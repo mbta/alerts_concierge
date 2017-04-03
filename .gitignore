@@ -11,3 +11,4 @@ npm-debug.log
 /devops/terraform-staging/variables.tf
 /test/fixture/vcr_cassettes/*
 .iex.exs
+.DS_Store
