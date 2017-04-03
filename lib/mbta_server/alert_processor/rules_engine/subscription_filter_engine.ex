@@ -3,11 +3,9 @@ defmodule MbtaServer.AlertProcessor.SubscriptionFilterEngine do
   Entry point for susbcription engine to filter users to alert users
   with relevant subscriptions to alert provided.
   """
-  alias MbtaServer.AlertProcessor.Messager
+  alias MbtaServer.AlertProcessor.{Messager, Model.AlertMessage}
 
-  @type alert :: %{
-    header: String.t
-  }
+  @type alert :: %AlertMessage{}
 
   @doc """
   process_alert/1 receives an alert and applies relevant filters to send alerts
