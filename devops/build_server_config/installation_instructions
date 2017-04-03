@@ -1,0 +1,16 @@
+Instructions for setting up build server
+
+0. Copy the .profile from this directory to ~/.profile on the build server
+1. Install git
+2. Install asdf-vm
+3. Install asdf plugin for erlang + correct erlang version
+4. Install asdf plugin for elixir + correct elixir version
+5. Install asdf plugin for node + correct node version
+6. Create an ssh key and add it to github
+7. Pull down the application in the home directory (you will need this to run migrations)
+8. Set up secrets
+  1. mkdir ~/secrets
+  2. cd ~/secrets
+  3. git init (DO NOT PUSH THIS DIRECTORY TO A REMOTE)
+  4. copy your prod.secret.exs here
+  5. When the build happens, this is the file it will pull in to configure the app, so it must be kept up to date. Using git(but not github) lets us easily track changes/debug
