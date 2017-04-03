@@ -3,3 +3,12 @@
 /deps
 erl_crash.dump
 *.ez
+npm-debug.log
+/assets/node_modules
+/priv/static/
+/config/*.secret.exs
+.deliver/releases/
+/devops/terraform-staging/variables.tf
+/test/fixture/vcr_cassettes/*
+.iex.exs
+.DS_Store

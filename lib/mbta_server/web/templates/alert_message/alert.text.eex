@@ -1,0 +1,3 @@
+<%= @subject %>
+
+<%= @email_body %>

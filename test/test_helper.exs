@@ -1,0 +1,8 @@
+{:ok, _} = Application.ensure_all_started(:ex_machina)
+
+ExUnit.configure(exclude: [pending: true])
+ExUnit.start()
+ExVCR.Config.cassette_library_dir("test/fixture/vcr_cassettes")
+
+Ecto.Adapters.SQL.Sandbox.mode(MbtaServer.Repo, :manual)
+
