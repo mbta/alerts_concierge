@@ -5,7 +5,7 @@ defmodule MbtaServer.AlertProcessor.ApiClient do
   use HTTPoison.Base
 
   defp process_url(url) do
-    "https://api.mbtace.com/" <> url
+    System.get_env("API_URL") <> url
   end
 
   defp process_response_body(body) do

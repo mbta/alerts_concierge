@@ -16,7 +16,7 @@ defmodule MbtaServer.AlertProcessor.AlertParser do
         message
       alert_data ->
         alert_data
-        |> Enum.map(&parse_alert(&1))
+        |> Enum.flat_map(&parse_alert(&1))
         |> Enum.map(&SubscriptionFilterEngine.process_alert(&1))
     end
   end
@@ -24,11 +24,12 @@ defmodule MbtaServer.AlertProcessor.AlertParser do
   @doc """
   parse_alert/1 takes a map of alert information and extracts relevant fields.
   """
-  @spec parse_alert(Map) :: %{header: String.t | nil}
-  defp parse_alert(alert_json) do
-    case alert_json do
-      %{"attributes" => %{"header" => header}} -> %{header: header}
-      _ -> %{header: nil}
-    end
+  @spec parse_alert(Map) :: [%{header: String.t}]
+  defp parse_alert(%{"attributes" => %{"header" => header}}) when is_binary(header) do
+    [%{header: header}]
+  end
+
+  defp parse_alert(_) do
+    []
   end
 end

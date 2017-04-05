@@ -2,8 +2,8 @@ defmodule MbtaServer.BasePolicy do
   @moduledoc """
   Base policy configuration to extend policies from
   """
-  
-  alias MbtaServer.{User}
+
+  alias MbtaServer.User
   import Ecto.Query
 
   # Admin users have full control by default
