@@ -16,8 +16,8 @@ defmodule MbtaServer.AlertProcessor.AlertParser do
         message
       alert_data ->
         alert_data
-        |> Enum.flat_map(&parse_alert(&1))
-        |> Enum.map(&SubscriptionFilterEngine.process_alert(&1))
+        |> Enum.flat_map(&parse_alert/1)
+        |> Enum.map(&SubscriptionFilterEngine.process_alert/1)
     end
   end
 

@@ -11,8 +11,12 @@ defmodule MbtaServer.AlertProcessor.JsonApiClient do
   @spec get_alerts() :: Map | {atom, Map}
   def get_alerts do
    case get("/alerts") do
-      {:ok, %{body: %{"data" => data}}} -> data
-      {:error, message} -> {:error, message}
+      {:ok, %{body: %{"data" => data}}} ->
+        data
+      {:ok, %{body: %{"errors" => errors}}} ->
+        {:error, errors |> Enum.map_join(", ", &(&1["code"]))}
+      {:error, message} ->
+        {:error, message}
     end
   end
 
