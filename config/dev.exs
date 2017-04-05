@@ -48,15 +48,6 @@ config :logger, :console, format: "[$level] $message\n"
 # in production as building large stacktraces may be expensive.
 config :phoenix, :stacktrace_depth, 20
 
-# Configure your database
-config :mbta_server, MbtaServer.Repo,
-  adapter: Ecto.Adapters.Postgres,
-  username: "postgres",
-  password: "postgres",
-  database: "mbta_server_dev",
-  hostname: "localhost",
-  pool_size: 10
-
 # AWS
 config :ex_aws,
   access_key_id: ["STAGING_ACCESS_KEY_ID", :instance_role],

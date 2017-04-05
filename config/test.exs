@@ -12,10 +12,6 @@ config :logger, level: :warn
 # Configure your database
 config :mbta_server, MbtaServer.Repo,
   adapter: Ecto.Adapters.Postgres,
-  username: "postgres",
-  password: "postgres",
-  database: "mbta_server_test",
-  hostname: "localhost",
   pool: Ecto.Adapters.SQL.Sandbox
 
 # Bamboo
