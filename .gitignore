@@ -12,3 +12,4 @@ npm-debug.log
 /test/fixture/vcr_cassettes/*
 .iex.exs
 .env
+.DS_Store

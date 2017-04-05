@@ -2,6 +2,13 @@ defmodule MbtaServer.User do
   @moduledoc """
   User struct and functions
   """
+  @type t :: %__MODULE__{
+    id: String.t,
+    email: String.t,
+    phone_number: String.t,
+    role: String.t
+  }
+
   use Ecto.Schema
 
   import Ecto.Changeset
