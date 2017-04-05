@@ -10,11 +10,15 @@ defmodule MbtaServer.AlertProcessor.HoldingQueueTest do
   setup do
     date_in_future = DateTime.from_unix!(4078579247)
     date_in_past = DateTime.from_unix!(1)
-
     future_message = %AlertMessage{send_after: date_in_future}
     past_message = %AlertMessage{send_after: date_in_past}
 
     {:ok, fm: future_message, pm: past_message}
+  end
+
+  setup do
+    Application.stop(:mbta_server)
+    on_exit(self(), fn() -> Application.start(:mbta_server) end)
   end
 
   test "Instantiates empty queue by default" do

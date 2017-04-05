@@ -18,8 +18,6 @@ defmodule MbtaServer.AlertProcessor.HoldingQueue do
   defp filter_queue(messages) do
     now = DateTime.utc_now()
 
-    # TODO: decouple filtering from passing to sending queue in next PR
-
     {ready_to_send, state} = messages
     |> Enum.split_with(&send_message?(&1, now))
 
@@ -42,7 +40,7 @@ defmodule MbtaServer.AlertProcessor.HoldingQueue do
   def enqueue(message) do
     case send_message?(message, DateTime.utc_now()) do
       true ->
-        SendingQueue.enqueue([message])
+        SendingQueue.enqueue(message)
       false ->
         GenServer.call(__MODULE__, {:push, message})
     end

@@ -29,6 +29,10 @@ config :mbta_server, MbtaServer.Mailer,
 config :mbta_server, MbtaServer.AlertProcessor.HoldingQueue,
   filter_interval: 300_000 # 5 mins
 
+config :mbta_server, MbtaServer.AlertProcessor,
+  pool_size: 2,
+  overflow: 1
+
 # Configure your database
 config :mbta_server, MbtaServer.Repo,
   adapter: Ecto.Adapters.Postgres,

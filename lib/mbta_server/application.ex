@@ -15,7 +15,6 @@ defmodule MbtaServer.Application do
       supervisor(MbtaServer.Web.Endpoint, []),
       supervisor(MbtaServer.AlertProcessor, [])
     ]
-
     # See http://elixir-lang.org/docs/stable/elixir/Supervisor.html
     # for other strategies and supported options
     opts = [strategy: :one_for_one, name: MbtaServer.Supervisor]

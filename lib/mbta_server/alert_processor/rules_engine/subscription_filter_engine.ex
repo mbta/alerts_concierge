@@ -3,9 +3,9 @@ defmodule MbtaServer.AlertProcessor.SubscriptionFilterEngine do
   Entry point for susbcription engine to filter users to alert users
   with relevant subscriptions to alert provided.
   """
-  alias MbtaServer.AlertProcessor.{Messager, Model.AlertMessage}
+  alias MbtaServer.AlertProcessor.{Messager, Model.Alert, Model.AlertMessage}
 
-  @type alert :: %AlertMessage{}
+  @type alert :: Alert.t
 
   @doc """
   process_alert/1 receives an alert and applies relevant filters to send alerts
@@ -14,7 +14,8 @@ defmodule MbtaServer.AlertProcessor.SubscriptionFilterEngine do
   @spec process_alert(alert, MbtaServer.User.t | nil) :: {:ok, map} | {:error, map} | {:error, String.t}
   def process_alert(alert, user \\ test_user()) do
     %{email: email, phone_number: phone_number} = user
-    Messager.send_alert_message({alert[:header], email, phone_number})
+    message = %AlertMessage{message: alert[:header], email: email, phone_number: phone_number}
+    Messager.send_alert_message(message)
   end
 
   @spec test_user :: %MbtaServer.User{}

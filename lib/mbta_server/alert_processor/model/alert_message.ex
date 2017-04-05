@@ -3,7 +3,7 @@ defmodule MbtaServer.AlertProcessor.Model.AlertMessage do
   @moduledoc """
   An individual message generated from an alert
   """
-  defstruct [:alert_id, :user_id, :send_after, :message, :header]
+  defstruct [:alert_id, :user_id, :send_after, :message, :header, :phone_number, :email]
 
   @type t :: %__MODULE__{
     alert_id: String.t,
@@ -11,5 +11,7 @@ defmodule MbtaServer.AlertProcessor.Model.AlertMessage do
     send_after: DateTime.t,
     message: String.t,
     header: String.t,
+    phone_number: String.t,
+    email: String.t
   }
 end

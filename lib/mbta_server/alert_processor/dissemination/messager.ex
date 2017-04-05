@@ -2,23 +2,23 @@ defmodule MbtaServer.AlertProcessor.Messager do
   @moduledoc """
   Module to handle the dissemination of messages to proper mediums based on user subscriptions.
   """
-  @type message_params :: {String.t, String.t | nil, String.t | nil}
-  @type ex_aws_success :: {:ok, map}
-  @type ex_aws_error :: {:error, map}
-  @type request_error :: {:error, String.t}
-
   @ex_aws Application.get_env(:mbta_server, :ex_aws)
 
   alias MbtaServer.{AlertMessageMailer, Mailer}
-  alias MbtaServer.AlertProcessor.AlertMessageSmser
+  alias MbtaServer.AlertProcessor.{AlertMessageSmser, Model.AlertMessage}
+
+  @type ex_aws_success :: {:ok, map}
+  @type ex_aws_error :: {:error, map}
+  @type request_error :: {:error, String.t}
+  @type message :: %AlertMessage{}
 
   @doc """
   send_alert_message/1 receives a map of user information and message to
   delegate to the proper api.
   """
-  @spec send_alert_message(message_params) ::
+  @spec send_alert_message(message) ::
   ex_aws_success | ex_aws_error | request_error
-  def send_alert_message({message, email, phone_number}) do
+  def send_alert_message(%AlertMessage{message: message, email: email, phone_number: phone_number}) do
     do_send_alert_message(email, phone_number, message)
   end
 
