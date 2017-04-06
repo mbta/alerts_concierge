@@ -21,9 +21,6 @@ defmodule MbtaServer.AlertProcessor.AlertParser do
     end
   end
 
-  @doc """
-  parse_alert/1 takes a map of alert information and extracts relevant fields.
-  """
   @spec parse_alert(Map) :: [%{header: String.t}]
   defp parse_alert(%{"attributes" => %{"header" => header}}) when is_binary(header) do
     [%{header: header}]

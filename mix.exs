@@ -44,8 +44,8 @@ defmodule MbtaServer.Mixfile do
   # Type `mix help deps` for examples and options.
   defp deps do
     [
-      {:bamboo, "~> 0.7"},
-      {:bamboo_smtp, "~> 1.2.1"},
+      {:bamboo, "~> 0.8"},
+      {:bamboo_smtp, "~> 1.3.0"},
       {:bodyguard, "~> 1.0.0"},
       {:cowboy, "~> 1.0"},
       {:credo, "~> 0.7", only: [:dev, :test]},
