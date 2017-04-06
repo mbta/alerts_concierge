@@ -4,7 +4,6 @@ defmodule MbtaServer.BasePolicy do
   """
 
   alias MbtaServer.User
-  #import Ecto.Query
 
   # Admin users have full control by default
   def can?(%User{role: "admin"}, _action, _resource), do: true

@@ -21,11 +21,10 @@ defmodule MbtaServer.AlertProcessor.ApiClient do
   end
 
   defp process_url(url) do
-    System.get_env("API_URL") |> URI.merge(url) |> URI.to_string
+    "API_URL" |> System.get_env |> URI.merge(url) |> URI.to_string
   end
 
   defp process_response_body(body) do
-    body
-    |> Poison.decode!
+    Poison.decode!(body)
   end
 end
