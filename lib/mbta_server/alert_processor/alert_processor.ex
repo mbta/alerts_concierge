@@ -1,6 +1,8 @@
 defmodule MbtaServer.AlertProcessor do
   @moduledoc """
-  Supervisor for alert processor processes.
+  Supervisor for managing child processes which facilitate the fetching
+  of alerts from the api as well as processing the alerts to be sent
+  to the correct users.
   """
   use Supervisor
   alias MbtaServer.AlertProcessor.AlertCache
@@ -11,7 +13,7 @@ defmodule MbtaServer.AlertProcessor do
 
   def init([]) do
     children = [
-      worker(AlertCache, [:alert_cache])
+      worker(AlertCache, [[name: :alert_cache]])
     ]
 
     opts = [strategy: :one_for_one]

@@ -5,18 +5,17 @@ defmodule MbtaServer.AlertProcessor.AlertCache do
   """
   use GenServer
 
-  def start_link(name) do
-    GenServer.start_link(__MODULE__, [{:alerts, %{}}], [name: name])
+  def start_link(opts \\ []) do
+    GenServer.start_link(__MODULE__, nil, opts)
   end
 
-  @spec update_cache(atom, Map) :: {[{String.t, Map}], [{String.t, Map}]}
+  @spec update_cache(atom, map) :: {[{String.t, map}], [{String.t, map}]}
   def update_cache(name, alerts) do
     GenServer.call(name, {:update_cache, alerts})
   end
 
-  def init(args) do
-    [{:alerts, alerts}] = args
-    {:ok, %{alerts: alerts}}
+  def init(_) do
+    {:ok, %{alerts: %{}}}
   end
 
   def handle_call({:update_cache, new_alerts}, _from, state) do

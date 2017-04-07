@@ -21,7 +21,7 @@ defmodule MbtaServer.AlertProcessor.AlertParser do
     end
   end
 
-  @spec parse_alert(Map, Map) :: [%{String.t => %{header: String.t, alert_id: String.t}}]
+  @spec parse_alert(map, map) :: [%{String.t => %{header: String.t, alert_id: String.t}}]
   defp parse_alert(%{"attributes" => %{"header" => header}, "id" => alert_id}, accumulator) when is_binary(header) do
     Map.put(accumulator, alert_id, %{header: header, alert_id: alert_id})
   end
