@@ -1,6 +1,6 @@
 defmodule MbtaServer.AlertProcessor.HoldingQueue do
   @moduledoc """
-  Parent service to handle queuing of incoming alerts
+  Parent service to handle queuing of incoming messages
   """
   use GenServer
   alias MbtaServer.AlertProcessor.{SendingQueue, Model}
@@ -8,54 +8,70 @@ defmodule MbtaServer.AlertProcessor.HoldingQueue do
 
   @filter_interval Application.get_env(:mbta_server, __MODULE__)[:filter_interval]
 
-  @type alert :: %AlertMessage{}
-  
-  @doc false
-  def start_link do
-    GenServer.start_link(__MODULE__, :queue.new(), [name: __MODULE__])
-  end
+  @type message :: AlertMessage.t
 
   @doc false
-  def start_link(alerts) do
-    GenServer.start_link(__MODULE__, :queue.from_list(alerts), [name: __MODULE__])
+  def start_link(messages \\ []) do
+    GenServer.start_link(__MODULE__, messages, [name: __MODULE__])
   end
 
-  defp filter_queue(queue) do
+  defp filter_queue(messages) do
     now = DateTime.utc_now()
-    :queue.filter(fn(alert) -> send_alert?(alert, now) end, queue)
-    |> make_list
-    |> Enum.each(fn(alert) -> 
-      SendingQueue.enqueue(alert)
+
+    # TODO: decouple filtering from passing to sending queue in next PR
+
+    {ready_to_send, state} = messages
+    |> Enum.split_with(&send_message?(&1, now))
+
+    ready_to_send
+    |> Enum.each(fn(message) ->
+      SendingQueue.enqueue(message)
     end)
 
-    :queue.filter(fn(alert) -> !send_alert?(alert, now) end, queue)
+    state
   end
 
-  defp make_list({h, t}) do
-    h ++ t
+  defp send_message?(message, now) do
+    DateTime.compare(Map.get(message, :send_after), now) != :gt
   end
 
-  defp send_alert?(alert, now) do
-    case DateTime.compare(Map.get(alert, :send_after), now) do
-      :gt -> false
-      _ -> true
+  @doc """
+  Add message to holding queue or add to sending queue as appropriate based on date
+  """
+  @spec enqueue(message) :: {atom, atom}
+  def enqueue(message) do
+    case send_message?(message, DateTime.utc_now()) do
+      true ->
+        SendingQueue.enqueue([message])
+      false ->
+        GenServer.call(__MODULE__, {:push, message})
     end
   end
 
   @doc """
-  Add alert to holding queue or add to sending queue as appropriate based on date
+  Returns message from queue
   """
-  @spec enqueue(alert) :: {atom, atom}
-  def enqueue(alert) do
-    case send_alert?(alert, DateTime.utc_now()) do
-      true -> 
-        SendingQueue.enqueue([alert])
-      false -> 
-        GenServer.call(__MODULE__, {:push, alert})
-    end
+  @spec pop() :: message
+  def pop do
+    GenServer.call(__MODULE__, :pop)
   end
 
   ## Callbacks
+
+  def handle_call(:pop, _from, []) do
+    {:reply, nil, []}
+  end
+  def handle_call(:pop, _from, messages) do
+    [message | newstate] = messages
+    {:reply, message, newstate}
+  end
+  def handle_call({:push, message}, _from, messages) do
+    newstate = [message | messages]
+    {:reply, :success, newstate}
+  end
+  def handle_call(request, from, state) do
+    super(request, from, state)
+  end
 
   @doc """
   Schedule recurring check of queue
@@ -66,24 +82,11 @@ defmodule MbtaServer.AlertProcessor.HoldingQueue do
   end
 
   @doc """
-  Check queue for any alerts that can be moved, then schedule another check
+  Check queue for any messages that can be moved, then schedule another check
   """
   def handle_info(:schedule, queue) do
     state = filter_queue(queue)
     Process.send_after(self(), :schedule, @filter_interval)
     {:noreply, state}
-  end
-
-  @doc """
-  Add alert to queue
-  """
-  def handle_call({:push, alert}, _from, queue) do
-    newstate = :queue.in(alert, queue)
-    {:reply, :success, newstate}
-  end
-
-  @doc false
-  def handle_call(request, from, state) do
-    super(request, from, state)
   end
 end
