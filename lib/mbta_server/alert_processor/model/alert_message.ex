@@ -8,7 +8,7 @@ defmodule MbtaServer.AlertProcessor.Model.AlertMessage do
   @type t :: %__MODULE__{
     alert_id: String.t,
     user_id: String.t,
-    send_after: Date.t,
+    send_after: DateTime.t,
     message: String.t,
     header: String.t,
   }

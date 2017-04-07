@@ -8,22 +8,22 @@ defmodule MbtaServer.AlertProcessor.SendingQueueTest do
   end
 
   test "Instantiates empty queue by default" do
-    {:ok, queue} = SendingQueue.start_link()
-    assert :sys.get_state(queue) == {[], []}
+    {:ok, _queue} = SendingQueue.start_link()
+    assert SendingQueue.pop == nil
   end
 
   test "Alert can be added to the queue", %{message: message} do
-    {:ok, queue} = SendingQueue.start_link()
+    {:ok, _queue} = SendingQueue.start_link()
+    assert SendingQueue.pop == nil
     SendingQueue.enqueue(message)
-    assert :sys.get_state(queue) == {[message], []}
+    assert SendingQueue.pop == message
   end
 
   test "Alert can be removed from the queue", %{message: message} do
-    {:ok, queue} = SendingQueue.start_link()
+    {:ok, _queue} = SendingQueue.start_link()
     SendingQueue.enqueue(message)
-    assert :sys.get_state(queue) == {[message], []}
 
-    assert message == SendingQueue.pop
-    assert :sys.get_state(queue) == {[], []}
+    assert SendingQueue.pop == message
+    assert SendingQueue.pop == nil
   end
 end
