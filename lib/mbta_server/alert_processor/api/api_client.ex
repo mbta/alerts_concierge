@@ -8,7 +8,7 @@ defmodule MbtaServer.AlertProcessor.ApiClient do
   Helper function that fetches all alerts from
   MBTA Alerts API
   """
-  @spec get_alerts() :: [Map] | {atom, Map}
+  @spec get_alerts() :: [map] | {atom, map}
   def get_alerts do
    case get("/alerts") do
       {:ok, %{body: %{"data" => data}}} ->
