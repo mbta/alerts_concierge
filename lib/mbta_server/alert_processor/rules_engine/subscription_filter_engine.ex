@@ -5,16 +5,16 @@ defmodule MbtaServer.AlertProcessor.SubscriptionFilterEngine do
   """
   alias MbtaServer.AlertProcessor.Messager
 
-  @type alert :: %{
+  @type alert :: {String.t, %{
     header: String.t
-  }
+  }}
 
   @doc """
   process_alert/1 receives an alert and applies relevant filters to send alerts
   to the correct users based on the alert.
   """
   @spec process_alert(alert, MbtaServer.User.t | nil) :: {:ok, Map} | {:error, Map} | {:error, String.t}
-  def process_alert(alert, user \\ test_user()) do
+  def process_alert({_, alert}, user \\ test_user()) do
     %{email: email, phone_number: phone_number} = user
     Messager.send_alert_message({alert[:header], email, phone_number})
   end

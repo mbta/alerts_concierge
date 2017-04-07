@@ -5,13 +5,13 @@ defmodule MbtaServer.AlertProcessor.SubscriptionFilterEngineTest do
 
   test "process_alert/1 when message provided" do
     user = insert(:user)
-    alert = %{header: "This is a test message"}
+    alert = {"1", %{header: "This is a test message"}}
     {:ok, _} = SubscriptionFilterEngine.process_alert(alert, user)
   end
 
   test "process_alert/1 when message not provided" do
     user = insert(:user)
-    alert = %{header: nil}
+    alert = {"1", %{header: nil}}
     {:error, _} = SubscriptionFilterEngine.process_alert(alert, user)
   end
 end
