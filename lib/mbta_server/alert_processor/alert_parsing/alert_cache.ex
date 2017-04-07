@@ -9,6 +9,13 @@ defmodule MbtaServer.AlertProcessor.AlertCache do
     GenServer.start_link(__MODULE__, nil, opts)
   end
 
+  @doc """
+  update_cache/2 takes the name of the cache and a map of alerts.
+  On update, the current cached alerts are retrieved and diffed against the new set of alerts
+  which are then stored. Returned is a tuple containing a list of new alerts to be processed,
+  and a list of removed alert ids to be removed from the holding queue since the alert is no
+  longer active.
+  """
   @spec update_cache(atom, map) :: {[{String.t, map}], [{String.t, map}]}
   def update_cache(name, alerts) do
     GenServer.call(name, {:update_cache, alerts})
