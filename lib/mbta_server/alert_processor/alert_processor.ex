@@ -13,7 +13,7 @@ defmodule MbtaServer.AlertProcessor do
 
   def init([]) do
     children = [
-      worker(AlertCache, [[name: :alert_cache]])
+      worker(AlertCache, [])
     ]
 
     opts = [strategy: :one_for_one]

@@ -5,7 +5,7 @@ defmodule MbtaServer.AlertProcessor.AlertCache do
   """
   use GenServer
 
-  def start_link(opts \\ []) do
+  def start_link(opts \\ [name: __MODULE__]) do
     GenServer.start_link(__MODULE__, nil, opts)
   end
 
@@ -17,7 +17,7 @@ defmodule MbtaServer.AlertProcessor.AlertCache do
   longer active.
   """
   @spec update_cache(atom, map) :: {[map], [String.t]}
-  def update_cache(name, alerts) do
+  def update_cache(alerts, name \\ __MODULE__) do
     GenServer.call(name, {:update_cache, alerts})
   end
 

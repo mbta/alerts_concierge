@@ -16,7 +16,7 @@ defmodule MbtaServer.AlertProcessor.AlertParser do
         message
       alert_data ->
         alerts = Enum.reduce(alert_data, %{}, &parse_alert/2)
-        {new_alerts, _} = AlertCache.update_cache(:alert_cache, alerts)
+        {new_alerts, _} = AlertCache.update_cache(alerts)
         Enum.map(new_alerts, &SubscriptionFilterEngine.process_alert/1)
     end
   end
