@@ -13,8 +13,7 @@ defmodule MbtaServer.Application do
       supervisor(MbtaServer.Repo, []),
       # Start the endpoint when the application starts
       supervisor(MbtaServer.Web.Endpoint, []),
-      # Start your own worker by calling: MbtaServer.Worker.start_link(arg1, arg2, arg3)
-      # supervisor(MbtaServer.AlertParser, []),
+      supervisor(MbtaServer.AlertProcessor, [])
     ]
 
     # See http://elixir-lang.org/docs/stable/elixir/Supervisor.html
