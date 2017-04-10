@@ -5,7 +5,6 @@ defmodule MbtaServer.AlertProcessor.AlertWorker do
   """
   use GenServer
 
-  @filter_interval "ALERT_FETCH_INTERVAL" |> System.get_env |> String.to_integer
   @alert_parser Application.get_env(:mbta_server, :alert_parser)
 
   @doc false
@@ -31,6 +30,15 @@ defmodule MbtaServer.AlertProcessor.AlertWorker do
   end
 
   defp schedule_work do
-    Process.send_after(self(), :work, @filter_interval)
+    Process.send_after(self(), :work, filter_interval())
+  end
+
+  defp filter_interval do
+    alert_fetch_interval =
+      case Application.get_env(:mbta_server, :alert_fetch_interval) do
+        {:system, env_var, default} -> System.get_env(env_var) || default
+        value -> value
+      end
+    String.to_integer(alert_fetch_interval)
   end
 end
