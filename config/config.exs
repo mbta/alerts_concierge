@@ -34,6 +34,9 @@ config :mbta_server, MbtaServer.Repo,
   adapter: Ecto.Adapters.Postgres,
   pool_size: 10
 
+# Config for alert parser
+config :mbta_server, :alert_parser, MbtaServer.AlertProcessor.AlertParser
+
 # Import environment specific config. This must remain at the bottom
 # of this file so it overrides the configuration defined above.
 import_config "#{Mix.env}.exs"
