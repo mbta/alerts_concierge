@@ -16,7 +16,7 @@ defmodule MbtaServer.AlertProcessor.AlertCache do
   and a list of removed alert ids to be removed from the holding queue since the alert is no
   longer active.
   """
-  @spec update_cache(atom, map) :: {[{String.t, map}], [{String.t, map}]}
+  @spec update_cache(atom, map) :: {[map], [String.t]}
   def update_cache(name, alerts) do
     GenServer.call(name, {:update_cache, alerts})
   end
@@ -33,6 +33,6 @@ defmodule MbtaServer.AlertProcessor.AlertCache do
   end
 
   defp new_alerts_list(alerts) do
-    Enum.map(alerts, fn({_id, alert}) -> alert end)
+    Map.values(alerts)
   end
 end

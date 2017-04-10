@@ -12,7 +12,7 @@ defmodule MbtaServer.AlertProcessor.AlertCacheTest do
     {:ok, pid: pid}
   end
 
-  test "Instantiates with empty new and removed lists", %{pid: pid} do
+  test "Instantiates with empty alerts map", %{pid: pid} do
     assert :sys.get_state(pid) == %{alerts: %{}}
   end
 
