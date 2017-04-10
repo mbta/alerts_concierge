@@ -18,26 +18,22 @@ defmodule MbtaServer.AlertProcessor.SendingQueue do
   @doc """
   Adds message to qeue
   """
-  @spec enqueue(message) :: {atom, atom}
-  def enqueue(message) do
-    case message do
-      %AlertMessage{} ->
-        GenServer.call(__MODULE__, {:push, message})
-      _ -> {:reply, :no_update}
-    end
+  @spec enqueue(message) :: {:success}
+  def enqueue(%AlertMessage{} = message) do
+    GenServer.call(__MODULE__, {:push, message})
   end
 
   @doc """
   Returns message from queue
   """
-  @spec pop() :: message
+  @spec pop() :: message | {:error, :empty}
   def pop do
     GenServer.call(__MODULE__, :pop)
   end
 
   @doc false
   def handle_call(:pop, _from, []) do
-    {:reply, nil, []}
+    {:reply, {:error, :empty}, []}
   end
   def handle_call(:pop, _from, messages) do
     [message | newstate] = messages
@@ -47,7 +43,7 @@ defmodule MbtaServer.AlertProcessor.SendingQueue do
   @doc false
   def handle_call({:push, message}, _from, messages) do
     newstate = [message | messages]
-    {:reply, :success, newstate}
+    {:reply, {:success}, newstate}
   end
 
   @doc false

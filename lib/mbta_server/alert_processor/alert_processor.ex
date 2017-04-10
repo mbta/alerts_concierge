@@ -5,7 +5,13 @@ defmodule MbtaServer.AlertProcessor do
   to the correct users.
   """
   use Supervisor
-  alias MbtaServer.AlertProcessor.{AlertCache, HoldingQueue, SendingQueue, MessageWorker}
+  alias MbtaServer.AlertProcessor.{
+    AlertCache,
+    HoldingQueue,
+    SendingQueue,
+    MessageWorker,
+    QueueWorker
+  }
 
   @worker_pool_size Application.get_env(__MODULE__, :pool_size)
   @worker_pool_overflow Application.get_env(__MODULE__, :overflow)
@@ -15,7 +21,7 @@ defmodule MbtaServer.AlertProcessor do
   end
 
   def init([]) do
-    poolboy_config = [
+    message_worker_config = [
       name: {:local, :message_worker},
       worker_module: MessageWorker,
       size: @worker_pool_size,
@@ -27,7 +33,8 @@ defmodule MbtaServer.AlertProcessor do
       worker(AlertCache, [[name: :alert_cache]]),
       worker(HoldingQueue, []),
       worker(SendingQueue, []),
-      :poolboy.child_spec(:message_worker, poolboy_config, [])
+      worker(QueueWorker, []),
+      :poolboy.child_spec(:message_worker, message_worker_config, [])
     ]
 
     opts = [strategy: :one_for_one]

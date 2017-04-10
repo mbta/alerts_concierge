@@ -10,7 +10,7 @@ defmodule MbtaServer.AlertProcessor.Messager do
   @type ex_aws_success :: {:ok, map}
   @type ex_aws_error :: {:error, map}
   @type request_error :: {:error, String.t}
-  @type message :: %AlertMessage{}
+  @type message :: AlertMessage.t
 
   @doc """
   send_alert_message/1 receives a map of user information and message to

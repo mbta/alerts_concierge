@@ -22,51 +22,32 @@ defmodule MbtaServer.AlertProcessor.HoldingQueueTest do
   end
 
   test "Instantiates empty queue by default" do
-    {:ok, queue} = HoldingQueue.start_link()
-    assert :sys.get_state(queue) ==  []
+    HoldingQueue.start_link()
+    assert HoldingQueue.pop == {:error, :empty}
   end
 
   test "Instantiates queue with future alerts when provided", %{fm: fm} do
     alerts = [fm]
-    {:ok, loaded_queue} = HoldingQueue.start_link(alerts)
+    HoldingQueue.start_link(alerts)
 
-    assert :sys.get_state(loaded_queue) == [fm]
-  end
-
-  test "Filters queue immediately when instantiated", %{fm: fm, pm: pm} do
-    {:ok, _sq} = SendingQueue.start_link()
-    alerts = [fm, pm]
-    {:ok, loaded_queue} = HoldingQueue.start_link(alerts)
-
-    assert :sys.get_state(loaded_queue) == [fm]
+    assert HoldingQueue.pop() == fm
   end
 
   test "Alert can be added to the queue", %{fm: fm} do
-    {:ok, queue} = HoldingQueue.start_link()
+    HoldingQueue.start_link()
     HoldingQueue.enqueue(fm)
-    assert :sys.get_state(queue) == [fm]
+
+    assert HoldingQueue.pop == fm
   end
 
-  test "Filtering the queue retains all alerts for the future" do
-    {:ok, _sq} = SendingQueue.start_link()
-    alert_to_not_filter = %AlertMessage{send_after: generate_date(250)}
-    alert_to_filter = %AlertMessage{send_after: generate_date(50)}
+  test "messages_to_send/1 retains all alerts for the future" do
+    SendingQueue.start_link()
+    alert_to_not_filter = %AlertMessage{send_after: generate_date(50)}
+    alert_to_filter = %AlertMessage{send_after: generate_date(-50)}
     alerts = [alert_to_not_filter, alert_to_filter]
-    {:ok, loaded_queue} = HoldingQueue.start_link(alerts)
+    HoldingQueue.start_link(alerts)
 
-    :timer.sleep(100)
-    assert :sys.get_state(loaded_queue) == [alert_to_not_filter]
-  end
-
-  test "Filtering the queue pushes sendable alerts to SendingQueue" do
-    alert = %AlertMessage{send_after: generate_date(50)}
-    alerts = [alert]
-
-    {:ok, sending_queue} = SendingQueue.start_link()
-    {:ok, loaded_queue} = HoldingQueue.start_link(alerts)
-
-    :timer.sleep(100)
-    assert :sys.get_state(loaded_queue) == []
-    assert :sys.get_state(sending_queue) == [alert]
+    assert HoldingQueue.messages_to_send(generate_date(0)) == {:success, [alert_to_filter]}
+    assert HoldingQueue.pop == alert_to_not_filter
   end
 end

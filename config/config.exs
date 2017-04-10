@@ -26,9 +26,6 @@ config :logger, :console,
 config :mbta_server, MbtaServer.Mailer,
   adapter: Bamboo.LocalAdapter
 
-config :mbta_server, MbtaServer.AlertProcessor.HoldingQueue,
-  filter_interval: 300_000 # 5 mins
-
 config :mbta_server, MbtaServer.AlertProcessor,
   pool_size: 2,
   overflow: 1

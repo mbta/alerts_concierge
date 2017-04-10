@@ -7,7 +7,7 @@ defmodule MbtaServer.AlertProcessor.SendingQueueTest do
   end
 
   test "Instantiates empty queue by default" do
-    assert SendingQueue.pop == nil
+    assert SendingQueue.pop == {:error, :empty}
   end
 
   test "Alert can be added to the queue", %{message: message} do
@@ -19,6 +19,6 @@ defmodule MbtaServer.AlertProcessor.SendingQueueTest do
     SendingQueue.enqueue(message)
 
     assert SendingQueue.pop == message
-    assert SendingQueue.pop == nil
+    assert SendingQueue.pop == {:error, :empty}
   end
 end
