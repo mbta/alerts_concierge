@@ -19,7 +19,9 @@ defmodule MbtaServer.AlertProcessor.QueueWorkerTest do
   end
 
   test "Worker passes notifications from holding queue to sending queue", %{notification: notification} do
-    MbtaServer.AlertProcessor.start_link
+    HoldingQueue.start_link
+    SendingQueue.start_link
+    QueueWorker.start_link
 
     assert HoldingQueue.pop == :error
     assert SendingQueue.pop == :error
