@@ -1,0 +1,51 @@
+defmodule MbtaServer.AlertProcessor.SendingQueue do
+  @moduledoc """
+  Queue for holding messages ready to be sent
+  """
+  use GenServer
+  alias MbtaServer.AlertProcessor.Model.AlertMessage
+
+  def start_link do
+    GenServer.start_link(__MODULE__, [], [name: __MODULE__])
+  end
+
+  def init(state) do
+    {:ok, state}
+  end
+
+  @doc """
+  Adds message to qeue
+  """
+  @spec enqueue(AlertMessage.t) :: :ok
+  def enqueue(%AlertMessage{} = message) do
+    GenServer.call(__MODULE__, {:push, message})
+  end
+
+  @doc """
+  Returns message from queue
+  """
+  @spec pop() :: {:ok, AlertMessage.t} | :error
+  def pop do
+    GenServer.call(__MODULE__, :pop)
+  end
+
+  @doc false
+  def handle_call(:pop, _from, []) do
+    {:reply, :error, []}
+  end
+  def handle_call(:pop, _from, messages) do
+    [message | newstate] = messages
+    {:reply, {:ok, message}, newstate}
+  end
+
+  @doc false
+  def handle_call({:push, message}, _from, messages) do
+    newstate = [message | messages]
+    {:reply, :ok, newstate}
+  end
+
+  @doc false
+  def handle_call(request, from, state) do
+    super(request, from, state)
+  end
+end

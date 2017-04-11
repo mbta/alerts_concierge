@@ -28,6 +28,7 @@ defmodule MbtaServer.Mixfile do
         :logger,
         :phoenix_ecto,
         :poison,
+        :poolboy,
         :postgrex,
         :runtime_tools,
         :edeliver # Must be at end of list
@@ -64,6 +65,7 @@ defmodule MbtaServer.Mixfile do
       {:phoenix_live_reload, "~> 1.0", only: :dev},
       {:phoenix_pubsub, "~> 1.0"},
       {:poison, "~> 2.0"},
+      {:poolboy, ">= 0.0.0"},
       {:postgrex, ">= 0.0.0"},
     ]
   end
