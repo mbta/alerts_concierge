@@ -4,8 +4,7 @@ defmodule MbtaServer.AlertProcessor.QueueWorker do
   """
   use GenServer
   alias MbtaServer.AlertProcessor.{HoldingQueue, SendingQueue, Model.AlertMessage}
-  @type message :: AlertMessage.t
-  @type messages :: List.t
+  @type messages :: [AlertMessage.t]
 
   @doc false
   def start_link() do
@@ -19,14 +18,14 @@ defmodule MbtaServer.AlertProcessor.QueueWorker do
   end
 
   @doc """
-  Checks sending queue for alert and sends it out to user
+  Checks holding queue for any messages that are ready to send and
+  passes them to the sending queue
   """
-  @spec handle_info(atom, messages) :: {:noreply, messages}
   def handle_info(:message, state) do
     case HoldingQueue.messages_to_send() do
-      {:error, :empty} ->
+      :error ->
         Process.send_after(self(), :message, 100)
-      {:success, messages} ->
+      {:ok, messages} ->
         send_messages(messages)
         send(self(), :message)
     end
@@ -34,7 +33,6 @@ defmodule MbtaServer.AlertProcessor.QueueWorker do
   end
 
   defp send_messages(messages) do
-    messages
-    |> Enum.each(fn(message) -> SendingQueue.enqueue(message) end)
+    Enum.each(messages, &SendingQueue.enqueue/1)
   end
 end

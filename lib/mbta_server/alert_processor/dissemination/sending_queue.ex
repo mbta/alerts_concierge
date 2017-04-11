@@ -5,8 +5,6 @@ defmodule MbtaServer.AlertProcessor.SendingQueue do
   use GenServer
   alias MbtaServer.AlertProcessor.Model.AlertMessage
 
-  @type message :: AlertMessage.t
-
   def start_link do
     GenServer.start_link(__MODULE__, [], [name: __MODULE__])
   end
@@ -18,7 +16,7 @@ defmodule MbtaServer.AlertProcessor.SendingQueue do
   @doc """
   Adds message to qeue
   """
-  @spec enqueue(message) :: {:success}
+  @spec enqueue(AlertMessage.t) :: :ok
   def enqueue(%AlertMessage{} = message) do
     GenServer.call(__MODULE__, {:push, message})
   end
@@ -26,24 +24,24 @@ defmodule MbtaServer.AlertProcessor.SendingQueue do
   @doc """
   Returns message from queue
   """
-  @spec pop() :: message | {:error, :empty}
+  @spec pop() :: {:ok, AlertMessage.t} | :error
   def pop do
     GenServer.call(__MODULE__, :pop)
   end
 
   @doc false
   def handle_call(:pop, _from, []) do
-    {:reply, {:error, :empty}, []}
+    {:reply, :error, []}
   end
   def handle_call(:pop, _from, messages) do
     [message | newstate] = messages
-    {:reply, message, newstate}
+    {:reply, {:ok, message}, newstate}
   end
 
   @doc false
   def handle_call({:push, message}, _from, messages) do
     newstate = [message | messages]
-    {:reply, {:success}, newstate}
+    {:reply, :ok, newstate}
   end
 
   @doc false

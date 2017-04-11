@@ -7,6 +7,7 @@ defmodule MbtaServer.AlertProcessor do
   use Supervisor
   alias MbtaServer.AlertProcessor.{
     AlertCache,
+    AlertWorker,
     HoldingQueue,
     SendingQueue,
     MessageWorker,
@@ -29,8 +30,8 @@ defmodule MbtaServer.AlertProcessor do
     ]
 
     children = [
-      worker(AlertWorker, [])
-      worker(AlertCache, [[name: :alert_cache]]),
+      worker(AlertWorker, []),
+      worker(AlertCache, []),
       worker(HoldingQueue, []),
       worker(SendingQueue, []),
       worker(QueueWorker, []),

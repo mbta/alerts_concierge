@@ -21,14 +21,14 @@ defmodule MbtaServer.AlertProcessor.QueueWorkerTest do
   test "Worker passes messages from holding queue to sending queue", %{message: message} do
     MbtaServer.AlertProcessor.start_link
 
-    assert HoldingQueue.pop == {:error, :empty}
-    assert SendingQueue.pop == {:error, :empty}
+    assert HoldingQueue.pop == :error
+    assert SendingQueue.pop == :error
     HoldingQueue.enqueue(message)
 
     :timer.sleep(100)
 
-    assert HoldingQueue.pop == {:error, :empty}
-    assert SendingQueue.pop == message
+    assert HoldingQueue.pop == :error
+    assert SendingQueue.pop == {:ok, message}
   end
 
   test "Worker is recurring", %{message: message, later_message: later_message} do
@@ -36,19 +36,19 @@ defmodule MbtaServer.AlertProcessor.QueueWorkerTest do
     SendingQueue.start_link
     QueueWorker.start_link
 
-    assert HoldingQueue.pop == {:error, :empty}
-    assert SendingQueue.pop == {:error, :empty}
+    assert HoldingQueue.pop == :error
+    assert SendingQueue.pop == :error
 
     HoldingQueue.enqueue(message)
     :timer.sleep(50)
 
-    assert SendingQueue.pop == message
-    assert HoldingQueue.pop == {:error, :empty}
+    assert SendingQueue.pop == {:ok, message}
+    assert HoldingQueue.pop == :error
 
     HoldingQueue.enqueue(later_message)
     :timer.sleep(50)
 
-    assert SendingQueue.pop == later_message
-    assert SendingQueue.pop == {:error, :empty}
+    assert SendingQueue.pop == {:ok, later_message}
+    assert SendingQueue.pop == :error
   end
 end

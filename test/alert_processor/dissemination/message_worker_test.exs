@@ -43,7 +43,7 @@ defmodule MbtaServer.AlertProcessor.MessageWorkerTest do
     SendingQueue.enqueue(message)
 
     assert_delivered_email AlertMessageMailer.alert_message_email(body, email)
-    assert SendingQueue.pop == {:error, :empty}
+    assert SendingQueue.pop == :error
 
     SendingQueue.enqueue(message_2)
     :timer.sleep(101)
