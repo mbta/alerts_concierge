@@ -1,5 +1,5 @@
 defmodule MbtaServer.AlertProcessor.HoldingQueueTest do
-  use MbtaServer.Web.ConnCase
+  use MbtaServer.Web.ConnCase, async: false
 
   alias MbtaServer.AlertProcessor.{HoldingQueue, SendingQueue, Model.Notification}
 
