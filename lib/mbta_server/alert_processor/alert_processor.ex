@@ -5,7 +5,7 @@ defmodule MbtaServer.AlertProcessor do
   to the correct users.
   """
   use Supervisor
-  alias MbtaServer.AlertProcessor.AlertCache
+  alias MbtaServer.AlertProcessor.{AlertCache, AlertWorker}
 
   def start_link do
     Supervisor.start_link(__MODULE__, [])
@@ -13,7 +13,8 @@ defmodule MbtaServer.AlertProcessor do
 
   def init([]) do
     children = [
-      worker(AlertCache, [[name: :alert_cache]])
+      worker(AlertCache, []),
+      worker(AlertWorker, [])
     ]
 
     opts = [strategy: :one_for_one]

@@ -7,8 +7,7 @@ defmodule MbtaServer.AlertProcessor.AlertCacheTest do
   @new_alerts %{"2" => %{id: "2"}}
 
   setup do
-    {:ok, pid} = AlertCache.start_link()
-
+    {:ok, pid} = AlertCache.start_link([name: __MODULE__])
     {:ok, pid: pid}
   end
 
