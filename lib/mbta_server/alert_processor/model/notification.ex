@@ -1,4 +1,4 @@
-defmodule MbtaServer.AlertProcessor.Model.AlertMessage do
+defmodule MbtaServer.AlertProcessor.Model.Notification do
 
   @moduledoc """
   An individual message generated from an alert

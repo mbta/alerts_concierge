@@ -1,9 +1,9 @@
 defmodule MbtaServer.AlertProcessor.SendingQueue do
   @moduledoc """
-  Queue for holding messages ready to be sent
+  Queue for holding notifications ready to be sent
   """
   use GenServer
-  alias MbtaServer.AlertProcessor.Model.AlertMessage
+  alias MbtaServer.AlertProcessor.Model.Notification
 
   def start_link do
     GenServer.start_link(__MODULE__, [], [name: __MODULE__])
@@ -14,17 +14,17 @@ defmodule MbtaServer.AlertProcessor.SendingQueue do
   end
 
   @doc """
-  Adds message to qeue
+  Adds notification to qeue
   """
-  @spec enqueue(AlertMessage.t) :: :ok
-  def enqueue(%AlertMessage{} = message) do
-    GenServer.call(__MODULE__, {:push, message})
+  @spec enqueue(Notification.t) :: :ok
+  def enqueue(%Notification{} = notification) do
+    GenServer.call(__MODULE__, {:push, notification})
   end
 
   @doc """
-  Returns message from queue
+  Returns notification from queue
   """
-  @spec pop() :: {:ok, AlertMessage.t} | :error
+  @spec pop() :: {:ok, Notification.t} | :error
   def pop do
     GenServer.call(__MODULE__, :pop)
   end
@@ -33,14 +33,14 @@ defmodule MbtaServer.AlertProcessor.SendingQueue do
   def handle_call(:pop, _from, []) do
     {:reply, :error, []}
   end
-  def handle_call(:pop, _from, messages) do
-    [message | newstate] = messages
-    {:reply, {:ok, message}, newstate}
+  def handle_call(:pop, _from, notifications) do
+    [notification | newstate] = notifications
+    {:reply, {:ok, notification}, newstate}
   end
 
   @doc false
-  def handle_call({:push, message}, _from, messages) do
-    newstate = [message | messages]
+  def handle_call({:push, notification}, _from, notifications) do
+    newstate = [notification | notifications]
     {:reply, :ok, newstate}
   end
 

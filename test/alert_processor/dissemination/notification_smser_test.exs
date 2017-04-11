@@ -1,12 +1,12 @@
-defmodule MbtaServer.AlertProcessor.AlertMessageSmserTest do
+defmodule MbtaServer.AlertProcessor.NotificationSmserTest do
   use ExUnit.Case
 
-  alias MbtaServer.AlertProcessor.AlertMessageSmser
+  alias MbtaServer.AlertProcessor.NotificationSmser
 
-  test "alert_message_sms/2" do
+  test "notification_sms/2" do
     message = "This is a test sms"
     user_phone_number = "5555551234"
-    {:ok, sms} = AlertMessageSmser.alert_message_sms(message, user_phone_number)
+    {:ok, sms} = NotificationSmser.notification_sms(message, user_phone_number)
     params = sms.params
 
     assert params["Message"] == message

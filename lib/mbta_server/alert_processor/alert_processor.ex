@@ -10,7 +10,7 @@ defmodule MbtaServer.AlertProcessor do
     AlertWorker,
     HoldingQueue,
     SendingQueue,
-    MessageWorker,
+    NotificationWorker,
     QueueWorker
   }
 
@@ -24,7 +24,7 @@ defmodule MbtaServer.AlertProcessor do
   def init([]) do
     message_worker_config = [
       name: {:local, :message_worker},
-      worker_module: MessageWorker,
+      worker_module: NotificationWorker,
       size: @worker_pool_size,
       max_overflow: @worker_pool_overflow
     ]

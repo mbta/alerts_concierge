@@ -1,7 +1,7 @@
 defmodule MbtaServer.AlertProcessor.HoldingQueueTest do
   use MbtaServer.Web.ConnCase
 
-  alias MbtaServer.AlertProcessor.{HoldingQueue, SendingQueue, Model.AlertMessage}
+  alias MbtaServer.AlertProcessor.{HoldingQueue, SendingQueue, Model.Notification}
 
   defp generate_date(x) do
     DateTime.from_unix!(System.system_time(:millisecond) + x, :millisecond)
@@ -10,10 +10,9 @@ defmodule MbtaServer.AlertProcessor.HoldingQueueTest do
   setup do
     date_in_future = DateTime.from_unix!(4078579247)
     date_in_past = DateTime.from_unix!(1)
-    future_message = %AlertMessage{send_after: date_in_future}
-    past_message = %AlertMessage{send_after: date_in_past}
+    future_notification = %Notification{send_after: date_in_future}
 
-    {:ok, fm: future_message, pm: past_message}
+    {:ok, fn: future_notification}
   end
 
   setup do
@@ -26,28 +25,28 @@ defmodule MbtaServer.AlertProcessor.HoldingQueueTest do
     assert HoldingQueue.pop == :error
   end
 
-  test "Instantiates queue with future alerts when provided", %{fm: fm} do
-    alerts = [fm]
-    HoldingQueue.start_link(alerts)
+  test "Instantiates queue with future notifications when provided", %{fn: future_notification} do
+    notifications = [future_notification]
+    HoldingQueue.start_link(notifications)
 
-    assert HoldingQueue.pop() == {:ok, fm}
+    assert HoldingQueue.pop() == {:ok, future_notification}
   end
 
-  test "Alert can be added to the queue", %{fm: fm} do
+  test "Alert can be added to the queue", %{fn: future_notification} do
     HoldingQueue.start_link()
-    HoldingQueue.enqueue(fm)
+    HoldingQueue.enqueue(future_notification)
 
-    assert HoldingQueue.pop == {:ok, fm}
+    assert HoldingQueue.pop == {:ok, future_notification}
   end
 
-  test "messages_to_send/1 retains all alerts for the future" do
+  test "messages_to_send/1 retains all notifications for the future" do
     SendingQueue.start_link()
-    alert_to_not_filter = %AlertMessage{send_after: generate_date(50)}
-    alert_to_filter = %AlertMessage{send_after: generate_date(-50)}
-    alerts = [alert_to_not_filter, alert_to_filter]
-    HoldingQueue.start_link(alerts)
+    notification_to_not_filter = %Notification{send_after: generate_date(50)}
+    notification_to_filter = %Notification{send_after: generate_date(-50)}
+    notifications = [notification_to_not_filter, notification_to_filter]
+    HoldingQueue.start_link(notifications)
 
-    assert HoldingQueue.messages_to_send(generate_date(0)) == {:ok, [alert_to_filter]}
-    assert HoldingQueue.pop == {:ok, alert_to_not_filter}
+    assert HoldingQueue.notifications_to_send(generate_date(0)) == {:ok, [notification_to_filter]}
+    assert HoldingQueue.pop == {:ok, notification_to_not_filter}
   end
 end
