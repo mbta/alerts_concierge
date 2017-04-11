@@ -4,7 +4,7 @@ defmodule MbtaServer.AlertProcessor.Dispatcher do
   """
   @ex_aws Application.get_env(:mbta_server, :ex_aws)
 
-  alias MbtaServer.{NotificationMailer, Mailer}
+  alias MbtaServer.{NotificationMailer, Mailer, Repo}
   alias MbtaServer.AlertProcessor.{NotificationSmser, Model.Notification}
 
   @type ex_aws_success :: {:ok, map}
@@ -17,12 +17,19 @@ defmodule MbtaServer.AlertProcessor.Dispatcher do
   """
   @spec send_notification(Notification.t) ::
   ex_aws_success | ex_aws_error | request_error
-  def send_notification(%Notification{message: message, email: email, phone_number: phone_number}) do
+  def send_notification(%Notification{message: message, email: email, phone_number: phone_number} = notification) do
+    persist_notification(notification)
     do_send_notification(email, phone_number, message)
   end
 
   def send_notification(_) do
     {:error, "invalid or missing params"}
+  end
+
+  @spec persist_notification(Notification.t) ::
+  {:ok, Notification.t} | {:error, Ecto.Changeset.t}
+  defp persist_notification(%Notification{} = notification) do
+    Repo.insert(Notification.create_changeset(notification))
   end
 
   @spec do_send_notification(String.t, String.t, nil) :: request_error

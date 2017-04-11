@@ -1,9 +1,7 @@
 defmodule MbtaServer.AlertProcessor.Model.Notification do
-
   @moduledoc """
   An individual message generated from an alert
   """
-  defstruct [:alert_id, :user_id, :send_after, :message, :header, :phone_number, :email]
 
   @type t :: %__MODULE__{
     alert_id: String.t,
@@ -14,4 +12,42 @@ defmodule MbtaServer.AlertProcessor.Model.Notification do
     phone_number: String.t,
     email: String.t
   }
+
+  use Ecto.Schema
+  import Ecto.Changeset
+
+  @primary_key {:id, :binary_id, autogenerate: true}
+
+  schema "notifications" do
+    belongs_to :user, User, type: :binary_id
+
+    field :alert_id, :string
+    field :send_after, :utc_datetime
+    field :message, :string
+    field :header, :string
+    field :phone_number, :string
+    field :email, :string
+
+    timestamps()
+  end
+
+  @permitted_fields ~w(alert_id user_id send_after message header phone_number email)a
+  @required_fields ~w(alert_id user_id message)a
+
+  @doc """
+  Changeset for persisting a sent Notification
+  """
+  def create_changeset(struct, params \\ %{}) do
+    struct
+    |> cast(params, @permitted_fields)
+    |> validate_required(@required_fields)
+    |> validate_email_or_phone
+  end
+
+  defp validate_email_or_phone(changeset) do
+    case {get_field(changeset, :email), get_field(changeset, :phone_number)} do
+      {nil, nil} -> add_error(changeset, :dispatch, "Must have email OR phone number")
+      _ -> changeset
+    end
+  end
 end
