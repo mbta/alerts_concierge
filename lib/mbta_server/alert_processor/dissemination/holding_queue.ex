@@ -39,21 +39,16 @@ defmodule MbtaServer.AlertProcessor.HoldingQueue do
   end
 
   @doc """
-  takes list of alert ids to filter out from holding queue's list of messages
+  takes list of alert ids to filter out from holding queue's list of notifications
   waiting to be sent.
   """
-  @spec remove_notifications([String.t] | []) :: :ok
+  @spec remove_notifications([String.t]) :: :ok
   def remove_notifications([]) do
     :ok
   end
 
   def remove_notifications(removed_alert_ids) do
     GenServer.call(__MODULE__, {:remove, removed_alert_ids})
-  end
-
-  @doc false
-  def remove_notifications([]) do
-    :ok
   end
 
   defp send_notification?(notification, now) do
@@ -73,8 +68,8 @@ defmodule MbtaServer.AlertProcessor.HoldingQueue do
     newstate = [notification | notifications]
     {:reply, :ok, newstate}
   end
-  def handle_call({:remove, removed_alert_ids}, _from, messages) do
-    newstate = Enum.reject(messages, &Enum.member?(removed_alert_ids, &1.alert_id))
+  def handle_call({:remove, removed_alert_ids}, _from, notifications) do
+    newstate = Enum.reject(notifications, &Enum.member?(removed_alert_ids, &1.alert_id))
     {:reply, :ok, newstate}
   end
   def handle_call({:filter, now}, _from, notifications) do

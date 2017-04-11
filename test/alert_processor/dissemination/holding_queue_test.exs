@@ -49,9 +49,9 @@ defmodule MbtaServer.AlertProcessor.HoldingQueueTest do
     assert HoldingQueue.pop == {:ok, notification_to_not_filter}
   end
 
-  test "remove_notifications/1 filters out messages matching list of alert ids" do
-    alert_message = %AlertMessage{alert_id: "1"}
-    HoldingQueue.start_link([alert_message])
+  test "remove_notifications/1 filters out notifications matching list of alert ids" do
+    notification = %Notification{alert_id: "1"}
+    HoldingQueue.start_link([notification])
 
     :ok = HoldingQueue.remove_notifications(["1"])
 
@@ -59,11 +59,11 @@ defmodule MbtaServer.AlertProcessor.HoldingQueueTest do
   end
 
   test "remove_notifications/1 does not filter anything if passed empty list" do
-    alert_message = %AlertMessage{alert_id: "1"}
-    HoldingQueue.start_link([alert_message])
+    notification = %Notification{alert_id: "1"}
+    HoldingQueue.start_link([notification])
 
     :ok = HoldingQueue.remove_notifications([])
 
-    assert HoldingQueue.pop == {:ok, alert_message}
+    assert HoldingQueue.pop == {:ok, notification}
   end
 end
