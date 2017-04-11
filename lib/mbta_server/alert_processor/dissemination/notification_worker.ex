@@ -3,7 +3,7 @@ defmodule MbtaServer.AlertProcessor.NotificationWorker do
   Worker process for processing a single Notification from SendingQueue
   """
   use GenServer
-  alias MbtaServer.AlertProcessor.{SendingQueue, Messager, Model.Notification}
+  alias MbtaServer.AlertProcessor.{SendingQueue, Dispatcher, Model.Notification}
   @type notifications :: [Notification.t]
 
   @doc false
@@ -23,7 +23,7 @@ defmodule MbtaServer.AlertProcessor.NotificationWorker do
   def handle_info(:notification, state) do
     case SendingQueue.pop do
       {:ok, %Notification{} = notification} ->
-        Messager.send_notification(notification)
+        Dispatcher.send_notification(notification)
         send(self(), :notification)
       :error ->
         Process.send_after(self(), :notification, 100)

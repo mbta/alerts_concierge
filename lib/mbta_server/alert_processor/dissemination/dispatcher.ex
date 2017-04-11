@@ -1,4 +1,4 @@
-defmodule MbtaServer.AlertProcessor.Messager do
+defmodule MbtaServer.AlertProcessor.Dispatcher do
   @moduledoc """
   Module to handle the dissemination of notifications to proper mediums based on user subscriptions.
   """

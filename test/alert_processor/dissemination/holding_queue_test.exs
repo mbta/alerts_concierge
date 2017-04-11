@@ -9,7 +9,6 @@ defmodule MbtaServer.AlertProcessor.HoldingQueueTest do
 
   setup do
     date_in_future = DateTime.from_unix!(4078579247)
-    date_in_past = DateTime.from_unix!(1)
     future_notification = %Notification{send_after: date_in_future}
 
     {:ok, fn: future_notification}

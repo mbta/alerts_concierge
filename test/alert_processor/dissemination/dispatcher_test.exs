@@ -1,9 +1,9 @@
-defmodule MbtaServer.AlertProcessor.MessagerTest do
+defmodule MbtaServer.AlertProcessor.DispatcherTest do
   use ExUnit.Case
   use Bamboo.Test
 
   alias MbtaServer.{NotificationMailer}
-  alias MbtaServer.AlertProcessor.{Messager, Model.Notification}
+  alias MbtaServer.AlertProcessor.{Dispatcher, Model.Notification}
 
   @email "test@example.com"
   @body "This is a test alert"
@@ -16,7 +16,7 @@ defmodule MbtaServer.AlertProcessor.MessagerTest do
       phone_number: @phone_number
     }
 
-    response = Messager.send_notification(notification)
+    response = Dispatcher.send_notification(notification)
     assert {:error, _} = response
   end
 
@@ -26,7 +26,7 @@ defmodule MbtaServer.AlertProcessor.MessagerTest do
       email: nil,
       phone_number: nil
     }
-    response = Messager.send_notification(notification)
+    response = Dispatcher.send_notification(notification)
     assert {:error, _} = response
   end
 
@@ -37,7 +37,7 @@ defmodule MbtaServer.AlertProcessor.MessagerTest do
       phone_number: @phone_number
     }
 
-    {:ok, _} = Messager.send_notification(notification)
+    {:ok, _} = Dispatcher.send_notification(notification)
     assert_received :published_sms
   end
 
@@ -48,7 +48,7 @@ defmodule MbtaServer.AlertProcessor.MessagerTest do
       phone_number: nil
     }
 
-    {:ok, _} = Messager.send_notification(notification)
+    {:ok, _} = Dispatcher.send_notification(notification)
     assert_delivered_email NotificationMailer.notification_email(@body, @email)
   end
 
@@ -58,7 +58,7 @@ defmodule MbtaServer.AlertProcessor.MessagerTest do
       email: @email,
       phone_number: @phone_number
     }
-    {:ok, _} = Messager.send_notification(notification)
+    {:ok, _} = Dispatcher.send_notification(notification)
     assert_delivered_email NotificationMailer.notification_email(@body, @email)
     assert_received :published_sms
   end
