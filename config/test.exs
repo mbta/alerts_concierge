@@ -22,10 +22,8 @@ config :mbta_server, MbtaServer.AlertProcessor.HoldingQueue,
   filter_interval: 100 # 0.1 sec
 
 # Config for ExAws lib
-Code.require_file("../test/mocks/ex_aws_mock.ex", __DIR__)
 config :mbta_server, :ex_aws, ExAws.Mock
 config :mbta_server, :ex_aws_sns, ExAws.SNS.Mock
 
 # Config for alert parser
-Code.require_file("../test/mocks/alert_parser_mock.ex", __DIR__)
 config :mbta_server, :alert_parser, MbtaServer.AlertProcessor.AlertParserMock

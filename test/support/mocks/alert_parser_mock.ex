@@ -4,6 +4,10 @@ defmodule MbtaServer.AlertProcessor.AlertParserMock do
   for testing purposes.
   """
 
+  alias MbtaServer.AlertProcessor.Parser
+
+  @behaviour Parser
+
   @doc """
   process_alerts/1 send messages to self for tests to be able
   to verify that process_alerts has properly been called.
