@@ -1,10 +1,10 @@
 defmodule MbtaServer.AlertProcessor.QueueWorker do
   @moduledoc """
-  Worker process for processing AlertMessages from HoldingQueue
+  Worker process for processing Notifications from HoldingQueue
   """
   use GenServer
-  alias MbtaServer.AlertProcessor.{HoldingQueue, SendingQueue, Model.AlertMessage}
-  @type messages :: [AlertMessage.t]
+  alias MbtaServer.AlertProcessor.{HoldingQueue, SendingQueue, Model.Notification}
+  @type notifications :: [Notification.t]
 
   @doc false
   def start_link() do
@@ -13,26 +13,26 @@ defmodule MbtaServer.AlertProcessor.QueueWorker do
 
   @doc false
   def init(state) do
-    Process.send_after(self(), :message, 10)
+    Process.send_after(self(), :notification, 10)
     {:ok, state}
   end
 
   @doc """
-  Checks holding queue for any messages that are ready to send and
+  Checks holding queue for any notifications that are ready to send and
   passes them to the sending queue
   """
-  def handle_info(:message, state) do
-    case HoldingQueue.messages_to_send() do
+  def handle_info(:notification, state) do
+    case HoldingQueue.notifications_to_send() do
       :error ->
-        Process.send_after(self(), :message, 100)
-      {:ok, messages} ->
-        send_messages(messages)
-        send(self(), :message)
+        Process.send_after(self(), :notification, 100)
+      {:ok, notifications} ->
+        send_notifications(notifications)
+        send(self(), :notification)
     end
     {:noreply, state}
   end
 
-  defp send_messages(messages) do
-    Enum.each(messages, &SendingQueue.enqueue/1)
+  defp send_notifications(notifications) do
+    Enum.each(notifications, &SendingQueue.enqueue/1)
   end
 end
