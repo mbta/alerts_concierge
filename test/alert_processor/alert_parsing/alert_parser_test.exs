@@ -11,7 +11,10 @@ defmodule MbtaServer.AlertProcessor.AlertParserTest do
 
   test "process_alerts/1" do
     insert(:user, phone_number: nil)
-    use_cassette "get_alerts" do
+    use_cassette "old_alerts", custom: true do
+      [{:ok, _} | _t] = AlertParser.process_alerts
+    end
+    use_cassette "new_alerts", custom: true do
       [{:ok, _} | _t] = AlertParser.process_alerts
     end
   end

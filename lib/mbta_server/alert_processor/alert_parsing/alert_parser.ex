@@ -3,7 +3,7 @@ defmodule MbtaServer.AlertProcessor.AlertParser do
   Module used to parse alerts from api and transform into Alert structs and pass along
   relevant information to subscription filter engine.
   """
-  alias MbtaServer.AlertProcessor.{AlertCache, ApiClient, Parser, SubscriptionFilterEngine}
+  alias MbtaServer.AlertProcessor.{AlertCache, ApiClient, HoldingQueue, Parser, SubscriptionFilterEngine}
 
   @behaviour Parser
 
@@ -17,8 +17,11 @@ defmodule MbtaServer.AlertProcessor.AlertParser do
       {:error, message} ->
         message
       alert_data ->
-        alerts = Enum.reduce(alert_data, %{}, &parse_alert/2)
-        {new_alerts, _} = AlertCache.update_cache(alerts)
+        {new_alerts, removed_alert_ids} =
+          alert_data
+          |> Enum.reduce(%{}, &parse_alert/2)
+          |> AlertCache.update_cache()
+        HoldingQueue.remove_notifications(removed_alert_ids)
         Enum.map(new_alerts, &SubscriptionFilterEngine.process_alert/1)
     end
   end
