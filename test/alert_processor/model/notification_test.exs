@@ -12,7 +12,8 @@ defmodule MbtaServer.AlertProcessor.Model.NotificationTest do
     header: "Short header",
     message: "There is a delay",
     send_after: DateTime.utc_now,
-    alert_id: "12345678"
+    alert_id: "12345678",
+    status: :sent
   }
 
   setup do
@@ -27,7 +28,7 @@ defmodule MbtaServer.AlertProcessor.Model.NotificationTest do
     assert changeset.valid?
   end
 
-  test "create_changeset/2 requires a user", %{valid_attrs: valid_attrs} do
+  test "create_changeset/2 requires a user_id", %{valid_attrs: valid_attrs} do
     attrs = Map.delete(valid_attrs, :user_id)
     changeset = Notification.create_changeset(%Notification{}, attrs)
 
@@ -61,5 +62,27 @@ defmodule MbtaServer.AlertProcessor.Model.NotificationTest do
     assert no_phone_changeset.valid?
     assert no_email_changeset.valid?
     refute no_email_or_phone_changeset.valid?
+  end
+
+  test "create_changeset/2 validates inclusion of status", %{valid_attrs: valid_attrs} do
+    invalid_attrs = Map.put(valid_attrs, :status, "example")
+    invalid_changeset = Notification.create_changeset(%Notification{}, invalid_attrs)
+
+    valid = Map.put(valid_attrs, :status, :sent)
+    valid_changeset = Notification.create_changeset(%Notification{}, valid)
+
+    valid_2 = Map.put(valid_attrs, :status, :failed)
+    valid_changeset_2 = Notification.create_changeset(%Notification{}, valid_2)
+
+    assert valid_changeset.valid?
+    assert valid_changeset_2.valid?
+    refute invalid_changeset.valid?
+  end
+
+  test "save/2 saves notification with given status", %{valid_attrs: valid_attrs} do
+    notification = struct(Notification, valid_attrs)
+    {:ok, saved_notification} = Notification.save(notification, :sent)
+
+    assert saved_notification.status == :sent
   end
 end

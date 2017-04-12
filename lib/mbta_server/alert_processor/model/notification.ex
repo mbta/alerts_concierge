@@ -10,11 +10,19 @@ defmodule MbtaServer.AlertProcessor.Model.Notification do
     message: String.t,
     header: String.t,
     phone_number: String.t,
-    email: String.t
+    email: String.t,
+    status: atom
   }
 
   use Ecto.Schema
   import Ecto.Changeset
+  alias MbtaServer.Repo
+
+  @spec save(__MODULE__.t, atom) ::
+  {:ok, __MODULE__.t} | {:error, Ecto.Changeset.t}
+  def save(notification, status) do
+    Repo.insert(__MODULE__.create_changeset(%{notification | status: status}))
+  end
 
   @primary_key {:id, :binary_id, autogenerate: true}
 
@@ -27,11 +35,12 @@ defmodule MbtaServer.AlertProcessor.Model.Notification do
     field :header, :string
     field :phone_number, :string
     field :email, :string
+    field :status, MbtaServer.AlertProcessor.AtomType
 
     timestamps()
   end
 
-  @permitted_fields ~w(alert_id user_id send_after message header phone_number email)a
+  @permitted_fields ~w(alert_id user_id send_after message header phone_number email status)a
   @required_fields ~w(alert_id user_id message)a
 
   @doc """
@@ -41,6 +50,7 @@ defmodule MbtaServer.AlertProcessor.Model.Notification do
     struct
     |> cast(params, @permitted_fields)
     |> validate_required(@required_fields)
+    |> validate_inclusion(:status, [:sent, :failed])
     |> validate_email_or_phone
   end
 

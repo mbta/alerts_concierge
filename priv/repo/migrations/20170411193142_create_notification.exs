@@ -9,8 +9,9 @@ defmodule MbtaServer.Repo.Migrations.CreateNotification do
       add :email, :string
       add :phone_number, :string
       add :header, :string
-      add :message, :string
+      add :message, :string, null: false
       add :send_after, :utc_datetime
+      add :status, :string, null: false
 
       timestamps(type: :utc_datetime)
     end

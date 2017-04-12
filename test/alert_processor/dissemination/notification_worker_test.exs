@@ -1,5 +1,5 @@
 defmodule MbtaServer.AlertProcessor.MessageWorkerTest do
-  use MbtaServer.Web.ConnCase, async: false
+  use MbtaServer.DataCase
   use Bamboo.Test, shared: true
 
   alias MbtaServer.NotificationMailer
@@ -13,19 +13,22 @@ defmodule MbtaServer.AlertProcessor.MessageWorkerTest do
     body = "This is a test alert"
     body_2 = "Another alert"
     phone_number = "+15555551234"
+    status = "unsent"
 
     notification = %Notification{
       message: body,
       email: email,
       phone_number: phone_number,
-      send_after: DateTime.utc_now()
+      send_after: DateTime.utc_now(),
+      status: status
     }
 
     notification_2 = %Notification{
       message: body_2,
       email: email,
       phone_number: phone_number,
-      send_after: DateTime.utc_now()
+      send_after: DateTime.utc_now(),
+      status: status
     }
 
     {:ok, notification: notification, notification_2: notification_2, email: email, body: body, body_2: body_2}

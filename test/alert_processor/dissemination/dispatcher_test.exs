@@ -1,9 +1,8 @@
 defmodule MbtaServer.AlertProcessor.DispatcherTest do
   use MbtaServer.DataCase
   use Bamboo.Test
-  import MbtaServer.Factory
 
-  alias MbtaServer.{NotificationMailer, Repo}
+  alias MbtaServer.NotificationMailer
   alias MbtaServer.AlertProcessor.{Dispatcher, Model.Notification}
 
   @email "test@example.com"
@@ -62,24 +61,5 @@ defmodule MbtaServer.AlertProcessor.DispatcherTest do
     {:ok, _} = Dispatcher.send_notification(notification)
     assert_delivered_email NotificationMailer.notification_email(@body, @email)
     assert_received :published_sms
-  end
-
-  test "send_notification/1 persists Notification" do
-    user = insert(:user)
-    notification = %Notification{
-      message: @body,
-      phone_number: @phone_number,
-      user_id: user.id,
-      alert_id: "123"
-    }
-
-    {:ok, _} = Dispatcher.send_notification(notification)
-
-    saved_notification = Repo.one(Notification)
-
-    assert %Notification{} = saved_notification
-    assert saved_notification.user_id == user.id
-    assert saved_notification.message == @body
-    assert saved_notification.phone_number == @phone_number
   end
 end
