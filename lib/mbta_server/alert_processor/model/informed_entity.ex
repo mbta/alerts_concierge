@@ -1,8 +1,10 @@
-defmodule MbtaServer.InformedEntity do
+defmodule MbtaServer.AlertProcessor.Model.InformedEntity do
   @moduledoc """
   Entity to map to the informed entity information provided in an
   Alert used to match to a subscription.
   """
+
+  defstruct [:direction_id, :facility, :route, :route_type, :subscription_id, :stop, :trip]
 
   @type t :: %__MODULE__{
     direction_id: integer,
@@ -13,21 +15,4 @@ defmodule MbtaServer.InformedEntity do
     stop: String.t,
     trip: String.t
   }
-
-  use Ecto.Schema
-
-  @primary_key {:id, :binary_id, autogenerate: true}
-
-  schema "subscriptions" do
-    belongs_to :subscription, Subscription, type: :binary_id
-
-    field :direction_id, :integer
-    field :facility, :string
-    field :route, :string
-    field :route_type, :integer
-    field :stop, :string
-    field :trip, :string
-
-    timestamps()
-  end
 end
