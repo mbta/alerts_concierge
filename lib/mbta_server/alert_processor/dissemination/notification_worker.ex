@@ -23,7 +23,7 @@ defmodule MbtaServer.AlertProcessor.NotificationWorker do
   def handle_info(:notification, state) do
     case SendingQueue.pop do
       {:ok, %Notification{} = notification} ->
-        Dispatcher.send_notification(notification)
+        send_notification(notification)
         send(self(), :notification)
       :error ->
         Process.send_after(self(), :notification, 100)
@@ -32,5 +32,12 @@ defmodule MbtaServer.AlertProcessor.NotificationWorker do
   end
   def handle_info(_, state) do
     {:noreply, state}
+  end
+
+  defp send_notification(notification) do
+    case Dispatcher.send_notification(notification) do
+      {:ok, _} -> Notification.save(notification, :sent)
+      {:error, _} -> Notification.save(notification, :failed)
+    end
   end
 end

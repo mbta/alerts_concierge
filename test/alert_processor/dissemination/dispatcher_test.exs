@@ -1,8 +1,8 @@
 defmodule MbtaServer.AlertProcessor.DispatcherTest do
-  use ExUnit.Case
+  use MbtaServer.DataCase
   use Bamboo.Test
 
-  alias MbtaServer.{NotificationMailer}
+  alias MbtaServer.NotificationMailer
   alias MbtaServer.AlertProcessor.{Dispatcher, Model.Notification}
 
   @email "test@example.com"
