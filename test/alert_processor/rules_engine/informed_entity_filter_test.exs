@@ -54,19 +54,28 @@ defmodule MbtaServer.AlertProcessor.InformedEntityFilterTest do
     InformedEntity |> struct(@ie2) |> Map.merge(%{subscription_id: subscription1.id}) |> insert
     InformedEntity |> struct(@ie1) |> Map.merge(%{subscription_id: subscription2.id}) |> insert
 
-    {:ok, user1: user1, user2: user2}
+    {:ok, user1: user1, user2: user2, all_user_ids: [user1.id, user2.id]}
   end
 
-  test "returns user id if informed entity matches subscription", %{user1: user1} do
-    assert {:ok, [user1.id]} == InformedEntityFilter.filter(@alert2)
+  test "filter returns error if user id list past is empty or nil" do
+    assert {:error, :empty, @alert1} == InformedEntityFilter.filter({:ok, [], @alert1})
+    assert {:error, :empty, @alert1} == InformedEntityFilter.filter({:ok, nil, @alert1})
   end
 
-  test "returns one user id even if informed entity matches multiple subscriptions", %{user1: user1, user2: user2} do
-    {:ok, user_ids} = InformedEntityFilter.filter(@alert1)
+  test "returns user id if informed entity matches subscription", %{user1: user1, all_user_ids: all_user_ids} do
+    assert {:ok, [user1.id], @alert2} == InformedEntityFilter.filter({:ok, all_user_ids, @alert2})
+  end
+
+  test "returns one user id even if informed entity matches multiple subscriptions", %{user1: user1, user2: user2, all_user_ids: all_user_ids} do
+    {:ok, user_ids, @alert1} = InformedEntityFilter.filter({:ok, all_user_ids, @alert1})
     assert MapSet.new(user_ids) == MapSet.new([user1.id, user2.id])
   end
 
-  test "returns empty list if no matches" do
-    assert {:ok, []} == InformedEntityFilter.filter(@alert3)
+  test "does not return user id if not included in previous ids list", %{user2: user2} do
+    assert {:ok, [user2.id], @alert1} == InformedEntityFilter.filter({:ok, [user2.id], @alert1})
+  end
+
+  test "returns empty list if no matches", %{all_user_ids: all_user_ids} do
+    assert {:ok, [], @alert3} == InformedEntityFilter.filter({:ok, all_user_ids, @alert3})
   end
 end

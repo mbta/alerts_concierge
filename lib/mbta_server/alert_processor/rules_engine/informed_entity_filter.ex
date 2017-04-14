@@ -8,10 +8,16 @@ defmodule MbtaServer.AlertProcessor.InformedEntityFilter do
   alias MbtaServer.AlertProcessor.Model.{Alert, InformedEntity, Subscription}
 
   @doc """
-  filter/1 takes an alert and returns the users which have a matching
-  subscription based on informed endtities.
+  filter/1 takes a tuple of the remaining users to be considered and
+  an alert and returns the now remaining users to be considered
+  which have a matching subscription based on informed endtities and
+  an alert to pass through to the next filter. Otherwise the flow is
+  shortcircuited if the user id list provided is missing or empty.
   """
-  def filter(%Alert{informed_entities: informed_entities}) do
+  @spec filter({:ok, nil | [String.t], Alert.t}) :: {:ok, [String.t], Alert.t} | {:error, :empty, Alert.t}
+  def filter({:ok, nil, %Alert{} = alert}), do: {:error, :empty, alert}
+  def filter({:ok, [], %Alert{} = alert}), do: {:error, :empty, alert}
+  def filter({:ok, previous_user_ids, %Alert{informed_entities: informed_entities} = alert}) do
     query = Enum.reduce(informed_entities, InformedEntity, fn informed_entity, informed_entity_query ->
       informed_entity_query(informed_entity_query, struct(InformedEntity, informed_entity))
     end)
@@ -24,7 +30,13 @@ defmodule MbtaServer.AlertProcessor.InformedEntityFilter do
       select: s.user_id
     )
 
-    {:ok, user_ids}
+    remaining_user_ids =
+      previous_user_ids
+      |> MapSet.new
+      |> MapSet.intersection(MapSet.new(user_ids))
+      |> Enum.to_list
+
+    {:ok, remaining_user_ids, alert}
   end
 
   # route
