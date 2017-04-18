@@ -31,4 +31,8 @@ defmodule MbtaServer.AlertProcessor.Model.InformedEntity do
 
     timestamps()
   end
+
+  def queryable_fields do
+    [:direction_id, :facility, :route, :route_type, :stop, :trip]
+  end
 end

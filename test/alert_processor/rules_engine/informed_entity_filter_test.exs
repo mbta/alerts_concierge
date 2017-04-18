@@ -20,6 +20,12 @@ defmodule MbtaServer.AlertProcessor.InformedEntityFilterTest do
     route_type: 3
   }
 
+  @ie4 %{
+    route: "16",
+    route_type: 3,
+    stop: "123"
+  }
+
   @alert1 %Alert{
     id: "1",
     header: "test1",
@@ -45,21 +51,33 @@ defmodule MbtaServer.AlertProcessor.InformedEntityFilterTest do
     ]
   }
 
+  @alert4 %Alert{
+    id: "4",
+    header: "test4",
+    informed_entities: [
+      @ie4
+    ]
+  }
+
   setup do
     user1 = insert(:user)
     user2 = insert(:user)
+    user3 = insert(:user)
     subscription1 = insert(:subscription, user: user1)
     subscription2 = insert(:subscription, user: user2)
+    subscription3 = insert(:subscription, user: user3)
     InformedEntity |> struct(@ie1) |> Map.merge(%{subscription_id: subscription1.id}) |> insert
     InformedEntity |> struct(@ie2) |> Map.merge(%{subscription_id: subscription1.id}) |> insert
     InformedEntity |> struct(@ie1) |> Map.merge(%{subscription_id: subscription2.id}) |> insert
+    InformedEntity |> struct(@ie4) |> Map.merge(%{subscription_id: subscription3.id}) |> insert
 
-    {:ok, user1: user1, user2: user2, all_user_ids: [user1.id, user2.id]}
+    {:ok, user1: user1, user2: user2, user3: user3, all_user_ids: [user1.id, user2.id, user3.id]}
   end
 
   test "filter returns error if user id list past is empty or nil" do
     assert {:error, :empty, @alert1} == InformedEntityFilter.filter({:ok, [], @alert1})
     assert {:error, :empty, @alert1} == InformedEntityFilter.filter({:ok, nil, @alert1})
+    assert {:error, :empty, @alert1} == InformedEntityFilter.filter({:error, :empty, @alert1})
   end
 
   test "returns user id if informed entity matches subscription", %{user1: user1, all_user_ids: all_user_ids} do
@@ -73,6 +91,10 @@ defmodule MbtaServer.AlertProcessor.InformedEntityFilterTest do
 
   test "does not return user id if not included in previous ids list", %{user2: user2} do
     assert {:ok, [user2.id], @alert1} == InformedEntityFilter.filter({:ok, [user2.id], @alert1})
+  end
+
+  test "does not return subscriptions that only partially match alert informed entity", %{user3: user3, all_user_ids: all_user_ids} do
+    assert {:ok, [user3.id], @alert4} == InformedEntityFilter.filter({:ok, all_user_ids, @alert4})
   end
 
   test "returns empty list if no matches", %{all_user_ids: all_user_ids} do
