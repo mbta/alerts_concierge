@@ -14,10 +14,9 @@ defmodule MbtaServer.AlertProcessor.InformedEntityFilter do
   an alert to pass through to the next filter. Otherwise the flow is
   shortcircuited if the user id list provided is missing or empty.
   """
-  @spec filter({:ok, nil | :empty | [String.t], Alert.t}) :: {:ok, [String.t], Alert.t} | {:error, :empty, Alert.t}
-  def filter({:ok, nil, %Alert{} = alert}), do: {:error, :empty, alert}
-  def filter({:ok, [], %Alert{} = alert}), do: {:error, :empty, alert}
-  def filter({:error, :empty, %Alert{} = alert}), do: {:error, :empty, alert}
+  @spec filter({:ok, nil | [String.t], Alert.t}) :: {:ok, [String.t], Alert.t}
+  def filter({:ok, nil, %Alert{} = alert}), do: {:ok, [], alert}
+  def filter({:ok, [], %Alert{} = alert}), do: {:ok, [], alert}
   def filter({:ok, previous_user_ids, %Alert{informed_entities: informed_entities} = alert}) do
     where_clause =
       Enum.reduce(informed_entities, false, fn(informed_entity), dynamic_query ->

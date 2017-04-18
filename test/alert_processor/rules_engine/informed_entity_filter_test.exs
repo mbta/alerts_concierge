@@ -74,10 +74,9 @@ defmodule MbtaServer.AlertProcessor.InformedEntityFilterTest do
     {:ok, user1: user1, user2: user2, user3: user3, all_user_ids: [user1.id, user2.id, user3.id]}
   end
 
-  test "filter returns error if user id list past is empty or nil" do
-    assert {:error, :empty, @alert1} == InformedEntityFilter.filter({:ok, [], @alert1})
-    assert {:error, :empty, @alert1} == InformedEntityFilter.filter({:ok, nil, @alert1})
-    assert {:error, :empty, @alert1} == InformedEntityFilter.filter({:error, :empty, @alert1})
+  test "filter returns :ok empty list if user id list past is empty or nil" do
+    assert {:ok, [], @alert1} == InformedEntityFilter.filter({:ok, [], @alert1})
+    assert {:ok, [], @alert1} == InformedEntityFilter.filter({:ok, nil, @alert1})
   end
 
   test "returns user id if informed entity matches subscription", %{user1: user1, all_user_ids: all_user_ids} do
