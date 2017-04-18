@@ -48,7 +48,7 @@ defmodule MbtaServer.AlertProcessor.InformedEntityFilter do
     |> Map.take(InformedEntity.queryable_fields)
     |> Enum.reduce(true, fn({k, v}, dynamic_query) ->
       if v do
-        dynamic([ie], field(ie, ^k) == ^Map.get(informed_entity, k) and ^dynamic_query)
+        dynamic([ie], field(ie, ^k) == ^v and ^dynamic_query)
       else
         dynamic([ie], is_nil(field(ie, ^k)) and ^dynamic_query)
       end
