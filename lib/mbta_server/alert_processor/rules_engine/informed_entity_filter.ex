@@ -9,8 +9,8 @@ defmodule MbtaServer.AlertProcessor.InformedEntityFilter do
 
   @doc """
   filter/1 takes a tuple of the remaining users to be considered and
-  an alert and returns the now remaining users to be considered
-  which have a matching subscription based on informed endtities and
+  an alert and returns the now remaining subscriptions to be considered
+  which have matched based on informed entities and
   an alert to pass through to the next filter. Otherwise the flow is
   shortcircuited if the user id list provided is missing or empty.
   """
@@ -23,22 +23,14 @@ defmodule MbtaServer.AlertProcessor.InformedEntityFilter do
         dynamic(^informed_entity_where_clause or ^dynamic_query)
       end)
 
-    user_ids = Repo.all(
-      from ie in InformedEntity,
+    query = from ie in InformedEntity,
       join: s in Subscription,
       on: s.id == ie.subscription_id,
-      distinct: true,
-      select: s.user_id,
+      select: s.id,
+      where: s.user_id in ^previous_user_ids,
       where: ^where_clause
-    )
 
-    remaining_user_ids =
-      previous_user_ids
-      |> MapSet.new
-      |> MapSet.intersection(MapSet.new(user_ids))
-      |> Enum.to_list
-
-    {:ok, remaining_user_ids, alert}
+    {:ok, Repo.all(query), alert}
   end
 
   defp informed_entity_where_clause(informed_entity) do
