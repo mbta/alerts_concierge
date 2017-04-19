@@ -9,11 +9,7 @@ defmodule MbtaServer.Factory do
   end
 
   def subscription_factory do
-    %Subscription{
-      alert_types: [],
-      priority: "High",
-      travel_days: []
-    }
+    %Subscription{}
   end
 
   def user_factory do

@@ -4,7 +4,7 @@ defmodule MbtaServer.AlertProcessor.Model.InformedEntity do
   Alert used to match to a subscription.
   """
 
-  defstruct [:direction_id, :facility, :route, :route_type, :subscription_id, :stop, :trip]
+  alias MbtaServer.AlertProcessor.Model.Subscription
 
   @type t :: %__MODULE__{
     direction_id: integer,
@@ -15,4 +15,24 @@ defmodule MbtaServer.AlertProcessor.Model.InformedEntity do
     stop: String.t,
     trip: String.t
   }
+
+  use Ecto.Schema
+
+  @primary_key {:id, :binary_id, autogenerate: true}
+
+  schema "informed_entities" do
+    belongs_to :subscription, Subscription, type: :binary_id
+    field :direction_id, :integer
+    field :facility, :string
+    field :route, :string
+    field :route_type, :integer
+    field :stop, :string
+    field :trip, :string
+
+    timestamps()
+  end
+
+  def queryable_fields do
+    [:direction_id, :facility, :route, :route_type, :stop, :trip]
+  end
 end
