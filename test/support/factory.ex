@@ -25,7 +25,11 @@ defmodule MbtaServer.Factory do
     %User{
       email: sequence(:email, &"email-#{&1}@example.com"),
       phone_number: sequence(:phone_number, &(String.pad_leading("#{&1}", 12, "+15555551234"))),
-      role: "user"
+      role: "user",
+      do_not_disturb_start: ~T[23:59:00.000],
+      do_not_disturb_end: ~T[01:00:00.000],
+      vacation_start: "2015-10-22T04:30:00-04:00",
+      vacation_end: "2015-10-22T04:30:00-04:00"
     }
   end
 end

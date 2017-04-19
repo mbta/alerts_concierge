@@ -2,14 +2,15 @@ defmodule MbtaServer.AlertProcessor.Model.Alert do
   @moduledoc """
   Representation of alert received from MBTA /alerts endpoint
   """
-  defstruct [:effect_name, :id, :header, :informed_entities, :severity]
+ defstruct [:active_period, :effect_name, :id, :header, :informed_entities, :severity]
 
   @type t :: %__MODULE__{
     effect_name: String.t,
     header: String.t,
     id: String.t,
     informed_entities: [map],
-    severity: atom
+    severity: atom,
+     active_period: [map]
   }
 
   @route_types %{
