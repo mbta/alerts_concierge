@@ -6,7 +6,7 @@ defmodule MbtaServer.AlertProcessor.Model.Subscription do
   alias MbtaServer.AlertProcessor.Model.InformedEntity
 
   @type t :: %__MODULE__{
-    alert_priority_type: String.t,
+    alert_priority_type: atom,
     user_id: String.t
   }
 
@@ -20,7 +20,7 @@ defmodule MbtaServer.AlertProcessor.Model.Subscription do
   schema "subscriptions" do
     belongs_to :user, User, type: :binary_id
     has_many :informed_entities, InformedEntity
-    field :alert_priority_type, :string
+    field :alert_priority_type, MbtaServer.AlertProcessor.AtomType
 
     timestamps()
   end
