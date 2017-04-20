@@ -14,7 +14,7 @@ defmodule MbtaServer.AlertProcessor.InformedEntityFilter do
   an alert to pass through to the next filter. Otherwise the flow is
   shortcircuited if the user id list provided is missing or empty.
   """
-  @spec filter({:ok, [String.t], Alert.t}) :: {:ok, [String.t], Alert.t}
+  @spec filter({:ok, [Subscription.id], Alert.t}) :: {:ok, [Subscription.id], Alert.t}
   def filter({:ok, [], %Alert{} = alert}), do: {:ok, [], alert}
   def filter({:ok, subscription_ids, %Alert{informed_entities: informed_entities} = alert}) do
     where_clause =

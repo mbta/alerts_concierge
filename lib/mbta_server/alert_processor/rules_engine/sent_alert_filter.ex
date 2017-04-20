@@ -11,7 +11,7 @@ defmodule MbtaServer.AlertProcessor.SentAlertFilter do
   Takes a single alert and returns a list of subscription ids for users
   that have not received any notifications for the alert
   """
-  @spec filter(Alert.t) :: {:ok, [String.t], Alert.t}
+  @spec filter(Alert.t) :: {:ok, [Subscription.id], Alert.t}
   def filter(%Alert{id: id} = alert) do
     query = from u in User,
       left_join: n in Notification,
