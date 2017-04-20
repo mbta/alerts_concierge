@@ -16,7 +16,7 @@ defmodule MbtaServer.AlertProcessor.InformedEntityFilter do
   """
   @spec filter({:ok, [String.t], Alert.t}) :: {:ok, [String.t], Alert.t}
   def filter({:ok, [], %Alert{} = alert}), do: {:ok, [], alert}
-  def filter({:ok, previous_user_ids, %Alert{informed_entities: informed_entities} = alert}) do
+  def filter({:ok, subscription_ids, %Alert{informed_entities: informed_entities} = alert}) do
     where_clause =
       Enum.reduce(informed_entities, false, fn(informed_entity), dynamic_query ->
         informed_entity_where_clause = informed_entity_where_clause(struct(InformedEntity, informed_entity))
@@ -27,7 +27,7 @@ defmodule MbtaServer.AlertProcessor.InformedEntityFilter do
       join: s in Subscription,
       on: s.id == ie.subscription_id,
       select: s.id,
-      where: s.user_id in ^previous_user_ids,
+      where: s.id in ^subscription_ids,
       where: ^where_clause
 
     {:ok, Repo.all(query), alert}
