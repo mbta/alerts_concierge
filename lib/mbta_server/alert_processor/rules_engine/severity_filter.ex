@@ -9,8 +9,8 @@ defmodule MbtaServer.AlertProcessor.SeverityFilter do
   alias MbtaServer.AlertProcessor.{Model.Alert, Model.Subscription}
 
   @doc """
-  filter/1 takes a tuple of the remaining users to be considered and
-  an alert and returns the now remaining users to be considered
+  filter/1 takes a tuple of the remaining subscriptions to be considered and
+  an alert and returns the now remaining subscriptions to be considered
   which have a matching subscription based on severity and
   an alert to pass through to the next filter. Otherwise the flow is
   shortcircuited if the user id list provided is missing or empty.
