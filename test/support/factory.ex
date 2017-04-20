@@ -9,7 +9,9 @@ defmodule MbtaServer.Factory do
   end
 
   def subscription_factory do
-    %Subscription{}
+    %Subscription{
+      alert_priority_type: "medium"
+    }
   end
 
   def user_factory do
