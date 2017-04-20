@@ -66,4 +66,24 @@ defmodule MbtaServer.AlertProcessor.HoldingQueueTest do
 
     assert HoldingQueue.pop == {:ok, notification}
   end
+
+  test "remove_user_notifications/1 filters out notifications for specific user_id" do
+    notification1 = %Notification{alert_id: "1", user_id: "1"}
+    notification2 = %Notification{alert_id: "2", user_id: "1"}
+    notification3 = %Notification{alert_id: "3", user_id: "2"}
+    HoldingQueue.start_link([notification1, notification2, notification3])
+
+    :ok = HoldingQueue.remove_user_notifications("1")
+    assert HoldingQueue.pop == {:ok, notification3}
+    assert HoldingQueue.pop == :error
+  end
+
+  test "remove_user_notifications/1 does not affect state if user_id has no notifications pending" do
+    notification = %Notification{alert_id: "1", user_id: "1"}
+    HoldingQueue.start_link([notification])
+
+    :ok = HoldingQueue.remove_user_notifications("2")
+    assert HoldingQueue.pop == {:ok, notification}
+    assert HoldingQueue.pop == :error
+  end
 end
