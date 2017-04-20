@@ -5,7 +5,7 @@ defmodule MbtaServer.AlertProcessor.SeverityFilterTest do
   import MbtaServer.Factory
 
   test "subscription with medium alert priority type will not send alert for minor severity alert" do
-    alert = %Alert{informed_entities: [%{route: "Red", route_type: 1}], severity: "Minor", effect_name: "Delay"}
+    alert = %Alert{informed_entities: [%{route: "Red", route_type: 1}], severity: :minor, effect_name: "Delay"}
     sub1 = insert(:subscription, alert_priority_type: :low, informed_entities: [%InformedEntity{route_type: 1, route: "Red"}])
     sub2 = insert(:subscription, alert_priority_type: :medium, informed_entities: [%InformedEntity{route_type: 1, route: "Red"}])
 
@@ -13,7 +13,7 @@ defmodule MbtaServer.AlertProcessor.SeverityFilterTest do
   end
 
   test "subscription with any alert priority type will send alert for minor severity alert" do
-    alert = %Alert{informed_entities: [%{route_type: 1, route: "Red"}], severity: "Minor", effect_name: "Schedule Change"}
+    alert = %Alert{informed_entities: [%{route_type: 1, route: "Red"}], severity: :minor, effect_name: "Schedule Change"}
     sub1 = insert(:subscription, alert_priority_type: :low, informed_entities: [%InformedEntity{route_type: 1, route: "Red"}])
     sub2 = insert(:subscription, alert_priority_type: :medium, informed_entities: [%InformedEntity{route_type: 1, route: "Red"}])
     sub3 = insert(:subscription, alert_priority_type: :high, informed_entities: [%InformedEntity{route_type: 1, route: "Red"}])
@@ -22,9 +22,9 @@ defmodule MbtaServer.AlertProcessor.SeverityFilterTest do
   end
 
   test "will not send alert if should not receive based on alert_priority_type setting regardless of alert severity" do
-    alert1 = %Alert{informed_entities: [%{route_type: 1, route: "Red"}], severity: "Minor", effect_name: "Extra Service"}
-    alert2 = %Alert{informed_entities: [%{route_type: 1, route: "Red"}], severity: "Moderate", effect_name: "Extra Service"}
-    alert3 = %Alert{informed_entities: [%{route_type: 1, route: "Red"}], severity: "Severe", effect_name: "Extra Service"}
+    alert1 = %Alert{informed_entities: [%{route_type: 1, route: "Red"}], severity: :minor, effect_name: "Extra Service"}
+    alert2 = %Alert{informed_entities: [%{route_type: 1, route: "Red"}], severity: :moderate, effect_name: "Extra Service"}
+    alert3 = %Alert{informed_entities: [%{route_type: 1, route: "Red"}], severity: :severe, effect_name: "Extra Service"}
     sub = insert(:subscription, alert_priority_type: :high, informed_entities: [%InformedEntity{route_type: 1, route: "Red"}])
 
     assert {:ok, [], alert1} == SeverityFilter.filter({:ok, [sub.id], alert1})
@@ -33,16 +33,16 @@ defmodule MbtaServer.AlertProcessor.SeverityFilterTest do
   end
 
   test "will send systemwide alerts" do
-    alert = %Alert{informed_entities: [%{route_type: 1}], severity: "Minor", effect_name: "Policy Change"}
+    alert = %Alert{informed_entities: [%{route_type: 1}], severity: :minor, effect_name: "Policy Change"}
     sub = insert(:subscription, alert_priority_type: :high, informed_entities: [%InformedEntity{route_type: 1, route: "Red"}])
 
     assert {:ok, [sub.id], alert} == SeverityFilter.filter({:ok, [sub.id], alert})
   end
 
   test "will not send systemwide alert if should not receive based on alert_priority_type setting regardless of alert severity" do
-    alert1 = %Alert{informed_entities: [%{route_type: 1}], severity: "Minor", effect_name: "Extra Service"}
-    alert2 = %Alert{informed_entities: [%{route_type: 1}], severity: "Moderate", effect_name: "Extra Service"}
-    alert3 = %Alert{informed_entities: [%{route_type: 1}], severity: "Severe", effect_name: "Extra Service"}
+    alert1 = %Alert{informed_entities: [%{route_type: 1}], severity: :minor, effect_name: "Extra Service"}
+    alert2 = %Alert{informed_entities: [%{route_type: 1}], severity: :moderate, effect_name: "Extra Service"}
+    alert3 = %Alert{informed_entities: [%{route_type: 1}], severity: :severe, effect_name: "Extra Service"}
     sub = insert(:subscription, alert_priority_type: :high, informed_entities: [%InformedEntity{route_type: 1, route: "Red"}])
 
     assert {:ok, [], alert1} == SeverityFilter.filter({:ok, [sub.id], alert1})

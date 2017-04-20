@@ -5,7 +5,7 @@ defmodule MbtaServer.AlertProcessor.SeverityFilter do
   """
 
   import Ecto.Query
-  alias MbtaServer.{Repo, User}
+  alias MbtaServer.Repo
   alias MbtaServer.AlertProcessor.{Model.Alert, Model.Subscription}
 
   @doc """
@@ -15,7 +15,7 @@ defmodule MbtaServer.AlertProcessor.SeverityFilter do
   an alert to pass through to the next filter. Otherwise the flow is
   shortcircuited if the user id list provided is missing or empty.
   """
-  @spec filter({:ok, [User.id], Alert.t}) :: {:ok, [Subscription.id], Alert.t}
+  @spec filter({:ok, [Subscription.id], Alert.t}) :: {:ok, [Subscription.id], Alert.t}
   def filter({:ok, [], %Alert{} = alert}), do: {:ok, [], alert}
   def filter({:ok, previous_subscription_ids, %Alert{} = alert}) do
     subscriptions = Repo.all(

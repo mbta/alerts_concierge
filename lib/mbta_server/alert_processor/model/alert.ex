@@ -9,13 +9,13 @@ defmodule MbtaServer.AlertProcessor.Model.Alert do
     header: String.t,
     id: String.t,
     informed_entities: [map],
-    severity: String.t
+    severity: atom
   }
 
   @severity_values %{
-    "Minor" => 1,
-    "Moderate" => 2,
-    "Severe" => 3
+    minor: 1,
+    moderate: 2,
+    severe: 3
   }
 
   @route_types %{
