@@ -10,7 +10,9 @@ defmodule MbtaServer.AlertProcessor.SentAlertFilterTest do
   describe "filter/1" do
     test "returns all users who have not received the alert" do
       user = insert(:user)
+      sub1 = insert(:subscription, user: user)
       other_notification_user = insert(:user)
+      sub2 = insert(:subscription, user: other_notification_user)
       notified_user = insert(:user)
 
       notification = %Notification{
@@ -32,7 +34,7 @@ defmodule MbtaServer.AlertProcessor.SentAlertFilterTest do
       Repo.insert(Notification.create_changeset(notification))
       Repo.insert(Notification.create_changeset(other_notification))
 
-      assert {:ok, [user.id, other_notification_user.id], @alert} == SentAlertFilter.filter(@alert)
+      assert {:ok, [sub1.id, sub2.id], @alert} == SentAlertFilter.filter(@alert)
     end
 
     test "returns empty list if no match" do
@@ -41,6 +43,7 @@ defmodule MbtaServer.AlertProcessor.SentAlertFilterTest do
 
     test "returns the user if notification failed" do
       user = insert(:user)
+      subscription = insert(:subscription, user: user)
 
       notification = %Notification{
         alert_id: "123",
@@ -52,7 +55,7 @@ defmodule MbtaServer.AlertProcessor.SentAlertFilterTest do
 
       Repo.insert(Notification.create_changeset(notification))
 
-      assert {:ok, [user.id], @alert} == SentAlertFilter.filter(@alert)
+      assert {:ok, [subscription.id], @alert} == SentAlertFilter.filter(@alert)
     end
   end
 end

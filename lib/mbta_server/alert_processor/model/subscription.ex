@@ -8,6 +8,8 @@ defmodule MbtaServer.AlertProcessor.Model.Subscription do
     user_id: String.t
   }
 
+  @type id :: String.t
+
   use Ecto.Schema
 
   @primary_key {:id, :binary_id, autogenerate: true}
