@@ -12,12 +12,6 @@ defmodule MbtaServer.AlertProcessor.Model.Alert do
     severity: atom
   }
 
-  @severity_values %{
-    minor: 1,
-    moderate: 2,
-    severe: 3
-  }
-
   @route_types %{
     0 => "Subway",
     1 => "Subway",
@@ -29,135 +23,203 @@ defmodule MbtaServer.AlertProcessor.Model.Alert do
   @severity_map %{
     "Subway" => %{
       "Delay" => %{
-        low: 1, medium: 2, high: 3
+        minor: 3,
+        moderate: 2,
+        severe: 1
       },
       "Extra Service" => %{
-        low: 1, medium: 1
+        moderate: 1,
+        severe: 1
       },
       "Schedule Change" => %{
-        low: 1, medium: 1, high: 1
+        minor: 1,
+        moderate: 1,
+        severe: 1
       },
       "Service Change" => %{
-        low: 1, medium: 2, high: 3
+        minor: 3,
+        moderate: 2,
+        severe: 1
       },
       "Shuttle" => %{
-        low: 1, medium: 1, high: 1
+        minor: 1,
+        moderate: 1,
+        severe: 1
       },
       "Station Closure" => %{
-        low: 1, medium: 1, high: 1
+        minor: 1,
+        moderate: 1,
+        severe: 1
       },
       "Station Issue" => %{
-        low: 1, medium: 2, high: 3
+        minor: 3,
+        moderate: 2,
+        severe: 1
       },
       "Suspension" => %{
-        low: 1, medium: 1, high: 1
+        minor: 1,
+        moderate: 1,
+        severe: 1
       }
     },
     "Commuter Rail" => %{
       "Cancellation" => %{
-        low: 1, medium: 1, high: 1
+        minor: 1,
+        moderate: 1,
+        severe: 1
       },
       "Delay" => %{
-        low: 1, medium: 1
+        moderate: 1,
+        severe: 1
       },
       "Extra Service" => %{
-        low: 1
+        severe: 1
       },
       "Schedule Change" => %{
-        low: 1, medium: 1, high: 1
+        minor: 1,
+        moderate: 1,
+        severe: 1
       },
       "Service Change" => %{
-        low: 1, medium: 2, high: 3
+        minor: 3,
+        moderate: 2,
+        severe: 1
       },
       "Shuttle" => %{
-        low: 1, medium: 1, high: 1
+        minor: 1,
+        moderate: 1,
+        severe: 1
       },
       "Station Closure" => %{
-        low: 1, medium: 1, high: 1
+        minor: 1,
+        moderate: 1,
+        severe: 1
       },
       "Suspension" => %{
-        low: 1, medium: 1, high: 1
+        minor: 1,
+        moderate: 1,
+        severe: 1
       },
       "Track Change" => %{
-        low: 1
+        minor: 1
       }
     },
     "Bus" => %{
       "Delay" => %{
-        low: 1, medium: 2, high: 3
+        minor: 3,
+        moderate: 2,
+        severe: 1
       },
       "Detour" => %{
-        low: 1, medium: 1, high: 1
+        minor: 1,
+        moderate: 1,
+        severe: 1
       },
       "Extra Service" => %{
-        low: 1
+        severe: 1
       },
       "Schedule Change" => %{
-        low: 1, medium: 1, high: 1
+        minor: 1,
+        moderate: 1,
+        severe: 1
       },
       "Service Change" => %{
-        low: 1, medium: 2, high: 3
+        minor: 3,
+        moderate: 2,
+        severe: 1
       },
       "Snow Route" => %{
-        low: 1, medium: 1, high: 1
+        minor: 1,
+        moderate: 1,
+        severe: 1
       },
       "Stop Closure" => %{
-        low: 1, medium: 1
+        moderate: 1,
+        severe: 1
       },
       "Stop Move" => %{
-        low: 1
+        severe: 1
       },
       "Suspension" => %{
-        low: 1, medium: 1, high: 1
+        minor: 1,
+        moderate: 1,
+        severe: 1
       }
     },
     "Ferry" => %{
       "Cancellation" => %{
-        low: 1, medium: 1, high: 1
+        minor: 1,
+        moderate: 1,
+        severe: 1
       },
       "Delay" => %{
-        low: 1, medium: 1
+        moderate: 1,
+        severe: 1
       },
       "Dock Closure" => %{
-        low: 1, medium: 1, high: 1
+        minor: 1,
+        moderate: 1,
+        severe: 1
       },
       "Dock Issue" => %{
-        low: 1, medium: 2, high: 3
+        minor: 3,
+        moderate: 2,
+        severe: 1
       },
       "Extra Service" => %{
-        low: 1, medium: 1
+        moderate: 1,
+        severe: 1
       },
       "Schedule Change" => %{
-        low: 1, medium: 1, high: 1
+        minor: 1,
+        moderate: 1,
+        severe: 1
       },
       "Service Change" => %{
-        low: 1, medium: 2, high: 3
+        minor: 3,
+        moderate: 2,
+        severe: 1
       },
       "Shuttle" => %{
-        low: 1, medium: 1, high: 1
+        minor: 1,
+        moderate: 1,
+        severe: 1
       },
       "Suspension" => %{
-        low: 1, medium: 1, high: 1
+        minor: 1,
+        moderate: 1,
+        severe: 1
       },
     },
     "Systemwide" => %{
       "Delay" => %{
-        low: 1, medium: 1, high: 1
+        minor: 1,
+        moderate: 1,
+        severe: 1
       },
       "Extra Service" => %{
-        low: 1, medium: 1
+        moderate: 1,
+        severe: 1
       },
       "Policy Change" => %{
-        low: 1, medium: 1, high: 1
+        minor: 1,
+        moderate: 1,
+        severe: 1
       },
       "Service Change" => %{
-        low: 1, medium: 1, high: 1
+        minor: 1,
+        moderate: 1,
+        severe: 1
       },
       "Suspension" => %{
-        low: 1, medium: 1, high: 1
+        minor: 1,
+        moderate: 1,
+        severe: 1
       },
       "Amber Alert" => %{
-        low: 1, medium: 1, high: 1
+        minor: 1,
+        moderate: 1,
+        severe: 1
       }
     }
   }
@@ -174,16 +236,27 @@ defmodule MbtaServer.AlertProcessor.Model.Alert do
   convert route type and effect name from an alert and a user's alert priority type
   into the minimum value needed to send a notification.
   """
-  @spec priority_min_value(String.t, String.t, atom) :: integer | nil
-  def priority_min_value(route_type, effect_name, alert_priority_type) do
-    @severity_map[route_type][effect_name][alert_priority_type]
+  @spec priority_value(String.t, String.t, atom) :: integer | nil
+  def priority_value(route_type, effect_name, severity) do
+    @severity_map[route_type][effect_name][severity]
   end
 
   @doc """
-  return the numeric value for severity for a given alert.
+  return the numeric value for severity for a given alert. the lower the number
+  the more severe.
   """
-  @spec severity_value(__MODULE__.t) :: integer
-  def severity_value(%__MODULE__{severity: severity}) do
-    @severity_values[severity]
+  @spec severity_value(__MODULE__.t) :: integer | nil
+  def severity_value(%__MODULE__{severity: severity, effect_name: effect_name, informed_entities: informed_entities}) do
+      informed_entities
+      |> Enum.map(fn(informed_entity) ->
+        mode =
+          case informed_entity do
+            %{route_type: _, route: nil} -> "Systemwide"
+            %{route_type: route_type, route: _} -> route_string(route_type)
+            %{route_type: _} -> "Systemwide"
+          end
+        priority_value(mode, effect_name, severity)
+      end)
+      |> Enum.min
   end
 end

@@ -12,6 +12,12 @@ defmodule MbtaServer.AlertProcessor.Model.Subscription do
 
   @type id :: String.t
 
+  @alert_priority_type_values %{
+    low: 1,
+    medium: 2,
+    high: 3
+  }
+
   use Ecto.Schema
   import Ecto.Changeset
 
@@ -35,6 +41,14 @@ defmodule MbtaServer.AlertProcessor.Model.Subscription do
     struct
     |> cast(params, @permitted_fields)
     |> validate_required(@required_fields)
-    |> validate_inclusion(:alert_priority_type, ["low", "medium", "high"])
+    |> validate_inclusion(:alert_priority_type, [:low, :medium, :high])
+  end
+
+  @doc """
+  return the numeric value for a subscription's alert priority type.
+  the higher the number, the greater amount of alerts should be received.
+  """
+  def severity_value(%__MODULE__{alert_priority_type: alert_priority_type}) do
+    @alert_priority_type_values[alert_priority_type]
   end
 end
