@@ -7,6 +7,10 @@ defmodule MbtaServer.AlertProcessor.SentAlertFilterTest do
 
   @alert %Alert{id: "123"}
 
+  defp execute_query(query) do
+    Repo.all(from q in subquery(query), select: q.id)
+  end
+
   describe "filter/1" do
     test "returns all users who have not received the alert" do
       user = insert(:user)
@@ -35,12 +39,12 @@ defmodule MbtaServer.AlertProcessor.SentAlertFilterTest do
       Repo.insert(Notification.create_changeset(other_notification))
 
       assert {:ok, query, @alert} = SentAlertFilter.filter(@alert)
-      assert [sub1.id, sub2.id] == Repo.all(from q in subquery(query), select: q.id)
+      assert [sub1.id, sub2.id] == execute_query(query)
     end
 
     test "returns empty list if no match" do
       assert {:ok, query, @alert} = SentAlertFilter.filter(@alert)
-      assert [] == Repo.all(from q in subquery(query), select: q.id)
+      assert [] == execute_query(query)
     end
 
     test "returns the user if notification failed" do
@@ -58,7 +62,7 @@ defmodule MbtaServer.AlertProcessor.SentAlertFilterTest do
       Repo.insert(Notification.create_changeset(notification))
 
       assert {:ok, query, @alert} = SentAlertFilter.filter(@alert)
-      assert [subscription.id] == Repo.all(from q in subquery(query), select: q.id)
+      assert [subscription.id] == execute_query(query)
     end
   end
 end

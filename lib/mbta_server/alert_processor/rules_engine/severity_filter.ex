@@ -5,36 +5,24 @@ defmodule MbtaServer.AlertProcessor.SeverityFilter do
   """
 
   import Ecto.Query
-  alias MbtaServer.Repo
   alias MbtaServer.AlertProcessor.{Model.Alert, Model.Subscription}
 
   @doc """
-  filter/1 takes a tuple of the remaining subscriptions to be considered and
+  filter/1 takes a tuple including a subquery which represents the
+  remaining subscriptions to be considered and
   an alert and returns the now remaining subscriptions to be considered
+  in the form of an ecto queryable
   which have a matching subscription based on severity and
-  an alert to pass through to the next filter. Otherwise the flow is
-  shortcircuited if the user id list provided is missing or empty.
+  an alert to pass through to the next filter.
   """
-  @spec filter({:ok, [Subscription.id], Alert.t}) :: {:ok, [Subscription.id], Alert.t}
-  def filter({:ok, [], %Alert{} = alert}), do: {:ok, [], alert}
-  def filter({:ok, previous_subscription_ids, %Alert{} = alert}) do
-    subscriptions = Repo.all(
-      from s in Subscription,
-      join: ie in assoc(s, :informed_entities),
-      preload: [:informed_entities],
-      where: s.id in ^previous_subscription_ids
-    )
+  @spec filter({:ok, Ecto.Queryable.t, Alert.t}) :: {:ok, Ecto.Queryable.t, Alert.t}
+  def filter({:ok, previous_query, %Alert{} = alert}) do
+    alert_severity_value = Alert.severity_value(alert)
+    query = from s in previous_query,
+      where: s.alert_priority_type == "low" and ^(alert_severity_value >= Subscription.severity_value(:low)),
+      or_where: s.alert_priority_type == "medium" and ^(alert_severity_value >= Subscription.severity_value(:medium)),
+      or_where: s.alert_priority_type == "high" and ^(alert_severity_value >= Subscription.severity_value(:high))
 
-    subscription_ids = Enum.filter_map(subscriptions, &send_alert?(&1, alert), & &1.id)
-
-    {:ok, subscription_ids, alert}
-  end
-
-  @spec send_alert?(Subscription.t, Alert.t) :: boolean
-  defp send_alert?(subscription, alert) do
-    case Alert.severity_value(alert) do
-      nil -> false
-      alert_severity_value -> alert_severity_value >= Subscription.severity_value(subscription)
-    end
+    {:ok, query, alert}
   end
 end

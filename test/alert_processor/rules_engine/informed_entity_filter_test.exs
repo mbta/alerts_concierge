@@ -59,6 +59,14 @@ defmodule MbtaServer.AlertProcessor.InformedEntityFilterTest do
     ]
   }
 
+  defp generate_query(subscription_ids) do
+    Ecto.Query.from(s in Subscription, where: s.id in ^subscription_ids)
+  end
+
+  defp execute_query(query) do
+    Repo.all(from q in subquery(query), select: q.id)
+  end
+
   setup do
     user1 = insert(:user)
     user2 = insert(:user)
@@ -72,37 +80,37 @@ defmodule MbtaServer.AlertProcessor.InformedEntityFilterTest do
     InformedEntity |> struct(@ie4) |> Map.merge(%{subscription_id: sub3.id}) |> insert
     InformedEntity |> struct(@ie2) |> Map.merge(%{subscription_id: sub4.id}) |> insert
 
-    {:ok, sub1: sub1, sub2: sub2, sub3: sub3, sub4: sub4, user1: user1, user2: user2, all_subscription_ids: Ecto.Query.from(s in Subscription) }
+    {:ok, sub1: sub1, sub2: sub2, sub3: sub3, sub4: sub4, user1: user1, user2: user2, all_subscription_ids: [sub1.id, sub2.id, sub3.id, sub4.id] }
   end
 
   test "filter returns :ok empty list if subscription id list passed is empty" do
-    assert {:ok, query, @alert1} = InformedEntityFilter.filter({:ok, Ecto.Query.from(s in Subscription, where: false), @alert1})
-    assert [] == Repo.all(from q in subquery(query), select: q.id)
+    assert {:ok, query, @alert1} = InformedEntityFilter.filter({:ok, generate_query([]), @alert1})
+    assert [] == execute_query(query)
   end
 
   test "returns subscription id if informed entity matches subscription", %{sub4: sub4, all_subscription_ids: all_subscription_ids} do
-    assert {:ok, query, @alert2} = InformedEntityFilter.filter({:ok, all_subscription_ids, @alert2})
-    assert [sub4.id] == Repo.all(from q in subquery(query), select: q.id)
+    assert {:ok, query, @alert2} = InformedEntityFilter.filter({:ok, generate_query(all_subscription_ids), @alert2})
+    assert [sub4.id] == execute_query(query)
   end
 
   test "does not return subscription id if subscription not included in previous ids list", %{sub2: sub2} do
-    assert {:ok, query, @alert1} = InformedEntityFilter.filter({:ok, Ecto.Query.from(s in Subscription, where: s.id in ^[sub2.id]), @alert1})
-    assert [sub2.id] == Repo.all(from q in subquery(query), select: q.id)
+    assert {:ok, query, @alert1} = InformedEntityFilter.filter({:ok, generate_query([sub2.id]), @alert1})
+    assert [sub2.id] == execute_query(query)
   end
 
   test "returns multiple subscriptions for same user if both match the alert", %{sub1: sub1, sub4: sub4} do
-    {:ok, query, @alert1} = InformedEntityFilter.filter({:ok, Ecto.Query.from(s in Subscription, where: s.id in ^[sub1.id, sub4.id]), @alert1})
-    subscription_ids = Repo.all(from q in subquery(query), select: q.id)
+    {:ok, query, @alert1} = InformedEntityFilter.filter({:ok, generate_query([sub1.id, sub4.id]), @alert1})
+    subscription_ids = execute_query(query)
     assert MapSet.new(subscription_ids) == MapSet.new([sub1.id, sub4.id])
   end
 
   test "does not return subscriptions that only partially match alert informed entity", %{sub3: sub3, all_subscription_ids: all_subscription_ids} do
-    assert {:ok, query, @alert4} = InformedEntityFilter.filter({:ok, all_subscription_ids, @alert4})
-    assert [sub3.id] == Repo.all(from q in subquery(query), select: q.id)
+    assert {:ok, query, @alert4} = InformedEntityFilter.filter({:ok, generate_query(all_subscription_ids), @alert4})
+    assert [sub3.id] == execute_query(query)
   end
 
   test "returns empty list if no matches", %{all_subscription_ids: all_subscription_ids} do
-    assert {:ok, query, @alert3} = InformedEntityFilter.filter({:ok, all_subscription_ids, @alert3})
-    assert [] == Repo.all(from q in subquery(query), select: q.id)
+    assert {:ok, query, @alert3} = InformedEntityFilter.filter({:ok, generate_query(all_subscription_ids), @alert3})
+    assert [] == execute_query(query)
   end
 end

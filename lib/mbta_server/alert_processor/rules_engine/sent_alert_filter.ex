@@ -8,8 +8,9 @@ defmodule MbtaServer.AlertProcessor.SentAlertFilter do
   import Ecto.Query
 
   @doc """
-  Takes a single alert and returns a list of subscription ids for users
-  that have not received any notifications for the alert
+  Takes a single alert and returns a ecto queryable representing
+  the subscription ids for users that have not received any notifications
+  for the alert
   """
   @spec filter(Alert.t) :: {:ok, Ecto.Queryable.t, Alert.t}
   def filter(%Alert{id: id} = alert) do

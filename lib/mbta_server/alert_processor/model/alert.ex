@@ -236,9 +236,9 @@ defmodule MbtaServer.AlertProcessor.Model.Alert do
   convert route type and effect name from an alert and a user's alert priority type
   into the minimum value needed to send a notification.
   """
-  @spec priority_value(String.t, String.t, atom) :: integer | nil
+  @spec priority_value(String.t, String.t, atom) :: integer
   def priority_value(route_type, effect_name, severity) do
-    @severity_map[route_type][effect_name][severity]
+    @severity_map[route_type][effect_name][severity] || 0
   end
 
   @doc """
