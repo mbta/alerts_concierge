@@ -34,11 +34,13 @@ defmodule MbtaServer.AlertProcessor.SentAlertFilterTest do
       Repo.insert(Notification.create_changeset(notification))
       Repo.insert(Notification.create_changeset(other_notification))
 
-      assert {:ok, [sub1.id, sub2.id], @alert} == SentAlertFilter.filter(@alert)
+      assert {:ok, query, @alert} = SentAlertFilter.filter(@alert)
+      assert [sub1.id, sub2.id] == Repo.all(from q in subquery(query), select: q.id)
     end
 
     test "returns empty list if no match" do
-      assert {:ok, [], @alert} == SentAlertFilter.filter(@alert)
+      assert {:ok, query, @alert} = SentAlertFilter.filter(@alert)
+      assert [] == Repo.all(from q in subquery(query), select: q.id)
     end
 
     test "returns the user if notification failed" do
@@ -55,7 +57,8 @@ defmodule MbtaServer.AlertProcessor.SentAlertFilterTest do
 
       Repo.insert(Notification.create_changeset(notification))
 
-      assert {:ok, [subscription.id], @alert} == SentAlertFilter.filter(@alert)
+      assert {:ok, query, @alert} = SentAlertFilter.filter(@alert)
+      assert [subscription.id] == Repo.all(from q in subquery(query), select: q.id)
     end
   end
 end
