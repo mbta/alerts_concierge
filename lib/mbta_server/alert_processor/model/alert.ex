@@ -23,203 +23,203 @@ defmodule MbtaServer.AlertProcessor.Model.Alert do
   @severity_map %{
     "Subway" => %{
       "Delay" => %{
-        minor: 3,
+        minor: 1,
         moderate: 2,
-        severe: 1
+        severe: 3
       },
       "Extra Service" => %{
-        moderate: 1,
-        severe: 1
+        moderate: 3,
+        severe: 3
       },
       "Schedule Change" => %{
-        minor: 1,
-        moderate: 1,
-        severe: 1
+        minor: 3,
+        moderate: 3,
+        severe: 3
       },
       "Service Change" => %{
-        minor: 3,
+        minor: 1,
         moderate: 2,
-        severe: 1
+        severe: 3
       },
       "Shuttle" => %{
-        minor: 1,
-        moderate: 1,
-        severe: 1
+        minor: 3,
+        moderate: 3,
+        severe: 3
       },
       "Station Closure" => %{
-        minor: 1,
-        moderate: 1,
-        severe: 1
+        minor: 3,
+        moderate: 3,
+        severe: 3
       },
       "Station Issue" => %{
-        minor: 3,
+        minor: 1,
         moderate: 2,
-        severe: 1
+        severe: 3
       },
       "Suspension" => %{
-        minor: 1,
-        moderate: 1,
-        severe: 1
+        minor: 3,
+        moderate: 3,
+        severe: 3
       }
     },
     "Commuter Rail" => %{
       "Cancellation" => %{
-        minor: 1,
-        moderate: 1,
-        severe: 1
+        minor: 3,
+        moderate: 3,
+        severe: 3
       },
       "Delay" => %{
-        moderate: 1,
-        severe: 1
+        moderate: 3,
+        severe: 3
       },
       "Extra Service" => %{
-        severe: 1
+        severe: 3
       },
       "Schedule Change" => %{
-        minor: 1,
-        moderate: 1,
-        severe: 1
+        minor: 3,
+        moderate: 3,
+        severe: 3
       },
       "Service Change" => %{
-        minor: 3,
+        minor: 1,
         moderate: 2,
-        severe: 1
+        severe: 3
       },
       "Shuttle" => %{
-        minor: 1,
-        moderate: 1,
-        severe: 1
+        minor: 3,
+        moderate: 3,
+        severe: 3
       },
       "Station Closure" => %{
-        minor: 1,
-        moderate: 1,
-        severe: 1
+        minor: 3,
+        moderate: 3,
+        severe: 3
       },
       "Suspension" => %{
-        minor: 1,
-        moderate: 1,
-        severe: 1
+        minor: 3,
+        moderate: 3,
+        severe: 3
       },
       "Track Change" => %{
-        minor: 1
+        minor: 3
       }
     },
     "Bus" => %{
       "Delay" => %{
-        minor: 3,
+        minor: 1,
         moderate: 2,
-        severe: 1
+        severe: 3
       },
       "Detour" => %{
-        minor: 1,
-        moderate: 1,
-        severe: 1
+        minor: 3,
+        moderate: 3,
+        severe: 3
       },
       "Extra Service" => %{
-        severe: 1
+        severe: 3
       },
       "Schedule Change" => %{
-        minor: 1,
-        moderate: 1,
-        severe: 1
+        minor: 3,
+        moderate: 3,
+        severe: 3
       },
       "Service Change" => %{
-        minor: 3,
+        minor: 1,
         moderate: 2,
-        severe: 1
+        severe: 3
       },
       "Snow Route" => %{
-        minor: 1,
-        moderate: 1,
-        severe: 1
+        minor: 3,
+        moderate: 3,
+        severe: 3
       },
       "Stop Closure" => %{
-        moderate: 1,
-        severe: 1
+        moderate: 3,
+        severe: 3
       },
       "Stop Move" => %{
-        severe: 1
+        severe: 3
       },
       "Suspension" => %{
-        minor: 1,
-        moderate: 1,
-        severe: 1
+        minor: 3,
+        moderate: 3,
+        severe: 3
       }
     },
     "Ferry" => %{
       "Cancellation" => %{
-        minor: 1,
-        moderate: 1,
-        severe: 1
+        minor: 3,
+        moderate: 3,
+        severe: 3
       },
       "Delay" => %{
-        moderate: 1,
-        severe: 1
+        moderate: 3,
+        severe: 3
       },
       "Dock Closure" => %{
-        minor: 1,
-        moderate: 1,
-        severe: 1
+        minor: 3,
+        moderate: 3,
+        severe: 3
       },
       "Dock Issue" => %{
-        minor: 3,
+        minor: 1,
         moderate: 2,
-        severe: 1
+        severe: 3
       },
       "Extra Service" => %{
-        moderate: 1,
-        severe: 1
+        moderate: 3,
+        severe: 3
       },
       "Schedule Change" => %{
-        minor: 1,
-        moderate: 1,
-        severe: 1
+        minor: 3,
+        moderate: 3,
+        severe: 3
       },
       "Service Change" => %{
-        minor: 3,
+        minor: 1,
         moderate: 2,
-        severe: 1
+        severe: 3
       },
       "Shuttle" => %{
-        minor: 1,
-        moderate: 1,
-        severe: 1
+        minor: 3,
+        moderate: 3,
+        severe: 3
       },
       "Suspension" => %{
-        minor: 1,
-        moderate: 1,
-        severe: 1
+        minor: 3,
+        moderate: 3,
+        severe: 3
       },
     },
     "Systemwide" => %{
       "Delay" => %{
-        minor: 1,
-        moderate: 1,
-        severe: 1
+        minor: 3,
+        moderate: 3,
+        severe: 3
       },
       "Extra Service" => %{
-        moderate: 1,
-        severe: 1
+        moderate: 3,
+        severe: 3
       },
       "Policy Change" => %{
-        minor: 1,
-        moderate: 1,
-        severe: 1
+        minor: 3,
+        moderate: 3,
+        severe: 3
       },
       "Service Change" => %{
-        minor: 1,
-        moderate: 1,
-        severe: 1
+        minor: 3,
+        moderate: 3,
+        severe: 3
       },
       "Suspension" => %{
-        minor: 1,
-        moderate: 1,
-        severe: 1
+        minor: 3,
+        moderate: 3,
+        severe: 3
       },
       "Amber Alert" => %{
-        minor: 1,
-        moderate: 1,
-        severe: 1
+        minor: 3,
+        moderate: 3,
+        severe: 3
       }
     }
   }

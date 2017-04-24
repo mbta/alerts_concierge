@@ -34,7 +34,7 @@ defmodule MbtaServer.AlertProcessor.SeverityFilter do
   defp send_alert?(subscription, alert) do
     case Alert.severity_value(alert) do
       nil -> false
-      alert_severity_value -> alert_severity_value <= Subscription.severity_value(subscription)
+      alert_severity_value -> alert_severity_value >= Subscription.severity_value(subscription)
     end
   end
 end
