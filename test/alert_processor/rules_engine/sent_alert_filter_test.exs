@@ -1,6 +1,6 @@
 defmodule MbtaServer.AlertProcessor.SentAlertFilterTest do
   use MbtaServer.DataCase
-  alias MbtaServer.AlertProcessor
+  alias MbtaServer.{AlertProcessor, QueryHelper}
   alias AlertProcessor.{SentAlertFilter, Model}
   alias Model.{Alert, Notification}
   import MbtaServer.Factory
@@ -34,11 +34,13 @@ defmodule MbtaServer.AlertProcessor.SentAlertFilterTest do
       Repo.insert(Notification.create_changeset(notification))
       Repo.insert(Notification.create_changeset(other_notification))
 
-      assert {:ok, [sub1.id, sub2.id], @alert} == SentAlertFilter.filter(@alert)
+      assert {:ok, query, @alert} = SentAlertFilter.filter(@alert)
+      assert MapSet.equal?(MapSet.new([sub1.id, sub2.id]), MapSet.new(QueryHelper.execute_query(query)))
     end
 
     test "returns empty list if no match" do
-      assert {:ok, [], @alert} == SentAlertFilter.filter(@alert)
+      assert {:ok, query, @alert} = SentAlertFilter.filter(@alert)
+      assert [] == QueryHelper.execute_query(query)
     end
 
     test "returns the user if notification failed" do
@@ -55,7 +57,8 @@ defmodule MbtaServer.AlertProcessor.SentAlertFilterTest do
 
       Repo.insert(Notification.create_changeset(notification))
 
-      assert {:ok, [subscription.id], @alert} == SentAlertFilter.filter(@alert)
+      assert {:ok, query, @alert} = SentAlertFilter.filter(@alert)
+      assert [subscription.id] == QueryHelper.execute_query(query)
     end
   end
 end
