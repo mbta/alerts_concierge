@@ -225,23 +225,6 @@ defmodule MbtaServer.AlertProcessor.Model.Alert do
   }
 
   @doc """
-  convert route type numeric representation to the string representation.
-  """
-  @spec route_string(integer) :: String.t
-  def route_string(route_type) do
-    @route_types[route_type]
-  end
-
-  @doc """
-  convert route type and effect name from an alert and a user's alert priority type
-  into the minimum value needed to send a notification.
-  """
-  @spec priority_value(String.t, String.t, atom) :: integer
-  def priority_value(route_type, effect_name, severity) do
-    @severity_map[route_type][effect_name][severity] || 0
-  end
-
-  @doc """
   return the numeric value for severity for a given alert. the lower the number
   the more severe.
   """
@@ -258,5 +241,15 @@ defmodule MbtaServer.AlertProcessor.Model.Alert do
         priority_value(mode, effect_name, severity)
       end)
       |> Enum.min
+  end
+
+  @spec route_string(integer) :: String.t
+  defp route_string(route_type) do
+    @route_types[route_type]
+  end
+
+  @spec priority_value(String.t, String.t, atom) :: integer
+  defp priority_value(route_type, effect_name, severity) do
+    @severity_map[route_type][effect_name][severity] || 0
   end
 end
