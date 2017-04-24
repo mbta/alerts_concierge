@@ -11,12 +11,12 @@ defmodule MbtaServer.AlertProcessor.SendingQueueTest do
   end
 
   test "Alert can be added to the queue", %{notification: notification} do
-    SendingQueue.enqueue(notification)
+    :ok = SendingQueue.enqueue(notification)
     assert SendingQueue.pop == {:ok, notification}
   end
 
   test "Alert can be removed from the queue", %{notification: notification} do
-    SendingQueue.enqueue(notification)
+    :ok = SendingQueue.enqueue(notification)
 
     assert SendingQueue.pop == {:ok, notification}
     assert SendingQueue.pop == :error
