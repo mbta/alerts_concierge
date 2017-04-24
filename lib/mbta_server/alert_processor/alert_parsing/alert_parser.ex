@@ -23,7 +23,7 @@ defmodule MbtaServer.AlertProcessor.AlertParser do
           |> Enum.reduce(%{}, &parse_alert/2)
           |> AlertCache.update_cache()
         HoldingQueue.remove_notifications(removed_alert_ids)
-        Enum.map(new_alerts, &SubscriptionFilterEngine.process_alert/1)
+        Enum.flat_map(new_alerts, &SubscriptionFilterEngine.process_alert/1)
     end
   end
 
@@ -46,7 +46,7 @@ defmodule MbtaServer.AlertProcessor.AlertParser do
         id: alert_id,
         effect_name: effect_name,
         header: header,
-        informed_entities: informed_entities,
+        informed_entities: parse_informed_entities(informed_entities),
         severity: severity |> String.downcase |> String.to_existing_atom
       })
     )
@@ -54,5 +54,11 @@ defmodule MbtaServer.AlertProcessor.AlertParser do
 
   defp parse_alert(_, accumulator) do
     accumulator
+  end
+
+  defp parse_informed_entities(informed_entities) do
+    Enum.map(informed_entities, fn(informed_entity) ->
+      Map.new(informed_entity, fn({k, v}) -> {String.to_existing_atom(k), v} end)
+    end)
   end
 end

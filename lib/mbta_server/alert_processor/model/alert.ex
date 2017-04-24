@@ -221,6 +221,13 @@ defmodule MbtaServer.AlertProcessor.Model.Alert do
         moderate: 3,
         severe: 3
       }
+    },
+    "Facility" => %{
+      "Access Issue" => %{
+        minor: 1,
+        moderate: 2,
+        severe: 3
+      }
     }
   }
 
@@ -237,10 +244,11 @@ defmodule MbtaServer.AlertProcessor.Model.Alert do
             %{route_type: _, route: nil} -> "Systemwide"
             %{route_type: route_type, route: _} -> route_string(route_type)
             %{route_type: _} -> "Systemwide"
+            %{stop: _, facility: _} -> "Facility"
           end
         priority_value(mode, effect_name, severity)
       end)
-      |> Enum.min
+      |> Enum.max
   end
 
   @spec route_string(integer) :: String.t
