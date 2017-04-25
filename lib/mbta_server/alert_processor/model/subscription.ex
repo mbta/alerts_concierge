@@ -4,7 +4,7 @@ defmodule MbtaServer.AlertProcessor.Model.Subscription do
   """
 
   alias MbtaServer.{AlertProcessor, Repo, User}
-  alias AlertProcessor.Model.{InformedEntity, Subscription}
+  alias AlertProcessor.Model.InformedEntity
   import Ecto.Query
 
   @type t :: %__MODULE__{
@@ -58,9 +58,9 @@ defmodule MbtaServer.AlertProcessor.Model.Subscription do
   @doc """
   Fetches subscriptions with users eager loaded for a list of ids
   """
-  @spec fetch_with_user(list) :: [Subscription.t]
+  @spec fetch_with_user([__MODULE__.id]) :: [__MODULE__.t]
   def fetch_with_user(subscription_ids) do
-    query = from s in Subscription,
+    query = from s in __MODULE__,
       where: s.id in ^subscription_ids
 
     query
