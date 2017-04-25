@@ -51,6 +51,14 @@ defmodule MbtaServer.AlertProcessor.HoldingQueue do
     GenServer.call(__MODULE__, {:remove, removed_alert_ids})
   end
 
+  @doc """
+  take user_id and clears out all notifications waiting to be sent to that user
+  """
+  @spec remove_user_notifications(String.t) :: :ok
+  def remove_user_notifications(user_id) do
+    GenServer.call(__MODULE__, {:clear_user, user_id})
+  end
+
   defp send_notification?(notification, now) do
     DateTime.compare(notification.send_after, now) != :gt
   end
@@ -76,6 +84,10 @@ defmodule MbtaServer.AlertProcessor.HoldingQueue do
     {ready_to_send, newstate} = notifications
     |> Enum.split_with(&send_notification?(&1, now))
     {:reply, {:ok, ready_to_send}, newstate}
+  end
+  def handle_call({:clear_user, user_id}, _from, notifications) do
+    newstate = Enum.reject(notifications, fn(n) -> n.user_id == user_id end)
+    {:reply, :ok, newstate}
   end
   def handle_call(request, from, state) do
     super(request, from, state)
