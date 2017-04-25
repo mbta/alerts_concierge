@@ -232,7 +232,7 @@ defmodule MbtaServer.AlertProcessor.Model.Alert do
   }
 
   @doc """
-  return the numeric value for severity for a given alert. the lower the number
+  return the numeric value for severity for a given alert. the higher the number
   the more severe.
   """
   @spec severity_value(__MODULE__.t) :: integer | nil

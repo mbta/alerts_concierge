@@ -12,7 +12,7 @@ defmodule MbtaServer.AlertProcessor.AlertParser do
   process_alerts/0 entry point for fetching json data from api and, transforming, storing and passing to
   subscription engine to process before sending.
   """
-  @spec process_alerts() :: [:ok | :error] | String.t
+  @spec process_alerts() :: [{:ok, map} | {:error, map}] | String.t
   def process_alerts() do
     case ApiClient.get_alerts do
       {:error, message} ->
