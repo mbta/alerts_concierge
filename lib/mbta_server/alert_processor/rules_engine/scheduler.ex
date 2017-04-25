@@ -136,88 +136,45 @@ defmodule MbtaServer.AlertProcessor.Scheduler do
   defp check_do_not_disturb({:ok, {_start_time, _end_time}, sending_time}, {nil, nil}) do
     {:ok, sending_time}
   end
-  defp check_do_not_disturb({:ok, {_start_time, nil}, sending_time}, {dnd_start, dnd_end}) do
-    params = {dnd_start, dnd_end, sending_time}
-    case dnd_start < dnd_end do
-      true -> check_same_day(params)
-      false -> check_overnight(params)
-    end
-  end
-  defp check_do_not_disturb({:ok, {_start_time, end_time}, sending_time}, {dnd_start, dnd_end}) do
-    params = {dnd_start, dnd_end, sending_time, end_time}
-    case dnd_start < dnd_end do
-      true -> check_same_day(params)
-      false -> check_overnight(params)
-    end
-  end
-
-  # For blackout intervals that start/stop in the same day
-  # 1. Checks if the notification sending_time and end_time
-  # are completely within blackout
-  # 2. If yes, do not send
-  # 3. If no, determine whether blackout ends before send_at
-  # 4. If yes, send_at stays the same
-  # 5. If no, send_at is end of blackout
-  @spec check_same_day({Time.t | nil, Time.t | nil, DateTime.t, Time.t | nil}) :: {:error} | {:ok, DateTime.t}
-  defp check_same_day({dnd_start, dnd_end, sending_time, end_time}) do
-    dnd_start_dt = time_to_datetime(dnd_start, sending_time)
-    dnd_end_dt = time_to_datetime(dnd_end, sending_time)
-
-    cond do
-      !Calendar.DateTime.after?(dnd_start_dt, sending_time)
-      && !Calendar.DateTime.after?(end_time, dnd_end_dt) ->
-        {:error}
-      !Calendar.DateTime.after?(dnd_start_dt, sending_time)
-      && !Calendar.DateTime.after?(dnd_end_dt, end_time) ->
-        {:ok, dnd_end_dt}
-      true ->
-        {:ok, sending_time}
+  defp check_do_not_disturb({:ok, {_start_time, end_time}, send_time}, {dnd_start, dnd_end}) do
+    dnd_start = time_to_datetime(dnd_start, send_time)
+    dnd_end = time_to_datetime(dnd_end, send_time)
+    case check_send_time(send_time, dnd_start, dnd_end) do
+      {:ok, send_time} -> {:ok, send_time}
+      {:check_send, adjusted_send_time} ->
+        case check_end_time(adjusted_send_time, end_time) do
+          true -> {:ok, adjusted_send_time}
+          false -> {:error}
+        end
     end
   end
 
-  @spec check_same_day({Time.t | nil, Time.t | nil, DateTime.t}) :: {:ok, DateTime.t}
-  defp check_same_day({dnd_start, dnd_end, sending_time}) do
-    dnd_start_dt = time_to_datetime(dnd_start, sending_time)
-    case !Calendar.DateTime.after?(dnd_start_dt, sending_time) do
-      true -> {:ok, time_to_datetime(dnd_end, sending_time)}
-      false -> {:ok, sending_time}
-    end
+  @spec check_end_time(DateTime.t, DateTime.t | nil) :: boolean()
+  defp check_end_time(_, nil) do
+    true
+  end
+  defp check_end_time(send_time, end_time) do
+    !Calendar.DateTime.after?(send_time, end_time)
   end
 
-  # For blackout intervals that goes into the next day
-  # 1. Checks if the notification sending_time and end_time
-  # are completely within blackout
-  # 2. If yes, do not send
-  # 3. If no, determine whether blackout ends before send_at
-  # 4. If yes, send_at stays the same
-  # 5. If no, send_at is end of blackout
-  @spec check_overnight({Time.t | nil, Time.t | nil, DateTime.t, Time.t | nil}) :: {:error} | {:ok, DateTime.t}
-  defp check_overnight({dnd_start, dnd_end, sending_time, end_time}) do
-    dnd_start_dt = time_to_datetime(dnd_start, sending_time)
-    dnd_end_dt_day1 = time_to_datetime(dnd_end, sending_time)
-    dnd_end_dt_day2 = time_to_datetime(dnd_end, Calendar.DateTime.add!(sending_time, 86_400))
-
-    cond do
-      !Calendar.DateTime.after?(sending_time, dnd_end_dt_day1)
-      && !Calendar.DateTime.after?(end_time, dnd_end_dt_day1) ->
-        {:error}
-      !Calendar.DateTime.after?(sending_time, dnd_end_dt_day1)
-        {:ok, dnd_end_dt_day1}
-      !Calendar.DateTime.after?(dnd_start_dt, sending_time)
-      && !Calendar.DateTime.after?(dnd_end_dt_day2, end_time) ->
-        {:ok, dnd_end_dt_day2}
-      true ->
-        {:ok, sending_time}
-    end
-  end
-
-  @spec check_overnight({Time.t | nil, Time.t | nil, DateTime.t}) :: {:ok, DateTime.t}
-  defp check_overnight({dnd_start, dnd_end, sending_time}) do
-    dnd_start_dt = time_to_datetime(dnd_start, sending_time)
-    dnd_end_next_day = time_to_datetime(dnd_end, Calendar.DateTime.add!(sending_time, 86_400))
-    case !Calendar.DateTime.after?(dnd_start_dt, sending_time) do
-      true -> {:ok, dnd_end_next_day}
-      false -> {:ok, sending_time}
+  @spec check_send_time(DateTime.t, DateTime.t, DateTime.t) :: {:ok | :check_send, DateTime.t}
+  defp check_send_time(send_time, dnd_start, dnd_end) do
+    if before_or_equal(dnd_start, dnd_end) do
+      if before_or_equal(dnd_start, send_time) && before_or_equal(send_time, dnd_end) do
+        {:check_send, dnd_end}
+      else
+        {:ok, send_time}
+      end
+    else
+      case before_or_equal(send_time, dnd_start) do
+        true ->
+          case before_or_equal(dnd_end, send_time) do
+            false -> {:check_send, dnd_end}
+            true -> {:ok, send_time}
+          end
+        false ->
+          {:check_send, Calendar.DateTime.add!(dnd_end, 86400)}
+      end
     end
   end
 
@@ -226,5 +183,9 @@ defmodule MbtaServer.AlertProcessor.Scheduler do
     erl_time = Calendar.Time.to_erl(time)
     erl_date = Calendar.DateTime.to_date(datetime)
     Calendar.DateTime.from_date_and_time_and_zone!(erl_date, erl_time, "Etc/UTC")
+  end
+
+  defp before_or_equal(first_dt, second_dt) do
+    !Calendar.DateTime.after?(first_dt, second_dt)
   end
 end
