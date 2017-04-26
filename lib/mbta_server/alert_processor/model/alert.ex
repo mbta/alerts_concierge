@@ -5,6 +5,7 @@ defmodule MbtaServer.AlertProcessor.Model.Alert do
   defstruct [:active_period, :effect_name, :id, :header, :informed_entities, :severity]
 
   @type t :: %__MODULE__{
+    active_period: [%{start: DateTime.t, end: DateTime.t | nil}],
     effect_name: String.t,
     header: String.t,
     id: String.t,

@@ -5,7 +5,7 @@ defmodule MbtaServer.AlertProcessor.SubscriptionFilterEngine do
   """
   alias MbtaServer.{Repo, User}
   alias MbtaServer.AlertProcessor.{Model.Alert, Model.Notification}
-  alias MbtaServer.AlertProcessor.{Dispatcher, InformedEntityFilter, SentAlertFilter, SeverityFilter}
+  alias MbtaServer.AlertProcessor.{ActivePeriodFilter, Dispatcher, InformedEntityFilter, SentAlertFilter, SeverityFilter}
   import Ecto.Query
 
   @doc """
@@ -28,6 +28,7 @@ defmodule MbtaServer.AlertProcessor.SubscriptionFilterEngine do
       |> SentAlertFilter.filter
       |> InformedEntityFilter.filter
       |> SeverityFilter.filter
+      |> ActivePeriodFilter.filter
 
     Repo.all(from u in User, join: s in subquery(query), on: s.user_id == u.id, distinct: true)
   end

@@ -17,8 +17,23 @@ defmodule MbtaServer.Factory do
 
   def subscription_factory do
     %Subscription{
-      alert_priority_type: :medium
+      relevant_days: [],
+      alert_priority_type: :medium,
+      start_time: ~T[14:00:00],
+      end_time: ~T[18:00:00]
     }
+  end
+
+  def weekday_subscription(%Subscription{} = subscription) do
+    Map.put(subscription, :relevant_days, [:weekday | subscription.relevant_days])
+  end
+
+  def sunday_subscription(%Subscription{} = subscription) do
+    Map.put(subscription, :relevant_days, [:sunday | subscription.relevant_days])
+  end
+
+  def saturday_subscription(%Subscription{} = subscription) do
+    Map.put(subscription, :relevant_days, [:saturday | subscription.relevant_days])
   end
 
   def user_factory do

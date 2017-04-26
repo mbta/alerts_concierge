@@ -73,7 +73,7 @@ defmodule MbtaServer.AlertProcessor.AlertParser do
     end)
   end
 
- defp parse_informed_entities(informed_entities) do
+  defp parse_informed_entities(informed_entities) do
     Enum.map(informed_entities, fn(informed_entity) ->
       Map.new(informed_entity, fn({k, v}) -> {String.to_existing_atom(k), v} end)
     end)
