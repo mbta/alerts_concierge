@@ -5,5 +5,5 @@ defmodule MbtaServer.AlertProcessor.Parser do
   alerts parsed and processed otherwise an error message.
   """
 
-  @callback process_alerts() :: [:ok | :error] | String.t
+  @callback process_alerts() :: [{:ok, map} | {:error, map}] | String.t
 end

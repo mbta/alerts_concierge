@@ -25,7 +25,7 @@ defmodule MbtaServer.AlertProcessor.InformedEntityFilter do
 
     query = from s in subquery(previous_query),
       join: ie in InformedEntity,
-      where: s.id == ie.subscription_id,
+      on: ie.subscription_id == s.id,
       where: ^where_clause
 
     {:ok, query, alert}

@@ -46,7 +46,7 @@ defmodule MbtaServer.AlertProcessor.Model.Subscription do
 
   @doc """
   return the numeric value for a subscription's alert priority type.
-  the higher the number, the greater amount of alerts should be received.
+  the higher the number, the fewer amount of alerts should be received.
   """
   @spec severity_value(atom) :: integer
   def severity_value(alert_priority_type) do

@@ -2,10 +2,17 @@ defmodule MbtaServer.Factory do
   use ExMachina.Ecto, repo: MbtaServer.Repo
 
   alias MbtaServer.User
-  alias MbtaServer.AlertProcessor.Model.{InformedEntity, Subscription}
+  alias MbtaServer.AlertProcessor.Model.{InformedEntity, Notification, Subscription}
 
   def informed_entity_factory do
     %InformedEntity{}
+  end
+
+  def notification_factory do
+    %Notification{
+      message: "Test Message",
+      header: "Test Message"
+    }
   end
 
   def subscription_factory do

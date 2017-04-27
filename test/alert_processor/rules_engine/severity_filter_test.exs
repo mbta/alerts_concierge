@@ -50,4 +50,21 @@ defmodule MbtaServer.AlertProcessor.SeverityFilterTest do
     assert {:ok, query, ^alert} = SeverityFilter.filter({:ok, QueryHelper.generate_query(Subscription, [sub1.id, sub2.id, sub3.id]), alert})
     assert [] == QueryHelper.execute_query(query)
   end
+
+  test "will send facility alerts if severity meets subscription" do
+    alert = %Alert{informed_entities: [%{facility: "941", stop: "70026"}], severity: :minor, effect_name: "Access Issue"}
+    sub1 = insert(:subscription, alert_priority_type: :low, informed_entities: [%InformedEntity{stop: "70026", facility: "941"}])
+    sub2 = insert(:subscription, alert_priority_type: :medium, informed_entities: [%InformedEntity{stop: "70026", facility: "941"}])
+
+    assert {:ok, query, ^alert} = SeverityFilter.filter({:ok, QueryHelper.generate_query(Subscription, [sub1.id, sub2.id]), alert})
+    assert [sub1.id] == QueryHelper.execute_query(query)
+  end
+
+  test "will send based off highest priority in alert" do
+    alert = %Alert{informed_entities: [%{route_type: 1}, %{route_type: 1, route: "Red"}], severity: :minor, effect_name: "Delay"}
+    sub = insert(:subscription, alert_priority_type: :high, informed_entities: [%InformedEntity{route_type: 1, route: "Red"}])
+
+    assert {:ok, query, ^alert} = SeverityFilter.filter({:ok, QueryHelper.generate_query(Subscription, [sub.id]), alert})
+    assert [sub.id] == QueryHelper.execute_query(query)
+  end
 end
