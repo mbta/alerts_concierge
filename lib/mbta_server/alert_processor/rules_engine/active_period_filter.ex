@@ -22,15 +22,15 @@ defmodule MbtaServer.AlertProcessor.ActivePeriodFilter do
         Map.put(acc, x.id, Subscription.timeframe_map(x))
       end)
 
-    {_filtered_subscriptions, matched_subscriptions} =
+    {matched_subscriptions, _filtered_subscriptions} =
       active_periods
-      |> Enum.reduce({subscriptions, []}, fn(active_period, {pending_approval_subscriptions, previously_matched}) ->
+      |> Enum.reduce({[], subscriptions}, fn(active_period, {previously_matched, pending_approval_subscriptions}) ->
         active_period_timeframe_map = active_period_timeframe_map(active_period)
 
         {matched, unmatched} = pending_approval_subscriptions |> Enum.split_with(fn(subscription) ->
           compare_with_subscriptions(active_period_timeframe_map, Map.get(subscription_timeframe_maps, subscription.id))
         end)
-        {unmatched, matched ++ previously_matched}
+        {matched ++ previously_matched, unmatched}
       end)
 
     query = from s in Subscription,
