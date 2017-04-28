@@ -60,6 +60,16 @@ defmodule MbtaServer.AlertProcessor.Model.Subscription do
     |> cast(params, @permitted_fields)
     |> validate_required(@required_fields)
     |> validate_inclusion(:alert_priority_type, [:low, :medium, :high])
+    |> validate_relevant_days
+  end
+
+  defp validate_relevant_days(changeset) do
+    relevant_days = get_field(changeset, :relevant_days)
+    if MapSet.subset?(MapSet.new(relevant_days), MapSet.new([{:array, :weekday}, {:array, :sunday}, {:array, :saturday}])) do
+      changeset
+    else
+      add_error(changeset, :dispatch, "invalid relevant day type")
+    end
   end
 
   @doc """
