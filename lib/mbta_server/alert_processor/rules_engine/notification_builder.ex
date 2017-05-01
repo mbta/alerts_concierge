@@ -7,7 +7,6 @@ defmodule MbtaServer.AlertProcessor.NotificationBuilder do
   alias AlertProcessor.Model.{Alert, Notification, Subscription}
   alias Calendar.Time, as: T
   alias Calendar.DateTime, as: DT
-  alias DT.Parse
 
   @notification_time 86_400
 
@@ -24,14 +23,7 @@ defmodule MbtaServer.AlertProcessor.NotificationBuilder do
   :: [Notification.t]
   def build_notifications(%Subscription{user: user}, %Alert{active_period: ap} = alert, now) do
     Enum.reduce(ap, [], fn(active_period, result) ->
-      {:ok, start_time} = Parse.rfc3339_utc(active_period.start)
-
-      {:ok, end_time} = case active_period.end do
-        nil -> {:ok, nil}
-        _ -> Parse.rfc3339_utc(active_period.end)
-      end
-
-      case calculate_send_after(user, {start_time, end_time}, now) do
+      case calculate_send_after(user, {active_period.start, active_period.end}, now) do
         nil ->
           result
         %DateTime{} = time ->
@@ -58,10 +50,10 @@ defmodule MbtaServer.AlertProcessor.NotificationBuilder do
       do_not_disturb_end: dnd_end
   }, active_period, now) do
 
-    with :ok <- check_expired(active_period, now),
-      {:ok, send_time} <- check_send_immediately(active_period, now),
-      {:ok, send_time} <- check_vacation_period(active_period, send_time, vs, ve),
-      {:ok, send_time} <- check_do_not_disturb(active_period, send_time, dnd_start, dnd_end)
+    with :ok <- not_expired(active_period, now),
+      {:ok, send_time} <- send_immediately(active_period, now),
+      {:ok, send_time} <- outside_vacation_dates(active_period, send_time, vs, ve),
+      {:ok, send_time} <- outside_do_not_disturb(active_period, send_time, dnd_start, dnd_end)
     do
       send_time
     else
@@ -69,33 +61,35 @@ defmodule MbtaServer.AlertProcessor.NotificationBuilder do
     end
   end
 
-  @spec check_expired({DateTime.t, DateTime.t | nil}, DateTime.t)
+  @spec not_expired({DateTime.t, DateTime.t | nil}, DateTime.t)
   :: :error | :ok
-  defp check_expired({_start_time, nil}, _now), do: :ok
-  defp check_expired({_start_time, end_time}, now) do
-    case DT.after?(now, end_time) do
-      true -> :error
-      false -> :ok
+  defp not_expired({_start_time, nil}, _now), do: :ok
+  defp not_expired({_start_time, end_time}, now) do
+    if DT.after?(now, end_time) do
+      :error
+    else
+      :ok
     end
   end
 
-  @spec check_send_immediately({DateTime.t, DateTime.t | nil}, DateTime.t)
+  @spec send_immediately({DateTime.t, DateTime.t | nil}, DateTime.t)
   :: {:ok, DateTime.t}
-  defp check_send_immediately({start_time, _}, now) do
+  defp send_immediately({start_time, _}, now) do
     sending_time = DT.subtract!(start_time, @notification_time)
-    case DT.after?(now, sending_time) do
-      true -> {:ok, now}
-      false -> {:ok, sending_time}
+    if DT.after?(now, sending_time) do
+      {:ok, now}
+    else
+      {:ok, sending_time}
     end
   end
 
-  @spec check_vacation_period({DateTime.t, DateTime.t | nil}, DateTime.t,
+  @spec outside_vacation_dates({DateTime.t, DateTime.t | nil}, DateTime.t,
   DateTime.t | nil, DateTime.t | nil)
   :: :error | {:ok, DateTime.t}
-  defp check_vacation_period({_start_time, _end_time}, sending_time, nil, nil) do
+  defp outside_vacation_dates({_start_time, _end_time}, sending_time, nil, nil) do
     {:ok, sending_time}
   end
-  defp check_vacation_period({_start_time, end_time}, sending_time, vs, ve) do
+  defp outside_vacation_dates({_start_time, end_time}, sending_time, vs, ve) do
     case in_vacation_period?(sending_time, end_time, vs, ve) do
       true -> :error
       false ->
@@ -113,35 +107,35 @@ defmodule MbtaServer.AlertProcessor.NotificationBuilder do
     !DT.before?(sending_time, vs) && !DT.after?(end_time, ve)
   end
 
-  @spec check_do_not_disturb({DateTime.t, DateTime.t | nil}, DateTime.t,
+  @spec outside_do_not_disturb({DateTime.t, DateTime.t | nil}, DateTime.t,
   Time.t | nil, Time.t | nil) :: :error | {:ok, DateTime.t}
-  defp check_do_not_disturb({_start_time, _end_time}, sending_time, nil, nil) do
+  defp outside_do_not_disturb({_start_time, _end_time}, sending_time, nil, nil) do
     {:ok, sending_time}
   end
-  defp check_do_not_disturb({_start_time, end_time}, send_time, dnd_start, dnd_end) do
+  defp outside_do_not_disturb({_start_time, end_time}, send_time, dnd_start, dnd_end) do
     dnd_start = time_to_datetime(dnd_start, send_time)
     dnd_end = time_to_datetime(dnd_end, send_time)
-    case check_send_time(send_time, dnd_start, dnd_end) do
+    case send_time(send_time, dnd_start, dnd_end) do
       {:ok, send_time} -> {:ok, send_time}
       {:check_send, adjusted_send_time} ->
-        case check_end_time(adjusted_send_time, end_time) do
+        case end_time(adjusted_send_time, end_time) do
           true -> {:ok, adjusted_send_time}
           false -> :error
         end
     end
   end
 
-  @spec check_end_time(DateTime.t, DateTime.t | nil) :: boolean()
-  defp check_end_time(_, nil) do
+  @spec end_time(DateTime.t, DateTime.t | nil) :: boolean()
+  defp end_time(_, nil) do
     true
   end
-  defp check_end_time(send_time, end_time) do
+  defp end_time(send_time, end_time) do
     !DT.after?(send_time, end_time)
   end
 
-  @spec check_send_time(DateTime.t, DateTime.t, DateTime.t)
+  @spec send_time(DateTime.t, DateTime.t, DateTime.t)
   :: {:ok | :check_send, DateTime.t}
-  defp check_send_time(send_time, dnd_start, dnd_end) do
+  defp send_time(send_time, dnd_start, dnd_end) do
     if before_or_equal(dnd_start, dnd_end) do
       if before_or_equal(dnd_start, send_time)
       && before_or_equal(send_time, dnd_end) do

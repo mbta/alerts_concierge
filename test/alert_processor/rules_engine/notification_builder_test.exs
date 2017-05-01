@@ -4,7 +4,6 @@ defmodule MbtaServer.AlertProcessor.NotificationBuilderTest do
   alias MbtaServer.AlertProcessor.{Model, NotificationBuilder}
   alias Model.Alert
   alias Calendar.DateTime, as: DT
-  alias DT.Format, as: F
 
   setup do
     now = DT.from_date_and_time_and_zone!({2018, 1, 8}, {14, 10, 55}, "Etc/UTC")
@@ -36,7 +35,7 @@ defmodule MbtaServer.AlertProcessor.NotificationBuilderTest do
     alert = %Alert{
       id: "1",
       header: nil,
-      active_period: [%{start: F.rfc3339(time.two_days_from_now), end: F.rfc3339(time.three_days_from_now)}]
+      active_period: [%{start: time.two_days_from_now, end: time.three_days_from_now}]
     }
 
     [notification] = NotificationBuilder.build_notifications(sub, alert, time.now)
@@ -49,7 +48,7 @@ defmodule MbtaServer.AlertProcessor.NotificationBuilderTest do
     alert = %Alert{
       id: "1",
       header: nil,
-      active_period: [%{start: F.rfc3339(time.two_days_ago), end: F.rfc3339(time.one_day_ago)}]
+      active_period: [%{start: time.two_days_ago, end: time.one_day_ago}]
     }
 
     assert Enum.empty? NotificationBuilder.build_notifications(sub, alert, time.now)
@@ -61,7 +60,7 @@ defmodule MbtaServer.AlertProcessor.NotificationBuilderTest do
     alert = %Alert{
       id: "1",
       header: nil,
-      active_period: [%{start: F.rfc3339(time.thirty_minutes_from_now), end: F.rfc3339(time.one_day_from_now)}]
+      active_period: [%{start: time.thirty_minutes_from_now, end: time.one_day_from_now}]
     }
 
     [notification] = NotificationBuilder.build_notifications(sub, alert, time.now)
@@ -74,7 +73,7 @@ defmodule MbtaServer.AlertProcessor.NotificationBuilderTest do
     alert = %Alert{
       id: "1",
       header: nil,
-      active_period: [%{start: F.rfc3339(time.two_days_from_now), end: F.rfc3339(time.three_days_from_now)}]
+      active_period: [%{start: time.two_days_from_now, end: time.three_days_from_now}]
     }
 
     [notification] = NotificationBuilder.build_notifications(sub, alert, time.now)
@@ -87,7 +86,7 @@ defmodule MbtaServer.AlertProcessor.NotificationBuilderTest do
     alert = %Alert{
       id: "1",
       header: nil,
-      active_period: [%{start: F.rfc3339(time.thirty_minutes_from_now), end: F.rfc3339(time.one_day_from_now)}]
+      active_period: [%{start: time.thirty_minutes_from_now, end: time.one_day_from_now}]
     }
 
     assert Enum.empty? NotificationBuilder.build_notifications(sub, alert, time.now)
@@ -99,7 +98,7 @@ defmodule MbtaServer.AlertProcessor.NotificationBuilderTest do
     alert = %Alert{
       id: "1",
       header: nil,
-      active_period: [%{start: F.rfc3339(time.thirty_minutes_from_now), end: F.rfc3339(time.three_days_from_now)}]
+      active_period: [%{start: time.thirty_minutes_from_now, end: time.three_days_from_now}]
     }
 
     [notification] = NotificationBuilder.build_notifications(sub, alert, time.now)
@@ -116,7 +115,7 @@ defmodule MbtaServer.AlertProcessor.NotificationBuilderTest do
     alert = %Alert{
       id: "1",
       header: nil,
-      active_period: [%{start: F.rfc3339(time.now), end: F.rfc3339(time.thirty_minutes_from_now)}]
+      active_period: [%{start: time.now, end: time.thirty_minutes_from_now}]
     }
 
     assert Enum.empty?  NotificationBuilder.build_notifications(sub, alert, time.now)
@@ -132,10 +131,75 @@ defmodule MbtaServer.AlertProcessor.NotificationBuilderTest do
     alert = %Alert{
       id: "1",
       header: nil,
-      active_period: [%{start: F.rfc3339(time.now), end: F.rfc3339(time.one_day_from_now)}]
+      active_period: [%{start: time.now, end: time.one_day_from_now}]
     }
 
     [notification] = NotificationBuilder.build_notifications(sub, alert, time.now)
     assert DT.same_time?(notification.send_after, time.one_hour_from_now)
+  end
+
+
+  test """
+  Schedule alert after DND of same day
+
+  Example:
+  It is currently 5am
+  DND is set for 8pm - 8am
+  The active period is < 24 hours, so the default time to send the alert is immediately
+  In this case, the alert would then get scheduled for 8am
+  """ do
+    today_5am = DT.from_date_and_time_and_zone!({2018, 1, 8}, {5, 0, 0}, "Etc/UTC")
+    tomorrow_5am = DT.add!(today_5am, 86_400)
+    today_8am = DT.from_date_and_time_and_zone!({2018, 1, 8}, {8, 0, 0}, "Etc/UTC")
+    user = insert(
+      :user,
+      do_not_disturb_start: ~T[20:00:00],
+      do_not_disturb_end: ~T[08:00:00]
+    )
+
+    sub = insert(:subscription, user: user)
+    alert = %Alert{
+      id: "1",
+      header: nil,
+      active_period: [%{
+        start: today_5am,
+        end: tomorrow_5am
+      }]
+    }
+
+    [notification] = NotificationBuilder.build_notifications(sub, alert, today_5am)
+    assert notification.send_after == today_8am
+  end
+
+  test """
+  Schedule alert after DND of next day
+
+  Example:
+  It is currently 10pm
+  DND is set for 8pm - 8am
+  The default time to send the alert immediately 10pm
+  In this case, the alert would then get scheduled for 8am *tomorrow*
+  """ do
+    today_10pm = DT.from_date_and_time_and_zone!({2018, 1, 8}, {22, 0, 0}, "Etc/UTC")
+    tomorrow_10pm = DT.add!(today_10pm, 86_400)
+    tomorrow_8am = DT.from_date_and_time_and_zone!({2018, 1, 9}, {8, 0, 0}, "Etc/UTC")
+    user = insert(
+      :user,
+      do_not_disturb_start: ~T[20:00:00],
+      do_not_disturb_end: ~T[08:00:00]
+    )
+
+    sub = insert(:subscription, user: user)
+    alert = %Alert{
+      id: "1",
+      header: nil,
+      active_period: [%{
+        start: tomorrow_10pm,
+        end: DT.add!(tomorrow_10pm, 86_400)
+      }]
+    }
+
+     [notification] = NotificationBuilder.build_notifications(sub, alert, today_10pm)
+     assert notification.send_after == tomorrow_8am
   end
 end

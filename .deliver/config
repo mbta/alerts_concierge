@@ -1,0 +1,49 @@
+BUILD_HOST="52.54.86.224"
+BUILD_USER="ubuntu"
+BUILD_AT="/home/ubuntu/build"
+
+STAGING_HOSTS="54.91.160.172"
+STAGING_USER="ubuntu"
+DELIVER_TO="/home/ubuntu/web"
+
+# LINK_VM_ARGS="/home/ubuntu/vm.args"
+APP="mbta_server"
+
+# For *Phoenix* projects, symlink prod.secret.exs to our tmp source
+pre_erlang_get_and_update_deps() {
+  local _prod_secret_path="/home/ubuntu/secrets/prod.secret.exs"
+  if [ "$TARGET_MIX_ENV" = "prod" ]; then
+    __sync_remote "
+      ln -sfn '$_prod_secret_path' '$BUILD_AT/config/prod.secret.exs'
+    "
+  fi
+}
+
+# Asset pipeline
+pre_erlang_clean_compile() {
+  status "Running yarn install"
+  __sync_remote "
+    [ -f ~/.profile ] && source ~/.profile
+    set -e
+    cd \"$BUILD_AT/assets\"
+    yarn install $SILENCE
+  "
+
+  status "Running brunch build"
+  __sync_remote "
+    [ -f ~/.profile ] && source ~/.profile
+    set -e
+    cd \"$BUILD_AT/assets\"
+    brunch build --production $SILENCE
+  "
+
+  status "Running phoenix.digest"
+  __sync_remote "
+    [ -f ~/.profile ] && source ~/.profile
+    set -e
+    cd \"$BUILD_AT\"
+    if [ \"$BUILD_CMD\" = \"mix\" ]; then
+      APP=\"$APP\" MIX_ENV=\"$TARGET_MIX_ENV\" $MIX_CMD do phoenix.digest $SILENCE
+    fi
+  "
+}
