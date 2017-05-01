@@ -22,6 +22,7 @@ defmodule MbtaServer.Mixfile do
       extra_applications: [
         :bamboo,
         :bamboo_smtp,
+        :calendar,
         :ex_aws,
         :hackney,
         :httpoison,
@@ -48,6 +49,7 @@ defmodule MbtaServer.Mixfile do
       {:bamboo, "~> 0.8"},
       {:bamboo_smtp, "~> 1.3.0"},
       {:bodyguard, "~> 1.0.0"},
+      {:calendar, "~> 0.16.1"},
       {:cowboy, "~> 1.0"},
       {:credo, "~> 0.7", only: [:dev, :test]},
       {:dialyxir, "~> 0.5.0", only: [:dev]},

@@ -1,0 +1,37 @@
+defmodule MbtaServer.AlertProcessor.SchedulerTest do
+  use MbtaServer.DataCase
+  import MbtaServer.Factory
+  alias MbtaServer.AlertProcessor.{Scheduler, Model, HoldingQueue}
+  alias Model.Alert
+  alias Calendar.DateTime, as: DT
+
+  setup do
+    now = DT.from_date_and_time_and_zone!({2018, 1, 8}, {14, 10, 55}, "Etc/UTC")
+    two_days_from_now = DT.add!(now, 172_800)
+    three_days_from_now = DT.add!(now, 172_800)
+
+    time = %{
+      now: now,
+      two_days_from_now: two_days_from_now,
+      three_days_from_now: three_days_from_now
+    }
+
+    {:ok, time: time}
+  end
+
+  describe "schedule_notifications/2" do
+    test "schedules notifications in holding queue", %{time: time} do
+      user = insert(:user)
+      sub = insert(:subscription, user: user)
+      alert = %Alert{
+        id: "1",
+        header: nil,
+        active_period: [%{start: time.two_days_from_now, end: time.three_days_from_now}]
+      }
+
+      {:ok, [notification]} = Scheduler.schedule_notifications({:ok, [sub.id], alert}, time.now)
+      {:ok, queued_notification} = HoldingQueue.pop
+      assert notification == queued_notification
+    end
+  end
+end

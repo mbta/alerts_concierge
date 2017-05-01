@@ -2,8 +2,10 @@ defmodule MbtaServer.AlertProcessor.Model.Subscription do
   @moduledoc """
   Set of criteria on which a user wants to be sent alerts.
   """
-  alias MbtaServer.User
-  alias MbtaServer.AlertProcessor.Model.InformedEntity
+
+  alias MbtaServer.{AlertProcessor, Repo, User}
+  alias AlertProcessor.Model.InformedEntity
+  import Ecto.Query
 
   @type t :: %__MODULE__{
     alert_priority_type: atom,
@@ -51,5 +53,18 @@ defmodule MbtaServer.AlertProcessor.Model.Subscription do
   @spec severity_value(atom) :: integer
   def severity_value(alert_priority_type) do
     @alert_priority_type_values[alert_priority_type]
+  end
+
+  @doc """
+  Fetches subscriptions with users eager loaded for a list of ids
+  """
+  @spec fetch_with_user([__MODULE__.id]) :: [__MODULE__.t]
+  def fetch_with_user(subscription_ids) do
+    query = from s in __MODULE__,
+      where: s.id in ^subscription_ids
+
+    query
+    |> Repo.all
+    |> Repo.preload(:user)
   end
 end

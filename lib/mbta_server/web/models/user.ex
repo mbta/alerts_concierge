@@ -6,24 +6,34 @@ defmodule MbtaServer.User do
     id: String.t,
     email: String.t,
     phone_number: String.t,
-    role: String.t
+    role: String.t,
+    vacation_start: DateTime.t,
+    vacation_end: DateTime.t,
+    do_not_disturb_start: Time.t,
+    do_not_disturb_end: Time.t,
   }
 
   use Ecto.Schema
-
   import Ecto.Changeset
+  alias MbtaServer.AlertProcessor.Model.Subscription
 
   @primary_key {:id, :binary_id, autogenerate: true}
 
   schema "users" do
+    has_one :subscription, Subscription
     field :email, :string
     field :phone_number, :string
     field :role, :string
+    field :vacation_start, :utc_datetime
+    field :vacation_end, :utc_datetime
+    field :do_not_disturb_start, :time
+    field :do_not_disturb_end, :time
 
     timestamps()
   end
 
-  @permitted_fields ~w(email phone_number role)a
+  @permitted_fields ~w(email phone_number role vacation_start
+    vacation_end do_not_disturb_start do_not_disturb_end)a
   @required_fields ~w(email role)a
 
   @doc """

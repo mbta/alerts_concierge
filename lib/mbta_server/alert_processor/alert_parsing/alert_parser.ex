@@ -31,6 +31,7 @@ defmodule MbtaServer.AlertProcessor.AlertParser do
   defp parse_alert(
     %{
       "attributes" => %{
+        "active_period" => active_periods,
         "effect_name" => effect_name,
         "header" => header,
         "informed_entity" => informed_entities,
@@ -44,6 +45,7 @@ defmodule MbtaServer.AlertProcessor.AlertParser do
       alert_id,
       struct(Alert, %{
         id: alert_id,
+        active_period: parse_active_periods(active_periods),
         effect_name: effect_name,
         header: header,
         informed_entities: parse_informed_entities(informed_entities),
@@ -56,7 +58,22 @@ defmodule MbtaServer.AlertProcessor.AlertParser do
     accumulator
   end
 
-  defp parse_informed_entities(informed_entities) do
+  defp parse_active_periods(active_periods) do
+    Enum.map(active_periods, &parse_active_period(&1))
+  end
+
+  defp parse_active_period(active_period) do
+    Map.new(active_period, fn({k, v}) ->
+      datetime =
+        case DateTime.from_iso8601(v) do
+          {:ok, dt, _} -> dt
+          {:error, _} -> nil
+        end
+      {String.to_existing_atom(k), datetime}
+    end)
+  end
+
+ defp parse_informed_entities(informed_entities) do
     Enum.map(informed_entities, fn(informed_entity) ->
       Map.new(informed_entity, fn({k, v}) -> {String.to_existing_atom(k), v} end)
     end)
