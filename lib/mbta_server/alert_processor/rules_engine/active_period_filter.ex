@@ -16,37 +16,32 @@ defmodule MbtaServer.AlertProcessor.ActivePeriodFilter do
   @spec filter({:ok, Ecto.Queryable.t, Alert.t}) :: {:ok, Ecto.Queryable.t, Alert.t}
   def filter({:ok, previous_query, %Alert{active_period: active_periods} = alert}) do
     subscriptions = MbtaServer.Repo.all(from s in subquery(previous_query))
-    subscription_timeframe_maps =
-      subscriptions
-      |> Enum.reduce(%{}, fn(x, acc) ->
-        Map.put(acc, x.id, Subscription.timeframe_map(x))
-      end)
+    subscription_timeframe_maps = for x <- subscriptions, into: %{} do
+      {x.id, Subscription.timeframe_map(x)}
+    end
 
-    {matched_subscriptions, _filtered_subscriptions} =
-      active_periods
-      |> Enum.reduce({[], subscriptions}, fn(active_period, {previously_matched, pending_approval_subscriptions}) ->
-        active_period_timeframe_map = active_period_timeframe_map(active_period)
+    all_matched_sub_ids = for sub <- subscriptions,
+      active_period <- active_periods,
+      active_period_match_subscription?(active_period_timeframe_map(active_period),  Map.get(subscription_timeframe_maps, sub.id)) do
+      sub.id
+    end
 
-        {matched, unmatched} = pending_approval_subscriptions |> Enum.split_with(fn(subscription) ->
-          compare_with_subscriptions(active_period_timeframe_map, Map.get(subscription_timeframe_maps, subscription.id))
-        end)
-        {matched ++ previously_matched, unmatched}
-      end)
-
-    query = from s in Subscription,
-      where: s.id in ^Enum.map(matched_subscriptions, & &1.id)
+    query = from s in Subscription, where: s.id in ^Enum.uniq(all_matched_sub_ids)
 
     {:ok, query, alert}
   end
 
-  @spec compare_with_subscriptions(true | map, map) :: boolean
-  defp compare_with_subscriptions(true, _), do: true
-  defp compare_with_subscriptions(active_period_timeframe_map, subscription_timeframe_map) do
+  @spec active_period_match_subscription?(boolean | map, map) :: boolean
+  defp active_period_match_subscription?(active_period_timeframe_map, _) when is_boolean(active_period_timeframe_map), do:
+    active_period_timeframe_map
+  defp active_period_match_subscription?(active_period_timeframe_map, subscription_timeframe_map) do
     relevant_active_period_timeframe_map = Map.take(active_period_timeframe_map, Map.keys(subscription_timeframe_map))
 
-    relevant_active_period_timeframe_map |> Enum.map(fn({day_of_week_atom, time_range}) ->
-      timeframes_match?(time_range, subscription_timeframe_map[day_of_week_atom])
-    end) |> Enum.any?
+    relevant_active_period_timeframe_map
+    |> Enum.map(fn({day_of_week_atom, time_range}) ->
+        timeframes_match?(time_range, subscription_timeframe_map[day_of_week_atom])
+      end)
+    |> Enum.any?
   end
 
   @spec timeframes_match?(%{start: integer, end: integer}, %{start: integer, end: integer}) :: boolean
@@ -61,6 +56,7 @@ defmodule MbtaServer.AlertProcessor.ActivePeriodFilter do
                                                                                   %{optional(:sunday) => %{start: integer, end: integer},
                                                                                     optional(:saturday) => %{start: integer, end: integer},
                                                                                     optional(:weekday) => %{start: integer, end: integer}}
+  defp active_period_timeframe_map(%{start: nil, end: _}), do: false
   defp active_period_timeframe_map(%{start: _, end: nil}), do: true
   defp active_period_timeframe_map(%{start: period_start, end: period_end}) do
     {start_date, _} = DateTimeHelper.datetime_to_date_and_time(period_start)
