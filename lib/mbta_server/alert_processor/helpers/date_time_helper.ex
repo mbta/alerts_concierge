@@ -12,16 +12,25 @@ defmodule MbtaServer.AlertProcessor.Helpers.DateTimeHelper do
     {date, time}
   end
 
-  @spec gregorian_day_range(NaiveDateTime.t, NaiveDateTime.t) :: Range.t
-  def gregorian_day_range(start_datetime, end_datetime) do
+  @spec date_range(NaiveDateTime.t, NaiveDateTime.t) :: [Date.t]
+  def date_range(%NaiveDateTime{} = start_datetime, %NaiveDateTime{} = end_datetime) do
     {start_date_erl, _} = NaiveDateTime.to_erl(start_datetime)
     {end_date_erl, _} = NaiveDateTime.to_erl(end_datetime)
+    do_date_range(start_date_erl, end_date_erl)
+  end
 
-    :calendar.date_to_gregorian_days(start_date_erl)..:calendar.date_to_gregorian_days(end_date_erl)
+  @spec do_date_range(:calendar.date, :calendar.date) :: [Date.t]
+  defp do_date_range(start_date_erl, end_date_erl) do
+    range = :calendar.date_to_gregorian_days(start_date_erl)..:calendar.date_to_gregorian_days(end_date_erl)
+
+    Enum.map(range, fn(x) ->
+      {:ok, date} = gregorian_day_to_date(x)
+      date
+    end)
   end
 
   @spec gregorian_day_to_date(integer) :: {:ok, Date.t} | {:error, atom}
-  def gregorian_day_to_date(gregorian_day) do
+  defp gregorian_day_to_date(gregorian_day) do
     gregorian_day
     |> :calendar.gregorian_days_to_date
     |> Date.from_erl

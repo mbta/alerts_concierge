@@ -286,18 +286,18 @@ defmodule MbtaServer.AlertProcessor.Model.Alert do
       }
     else
       period_start
-      |> DateTimeHelper.gregorian_day_range(period_end)
-      |> Enum.reduce(%{}, fn(gregorian_day, acc) ->
-        case DateTimeHelper.gregorian_day_to_date(gregorian_day) do
-          {:ok, ^start_date} ->
+      |> DateTimeHelper.date_range(period_end)
+      |> Enum.reduce(%{}, fn(current_date, acc) ->
+        case current_date do
+          ^start_date ->
             day_of_week_atom = Subscription.relevant_day_of_week_type(Date.day_of_week(start_date))
 
             Map.put(acc, day_of_week_atom, %{start: DateTimeHelper.seconds_of_day(start_time), end: 85_399})
-          {:ok, ^end_date} ->
+          ^end_date ->
             relevant_day_of_week_atom = Subscription.relevant_day_of_week_type(Date.day_of_week(end_date))
 
             Map.put_new(acc, relevant_day_of_week_atom, %{start: 0, end: DateTimeHelper.seconds_of_day(end_time)})
-          {:ok, date} ->
+          date ->
             relevant_day_of_week_atom = Subscription.relevant_day_of_week_type(Date.day_of_week(date))
 
             Map.put(acc, relevant_day_of_week_atom, %{start: 0, end: 85_399})
