@@ -3,17 +3,31 @@ defmodule MbtaServer.AlertProcessor.SubscriptionFilterEngineTest do
   import MbtaServer.Factory
   alias MbtaServer.AlertProcessor.{Model.Alert, Model.InformedEntity, SubscriptionFilterEngine}
 
-  test "process_alert/1 when message provided" do
-    user = insert(:user)
-    insert(:subscription, user: user, alert_priority_type: :low, informed_entities: [%InformedEntity{route_type: 1}])
-    alert = %Alert{header: "This is a test message", id: "1", effect_name: "Delay", severity: :minor, informed_entities: [%{route_type: 1}]}
+  setup do
+    alert = %Alert{
+      active_period: [%{start: ~N[2017-04-26 09:00:00], end: ~N[2017-04-26 19:00:00]}],
+      effect_name: "Delay",
+      header: "This is a test message",
+      id: "1",
+      informed_entities: [%{route_type: 1}],
+      severity: :minor
+    }
+    {:ok, alert: alert}
+  end
+
+  test "process_alert/1 when message provided", %{alert: alert} do
+    user = insert(:user, phone_number: nil)
+    build(:subscription, user: user, alert_priority_type: :low, informed_entities: [%InformedEntity{route_type: 1}])
+    |> weekday_subscription
+    |> insert
     assert [{:ok, _} | _t] = SubscriptionFilterEngine.process_alert(alert)
   end
 
-  test "process_alert/1 when message not provided" do
-    user = insert(:user)
-    insert(:subscription, user: user, alert_priority_type: :low, informed_entities: [%InformedEntity{route_type: 1}])
-    alert = %Alert{header: nil, id: "1", effect_name: "Delay", severity: :minor, informed_entities: [%{route_type: 1}]}
-    assert [{:error, _} | _t] = SubscriptionFilterEngine.process_alert(alert)
+  test "process_alert/1 when message not provided", %{alert: alert} do
+    user = insert(:user, phone_number: nil)
+    build(:subscription, user: user, alert_priority_type: :low, informed_entities: [%InformedEntity{route_type: 1}])
+    |> weekday_subscription
+    |> insert
+    assert [{:error, _} | _t] = SubscriptionFilterEngine.process_alert(Map.put(alert, :header, nil))
   end
 end
