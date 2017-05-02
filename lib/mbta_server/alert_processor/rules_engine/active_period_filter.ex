@@ -4,8 +4,8 @@ defmodule MbtaServer.AlertProcessor.ActivePeriodFilter do
   """
 
   import Ecto.Query
-  alias MbtaServer.AlertProcessor.Model.{Alert, Subscription}
-  alias MbtaServer.AlertProcessor.Helpers.DateTimeHelper
+  alias MbtaServer.AlertProcessor.{Helpers.DateTimeHelper, Model, TimeFrameComparison}
+  alias Model.{Alert, Subscription}
 
   @doc """
   filter/1 takes a tuple including a subquery which represents the remaining
@@ -22,7 +22,7 @@ defmodule MbtaServer.AlertProcessor.ActivePeriodFilter do
 
     all_matched_sub_ids = for sub <- subscriptions,
       active_period <- active_periods,
-      active_period_match_subscription?(active_period_timeframe_map(active_period),  Map.get(subscription_timeframe_maps, sub.id)) do
+      TimeFrameComparison.match?(active_period_timeframe_map(active_period),  Map.get(subscription_timeframe_maps, sub.id)) do
       sub.id
     end
 
@@ -31,42 +31,18 @@ defmodule MbtaServer.AlertProcessor.ActivePeriodFilter do
     {:ok, query, alert}
   end
 
-  @spec active_period_match_subscription?(boolean | map, map) :: boolean
-  defp active_period_match_subscription?(active_period_timeframe_map, _) when is_boolean(active_period_timeframe_map), do:
-    active_period_timeframe_map
-  defp active_period_match_subscription?(active_period_timeframe_map, subscription_timeframe_map) do
-    relevant_active_period_timeframe_map = Map.take(active_period_timeframe_map, Map.keys(subscription_timeframe_map))
-
-    relevant_active_period_timeframe_map
-    |> Enum.map(fn({day_of_week_atom, time_range}) ->
-        timeframes_match?(time_range, subscription_timeframe_map[day_of_week_atom])
-      end)
-    |> Enum.any?
-  end
-
-  @spec timeframes_match?(%{start: integer, end: integer}, %{start: integer, end: integer}) :: boolean
-  defp timeframes_match?(%{start: active_period_start, end: active_period_end}, %{start: subscription_start, end: subscription_end}) do
-    active_period_range = active_period_start..active_period_end |> Enum.to_list |> MapSet.new
-    subscription_range = subscription_start..subscription_end |> Enum.to_list |> MapSet.new
-
-    !MapSet.disjoint?(active_period_range, subscription_range)
-  end
-
-  @spec active_period_timeframe_map(%{start: DateTime.t, end: DateTime.t | nil}) :: true |
-                                                                                  %{optional(:sunday) => %{start: integer, end: integer},
-                                                                                    optional(:saturday) => %{start: integer, end: integer},
-                                                                                    optional(:weekday) => %{start: integer, end: integer}}
+  @spec active_period_timeframe_map(%{start: NaiveDateTime.t, end: NaiveDateTime.t | nil}) :: true | TimeFrameComparison.timeframe_map
   defp active_period_timeframe_map(%{start: nil, end: _}), do: false
   defp active_period_timeframe_map(%{start: _, end: nil}), do: true
   defp active_period_timeframe_map(%{start: period_start, end: period_end}) do
-    {start_date, _} = DateTimeHelper.datetime_to_date_and_time(period_start)
-    {end_date, _} = DateTimeHelper.datetime_to_date_and_time(period_end)
+    start_date = NaiveDateTime.to_date(period_start)
+    end_date = NaiveDateTime.to_date(period_end)
 
     if Date.compare(start_date, end_date) == :eq do
       %{start_date |> Date.day_of_week |> Subscription.relevant_day_of_week_type => %{start: 0, end: 85_399}}
     else
-      {start_date_erl, start_time_erl} = DateTimeHelper.datetime_to_erl(period_start)
-      {end_date_erl, end_time_erl} = DateTimeHelper.datetime_to_erl(period_end)
+      {start_date_erl, start_time_erl} = NaiveDateTime.to_erl(period_start)
+      {end_date_erl, end_time_erl} = NaiveDateTime.to_erl(period_end)
 
       period_start
       |> DateTimeHelper.gregorian_day_range(period_end)
@@ -79,10 +55,7 @@ defmodule MbtaServer.AlertProcessor.ActivePeriodFilter do
           ^end_date_erl ->
             relevant_day_of_week_atom = Subscription.relevant_day_of_week_type(:calendar.day_of_the_week(end_date_erl))
 
-            case Map.fetch(acc, relevant_day_of_week_atom) do
-              {:ok, _} -> acc
-              :error -> Map.put(acc, relevant_day_of_week_atom, %{start: 0, end: DateTimeHelper.seconds_of_day(end_time_erl)})
-            end
+            Map.put_new(acc, relevant_day_of_week_atom, %{start: 0, end: DateTimeHelper.seconds_of_day(end_time_erl)})
           date_erl ->
             relevant_day_of_week_atom = Subscription.relevant_day_of_week_type(:calendar.day_of_the_week(date_erl))
 

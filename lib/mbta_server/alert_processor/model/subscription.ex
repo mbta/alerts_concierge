@@ -4,7 +4,7 @@ defmodule MbtaServer.AlertProcessor.Model.Subscription do
   """
 
   alias MbtaServer.{AlertProcessor, Repo, User}
-  alias AlertProcessor.{Helpers.DateTimeHelper, Model.InformedEntity}
+  alias AlertProcessor.{Helpers.DateTimeHelper, Model.InformedEntity, TimeFrameComparison}
   import Ecto.Query
 
   @type t :: %__MODULE__{
@@ -50,7 +50,7 @@ defmodule MbtaServer.AlertProcessor.Model.Subscription do
   end
 
   @permitted_fields ~w(alert_priority_type user_id relevant_days start_time end_time)a
-  @required_fields ~w(alert_priority_type user_id start_time end_time)a
+  @required_fields ~w(alert_priority_type user start_time end_time)a
 
   @doc """
   Changeset for persisting a Subscription
@@ -107,9 +107,7 @@ defmodule MbtaServer.AlertProcessor.Model.Subscription do
   types which contain a start and end integer which represent the second of the day for
   the timestamp. This allows for comparing ranges of seconds for overlap.
   """
-  @spec timeframe_map(__MODULE__.t) :: %{optional(:sunday) => %{start: integer, end: integer},
-                                         optional(:saturday) => %{start: integer, end: integer},
-                                         optional(:weekday) => %{start: integer, end: integer}}
+  @spec timeframe_map(__MODULE__.t) :: TimeFrameComparison.timeframe_map
   def timeframe_map(subscription) do
     start_time_erl = Time.to_erl(subscription.start_time)
     end_time_erl = Time.to_erl(subscription.end_time)
