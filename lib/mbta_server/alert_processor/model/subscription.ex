@@ -50,7 +50,7 @@ defmodule MbtaServer.AlertProcessor.Model.Subscription do
   end
 
   @permitted_fields ~w(alert_priority_type user_id relevant_days start_time end_time)a
-  @required_fields ~w(alert_priority_type user start_time end_time)a
+  @required_fields ~w(alert_priority_type user_id start_time end_time)a
 
   @doc """
   Changeset for persisting a Subscription
