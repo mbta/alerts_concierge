@@ -1,11 +1,16 @@
 defmodule MbtaServer.AlertProcessor.Helpers.DateTimeHelper do
   @moduledoc """
   Module containing reusable datetime helpers for
-  mutlti-step datetime functions.
+  multi-step datetime functions.
   """
 
-  @type erl_time :: :calendar.time
-  @type seconds :: integer
+  @spec datetime_to_date_and_time(NaiveDateTime.t) :: {Date.t, Time.t}
+  def datetime_to_date_and_time(datetime) do
+    date = NaiveDateTime.to_date(datetime)
+    time = NaiveDateTime.to_time(datetime)
+
+    {date, time}
+  end
 
   @spec gregorian_day_range(NaiveDateTime.t, NaiveDateTime.t) :: Range.t
   def gregorian_day_range(start_datetime, end_datetime) do
@@ -15,8 +20,16 @@ defmodule MbtaServer.AlertProcessor.Helpers.DateTimeHelper do
     :calendar.date_to_gregorian_days(start_date_erl)..:calendar.date_to_gregorian_days(end_date_erl)
   end
 
-  @spec seconds_of_day(erl_time) :: seconds
-  def seconds_of_day({hour, minute, second}) do
+  @spec gregorian_day_to_date(integer) :: {:ok, Date.t} | {:error, atom}
+  def gregorian_day_to_date(gregorian_day) do
+    gregorian_day
+    |> :calendar.gregorian_days_to_date
+    |> Date.from_erl
+  end
+
+  @spec seconds_of_day(Time.t) :: MbtaServer.AlertProcessor.TimeFrameComparison.second_of_day
+  def seconds_of_day(timestamp) do
+    {hour, minute, second} = Time.to_erl(timestamp)
     (hour * 3600) + (minute * 60) + second
   end
 end

@@ -109,11 +109,8 @@ defmodule MbtaServer.AlertProcessor.Model.Subscription do
   """
   @spec timeframe_map(__MODULE__.t) :: TimeFrameComparison.timeframe_map
   def timeframe_map(subscription) do
-    start_time_erl = Time.to_erl(subscription.start_time)
-    end_time_erl = Time.to_erl(subscription.end_time)
-
     Map.new(subscription.relevant_days, fn(relevant_day) ->
-      {relevant_day, %{start: DateTimeHelper.seconds_of_day(start_time_erl), end: DateTimeHelper.seconds_of_day(end_time_erl)}}
+      {relevant_day, %{start: DateTimeHelper.seconds_of_day(subscription.start_time), end: DateTimeHelper.seconds_of_day(subscription.end_time)}}
     end)
   end
 end

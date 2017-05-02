@@ -2,6 +2,9 @@ defmodule MbtaServer.AlertProcessor.Model.Alert do
   @moduledoc """
   Representation of alert received from MBTA /alerts endpoint
   """
+
+  alias MbtaServer.AlertProcessor.{Model.Subscription, Helpers.DateTimeHelper, TimeFrameComparison}
+
   defstruct [:active_period, :effect_name, :id, :header, :informed_entities, :severity]
 
   @type t :: %__MODULE__{
@@ -251,6 +254,51 @@ defmodule MbtaServer.AlertProcessor.Model.Alert do
         priority_value(mode, effect_name, severity)
       end)
       |> Enum.max
+  end
+
+  def timeframe_maps(%__MODULE__{active_period: active_periods}) do
+    for active_period <- active_periods do
+      timeframe_map(active_period)
+    end
+  end
+
+  @spec timeframe_map(%{start: NaiveDateTime.t, end: NaiveDateTime.t | nil}) :: boolean | TimeFrameComparison.timeframe_map
+  defp timeframe_map(%{start: nil, end: _}), do: false
+  defp timeframe_map(%{start: _, end: nil}), do: true
+  defp timeframe_map(%{start: period_start, end: period_end}) do
+    {start_date, start_time} = DateTimeHelper.datetime_to_date_and_time(period_start)
+    {end_date, end_time} = DateTimeHelper.datetime_to_date_and_time(period_end)
+
+    if Date.compare(start_date, end_date) == :eq do
+      %{
+        start_date
+        |> Date.day_of_week
+        |> Subscription.relevant_day_of_week_type =>
+        %{
+          start: DateTimeHelper.seconds_of_day(start_time),
+          end: DateTimeHelper.seconds_of_day(end_time)
+        }
+      }
+    else
+      period_start
+      |> DateTimeHelper.gregorian_day_range(period_end)
+      |> Enum.reduce(%{}, fn(gregorian_day, acc) ->
+        case DateTimeHelper.gregorian_day_to_date(gregorian_day) do
+          {:ok, ^start_date} ->
+            day_of_week_atom = Subscription.relevant_day_of_week_type(Date.day_of_week(start_date))
+
+            Map.put(acc, day_of_week_atom, %{start: DateTimeHelper.seconds_of_day(start_time), end: 85_399})
+          {:ok, ^end_date} ->
+            relevant_day_of_week_atom = Subscription.relevant_day_of_week_type(Date.day_of_week(end_date))
+
+            Map.put_new(acc, relevant_day_of_week_atom, %{start: 0, end: DateTimeHelper.seconds_of_day(end_time)})
+          {:ok, date} ->
+            relevant_day_of_week_atom = Subscription.relevant_day_of_week_type(Date.day_of_week(date))
+
+            Map.put(acc, relevant_day_of_week_atom, %{start: 0, end: 85_399})
+        end
+      end)
+    end
   end
 
   @spec route_string(integer) :: String.t

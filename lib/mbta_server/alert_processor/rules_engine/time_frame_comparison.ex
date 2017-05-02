@@ -1,10 +1,19 @@
 defmodule MbtaServer.AlertProcessor.TimeFrameComparison do
-  @type timeframe_map :: %{optional(:sunday) => %{start: integer, end: integer},
-                           optional(:saturday) => %{start: integer, end: integer},
-                           optional(:weekday) => %{start: integer, end: integer}}
+  @moduledoc """
+  module used to compare between subscription timeframe maps
+  and alert timeframe maps. maps contain keys identifying
+  the day type being checked along with a start and end second
+  of day to be able to create a range to check for an intersection.
+  """
+
+  @type second_of_day :: 0..86_399
+  @type timeframe_map :: %{optional(:sunday) => %{start: second_of_day, end: second_of_day},
+                           optional(:saturday) => %{start: second_of_day, end: second_of_day},
+                           optional(:weekday) => %{start: second_of_day, end: second_of_day}}
+  @type time_period :: %{start: second_of_day, end: second_of_day}
 
 
-  @spec match?(boolean | map, map) :: boolean
+  @spec match?(boolean | timeframe_map, timeframe_map) :: boolean
   def match?(active_period_timeframe_map, _) when is_boolean(active_period_timeframe_map), do:
     active_period_timeframe_map
   def match?(active_period_timeframe_map, subscription_timeframe_map) do
@@ -15,11 +24,12 @@ defmodule MbtaServer.AlertProcessor.TimeFrameComparison do
     end)
   end
 
-  @spec timeframes_match?(%{start: integer, end: integer}, %{start: integer, end: integer}) :: boolean
-  defp timeframes_match?(%{start: active_period_start, end: active_period_end}, %{start: subscription_start, end: subscription_end}) do
-    active_period_range = active_period_start..active_period_end |> Enum.to_list |> MapSet.new
-    subscription_range = subscription_start..subscription_end |> Enum.to_list |> MapSet.new
+  @spec timeframes_match?(time_period, time_period) :: boolean
+  defp timeframes_match?(active_period, subscription_time_period) do
+    !MapSet.disjoint?(range_map(active_period), range_map(subscription_time_period))
+  end
 
-    !MapSet.disjoint?(active_period_range, subscription_range)
+  defp range_map(%{start: start_seconds, end: end_seconds}) do
+    MapSet.new(start_seconds..end_seconds)
   end
 end

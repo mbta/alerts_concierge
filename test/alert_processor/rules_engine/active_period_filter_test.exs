@@ -14,7 +14,7 @@ defmodule MbtaServer.AlertProcessor.ActivePeriodFilterTest do
 
     alert2 = %Alert{
       active_period: [
-        %{start: ~N[2017-04-26 12:00:00], end: ~N[2017-04-26 13:00:00]}
+        %{start: ~N[2017-04-26 15:00:00], end: ~N[2017-04-26 17:00:00]}
       ]
     }
 
