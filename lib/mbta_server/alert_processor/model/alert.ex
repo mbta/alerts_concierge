@@ -256,6 +256,11 @@ defmodule MbtaServer.AlertProcessor.Model.Alert do
       |> Enum.max
   end
 
+  @doc """
+  parse alert active periods and return as timeframe map for comparison
+  with subscriptions
+  """
+  @spec timeframe_maps(__MODULE__.t) :: [TimeFrameComparison.timeframe_map]
   def timeframe_maps(%__MODULE__{active_period: active_periods}) do
     for active_period <- active_periods do
       timeframe_map(active_period)
