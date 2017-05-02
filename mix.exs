@@ -11,7 +11,8 @@ defmodule MbtaServer.Mixfile do
      aliases: aliases(),
      dialyzer: [plt_add_deps: :transitive],
      deps: deps(),
-     preferred_cli_env: [vcr: :test]]
+     test_coverage: [tool: ExCoveralls],
+     preferred_cli_env: [vcr: :test, coveralls: :test]]
   end
 
   # Configuration for the OTP application.
@@ -56,6 +57,7 @@ defmodule MbtaServer.Mixfile do
       {:distillery, "1.2.2", warn_missing: false},
       {:edeliver, "1.4.2"},
       {:ex_aws, "~> 1.0"},
+      {:excoveralls, "~> 0.5", only: [:dev, :test]},
       {:ex_machina, "~> 2.0", only: :test},
       {:exvcr, "~> 0.8", only: :test},
       {:gettext, "~> 0.11"},
@@ -81,6 +83,6 @@ defmodule MbtaServer.Mixfile do
   defp aliases do
     ["ecto.setup": ["ecto.create", "ecto.migrate", "run priv/repo/seeds.exs"],
      "ecto.reset": ["ecto.drop", "ecto.setup"],
-     "test": ["ecto.create --quiet", "ecto.migrate", "test"]]
+     "test": ["ecto.create --quiet", "ecto.migrate", "coveralls.json"]]
   end
 end
