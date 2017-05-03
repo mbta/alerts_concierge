@@ -3,11 +3,12 @@ defmodule MbtaServer.AlertProcessor.QueueWorkerTest do
   alias MbtaServer.AlertProcessor.{HoldingQueue, SendingQueue, QueueWorker, Model.Notification}
 
   defp generate_date(x) do
-    DateTime.from_unix!(System.system_time(:millisecond) + x, :millisecond)
+    now = NaiveDateTime.utc_now()
+    NaiveDateTime.add(now, x, :millisecond)
   end
 
   setup do
-    notification = %Notification{send_after: DateTime.utc_now()}
+    notification = %Notification{send_after: NaiveDateTime.utc_now()}
     later_notification = %Notification{send_after: generate_date(50)}
 
     {:ok, notification: notification, later_notification: later_notification}

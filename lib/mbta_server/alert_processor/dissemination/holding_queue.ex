@@ -16,9 +16,9 @@ defmodule MbtaServer.AlertProcessor.HoldingQueue do
   @doc """
   Updates state to Notifications that can't be sent yet, returns ones that are ready.
   """
-  @spec notifications_to_send(DateTime.t | nil) :: {:ok, notifications} | :error
+  @spec notifications_to_send(NaiveDateTime.t | nil) :: {:ok, notifications} | :error
   def notifications_to_send(now \\ nil) do
-    now = now || DateTime.utc_now()
+    now = now || NaiveDateTime.utc_now()
     GenServer.call(__MODULE__, {:filter, now})
   end
 
@@ -60,7 +60,7 @@ defmodule MbtaServer.AlertProcessor.HoldingQueue do
   end
 
   defp send_notification?(notification, now) do
-    DateTime.compare(notification.send_after, now) != :gt
+    NaiveDateTime.compare(notification.send_after, now) != :gt
   end
 
   ## Callbacks

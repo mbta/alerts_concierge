@@ -20,7 +20,7 @@ defmodule MbtaServer.AlertProcessor.SubscriptionFilterEngineTest do
     build(:subscription, user: user, alert_priority_type: :low, informed_entities: [%InformedEntity{route_type: 1}])
     |> weekday_subscription
     |> insert
-    assert [{:ok, _} | _t] = SubscriptionFilterEngine.process_alert(alert)
+    assert {:ok, []} = SubscriptionFilterEngine.process_alert(alert)
   end
 
   test "process_alert/1 when message not provided", %{alert: alert} do
@@ -28,6 +28,6 @@ defmodule MbtaServer.AlertProcessor.SubscriptionFilterEngineTest do
     build(:subscription, user: user, alert_priority_type: :low, informed_entities: [%InformedEntity{route_type: 1}])
     |> weekday_subscription
     |> insert
-    assert [{:error, _} | _t] = SubscriptionFilterEngine.process_alert(Map.put(alert, :header, nil))
+    assert {:ok, []} = SubscriptionFilterEngine.process_alert(Map.put(alert, :header, nil))
   end
 end

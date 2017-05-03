@@ -3,10 +3,10 @@ defmodule MbtaServer.AlertProcessor.NotificationBuilderTest do
   import MbtaServer.Factory
   alias MbtaServer.AlertProcessor.{Model, NotificationBuilder}
   alias Model.Alert
-  alias Calendar.DateTime, as: DT
+  alias Calendar.NaiveDateTime, as: DT
 
   setup do
-    now = DT.from_date_and_time_and_zone!({2018, 1, 8}, {14, 10, 55}, "Etc/UTC")
+    now = DT.from_date_and_time!({2018, 1, 8}, {14, 10, 55})
     two_days_ago = DT.subtract!(now, 172_800)
     one_day_ago = DT.subtract!(now, 86_400)
     thirty_minutes_from_now = DT.add!(now, 1800)
@@ -148,9 +148,9 @@ defmodule MbtaServer.AlertProcessor.NotificationBuilderTest do
   The active period is < 24 hours, so the default time to send the alert is immediately
   In this case, the alert would then get scheduled for 8am
   """ do
-    today_5am = DT.from_date_and_time_and_zone!({2018, 1, 8}, {5, 0, 0}, "Etc/UTC")
+    today_5am = DT.from_date_and_time!({2018, 1, 8}, {5, 0, 0})
     tomorrow_5am = DT.add!(today_5am, 86_400)
-    today_8am = DT.from_date_and_time_and_zone!({2018, 1, 8}, {8, 0, 0}, "Etc/UTC")
+    today_8am = DT.from_date_and_time!({2018, 1, 8}, {8, 0, 0})
     user = insert(
       :user,
       do_not_disturb_start: ~T[20:00:00],
@@ -180,9 +180,9 @@ defmodule MbtaServer.AlertProcessor.NotificationBuilderTest do
   The default time to send the alert immediately 10pm
   In this case, the alert would then get scheduled for 8am *tomorrow*
   """ do
-    today_10pm = DT.from_date_and_time_and_zone!({2018, 1, 8}, {22, 0, 0}, "Etc/UTC")
+    today_10pm = DT.from_date_and_time!({2018, 1, 8}, {22, 0, 0})
     tomorrow_10pm = DT.add!(today_10pm, 86_400)
-    tomorrow_8am = DT.from_date_and_time_and_zone!({2018, 1, 9}, {8, 0, 0}, "Etc/UTC")
+    tomorrow_8am = DT.from_date_and_time!({2018, 1, 9}, {8, 0, 0})
     user = insert(
       :user,
       do_not_disturb_start: ~T[20:00:00],

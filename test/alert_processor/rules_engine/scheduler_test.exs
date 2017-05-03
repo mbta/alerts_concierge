@@ -3,10 +3,10 @@ defmodule MbtaServer.AlertProcessor.SchedulerTest do
   import MbtaServer.Factory
   alias MbtaServer.AlertProcessor.{Scheduler, Model, HoldingQueue}
   alias Model.Alert
-  alias Calendar.DateTime, as: DT
+  alias Calendar.NaiveDateTime, as: DT
 
   setup do
-    now = DT.from_date_and_time_and_zone!({2018, 1, 8}, {14, 10, 55}, "Etc/UTC")
+    now = DT.from_date_and_time!({2018, 1, 8}, {14, 10, 55})
     two_days_from_now = DT.add!(now, 172_800)
     three_days_from_now = DT.add!(now, 172_800)
 

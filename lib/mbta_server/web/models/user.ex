@@ -7,8 +7,8 @@ defmodule MbtaServer.User do
     email: String.t,
     phone_number: String.t,
     role: String.t,
-    vacation_start: DateTime.t,
-    vacation_end: DateTime.t,
+    vacation_start: NaiveDateTime.t,
+    vacation_end: NaiveDateTime.t,
     do_not_disturb_start: Time.t,
     do_not_disturb_end: Time.t,
   }
@@ -24,8 +24,8 @@ defmodule MbtaServer.User do
     field :email, :string
     field :phone_number, :string
     field :role, :string
-    field :vacation_start, :utc_datetime
-    field :vacation_end, :utc_datetime
+    field :vacation_start, :naive_datetime
+    field :vacation_end, :naive_datetime
     field :do_not_disturb_start, :time
     field :do_not_disturb_end, :time
 

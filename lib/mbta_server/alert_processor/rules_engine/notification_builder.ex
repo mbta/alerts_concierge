@@ -6,7 +6,7 @@ defmodule MbtaServer.AlertProcessor.NotificationBuilder do
   alias MbtaServer.{AlertProcessor, User}
   alias AlertProcessor.Model.{Alert, Notification, Subscription}
   alias Calendar.Time, as: T
-  alias Calendar.DateTime, as: DT
+  alias Calendar.NaiveDateTime, as: DT
 
   @notification_time 86_400
 
@@ -19,18 +19,19 @@ defmodule MbtaServer.AlertProcessor.NotificationBuilder do
   4a. Determine whether a notification should go out based on a user's do_not_disturb
   4b. If do_not_disturb overlaps send_after, adjust send_after to end of period
   """
-  @spec build_notifications(Subscription.t, Alert.t, DateTime.t)
+  @spec build_notifications(Subscription.t, Alert.t, NaiveDateTime.t)
   :: [Notification.t]
   def build_notifications(%Subscription{user: user}, %Alert{active_period: ap} = alert, now) do
     Enum.reduce(ap, [], fn(active_period, result) ->
       case calculate_send_after(user, {active_period.start, active_period.end}, now) do
         nil ->
           result
-        %DateTime{} = time ->
+        %NaiveDateTime{} = time ->
           notification = %Notification{
               alert_id: alert.id,
               user_id: user.id,
               header: alert.header,
+              message: alert.header,
               phone_number: user.phone_number,
               email: user.email,
               status: :unsent,
@@ -41,15 +42,14 @@ defmodule MbtaServer.AlertProcessor.NotificationBuilder do
     end)
   end
 
-  @spec calculate_send_after(User.t, {DateTime.t, DateTime.t | nil}, DateTime.t)
-  :: DateTime.t | nil
+  @spec calculate_send_after(User.t, {NaiveDateTime.t, NaiveDateTime.t | nil}, NaiveDateTime.t)
+  :: NaiveDateTime.t | nil
   defp calculate_send_after(%User{
       vacation_start: vs,
       vacation_end: ve,
       do_not_disturb_start: dnd_start,
       do_not_disturb_end: dnd_end
   }, active_period, now) do
-
     with :ok <- not_expired(active_period, now),
       {:ok, send_time} <- send_immediately(active_period, now),
       {:ok, send_time} <- outside_vacation_dates(active_period, send_time, vs, ve),
@@ -61,7 +61,7 @@ defmodule MbtaServer.AlertProcessor.NotificationBuilder do
     end
   end
 
-  @spec not_expired({DateTime.t, DateTime.t | nil}, DateTime.t)
+  @spec not_expired({NaiveDateTime.t, NaiveDateTime.t | nil}, NaiveDateTime.t)
   :: :error | :ok
   defp not_expired({_start_time, nil}, _now), do: :ok
   defp not_expired({_start_time, end_time}, now) do
@@ -72,8 +72,8 @@ defmodule MbtaServer.AlertProcessor.NotificationBuilder do
     end
   end
 
-  @spec send_immediately({DateTime.t, DateTime.t | nil}, DateTime.t)
-  :: {:ok, DateTime.t}
+  @spec send_immediately({NaiveDateTime.t, NaiveDateTime.t | nil}, NaiveDateTime.t)
+  :: {:ok, NaiveDateTime.t}
   defp send_immediately({start_time, _}, now) do
     sending_time = DT.subtract!(start_time, @notification_time)
     if DT.after?(now, sending_time) do
@@ -83,9 +83,9 @@ defmodule MbtaServer.AlertProcessor.NotificationBuilder do
     end
   end
 
-  @spec outside_vacation_dates({DateTime.t, DateTime.t | nil}, DateTime.t,
-  DateTime.t | nil, DateTime.t | nil)
-  :: :error | {:ok, DateTime.t}
+  @spec outside_vacation_dates({NaiveDateTime.t, NaiveDateTime.t | nil}, NaiveDateTime.t,
+  NaiveDateTime.t | nil, NaiveDateTime.t | nil)
+  :: :error | {:ok, NaiveDateTime.t}
   defp outside_vacation_dates({_start_time, _end_time}, sending_time, nil, nil) do
     {:ok, sending_time}
   end
@@ -100,15 +100,15 @@ defmodule MbtaServer.AlertProcessor.NotificationBuilder do
     end
   end
 
-  @spec in_vacation_period?(DateTime.t, DateTime.t | nil, DateTime.t | nil,
-  DateTime.t | nil) :: boolean()
+  @spec in_vacation_period?(NaiveDateTime.t, NaiveDateTime.t | nil, NaiveDateTime.t | nil,
+  NaiveDateTime.t | nil) :: boolean()
   defp in_vacation_period?(_sending_time, nil, _vacation_start, _vacation_end), do: false
   defp in_vacation_period?(sending_time, end_time, vs, ve) do
     !DT.before?(sending_time, vs) && !DT.after?(end_time, ve)
   end
 
-  @spec outside_do_not_disturb({DateTime.t, DateTime.t | nil}, DateTime.t,
-  Time.t | nil, Time.t | nil) :: :error | {:ok, DateTime.t}
+  @spec outside_do_not_disturb({NaiveDateTime.t, NaiveDateTime.t | nil}, NaiveDateTime.t,
+  Time.t | nil, Time.t | nil) :: :error | {:ok, NaiveDateTime.t}
   defp outside_do_not_disturb({_start_time, _end_time}, sending_time, nil, nil) do
     {:ok, sending_time}
   end
@@ -125,7 +125,7 @@ defmodule MbtaServer.AlertProcessor.NotificationBuilder do
     end
   end
 
-  @spec end_time(DateTime.t, DateTime.t | nil) :: boolean()
+  @spec end_time(NaiveDateTime.t, NaiveDateTime.t | nil) :: boolean()
   defp end_time(_, nil) do
     true
   end
@@ -133,8 +133,8 @@ defmodule MbtaServer.AlertProcessor.NotificationBuilder do
     !DT.after?(send_time, end_time)
   end
 
-  @spec send_time(DateTime.t, DateTime.t, DateTime.t)
-  :: {:ok | :check_send, DateTime.t}
+  @spec send_time(NaiveDateTime.t, NaiveDateTime.t, NaiveDateTime.t)
+  :: {:ok | :check_send, NaiveDateTime.t}
   defp send_time(send_time, dnd_start, dnd_end) do
     if before_or_equal(dnd_start, dnd_end) do
       if before_or_equal(dnd_start, send_time)
@@ -156,11 +156,11 @@ defmodule MbtaServer.AlertProcessor.NotificationBuilder do
     end
   end
 
-  @spec time_to_datetime(Time.t | nil, DateTime.t) :: DateTime.t | nil
+  @spec time_to_datetime(Time.t | nil, NaiveDateTime.t) :: NaiveDateTime.t | nil
   defp time_to_datetime(time, datetime) do
     erl_time = T.to_erl(time)
     erl_date = DT.to_date(datetime)
-    DT.from_date_and_time_and_zone!(erl_date, erl_time, "Etc/UTC")
+    DT.from_date_and_time!(erl_date, erl_time)
   end
 
   defp before_or_equal(first_dt, second_dt) do

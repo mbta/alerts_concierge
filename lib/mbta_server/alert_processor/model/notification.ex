@@ -6,7 +6,7 @@ defmodule MbtaServer.AlertProcessor.Model.Notification do
   @type t :: %__MODULE__{
     alert_id: String.t,
     user_id: String.t,
-    send_after: DateTime.t,
+    send_after: NaiveDateTime.t,
     message: String.t,
     header: String.t,
     phone_number: String.t,
@@ -30,7 +30,7 @@ defmodule MbtaServer.AlertProcessor.Model.Notification do
     belongs_to :user, User, type: :binary_id
 
     field :alert_id, :string
-    field :send_after, :utc_datetime
+    field :send_after, :naive_datetime
     field :message, :string
     field :header, :string
     field :phone_number, :string

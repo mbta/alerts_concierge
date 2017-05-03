@@ -19,7 +19,7 @@ defmodule MbtaServer.AlertProcessor.MessageWorkerTest do
       message: body,
       email: email,
       phone_number: phone_number,
-      send_after: DateTime.utc_now(),
+      send_after: NaiveDateTime.utc_now(),
       status: status
     }
 
@@ -27,7 +27,7 @@ defmodule MbtaServer.AlertProcessor.MessageWorkerTest do
       message: body_2,
       email: email,
       phone_number: phone_number,
-      send_after: DateTime.utc_now(),
+      send_after: NaiveDateTime.utc_now(),
       status: status
     }
 

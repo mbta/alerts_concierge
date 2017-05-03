@@ -11,10 +11,10 @@ defmodule MbtaServer.AlertProcessor.Scheduler do
   1. Generate a Notification for each Subscription/Alert combination
   2. Add resulting list of Notifications to holding queue
   """
-  @spec schedule_notifications({:ok, [any()], Alert.t}, DateTime.t)
+  @spec schedule_notifications({:ok, [any()], Alert.t}, NaiveDateTime.t)
   :: {:ok, [Notification.t]} | :error
   def schedule_notifications({:ok, subscription_ids, alert}, now \\ nil) do
-    now = now || DateTime.utc_now()
+    now = now || NaiveDateTime.utc_now()
 
     notifications = subscription_ids
     |> Subscription.fetch_with_user

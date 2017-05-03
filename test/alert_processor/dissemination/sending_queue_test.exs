@@ -3,7 +3,7 @@ defmodule MbtaServer.AlertProcessor.SendingQueueTest do
   alias MbtaServer.AlertProcessor.{SendingQueue, Model.Notification}
 
   setup do
-    {:ok, notification: %Notification{send_after: DateTime.utc_now()}}
+    {:ok, notification: %Notification{send_after: NaiveDateTime.utc_now()}}
   end
 
   test "Instantiates empty queue by default" do

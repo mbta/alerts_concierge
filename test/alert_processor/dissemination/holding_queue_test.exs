@@ -4,11 +4,12 @@ defmodule MbtaServer.AlertProcessor.HoldingQueueTest do
   alias MbtaServer.AlertProcessor.{HoldingQueue, SendingQueue, Model.Notification}
 
   defp generate_date(x) do
-    DateTime.from_unix!(System.system_time(:millisecond) + x, :millisecond)
+    now = NaiveDateTime.utc_now()
+    NaiveDateTime.add(now, x, :millisecond)
   end
 
   setup do
-    date_in_future = DateTime.from_unix!(4078579247)
+    date_in_future = ~N[2092-05-01 12:00:00]
     future_notification = %Notification{send_after: date_in_future}
 
     {:ok, fn: future_notification}
