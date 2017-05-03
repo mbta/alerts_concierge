@@ -267,7 +267,7 @@ defmodule MbtaServer.AlertProcessor.Model.Alert do
     end
   end
 
-  @spec timeframe_map(%{start: NaiveDateTime.t, end: NaiveDateTime.t | nil}) :: boolean | TimeFrameComparison.timeframe_map
+  @spec timeframe_map(%{start: DateTime.t, end: DateTime.t | nil}) :: boolean | TimeFrameComparison.timeframe_map
   defp timeframe_map(%{start: nil, end: _}), do: false
   defp timeframe_map(%{start: _, end: nil}), do: true
   defp timeframe_map(%{start: period_start, end: period_end}) do

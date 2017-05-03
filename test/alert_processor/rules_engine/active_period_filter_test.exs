@@ -5,47 +5,52 @@ defmodule MbtaServer.AlertProcessor.ActivePeriodFilterTest do
   alias Model.{Alert, Subscription}
   import MbtaServer.Factory
 
+  defp datetime_from_native(dt) do
+    {:ok, datetime} = DateTime.from_naive(dt, "Etc/UTC")
+    datetime
+  end
+
   setup do
     alert1 = %Alert{
       active_period: [
-        %{start: ~N[2017-04-26 09:00:00], end: ~N[2017-04-26 19:00:00]}
+        %{start: datetime_from_native(~N[2017-04-26 09:00:00]), end: datetime_from_native(~N[2017-04-26 19:00:00])}
       ]
     }
 
     alert2 = %Alert{
       active_period: [
-        %{start: ~N[2017-04-26 15:00:00], end: ~N[2017-04-26 17:00:00]}
+        %{start: datetime_from_native(~N[2017-04-26 15:00:00]), end: datetime_from_native(~N[2017-04-26 17:00:00])}
       ]
     }
 
     alert3 = %Alert{
       active_period: [
-        %{start: ~N[2017-04-26 07:00:00], end: ~N[2017-04-26 09:00:00]}
+        %{start: datetime_from_native(~N[2017-04-26 07:00:00]), end: datetime_from_native(~N[2017-04-26 09:00:00])}
       ]
     }
 
     alert4 = %Alert{
       active_period: [
-        %{start: ~N[2017-04-26 09:00:00], end: ~N[2017-04-26 19:00:00]},
-        %{start: ~N[2017-04-29 07:00:00], end: ~N[2017-04-29 09:00:00]}
+        %{start: datetime_from_native(~N[2017-04-26 09:00:00]), end: datetime_from_native(~N[2017-04-26 19:00:00])},
+        %{start: datetime_from_native(~N[2017-04-29 07:00:00]), end: datetime_from_native(~N[2017-04-29 09:00:00])}
       ]
     }
 
     alert5 = %Alert{
       active_period: [
-        %{start: ~N[2017-04-26 13:00:00], end: ~N[2017-04-27 02:00:00]}
+        %{start: datetime_from_native(~N[2017-04-26 13:00:00]), end: datetime_from_native(~N[2017-04-27 02:00:00])}
       ]
     }
 
     alert6 = %Alert{
       active_period: [
-        %{start: ~N[2017-04-28 19:00:00], end: ~N[2017-05-01 04:00:00]}
+        %{start: datetime_from_native(~N[2017-04-28 19:00:00]), end: datetime_from_native(~N[2017-05-01 04:00:00])}
       ]
     }
 
     alert7 = %Alert{
       active_period: [
-        %{start: ~N[2017-04-26 09:00:00], end: nil}
+        %{start: datetime_from_native(~N[2017-04-26 09:00:00]), end: nil}
       ]
     }
 

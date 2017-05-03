@@ -64,12 +64,11 @@ defmodule MbtaServer.AlertProcessor.AlertParser do
 
   defp parse_active_period(active_period) do
     Map.new(active_period, fn({k, v}) ->
-      {:ok, datetime} =
-        case v do
-          nil -> {:ok, nil}
-          dt ->  NaiveDateTime.from_iso8601(dt)
-        end
-      {String.to_existing_atom(k), datetime}
+      with {:ok, datetime, _} <- DateTime.from_iso8601(v) do
+        {String.to_existing_atom(k), datetime}
+      else
+        _ -> {String.to_existing_atom(k), nil}
+      end
     end)
   end
 
