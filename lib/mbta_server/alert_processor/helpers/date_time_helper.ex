@@ -4,18 +4,20 @@ defmodule MbtaServer.AlertProcessor.Helpers.DateTimeHelper do
   multi-step datetime functions.
   """
 
-  @spec datetime_to_date_and_time(NaiveDateTime.t) :: {Date.t, Time.t}
+  alias Calendar.DateTime, as: DT
+
+  @spec datetime_to_date_and_time(DateTime.t) :: {Date.t, Time.t}
   def datetime_to_date_and_time(datetime) do
-    date = NaiveDateTime.to_date(datetime)
-    time = NaiveDateTime.to_time(datetime)
+    date = DateTime.to_date(datetime)
+    time = DateTime.to_time(datetime)
 
     {date, time}
   end
 
-  @spec date_range(NaiveDateTime.t, NaiveDateTime.t) :: [Date.t]
-  def date_range(%NaiveDateTime{} = start_datetime, %NaiveDateTime{} = end_datetime) do
-    {start_date_erl, _} = NaiveDateTime.to_erl(start_datetime)
-    {end_date_erl, _} = NaiveDateTime.to_erl(end_datetime)
+  @spec date_range(DateTime.t, DateTime.t) :: [Date.t]
+  def date_range(%DateTime{} = start_datetime, %DateTime{} = end_datetime) do
+    {start_date_erl, _} = DT.to_erl(start_datetime)
+    {end_date_erl, _} = DT.to_erl(end_datetime)
     do_date_range(start_date_erl, end_date_erl)
   end
 

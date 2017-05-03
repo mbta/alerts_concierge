@@ -4,8 +4,10 @@ defmodule MbtaServer.AlertProcessor.SubscriptionFilterEngineTest do
   alias MbtaServer.AlertProcessor.{Model.Alert, Model.InformedEntity, SubscriptionFilterEngine}
 
   setup do
+    {:ok, start_time} = DateTime.from_naive(~N[2017-04-26 09:00:00], "Etc/UTC")
+    {:ok, end_time} = DateTime.from_naive(~N[2017-04-26 19:00:00], "Etc/UTC")
     alert = %Alert{
-      active_period: [%{start: ~N[2017-04-26 09:00:00], end: ~N[2017-04-26 19:00:00]}],
+      active_period: [%{start: start_time, end: end_time}],
       effect_name: "Delay",
       header: "This is a test message",
       id: "1",
