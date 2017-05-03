@@ -4,7 +4,7 @@ defmodule MbtaServer.AlertProcessor.AlertParser do
   relevant information to subscription filter engine.
   """
   alias MbtaServer.AlertProcessor.{AlertCache, ApiClient, HoldingQueue, Parser, SubscriptionFilterEngine}
-  alias MbtaServer.AlertProcessor.Model.Alert
+  alias MbtaServer.AlertProcessor.Model.{Alert, Notification}
 
   @behaviour Parser
 
@@ -12,7 +12,7 @@ defmodule MbtaServer.AlertProcessor.AlertParser do
   process_alerts/0 entry point for fetching json data from api and, transforming, storing and passing to
   subscription engine to process before sending.
   """
-  @spec process_alerts() :: [{:ok, map} | {:error, map}] | String.t
+  @spec process_alerts() :: [{:ok, [Notification.t]}]
   def process_alerts() do
     case ApiClient.get_alerts do
       {:error, message} ->
