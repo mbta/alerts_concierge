@@ -23,7 +23,7 @@ defmodule MbtaServer.AlertProcessor.AlertParser do
           |> Enum.reduce(%{}, &parse_alert/2)
           |> AlertCache.update_cache()
         HoldingQueue.remove_notifications(removed_alert_ids)
-        Enum.flat_map(new_alerts, &SubscriptionFilterEngine.process_alert/1)
+        Enum.map(new_alerts, &SubscriptionFilterEngine.process_alert/1)
     end
   end
 

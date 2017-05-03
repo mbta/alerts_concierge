@@ -3,26 +3,17 @@ defmodule MbtaServer.AlertProcessor.SubscriptionFilterEngine do
   Entry point for susbcription engine to filter users to alert users
   with relevant subscriptions to alert provided.
   """
-  alias MbtaServer.{Repo, User}
+  alias MbtaServer.{Repo}
   alias MbtaServer.AlertProcessor.{Model.Alert, Model.Notification}
-  alias MbtaServer.AlertProcessor.{ActivePeriodFilter, Dispatcher, InformedEntityFilter, SentAlertFilter, SeverityFilter}
+  alias MbtaServer.AlertProcessor.{ActivePeriodFilter, InformedEntityFilter, Scheduler, SentAlertFilter, SeverityFilter}
   import Ecto.Query
 
   @doc """
   process_alert/1 receives an alert and applies relevant filters to send alerts
   to the correct users based on the alert.
   """
-  @spec process_alert(Alert.t) :: [{:ok, map} | {:error, map} | {:error, String.t}]
+  @spec process_alert(Alert.t) :: {:ok, [Notification.t]}
   def process_alert(alert) do
-    Enum.map(fetch_relevant_users(alert), fn(user) ->
-      %{email: email, phone_number: phone_number} = user
-      notification = %Notification{message: alert.header, email: email, phone_number: phone_number}
-      Dispatcher.send_notification(notification)
-    end)
-  end
-
-  @spec fetch_relevant_users(Alert.t) :: [User.t]
-  defp fetch_relevant_users(alert) do
     {:ok, query, ^alert} =
       alert
       |> SentAlertFilter.filter
@@ -30,6 +21,7 @@ defmodule MbtaServer.AlertProcessor.SubscriptionFilterEngine do
       |> SeverityFilter.filter
       |> ActivePeriodFilter.filter
 
-    Repo.all(from u in User, join: s in subquery(query), on: s.user_id == u.id, distinct: true)
+    subscription_ids = Repo.all(from s in subquery(query), distinct: true, select: s.id)
+    Scheduler.schedule_notifications({:ok, subscription_ids, alert})
   end
 end
