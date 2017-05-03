@@ -64,10 +64,8 @@ defmodule MbtaServer.AlertProcessor.AlertParser do
 
   defp parse_active_period(active_period) do
     Map.new(active_period, fn({k, v}) ->
-      with {:ok, datetime, _} <- DateTime.from_iso8601(v),
-           {:ok, utc_datetime} <- Calendar.DateTime.shift_zone(datetime, "UTC")
-      do
-        {String.to_existing_atom(k), utc_datetime}
+      with {:ok, datetime, _} <- DateTime.from_iso8601(v) do
+        {String.to_existing_atom(k), datetime}
       else
         _ -> {String.to_existing_atom(k), nil}
       end
