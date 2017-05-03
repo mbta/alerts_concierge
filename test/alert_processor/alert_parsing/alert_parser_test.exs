@@ -1,8 +1,9 @@
 defmodule MbtaServer.AlertProcessor.AlertParserTest do
   use MbtaServer.Web.ConnCase
   use ExVCR.Mock, adapter: ExVCR.Adapter.Hackney
-  use Bamboo.Test
+  use Bamboo.Test, shared: :true
   import MbtaServer.Factory
+  alias MbtaServer.NotificationMailer
   alias MbtaServer.AlertProcessor.{AlertParser, Model.InformedEntity}
 
   setup_all do
@@ -41,9 +42,8 @@ defmodule MbtaServer.AlertProcessor.AlertParserTest do
     |> insert
     insert(:notification, alert_id: "177528", user: user4, email: user4.email, phone_number: user4.phone_number, status: "sent", send_after: ~N[2017-04-25 10:00:00])
     use_cassette "route_19_minor_delay", custom: true do
-      assert [{:ok, email} | []] = AlertParser.process_alerts
-      [{nil, to_address} | _] = email.to
-      assert to_address == user1.email
+      assert [{:ok, _} | _t] = AlertParser.process_alerts
+      assert_delivered_email NotificationMailer.notification_email("Route 19 experiencing minor delays due to traffic", user1.email)
     end
   end
 end

@@ -11,7 +11,7 @@ defmodule MbtaServer.AlertProcessor.Model.NotificationTest do
     phone_number: "+12345678910",
     header: "Short header",
     message: "There is a delay",
-    send_after: DateTime.utc_now,
+    send_after: NaiveDateTime.utc_now,
     alert_id: "12345678",
     status: :sent
   }

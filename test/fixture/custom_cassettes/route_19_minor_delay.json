@@ -9,7 +9,7 @@
       "url": "https://dev.api.mbtace.com/alerts"
     },
     "response": {
-      "body": "{\"jsonapi\":{\"version\":\"1.0\"},\"data\":[{\"type\":\"alert\",\"links\":{\"self\":\"/alerts/177528\"},\"id\":\"177528\",\"attributes\":{\"url\":null,\"updated_at\":\"2017-04-11T07:53:33-04:00\",\"timeframe\":null,\"short_header\":\"Route 19 experiencing minor delays due to traffic\",\"severity\":\"Minor\",\"service_effect\":\"Minor Route 19 delay\",\"lifecycle\":\"New\",\"informed_entity\":[{\"route_type\":3,\"route\":\"19\"}],\"header\":\"Route 19 experiencing minor delays due to traffic\",\"effect_name\":\"Delay\",\"effect\":\"OTHER_EFFECT\",\"description\":null,\"created_at\":\"2017-04-11T07:53:33-04:00\",\"cause\":\"OTHER_CAUSE\",\"banner\":null,\"active_period\":[{\"start\":\"2017-04-11T07:53:32-04:00\",\"end\":\"2017-04-11T15:28:29-04:00\"}]}}]}",
+      "body": "{\"jsonapi\":{\"version\":\"1.0\"},\"data\":[{\"type\":\"alert\",\"links\":{\"self\":\"/alerts/177528\"},\"id\":\"177528\",\"attributes\":{\"url\":null,\"updated_at\":\"2017-04-11T07:53:33-04:00\",\"timeframe\":null,\"short_header\":\"Route 19 experiencing minor delays due to traffic\",\"severity\":\"Minor\",\"service_effect\":\"Minor Route 19 delay\",\"lifecycle\":\"New\",\"informed_entity\":[{\"route_type\":3,\"route\":\"19\"}],\"header\":\"Route 19 experiencing minor delays due to traffic\",\"effect_name\":\"Delay\",\"effect\":\"OTHER_EFFECT\",\"description\":null,\"created_at\":\"2017-04-11T07:53:33-04:00\",\"cause\":\"OTHER_CAUSE\",\"banner\":null,\"active_period\":[{\"start\":\"2017-04-11T07:53:32-04:00\",\"end\":null}]}}]}",
       "headers": {
         "cache-control": "max-age=0, private, must-revalidate",
         "Content-Type": "application/vnd.api+json; charset=utf-8",
