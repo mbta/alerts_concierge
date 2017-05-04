@@ -10,11 +10,13 @@ defmodule MbtaServer.AlertProcessor.ApiClient do
   """
   @spec get_alerts() :: [map] | {atom, map}
   def get_alerts do
-   case get("/alerts") do
-      {:ok, %{body: %{"data" => data}}} ->
-        data
+   case get("/alerts/?include=facilities") do
       {:ok, %{body: %{"errors" => errors}}} ->
         {:error, errors |> Enum.map_join(", ", &(&1["code"]))}
+      {:ok, %{body: %{"included" => facilities, "data" => alerts}}} ->
+        {alerts, facilities}
+      {:ok, %{body: %{"data" => alerts}}} ->
+        {alerts, []}
       {:error, message} ->
         {:error, message}
     end

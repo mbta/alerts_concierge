@@ -10,7 +10,7 @@ defmodule MbtaServer.AlertProcessor.ApiClientTest do
 
   test "get_alerts/0 returns list of alerts if successful" do
     use_cassette "get_alerts" do
-      assert [_h | _t] = ApiClient.get_alerts
+      assert {[_ | _], [_ | _]} = ApiClient.get_alerts
     end
   end
 end

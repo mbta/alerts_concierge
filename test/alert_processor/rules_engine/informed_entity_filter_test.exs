@@ -26,6 +26,11 @@ defmodule MbtaServer.AlertProcessor.InformedEntityFilterTest do
     stop: "123"
   }
 
+  @ie5 %{
+    stop: "place-pktrm",
+    facility: "ESCALATOR"
+  }
+
   @alert1 %Alert{
     id: "1",
     header: "test1",
@@ -59,20 +64,31 @@ defmodule MbtaServer.AlertProcessor.InformedEntityFilterTest do
     ]
   }
 
+  @alert5 %Alert{
+    id: "5",
+    header: "test5",
+    informed_entities: [
+      @ie5
+    ]
+  }
+
   setup do
     user1 = insert(:user)
     user2 = insert(:user)
     user3 = insert(:user)
+    user4 = insert(:user)
     sub1 = insert(:subscription, user: user1)
     sub2 = insert(:subscription, user: user2)
     sub3 = insert(:subscription, user: user3)
     sub4 = insert(:subscription, user: user1)
+    sub5 = insert(:subscription, user: user4)
     InformedEntity |> struct(@ie1) |> Map.merge(%{subscription_id: sub1.id}) |> insert
     InformedEntity |> struct(@ie1) |> Map.merge(%{subscription_id: sub2.id}) |> insert
     InformedEntity |> struct(@ie4) |> Map.merge(%{subscription_id: sub3.id}) |> insert
     InformedEntity |> struct(@ie2) |> Map.merge(%{subscription_id: sub4.id}) |> insert
+    InformedEntity |> struct(@ie5) |> Map.merge(%{subscription_id: sub5.id}) |> insert
 
-    {:ok, sub1: sub1, sub2: sub2, sub3: sub3, sub4: sub4, user1: user1, user2: user2, all_subscription_ids: [sub1.id, sub2.id, sub3.id, sub4.id] }
+    {:ok, sub1: sub1, sub2: sub2, sub3: sub3, sub4: sub4, sub5: sub5, user1: user1, user2: user2, all_subscription_ids: [sub1.id, sub2.id, sub3.id, sub4.id, sub5.id] }
   end
 
   test "filter returns :ok empty list if subscription id list passed is empty" do
@@ -104,5 +120,10 @@ defmodule MbtaServer.AlertProcessor.InformedEntityFilterTest do
   test "returns empty list if no matches", %{all_subscription_ids: all_subscription_ids} do
     assert {:ok, query, @alert3} = InformedEntityFilter.filter({:ok, QueryHelper.generate_query(Subscription, all_subscription_ids), @alert3})
     assert [] == QueryHelper.execute_query(query)
+  end
+
+  test "matches facility alerts", %{sub5: sub5, all_subscription_ids: all_subscription_ids} do
+    assert {:ok, query, @alert5} = InformedEntityFilter.filter({:ok, QueryHelper.generate_query(Subscription, all_subscription_ids), @alert5})
+    assert [sub5.id] == QueryHelper.execute_query(query)
   end
 end
