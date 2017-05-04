@@ -49,7 +49,7 @@ defmodule MbtaServer.AlertProcessor.AlertParserTest do
 
   test "process_alerts/1 parses alerts and replaces facility id with type" do
     user1 = insert(:user, phone_number: nil)
-    build(:subscription, user: user1, alert_priority_type: :low, informed_entities: [%InformedEntity{stop: "place-pktrm", facility: "ELEVATOR"}])
+    build(:subscription, user: user1, alert_priority_type: :low, informed_entities: [%InformedEntity{stop: "place-pktrm", facility_type: "ELEVATOR"}])
     |> weekday_subscription
     |> insert
     use_cassette "facilities_alerts", custom: true do

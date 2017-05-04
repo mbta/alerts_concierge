@@ -8,7 +8,7 @@ defmodule MbtaServer.AlertProcessor.Model.InformedEntity do
 
   @type t :: %__MODULE__{
     direction_id: integer,
-    facility: String.t,
+    facility_type: String.t,
     route: String.t,
     route_type: integer,
     subscription_id: String.t,
@@ -23,7 +23,7 @@ defmodule MbtaServer.AlertProcessor.Model.InformedEntity do
   schema "informed_entities" do
     belongs_to :subscription, Subscription, type: :binary_id
     field :direction_id, :integer
-    field :facility, :string
+    field :facility_type, :string
     field :route, :string
     field :route_type, :integer
     field :stop, :string
@@ -33,6 +33,6 @@ defmodule MbtaServer.AlertProcessor.Model.InformedEntity do
   end
 
   def queryable_fields do
-    [:direction_id, :facility, :route, :route_type, :stop, :trip]
+    [:direction_id, :facility_type, :route, :route_type, :stop, :trip]
   end
 end

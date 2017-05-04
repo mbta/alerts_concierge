@@ -93,7 +93,7 @@ defmodule MbtaServer.AlertProcessor.AlertParser do
       with %{"facility" => facility_id} <- ie,
            %{^facility_id => facility_type} <- facilities_map
       do
-        Map.put(informed_entity, :facility, facility_type)
+        Map.put(informed_entity, :facility_type, facility_type)
       else
         _ -> informed_entity
       end
