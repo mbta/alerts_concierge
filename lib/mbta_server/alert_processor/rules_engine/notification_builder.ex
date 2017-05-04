@@ -31,6 +31,7 @@ defmodule MbtaServer.AlertProcessor.NotificationBuilder do
               alert_id: alert.id,
               user_id: user.id,
               header: alert.header,
+              message: alert.header,
               phone_number: user.phone_number,
               email: user.email,
               status: :unsent,
