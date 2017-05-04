@@ -86,4 +86,17 @@ defmodule MbtaServer.AlertProcessor.HoldingQueueTest do
     assert HoldingQueue.pop == {:ok, notification}
     assert HoldingQueue.pop == :error
   end
+
+  test "Duplicate notifications are not enqueued" do
+    notification1 = %Notification{alert_id: "1", user_id: "1"}
+    notification2 = %Notification{alert_id: "1", user_id: "1"}
+    HoldingQueue.start_link()
+    HoldingQueue.enqueue(notification1)
+    HoldingQueue.enqueue(notification2)
+
+    {:ok, notification} = HoldingQueue.pop()
+    assert notification == notification1
+    assert notification == notification2
+    assert :error = HoldingQueue.pop()
+  end
 end
