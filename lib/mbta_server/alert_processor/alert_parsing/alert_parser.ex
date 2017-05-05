@@ -20,14 +20,29 @@ defmodule MbtaServer.AlertProcessor.AlertParser do
       alert_data ->
         {new_alerts, removed_alert_ids} =
           alert_data
-          |> Enum.reduce(%{}, &parse_alert/2)
+          |> map_facilities()
+          |> parse_alerts()
           |> AlertCache.update_cache()
         HoldingQueue.remove_notifications(removed_alert_ids)
         Enum.map(new_alerts, &SubscriptionFilterEngine.process_alert/1)
     end
   end
 
-  @spec parse_alert(map, map) :: [%{String.t => Alert.t}]
+  defp map_facilities({alerts, facilities}) do
+    facilities_map = for f <- facilities, into: %{} do
+      %{"attributes" => %{"type" => facility_type}, "id" => id} = f
+      {id, facility_type}
+    end
+    {alerts, facilities_map}
+  end
+
+  defp parse_alerts({alerts, facilities_map}) do
+    Enum.reduce(alerts, %{}, fn(x, acc) ->
+      parse_alert(x, facilities_map, acc)
+    end)
+  end
+
+  @spec parse_alert(map, [map], map) :: [%{String.t => Alert.t}]
   defp parse_alert(
     %{
       "attributes" => %{
@@ -38,7 +53,7 @@ defmodule MbtaServer.AlertProcessor.AlertParser do
         "severity" => severity
       },
       "id" => alert_id
-    }, accumulator
+    }, facilities_map, accumulator
   ) when is_binary(header) do
     Map.put(
       accumulator,
@@ -48,13 +63,13 @@ defmodule MbtaServer.AlertProcessor.AlertParser do
         active_period: parse_active_periods(active_periods),
         effect_name: effect_name,
         header: header,
-        informed_entities: parse_informed_entities(informed_entities),
+        informed_entities: parse_informed_entities(informed_entities, facilities_map),
         severity: severity |> String.downcase |> String.to_existing_atom
       })
     )
   end
 
-  defp parse_alert(_, accumulator) do
+  defp parse_alert(_, _, accumulator) do
     accumulator
   end
 
@@ -72,9 +87,16 @@ defmodule MbtaServer.AlertProcessor.AlertParser do
     end)
   end
 
-  defp parse_informed_entities(informed_entities) do
-    Enum.map(informed_entities, fn(informed_entity) ->
-      Map.new(informed_entity, fn({k, v}) -> {String.to_existing_atom(k), v} end)
+  defp parse_informed_entities(informed_entities, facilities_map) do
+    Enum.map(informed_entities, fn(ie) ->
+      informed_entity = Map.new(ie, fn({k, v}) -> {String.to_existing_atom(k), v} end)
+      with %{"facility" => facility_id} <- ie,
+           %{^facility_id => facility_type} <- facilities_map
+      do
+        Map.put(informed_entity, :facility_type, facility_type |> String.downcase |> String.to_existing_atom)
+      else
+        _ -> informed_entity
+      end
     end)
   end
 end

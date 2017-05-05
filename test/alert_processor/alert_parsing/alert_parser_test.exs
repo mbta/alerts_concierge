@@ -46,4 +46,15 @@ defmodule MbtaServer.AlertProcessor.AlertParserTest do
       assert_delivered_email NotificationMailer.notification_email("Route 19 experiencing minor delays due to traffic", user1.email)
     end
   end
+
+  test "process_alerts/1 parses alerts and replaces facility id with type" do
+    user1 = insert(:user, phone_number: nil)
+    build(:subscription, user: user1, alert_priority_type: :low, informed_entities: [%InformedEntity{stop: "place-pktrm", facility_type: :elevator}])
+    |> weekday_subscription
+    |> insert
+    use_cassette "facilities_alerts", custom: true do
+      AlertParser.process_alerts
+      assert_delivered_email NotificationMailer.notification_email("Elevator 804 PARK STREET - Tremont Street to the Lobby will be reconstructed and will be out of service through June 2017.", user1.email)
+    end
+  end
 end
