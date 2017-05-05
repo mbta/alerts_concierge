@@ -28,7 +28,7 @@ defmodule MbtaServer.AlertProcessor.InformedEntityFilterTest do
 
   @ie5 %{
     stop: "place-pktrm",
-    facility: "ESCALATOR"
+    facility: :escalator
   }
 
   @alert1 %Alert{

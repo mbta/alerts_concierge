@@ -8,7 +8,7 @@ defmodule MbtaServer.AlertProcessor.Model.InformedEntity do
 
   @type t :: %__MODULE__{
     direction_id: integer,
-    facility_type: String.t,
+    facility_type: :elevator | :escalator,
     route: String.t,
     route_type: integer,
     subscription_id: String.t,
@@ -23,7 +23,7 @@ defmodule MbtaServer.AlertProcessor.Model.InformedEntity do
   schema "informed_entities" do
     belongs_to :subscription, Subscription, type: :binary_id
     field :direction_id, :integer
-    field :facility_type, :string
+    field :facility_type, MbtaServer.AlertProcessor.AtomType
     field :route, :string
     field :route_type, :integer
     field :stop, :string
