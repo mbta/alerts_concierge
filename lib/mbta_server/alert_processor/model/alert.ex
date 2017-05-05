@@ -292,7 +292,7 @@ defmodule MbtaServer.AlertProcessor.Model.Alert do
           ^start_date ->
             day_of_week_atom = Subscription.relevant_day_of_week_type(Date.day_of_week(start_date))
 
-            Map.put(acc, day_of_week_atom, %{start: DateTimeHelper.seconds_of_day(start_time), end: 85_399})
+            Map.put(acc, day_of_week_atom, %{start: DateTimeHelper.seconds_of_day(start_time), end: 86_399})
           ^end_date ->
             relevant_day_of_week_atom = Subscription.relevant_day_of_week_type(Date.day_of_week(end_date))
 
@@ -300,7 +300,7 @@ defmodule MbtaServer.AlertProcessor.Model.Alert do
           date ->
             relevant_day_of_week_atom = Subscription.relevant_day_of_week_type(Date.day_of_week(date))
 
-            Map.put(acc, relevant_day_of_week_atom, %{start: 0, end: 85_399})
+            Map.put(acc, relevant_day_of_week_atom, %{start: 0, end: 86_399})
         end
       end)
     end

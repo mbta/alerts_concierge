@@ -30,6 +30,8 @@ defmodule MbtaServer.AlertProcessor.TimeFrameComparison do
   end
 
   defp range_map(%{start: start_seconds, end: end_seconds}) do
-    MapSet.new(start_seconds..end_seconds)
+    start_minute = Integer.floor_div(start_seconds, 60) * 60
+    end_minute = Integer.floor_div(end_seconds, 60) * 60
+    MapSet.new(Enum.take_every(start_minute..end_minute, 60))
   end
 end
