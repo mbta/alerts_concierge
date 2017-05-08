@@ -24,6 +24,7 @@ defmodule MbtaServer.Mixfile do
         :bamboo,
         :bamboo_smtp,
         :calendar,
+        :sweet_xml, # Must come before ex_aws
         :ex_aws,
         :hackney,
         :httpoison,
@@ -56,7 +57,7 @@ defmodule MbtaServer.Mixfile do
       {:dialyxir, "~> 0.5.0", only: [:dev]},
       {:distillery, "1.2.2", warn_missing: false},
       {:edeliver, "1.4.2"},
-      {:ex_aws, "~> 1.0"},
+      {:ex_aws, git: "https://github.com/bfauble/ex_aws", ref: "fde7a918c90a640b6c8389fe4c36566957d0555c"},
       {:excoveralls, "~> 0.5", only: [:dev, :test]},
       {:ex_machina, "~> 2.0", only: :test},
       {:exvcr, "~> 0.8", only: :test},
@@ -71,6 +72,7 @@ defmodule MbtaServer.Mixfile do
       {:poison, "~> 2.0"},
       {:poolboy, ">= 0.0.0"},
       {:postgrex, ">= 0.0.0"},
+      {:sweet_xml, "~> 0.6"},
     ]
   end
 

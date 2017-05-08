@@ -4,6 +4,7 @@ defmodule MbtaServer.AlertProcessor.AlertWorker do
   to begin processing alerts.
   """
   use GenServer
+  alias MbtaServer.AlertProcessor.Helpers.ConfigHelper
 
   @alert_parser Application.get_env(:mbta_server, :alert_parser)
 
@@ -34,11 +35,6 @@ defmodule MbtaServer.AlertProcessor.AlertWorker do
   end
 
   defp filter_interval do
-    alert_fetch_interval =
-      case Application.get_env(:mbta_server, :alert_fetch_interval) do
-        {:system, env_var, default} -> System.get_env(env_var) || default
-        value -> value
-      end
-    String.to_integer(alert_fetch_interval)
+    ConfigHelper.get(:alert_fetch_interval, :int)
   end
 end

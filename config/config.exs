@@ -40,6 +40,8 @@ config :mbta_server, :alert_parser, MbtaServer.AlertProcessor.AlertParser
 
 config :mbta_server, alert_fetch_interval: {:system, "ALERT_FETCH_INTERVAL", "60000"}
 
+config :mbta_server, opted_out_list_fetch_interval: {:system, "OPTED_OUT_LIST_FETCH_INTERVAL", "300000"}
+
 # Import environment specific config. This must remain at the bottom
 # of this file so it overrides the configuration defined above.
 import_config "#{Mix.env}.exs"

@@ -10,7 +10,31 @@ defmodule ExAws.Mock do
   """
   @spec request(Map, List) :: {:ok, Map}
   def request(operation, []) do
-    {:ok, operation}
+    case operation.action do
+      :publish ->
+        {:ok, %{
+          body: %{
+            message_id: "123",
+            request_id: "345"
+          }
+        }}
+      :list_phone_numbers_opted_out ->
+        {:ok, %{
+          body: %{
+            phone_numbers: ["+19999999999"],
+            next_token: nil,
+            request_id: "123"
+          }
+        }}
+      :opt_in_phone_number ->
+        {:ok, %{
+          body: %{
+            request_id: "345"
+          }
+        }}
+      _ ->
+        {:error, operation}
+    end
   end
 end
 
@@ -25,26 +49,27 @@ defmodule ExAws.SNS.Mock do
   publish/2 takes the message to be sent and map of properties to pass with the message.
   also sends message to self to make function call tracking easier within tests.
   """
-  @spec publish(String.t, Map) :: {:ok, Map}
+  @spec publish(String.t, Map) :: {:ok, ExAws.Operation.Query.t}
   def publish(message, opts) do
     send self(), :published_sms
-    request(message, opts)
+    ExAws.SNS.publish(message, opts)
   end
 
-  @spec request(String.t, Map) :: {:ok, Map}
-  defp request(message, params) do
-    {:ok,
-      %{
-        path: "/",
-        params: %{
-          "Action" => "Publish",
-          "Message" => message,
-          "PhoneNumber" => params[:phone_number]
-        },
-        service: :sns,
-        action: :publish,
-        parser: &ExAws.SNS.Parsers.parse/2
-      }
-    }
+  @spec list_phone_numbers_opted_out() :: {:ok, ExAws.Operation.Query.t}
+  def list_phone_numbers_opted_out() do
+    send self(), :list_phone_numbers_opted_out
+    ExAws.SNS.list_phone_numbers_opted_out()
+  end
+
+  @spec list_phone_numbers_opted_out(String.t) :: {:ok, ExAws.Operation.Query.t}
+  def list_phone_numbers_opted_out(next_token) do
+    send self(), :list_phone_numbers_opted_out
+    ExAws.SNS.list_phone_numbers_opted_out(next_token)
+  end
+
+  @spec opt_in_phone_number(String.t) :: {:ok, ExAws.Operation.Query.t}
+  def opt_in_phone_number(phone_number) do
+    send self(), :opt_in_phone_number
+    ExAws.SNS.opt_in_phone_number(phone_number)
   end
 end

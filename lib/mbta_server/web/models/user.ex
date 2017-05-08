@@ -13,6 +13,8 @@ defmodule MbtaServer.User do
     do_not_disturb_end: Time.t,
   }
 
+  @type id :: String.t
+
   use Ecto.Schema
   import Ecto.Changeset
   alias MbtaServer.AlertProcessor.Model.Subscription
