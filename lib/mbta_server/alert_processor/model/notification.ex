@@ -52,6 +52,7 @@ defmodule MbtaServer.AlertProcessor.Model.Notification do
     |> validate_required(@required_fields)
     |> validate_inclusion(:status, [:sent, :failed])
     |> validate_email_or_phone
+    |> foreign_key_constraint(:user_id)
   end
 
   defp validate_email_or_phone(changeset) do
