@@ -6,8 +6,7 @@ defmodule MbtaServer.AlertProcessor.SmsOptOutWorker do
   sending alerts.
   """
   use GenServer
-  import Ecto.Query
-  alias MbtaServer.{Repo, User}
+  alias MbtaServer.User
   alias MbtaServer.AlertProcessor.HoldingQueue
   alias MbtaServer.AlertProcessor.Helpers.ConfigHelper
 
