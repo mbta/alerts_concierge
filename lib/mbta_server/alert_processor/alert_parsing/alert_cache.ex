@@ -27,10 +27,8 @@ defmodule MbtaServer.AlertProcessor.AlertCache do
 
   def handle_call({:update_cache, new_alerts}, _from, %{alerts: old_alerts}) do
     removed_alert_ids =  Map.keys(old_alerts) -- Map.keys(new_alerts)
-    {alerts, updated_alert_ids} = segment_alerts(new_alerts,
-                                                 old_alerts,
-                                                 removed_alert_ids)
-    response = {alerts, removed_alert_ids ++ updated_alert_ids}
+    updated_alert_ids = get_updated_ids(new_alerts, old_alerts)
+    response = {alerts_list(new_alerts), removed_alert_ids ++ updated_alert_ids}
     {:reply, response, %{alerts: new_alerts}}
   end
 
@@ -38,46 +36,12 @@ defmodule MbtaServer.AlertProcessor.AlertCache do
     Map.values(alerts)
   end
 
-  defp segment_alerts(new_alerts, old_alerts, removed_alert_ids) do
-    new = alerts_list(new_alerts)
-
-    updated_alert_ids = old_alerts
-    |> alerts_list
-    |> without_removed(removed_alert_ids)
-    |> pair_by_id(new)
-    |> find_updated_alerts
-    |> extract_ids
-
-    {new, updated_alert_ids}
-  end
-
-  defp extract_ids(alerts) do
-    Enum.map(alerts, &(&1[:id]))
-  end
-
-  defp find_updated_alerts(alerts) do
-    Enum.reduce(alerts, [], fn({old_alert, new_alert}, acc) ->
-      if updated?(new_alert, old_alert) do
-        acc ++ [new_alert]
-      else
-        acc
-      end
-    end)
-  end
-
-  defp without_removed(alerts, ids) do
-    Enum.filter(alerts, fn(old_alert) ->
-      !Enum.member?(ids, old_alert.id)
-    end)
-  end
-
-  defp pair_by_id(alerts, new_alerts) do
-    Enum.map(alerts, fn(alert) ->
-      matching_new = Enum.find(new_alerts, fn(x) -> x.id == alert.id end)
-      if matching_new != nil do
-        {alert, matching_new}
-      end
-    end)
+  defp get_updated_ids(new_alerts, old_alerts) do
+    old_alerts
+    |> Map.take(Map.keys(new_alerts))
+    |> Enum.filter_map(fn ({id, old_alert}) ->
+      updated?(old_alert, new_alerts[id])
+    end, &elem(&1, 0))
   end
 
   defp updated?(new_alert, old_alert) do

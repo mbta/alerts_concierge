@@ -18,14 +18,14 @@ defmodule MbtaServer.AlertProcessor.AlertParser do
       {:error, message} ->
         message
       alert_data ->
-        {alerts, removed_and_updated_ids} =
+        {alerts_needing_notifications, alert_ids_to_clear_notifications} =
           alert_data
           |> map_facilities()
           |> parse_alerts()
           |> AlertCache.update_cache()
 
-        HoldingQueue.remove_notifications(removed_and_updated_ids)
-        Enum.map(alerts, &SubscriptionFilterEngine.process_alert/1)
+        HoldingQueue.remove_notifications(alert_ids_to_clear_notifications)
+        Enum.map(alerts_needing_notifications, &SubscriptionFilterEngine.process_alert/1)
    end
   end
 
