@@ -11,7 +11,8 @@ defmodule MbtaServer.AlertProcessor do
     HoldingQueue,
     SendingQueue,
     NotificationWorker,
-    QueueWorker
+    QueueWorker,
+    SmsOptOutWorker
   }
 
   @worker_pool_size Application.get_env(__MODULE__, :pool_size)
@@ -35,6 +36,7 @@ defmodule MbtaServer.AlertProcessor do
       worker(HoldingQueue, []),
       worker(SendingQueue, []),
       worker(QueueWorker, []),
+      worker(SmsOptOutWorker, []),
       :poolboy.child_spec(:message_worker, message_worker_config, [])
     ]
 

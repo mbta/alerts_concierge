@@ -38,7 +38,7 @@ defmodule MbtaServer.AlertProcessor.DispatcherTest do
     }
 
     {:ok, _} = Dispatcher.send_notification(notification)
-    assert_received :published_sms
+    assert_received :publish
   end
 
   test "notification_email/1 can send email" do
@@ -60,6 +60,6 @@ defmodule MbtaServer.AlertProcessor.DispatcherTest do
     }
     {:ok, _} = Dispatcher.send_notification(notification)
     assert_delivered_email NotificationMailer.notification_email(@body, @email)
-    assert_received :published_sms
+    assert_received :publish
   end
 end

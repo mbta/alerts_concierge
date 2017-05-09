@@ -10,41 +10,31 @@ defmodule ExAws.Mock do
   """
   @spec request(Map, List) :: {:ok, Map}
   def request(operation, []) do
-    {:ok, operation}
-  end
-end
-
-defmodule ExAws.SNS.Mock do
-  @moduledoc """
-  Module to act as mock for AWS SNS api.
-  Mock modeled after ex_aws implementation.
-  https://github.com/CargoSense/ex_aws/blob/master/lib/ex_aws/sns.ex#L361
-  """
-
-  @doc """
-  publish/2 takes the message to be sent and map of properties to pass with the message.
-  also sends message to self to make function call tracking easier within tests.
-  """
-  @spec publish(String.t, Map) :: {:ok, Map}
-  def publish(message, opts) do
-    send self(), :published_sms
-    request(message, opts)
-  end
-
-  @spec request(String.t, Map) :: {:ok, Map}
-  defp request(message, params) do
-    {:ok,
-      %{
-        path: "/",
-        params: %{
-          "Action" => "Publish",
-          "Message" => message,
-          "PhoneNumber" => params[:phone_number]
-        },
-        service: :sns,
-        action: :publish,
-        parser: &ExAws.SNS.Parsers.parse/2
-      }
-    }
+    send self(), operation.action
+    case operation.action do
+      :publish ->
+        {:ok, %{
+          body: %{
+            message_id: "123",
+            request_id: "345"
+          }
+        }}
+      :list_phone_numbers_opted_out ->
+        {:ok, %{
+          body: %{
+            phone_numbers: ["+19999999999"],
+            next_token: nil,
+            request_id: "123"
+          }
+        }}
+      :opt_in_phone_number ->
+        {:ok, %{
+          body: %{
+            request_id: "345"
+          }
+        }}
+      _ ->
+        {:error, operation}
+    end
   end
 end

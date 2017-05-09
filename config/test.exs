@@ -23,7 +23,6 @@ config :mbta_server, MbtaServer.AlertProcessor.HoldingQueue,
 
 # Config for ExAws lib
 config :mbta_server, :ex_aws, ExAws.Mock
-config :mbta_server, :ex_aws_sns, ExAws.SNS.Mock
 
 # Config for alert parser
 config :mbta_server, :alert_parser, MbtaServer.AlertProcessor.AlertParserMock
