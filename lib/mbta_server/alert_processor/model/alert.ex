@@ -2,10 +2,9 @@ defmodule MbtaServer.AlertProcessor.Model.Alert do
   @moduledoc """
   Representation of alert received from MBTA /alerts endpoint
   """
-
   alias MbtaServer.AlertProcessor.{Model.Subscription, Helpers.DateTimeHelper, TimeFrameComparison}
 
-  defstruct [:active_period, :effect_name, :id, :header, :informed_entities, :severity]
+  defstruct [:active_period, :effect_name, :id, :header, :informed_entities, :severity, :updated_at]
 
   @type t :: %__MODULE__{
     active_period: [%{start: DateTime.t, end: DateTime.t | nil}],
@@ -14,7 +13,8 @@ defmodule MbtaServer.AlertProcessor.Model.Alert do
     id: String.t,
     informed_entities: [map],
     severity: atom,
-    active_period: [map]
+    active_period: [map],
+    updated_at: DateTime.t
   }
 
   @route_types %{
