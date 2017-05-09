@@ -13,8 +13,8 @@ defmodule MbtaServer.AlertProcessor.AlertCache do
   update_cache/2 takes the name of the cache and a map of alerts.
   On update, the current cached alerts are retrieved and diffed against the new set of alerts
   which are then stored. Returned is a tuple containing a list of new alerts to be processed,
-  and a list of removed alert ids to be removed from the holding queue since the alert is no
-  longer active.
+  and a list of removed alert and updated alert ids to be removed from the holding queue
+  since the alert is no longer active.
   """
   @spec update_cache(atom, map) :: {[map], [String.t]}
   def update_cache(name \\ __MODULE__, alerts) do
@@ -27,12 +27,10 @@ defmodule MbtaServer.AlertProcessor.AlertCache do
 
   def handle_call({:update_cache, new_alerts}, _from, %{alerts: old_alerts}) do
     removed_alert_ids =  Map.keys(old_alerts) -- Map.keys(new_alerts)
-    {unchanged_alerts, updated_alerts} = segment_alerts(new_alerts,
-                                                        old_alerts,
-                                                        removed_alert_ids)
-    response = {unchanged_alerts,
-                removed_alert_ids,
-                updated_alerts}
+    {alerts, updated_alert_ids} = segment_alerts(new_alerts,
+                                                 old_alerts,
+                                                 removed_alert_ids)
+    response = {alerts, removed_alert_ids ++ updated_alert_ids}
     {:reply, response, %{alerts: new_alerts}}
   end
 
@@ -43,13 +41,18 @@ defmodule MbtaServer.AlertProcessor.AlertCache do
   defp segment_alerts(new_alerts, old_alerts, removed_alert_ids) do
     new = alerts_list(new_alerts)
 
-    updated_alerts = old_alerts
+    updated_alert_ids = old_alerts
     |> alerts_list
     |> without_removed(removed_alert_ids)
     |> pair_by_id(new)
     |> find_updated_alerts
+    |> extract_ids
 
-    {new -- updated_alerts, updated_alerts}
+    {new, updated_alert_ids}
+  end
+
+  defp extract_ids(alerts) do
+    Enum.map(alerts, &(&1[:id]))
   end
 
   defp find_updated_alerts(alerts) do
@@ -81,11 +84,6 @@ defmodule MbtaServer.AlertProcessor.AlertCache do
     updated_value(new_alert) != updated_value(old_alert)
   end
 
-  defp updated_value(alert) do
-    if Map.has_key?(alert, :updated_at) do
-      alert.updated_at
-    else
-      nil
-    end
-  end
+  defp updated_value(%{updated_at: updated_at}), do: updated_at
+  defp updated_value(_), do: nil
 end
