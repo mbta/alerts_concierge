@@ -8,7 +8,7 @@ defmodule MbtaServer.AlertProcessor.SentAlertFilterTest do
   @alert %Alert{id: "123"}
 
   describe "filter/1" do
-    test "returns all users who have not received the alert" do
+    test "returns all subscriptions that have not received the alert" do
       user = insert(:user)
       sub1 = insert(:subscription, user: user)
       other_notification_user = insert(:user)
@@ -43,7 +43,7 @@ defmodule MbtaServer.AlertProcessor.SentAlertFilterTest do
       assert [] == QueryHelper.execute_query(query)
     end
 
-    test "returns the user if notification failed" do
+    test "returns the subscription if notification failed" do
       user = insert(:user)
       subscription = insert(:subscription, user: user)
 
@@ -59,6 +59,30 @@ defmodule MbtaServer.AlertProcessor.SentAlertFilterTest do
 
       assert {:ok, query, @alert} = SentAlertFilter.filter(@alert)
       assert [subscription.id] == QueryHelper.execute_query(query)
+    end
+
+    test "returns subscriptions that have received the alert if the last_push_notification changed" do
+      user = insert(:user)
+      sub1 = insert(:subscription, user: user)
+      now = DateTime.utc_now
+      later = now |> Calendar.DateTime.add!(1800)
+      alert = %Alert{id: "123", updated_at: now}
+      updated_alert = %Alert{id: "123", updated_at: later}
+      notification = %Notification{
+        alert_id: "123",
+        user_id: user.id,
+        email: "a@b.com",
+        message: "You are being notified",
+        status: :sent,
+        last_push_notification: now
+      }
+      Repo.insert(Notification.create_changeset(notification))
+
+      assert {:ok, query, _alert} = SentAlertFilter.filter(alert)
+      assert [] == QueryHelper.execute_query(query)
+
+      assert {:ok, query2, _alert2} = SentAlertFilter.filter(updated_alert)
+      assert [sub1.id] == QueryHelper.execute_query(query2)
     end
   end
 end

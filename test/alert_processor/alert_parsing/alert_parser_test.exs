@@ -40,7 +40,7 @@ defmodule MbtaServer.AlertProcessor.AlertParserTest do
     build(:subscription, user: user4, alert_priority_type: :low, informed_entities: [%InformedEntity{route_type: 3, route: "19"}])
     |> weekday_subscription
     |> insert
-    insert(:notification, alert_id: "177528", user: user4, email: user4.email, phone_number: user4.phone_number, status: "sent", send_after: ~N[2017-04-25 10:00:00])
+    insert(:notification, alert_id: "177528", last_push_notification: ~N[2017-04-11 11:53:33], user: user4, email: user4.email, phone_number: user4.phone_number, status: "sent", send_after: ~N[2017-04-25 10:00:00])
     use_cassette "route_19_minor_delay", custom: true do
       assert [{:ok, [%Notification{}]} | _t] = AlertParser.process_alerts
       assert_delivered_email NotificationMailer.notification_email("Route 19 experiencing minor delays due to traffic", user1.email)

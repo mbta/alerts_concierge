@@ -11,7 +11,8 @@ defmodule MbtaServer.AlertProcessor.Model.Notification do
     header: String.t,
     phone_number: String.t,
     email: String.t,
-    status: atom
+    status: atom,
+    last_push_notification: DateTime.t
   }
 
   use Ecto.Schema
@@ -36,11 +37,12 @@ defmodule MbtaServer.AlertProcessor.Model.Notification do
     field :phone_number, :string
     field :email, :string
     field :status, MbtaServer.AlertProcessor.AtomType
+    field :last_push_notification, :utc_datetime
 
     timestamps()
   end
 
-  @permitted_fields ~w(alert_id user_id send_after message header phone_number email status)a
+  @permitted_fields ~w(alert_id user_id send_after message header phone_number email status last_push_notification)a
   @required_fields ~w(alert_id user_id message)a
 
   @doc """

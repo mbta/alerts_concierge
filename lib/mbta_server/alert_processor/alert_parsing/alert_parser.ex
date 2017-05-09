@@ -51,7 +51,8 @@ defmodule MbtaServer.AlertProcessor.AlertParser do
         "effect_name" => effect_name,
         "header" => header,
         "informed_entity" => informed_entities,
-        "severity" => severity
+        "severity" => severity,
+        "updated_at" => updated_at
       },
       "id" => alert_id
     }, facilities_map, accumulator
@@ -65,13 +66,19 @@ defmodule MbtaServer.AlertProcessor.AlertParser do
         effect_name: effect_name,
         header: header,
         informed_entities: parse_informed_entities(informed_entities, facilities_map),
-        severity: severity |> String.downcase |> String.to_existing_atom
+        severity: severity |> String.downcase |> String.to_existing_atom,
+        updated_at: parse_datetime(updated_at)
       })
     )
   end
 
   defp parse_alert(_, _, accumulator) do
     accumulator
+  end
+
+  defp parse_datetime(datetime) do
+    {:ok, dt, _} = DateTime.from_iso8601(datetime)
+    dt
   end
 
   defp parse_active_periods(active_periods) do
