@@ -12,6 +12,5 @@ defmodule MbtaServer.AlertProcessor.NotificationSmserTest do
     assert params["Message"] == message
     assert params["PhoneNumber"] == user_phone_number
     assert params["Action"] == "Publish"
-    assert_received :published_sms
   end
 end

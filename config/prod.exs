@@ -28,7 +28,6 @@ config :logger, level: :info
 
 # Config for ExAws lib
 config :mbta_server, :ex_aws, ExAws
-config :mbta_server, :ex_aws_sns, ExAws.SNS
 
 # ## SSL Support
 #

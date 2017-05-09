@@ -5,11 +5,12 @@ defmodule MbtaServer.AlertProcessor.Helpers.ConfigHelper do
   """
 
   @spec get(atom, atom) :: String.t | integer
-  def get(name, type \\ :string) do
-    case type do
-      :string -> do_get(name)
-      :int -> name |> do_get() |> String.to_integer()
-    end
+  def get(name) do
+    do_get(name)
+  end
+
+  def get(name, :int) do
+    name |> do_get() |> String.to_integer()
   end
 
   defp do_get(name) do

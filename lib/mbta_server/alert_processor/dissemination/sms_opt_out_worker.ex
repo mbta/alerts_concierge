@@ -12,7 +12,6 @@ defmodule MbtaServer.AlertProcessor.SmsOptOutWorker do
   alias MbtaServer.AlertProcessor.Helpers.ConfigHelper
 
   @ex_aws Application.get_env(:mbta_server, :ex_aws)
-  @ex_aws_sns Application.get_env(:mbta_server, :ex_aws_sns)
   @type phone_number :: String.t
 
   @doc false
@@ -32,7 +31,7 @@ defmodule MbtaServer.AlertProcessor.SmsOptOutWorker do
   fetch opted out list, process and reschedule next occurrence
   """
   def handle_info(:work, state) do
-    {opted_out_phone_numbers, _processed_user_ids} = do_work(state)
+    opted_out_phone_numbers = do_work(state)
     schedule_work()
     {:noreply, opted_out_phone_numbers}
   end
@@ -45,14 +44,15 @@ defmodule MbtaServer.AlertProcessor.SmsOptOutWorker do
     ConfigHelper.get(:opted_out_list_fetch_interval, :int)
   end
 
-  @spec do_work([phone_number]) :: {[phone_number], [User.id]}
+  @spec do_work([phone_number]) :: [phone_number]
   defp do_work(state) do
     with opted_out_phone_numbers <- fetch_opted_out_list(nil),
       {:ok, new_opted_out_numbers} <- get_new_opted_out_numbers(state, opted_out_phone_numbers),
       {:ok, user_ids} <- get_opted_out_user_ids(new_opted_out_numbers) do
-      {opted_out_phone_numbers, update_users_opted_out(user_ids)}
+      update_users_opted_out(user_ids)
+      opted_out_phone_numbers
     else
-      _ -> {state, []}
+      _ -> state
     end
   end
 
@@ -69,8 +69,8 @@ defmodule MbtaServer.AlertProcessor.SmsOptOutWorker do
   @spec list_phone_numbers_opted_out_query(String.t | nil) :: ExAws.Operation.Query.t
   defp list_phone_numbers_opted_out_query(next_token) do
     case next_token do
-      nil -> @ex_aws_sns.list_phone_numbers_opted_out()
-      _ -> @ex_aws_sns.list_phone_numbers_opted_out(next_token)
+      nil -> ExAws.SNS.list_phone_numbers_opted_out()
+      _ -> ExAws.SNS.list_phone_numbers_opted_out(next_token)
     end
   end
 
@@ -84,7 +84,7 @@ defmodule MbtaServer.AlertProcessor.SmsOptOutWorker do
 
   @spec get_opted_out_user_ids([phone_number]) :: [User.id] | :error
   defp get_opted_out_user_ids(new_opted_out_numbers) do
-    case Repo.all(from u in User, where: u.phone_number in ^new_opted_out_numbers, select: u.id) do
+    case User.ids_by_phone_numbers(new_opted_out_numbers) do
       [] -> :error
       user_ids -> {:ok, user_ids}
     end
@@ -92,9 +92,7 @@ defmodule MbtaServer.AlertProcessor.SmsOptOutWorker do
 
   @spec update_users_opted_out([User.id]) :: [User.id]
   defp update_users_opted_out(user_ids) do
-    Repo.update_all(from(u in User, where: u.id in ^user_ids),
-                    set: [vacation_start: DateTime.utc_now(),
-                          vacation_end: DateTime.from_naive!(~N[9999-12-25 23:59:59], "Etc/UTC")])
+    User.put_users_on_indefinite_vacation(user_ids)
     Enum.map(user_ids, &HoldingQueue.remove_user_notifications/1)
   end
 end

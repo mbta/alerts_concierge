@@ -16,7 +16,8 @@ defmodule MbtaServer.User do
   @type id :: String.t
 
   use Ecto.Schema
-  import Ecto.Changeset
+  import Ecto.{Changeset, Query}
+  alias MbtaServer.Repo
   alias MbtaServer.AlertProcessor.Model.Subscription
 
   @primary_key {:id, :binary_id, autogenerate: true}
@@ -45,5 +46,21 @@ defmodule MbtaServer.User do
     struct
     |> cast(params, @permitted_fields)
     |> validate_required(@required_fields)
+  end
+
+  @doc """
+  Returns user ids based on a list of phone numbers
+  """
+  def ids_by_phone_numbers(phone_numbers) do
+    Repo.all(from u in __MODULE__, where: u.phone_number in ^phone_numbers, select: u.id)
+  end
+
+  @doc """
+  Takes a list of user ids and puts on vacation mode ending in the year 9999
+  """
+  def put_users_on_indefinite_vacation(user_ids) do
+    Repo.update_all(from(u in __MODULE__, where: u.id in ^user_ids),
+                    set: [vacation_start: DateTime.utc_now(),
+                          vacation_end: DateTime.from_naive!(~N[9999-12-25 23:59:59], "Etc/UTC")])
   end
 end
