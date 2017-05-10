@@ -66,8 +66,8 @@ defmodule MbtaServer.AlertProcessor.SentAlertFilterTest do
       sub1 = insert(:subscription, user: user)
       now = DateTime.utc_now
       later = now |> Calendar.DateTime.add!(1800)
-      alert = %Alert{id: "123", updated_at: now}
-      updated_alert = %Alert{id: "123", updated_at: later}
+      alert = %Alert{id: "123", last_push_notification: now}
+      updated_alert = %Alert{id: "123", last_push_notification: later}
       notification = %Notification{
         alert_id: "123",
         user_id: user.id,

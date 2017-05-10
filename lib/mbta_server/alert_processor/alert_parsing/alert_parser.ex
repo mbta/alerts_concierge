@@ -67,7 +67,7 @@ defmodule MbtaServer.AlertProcessor.AlertParser do
         header: header,
         informed_entities: parse_informed_entities(informed_entities, facilities_map),
         severity: severity |> String.downcase |> String.to_existing_atom,
-        updated_at: parse_datetime(updated_at)
+        last_push_notification: parse_datetime(updated_at)
       })
     )
   end

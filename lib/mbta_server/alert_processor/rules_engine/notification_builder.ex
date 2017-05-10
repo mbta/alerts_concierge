@@ -36,7 +36,7 @@ defmodule MbtaServer.AlertProcessor.NotificationBuilder do
               email: user.email,
               status: :unsent,
               send_after: time,
-              last_push_notification: alert.updated_at # Note: update when API changes
+              last_push_notification: alert.last_push_notification
             }
           [notification | result]
       end

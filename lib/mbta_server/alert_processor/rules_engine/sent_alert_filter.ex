@@ -14,7 +14,7 @@ defmodule MbtaServer.AlertProcessor.SentAlertFilter do
   Note: We will use updated_at in lieu of last_push_notification until the API supports that field
   """
   @spec filter(Alert.t) :: {:ok, Ecto.Queryable.t, Alert.t}
-  def filter(%Alert{id: alert_id, updated_at: last_push_notification} = alert) do
+  def filter(%Alert{id: alert_id, last_push_notification: lpn} = alert) do
     query = from s in Subscription,
       join: u in User,
       on: s.user_id == u.id,
@@ -22,7 +22,7 @@ defmodule MbtaServer.AlertProcessor.SentAlertFilter do
         "? not in (select n.user_id from notifications n where n.status = 'sent' and n.alert_id = ? and n.last_push_notification = ?)",
         u.id,
         ^alert_id,
-        ^last_push_notification
+        ^lpn
       ),
       distinct: true
 

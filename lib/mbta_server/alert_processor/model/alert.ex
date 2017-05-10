@@ -4,7 +4,7 @@ defmodule MbtaServer.AlertProcessor.Model.Alert do
   """
   alias MbtaServer.AlertProcessor.{Model.Subscription, Helpers.DateTimeHelper, TimeFrameComparison}
 
-  defstruct [:active_period, :effect_name, :id, :header, :informed_entities, :severity, :updated_at]
+  defstruct [:active_period, :effect_name, :id, :header, :informed_entities, :severity, :last_push_notification]
 
   @type t :: %__MODULE__{
     active_period: [%{start: DateTime.t, end: DateTime.t | nil}],
@@ -14,7 +14,7 @@ defmodule MbtaServer.AlertProcessor.Model.Alert do
     informed_entities: [map],
     severity: atom,
     active_period: [map],
-    updated_at: DateTime.t
+    last_push_notification: DateTime.t
   }
 
   @route_types %{
