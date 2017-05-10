@@ -18,7 +18,7 @@ defmodule MbtaServer.AlertProcessor.SeverityFilter do
   @spec filter({:ok, Ecto.Queryable.t, Alert.t}) :: {:ok, Ecto.Queryable.t, Alert.t}
   def filter({:ok, previous_query, %Alert{} = alert}) do
     alert_severity_value = Alert.severity_value(alert)
-    query = from s in previous_query,
+    query = from s in subquery(previous_query),
       where: s.alert_priority_type == "low" and ^(alert_severity_value >= Subscription.severity_value(:low)),
       or_where: s.alert_priority_type == "medium" and ^(alert_severity_value >= Subscription.severity_value(:medium)),
       or_where: s.alert_priority_type == "high" and ^(alert_severity_value >= Subscription.severity_value(:high))
