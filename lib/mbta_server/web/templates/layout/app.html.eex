@@ -13,7 +13,7 @@
 
   <body>
     <div class="container">
-      <main class="<%= get_page_classes(@view_module, @view_template) %>" id="main" tabindex="-1">
+      <main id="main" tabindex="-1">
         <%= render @view_module, @view_template, assigns %>
       </main>
     </div>
