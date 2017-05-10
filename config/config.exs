@@ -42,6 +42,22 @@ config :mbta_server, alert_fetch_interval: {:system, "ALERT_FETCH_INTERVAL", "60
 
 config :mbta_server, opted_out_list_fetch_interval: {:system, "OPTED_OUT_LIST_FETCH_INTERVAL", "300000"}
 
+config :guardian, Guardian,
+  allowed_algos: ["HS512"],
+  verify_module: Guardian.JWT,
+  issuer: "AlertsConcierge",
+  ttl: { 30, :days },
+  allowed_drift: 2000,
+  verify_issuer: true,
+  secret_key: {:system, "GUARDIAN_AUTH_KEY", "default_key"},
+  serializer: MbtaServer.GuardianSerializer,
+  hooks: GuardianDb
+
+config :guardian_db, GuardianDb,
+  repo: MbtaServer.Repo,
+  schema_name: "guardian_tokens",
+  sweep_interval: 120
+
 # Import environment specific config. This must remain at the bottom
 # of this file so it overrides the configuration defined above.
 import_config "#{Mix.env}.exs"

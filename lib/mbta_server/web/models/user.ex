@@ -31,13 +31,15 @@ defmodule MbtaServer.User do
     field :vacation_end, :utc_datetime
     field :do_not_disturb_start, :time
     field :do_not_disturb_end, :time
+    field :encrypted_password, :string
+    field :password, :string, virtual: true
 
     timestamps()
   end
 
   @permitted_fields ~w(email phone_number role vacation_start
-    vacation_end do_not_disturb_start do_not_disturb_end)a
-  @required_fields ~w(email role)a
+    vacation_end do_not_disturb_start do_not_disturb_end password)a
+  @required_fields ~w(email role password)a
 
   @doc """
   Builds a changeset based on the `struct` and `params`.

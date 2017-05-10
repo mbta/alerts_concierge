@@ -3,7 +3,7 @@ defmodule MbtaServer.UserTest do
 
   alias MbtaServer.User
 
-  @valid_attrs %{email: "some email", role: "user"}
+  @valid_attrs %{email: "some email", role: "user", password: "password1"}
   @invalid_attrs %{}
 
   test "changeset with valid attributes" do
