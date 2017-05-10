@@ -35,7 +35,8 @@ defmodule MbtaServer.AlertProcessor.NotificationBuilder do
               phone_number: user.phone_number,
               email: user.email,
               status: :unsent,
-              send_after: time
+              send_after: time,
+              last_push_notification: alert.last_push_notification
             }
           [notification | result]
       end
