@@ -60,67 +60,61 @@ defmodule MbtaServer.AlertProcessor.ActivePeriodFilterTest do
   describe "active period with end date" do
     test "matches if subscription timeframe falls completely between active period", %{alert1: alert1} do
       subscription = build(:subscription) |> weekday_subscription |> insert
-      previous_query = QueryHelper.generate_query(Subscription, [subscription.id])
+      sunday_subscription = build(:subscription) |> sunday_subscription |> insert
+      previous_query = QueryHelper.generate_query(Subscription, [subscription.id, sunday_subscription.id])
       assert {:ok, query, ^alert1} = ActivePeriodFilter.filter({:ok, previous_query, alert1})
       assert [subscription.id] == QueryHelper.execute_query(query)
     end
 
     test "matches if active period falls completely between subscription timeframe", %{alert2: alert2} do
       subscription = build(:subscription) |> weekday_subscription |> insert
-      previous_query = QueryHelper.generate_query(Subscription, [subscription.id])
+      sunday_subscription = build(:subscription) |> sunday_subscription |> insert
+      previous_query = QueryHelper.generate_query(Subscription, [subscription.id, sunday_subscription.id])
       assert {:ok, query, ^alert2} = ActivePeriodFilter.filter({:ok, previous_query, alert2})
       assert [subscription.id] == QueryHelper.execute_query(query)
     end
 
     test "does not match if active period is completely outside of subscription timeframe", %{alert3: alert3} do
       subscription = build(:subscription) |> sunday_subscription |> insert
-      previous_query = QueryHelper.generate_query(Subscription, [subscription.id])
+      weekday_subscription = build(:subscription) |> weekday_subscription |> insert
+      previous_query = QueryHelper.generate_query(Subscription, [subscription.id, weekday_subscription.id])
       assert {:ok, query, ^alert3} = ActivePeriodFilter.filter({:ok, previous_query, alert3})
       assert [] == QueryHelper.execute_query(query)
     end
 
     test "matches if one active period matches subscription timeframe and one does not", %{alert4: alert4} do
       subscription = build(:subscription) |> weekday_subscription |> insert
-      previous_query = QueryHelper.generate_query(Subscription, [subscription.id])
+      sunday_subscription = build(:subscription) |> sunday_subscription |> insert
+      previous_query = QueryHelper.generate_query(Subscription, [subscription.id, sunday_subscription.id])
       assert {:ok, query, ^alert4} = ActivePeriodFilter.filter({:ok, previous_query, alert4})
       assert [subscription.id] == QueryHelper.execute_query(query)
     end
 
     test "matches multiday active period", %{alert5: alert5} do
       subscription = build(:subscription) |> weekday_subscription |> insert
-      previous_query = QueryHelper.generate_query(Subscription, [subscription.id])
+      sunday_subscription = build(:subscription) |> sunday_subscription |> insert
+      previous_query = QueryHelper.generate_query(Subscription, [subscription.id, sunday_subscription.id])
       assert {:ok, query, ^alert5} = ActivePeriodFilter.filter({:ok, previous_query, alert5})
       assert [subscription.id] == QueryHelper.execute_query(query)
     end
 
     test "matches multiday active period more than 1 day difference", %{alert6: alert6} do
       subscription = build(:subscription) |> weekday_subscription |> insert
-      previous_query = QueryHelper.generate_query(Subscription, [subscription.id])
+      sunday_subscription = build(:subscription) |> sunday_subscription |> insert
+      previous_query = QueryHelper.generate_query(Subscription, [subscription.id, sunday_subscription.id])
       assert {:ok, query, ^alert6} = ActivePeriodFilter.filter({:ok, previous_query, alert6})
-      assert [] == QueryHelper.execute_query(query)
+      assert [sunday_subscription.id] == QueryHelper.execute_query(query)
     end
   end
 
   describe "active period without end date" do
     test "it matches weekday subscription", %{alert7: alert7} do
-      subscription = build(:subscription) |> weekday_subscription |> insert
-      previous_query = QueryHelper.generate_query(Subscription, [subscription.id])
+      weekday_subscription = build(:subscription) |> weekday_subscription |> insert
+      saturday_subscription = build(:subscription) |> saturday_subscription |> insert
+      sunday_subscription = build(:subscription) |> sunday_subscription |> insert
+      previous_query = QueryHelper.generate_query(Subscription, [weekday_subscription.id, saturday_subscription.id, sunday_subscription.id])
       assert {:ok, query, ^alert7} = ActivePeriodFilter.filter({:ok, previous_query, alert7})
-      assert [subscription.id] == QueryHelper.execute_query(query)
-    end
-
-    test "it matches sunday subscription", %{alert7: alert7} do
-      subscription = build(:subscription) |> sunday_subscription |> insert
-      previous_query = QueryHelper.generate_query(Subscription, [subscription.id])
-      assert {:ok, query, ^alert7} = ActivePeriodFilter.filter({:ok, previous_query, alert7})
-      assert [subscription.id] == QueryHelper.execute_query(query)
-    end
-
-    test "it matches saturday subscription", %{alert7: alert7} do
-      subscription = build(:subscription) |> saturday_subscription |> insert
-      previous_query = QueryHelper.generate_query(Subscription, [subscription.id])
-      assert {:ok, query, ^alert7} = ActivePeriodFilter.filter({:ok, previous_query, alert7})
-      assert [subscription.id] == QueryHelper.execute_query(query)
+      assert MapSet.new([weekday_subscription.id, saturday_subscription.id, sunday_subscription.id]) == MapSet.new(QueryHelper.execute_query(query))
     end
   end
 end
