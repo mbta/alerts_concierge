@@ -24,6 +24,7 @@ defmodule MbtaServer.Mixfile do
         :bamboo,
         :bamboo_smtp,
         :calendar,
+        :comeonin,
         :sweet_xml, # Must come before ex_aws
         :ex_aws,
         :guardian_db,
@@ -53,6 +54,7 @@ defmodule MbtaServer.Mixfile do
       {:bamboo_smtp, "~> 1.3.0"},
       {:bodyguard, "~> 1.0.0"},
       {:calendar, "~> 0.16.1"},
+      {:comeonin, "~> 3.0"},
       {:cowboy, "~> 1.0"},
       {:credo, "~> 0.7", only: [:dev, :test]},
       {:dialyxir, "~> 0.5.0", only: [:dev]},

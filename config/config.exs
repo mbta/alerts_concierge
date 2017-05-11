@@ -49,7 +49,7 @@ config :guardian, Guardian,
   ttl: { 30, :days },
   allowed_drift: 2000,
   verify_issuer: true,
-  secret_key: {:system, "GUARDIAN_AUTH_KEY", "default_key"},
+  secret_key:  System.get_env("GUARDIAN_AUTH_KEY"),
   serializer: MbtaServer.GuardianSerializer,
   hooks: GuardianDb
 

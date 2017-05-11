@@ -3,7 +3,7 @@ defmodule MbtaServer.Repo.Migrations.AddPasswordToUsers do
 
   def change do
     alter table(:users, primary_key: false) do
-      add :encrypted_password, :string
+      add :encrypted_password, :string, null: false
     end
   end
 end

@@ -24,5 +24,6 @@ config :mbta_server, MbtaServer.AlertProcessor.HoldingQueue,
 # Config for ExAws lib
 config :mbta_server, :ex_aws, ExAws.Mock
 
+config :guardian, Guardian, secret_key: "top_secret_key"
 # Config for alert parser
 config :mbta_server, :alert_parser, MbtaServer.AlertProcessor.AlertParserMock

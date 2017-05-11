@@ -19,19 +19,20 @@ defmodule MbtaServer.User do
   import Ecto.{Changeset, Query}
   alias MbtaServer.Repo
   alias MbtaServer.AlertProcessor.Model.Subscription
+  alias Comeonin.Bcrypt
 
   @primary_key {:id, :binary_id, autogenerate: true}
 
   schema "users" do
     has_one :subscription, Subscription
-    field :email, :string
+    field :email, :string, null: false
     field :phone_number, :string
     field :role, :string
     field :vacation_start, :utc_datetime
     field :vacation_end, :utc_datetime
     field :do_not_disturb_start, :time
     field :do_not_disturb_end, :time
-    field :encrypted_password, :string
+    field :encrypted_password, :string, null: false
     field :password, :string, virtual: true
 
     timestamps()
@@ -48,6 +49,34 @@ defmodule MbtaServer.User do
     struct
     |> cast(params, @permitted_fields)
     |> validate_required(@required_fields)
+  end
+
+  @doc """
+  Builds a changeset to verify login
+  """
+  def login_changeset(struct, params \\ %{}) do
+    struct
+    |> cast(params, [:email, :password])
+    |> validate_required([:email, :password])
+  end
+
+  @doc """
+  Checks if user's login credentials are valid
+  """
+  def authenticate(%{"email" => email, "password" => password} = params) do
+    user = Repo.get_by(__MODULE__, email: email)
+    case check_password(user, password) do
+      true -> {:ok, user}
+      false -> {:error, login_changeset(user, params)}
+      :error -> {:error, login_changeset(%__MODULE__{}, params)}
+    end
+  end
+
+  defp check_password(user, password) do
+    case user do
+      nil -> :error
+      _ -> Bcrypt.checkpw(password, user.encrypted_password)
+    end
   end
 
   @doc """
