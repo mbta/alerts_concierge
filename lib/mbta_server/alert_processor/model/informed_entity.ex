@@ -6,9 +6,11 @@ defmodule MbtaServer.AlertProcessor.Model.InformedEntity do
 
   alias MbtaServer.AlertProcessor.Model.Subscription
 
+  @type facility_type :: :elevator | :escalator
+
   @type t :: %__MODULE__{
     direction_id: integer,
-    facility_type: :elevator | :escalator,
+    facility_type: facility_type,
     route: String.t,
     route_type: integer,
     subscription_id: String.t,
