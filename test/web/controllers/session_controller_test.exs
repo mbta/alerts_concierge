@@ -6,10 +6,9 @@ defmodule MbtaServer.Web.SessionControllerTest do
   @encrypted_password Comeonin.Bcrypt.hashpwsalt(@password)
 
   test "GET /login", %{conn: conn} do
-    conn = get(conn, "/login")
+    conn = get(conn, "/login/new")
     assert html_response(conn, 200) =~ "Transportation alerts when you need them"
   end
-
 
   test "POST /login", %{conn: conn} do
     user = Repo.insert!(%User{email: "test@email.com",

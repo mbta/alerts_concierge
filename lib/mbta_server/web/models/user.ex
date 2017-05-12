@@ -65,16 +65,16 @@ defmodule MbtaServer.User do
   """
   def authenticate(%{"email" => email, "password" => password} = params) do
     user = Repo.get_by(__MODULE__, email: email)
-    case check_password(user, password) do
-      true -> {:ok, user}
-      false -> {:error, login_changeset(user, params)}
-      :error -> {:error, login_changeset(%__MODULE__{}, params)}
+    if check_password(user, password) do
+      {:ok, user}
+    else
+      {:error, login_changeset(%__MODULE__{}, params)}
     end
   end
 
   defp check_password(user, password) do
     case user do
-      nil -> :error
+      nil -> Bcrypt.dummy_checkpw()
       _ -> Bcrypt.checkpw(password, user.encrypted_password)
     end
   end

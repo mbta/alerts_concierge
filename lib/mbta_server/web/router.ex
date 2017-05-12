@@ -22,8 +22,7 @@ defmodule MbtaServer.Web.Router do
     pipe_through :browser
 
     get "/", PageController, :index
-    get "/login", SessionController, :new
-    post "/login", SessionController, :create
+    resources "/login", SessionController, only: [:new, :create]
   end
 
   scope "/", MbtaServer.Web do
