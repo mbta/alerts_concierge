@@ -10,7 +10,7 @@ defmodule MbtaServer.AlertProcessor.HoldingQueue do
 
   @doc false
   def start_link(notifications \\ []) do
-    GenServer.start_link(__MODULE__, notifications, [name: __MODULE__])
+    GenServer.start_link(__MODULE__, Enum.uniq(notifications), [name: __MODULE__])
   end
 
   @doc """
@@ -74,7 +74,7 @@ defmodule MbtaServer.AlertProcessor.HoldingQueue do
   end
   def handle_call({:push, notification}, _from, notifications) do
     newstate = [notification | notifications]
-    {:reply, :ok, newstate}
+    {:reply, :ok, Enum.uniq(newstate)}
   end
   def handle_call({:remove, removed_alert_ids}, _from, notifications) do
     newstate = Enum.reject(notifications, &Enum.member?(removed_alert_ids, &1.alert_id))

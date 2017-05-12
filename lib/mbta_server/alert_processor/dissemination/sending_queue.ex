@@ -41,7 +41,7 @@ defmodule MbtaServer.AlertProcessor.SendingQueue do
   @doc false
   def handle_call({:push, notification}, _from, notifications) do
     newstate = [notification | notifications]
-    {:reply, :ok, newstate}
+    {:reply, :ok, Enum.uniq(newstate)}
   end
 
   @doc false
