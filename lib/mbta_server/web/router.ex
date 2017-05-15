@@ -14,10 +14,6 @@ defmodule MbtaServer.Web.Router do
     plug Guardian.Plug.LoadResource
   end
 
-  pipeline :api do
-    plug :accepts, ["json"]
-  end
-
   scope "/", MbtaServer.Web do
     pipe_through :browser
 
