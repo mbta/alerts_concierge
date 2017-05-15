@@ -40,7 +40,8 @@ defmodule MbtaServer.Factory do
     %User{
       email: sequence(:email, &"email-#{&1}@example.com"),
       phone_number: sequence(:phone_number, &(String.pad_leading("#{&1}", 12, "+15555551234"))),
-      role: "user"
+      role: "user",
+      encrypted_password: "abc123"
     }
   end
 end

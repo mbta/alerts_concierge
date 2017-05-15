@@ -13,7 +13,8 @@ defmodule MbtaServer.Application do
       supervisor(MbtaServer.Repo, []),
       # Start the endpoint when the application starts
       supervisor(MbtaServer.Web.Endpoint, []),
-      supervisor(MbtaServer.AlertProcessor, [])
+      supervisor(MbtaServer.AlertProcessor, []),
+      worker(GuardianDb.ExpiredSweeper, [])
     ]
     # See http://elixir-lang.org/docs/stable/elixir/Supervisor.html
     # for other strategies and supported options

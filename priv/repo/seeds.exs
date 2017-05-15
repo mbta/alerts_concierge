@@ -11,9 +11,10 @@
 # and so on) as they will fail if something goes wrong.
 alias MbtaServer.{Repo, User}
 
+encrypted_password = Comeonin.Bcrypt.hashpwsalt("password1")
 users = [
-  %User{email: "test_email1@example.com", role: "user"},
-  %User{email: "test_email2@example.com", phone_number: "+15555551234", role: "user"}
+  %User{email: "test_email1@example.com", role: "user", password: "password1", encrypted_password: encrypted_password},
+  %User{email: "test_email2@example.com", phone_number: "+15555551234", role: "user", password: "password1", encrypted_password: encrypted_password}
 ]
 
 users |> Enum.each(&Repo.insert!/1)
