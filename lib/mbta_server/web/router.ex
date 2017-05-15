@@ -12,6 +12,8 @@ defmodule MbtaServer.Web.Router do
   pipeline :browser_auth do
     plug Guardian.Plug.VerifySession
     plug Guardian.Plug.LoadResource
+    plug Guardian.Plug.EnsureAuthenticated,
+      handler: MbtaServer.Web.SessionController
   end
 
   scope "/", MbtaServer.Web do

@@ -23,6 +23,15 @@ defmodule MbtaServer.Web.ConnCase do
 
       # The default endpoint for testing
       @endpoint MbtaServer.Web.Endpoint
+
+      def guardian_login(user, conn, token \\ :token, opts \\ []) do
+        conn
+          |> bypass_through(MbtaServer.Web.Router, [:browser])
+          |> get("/")
+          |> Guardian.Plug.sign_in(user, token, opts)
+          |> send_resp(200, "Flush the session")
+          |> recycle()
+      end
     end
   end
 

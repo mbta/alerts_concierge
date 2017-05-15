@@ -21,4 +21,10 @@ defmodule MbtaServer.Web.SessionController do
         render conn, "new.html", login_changeset: changeset
     end
   end
+
+  def unauthenticated(conn, _params) do
+    conn
+    |> put_flash(:info, "Please log in")
+    |> redirect(to: session_path(conn, :new))
+  end
 end
