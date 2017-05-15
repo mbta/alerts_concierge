@@ -23,4 +23,15 @@ defmodule MbtaServer.Web.SessionControllerTest do
     conn = post(conn, "/login", params)
     assert html_response(conn, 302) =~ "<a href=\"/my-subscriptions\">"
   end
+
+  test "DELETE /login", %{conn: conn} do
+    user = Repo.insert!(%User{email: "test@email.com",
+                              role: "user",
+                              encrypted_password: @encrypted_password})
+    conn = user
+    |> guardian_login(conn)
+    |> delete("/login")
+
+    assert html_response(conn, 302) =~ "login/new"
+  end
 end
