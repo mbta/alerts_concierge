@@ -1,6 +1,7 @@
-defmodule MbtaServer.NotificationMailer do
-  @moduledoc "Module to handle sending email messages through Bamboo's smtp adapter."
-  use Bamboo.Phoenix, view: MbtaServer.Email.NotificationView
+defmodule MbtaServer.AlertProcessor.NotificationMailer do
+  @moduledoc "Bamboo Mailer interface"
+  use Bamboo.Mailer, otp_app: :mbta_server
+  import Bamboo.Email
 
   @doc "notification_email/2 takes a message and a user's email address and builds an email to be sent to user."
   @spec notification_email(String.t, String.t) :: Elixir.Bamboo.Email.t
@@ -8,15 +9,13 @@ defmodule MbtaServer.NotificationMailer do
     base_email()
     |> to(user_email)
     |> subject("Test Email")
-    |> assign(:subject, "Test Email")
-    |> assign(:email_body, message)
-    |> render(:notification)
+    |> html_body("<p>" <> message <> "</p>")
+    |> text_body(message)
   end
 
   @spec base_email() :: Elixir.Bamboo.Email.t
   defp base_email do
     new_email()
     |> from("faizaan@intrepid.io")
-    |> put_layout({MbtaServer.Web.LayoutView, :mail})
   end
 end

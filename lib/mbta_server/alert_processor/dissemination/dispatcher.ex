@@ -4,8 +4,7 @@ defmodule MbtaServer.AlertProcessor.Dispatcher do
   """
   @ex_aws Application.get_env(:mbta_server, :ex_aws)
 
-  alias MbtaServer.{NotificationMailer, Mailer}
-  alias MbtaServer.AlertProcessor.{NotificationSmser, Model.Notification}
+  alias MbtaServer.AlertProcessor.{Model.Notification, NotificationMailer, NotificationSmser}
 
   @type ex_aws_success :: {:ok, map}
   @type ex_aws_error :: {:error, map}
@@ -43,14 +42,14 @@ defmodule MbtaServer.AlertProcessor.Dispatcher do
   defp do_send_notification(email, nil, notification) do
     email = notification
     |> NotificationMailer.notification_email(email)
-    |> Mailer.deliver_later
+    |> NotificationMailer.deliver_later
     {:ok, email}
   end
 
   defp do_send_notification(email, phone_number, notification) do
     notification
     |> NotificationMailer.notification_email(email)
-    |> Mailer.deliver_later
+    |> NotificationMailer.deliver_later
     notification
     |> NotificationSmser.notification_sms(phone_number)
     |> @ex_aws.request([])

@@ -23,7 +23,7 @@ config :logger, :console,
   metadata: [:request_id]
 
 # Bamboo
-config :mbta_server, MbtaServer.Mailer,
+config :mbta_server, MbtaServer.AlertProcessor.NotificationMailer,
   adapter: Bamboo.LocalAdapter
 
 config :mbta_server, MbtaServer.AlertProcessor,

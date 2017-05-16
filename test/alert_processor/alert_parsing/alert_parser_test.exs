@@ -3,8 +3,7 @@ defmodule MbtaServer.AlertProcessor.AlertParserTest do
   use ExVCR.Mock, adapter: ExVCR.Adapter.Hackney
   use Bamboo.Test, shared: :true
   import MbtaServer.Factory
-  alias MbtaServer.NotificationMailer
-  alias MbtaServer.AlertProcessor.{AlertParser, Model.InformedEntity, Model.Notification}
+  alias MbtaServer.AlertProcessor.{AlertParser, Model.InformedEntity, Model.Notification, NotificationMailer}
 
   setup_all do
     HTTPoison.start

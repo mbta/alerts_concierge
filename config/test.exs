@@ -15,7 +15,7 @@ config :mbta_server, MbtaServer.AlertProcessor.Repo,
   pool: Ecto.Adapters.SQL.Sandbox
 
 # Bamboo
-config :mbta_server, MbtaServer.Mailer,
+config :mbta_server, MbtaServer.AlertProcessor.NotificationMailer,
   adapter: Bamboo.TestAdapter
 
 config :mbta_server, MbtaServer.AlertProcessor.HoldingQueue,

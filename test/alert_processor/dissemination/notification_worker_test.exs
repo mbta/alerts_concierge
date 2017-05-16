@@ -2,8 +2,7 @@ defmodule MbtaServer.AlertProcessor.MessageWorkerTest do
   use MbtaServer.DataCase
   use Bamboo.Test, shared: true
 
-  alias MbtaServer.NotificationMailer
-  alias MbtaServer.AlertProcessor.{SendingQueue, Model.Notification}
+  alias MbtaServer.AlertProcessor.{Model.Notification, NotificationMailer, SendingQueue}
 
   setup do
     Application.stop(:mbta_server)

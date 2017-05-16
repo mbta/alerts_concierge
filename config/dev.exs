@@ -54,7 +54,7 @@ config :ex_aws,
   secret_access_key: ["STAGING_SECRET_ACCESS_KEY", :instance_role]
 
 # Bamboo
-config :mbta_server, MbtaServer.Mailer,
+config :mbta_server, MbtaServer.AlertProcessor.NotificationMailer,
   adapter: Bamboo.LocalAdapter
 
 # Config for ExAws lib
