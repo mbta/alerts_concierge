@@ -5,6 +5,7 @@ defmodule AlertsConcierge.Mixfile do
     [apps_path: "apps",
      build_embedded: Mix.env == :prod,
      start_permanent: Mix.env == :prod,
+     aliases: aliases(),
      deps: deps(),
      test_coverage: [tool: ExCoveralls],
      preferred_cli_env: [vcr: :test, coveralls: :test]]
@@ -29,5 +30,11 @@ defmodule AlertsConcierge.Mixfile do
       {:distillery, "1.2.2", warn_missing: false},
       {:edeliver, "1.4.2"},
     ]
+  end
+
+  defp aliases do
+    ["ecto.setup": ["ecto.create", "ecto.migrate", "run priv/repo/seeds.exs"],
+     "ecto.reset": ["ecto.drop", "ecto.setup"],
+     "test": ["ecto.create --quiet", "ecto.migrate", "coveralls.json"]]
   end
 end
