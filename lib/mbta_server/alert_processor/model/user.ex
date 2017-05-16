@@ -17,8 +17,7 @@ defmodule MbtaServer.AlertProcessor.Model.User do
 
   use Ecto.Schema
   import Ecto.{Changeset, Query}
-  alias MbtaServer.Repo
-  alias MbtaServer.AlertProcessor.Model.Subscription
+  alias MbtaServer.AlertProcessor.{Model.Subscription, Repo}
   alias Comeonin.Bcrypt
 
   @primary_key {:id, :binary_id, autogenerate: true}

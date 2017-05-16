@@ -7,7 +7,7 @@ use Mix.Config
 
 # General application configuration
 config :mbta_server,
-  ecto_repos: [MbtaServer.Repo]
+  ecto_repos: [MbtaServer.AlertProcessor.Repo]
 
 # Configures the endpoint
 config :mbta_server, MbtaServer.Web.Endpoint,
@@ -31,7 +31,7 @@ config :mbta_server, MbtaServer.AlertProcessor,
   overflow: 1
 
 # Configure your database
-config :mbta_server, MbtaServer.Repo,
+config :mbta_server, MbtaServer.AlertProcessor.Repo,
   adapter: Ecto.Adapters.Postgres,
   pool_size: 10
 
@@ -54,7 +54,7 @@ config :guardian, Guardian,
   hooks: GuardianDb
 
 config :guardian_db, GuardianDb,
-  repo: MbtaServer.Repo,
+  repo: MbtaServer.AlertProcessor.Repo,
   schema_name: "guardian_tokens",
   sweep_interval: 120
 

@@ -1,6 +1,6 @@
 defmodule MbtaServer.QueryHelper do
   import Ecto.Query
-  alias MbtaServer.Repo
+  alias MbtaServer.AlertProcessor.Repo
 
   def execute_query(query) do
     Repo.all(from q in subquery(query), distinct: true, select: q.id)

@@ -1,5 +1,5 @@
 defmodule MbtaServer.Factory do
-  use ExMachina.Ecto, repo: MbtaServer.Repo
+  use ExMachina.Ecto, repo: MbtaServer.AlertProcessor.Repo
 
   alias MbtaServer.AlertProcessor.Model.{InformedEntity, Notification, Subscription, User}
 

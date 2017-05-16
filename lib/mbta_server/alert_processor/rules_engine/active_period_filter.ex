@@ -4,7 +4,7 @@ defmodule MbtaServer.AlertProcessor.ActivePeriodFilter do
   """
 
   import Ecto.Query
-  alias MbtaServer.AlertProcessor.{Model, TimeFrameComparison}
+  alias MbtaServer.AlertProcessor.{Model, Repo, TimeFrameComparison}
   alias Model.{Alert, Subscription}
 
   @doc """
@@ -15,7 +15,7 @@ defmodule MbtaServer.AlertProcessor.ActivePeriodFilter do
   """
   @spec filter({:ok, Ecto.Queryable.t, Alert.t}) :: {:ok, Ecto.Queryable.t, Alert.t}
   def filter({:ok, previous_query, %Alert{} = alert}) do
-    subscriptions = MbtaServer.Repo.all(from s in subquery(previous_query))
+    subscriptions = Repo.all(from s in subquery(previous_query))
     subscription_timeframe_maps = for x <- subscriptions, into: %{} do
       {x.id, Subscription.timeframe_map(x)}
     end

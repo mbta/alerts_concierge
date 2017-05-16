@@ -3,9 +3,8 @@ defmodule MbtaServer.AlertProcessor.SubscriptionFilterEngine do
   Entry point for susbcription engine to filter users to alert users
   with relevant subscriptions to alert provided.
   """
-  alias MbtaServer.{Repo}
   alias MbtaServer.AlertProcessor.{Model.Alert, Model.Notification}
-  alias MbtaServer.AlertProcessor.{ActivePeriodFilter, InformedEntityFilter, Scheduler, SentAlertFilter, SeverityFilter}
+  alias MbtaServer.AlertProcessor.{ActivePeriodFilter, InformedEntityFilter, Repo, Scheduler, SentAlertFilter, SeverityFilter}
   import Ecto.Query
 
   @doc """

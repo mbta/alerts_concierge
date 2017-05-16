@@ -17,8 +17,7 @@ defmodule MbtaServer.AlertProcessor.Model.Notification do
 
   use Ecto.Schema
   import Ecto.Changeset
-  alias MbtaServer.Repo
-  alias MbtaServer.AlertProcessor.Model.User
+  alias MbtaServer.AlertProcessor.{Model.User, Repo}
 
   @spec save(__MODULE__.t, atom) ::
   {:ok, __MODULE__.t} | {:error, Ecto.Changeset.t}

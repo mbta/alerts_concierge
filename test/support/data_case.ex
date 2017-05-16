@@ -16,7 +16,7 @@ defmodule MbtaServer.DataCase do
 
   using do
     quote do
-      alias MbtaServer.Repo
+      alias MbtaServer.AlertProcessor.Repo
 
       import Ecto
       import Ecto.Changeset
@@ -26,10 +26,10 @@ defmodule MbtaServer.DataCase do
   end
 
   setup tags do
-    :ok = Ecto.Adapters.SQL.Sandbox.checkout(MbtaServer.Repo)
+    :ok = Ecto.Adapters.SQL.Sandbox.checkout(MbtaServer.AlertProcessor.Repo)
 
     unless tags[:async] do
-      Ecto.Adapters.SQL.Sandbox.mode(MbtaServer.Repo, {:shared, self()})
+      Ecto.Adapters.SQL.Sandbox.mode(MbtaServer.AlertProcessor.Repo, {:shared, self()})
     end
 
     :ok

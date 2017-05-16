@@ -10,7 +10,7 @@ config :mbta_server, MbtaServer.Web.Endpoint,
 config :logger, level: :warn
 
 # Configure your database
-config :mbta_server, MbtaServer.Repo,
+config :mbta_server, MbtaServer.AlertProcessor.Repo,
   adapter: Ecto.Adapters.Postgres,
   pool: Ecto.Adapters.SQL.Sandbox
 
