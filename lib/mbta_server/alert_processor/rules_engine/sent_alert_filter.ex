@@ -3,8 +3,8 @@ defmodule MbtaServer.AlertProcessor.SentAlertFilter do
   Filter users to receive alert based on having previously received alert
   """
 
-  alias MbtaServer.{AlertProcessor, User}
-  alias AlertProcessor.Model.{Alert, Subscription}
+  alias MbtaServer.{AlertProcessor}
+  alias AlertProcessor.Model.{Alert, Subscription, User}
   import Ecto.Query
 
   @doc """

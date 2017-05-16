@@ -3,7 +3,8 @@ defmodule MbtaServer.Web.SubscriptionControllerTest do
 
   @password "password1"
   @encrypted_password Comeonin.Bcrypt.hashpwsalt(@password)
-  alias MbtaServer.{Repo, User}
+  alias MbtaServer.Repo
+  alias MbtaServer.AlertProcessor.Model.User
 
   describe "authorized" do
     test "GET /my-subscriptions", %{conn: conn}  do

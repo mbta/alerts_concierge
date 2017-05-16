@@ -6,7 +6,7 @@ defmodule MbtaServer.AlertProcessor.SmsOptOutWorker do
   sending alerts.
   """
   use GenServer
-  alias MbtaServer.User
+  alias MbtaServer.AlertProcessor.Model.User
   alias MbtaServer.AlertProcessor.HoldingQueue
   alias MbtaServer.AlertProcessor.Helpers.ConfigHelper
 

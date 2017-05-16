@@ -3,7 +3,7 @@ defmodule MbtaServer.BasePolicy do
   Base policy configuration to extend policies from
   """
 
-  alias MbtaServer.User
+  alias MbtaServer.AlertProcessor.Model.User
 
   # Admin users have full control by default
   def can?(%User{role: "admin"}, _action, _resource), do: true

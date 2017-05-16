@@ -3,8 +3,7 @@ defmodule MbtaServer.AlertProcessor.NotificationBuilder do
   Responsible for construction of Notifications from an Alert and Subscription
   """
 
-  alias MbtaServer.{AlertProcessor, User}
-  alias AlertProcessor.Model.{Alert, Notification, Subscription}
+  alias MbtaServer.AlertProcessor.Model.{Alert, Notification, Subscription, User}
   alias Calendar.Time, as: T
   alias Calendar.DateTime, as: DT
 

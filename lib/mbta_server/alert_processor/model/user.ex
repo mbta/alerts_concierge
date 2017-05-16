@@ -1,4 +1,4 @@
-defmodule MbtaServer.User do
+defmodule MbtaServer.AlertProcessor.Model.User do
   @moduledoc """
   User struct and functions
   """

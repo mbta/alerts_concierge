@@ -1,7 +1,7 @@
 defmodule MbtaServer.AlertProcessor.SmsOptOutWorkerTest do
   use MbtaServer.DataCase
   import MbtaServer.Factory
-  alias MbtaServer.User
+  alias MbtaServer.AlertProcessor.Model.User
   alias MbtaServer.AlertProcessor.SmsOptOutWorker
 
   test "worker fetches list of opted out phone numbers from aws sns and update vacation time for new numbers" do

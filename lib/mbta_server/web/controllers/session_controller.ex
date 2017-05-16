@@ -3,7 +3,7 @@ defmodule MbtaServer.Web.SessionController do
   Handles creating and destroying of a session (login/logout)
   """
   use MbtaServer.Web, :controller
-  alias MbtaServer.User
+  alias MbtaServer.AlertProcessor.Model.User
   plug :scrub_params, "user" when action in [:create]
 
   def new(conn, _params) do

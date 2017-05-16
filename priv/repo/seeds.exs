@@ -9,7 +9,8 @@
 #
 # We recommend using the bang functions (`insert!`, `update!`
 # and so on) as they will fail if something goes wrong.
-alias MbtaServer.{Repo, User}
+alias MbtaServer.Repo
+alias MbtaServer.AlertProcessor.Model.User
 
 encrypted_password = Comeonin.Bcrypt.hashpwsalt("password1")
 users = [

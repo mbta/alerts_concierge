@@ -1,6 +1,7 @@
 defmodule MbtaServer.Web.SessionControllerTest do
   use MbtaServer.Web.ConnCase
-  alias MbtaServer.{User, Repo}
+  alias MbtaServer.Repo
+  alias MbtaServer.AlertProcessor.Model.User
 
   @password "password1"
   @encrypted_password Comeonin.Bcrypt.hashpwsalt(@password)

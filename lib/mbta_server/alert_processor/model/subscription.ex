@@ -3,8 +3,8 @@ defmodule MbtaServer.AlertProcessor.Model.Subscription do
   Set of criteria on which a user wants to be sent alerts.
   """
 
-  alias MbtaServer.{AlertProcessor, Repo, User}
-  alias AlertProcessor.{Helpers.DateTimeHelper, Model.InformedEntity, TimeFrameComparison}
+  alias MbtaServer.{AlertProcessor, Repo}
+  alias AlertProcessor.{Helpers.DateTimeHelper, Model.InformedEntity, Model.User, TimeFrameComparison}
   import Ecto.Query
 
   @type t :: %__MODULE__{

@@ -1,7 +1,7 @@
-defmodule MbtaServer.UserTest do
+defmodule MbtaServer.AlertProcessor.Model.UserTest do
   use MbtaServer.DataCase
 
-  alias MbtaServer.User
+  alias MbtaServer.AlertProcessor.Model.User
 
   @valid_attrs %{email: "email@test.com", role: "user", password: "password1"}
   @invalid_attrs %{}
