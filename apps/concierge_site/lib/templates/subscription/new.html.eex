@@ -7,7 +7,7 @@
     <p class="select-service-subheader">What mode of transportation do you take?</p>
 
     <div class="service-options-container">
-      <%= link to: subscription_path(@conn, :type, mode: "subway"), class: "service-option" do %>
+      <%= link to: subway_subscription_path(@conn, :new), class: "service-option" do %>
         <div class="subway-icon subscription-icon">
           <img src=<%= static_path(@conn, "/images/subway.svg") %> />
         </div>

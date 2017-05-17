@@ -28,7 +28,7 @@ defmodule ConciergeSite.Router do
     get "/my-subscriptions", SubscriptionController, :index
     get "/my-account", AccountController, :index
     get "/subscriptions/new", SubscriptionController, :new
-    get "/subscriptions/new/type", SubscriptionController, :type
+    get "/subscriptions/subway/new", SubwaySubscriptionController, :new
   end
 
   if Mix.env == :dev do
