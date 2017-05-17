@@ -1,0 +1,93 @@
+.select-service {
+  text-align: center;
+}
+
+.select-service-header {
+  font-family: $font-family-base;
+  font-weight: $headings-font-weight;
+  margin-bottom: 16px;
+}
+
+.select-service-subheader {
+  font-family: $font-family-base;
+  font-size: $base-font-size-xxl;
+  margin-bottom: 37px;
+}
+
+.service-options-container {
+  border: 1px solid $gray-lightest;
+}
+
+.service-option {
+  color: $cerulean;
+  display: block;
+  font-family: $font-family-base;
+  font-size: $base-font-size;
+  margin: 0;
+  padding: 16px 0;
+  position: relative;
+}
+
+.service-option:not(:last-child) {
+  border-bottom: 1px solid $gray-lightest;
+}
+
+.service-option:hover {
+  background-color: $pale-blue;
+  text-decoration: none;
+}
+
+.subscription-icon {
+  border-radius: 100%;
+  height: 24px;
+  left: 20px;
+  position: absolute;
+  top: 18px;
+  width: 24px;
+}
+
+.subway-icon {
+  background-color: #788093;
+}
+
+.subway-icon img {
+  bottom: 1px;
+  height: 16px;
+  position: relative;
+}
+
+.commuter-rail-icon {
+  background-color: #a00a78;
+}
+
+.commuter-rail-icon img {
+  bottom: 2px;
+  height: 18px;
+  position: relative;
+}
+
+.bus-icon {
+  background-color: #ffce0c;
+}
+
+.bus-icon img {
+  bottom: 2px;
+  height: 16px;
+  position: relative;
+}
+
+.ferry-icon {
+  background-color: #5da9e8;
+
+}
+
+.ferry-icon img {
+  bottom: 2px;
+  height: 16px;
+  position: relative;
+}
+
+.mbta-icon img {
+  bottom: 3px;
+  position: relative;
+}
