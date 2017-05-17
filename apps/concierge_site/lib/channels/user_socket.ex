@@ -1,8 +1,8 @@
-defmodule ConciergeSite.Web.UserSocket do
+defmodule ConciergeSite.UserSocket do
   use Phoenix.Socket
 
   ## Channels
-  # channel "room:*", ConciergeSite.Web.RoomChannel
+  # channel "room:*", ConciergeSite.RoomChannel
 
   ## Transports
   transport :websocket, Phoenix.Transports.WebSocket
@@ -30,7 +30,7 @@ defmodule ConciergeSite.Web.UserSocket do
   # Would allow you to broadcast a "disconnect" event and terminate
   # all active sockets and channels for a given user:
   #
-  #     ConciergeSite.Web.Endpoint.broadcast("user_socket:#{user.id}", "disconnect", %{})
+  #     ConciergeSite.Endpoint.broadcast("user_socket:#{user.id}", "disconnect", %{})
   #
   # Returning `nil` makes this socket anonymous.
   def id(_socket), do: nil

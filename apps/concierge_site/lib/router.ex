@@ -1,4 +1,4 @@
-defmodule ConciergeSite.Web.Router do
+defmodule ConciergeSite.Router do
   use ConciergeSite.Web, :router
 
   pipeline :browser do
@@ -13,17 +13,17 @@ defmodule ConciergeSite.Web.Router do
     plug Guardian.Plug.VerifySession
     plug Guardian.Plug.LoadResource
     plug Guardian.Plug.EnsureAuthenticated,
-      handler: ConciergeSite.Web.SessionController
+      handler: ConciergeSite.SessionController
   end
 
-  scope "/", ConciergeSite.Web do
+  scope "/", ConciergeSite do
     pipe_through :browser
 
     get "/", PageController, :index
     resources "/login", SessionController, only: [:new, :create, :delete], singleton: true
   end
 
-  scope "/", ConciergeSite.Web do
+  scope "/", ConciergeSite do
     pipe_through [:browser, :browser_auth]
     get "/my-subscriptions", SubscriptionController, :index
     get "/my-account", AccountController, :index

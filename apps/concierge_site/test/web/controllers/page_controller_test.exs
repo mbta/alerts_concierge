@@ -1,5 +1,5 @@
-defmodule ConciergeSite.Web.PageControllerTest do
-  use ConciergeSite.Web.ConnCase
+defmodule ConciergeSite.PageControllerTest do
+  use ConciergeSite.ConnCase
 
   test "GET /", %{conn: conn} do
     conn = get conn, "/"

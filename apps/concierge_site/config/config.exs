@@ -11,10 +11,10 @@ config :concierge_site,
   ecto_repos: []
 
 # Configures the endpoint
-config :concierge_site, ConciergeSite.Web.Endpoint,
+config :concierge_site, ConciergeSite.Endpoint,
   url: [host: "localhost"],
   secret_key_base: "wxQjfCkbnND+H2kYSmvtNl+77BiBDB3qM7ytsJaOTZp2aBcEhcGvdkoa55pYbER0",
-  render_errors: [view: ConciergeSite.Web.ErrorView, accepts: ~w(html json)],
+  render_errors: [view: ConciergeSite.ErrorView, accepts: ~w(html json)],
   pubsub: [name: ConciergeSite.PubSub,
            adapter: Phoenix.PubSub.PG2]
 

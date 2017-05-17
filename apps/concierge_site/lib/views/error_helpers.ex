@@ -1,4 +1,4 @@
-defmodule ConciergeSite.Web.ErrorHelpers do
+defmodule ConciergeSite.ErrorHelpers do
   @moduledoc """
   Conveniences for translating and building error messages.
   """
@@ -32,9 +32,9 @@ defmodule ConciergeSite.Web.ErrorHelpers do
     #     dgettext "errors", "is invalid"
     #
     if count = opts[:count] do
-      Gettext.dngettext(ConciergeSite.Web.Gettext, "errors", msg, msg, count, opts)
+      Gettext.dngettext(ConciergeSite.Gettext, "errors", msg, msg, count, opts)
     else
-      Gettext.dgettext(ConciergeSite.Web.Gettext, "errors", msg, opts)
+      Gettext.dgettext(ConciergeSite.Gettext, "errors", msg, opts)
     end
   end
 end

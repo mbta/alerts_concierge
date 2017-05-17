@@ -1,4 +1,4 @@
-defmodule ConciergeSite.Web.ConnCase do
+defmodule ConciergeSite.ConnCase do
   @moduledoc """
   This module defines the test case to be used by
   tests that require setting up a connection.
@@ -19,14 +19,14 @@ defmodule ConciergeSite.Web.ConnCase do
     quote do
       # Import conveniences for testing with connections
       use Phoenix.ConnTest
-      import ConciergeSite.Web.Router.Helpers
+      import ConciergeSite.Router.Helpers
 
       # The default endpoint for testing
-      @endpoint ConciergeSite.Web.Endpoint
+      @endpoint ConciergeSite.Endpoint
 
       def guardian_login(user, conn, token \\ :token, opts \\ []) do
         conn
-          |> bypass_through(ConciergeSite.Web.Router, [:browser])
+          |> bypass_through(ConciergeSite.Router, [:browser])
           |> get("/")
           |> Guardian.Plug.sign_in(user, token, opts)
           |> send_resp(200, "Flush the session")

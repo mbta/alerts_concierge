@@ -1,3 +1,3 @@
-defmodule ConciergeSite.Web.LayoutViewTest do
-  use ConciergeSite.Web.ConnCase, async: true
+defmodule ConciergeSite.LayoutViewTest do
+  use ConciergeSite.ConnCase, async: true
 end

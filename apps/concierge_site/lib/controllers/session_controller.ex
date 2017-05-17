@@ -1,4 +1,4 @@
-defmodule ConciergeSite.Web.SessionController do
+defmodule ConciergeSite.SessionController do
   @moduledoc """
   Handles creating and destroying of a session (login/logout)
   """

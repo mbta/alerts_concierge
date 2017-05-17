@@ -1,7 +1,7 @@
-defmodule ConciergeSite.Web.Endpoint do
+defmodule ConciergeSite.Endpoint do
   use Phoenix.Endpoint, otp_app: :concierge_site
 
-  socket "/socket", ConciergeSite.Web.UserSocket
+  socket "/socket", ConciergeSite.UserSocket
 
   # Serve at "/" the static files from "priv/static" directory.
   #
@@ -38,7 +38,7 @@ defmodule ConciergeSite.Web.Endpoint do
     key: "_mbta_concierge_key",
     signing_salt: "SHoiHw+G"
 
-  plug ConciergeSite.Web.Router
+  plug ConciergeSite.Router
 
   @doc """
   Dynamically loads configuration from the system environment

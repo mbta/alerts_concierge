@@ -1,5 +1,5 @@
-defmodule ConciergeSite.Web.SubscriptionControllerTest do
-  use ConciergeSite.Web.ConnCase
+defmodule ConciergeSite.SubscriptionControllerTest do
+  use ConciergeSite.ConnCase
 
   @password "password1"
   @encrypted_password Comeonin.Bcrypt.hashpwsalt(@password)

@@ -7,7 +7,7 @@ defmodule ConciergeSite do
     # Define workers and child supervisors to be supervised
     children = [
       # Start the endpoint when the application starts
-      supervisor(ConciergeSite.Web.Endpoint, []),
+      supervisor(ConciergeSite.Endpoint, []),
       # Start your own worker by calling: ConciergeSite.Worker.start_link(arg1, arg2, arg3)
       # worker(ConciergeSite.Worker, [arg1, arg2, arg3]),
     ]

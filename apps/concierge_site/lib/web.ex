@@ -18,18 +18,18 @@ defmodule ConciergeSite.Web do
 
   def controller do
     quote do
-      use Phoenix.Controller, namespace: ConciergeSite.Web
+      use Phoenix.Controller, namespace: ConciergeSite
       import Plug.Conn
-      import ConciergeSite.Web.Router.Helpers
-      import ConciergeSite.Web.Gettext
+      import ConciergeSite.Router.Helpers
+      import ConciergeSite.Gettext
       import Bodyguard.Controller
     end
   end
 
   def view do
     quote do
-      use Phoenix.View, root: "lib/concierge_site/web/templates",
-                        namespace: ConciergeSite.Web
+      use Phoenix.View, root: "lib/templates",
+                        namespace: ConciergeSite
       @dialyzer :no_match
       # Import convenience functions from controllers
       import Phoenix.Controller, only: [get_csrf_token: 0, get_flash: 2, view_module: 1]
@@ -37,9 +37,9 @@ defmodule ConciergeSite.Web do
       # Use all HTML functionality (forms, tags, etc)
       use Phoenix.HTML
 
-      import ConciergeSite.Web.Router.Helpers
-      import ConciergeSite.Web.ErrorHelpers
-      import ConciergeSite.Web.Gettext
+      import ConciergeSite.Router.Helpers
+      import ConciergeSite.ErrorHelpers
+      import ConciergeSite.Gettext
       import Bodyguard.ViewHelpers
     end
   end
@@ -55,7 +55,7 @@ defmodule ConciergeSite.Web do
   def channel do
     quote do
       use Phoenix.Channel
-      import ConciergeSite.Web.Gettext
+      import ConciergeSite.Gettext
     end
   end
 

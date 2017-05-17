@@ -1,4 +1,4 @@
-defmodule ConciergeSite.Web.ErrorView do
+defmodule ConciergeSite.ErrorView do
   use ConciergeSite.Web, :view
 
   def render("403.html", _assigns) do

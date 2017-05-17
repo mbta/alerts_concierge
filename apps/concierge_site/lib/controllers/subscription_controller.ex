@@ -1,4 +1,4 @@
-defmodule ConciergeSite.Web.SubscriptionController do
+defmodule ConciergeSite.SubscriptionController do
   use ConciergeSite.Web, :controller
 
   def index(conn, _params) do

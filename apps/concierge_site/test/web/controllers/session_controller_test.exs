@@ -1,5 +1,5 @@
-defmodule ConciergeSite.Web.SessionControllerTest do
-  use ConciergeSite.Web.ConnCase
+defmodule ConciergeSite.SessionControllerTest do
+  use ConciergeSite.ConnCase
   alias AlertProcessor.{Model.User, Repo}
 
   @password "password1"
