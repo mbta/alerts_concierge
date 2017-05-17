@@ -1,4 +1,4 @@
-<%= render MbtaServer.Web.SharedView, "title.html", title_text: "Create New Subscription" %>
+<%= render ConciergeSite.SharedView, "title.html", title_text: "Create New Subscription" %>
 
 <div class="row">
   <div class="col-lg-2"></div>
