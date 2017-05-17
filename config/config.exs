@@ -1,63 +1,17 @@
 # This file is responsible for configuring your application
 # and its dependencies with the aid of the Mix.Config module.
-#
-# This configuration file is loaded before any dependency and
-# is restricted to this project.
 use Mix.Config
 
-# General application configuration
-config :mbta_server,
-  ecto_repos: [MbtaServer.Repo]
+# By default, the umbrella project as well as each child
+# application will require this configuration file, ensuring
+# they all use the same configuration. While one could
+# configure all applications here, we prefer to delegate
+# back to each application for organization purposes.
+import_config "../apps/*/config/config.exs"
 
-# Configures the endpoint
-config :mbta_server, MbtaServer.Web.Endpoint,
-  url: [host: "localhost"],
-  secret_key_base: "7U73UP3XMgn6IpcCcFls5SpkGk+jLN5dAAax/XYKoMMuC/PlfqK0n+NfS1n3MbrK",
-  render_errors: [view: MbtaServer.Web.ErrorView, accepts: ~w(html json)],
-  pubsub: [name: MbtaServer.PubSub,
-           adapter: Phoenix.PubSub.PG2]
-
-# Configures Elixir's Logger
-config :logger, :console,
-  format: "$time $metadata[$level] $message\n",
-  metadata: [:request_id]
-
-# Bamboo
-config :mbta_server, MbtaServer.Mailer,
-  adapter: Bamboo.LocalAdapter
-
-config :mbta_server, MbtaServer.AlertProcessor,
-  pool_size: 2,
-  overflow: 1
-
-# Configure your database
-config :mbta_server, MbtaServer.Repo,
-  adapter: Ecto.Adapters.Postgres,
-  pool_size: 10
-
-# Config for alert parser
-config :mbta_server, :alert_parser, MbtaServer.AlertProcessor.AlertParser
-
-config :mbta_server, alert_fetch_interval: {:system, "ALERT_FETCH_INTERVAL", "60000"}
-
-config :mbta_server, opted_out_list_fetch_interval: {:system, "OPTED_OUT_LIST_FETCH_INTERVAL", "300000"}
-
-config :guardian, Guardian,
-  allowed_algos: ["HS512"],
-  verify_module: Guardian.JWT,
-  issuer: "AlertsConcierge",
-  ttl: { 30, :days },
-  allowed_drift: 2000,
-  verify_issuer: true,
-  secret_key:  System.get_env("GUARDIAN_AUTH_KEY"),
-  serializer: MbtaServer.GuardianSerializer,
-  hooks: GuardianDb
-
-config :guardian_db, GuardianDb,
-  repo: MbtaServer.Repo,
-  schema_name: "guardian_tokens",
-  sweep_interval: 120
-
-# Import environment specific config. This must remain at the bottom
-# of this file so it overrides the configuration defined above.
-import_config "#{Mix.env}.exs"
+# Sample configuration (overrides the imported configuration above):
+#
+#     config :logger, :console,
+#       level: :info,
+#       format: "$date $time [$level] $metadata$message\n",
+#       metadata: [:user_id]
