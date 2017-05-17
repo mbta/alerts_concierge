@@ -1,0 +1,81 @@
+// style-guide --section Primary Colors
+$brand-primary: #1c77c3;
+$brand-primary-darkest: #0b2f4c;
+$brand-primary-dark: #165c96;
+$brand-primary-light: #5da9e8;
+$brand-primary-light-contrast: #7bb9ec;
+$brand-primary-lightest: #cee0f4;
+
+// style-guide --section Secondary Colors
+$brand-secondary: #ffce0c;
+$brand-secondary-dark: #d8ac00;
+$brand-secondary-light: #ffe372;
+
+// style-guide --section Background Colors
+$brand-navy-dark: #071d2e;
+$brand-purple: #3324ae;
+$gradient-color-light: #3191e1;
+$riding-the-t-bg: #34416e;
+
+// style-guide --section Grays
+$gray: #494f5c;
+$gray-dark: #1c1e23;
+$gray-light: #788093;
+$gray-lighter: #b0b5c0;
+$gray-lightest: #e9eaed;
+$gray-bordered-background: #f2f3f5; // use as background color for gray elements that need a border
+$gray-image-overlay: rgba(28, 30, 35, .8);
+
+// style-guide --section Modes and Lines
+$brand-blue-line: #0064c8;
+$brand-green-line: #428608;
+$brand-orange-line: #ff8200;
+$brand-red-line: #ff1428;
+$brand-silver-line: #788093;
+$brand-subway: $gray;
+$brand-bus: $brand-secondary;
+$brand-commuter-rail: #a00a78;
+$brand-ferry: $brand-primary-light;
+$brand-the-ride: #52bbc5;
+
+// style-guide --section Alerts
+$alert-color: $brand-secondary;
+$alert-color-lighter: #fff7d8;
+$alert-notice-color: #dcd3e8;
+$brand-danger: #ff1428;
+$brand-success: #428608;
+
+// style-guide --section Social Media
+$instagram: #1c1e23;
+$twitter: #55acee;
+$facebook: #395185;
+$youtube: #cd201f;
+
+// style-guide --section Gradients
+$whats-happening-gradient-end: #eff0f2;
+$hp-hero-gradient-start: rgba(28, 30, 35, .4);
+$hp-hero-gradient-end: rgba(28, 30, 35, .8);
+$hp-hero-gradient: linear-gradient(to bottom, $hp-hero-gradient-start, $hp-hero-gradient-end);
+$riding-the-t-gradient-start: rgba(52, 65, 110, .95);
+$riding-the-t-gradient-end: rgba(52, 65, 110, .75);
+$riding-the-t-gradient: linear-gradient(to bottom right, $riding-the-t-gradient-start, $riding-the-t-gradient-end);
+
+
+// style-guide --section General
+$homepage-bg-color: #fff;
+$footer-color: $brand-navy-dark;
+$input-color: $gray-dark;
+$list-group-link-color: $gray-dark;
+$nav-mobile-link-color: #fff;
+$form-error-message: #f2dede;
+$error-text: #4d1e1e;
+$form-success-message: #dff0d8;
+$white: #fff;
+$holiday-color: #dcd3e8;
+$weekend-color: $gray-bordered-background;
+$today-color: $brand-primary-lightest;
+
+$btn-primary-color: $white;
+$btn-primary-bg: $brand-primary;
+$btn-primary-focus-color: $gray-dark;
+$btn-primary-focus-bg: $brand-primary-lightest;

@@ -1,0 +1,51 @@
+html {
+  @include media-breakpoint-up(xxl) {
+    font-size: $base-font-size-xxl;
+  }
+}
+
+h1,
+.h1 {
+  border-bottom-color: $brand-purple;
+  border-bottom-style: solid;
+  border-bottom-width: $base-spacing / 4;
+
+  @include media-breakpoint-up(xxl) {
+    font-size: $font-size-h1-xxl;
+  }
+}
+
+h2,
+.h2 {
+  @include media-breakpoint-up(xxl) {
+    font-size: $font-size-h2-xxl;
+  }
+}
+
+h3,
+.h3 {
+  @include media-breakpoint-up(xxl) {
+    font-size: $font-size-h3-xxl;
+  }
+}
+
+h4,
+.h4 {
+  @include media-breakpoint-up(xxl) {
+    font-size: $font-size-h4-xxl;
+  }
+}
+
+h5,
+.h5 {
+  @include media-breakpoint-up(xxl) {
+    font-size: $font-size-h5-xxl;
+  }
+}
+
+h6,
+.h6 {
+  @include media-breakpoint-up(xxl) {
+    font-size: $font-size-h6-xxl;
+  }
+}
