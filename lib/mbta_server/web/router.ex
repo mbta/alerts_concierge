@@ -20,12 +20,13 @@ defmodule MbtaServer.Web.Router do
     pipe_through :browser
 
     get "/", PageController, :index
-    resources "/login", SessionController, only: [:new, :create]
+    resources "/login", SessionController, only: [:new, :create, :delete], singleton: true
   end
 
   scope "/", MbtaServer.Web do
     pipe_through [:browser, :browser_auth]
     get "/my-subscriptions", SubscriptionController, :index
+    get "/my-account", AccountController, :index
   end
 
   if Mix.env == :dev do

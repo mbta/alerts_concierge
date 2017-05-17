@@ -22,6 +22,13 @@ defmodule MbtaServer.Web.SessionController do
     end
   end
 
+  def delete(conn, _params) do
+    conn
+    |> put_flash(:info, "You have been logged out!")
+    |> Guardian.Plug.sign_out()
+    |> redirect(to: "/login/new")
+  end
+
   def unauthenticated(conn, _params) do
     conn
     |> put_flash(:info, "Please log in")

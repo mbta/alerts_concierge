@@ -1,0 +1,1 @@
+<%= button("Log Out", to: "/login", method: "delete") %>
