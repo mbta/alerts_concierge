@@ -20,8 +20,7 @@ defmodule MbtaServer.Web.Router do
     pipe_through :browser
 
     get "/", PageController, :index
-    resources "/login", SessionController, only: [:new, :create]
-    delete "/login", SessionController, :delete
+    resources "/login", SessionController, only: [:new, :create, :delete], singleton: true
   end
 
   scope "/", MbtaServer.Web do
