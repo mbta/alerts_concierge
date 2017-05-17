@@ -57,7 +57,10 @@ defmodule AlertProcessor.SmsOptOutWorker do
 
   @spec fetch_opted_out_list(String.t | nil, [phone_number]) :: [phone_number]
   defp fetch_opted_out_list(next_token, opted_out_list \\ []) do
-    {:ok, %{body: %{phone_numbers: phone_numbers}=body}} = next_token |> list_phone_numbers_opted_out_query() |> @ex_aws.request([])
+    {:ok, %{body: %{phone_numbers: phone_numbers} = body}} =
+      next_token
+      |> list_phone_numbers_opted_out_query()
+      |> @ex_aws.request([])
 
     case body[:next_token] do
       nil -> opted_out_list ++ phone_numbers

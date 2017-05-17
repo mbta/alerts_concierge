@@ -19,16 +19,21 @@ defmodule AlertProcessor.SubscriptionFilterEngineTest do
   test "process_alert/1 when message provided", %{alert: alert} do
     user = insert(:user, phone_number: nil)
     user2 = insert(:user, phone_number: nil)
-    build(:subscription, user: user, alert_priority_type: :low, informed_entities: [%InformedEntity{route_type: 1}])
+
+    :subscription
+    |> build(user: user, alert_priority_type: :low, informed_entities: [%InformedEntity{route_type: 1}])
     |> weekday_subscription
     |> insert
-    build(:subscription, user: user, alert_priority_type: :high, informed_entities: [%InformedEntity{route_type: 4}])
+    :subscription
+    |> build(user: user, alert_priority_type: :high, informed_entities: [%InformedEntity{route_type: 4}])
     |> weekday_subscription
     |> insert
-    build(:subscription, user: user2, alert_priority_type: :low, informed_entities: [%InformedEntity{route_type: 3}])
+    :subscription
+    |> build(user: user2, alert_priority_type: :low, informed_entities: [%InformedEntity{route_type: 3}])
     |> weekday_subscription
     |> insert
-    build(:subscription, user: user2, alert_priority_type: :high, informed_entities: [%InformedEntity{route_type: 2}])
+    :subscription
+    |> build(user: user2, alert_priority_type: :high, informed_entities: [%InformedEntity{route_type: 2}])
     |> weekday_subscription
     |> sunday_subscription
     |> insert

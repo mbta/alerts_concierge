@@ -1,4 +1,5 @@
 defmodule ConciergeSite do
+  @moduledoc "Application for Alert Concierge frontend"
   use Application
 
   def start(_type, _args) do
