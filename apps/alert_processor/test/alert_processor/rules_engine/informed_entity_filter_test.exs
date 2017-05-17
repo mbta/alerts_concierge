@@ -87,7 +87,7 @@ defmodule AlertProcessor.InformedEntityFilterTest do
     InformedEntity |> struct(@ie2) |> Map.merge(%{subscription_id: sub4.id}) |> insert
     InformedEntity |> struct(@ie5) |> Map.merge(%{subscription_id: sub5.id}) |> insert
 
-    {:ok, sub1: sub1, sub2: sub2, sub3: sub3, sub4: sub4, sub5: sub5, user1: user1, user2: user2, all_subscription_ids: [sub1.id, sub2.id, sub3.id, sub4.id, sub5.id] }
+    {:ok, sub1: sub1, sub2: sub2, sub3: sub3, sub4: sub4, sub5: sub5, user1: user1, user2: user2, all_subscription_ids: [sub1.id, sub2.id, sub3.id, sub4.id, sub5.id]}
   end
 
   test "filter returns :ok empty list if subscription id list passed is empty" do

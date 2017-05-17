@@ -11,7 +11,8 @@ defmodule AlertProcessor.AlertParserTest do
 
   test "process_alerts/1" do
     user = insert(:user, phone_number: nil)
-    build(:subscription, user: user, alert_priority_type: :low, informed_entities: [%InformedEntity{route_type: 3, route: "16"}])
+    :subscription
+    |> build(user: user, alert_priority_type: :low, informed_entities: [%InformedEntity{route_type: 3, route: "16"}])
     |> weekday_subscription
     |> insert
     use_cassette "old_alerts", custom: true do
@@ -24,19 +25,23 @@ defmodule AlertProcessor.AlertParserTest do
 
   test "process_alerts/1 sends to correct users via filter chain" do
     user1 = insert(:user, phone_number: nil)
-    build(:subscription, user: user1, alert_priority_type: :low, informed_entities: [%InformedEntity{route_type: 3, route: "19"}])
+    :subscription
+    |> build(user: user1, alert_priority_type: :low, informed_entities: [%InformedEntity{route_type: 3, route: "19"}])
     |> weekday_subscription
     |> insert
     user2 = insert(:user, phone_number: nil)
-    build(:subscription, user: user2, alert_priority_type: :high, informed_entities: [%InformedEntity{route_type: 3, route: "19"}])
+    :subscription
+    |> build(user: user2, alert_priority_type: :high, informed_entities: [%InformedEntity{route_type: 3, route: "19"}])
     |> weekday_subscription
     |> insert
     user3 = insert(:user, phone_number: nil)
-    build(:subscription, user: user3, alert_priority_type: :low, informed_entities: [%InformedEntity{route_type: 3, route: "1"}])
+    :subscription
+    |> build(user: user3, alert_priority_type: :low, informed_entities: [%InformedEntity{route_type: 3, route: "1"}])
     |> weekday_subscription
     |> insert
     user4 = insert(:user, phone_number: nil)
-    build(:subscription, user: user4, alert_priority_type: :low, informed_entities: [%InformedEntity{route_type: 3, route: "19"}])
+    :subscription
+    |> build(user: user4, alert_priority_type: :low, informed_entities: [%InformedEntity{route_type: 3, route: "19"}])
     |> weekday_subscription
     |> insert
     insert(:notification, alert_id: "177528", last_push_notification: ~N[2017-04-11 11:53:33], user: user4, email: user4.email, phone_number: user4.phone_number, status: "sent", send_after: ~N[2017-04-25 10:00:00])
@@ -48,7 +53,8 @@ defmodule AlertProcessor.AlertParserTest do
 
   test "process_alerts/1 parses alerts and replaces facility id with type" do
     user1 = insert(:user, phone_number: nil)
-    build(:subscription, user: user1, alert_priority_type: :low, informed_entities: [%InformedEntity{stop: "place-pktrm", facility_type: :elevator}])
+    :subscription
+    |> build(user: user1, alert_priority_type: :low, informed_entities: [%InformedEntity{stop: "place-pktrm", facility_type: :elevator}])
     |> weekday_subscription
     |> insert
     use_cassette "facilities_alerts", custom: true do

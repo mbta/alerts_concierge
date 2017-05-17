@@ -1,4 +1,5 @@
 defmodule AlertProcessor.Factory do
+  @moduledoc false
   use ExMachina.Ecto, repo: AlertProcessor.Repo
 
   alias AlertProcessor.Model.{InformedEntity, Notification, Subscription, User}

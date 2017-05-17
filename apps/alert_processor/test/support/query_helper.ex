@@ -1,4 +1,5 @@
 defmodule AlertProcessor.QueryHelper do
+  @moduledoc false
   import Ecto.Query
   alias AlertProcessor.Repo
 

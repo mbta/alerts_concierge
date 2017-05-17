@@ -8,7 +8,7 @@ defmodule AlertProcessor.HoldingQueueTest do
   end
 
   setup do
-    date_in_future = DateTime.from_unix!(4078579247)
+    date_in_future = DateTime.from_unix!(4_078_579_247)
     future_notification = %Notification{send_after: date_in_future}
 
     {:ok, fn: future_notification}
