@@ -1,5 +1,5 @@
 defmodule ConciergeSite.BasePolicyTest do
-  use ConciergeSite.DataCase
+  use AlertProcessor.DataCase
   import AlertProcessor.Factory
   alias ConciergeSite.BasePolicy
 
