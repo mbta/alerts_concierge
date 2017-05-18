@@ -1,72 +1,11 @@
 @import 'node_modules/bootstrap/scss/variables';
 @import "colors";
 
-$headings-margin-bottom: .375em;
+$base-spacing: 1rem;
+$base-font-size: 16px;
+$base-font-size-xxl: 18px;
 $headings-font-weight: bold;
 $headings-line-height: 1.5;
-
-$space-16: 1rem;
-$space-12: $space-16 * .75;
-$space-18: $space-12 * 1.5;
-$space-24: $space-12 * 2;
-$space-36: $space-16 * 2.25;
-$space-8: $space-16 / 2; // 8px real, 4px Zeplin
-$space-6: $space-12 / 2; // 6px real, 3px Zeplin
-$space-4: $space-12 / 4; // 3px real, 1.5px Zeplin
-$space-2: $space-12 / 6; // 2px real, 1px Zeplin
-$space-1: $space-12 / 12; // 1px real, 0.5px Zeplin
-
-$base-spacing: $space-16;
-$base-spacing-sm: $space-8;
-$base-spacing-lg: $space-24;
-$base-spacing-xl: $space-36;
-
-$font-family-base: 'LatoLatinWeb', sans-serif;
-
-// style-guide --section Font Sizes
-$base-font-size: 16px;
-$base-font-size-xs: 14px;
-$base-font-size-xxl: 18px;
-$font-size-h1: 1.625rem;
 $font-size-h1-xxl: 1.875rem;
-$font-size-h2: 1.375rem;
 $font-size-h2-xxl: 1.625rem;
-$font-size-h3: 1.125rem;
-$font-size-h3-xxl: 1.375rem;
-$font-size-h4: $font-size-h3;
-$font-size-h4-xxl: 1.125rem;
-$font-size-h5: 1rem;
-$font-size-h5-xxl: $font-size-h5;
-$font-size-h6: .875rem;
-$font-size-h6-xxl: $font-size-h5;
-
-// style-guide --ignore
-$border-width: 1px;
-$border-color: $gray-lightest;
-$border: $border-width solid $border-color;
-$border-md: 2px solid $border-color;
-$border-radius: $base-spacing / 4;
-
-$headings-margin-bottom: $space-16;
-$header-navbar-height-multiplier: 3;
-$header-navbar-height: $base-spacing * $header-navbar-height-multiplier;
-$navbar-padding-vertical: $base-spacing * .75;
-$navbar-padding-horizontal: 0;
-$default-border-radius: $space-4;
-$icon-size: $space-16 * 1.5;
-$icon-size-sm: $space-16;
-$icon-size-lg: $space-16 * 3;
-
-$z-index-above-main-container-content: 6;
-$z-index-datepicker-content: 5;
-$z-index-alert-show-title: 5;
-$z-index-alert-show-title-background: 4;
-$z-index-calendar-cover: 4;
-$z-index-stop-bubble: 3;
-$z-index-redline-braintree-stops: 2;
-$z-index-stop-bubble-line: 2;
-$z-index-schedule-v2-timetable-more-text: 1;
-$z-index-alert-list-header: 1;
-$z-index-alert-item-icon: 1;
-
-$fa-font-path: "../fonts";
+$font-family-base: 'LatoLatinWeb', sans-serif;

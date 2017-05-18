@@ -22,7 +22,7 @@
 }
 
 .service-option {
-  color: $cerulean;
+  color: $link-color;
   display: block;
   font-family: $font-family-base;
   font-size: $base-font-size;
@@ -36,8 +36,8 @@
 }
 
 .service-option:hover {
-  background-color: $pale-blue;
-  text-decoration: none;
+  background-color: $link-hover-color;
+  text-decoration: $link-hover-decoration;
 }
 
 .subscription-icon {
@@ -47,49 +47,59 @@
   position: absolute;
   top: 1.125rem;
   width: 1.5rem;
+
+  img {
+    position: relative;
+  }
 }
 
 .subway-icon {
   background-color: $brand-subway;
-}
 
-.subway-icon img {
-  height: 1rem;
-  position: relative;
+  img {
+    height: 1rem;
+    position: relative;
+  }
 }
 
 .commuter-rail-icon {
   background-color: $brand-commuter-rail;
+
+  img {
+    bottom: .03125rem;
+    height: 1.125rem;
+    position: relative;
+  }
 }
 
-.commuter-rail-icon img {
-  bottom: .03125rem;
-  height: 1.125rem;
-  position: relative;
-}
 
 .bus-icon {
   background-color: $brand-bus;
+
+  img {
+    bottom: .0625rem;
+    height: 1rem;
+    left: .0625rem;
+    position: relative;
+  }
 }
 
-.bus-icon img {
-  bottom: .0625rem;
-  height: 1rem;
-  left: .0625rem;
-  position: relative;
-}
 
 .ferry-icon {
   background-color: $brand-ferry;
+
+  img {
+    bottom: .0625rem;
+    height: 1rem;
+    position: relative;
+  }
 }
 
-.ferry-icon img {
-  bottom: .0625rem;
-  height: 1rem;
-  position: relative;
-}
 
-.mbta-icon img {
-  bottom: .1875rem;
-  position: relative;
-}
+.mbta-icon {
+
+  img {
+    bottom: .1875rem;
+    position: relative;
+  }
+} 
