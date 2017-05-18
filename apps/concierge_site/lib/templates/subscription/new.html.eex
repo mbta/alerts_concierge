@@ -10,34 +10,34 @@
         <img src=<%= static_url(@conn, "/images/subway.svg") %> />
       </div>
       <div>Subway</div>
-    <% end  %>
+    <% end %>
 
     <%= link to: "#", class: "service-option" do %>
       <div class="commuter-rail-icon subscription-icon">
         <img src=<%= static_url(@conn, "/images/commuter-rail.svg") %> />
       </div>
       <div>Commuter Rail</div>
-    <% end  %>
+    <% end %>
 
     <%= link to: "#", class: "service-option" do %>
       <div class="bus-icon subscription-icon">
         <img src=<%= static_url(@conn, "/images/bus.svg") %> />
       </div>
       <div>Bus</div>
-    <% end  %>
+    <% end %>
 
     <%= link to: "#", class: "service-option" do %>
       <div class="ferry-icon subscription-icon">
         <img src=<%= static_url(@conn, "/images/ferry.svg") %> />
       </div>
       <div>Ferry</div>
-    <% end  %>
+    <% end %>
 
     <%= link to: "#", class: "service-option" do %>
       <div class="mbta-icon subscription-icon">
         <img src=<%= static_url(@conn, "/images/m-b-t-a.svg") %> />
       </div>
       <div>Station Amenities (elevators, escalators, etc.)</div>
-    <% end  %>
+    <% end %>
   </div>
 </div>
