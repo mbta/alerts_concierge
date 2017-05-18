@@ -8,6 +8,7 @@ defmodule AlertProcessor.Supervisor do
   alias AlertProcessor.{
     AlertCache,
     AlertWorker,
+    DigestManager,
     HoldingQueue,
     SendingQueue,
     NotificationWorker,
@@ -36,6 +37,7 @@ defmodule AlertProcessor.Supervisor do
       supervisor(AlertProcessor.Repo, []),
       worker(AlertWorker, []),
       worker(AlertCache, []),
+      worker(DigestManager, []),
       worker(HoldingQueue, []),
       worker(SendingQueue, []),
       worker(QueueWorker, []),

@@ -21,10 +21,21 @@ defmodule AlertProcessor.AlertCache do
     GenServer.call(name, {:update_cache, alerts})
   end
 
+  @doc """
+  Return list of alerts in cache
+  """
+  @spec get_alerts(atom) :: [map]
+  def get_alerts(name \\ __MODULE__) do
+    GenServer.call(name, :get_alerts)
+  end
+
   def init(_) do
     {:ok, %{alerts: %{}}}
   end
 
+  def handle_call(:get_alerts, _from, state) do
+    {:reply, Map.values(state.alerts), state}
+  end
   def handle_call({:update_cache, new_alerts}, _from, %{alerts: old_alerts}) do
     removed_alert_ids =  Map.keys(old_alerts) -- Map.keys(new_alerts)
     updated_alert_ids = get_updated_ids(new_alerts, old_alerts)

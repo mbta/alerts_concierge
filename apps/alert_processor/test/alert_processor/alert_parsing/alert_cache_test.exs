@@ -35,4 +35,11 @@ defmodule AlertProcessor.AlertCacheTest do
     assert {[%{id: "1"}, %{id: "2"}, %{id: "3"}], []} == AlertCache.update_cache(pid, old_alerts)
     assert {[%{id: "1"}, updated_alert], ["3", updated_alert.id]} == AlertCache.update_cache(pid, updated_alerts)
   end
+
+  test "get_alerts/0 returns list of alerts in the cache", %{pid: pid} do
+    alerts = %{"1" => %{id: "1"}, "2" => %{id: "2"}, "3" => %{id: "3"}}
+    AlertCache.update_cache(pid, alerts)
+
+    assert [%{id: "1"}, %{id: "2"}, %{id: "3"}] == AlertCache.get_alerts(pid)
+  end
 end
