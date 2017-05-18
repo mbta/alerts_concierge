@@ -18,6 +18,9 @@ config :logger, :console,
 config :alert_processor, AlertProcessor.NotificationMailer,
   adapter: Bamboo.LocalAdapter
 
+config :alert_processor, AlertProcessor.DigestMailer,
+  adapter: Bamboo.LocalAdapter
+
 config :alert_processor, AlertProcessor,
   pool_size: 2,
   overflow: 1
