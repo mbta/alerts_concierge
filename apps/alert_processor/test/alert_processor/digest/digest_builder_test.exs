@@ -51,9 +51,9 @@ defmodule AlertProcessor.DigestBuilderTest do
 
     digests = DigestBuilder.build_digests([@alert1, @alert2])
     expected = [%Digest{user: user1, alerts: [@alert1]},
-                %Digest{user: user2, alerts: [@alert1, @alert2]}]
+                %Digest{user: user2, alerts: [@alert2, @alert1]}]
 
-    assert digests -- expected == []
+    assert digests == expected
   end
 
   test "build_digests/1 does not filter on severity" do

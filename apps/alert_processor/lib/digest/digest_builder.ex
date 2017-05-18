@@ -18,7 +18,6 @@ defmodule AlertProcessor.DigestBuilder do
     |> Enum.map(fn(alert) ->
       {fetch_users(alert), alert}
     end)
-    |> List.flatten
     |> sort_by_user
   end
 
@@ -36,12 +35,10 @@ defmodule AlertProcessor.DigestBuilder do
     |> Enum.reduce(%{}, fn({users, alert}, result) ->
       users
       |> Enum.reduce(result, fn(user, acc) ->
-        {values, _user} = Map.get(acc, user.id) || {[], nil}
-        values = values ++ [alert]
-        Map.put(acc, user.id, {values, user})
+        Map.update(acc, user, [alert], &[alert | &1])
       end)
     end)
-    |> Enum.map(fn({_user_id, {alerts, user}}) ->
+    |> Enum.map(fn({user, alerts}) ->
       %Digest{user: user, alerts: alerts}
     end)
   end
