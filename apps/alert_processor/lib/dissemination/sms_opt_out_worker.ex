@@ -40,7 +40,7 @@ defmodule AlertProcessor.SmsOptOutWorker do
   end
 
   defp fetch_interval do
-    ConfigHelper.get(:opted_out_list_fetch_interval, :int)
+    ConfigHelper.get_int(:opted_out_list_fetch_interval)
   end
 
   @spec do_work([phone_number]) :: [phone_number]

@@ -35,6 +35,6 @@ defmodule AlertProcessor.AlertWorker do
   end
 
   defp filter_interval do
-    ConfigHelper.get(:alert_fetch_interval, :int)
+    ConfigHelper.get_int(:alert_fetch_interval)
   end
 end

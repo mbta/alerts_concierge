@@ -18,6 +18,8 @@ config :concierge_site, ConciergeSite.Endpoint,
   pubsub: [name: ConciergeSite.PubSub,
            adapter: Phoenix.PubSub.PG2]
 
+config :concierge_site, temp_state_key: {:system, "TEMP_STATE_KEY", "top_secret_temp_state_key"}
+
 # Configures Elixir's Logger
 config :logger, :console,
   format: "$time $metadata[$level] $message\n",
