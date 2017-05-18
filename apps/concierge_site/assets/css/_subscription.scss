@@ -1,21 +1,24 @@
 .select-service {
+  @include make-col(8);
+  @include make-col-offset(2);
+
   text-align: center;
 }
 
 .select-service-header {
   font-family: $font-family-base;
   font-weight: $headings-font-weight;
-  margin-bottom: 16px;
+  margin-bottom: 1rem;
 }
 
 .select-service-subheader {
   font-family: $font-family-base;
   font-size: $base-font-size-xxl;
-  margin-bottom: 37px;
+  margin-bottom: 2.25rem;
 }
 
 .service-options-container {
-  border: 1px solid $gray-lightest;
+  border: $border-width solid $gray-lightest;
 }
 
 .service-option {
@@ -24,12 +27,12 @@
   font-family: $font-family-base;
   font-size: $base-font-size;
   margin: 0;
-  padding: 16px 0;
+  padding: 1rem 0;
   position: relative;
 }
 
 .service-option:not(:last-child) {
-  border-bottom: 1px solid $gray-lightest;
+  border-bottom: $border-width solid $gray-lightest;
 }
 
 .service-option:hover {
@@ -39,54 +42,54 @@
 
 .subscription-icon {
   border-radius: 100%;
-  height: 24px;
-  left: 20px;
+  height: 1.5rem;
+  left: 1.25rem;
   position: absolute;
-  top: 18px;
-  width: 24px;
+  top: 1.125rem;
+  width: 1.5rem;
 }
 
 .subway-icon {
-  background-color: #788093;
+  background-color: $brand-subway;
 }
 
 .subway-icon img {
-  bottom: 1px;
-  height: 16px;
+  height: 1rem;
   position: relative;
 }
 
 .commuter-rail-icon {
-  background-color: #a00a78;
+  background-color: $brand-commuter-rail;
 }
 
 .commuter-rail-icon img {
-  bottom: 2px;
-  height: 18px;
+  bottom: .03125rem;
+  height: 1.125rem;
   position: relative;
 }
 
 .bus-icon {
-  background-color: #ffce0c;
+  background-color: $brand-bus;
 }
 
 .bus-icon img {
-  bottom: 2px;
-  height: 16px;
+  bottom: .0625rem;
+  height: 1rem;
+  left: .0625rem;
   position: relative;
 }
 
 .ferry-icon {
-  background-color: #5da9e8;
+  background-color: $brand-ferry;
 }
 
 .ferry-icon img {
-  bottom: 2px;
-  height: 16px;
+  bottom: .0625rem;
+  height: 1rem;
   position: relative;
 }
 
 .mbta-icon img {
-  bottom: 3px;
+  bottom: .1875rem;
   position: relative;
 }

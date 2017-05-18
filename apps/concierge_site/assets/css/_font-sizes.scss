@@ -9,6 +9,10 @@ h1,
   border-bottom-color: $brand-purple;
   border-bottom-style: solid;
   border-bottom-width: $base-spacing / 4;
+  font-family: $font-family-base;
+  font-weight: $headings-font-weight;
+  margin-bottom: 2.875rem;
+  padding: 1.875rem 0 1rem;
 
   @include media-breakpoint-up(xxl) {
     font-size: $font-size-h1-xxl;
