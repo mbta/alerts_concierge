@@ -27,8 +27,12 @@ defmodule ConciergeSite.Router do
     pipe_through [:browser, :browser_auth]
     get "/my-subscriptions", SubscriptionController, :index
     get "/my-account", AccountController, :index
-    get "/subscriptions/new", SubscriptionController, :new
-    get "/subscriptions/subway/new", SubwaySubscriptionController, :new
+    resources "/subscriptions", SubscriptionController, only: [:new]
+  end
+
+  scope "/subscriptions", ConciergeSite do
+    pipe_through [:browser, :browser_auth]
+    resources "/subway", SubwaySubscriptionController, only: [:new]
   end
 
   if Mix.env == :dev do
