@@ -240,8 +240,8 @@ defmodule AlertProcessor.Model.Alert do
     },
     "Facility" => %{
       "Access Issue" => %{
-        minor: 1,
-        moderate: 2,
+        minor: 3,
+        moderate: 3,
         severe: 3
       }
     }
