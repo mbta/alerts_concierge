@@ -1,5 +1,4 @@
-<%= render ConciergeSite.SharedView, "title.html", title_text: "Create New Subscription" %>
-
+<h1>Create New Subscription</h1>
 <div class="select-service">
   <h2 class="select-service-header">Select a service:</h2>
   <p class="select-service-subheader">What mode of transportation do you take?</p>
