@@ -3,47 +3,46 @@ defmodule AlertProcessor.DigestBuilder do
   Generates digests for all users/alerts in the system
   """
   alias AlertProcessor.{InformedEntityFilter, Model, Repo}
-  alias Model.{Alert, Subscription}
+  alias Model.{Alert, Digest, Subscription}
   import Ecto.Query
 
   @doc """
   1. Takes a list of alerts
   2. Gets all users the alert affects
-  3. Returns a map with user ids as keys,
-     and an array of relevant alerts as value:
-
-     %{
-       "abc123" => [%Alert{}]
-     }
+  3. Returns a list of Digest structs:
+     [%Digest{user: user, alerts: [Alert]}]
   """
-  @spec build_digests([Alert.t]) :: map
+  @spec build_digests([Alert.t]) :: [Digest.t]
   def build_digests(alerts) do
     alerts
     |> Enum.map(fn(alert) ->
-      {fetch_user_ids(alert), alert}
+      {fetch_users(alert), alert}
     end)
     |> List.flatten
     |> sort_by_user
   end
 
-  defp fetch_user_ids(alert) do
+  defp fetch_users(alert) do
     q = from s in Subscription, select: s
     {:ok, query, ^alert} = InformedEntityFilter.filter({:ok, q, alert})
     query
     |> Repo.all()
     |> Repo.preload(:user)
-    |> Enum.map(&(&1.user.id))
+    |> Enum.map(&(&1.user))
   end
 
   defp sort_by_user(data) do
     data
-    |> Enum.reduce(%{}, fn({ids, alert}, result) ->
-      ids
-      |> Enum.reduce(result, fn(id, acc) ->
-        values = Map.get(acc, id) || []
+    |> Enum.reduce(%{}, fn({users, alert}, result) ->
+      users
+      |> Enum.reduce(result, fn(user, acc) ->
+        {values, _user} = Map.get(acc, user.id) || {[], nil}
         values = values ++ [alert]
-        Map.put(acc, id, values)
+        Map.put(acc, user.id, {values, user})
       end)
+    end)
+    |> Enum.map(fn({_user_id, {alerts, user}}) ->
+      %Digest{user: user, alerts: alerts}
     end)
   end
 end

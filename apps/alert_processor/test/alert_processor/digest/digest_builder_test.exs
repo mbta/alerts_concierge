@@ -4,7 +4,7 @@ defmodule AlertProcessor.DigestBuilderTest do
   import AlertProcessor.Factory
 
   alias AlertProcessor.{DigestBuilder, Model}
-  alias Model.{Alert, InformedEntity}
+  alias Model.{Alert, Digest, InformedEntity}
 
   @ie1 %{
     route: "16",
@@ -50,9 +50,10 @@ defmodule AlertProcessor.DigestBuilderTest do
     |> insert
 
     digests = DigestBuilder.build_digests([@alert1, @alert2])
+    expected = [%Digest{user: user1, alerts: [@alert1]},
+                %Digest{user: user2, alerts: [@alert1, @alert2]}]
 
-    assert digests == %{"#{user1.id}" => [@alert1],
-                        "#{user2.id}" => [@alert1, @alert2]}
+    assert digests -- expected == []
   end
 
   test "build_digests/1 does not filter on severity" do
@@ -65,6 +66,6 @@ defmodule AlertProcessor.DigestBuilderTest do
     |> insert
 
     digests = DigestBuilder.build_digests([@alert2])
-    assert digests == %{"#{user.id}" => [@alert2]}
+    assert digests == [%Digest{user: user, alerts: [@alert2]}]
   end
 end
