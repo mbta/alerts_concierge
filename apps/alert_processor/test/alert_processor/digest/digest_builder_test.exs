@@ -35,6 +35,10 @@ defmodule AlertProcessor.DigestBuilderTest do
     ]
   }
 
+  setup_all do
+    {:ok, _} = Application.ensure_all_started(:alert_processor)
+  end
+
   test "build_digests/1 returns all alerts for each user based on informed entity" do
     user1 = insert(:user)
     user2 = insert(:user)

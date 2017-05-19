@@ -13,6 +13,7 @@ defmodule AlertProcessor.Supervisor do
     SendingQueue,
     NotificationWorker,
     QueueWorker,
+    ServiceInfoCache,
     SmsOptOutWorker
   }
 
@@ -35,6 +36,7 @@ defmodule AlertProcessor.Supervisor do
 
     children = [
       supervisor(AlertProcessor.Repo, []),
+      worker(ServiceInfoCache, []),
       worker(AlertWorker, []),
       worker(AlertCache, []),
       worker(DigestManager, []),

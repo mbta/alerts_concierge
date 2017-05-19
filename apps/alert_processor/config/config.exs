@@ -34,6 +34,8 @@ config :alert_processor, alert_fetch_interval: {:system, "ALERT_FETCH_INTERVAL",
 
 config :alert_processor, opted_out_list_fetch_interval: {:system, "OPTED_OUT_LIST_FETCH_INTERVAL", "300000"}
 
+config :alert_processor, service_info_update_interval: {:system, "SERVICE_INFO_UPDATE_INTERVAL", "86400000"}
+
 # Import environment specific config. This must remain at the bottom
 # of this file so it overrides the configuration defined above.
 import_config "#{Mix.env}.exs"

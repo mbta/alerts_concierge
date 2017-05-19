@@ -1,21 +1,27 @@
 defmodule AlertProcessor.SendingQueueTest do
-  use ExUnit.Case, async: false
+  use ExUnit.Case
   alias AlertProcessor.{SendingQueue, Model.Notification}
 
-  setup do
+  setup_all do
+    Application.stop(:alert_processor)
+    on_exit(self(), fn() -> Application.start(:alert_processor) end)
+
     {:ok, notification: %Notification{send_after: DateTime.utc_now()}}
   end
 
   test "Instantiates empty queue by default" do
+    SendingQueue.start_link()
     assert SendingQueue.pop == :error
   end
 
   test "Alert can be added to the queue", %{notification: notification} do
+    SendingQueue.start_link()
     :ok = SendingQueue.enqueue(notification)
     assert SendingQueue.pop == {:ok, notification}
   end
 
   test "Alert can be removed from the queue", %{notification: notification} do
+    SendingQueue.start_link()
     :ok = SendingQueue.enqueue(notification)
 
     assert SendingQueue.pop == {:ok, notification}

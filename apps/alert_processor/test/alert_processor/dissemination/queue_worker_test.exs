@@ -7,15 +7,12 @@ defmodule AlertProcessor.QueueWorkerTest do
   end
 
   setup do
+    Application.stop(:alert_processor)
+    on_exit(self(), fn() -> Application.start(:alert_processor) end)
     notification = %Notification{send_after: DateTime.utc_now()}
     later_notification = %Notification{send_after: generate_date(50)}
 
     {:ok, notification: notification, later_notification: later_notification}
-  end
-
-  setup do
-    Application.stop(:alert_processor)
-    on_exit(self(), fn() -> Application.start(:alert_processor) end)
   end
 
   test "Worker passes notifications from holding queue to sending queue", %{notification: notification} do

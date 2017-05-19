@@ -1,10 +1,10 @@
-defmodule AlertProcessor.MessageWorkerTest do
-  use ExUnit.Case, async: false
+defmodule AlertProcessor.NotificationWorkerTest do
+  use ExUnit.Case
   use Bamboo.Test, shared: true
 
-  alias AlertProcessor.{Model.Notification, NotificationMailer, SendingQueue}
+  alias AlertProcessor.{Model.Notification, NotificationMailer, NotificationWorker, SendingQueue}
 
-  setup do
+  setup_all do
     Application.stop(:alert_processor)
     on_exit(self(), fn() -> Application.start(:alert_processor) end)
 
@@ -34,14 +34,16 @@ defmodule AlertProcessor.MessageWorkerTest do
   end
 
   test "Worker passes jobs from sending queue to notificationr", %{notification: notification, body: body, email: email} do
-    AlertProcessor.start()
+    SendingQueue.start_link()
+    NotificationWorker.start_link([])
     SendingQueue.enqueue(notification)
 
     assert_delivered_email NotificationMailer.notification_email(body, email)
   end
 
   test "Worker runs on interval jobs from sending queue to notificationr", %{notification: notification, notification_2: notification_2, body: body, body_2: body_2, email: email} do
-    AlertProcessor.start()
+    SendingQueue.start_link()
+    NotificationWorker.start_link([])
     SendingQueue.enqueue(notification)
 
     assert_delivered_email NotificationMailer.notification_email(body, email)

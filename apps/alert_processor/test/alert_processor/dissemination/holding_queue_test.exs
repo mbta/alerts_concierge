@@ -1,22 +1,19 @@
 defmodule AlertProcessor.HoldingQueueTest do
   use ExUnit.Case
 
-  alias AlertProcessor.{HoldingQueue, SendingQueue, Model.Notification}
+  alias AlertProcessor.{HoldingQueue, Model.Notification}
 
   defp generate_date(x) do
     DateTime.from_unix!(System.system_time(:millisecond) + x, :millisecond)
   end
 
   setup do
+    Application.stop(:alert_processor)
+    on_exit(self(), fn() -> Application.start(:alert_processor) end)
     date_in_future = DateTime.from_unix!(4_078_579_247)
     future_notification = %Notification{send_after: date_in_future}
 
     {:ok, fn: future_notification}
-  end
-
-  setup do
-    Application.stop(:alert_processor)
-    on_exit(self(), fn() -> Application.start(:alert_processor) end)
   end
 
   test "Instantiates empty queue by default" do
@@ -39,7 +36,6 @@ defmodule AlertProcessor.HoldingQueueTest do
   end
 
   test "messages_to_send/1 retains all notifications for the future" do
-    SendingQueue.start_link()
     notification_to_not_filter = %Notification{send_after: generate_date(50)}
     notification_to_filter = %Notification{send_after: generate_date(-50)}
     notifications = [notification_to_not_filter, notification_to_filter]
