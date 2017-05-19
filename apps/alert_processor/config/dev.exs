@@ -12,8 +12,5 @@ config :ex_aws,
 config :alert_processor, AlertProcessor.NotificationMailer,
   adapter: Bamboo.LocalAdapter
 
-config :alert_processor, AlertProcessor.DigestMailer,
-  adapter: Bamboo.LocalAdapter
-
 # Config for ExAws lib
 config :alert_processor, :ex_aws, ExAws

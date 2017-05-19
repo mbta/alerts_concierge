@@ -4,14 +4,15 @@ defmodule AlertProcessor.DigestDispatcherTest do
   use Bamboo.Test, shared: true
 
   alias AlertProcessor.{DigestDispatcher, DigestMailer, Model}
-  alias Model.{Alert, Digest, User}
+  alias Model.{Alert, Digest, DigestMessage, User}
 
   test "send_email/1 sends emails from digest list" do
     user = %User{email: "abc@123.com"}
     alert = %Alert{id: "1", header: "Test"}
-    digest = %Digest{user: user, alerts: [alert], serialized_alerts: ["Test"]}
+    digest = %Digest{user: user, alerts: [alert]}
+    message = DigestMessage.from_digest(digest)
 
-    DigestDispatcher.send_emails([digest])
-    assert_delivered_email DigestMailer.digest_email(digest)
+    DigestDispatcher.send_emails([message])
+    assert_delivered_email DigestMailer.digest_email(message)
   end
 end
