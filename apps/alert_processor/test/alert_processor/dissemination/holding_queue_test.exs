@@ -1,7 +1,7 @@
 defmodule AlertProcessor.HoldingQueueTest do
-  use ExUnit.Case
+  use ExUnit.Case, async: false
 
-  alias AlertProcessor.{HoldingQueue, SendingQueue, Model.Notification}
+  alias AlertProcessor.{HoldingQueue, Model.Notification}
 
   defp generate_date(x) do
     DateTime.from_unix!(System.system_time(:millisecond) + x, :millisecond)
@@ -39,7 +39,6 @@ defmodule AlertProcessor.HoldingQueueTest do
   end
 
   test "messages_to_send/1 retains all notifications for the future" do
-    SendingQueue.start_link()
     notification_to_not_filter = %Notification{send_after: generate_date(50)}
     notification_to_filter = %Notification{send_after: generate_date(-50)}
     notifications = [notification_to_not_filter, notification_to_filter]

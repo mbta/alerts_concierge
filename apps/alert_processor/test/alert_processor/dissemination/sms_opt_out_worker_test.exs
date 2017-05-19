@@ -1,5 +1,5 @@
 defmodule AlertProcessor.SmsOptOutWorkerTest do
-  use AlertProcessor.DataCase
+  use AlertProcessor.DataCase, async: false
   import AlertProcessor.Factory
   alias AlertProcessor.Model.User
   alias AlertProcessor.SmsOptOutWorker

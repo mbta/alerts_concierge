@@ -1,5 +1,5 @@
 defmodule AlertProcessor.QueueWorkerTest do
-  use ExUnit.Case
+  use ExUnit.Case, async: false
   alias AlertProcessor.{HoldingQueue, SendingQueue, QueueWorker, Model.Notification}
 
   defp generate_date(x) do
