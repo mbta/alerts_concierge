@@ -1,5 +1,5 @@
 defmodule AlertProcessor.ServiceInfoCacheTest do
-  use ExUnit.Case, async: false
+  use ExUnit.Case
   use ExVCR.Mock, adapter: ExVCR.Adapter.Hackney
   alias AlertProcessor.ServiceInfoCache
 
@@ -10,7 +10,7 @@ defmodule AlertProcessor.ServiceInfoCacheTest do
   end
 
   test "get_subway_info/0 returns subway branch lists" do
-    use_cassette "service_info", custom: true do
+    use_cassette "service_info", custom: true, clear_mock: true do
       ServiceInfoCache.start_link()
       assert {:ok, %{
         "Blue" => [{_, _} | _],

@@ -1,5 +1,5 @@
 defmodule AlertProcessor.HoldingQueueTest do
-  use ExUnit.Case, async: false
+  use ExUnit.Case
 
   alias AlertProcessor.{HoldingQueue, Model.Notification}
 
@@ -8,15 +8,12 @@ defmodule AlertProcessor.HoldingQueueTest do
   end
 
   setup do
+    Application.stop(:alert_processor)
+    on_exit(self(), fn() -> Application.start(:alert_processor) end)
     date_in_future = DateTime.from_unix!(4_078_579_247)
     future_notification = %Notification{send_after: date_in_future}
 
     {:ok, fn: future_notification}
-  end
-
-  setup do
-    Application.stop(:alert_processor)
-    on_exit(self(), fn() -> Application.start(:alert_processor) end)
   end
 
   test "Instantiates empty queue by default" do

@@ -21,7 +21,8 @@ defmodule AlertProcessor.ServiceInfoCache do
   Initialize GenServer and schedule recurring service info fetching.
   """
   def init(_) do
-    {:ok, fetch_service_info()}
+    send self(), :work
+    {:ok, %{}}
   end
 
   def get_subway_info(name \\ __MODULE__) do
@@ -48,18 +49,21 @@ defmodule AlertProcessor.ServiceInfoCache do
 
   defp fetch_route_info(routes) do
     for route <- routes, into: %{} do
-      stop_list = Enum.map(ApiClient.route_stops(route), fn(%{"attributes" => %{"name" => name}, "id" => id}) ->
-        {name, id}
-      end)
+      stop_list =
+        route
+        |> ApiClient.route_stops
+        |> Enum.map(fn(%{"attributes" => %{"name" => name}, "id" => id}) ->
+          {name, id}
+        end)
       {route, stop_list}
     end
   end
 
   defp schedule_work do
-    Process.send_after(self(), :work, filter_interval())
+    Process.send_after(self(), :work, update_interval())
   end
 
-  defp filter_interval do
+  defp update_interval do
     ConfigHelper.get_int(:service_info_update_interval)
   end
 end

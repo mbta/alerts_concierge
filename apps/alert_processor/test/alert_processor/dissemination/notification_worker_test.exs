@@ -1,5 +1,5 @@
 defmodule AlertProcessor.NotificationWorkerTest do
-  use ExUnit.Case, async: false
+  use ExUnit.Case
   use Bamboo.Test, shared: true
 
   alias AlertProcessor.{Model.Notification, NotificationMailer, NotificationWorker, SendingQueue}
