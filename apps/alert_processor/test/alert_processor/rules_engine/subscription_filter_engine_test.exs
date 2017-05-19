@@ -3,7 +3,7 @@ defmodule AlertProcessor.SubscriptionFilterEngineTest do
   import AlertProcessor.Factory
   alias AlertProcessor.{Model.Alert, Model.InformedEntity, Model.Notification, SubscriptionFilterEngine}
 
-  setup do
+  setup_all do
     {:ok, start_time} = DateTime.from_naive(~N[2017-04-26 09:00:00], "Etc/UTC")
     alert = %Alert{
       active_period: [%{start: start_time, end: nil}],

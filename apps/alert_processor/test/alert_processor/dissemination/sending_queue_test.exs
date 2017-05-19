@@ -2,7 +2,7 @@ defmodule AlertProcessor.SendingQueueTest do
   use ExUnit.Case
   alias AlertProcessor.{SendingQueue, Model.Notification}
 
-  setup do
+  setup_all do
     Application.stop(:alert_processor)
     on_exit(self(), fn() -> Application.start(:alert_processor) end)
 

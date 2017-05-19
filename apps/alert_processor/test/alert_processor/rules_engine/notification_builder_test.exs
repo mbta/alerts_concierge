@@ -5,7 +5,7 @@ defmodule AlertProcessor.NotificationBuilderTest do
   alias Model.Alert
   alias Calendar.DateTime, as: DT
 
-  setup do
+  setup_all do
     now = DT.from_date_and_time_and_zone!({2018, 1, 8}, {14, 10, 55}, "Etc/UTC")
     two_days_ago = DT.subtract!(now, 172_800)
     one_day_ago = DT.subtract!(now, 86_400)

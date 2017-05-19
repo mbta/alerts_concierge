@@ -4,7 +4,7 @@ defmodule AlertProcessor.NotificationWorkerTest do
 
   alias AlertProcessor.{Model.Notification, NotificationMailer, NotificationWorker, SendingQueue}
 
-  setup do
+  setup_all do
     Application.stop(:alert_processor)
     on_exit(self(), fn() -> Application.start(:alert_processor) end)
 
