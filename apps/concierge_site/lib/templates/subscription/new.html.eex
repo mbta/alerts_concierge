@@ -4,39 +4,34 @@
   <p class="select-service-subheader">What mode of transportation do you take?</p>
 
   <div class="service-options-container">
-    <%= link to: subway_subscription_path(@conn, :new), class: "service-option" do %>
-      <div class="subway-icon subscription-icon">
-        <img src=<%= static_url(@conn, "/images/subway.svg") %> />
-      </div>
-      <div>Subway</div>
-    <% end %>
+    <%= render "_service_option.html",
+               link_to: subway_subscription_path(@conn, :new),
+               icon_class: "subway-icon subscription-icon",
+               icon_src: static_url(@conn, "/images/subway.svg"),
+               name: "Subway" %>
 
-    <%= link to: "#", class: "service-option" do %>
-      <div class="commuter-rail-icon subscription-icon">
-        <img src=<%= static_url(@conn, "/images/commuter-rail.svg") %> />
-      </div>
-      <div>Commuter Rail</div>
-    <% end %>
+    <%= render "_service_option.html",
+               link_to: "#",
+               icon_class: "commuter-rail-icon subscription-icon",
+               icon_src: static_url(@conn, "/images/commuter-rail.svg"),
+               name: "Commuter Rail" %>
 
-    <%= link to: "#", class: "service-option" do %>
-      <div class="bus-icon subscription-icon">
-        <img src=<%= static_url(@conn, "/images/bus.svg") %> />
-      </div>
-      <div>Bus</div>
-    <% end %>
+    <%= render "_service_option.html",
+               link_to: "#",
+               icon_class: "bus-icon subscription-icon",
+               icon_src: static_url(@conn, "/images/bus.svg"),
+               name: "Bus" %>
 
-    <%= link to: "#", class: "service-option" do %>
-      <div class="ferry-icon subscription-icon">
-        <img src=<%= static_url(@conn, "/images/ferry.svg") %> />
-      </div>
-      <div>Ferry</div>
-    <% end %>
+    <%= render "_service_option.html",
+               link_to: "#",
+               icon_class: "ferry-icon subscription-icon",
+               icon_src: static_url(@conn, "/images/ferry.svg"),
+               name: "Ferry" %>
 
-    <%= link to: "#", class: "service-option" do %>
-      <div class="mbta-icon subscription-icon">
-        <img src=<%= static_url(@conn, "/images/m-b-t-a.svg") %> />
-      </div>
-      <div>Station Amenities (elevators, escalators, etc.)</div>
-    <% end %>
+    <%= render "_service_option.html",
+               link_to: "#",
+               icon_class: "mbta-icon subscription-icon",
+               icon_src: static_url(@conn, "/images/m-b-t-a.svg"),
+               name: "Station Amenities (elevators, escalators, etc.)" %>
   </div>
 </div>
