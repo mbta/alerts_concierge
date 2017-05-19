@@ -6,6 +6,7 @@ defmodule AlertProcessor.AlertParserTest do
   alias AlertProcessor.{AlertParser, Model.InformedEntity, Model.Notification, NotificationMailer}
 
   setup_all do
+    {:ok, _} = Application.ensure_all_started(:alert_processor)
     HTTPoison.start
     :ok
   end
