@@ -22,7 +22,6 @@
 }
 
 .service-option {
-  color: $link-color;
   display: block;
   font-family: $font-family-base;
   font-size: $base-font-size;
@@ -35,8 +34,8 @@
 }
 
 .service-option:hover {
+  color: $link-color;
   background-color: $link-hover-color;
-  text-decoration: $link-hover-decoration;
 }
 
 .subscription-icon {
