@@ -6,9 +6,9 @@ defmodule AlertProcessor.QueueWorkerTest do
     DateTime.from_unix!(System.system_time(:millisecond) + x, :millisecond)
   end
 
-  setup do
+  setup_all do
     Application.stop(:alert_processor)
-    on_exit(self(), fn() -> Application.start(:alert_processor) end)
+    on_exit(self(), fn() -> {:ok, _} = Application.ensure_all_started(:alert_processor) end)
     notification = %Notification{send_after: DateTime.utc_now()}
     later_notification = %Notification{send_after: generate_date(50)}
 
