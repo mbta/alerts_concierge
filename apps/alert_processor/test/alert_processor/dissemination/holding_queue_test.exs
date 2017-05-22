@@ -7,9 +7,9 @@ defmodule AlertProcessor.HoldingQueueTest do
     DateTime.from_unix!(System.system_time(:millisecond) + x, :millisecond)
   end
 
-  setup do
+  setup_all do
     Application.stop(:alert_processor)
-    on_exit(self(), fn() -> Application.start(:alert_processor) end)
+    on_exit(self(), fn() -> {:ok, _} = Application.ensure_all_started(:alert_processor) end)
     date_in_future = DateTime.from_unix!(4_078_579_247)
     future_notification = %Notification{send_after: date_in_future}
 

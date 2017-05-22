@@ -5,7 +5,7 @@ defmodule AlertProcessor.ServiceInfoCacheTest do
 
   setup_all do
     Application.stop(:alert_processor)
-    on_exit(self(), fn() -> Application.start(:alert_processor) end)
+    on_exit(self(), fn() -> {:ok, _} = Application.ensure_all_started(:alert_processor) end)
     :ok
   end
 
