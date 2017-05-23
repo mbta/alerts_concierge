@@ -34,6 +34,10 @@ defmodule AlertProcessor.Model.InformedEntity do
     timestamps()
   end
 
+  def facility_types do
+    [:elevator, :escalator]
+  end
+
   def queryable_fields do
     [:direction_id, :facility_type, :route, :route_type, :stop, :trip]
   end
