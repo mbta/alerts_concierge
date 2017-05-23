@@ -12,7 +12,7 @@ defmodule AlertProcessor.ApiClientTest do
   end
 
   test "get_alerts/0 returns list of alerts if successful" do
-    use_cassette "get_alerts", clear_mock: true do
+    use_cassette "get_alerts", custom: true, clear_mock: true do
       assert {[_ | _], [_ | _]} = ApiClient.get_alerts
     end
   end

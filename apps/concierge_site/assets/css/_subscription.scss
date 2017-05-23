@@ -1,0 +1,92 @@
+.select-service {
+  @include make-col(8);
+  @include make-col-offset(2);
+
+  text-align: center;
+}
+
+.select-service-header {
+  font-weight: $headings-font-weight;
+  margin-bottom: 1rem;
+}
+
+.select-service-subheader {
+  margin-bottom: 2.25rem;
+}
+
+.service-options-container {
+  border: $border-width solid $gray-lightest;
+}
+
+.service-option {
+  display: block;
+  padding: 1rem 0;
+  position: relative;
+}
+
+.service-option:not(:last-child) {
+  border-bottom: $border-width solid $gray-lightest;
+}
+
+.service-option:hover {
+  color: $link-color;
+  background-color: $link-hover-color;
+}
+
+.subscription-icon {
+  border-radius: 100%;
+  height: 1.5rem;
+  left: 1.25rem;
+  position: absolute;
+  top: 1.125rem;
+  width: 1.5rem;
+
+  img {
+    position: relative;
+  }
+}
+
+.subway-icon {
+  background-color: $brand-subway;
+
+  img {
+    height: 1rem;
+  }
+}
+
+.commuter-rail-icon {
+  background-color: $brand-commuter-rail;
+
+  img {
+    bottom: .03125rem;
+    height: 1.125rem;
+  }
+}
+
+
+.bus-icon {
+  background-color: $brand-bus;
+
+  img {
+    height: 1rem;
+    left: .0625rem;
+  }
+}
+
+
+.ferry-icon {
+  background-color: $brand-ferry;
+
+  img {
+    bottom: .0625rem;
+    height: 1rem;
+  }
+}
+
+
+.mbta-icon {
+
+  img {
+    bottom: .1875rem;
+  }
+}

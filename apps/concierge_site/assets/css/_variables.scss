@@ -1,3 +1,11 @@
 @import 'node_modules/bootstrap/scss/variables';
-$fa-font-path: "../fonts";
-$font-family-base: 'LatoLatinWeb', $font-family-sans-serif;
+@import "colors";
+
+$base-spacing: 1rem;
+$base-font-size: 16px;
+$base-font-size-xxl: 18px;
+$headings-font-weight: bold;
+$headings-line-height: 1.5;
+$font-size-h1-xxl: 1.875rem;
+$font-size-h2-xxl: 1.625rem;
+$font-family-base: 'LatoLatinWeb', sans-serif;

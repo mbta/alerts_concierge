@@ -1,0 +1,6 @@
+<%= link to: @link_to, class: "service-option" do %>
+  <div class="<%= @icon_class %> subscription-icon">
+    <img src="<%= @icon_src %>" />
+  </div>
+  <div><%= @name %></div>
+<% end %>
