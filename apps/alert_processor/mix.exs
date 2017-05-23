@@ -11,6 +11,7 @@ defmodule AlertProcessor.Mixfile do
      elixir: "~> 1.4",
      elixirc_paths: elixirc_paths(Mix.env),
      compilers: [:gettext] ++ Mix.compilers,
+     build_embedded: Mix.env == :prod,
      start_permanent: Mix.env == :prod,
      dialyzer: [plt_add_deps: :transitive],
      test_coverage: [tool: ExCoveralls],

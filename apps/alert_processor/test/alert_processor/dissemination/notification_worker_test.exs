@@ -1,13 +1,10 @@
 defmodule AlertProcessor.NotificationWorkerTest do
-  use ExUnit.Case
+  use AlertProcessor.DataCase
   use Bamboo.Test, shared: true
 
   alias AlertProcessor.{Model.Notification, NotificationMailer, NotificationWorker, SendingQueue}
 
   setup_all do
-    Application.stop(:alert_processor)
-    on_exit(self(), fn() -> {:ok, _} = Application.ensure_all_started(:alert_processor) end)
-
     email = "test@example.com"
     body = "This is a test alert"
     body_2 = "Another alert"
