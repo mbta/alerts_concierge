@@ -6,14 +6,11 @@
 }
 
 .select-service-header {
-  font-family: $font-family-base;
   font-weight: $headings-font-weight;
   margin-bottom: 1rem;
 }
 
 .select-service-subheader {
-  font-family: $font-family-base;
-  font-size: $base-font-size-xxl;
   margin-bottom: 2.25rem;
 }
 
@@ -23,8 +20,6 @@
 
 .service-option {
   display: block;
-  font-family: $font-family-base;
-  font-size: $base-font-size;
   padding: 1rem 0;
   position: relative;
 }
