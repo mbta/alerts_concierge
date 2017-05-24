@@ -1,1 +1,23 @@
-Subway
+<h1>Create New Subscription</h1>
+
+<div class="select-trip-type">
+  <h2 class="select-trip-type-header">What type of trip do you take?</h2>
+
+  <div class="trip-type-options-container">
+    <%= render "_trip_type_option.html",
+               link_to: subway_subscription_path(@conn, :info, trip_type: "one-way"),
+               name: "One Way" %>
+
+    <%= render "_trip_type_option.html",
+               link_to: subway_subscription_path(@conn, :info, trip_type: "round-trip"),
+               name: "Round Trip" %>
+
+    <%= render "_trip_type_option.html",
+               link_to: subway_subscription_path(@conn, :info, trip_type: "roaming"),
+               name: "Roaming (travel in the area between two stations)" %>
+  </div>
+</div>
+
+<%= link to: subscription_path(@conn, :new), class: "subscription-back-link" do %>
+  <i class="fa fa-arrow-left" aria-hidden="true"></i> Go Back
+<% end %>

@@ -1,0 +1,3 @@
+<%= link to: @link_to, class: "trip-type-option" do %>
+  <div><%= @name %></div>
+<% end %>
