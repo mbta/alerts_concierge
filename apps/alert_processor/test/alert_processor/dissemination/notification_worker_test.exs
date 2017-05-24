@@ -8,7 +8,7 @@ defmodule AlertProcessor.NotificationWorkerTest do
     email = "test@example.com"
     body = "This is a test alert"
     body_2 = "Another alert"
-    phone_number = "+15555551234"
+    phone_number = "5555551234"
     status = "unsent"
 
     notification = %Notification{

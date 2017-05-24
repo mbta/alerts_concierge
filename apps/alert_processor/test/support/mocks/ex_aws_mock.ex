@@ -22,7 +22,7 @@ defmodule ExAws.Mock do
       :list_phone_numbers_opted_out ->
         {:ok, %{
           body: %{
-            phone_numbers: ["+19999999999"],
+            phone_numbers: ["9999999999"],
             next_token: nil,
             request_id: "123"
           }

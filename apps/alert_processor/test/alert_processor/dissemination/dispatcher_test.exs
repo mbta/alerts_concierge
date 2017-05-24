@@ -6,7 +6,7 @@ defmodule AlertProcessor.DispatcherTest do
 
   @email "test@example.com"
   @body "This is a test alert"
-  @phone_number "+15555551234"
+  @phone_number "5555551234"
 
   test "notification_email/1 requires a notification" do
     notification = %Notification{
