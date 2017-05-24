@@ -19,7 +19,7 @@ defmodule ConciergeSite.SubwaySubscriptionView do
   @doc """
   Provide css classes for the text and circle in progress bar steps
   """
-  def progress_step_classes(page, step) when (page === step) do
+  def progress_step_classes(page, step) when (page == step) do
     %{circle: "active-circle", name: "active-page"}
   end
 
