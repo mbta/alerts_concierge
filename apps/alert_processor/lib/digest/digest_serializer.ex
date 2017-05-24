@@ -17,7 +17,7 @@ defmodule AlertProcessor.DigestSerializer do
 
   @spec serialize_alert(Alert.t) :: String.t
   defp serialize_alert(alert) do
-    # TODO: Waiting on spec
+    # TODO:  Waiting on spec
     alert.header
   end
 end
