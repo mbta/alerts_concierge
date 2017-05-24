@@ -7,6 +7,7 @@ defmodule AlertProcessor.Helpers.DateTimeHelper do
 
   alias Calendar.DateTime, as: DT
   alias Calendar.Time, as: T
+  alias Calendar.Date, as: D
 
   @spec datetime_to_date_and_time(DateTime.t) :: {Date.t, Time.t}
   def datetime_to_date_and_time(datetime) do
@@ -76,5 +77,66 @@ defmodule AlertProcessor.Helpers.DateTimeHelper do
 
   defp difference_in_time_as_seconds(time_of_day, time_now) do
     T.diff(time_of_day, time_now)
+  end
+
+  @doc """
+  Returns a tuple of the datetime of the upcoming weekend.
+  If called on a weekend, will go back to start of current weekend.
+  """
+  @spec upcoming_weekend(DateTime.t | nil) :: {DateTime.t, DateTime.t}
+  def upcoming_weekend(time \\ nil) do
+    today = time || DT.now!("America/New_York")
+
+    start_time = today
+    |> Map.merge(%{
+      hour: 0,
+      minute: 0,
+      second: 0,
+      microsecond: {0, 0}
+    })
+    |> DT.add!(seconds_till_saturday(today))
+    end_time = DT.add!(start_time, 86_400 * 2 - 1)
+
+    {start_time, end_time}
+  end
+
+  @spec seconds_till_saturday(DateTime.t) :: number
+  defp seconds_till_saturday(date_time) do
+    day_of_week = date_time
+    |> DT.to_date
+    |> D.day_of_week
+    (6 - day_of_week) * 86_400
+  end
+
+  @doc """
+  Returns a tuple of DateTimes of the upcoming week
+  """
+  @spec upcoming_week(DateTime.t | nil) :: {DateTime.t, DateTime.t}
+  def upcoming_week(time \\ nil) do
+    {_start, end_of_weekend} = upcoming_weekend(time)
+    start_time = DT.add!(end_of_weekend, 1)
+    end_time = DT.add!(start_time, 86_400 * 5 - 1)
+
+    {start_time, end_time}
+  end
+
+  @doc """
+  Returns a tuple of DateTimes of the next weekend (after upcoming week)
+  """
+  @spec next_weekend(DateTime.t | nil) :: {DateTime.t, DateTime.t}
+  def next_weekend(time \\ nil) do
+    {_start, end_of_week} = upcoming_week(time)
+    start_time = DT.add!(end_of_week, 1)
+    end_time = DT.add!(start_time, 86_400 * 2 - 1)
+
+    {start_time, end_time}
+  end
+
+  @spec future(DateTime.t | nil) :: {DateTime.t, DateTime.t}
+  def future(time \\ nil) do
+    {_start, end_of_next_weekend} = next_weekend(time)
+    start_time = DT.add!(end_of_next_weekend, 1)
+    end_time = DT.from_erl!({{3000, 01, 01}, {0, 0, 0}}, "America/New_York")
+    {start_time, end_time}
   end
 end
