@@ -19,3 +19,5 @@ import "phoenix_html"
 // paths "./socket" or full ones "web/static/js/socket".
 
 // import socket from "./socket"
+
+document.body.className = document.body.className.replace("no-js", "js");
