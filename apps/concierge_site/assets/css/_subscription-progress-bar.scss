@@ -1,7 +1,3 @@
-$active-step-font-weight: bold;
-$active-step-circle-border-color: $dark-blue;
-$active-step-circle-background-color: $dark-blue;
-
 .progress-container {
   @include make-col(4);
   @include make-col-offset(4);
