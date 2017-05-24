@@ -12,6 +12,9 @@ config :alert_processor, AlertProcessor.Repo,
 config :alert_processor, AlertProcessor.NotificationMailer,
   adapter: Bamboo.TestAdapter
 
+config :alert_processor, AlertProcessor.DigestMailer,
+  adapter: Bamboo.TestAdapter
+
 config :alert_processor, AlertProcessor.HoldingQueue,
   filter_interval: 100 # 0.1 sec
 

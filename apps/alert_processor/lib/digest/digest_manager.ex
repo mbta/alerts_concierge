@@ -1,12 +1,13 @@
 defmodule AlertProcessor.DigestManager do
   @moduledoc false
   use GenServer
-  alias AlertProcessor.{AlertCache, DigestBuilder, Helpers}
+  alias AlertProcessor.{AlertCache, DigestBuilder,
+    Model.DigestMessage, DigestDispatcher, Helpers}
   alias Helpers.DateTimeHelper
 
   @digest_interval 604_800 # 1 Week in seconds
   @digest_day 7
-  @digest_time ~T[21:00:00]
+  @digest_time ~T[15:00:00]
 
   def start_link do
     GenServer.start_link(__MODULE__, @digest_interval, [name: __MODULE__])
@@ -26,8 +27,8 @@ defmodule AlertProcessor.DigestManager do
   def handle_info(:send_digests, interval) do
     AlertCache.get_alerts()
     |> DigestBuilder.build_digests()
-    # |> DigestSerializer.serialize()
-    # |> DigestDispatcher.send_emails()
+    |> Enum.map(&DigestMessage.from_digest/1)
+    |> DigestDispatcher.send_emails()
     Process.send_after(self(), :send_digests, interval * 1000)
     {:noreply, interval}
   end
