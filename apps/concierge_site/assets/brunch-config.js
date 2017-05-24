@@ -74,6 +74,7 @@ exports.config = {
     globals: {
       $: 'jquery',
       jQuery: 'jquery',
+      Tether: 'tether',
       bootstrap: 'bootstrap'
     }
   }
