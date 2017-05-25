@@ -39,11 +39,22 @@ defmodule AlertProcessor.Helpers.DateTimeHelperTest do
 
   describe "digest groups" do
     @thursday DT.from_erl!({{2017, 5, 25}, {0, 0, 0}}, "America/New_York")
+    @saturday DT.from_erl!({{2017, 5, 27}, {0, 0, 0}}, "America/New_York")
+    @sunday DT.from_erl!({{2017, 5, 28}, {0, 0, 0}}, "America/New_York")
+
     test "upcoming_weekend/0 returns the start and end DateTime of upcoming weekend" do
       saturday_start = DT.from_erl!({{2017, 5, 27}, {0, 0, 0}}, "America/New_York")
       sunday_end = DT.from_erl!({{2017, 5, 28}, {23, 59, 59}}, "America/New_York")
 
       assert DTH.upcoming_weekend(@thursday) == {saturday_start, sunday_end}
+    end
+
+    test "upcoming_weekend/0 works for current date of Saturday/Sunday" do
+      saturday_start = DT.from_erl!({{2017, 6, 03}, {0, 0, 0}}, "America/New_York")
+      sunday_end = DT.from_erl!({{2017, 6, 04}, {23, 59, 59}}, "America/New_York")
+
+      assert DTH.upcoming_weekend(@saturday) == {saturday_start, sunday_end}
+      assert DTH.upcoming_weekend(@sunday) == {saturday_start, sunday_end}
     end
 
     test "upcoming_week/0" do

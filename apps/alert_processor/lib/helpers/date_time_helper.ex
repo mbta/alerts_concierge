@@ -3,7 +3,7 @@ defmodule AlertProcessor.Helpers.DateTimeHelper do
   Module containing reusable datetime helpers for
   multi-step datetime functions.
   """
-  @seconds_in_a_week 86_400
+  @seconds_in_a_day 86_400
 
   alias Calendar.DateTime, as: DT
   alias Calendar.Time, as: T
@@ -72,7 +72,7 @@ defmodule AlertProcessor.Helpers.DateTimeHelper do
 
   defp difference_in_days_as_seconds(day_of_week, today) do
     current_day_of_week = today |> Date.day_of_week
-    (day_of_week - current_day_of_week) * @seconds_in_a_week
+    (day_of_week - current_day_of_week) * @seconds_in_a_day
   end
 
   defp difference_in_time_as_seconds(time_of_day, time_now) do
@@ -95,7 +95,7 @@ defmodule AlertProcessor.Helpers.DateTimeHelper do
       microsecond: {0, 0}
     })
     |> DT.add!(seconds_till_saturday(today))
-    end_time = DT.add!(start_time, 86_400 * 2 - 1)
+    end_time = DT.add!(start_time, @seconds_in_a_day * 2 - 1)
 
     {start_time, end_time}
   end
@@ -105,7 +105,11 @@ defmodule AlertProcessor.Helpers.DateTimeHelper do
     day_of_week = date_time
     |> DT.to_date
     |> D.day_of_week
-    (6 - day_of_week) * 86_400
+    if day_of_week >= 6 do
+      (6 - day_of_week) * @seconds_in_a_day + 7 * @seconds_in_a_day
+    else
+      (6 - day_of_week) * @seconds_in_a_day
+    end
   end
 
   @doc """
@@ -115,7 +119,7 @@ defmodule AlertProcessor.Helpers.DateTimeHelper do
   def upcoming_week(time \\ nil) do
     {_start, end_of_weekend} = upcoming_weekend(time)
     start_time = DT.add!(end_of_weekend, 1)
-    end_time = DT.add!(start_time, 86_400 * 5 - 1)
+    end_time = DT.add!(start_time, @seconds_in_a_day * 5 - 1)
 
     {start_time, end_time}
   end
@@ -127,7 +131,7 @@ defmodule AlertProcessor.Helpers.DateTimeHelper do
   def next_weekend(time \\ nil) do
     {_start, end_of_week} = upcoming_week(time)
     start_time = DT.add!(end_of_week, 1)
-    end_time = DT.add!(start_time, 86_400 * 2 - 1)
+    end_time = DT.add!(start_time, @seconds_in_a_day * 2 - 1)
 
     {start_time, end_time}
   end
