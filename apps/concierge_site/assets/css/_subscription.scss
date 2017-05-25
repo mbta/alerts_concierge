@@ -1,4 +1,5 @@
-.select-service {
+.select-service,
+.select-trip-type {
   @include make-col(8);
   @include make-col-offset(2);
 
@@ -6,7 +7,6 @@
 }
 
 .select-service-header {
-  font-weight: $headings-font-weight;
   margin-bottom: 1rem;
 }
 
@@ -14,21 +14,29 @@
   margin-bottom: 2.25rem;
 }
 
-.service-options-container {
+.select-trip-type-header {
+  margin-bottom: 3.25rem;
+}
+
+.service-options-container,
+.trip-type-options-container {
   border: $border-width solid $gray-lightest;
 }
 
-.service-option {
+.service-option,
+.trip-type-option {
   display: block;
   padding: 1rem 0;
   position: relative;
 }
 
-.service-option:not(:last-child) {
+.service-option:not(:last-child),
+.trip-type-option:not(:last-child) {
   border-bottom: $border-width solid $gray-lightest;
 }
 
-.service-option:hover {
+.service-option:hover,
+.trip-type-option:hover {
   color: $link-color;
   background-color: $link-hover-color;
 }
@@ -88,5 +96,19 @@
 
   img {
     bottom: .1875rem;
+  }
+}
+
+.subscription-back-link {
+  @include make-col-offset(2);
+
+  display: block;
+  font-size: $base-font-size;
+  margin-top: 1.125rem;
+
+  .fa-arrow-left {
+    bottom: .0625rem;
+    margin-right: .125rem;
+    position: relative;
   }
 }

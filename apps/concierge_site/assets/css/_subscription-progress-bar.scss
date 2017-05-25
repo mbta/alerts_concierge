@@ -1,0 +1,61 @@
+.progress-container {
+  @include make-col(4);
+  @include make-col-offset(4);
+
+  margin-bottom: 2.5rem;
+  position: relative;
+  text-align: center;
+  z-index: 1;
+}
+
+.progress-bar {
+  @include make-col(4);
+  @include make-col-offset(4);
+
+  background-color: $black;
+  height: .1rem;
+  position: relative;
+  top: .75rem;
+}
+
+.progress-step-name {
+  font-size: $base-font-size-xs;
+}
+
+.progress-step-name.active-page {
+  color: $black;
+  font-weight: $active-step-font-weight;
+}
+
+.progress-link {
+  display: inline-block;
+  text-align: center;
+}
+
+.disabled-progress-link {
+  @include disabled-link($black);
+}
+
+.progress-step-trip-type {
+  position: absolute;
+  left: -1.75rem;
+}
+
+.progress-step-preferences {
+  position: absolute;
+  right: -1.75rem;
+}
+
+.progress-circle {
+  background-color: $white;
+  border: .1rem solid $black;
+  border-radius: 100%;
+  display: inline-block;
+  height: .875rem;
+  width: .875rem;
+}
+
+.progress-circle.active-circle {
+  background-color: $active-step-circle-background-color;
+  border-color: $active-step-circle-border-color;
+}
