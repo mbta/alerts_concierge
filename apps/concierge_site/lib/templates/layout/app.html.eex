@@ -11,7 +11,7 @@
     <link rel="stylesheet" href="<%= static_path(@conn, "/css/app.css") %>">
   </head>
 
-  <body>
+  <body class="no-js">
     <div class="container">
       <main id="main" tabindex="-1">
         <%= render @view_module, @view_template, assigns %>
