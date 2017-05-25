@@ -27,7 +27,7 @@ defmodule AlertProcessor.Model.Alert do
     severity: atom,
     active_period: [map],
     last_push_notification: DateTime.t,
-    digest_groups: [number]
+    digest_groups: [atom]
   }
 
   @route_types %{

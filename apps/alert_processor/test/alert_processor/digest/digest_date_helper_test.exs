@@ -65,9 +65,9 @@ defmodule AlertProcessor.DigestDateHelperTest do
    alerts = [@alert1, @alert2, @alert3, @alert4]
    [a1, a2, a3, a4] = DigestDateHelper.calculate_date_groups(alerts, @thursday)
 
-    assert a1.digest_groups == ["future"]
-    assert a2.digest_groups == ["next_weekend", "upcoming_week"]
+    assert a1.digest_groups == [:future]
+    assert a2.digest_groups == [:next_weekend, :upcoming_week]
     assert a3.digest_groups == []
-    assert a4.digest_groups == ["upcoming_weekend"]
+    assert a4.digest_groups == [:upcoming_weekend]
   end
 end

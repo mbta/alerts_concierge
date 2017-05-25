@@ -3,7 +3,7 @@ defmodule AlertProcessor.DigestDateHelper do
   Determines which digest date groups an alert belongs in
   """
 
-  alias AlertProcessor.Helpers.DateTimeHelper
+  alias AlertProcessor.{Model.DigestDateGroup, Helpers.DateTimeHelper}
   alias Calendar.DateTime, as: DT
 
   @spec calculate_date_groups([Alert.t], DateTime.t | nil) :: [Alert.t]
@@ -14,11 +14,13 @@ defmodule AlertProcessor.DigestDateHelper do
 
   @spec calculate_date_group(Alert.t, map) :: Alert.t
   defp calculate_date_group(alert, digest_groups) do
-    groups = digest_groups
-    |> Enum.map(fn({name, dg}) ->
-      if active_period_matches?(alert.active_period, dg), do: name
+    groups = Enum.flat_map(Map.from_struct(digest_groups), fn {name, group} ->
+      if active_period_matches?(alert.active_period, group) do
+        [name]
+      else
+        []
+      end
     end)
-    |> Enum.reject(&is_nil/1)
     Map.put(alert, :digest_groups, groups)
   end
 
@@ -32,21 +34,16 @@ defmodule AlertProcessor.DigestDateHelper do
 
   @spec determine_digest_groups(DateTime.t) :: map
   defp determine_digest_groups(time) do
-    %{
-      "upcoming_weekend" => DateTimeHelper.upcoming_weekend(time),
-      "upcoming_week" => DateTimeHelper.upcoming_week(time),
-      "next_weekend" => DateTimeHelper.next_weekend(time),
-      "future" => DateTimeHelper.future(time)
+    %DigestDateGroup{
+      upcoming_weekend: DateTimeHelper.upcoming_weekend(time),
+      upcoming_week: DateTimeHelper.upcoming_week(time),
+      next_weekend: DateTimeHelper.next_weekend(time),
+      future: DateTimeHelper.future(time)
      }
   end
 
   @spec active_period_within?(map, {DateTime.t, DateTime.t}) :: boolean()
   defp active_period_within?(%{start: aps, end: ape}, {dgs, dge}) do
-    cond do
-      DT.after?(aps, dgs) && DT.before?(aps, dge) -> true # ap start within interval
-      DT.before?(aps, dgs) && DT.after?(ape, dge) -> true # ap start before, end after interval
-      DT.after?(ape, dgs) && DT.before?(ape, dge) -> true # ap end within interval
-      true -> false
-    end
+    not DT.before?(dge, aps) and not DT.before?(ape, dgs)
   end
 end
