@@ -8,7 +8,7 @@ defmodule AlertProcessor.Model.DigestMessage do
   @type t :: %__MODULE__{
     user: User.t,
     digest: Digest.t,
-    body: String.t
+    body: List.t
   }
 
   def from_digest(digest) do

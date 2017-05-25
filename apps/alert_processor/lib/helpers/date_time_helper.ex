@@ -9,6 +9,22 @@ defmodule AlertProcessor.Helpers.DateTimeHelper do
   alias Calendar.Time, as: T
   alias Calendar.Date, as: D
 
+  @doc "Returns full name of month for integers 1-12"
+  @spec month_name(number) :: String.t
+  def month_name(number), do: do_month_name(number)
+  defp do_month_name(1), do: "January"
+  defp do_month_name(2), do: "February"
+  defp do_month_name(3), do: "March"
+  defp do_month_name(4), do: "April"
+  defp do_month_name(5), do: "May"
+  defp do_month_name(6), do: "June"
+  defp do_month_name(7), do: "July"
+  defp do_month_name(8), do: "August"
+  defp do_month_name(9), do: "September"
+  defp do_month_name(10), do: "October"
+  defp do_month_name(11), do: "November"
+  defp do_month_name(12), do: "December"
+
   @spec datetime_to_date_and_time(DateTime.t) :: {Date.t, Time.t}
   def datetime_to_date_and_time(datetime) do
     date = DateTime.to_date(datetime)
