@@ -2,13 +2,14 @@ defmodule AlertProcessor.Model.DigestMessage do
   @moduledoc """
   Representation of DigestMessage data
   """
-  alias AlertProcessor.{Model.User, Model.Digest, DigestSerializer}
+  alias AlertProcessor.{Model, DigestSerializer}
+  alias Model.{Alert, Digest, DigestMessage, User}
   defstruct [:user, :digest, :body]
 
   @type t :: %__MODULE__{
     user: User.t,
     digest: Digest.t,
-    body: List.t
+    body: [{String.t, [Alert.t]}]
   }
 
   def from_digest(digest) do

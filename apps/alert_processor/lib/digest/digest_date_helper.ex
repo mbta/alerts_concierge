@@ -3,7 +3,7 @@ defmodule AlertProcessor.DigestDateHelper do
   Determines which digest date groups an alert belongs in
   """
 
-  alias AlertProcessor.{Model.DigestDateGroup, Helpers.DateTimeHelper}
+  alias AlertProcessor.{Model.DigestDateGroup, Model.Alert, Helpers.DateTimeHelper}
   alias Calendar.DateTime, as: DT
 
   @spec calculate_date_groups([Alert.t], DateTime.t | nil) :: [Alert.t]
