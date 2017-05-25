@@ -7,7 +7,7 @@ defmodule AlertProcessor.Model.NotificationTest do
 
   @base_attrs %{
     email: "test@test.com",
-    phone_number: "+12345678910",
+    phone_number: "2345678910",
     header: "Short header",
     message: "There is a delay",
     send_after: DateTime.utc_now,

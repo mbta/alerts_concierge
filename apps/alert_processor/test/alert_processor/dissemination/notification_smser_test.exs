@@ -10,7 +10,7 @@ defmodule AlertProcessor.NotificationSmserTest do
     params = sms_operation.params
 
     assert params["Message"] == message
-    assert params["PhoneNumber"] == user_phone_number
+    assert params["PhoneNumber"] == "+1#{user_phone_number}"
     assert params["Action"] == "Publish"
   end
 end
