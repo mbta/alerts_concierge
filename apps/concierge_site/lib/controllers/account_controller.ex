@@ -22,7 +22,7 @@ defmodule ConciergeSite.AccountController do
         |> Guardian.Plug.sign_in(user)
         |> redirect(to: "/my-subscriptions")
       {:error, changeset} ->
-        render conn, "new.html", account_changeset: %{changeset | action: :insert}, errors: errors(changeset)
+        render conn, "new.html", account_changeset: changeset, errors: errors(changeset)
     end
   end
 
