@@ -1,0 +1,52 @@
+.create-account-container,
+.login-container {
+  @include media-breakpoint-up(sm) {
+    @include make-col(8);
+    @include make-col-offset(2);
+  }
+}
+
+.create-account-header,
+.login-header {
+  font-weight: $headings-font-weight;
+  margin-bottom: 1rem;
+}
+
+.login-header {
+  text-align: center
+}
+
+.login-container {
+  p {
+    text-align: center;
+  }
+}
+
+.forgot-password-link {
+  font-size: $base-font-size;
+}
+
+.account-creation-divider {
+  margin-top: 1.6rem;
+  margin-bottom: 2rem;
+}
+
+.btn-create-account,
+.btn-login {
+  width: 15rem;
+  margin: 0 auto;
+  margin-bottom: $font-size-h1-xxl;
+}
+
+.account-creation-privacy-policy {
+  font-size: $base-font-size;
+}
+
+.account-creation-footer,
+.login-footer {
+  @include media-breakpoint-up(sm) {
+    @include make-col(6);
+    @include make-col-offset(3);
+  }
+  text-align: center;
+}

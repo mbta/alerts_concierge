@@ -1,22 +1,32 @@
-<h1>Transportation alerts when you need them</h1>
-<h2>
-  T-Alerts  lets you sign up to receive notifications of delays and disruptions,
-  as well as advanced notice of planned service changes, by e-mail or text message (SMS).
-</h2>
-<h2>
-  To modify existing  alerts or account preferences,  enter your email address and password.
-</h2>
+<h1>T-Alerts</h1>
+<%= flash_error(@conn) %>
+<div class="login-container">
+  <h2 class="login-header">Transportation alerts when you need them</h1>
+  <p>
+    T-Alerts  lets you sign up to receive notifications of delays and disruptions,
+    as well as advanced notice of planned service changes, by e-mail or text message (SMS).
+  </p>
+  <p>
+    To modify existing  alerts or account preferences,  enter your email address and password.
+  </p>
 
-<%= form_for @login_changeset, session_path(@conn, :create), fn f -> %>
-  <div class="form-group">
-    <label>Email Address</label>
-    <%= text_input f, :email, placeholder: "your@email.com", class: "form-control" %>
-    <%= error_tag f, :email %>
-  </div>
-  <div class="form-group">
-    <label>Password</label>
-    <%= password_input f, :password, placeholder: "Enter your password", class: "form-control" %>
-    <%= error_tag f, :password %>
-  </div>
-  <%= submit "Sign In", class: "btn btn-primary" %>
-<% end %>
+  <%= form_for @login_changeset, session_path(@conn, :create), fn f -> %>
+    <div class="form-group">
+      <%= label f, :email, "Email Address", class: "form-label" %>
+      <%= error_tag f, :email %>
+      <%= email_input f, :email, placeholder: "your@email.com", class: "form-control", required: true %>
+      <span></span>
+    </div>
+    <div class="form-group">
+      <%= label f, :password, "Password", class: "form-label" %>
+      <%= error_tag f, :password %>
+      <%= password_input f, :password, placeholder: "Enter your password", class: "form-control", pattern: "(?=^.{6,}$)((?=.*\\d)|(?=.*\\W+))(?![.\\n])(?=.*[a-zA-Z]).*$", required: true %>
+      <span></span>
+      <p class="text-right"><%= link("Forgot password?", to: "#", class: "forgot-password-link") %></p>
+    </div>
+    <div class="login-footer">
+      <%= submit "Sign In", class: "btn btn-primary btn-login" %>
+      <p>Don't have an existing account? <%= link("Create one", to: account_path(@conn, :new)) %></p>
+    </div>
+  <% end %>
+</div>

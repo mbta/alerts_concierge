@@ -1,17 +1,35 @@
+$brand-primary: #1c77c3;
+$brand-primary-lightest: #cee0f4;
+$brand-danger: #d0021b;
+$brand-success: #3a8700;
+
 $black: #000;
 $cerulean: #0061cb;
 $dark-blue: #1c77c3;
 $gray-lightest: #e9eaed;
 $pale-blue: #cde0f5;
 $white: #fff;
+$gunmetal: #494f5c;
+$steel: #788094;
 
-$link-color: $cerulean;
-$link-hover-color: $pale-blue;
-$link-hover-decoration: none;
+$link-color: $brand-primary;
+$link-hover-color: darken($link-color, 15%);
+$secondary-link-color: $cerulean;
+$secondary-link-hover-color: $pale-blue;
 $border-color: $gray-lightest;
 
 $brand-bus: #ffce0c;
 $brand-commuter-rail: #a00a78;
 $brand-ferry: #5da9e8;
 $brand-purple: #3324ae;
-$brand-subway: #494f5c;
+$brand-subway: $gunmetal;
+
+$form-error-message: #f2dede;
+$form-helper-text-color: $gunmetal;
+$input-border-color: $steel;
+
+$btn-primary-color: $white;
+$btn-primary-bg: $brand-primary;
+$btn-primary-border: $btn-primary-bg;
+$btn-primary-focus-color: $gray-dark;
+$btn-primary-focus-bg: $brand-primary-lightest;
