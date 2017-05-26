@@ -9,7 +9,7 @@
 
 button {
   font-family: $font-family-base;
-  line-height: 1.55rem;
+  line-height: $base-form-line-height;
 }
 
 .form-group {
@@ -19,7 +19,7 @@ button {
 .form-control {
   border: 1px solid $input-border-color;
   font-family: $font-family-base;
-  line-height: 1.56rem;
+  line-height: $base-form-line-height;
 }
 
 .form-label {

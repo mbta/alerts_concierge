@@ -1,6 +1,20 @@
 @import 'node_modules/bootstrap/scss/variables';
 @import "colors";
 
+$container-max-widths: (
+  md: 768px,
+  lg: 960px,
+  xxl: 1200px
+);
+
+$grid-breakpoints: (
+  xs: 0,
+  sm: 544px,
+  md: map-get($container-max-widths, md) + (16px * 2),
+  lg: map-get($container-max-widths, lg) + (16px * 8),
+  xxl: map-get($container-max-widths, xxl) + (18px * 8),
+);
+
 $active-step-font-weight: bold;
 $active-step-circle-border-color: $dark-blue;
 $active-step-circle-background-color: $dark-blue;
@@ -14,3 +28,5 @@ $font-size-h1-xxl: 1.875rem;
 $font-size-h2-xxl: 1.625rem;
 $font-family-base: 'LatoLatinWeb', sans-serif;
 $btn-padding-y: .585rem;
+$base-form-line-height: 1.55rem;
+$cta-margin-bottom: 1.875rem;

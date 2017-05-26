@@ -22,10 +22,6 @@
   }
 }
 
-.forgot-password-link {
-  font-size: $base-font-size;
-}
-
 .account-creation-divider {
   margin-top: 1.6rem;
   margin-bottom: 2rem;
@@ -35,11 +31,7 @@
 .btn-login {
   width: 15rem;
   margin: 0 auto;
-  margin-bottom: $font-size-h1-xxl;
-}
-
-.account-creation-privacy-policy {
-  font-size: $base-font-size;
+  margin-bottom: $cta-margin-bottom;
 }
 
 .account-creation-footer,
