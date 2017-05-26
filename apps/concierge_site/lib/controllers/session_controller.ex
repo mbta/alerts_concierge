@@ -18,7 +18,9 @@ defmodule ConciergeSite.SessionController do
         |> Guardian.Plug.sign_in(user)
         |> redirect(to: "/my-subscriptions")
       {:error, changeset} ->
-        render conn, "new.html", login_changeset: changeset
+        conn
+        |> put_flash(:error, "Sorry, your login information was incorrect. Please try again.")
+        |> render("new.html", login_changeset: changeset)
     end
   end
 

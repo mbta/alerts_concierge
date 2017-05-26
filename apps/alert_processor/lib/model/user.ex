@@ -33,13 +33,15 @@ defmodule AlertProcessor.Model.User do
     field :do_not_disturb_end, :time
     field :encrypted_password, :string, null: false
     field :password, :string, virtual: true
+    field :password_confirmation, :string, virtual: true
+    field :sms_toggle, :boolean, virtual: true
 
     timestamps()
   end
 
   @permitted_fields ~w(email phone_number role vacation_start
-    vacation_end do_not_disturb_start do_not_disturb_end password)a
-  @required_fields ~w(email role password)a
+    vacation_end do_not_disturb_start do_not_disturb_end password password_confirmation)a
+  @required_fields ~w(email password)a
 
   @doc """
   Builds a changeset based on the `struct` and `params`.
@@ -48,6 +50,35 @@ defmodule AlertProcessor.Model.User do
     struct
     |> cast(params, @permitted_fields)
     |> validate_required(@required_fields)
+  end
+
+  @doc """
+  Builds changeset used for registering a new user account
+  """
+  def create_account_changeset(struct, params \\ %{}) do
+    params =
+      case params do
+        %{"sms_toggle" => "false"} -> Map.put(params, "phone_number", nil)
+        _ -> params
+      end
+    struct
+    |> changeset(params)
+    |> validate_format(:email, ~r/^([a-zA-Z0-9_\-\.]+)@([a-zA-Z0-9_\-\.]+)\.([a-zA-Z]{2,5})$/, message: "Please enter a valid email address.")
+    |> unique_constraint(:email, message: "Sorry,that email has already been taken.")
+    |> validate_confirmation(:password, required: true, message: "Password and password confirmation did not match.")
+    |> validate_length(:password, min: 6, message: "Password must be at least six characters long.")
+    |> validate_format(:password, ~r/[^a-zA-Z\s:]{1}/, message: "Password must contain one number or special character (? & % $ # !, etc).")
+    |> validate_format(:phone_number, ~r/^[0-9]{10}$/, message: "Phone number is not in a valid format.")
+    |> hash_password()
+  end
+
+  defp hash_password(changeset) do
+    case changeset do
+      %Ecto.Changeset{valid?: true, changes: %{password: password}} ->
+        put_change(changeset, :encrypted_password, Bcrypt.hashpwsalt(password))
+      _ ->
+        changeset
+    end
   end
 
   @doc """

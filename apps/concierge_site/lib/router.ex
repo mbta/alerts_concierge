@@ -20,6 +20,7 @@ defmodule ConciergeSite.Router do
     pipe_through :browser
 
     get "/", PageController, :index
+    resources "/account", AccountController, only: [:new, :create]
     resources "/login", SessionController, only: [:new, :create, :delete], singleton: true
   end
 
