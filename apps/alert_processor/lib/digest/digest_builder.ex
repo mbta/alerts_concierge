@@ -18,7 +18,7 @@ defmodule AlertProcessor.DigestBuilder do
     |> Enum.map(fn(alert) ->
       {fetch_users(alert), alert}
     end)
-    |> sort_by_user
+    |> sort_by_user()
   end
 
   defp fetch_users(alert) do
