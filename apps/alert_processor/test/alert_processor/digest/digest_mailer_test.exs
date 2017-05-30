@@ -12,7 +12,6 @@ defmodule AlertProcessor.DigestMailerTest do
     digest = %Digest{user: user, alerts: [alert]}
     message = DigestMessage.from_digest(digest)
     email = DigestMailer.digest_email(message)
-
     assert email.to == user.email
     assert email.html_body == alert.header
   end
