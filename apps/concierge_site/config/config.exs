@@ -34,7 +34,12 @@ config :guardian, Guardian,
   verify_issuer: true,
   secret_key:  System.get_env("GUARDIAN_AUTH_KEY"),
   serializer: ConciergeSite.GuardianSerializer,
-  hooks: GuardianDb
+  hooks: GuardianDb,
+  permissions: %{
+    default: [
+      :reset_password
+    ]
+  }
 
 config :guardian_db, GuardianDb,
   repo: AlertProcessor.Repo,
