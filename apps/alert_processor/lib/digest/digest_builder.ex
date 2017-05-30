@@ -3,7 +3,7 @@ defmodule AlertProcessor.DigestBuilder do
   Generates digests for all users/alerts in the system
   """
   alias AlertProcessor.{InformedEntityFilter, Model, Repo}
-  alias Model.{Alert, Digest, Subscription}
+  alias Model.{Alert, Digest, DigestDateGroup, Subscription}
   import Ecto.Query
 
   @doc """
@@ -12,13 +12,13 @@ defmodule AlertProcessor.DigestBuilder do
   3. Returns a list of Digest structs:
      [%Digest{user: user, alerts: [Alert]}]
   """
-  @spec build_digests([Alert.t]) :: [Digest.t]
-  def build_digests(alerts) do
+  @spec build_digests({[Alert.t], DigestDateGroup.t}) :: [Digest.t]
+  def build_digests({alerts, digest_date_group}) do
     alerts
     |> Enum.map(fn(alert) ->
       {fetch_users(alert), alert}
     end)
-    |> sort_by_user()
+    |> sort_by_user(digest_date_group)
   end
 
   defp fetch_users(alert) do
@@ -30,7 +30,7 @@ defmodule AlertProcessor.DigestBuilder do
     |> Enum.map(&(&1.user))
   end
 
-  defp sort_by_user(data) do
+  defp sort_by_user(data, digest_date_group) do
     data
     |> Enum.reduce(%{}, fn({users, alert}, result) ->
       users
@@ -39,7 +39,7 @@ defmodule AlertProcessor.DigestBuilder do
       end)
     end)
     |> Enum.map(fn({user, alerts}) ->
-      %Digest{user: user, alerts: alerts}
+      %Digest{user: user, alerts: alerts, digest_date_group: digest_date_group}
     end)
   end
 end

@@ -3,7 +3,7 @@ defmodule AlertProcessor.DigestDateHelperTest do
   use ExUnit.Case
 
   alias AlertProcessor.{DigestDateHelper, Model}
-  alias Model.Alert
+  alias Model.{Alert, DigestDateGroup}
   alias Calendar.DateTime, as: DT
 
   @thursday DT.from_erl!({{2017, 05, 25}, {0, 0, 0}}, "America/New_York")
@@ -63,11 +63,25 @@ defmodule AlertProcessor.DigestDateHelperTest do
 
   test "calculate_date_groups/1 adds date group array to each alert" do
    alerts = [@alert1, @alert2, @alert3, @alert4]
-   [a1, a2, a3, a4] = DigestDateHelper.calculate_date_groups(alerts, @thursday)
 
-    assert a1.digest_groups == [:future]
-    assert a2.digest_groups == [:next_weekend, :upcoming_week]
-    assert a3.digest_groups == []
-    assert a4.digest_groups == [:upcoming_weekend]
+   assert {_alerts, digest_date_group} = DigestDateHelper.calculate_date_groups(alerts, @thursday)
+   assert %DigestDateGroup{
+     upcoming_weekend: %{
+        timeframe: _,
+        alert_ids: ["4"]
+      },
+      upcoming_week: %{
+        timeframe: _,
+        alert_ids: ["2"]
+      },
+      next_weekend: %{
+        timeframe: _,
+        alert_ids: ["2"]
+      },
+      future: %{
+        timeframe: _,
+        alert_ids: ["1"]
+      }
+    } = digest_date_group
   end
 end

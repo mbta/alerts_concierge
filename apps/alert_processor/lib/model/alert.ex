@@ -4,8 +4,8 @@ defmodule AlertProcessor.Model.Alert do
   """
   alias AlertProcessor.{Model.InformedEntity, Model.Subscription, Helpers.DateTimeHelper, TimeFrameComparison}
 
-  defstruct [:active_period, :effect_name, :id, :header, :digest_groups,
-             :informed_entities, :severity, :last_push_notification]
+  defstruct [:active_period, :effect_name, :id, :header, :informed_entities,
+             :severity, :last_push_notification]
 
   @type informed_entity :: [
     %{
@@ -27,7 +27,6 @@ defmodule AlertProcessor.Model.Alert do
     severity: atom,
     active_period: [map],
     last_push_notification: DateTime.t,
-    digest_groups: [atom]
   }
 
   @route_types %{

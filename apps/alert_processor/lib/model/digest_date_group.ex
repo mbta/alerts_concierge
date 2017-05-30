@@ -5,9 +5,21 @@ defmodule AlertProcessor.Model.DigestDateGroup do
   defstruct [:upcoming_weekend, :upcoming_week, :next_weekend, :future]
 
   @type t :: %__MODULE__{
-    upcoming_weekend: {DateTime.t, DateTime.t},
-    upcoming_week: {DateTime.t, DateTime.t},
-    next_weekend: {DateTime.t, DateTime.t},
-    future: {DateTime.t, DateTime.t},
+    upcoming_weekend: %{
+      timeframe: {DateTime.t, DateTime.t},
+      alert_ids: [String.t]
+    },
+    upcoming_week: %{
+      timeframe: {DateTime.t, DateTime.t},
+      alert_ids: [String.t]
+    },
+    next_weekend: %{
+      timeframe: {DateTime.t, DateTime.t},
+      alert_ids: [String.t]
+    },
+    future: %{
+      timeframe: {DateTime.t, DateTime.t},
+      alert_ids: [String.t]
+    }
   }
 end

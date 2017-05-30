@@ -2,22 +2,45 @@ defmodule AlertProcessor.DigestSerializer do
   @moduledoc """
   Converts alerts into digest email text
   """
-  alias AlertProcessor.Model.{Alert, Digest}
+  alias AlertProcessor.{Helpers.DateTimeHelper, Model}
+  alias Model.{Alert, Digest}
 
   @doc """
   Takes a Digest and serializes each alert into
   the format it will be presented in an email
   """
-  @spec serialize([Digest.t]) :: iodata
+  @spec serialize(Digest.t) :: [{String.t, [Alert.t]}]
   def serialize(digest) do
-    digest.alerts
-    |> Enum.map(&serialize_alert/1)
-    |> Enum.join(" ")
+    digest.digest_date_group
+    |> Map.from_struct()
+    |> Enum.reduce(%{}, fn({name, value}, acc) ->
+      filtered_alerts = filter_alerts(digest.alerts, value.alert_ids)
+      header = header(name, value.timeframe)
+      {_res, acc} = get_and_update_in(acc[:name], &{&1, %{title: header, alerts: filtered_alerts}})
+      acc
+    end)
   end
 
-  @spec serialize_alert(Alert.t) :: String.t
-  defp serialize_alert(alert) do
-    # TODO:  Waiting on spec
-    alert.header
+  defp filter_alerts(alerts, alert_ids) do
+    Enum.filter(alerts, &(Enum.member?(alert_ids, &1.id)))
+  end
+
+  defp header(date_group, {start_date, end_date}) do
+    prefix = prefix(date_group)
+    range_text = if start_date.month == end_date.month do
+      "#{DateTimeHelper.month_name(start_date.month)} #{start_date.day} - #{end_date.day}"
+    else
+      "#{DateTimeHelper.month_name(start_date.month)} #{start_date.day} - #{DateTimeHelper.month_name(end_date.month)} #{end_date.day}"
+    end
+    "#{prefix}, #{range_text}"
+  end
+
+  defp prefix(date_group) do
+    case date_group do
+      :upcoming_weekend -> "This Weekend"
+      :upcoming_week -> "Next Week"
+      :next_weekend -> "Next Weekend"
+      :future -> "Future Alerts"
+    end
   end
 end
