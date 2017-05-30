@@ -18,8 +18,8 @@
                link_to: subway_subscription_path(@conn, :info, trip_type: "roaming"),
                name: "Roaming (travel in the area between two stations)" %>
   </div>
-</div>
 
-<%= link to: subscription_path(@conn, :new), class: "subscription-back-link" do %>
-  <i class="fa fa-arrow-left" aria-hidden="true"></i> Go Back
-<% end %>
+  <%= link to: subscription_path(@conn, :new), class: "subscription-back-link" do %>
+    <i class="fa fa-arrow-left" aria-hidden="true"></i> Go Back
+  <% end %>
+</div>

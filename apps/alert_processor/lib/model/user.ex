@@ -64,7 +64,7 @@ defmodule AlertProcessor.Model.User do
     struct
     |> changeset(params)
     |> validate_format(:email, ~r/^([a-zA-Z0-9_\-\.]+)@([a-zA-Z0-9_\-\.]+)\.([a-zA-Z]{2,5})$/, message: "Please enter a valid email address.")
-    |> unique_constraint(:email, message: "Sorry,that email has already been taken.")
+    |> unique_constraint(:email, message: "Sorry, that email has already been taken.")
     |> validate_confirmation(:password, required: true, message: "Password and password confirmation did not match.")
     |> validate_length(:password, min: 6, message: "Password must be at least six characters long.")
     |> validate_format(:password, ~r/[^a-zA-Z\s:]{1}/, message: "Password must contain one number or special character (? & % $ # !, etc).")

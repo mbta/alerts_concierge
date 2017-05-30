@@ -5,5 +5,14 @@
 @import "font-sizes";
 @import "font-awesome";
 @import "lato";
+@import "forms";
 @import "subscription";
 @import "subscription-progress-bar";
+@import "account";
+
+body {
+  -moz-osx-font-smoothing: grayscale;
+  -webkit-font-smoothing: antialiased;
+  min-width: 20rem;
+  text-rendering: optimizeLegibility;
+}

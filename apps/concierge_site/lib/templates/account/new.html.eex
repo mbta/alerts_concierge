@@ -1,0 +1,44 @@
+<h1>T-Alerts</h1>
+<div class="create-account-container">
+  <h2 class="create-account-header">Account Information</h2>
+  <%= form_for @account_changeset, account_path(@conn, :create), fn f -> %>
+    <div class="form-group <%= if :email in @errors, do: "has-danger" %>">
+      <%= label f, :email, "Email Address", class: "form-label" %>
+      <%= label f, :email, "Your contact information is used to deliver requested updates or to access your subscriber preferences. You will be sent an email request to confirm your account.", class: "form-sub-label" %>
+      <%= error_tag f, :email %>
+      <%= email_input f, :email, placeholder: "your@email.com", class: "form-control form-control-success form-control-danger", required: true  %>
+      <span></span>
+    </div>
+    <div class="form-group <%= if :password in @errors, do: "has-danger" %>">
+      <%= label f, :password, "Password", class: "form-label" %>
+      <%= label f, :password, "Your password must be at least 6 characters, with one number or special character (? & % $ # !, etc)", class: "form-sub-label" %>
+      <%= error_tag f, :password %>
+      <%= password_input f, :password, placeholder: "Please enter your password", class: "form-control form-control-success form-control-danger", pattern: "(?=^.{6,}$)((?=.*\\d)|(?=.*\\W+))(?![.\\n])(?=.*[a-zA-Z]).*$", required: true %>
+      <span></span>
+    </div>
+    <div class="form-group <%= if :password_confirmation in @errors, do: "has-danger" %>">
+      <%= label f, :password_confirmation, "Confirm Password", class: "form-label" %>
+      <%= error_tag f, :password_confirmation %>
+      <%= password_input f, :password_confirmation, placeholder: "Please re-enter your password", class: "form-control form-control-success form-control-danger", pattern: "(?=^.{6,}$)((?=.*\\d)|(?=.*\\W+))(?![.\\n])(?=.*[a-zA-Z]).*$", required: true %>
+      <span></span>
+    </div>
+
+    <h2 class="create-account-header">SMS Messaging</h2>
+    <%= radio_button f, :sms_toggle, true, class: "radio toggle_show" %> Yes<br>
+    <%= radio_button f, :sms_toggle, false, class: "radio toggle_hide" %> No<br>
+
+    <div class="form-group toggleable <%= if :phone_number in @errors, do: "has-danger" %>">
+      <%= label f, :phone_number, "Wireless Number", class: "form-label" %>
+      <%= label f, :phone_number, "Please enter your wireless number to receive T-Alerts via SMS", class: "form-sub-label" %>
+      <%= error_tag f, :phone_number %>
+      <%= telephone_input f, :phone_number, placeholder: "###-###-####", class: "form-control form-control-success form-control-danger", pattern: "^[0-9]{10}$" %>
+      <span></span>
+    </div>
+    <hr class="account-creation-divider">
+    <div class="account-creation-footer">
+      <%= submit "Create Account", class: "btn btn-primary btn-create-account" %>
+      <p class="account-creation-privacy-policy">By creating an account you accept our <%= link("terms and conditions", to: "#") %>, <%= link("privacy policy", to: "#") %> &amp; <%= link("terms of service", to: "#") %>.</p>
+      <p>Already have an account?  <%= link("Sign in.", to: session_path(@conn, :new)) %><p>
+    </div>
+  <% end %>
+</div>

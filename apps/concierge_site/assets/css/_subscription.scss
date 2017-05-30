@@ -1,7 +1,9 @@
 .select-service,
 .select-trip-type {
-  @include make-col(8);
-  @include make-col-offset(2);
+  @include media-breakpoint-up(sm) {
+    @include make-col(8);
+    @include make-col-offset(2);
+  }
 
   text-align: center;
 }
@@ -20,11 +22,12 @@
 
 .service-options-container,
 .trip-type-options-container {
-  border: $border-width solid $gray-lightest;
+  border: $border-width solid $border-color;
 }
 
 .service-option,
 .trip-type-option {
+  color: $secondary-link-color;
   display: block;
   padding: 1rem 0;
   position: relative;
@@ -32,13 +35,14 @@
 
 .service-option:not(:last-child),
 .trip-type-option:not(:last-child) {
-  border-bottom: $border-width solid $gray-lightest;
+  border-bottom: $border-width solid $border-color;
 }
 
 .service-option:hover,
 .trip-type-option:hover {
-  color: $link-color;
-  background-color: $link-hover-color;
+  color: $secondary-link-color;
+  text-decoration: none;
+  background-color: $secondary-link-hover-color;
 }
 
 .subscription-icon {
@@ -100,9 +104,8 @@
 }
 
 .subscription-back-link {
-  @include make-col-offset(2);
-
   display: block;
+  text-align: left;
   font-size: $base-font-size;
   margin-top: 1.125rem;
 
