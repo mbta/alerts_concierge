@@ -107,6 +107,21 @@ defmodule AlertProcessor.Subscription.SubwayMapper do
     {subscriptions, informed_entities ++ route_entities}
   end
 
+  defp map_stops(subscriptions, informed_entities, %{origin: origin, destination: destination, roaming: true}, route_maps) do
+    stop_entities =
+      Enum.flat_map(route_maps, fn({route, stop_list}) ->
+        stop_list
+        |> Enum.drop_while(fn({_k, v}) -> v == origin || v == destination end)
+        |> Enum.reverse()
+        |> Enum.drop_while(fn({_k, v}) -> v == origin || v == destination end)
+        |> Enum.map(fn({_k, stop}) ->
+          %InformedEntity{route: route, route_type: @route_type_map[route], stop: stop}
+        end)
+      end)
+
+    {subscriptions, informed_entities ++ stop_entities}
+  end
+
   defp map_stops(subscriptions, informed_entities, %{origin: origin, destination: destination}, route_maps) do
     stop_entities =
       Enum.flat_map(route_maps, fn({route, _stop_list}) ->

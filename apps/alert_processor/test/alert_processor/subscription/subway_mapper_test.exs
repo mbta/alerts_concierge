@@ -39,6 +39,8 @@ defmodule AlertProcessor.Subscription.SubwayMapperTest do
     amenities: []
   }
 
+  @roaming_params Map.put(@one_way_params, :roaming, true)
+
   describe "one way" do
     test "constructs subscription with severity" do
       {:ok, [subscription | []], [_ie | _t]} = SubwayMapper.map_subscription(@one_way_params)
@@ -233,6 +235,76 @@ defmodule AlertProcessor.Subscription.SubwayMapperTest do
       harvard_station_count =
         Enum.count(informed_entities, fn(informed_entity) ->
           match?(%InformedEntity{route: "Green-C", route_type: 0, stop: "place-kencl"}, informed_entity)
+        end)
+      assert harvard_station_count == 1
+    end
+  end
+
+  describe "roaming" do
+    test "constructs subscription with severity" do
+      {:ok, [subscription | []], [_ie | _t]} = SubwayMapper.map_subscription(@roaming_params)
+      assert subscription.alert_priority_type == :low
+    end
+
+    test "constructs subscription with timeframe" do
+      {:ok, [subscription | []], [_ie | _t]} = SubwayMapper.map_subscription(@roaming_params)
+      assert subscription.start_time == ~T[16:00:00]
+      assert subscription.end_time == ~T[18:00:00]
+      assert subscription.relevant_days == [:weekday, :saturday]
+    end
+
+    test "constructs subscription with amenities" do
+      {:ok, [_subscription | []], informed_entities} = SubwayMapper.map_subscription(@roaming_params)
+      amenity_informed_entities_count =
+        Enum.count(informed_entities, fn(informed_entity) ->
+          match?(%InformedEntity{facility_type: :elevator, stop: "place-davis"}, informed_entity)
+        end)
+      assert amenity_informed_entities_count == 1
+    end
+
+    test "constructs subscription with route" do
+      {:ok, [_subscription | []], informed_entities} = SubwayMapper.map_subscription(@roaming_params)
+      route_entity_count =
+        Enum.count(informed_entities, fn(informed_entity) ->
+          match?(%InformedEntity{route: "Red", route_type: 1, stop: nil, direction_id: nil}, informed_entity)
+        end)
+      assert route_entity_count == 1
+      route_entity_count =
+        Enum.count(informed_entities, fn(informed_entity) ->
+          match?(%InformedEntity{route: "Red", route_type: 1, stop: nil, direction_id: 0}, informed_entity)
+        end)
+      assert route_entity_count == 1
+      route_entity_count =
+        Enum.count(informed_entities, fn(informed_entity) ->
+          match?(%InformedEntity{route: "Red", route_type: 1, stop: nil, direction_id: 1}, informed_entity)
+        end)
+      assert route_entity_count == 1
+    end
+
+    test "constructs subscription with route type" do
+      {:ok, [_subscription | []], informed_entities} = SubwayMapper.map_subscription(@roaming_params)
+      route_type_entity_count =
+        Enum.count(informed_entities, fn(informed_entity) ->
+          match?(%InformedEntity{route: nil, route_type: 1}, informed_entity)
+        end)
+      assert route_type_entity_count == 1
+    end
+
+    test "constructs subscription with stops" do
+      {:ok, [_subscription | []], informed_entities} = SubwayMapper.map_subscription(@roaming_params)
+      davis_station_count =
+        Enum.count(informed_entities, fn(informed_entity) ->
+          match?(%InformedEntity{route: "Red", route_type: 1, stop: "place-davis"}, informed_entity)
+        end)
+      assert davis_station_count == 1
+      davis_station_count =
+        Enum.count(informed_entities, fn(informed_entity) ->
+          match?(%InformedEntity{route: "Red", route_type: 1, stop: "place-portr"}, informed_entity)
+        end)
+      assert davis_station_count == 1
+      harvard_station_count =
+        Enum.count(informed_entities, fn(informed_entity) ->
+          match?(%InformedEntity{route: "Red", route_type: 1, stop: "place-harsq"}, informed_entity)
         end)
       assert harvard_station_count == 1
     end
