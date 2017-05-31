@@ -4,42 +4,42 @@ defmodule AlertProcessor.Subscription.SubwayMapperTest do
   alias AlertProcessor.Model.InformedEntity
 
   @one_way_params %{
-    origin: "place-davis",
-    destination: "place-harsq",
-    relevant_days: ["weekday", "saturday"],
-    departure_start: "12:00:00",
-    departure_end: "14:00:00",
-    return_start: nil,
-    return_end: nil,
-    alert_priority_type: "low",
-    amenities: ["elevator"]
+    "origin" => "place-davis",
+    "destination" => "place-harsq",
+    "relevant_days" => ["weekday", "saturday"],
+    "departure_start" => "12:00:00",
+    "departure_end" => "14:00:00",
+    "return_start" => nil,
+    "return_end" => nil,
+    "alert_priority_type" => "low",
+    "amenities" => ["elevator"]
   }
 
   @round_trip_params %{
-    origin: "place-davis",
-    destination: "place-harsq",
-    relevant_days: ["weekday", "saturday"],
-    departure_start: "12:00:00",
-    departure_end: "14:00:00",
-    return_start: "18:00:00",
-    return_end: "20:00:00",
-    alert_priority_type: "low",
-    amenities: ["elevator"]
+    "origin" => "place-davis",
+    "destination" => "place-harsq",
+    "relevant_days" => ["weekday", "saturday"],
+    "departure_start" => "12:00:00",
+    "departure_end" => "14:00:00",
+    "return_start" => "18:00:00",
+    "return_end" => "20:00:00",
+    "alert_priority_type" => "low",
+    "amenities" => ["elevator"]
   }
 
   @green_line_one_way_params %{
-    origin: "place-north",
-    destination: "place-kencl",
-    relevant_days: ["weekday", "sunday"],
-    departure_start: "12:00:00",
-    departure_end: "14:00:00",
-    return_start: nil,
-    return_end: nil,
-    alert_priority_type: "low",
-    amenities: []
+    "origin" => "place-north",
+    "destination" => "place-kencl",
+    "relevant_days" => ["weekday", "sunday"],
+    "departure_start" => "12:00:00",
+    "departure_end" => "14:00:00",
+    "return_start" => nil,
+    "return_end" => nil,
+    "alert_priority_type" => "low",
+    "amenities" => []
   }
 
-  @roaming_params Map.put(@one_way_params, :roaming, true)
+  @roaming_params Map.put(@one_way_params, "roaming", "true")
 
   describe "one way" do
     test "constructs subscription with severity" do

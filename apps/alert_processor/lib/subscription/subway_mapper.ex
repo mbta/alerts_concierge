@@ -33,13 +33,13 @@ defmodule AlertProcessor.Subscription.SubwayMapper do
     end
   end
 
-  defp map_timeframe(%{departure_start: ds, departure_end: de, return_start: nil, return_end: nil, relevant_days: rd}) do
+  defp map_timeframe(%{"departure_start" => ds, "departure_end" => de, "return_start" => nil, "return_end" => nil, "relevant_days" => rd}) do
     subscription = %Subscription{start_time: DateTimeHelper.timestamp_to_utc(ds), end_time: DateTimeHelper.timestamp_to_utc(de), relevant_days: Enum.map(rd, &String.to_existing_atom/1)}
 
     {:ok, [subscription]}
   end
 
-  defp map_timeframe(%{departure_start: ds, departure_end: de, return_start: rs, return_end: re, relevant_days: rd}) do
+  defp map_timeframe(%{"departure_start" => ds, "departure_end" => de, "return_start" => rs, "return_end" => re, "relevant_days" => rd}) do
     sub1 =
       %Subscription{
         start_time: DateTimeHelper.timestamp_to_utc(ds),
@@ -56,7 +56,7 @@ defmodule AlertProcessor.Subscription.SubwayMapper do
     {:ok, [sub1, sub2]}
   end
 
-  defp map_priority(subscriptions, %{alert_priority_type: alert_priority_type}) when is_list(subscriptions) do
+  defp map_priority(subscriptions, %{"alert_priority_type" => alert_priority_type}) when is_list(subscriptions) do
     {:ok, Enum.map(subscriptions, fn(subscription) ->
       %{subscription | alert_priority_type: String.to_existing_atom(alert_priority_type)}
     end)}
@@ -64,7 +64,7 @@ defmodule AlertProcessor.Subscription.SubwayMapper do
 
   defp map_entities(subscriptions, params) do
     with {:ok, subway_info} = ServiceInfoCache.get_subway_info(),
-         %{origin: origin, destination: destination} <- params,
+         %{"origin" => origin, "destination" => destination} <- params,
          route_maps <- Enum.filter(subway_info, fn({_route, stop_list}) -> List.keymember?(stop_list, origin, 1) && List.keymember?(stop_list, destination, 1) end),
          {subscriptions, informed_entities} <- map_amenities(subscriptions, params),
          {subscriptions, informed_entities} <- map_route_type(subscriptions, informed_entities, route_maps),
@@ -76,7 +76,7 @@ defmodule AlertProcessor.Subscription.SubwayMapper do
     end
   end
 
-  defp map_amenities(subscriptions, %{origin: origin, amenities: amenities}) do
+  defp map_amenities(subscriptions, %{"origin" => origin, "amenities" => amenities}) do
     informed_entities =
       Enum.map(amenities, fn(amenity) ->
         %InformedEntity{stop: origin, facility_type: String.to_existing_atom(amenity)}
@@ -107,7 +107,7 @@ defmodule AlertProcessor.Subscription.SubwayMapper do
     {subscriptions, informed_entities ++ route_entities}
   end
 
-  defp map_stops(subscriptions, informed_entities, %{origin: origin, destination: destination, roaming: true}, route_maps) do
+  defp map_stops(subscriptions, informed_entities, %{"origin" => origin, "destination" => destination, "roaming" => "true"}, route_maps) do
     stop_entities =
       Enum.flat_map(route_maps, fn({route, stop_list}) ->
         stop_list
@@ -122,7 +122,7 @@ defmodule AlertProcessor.Subscription.SubwayMapper do
     {subscriptions, informed_entities ++ stop_entities}
   end
 
-  defp map_stops(subscriptions, informed_entities, %{origin: origin, destination: destination}, route_maps) do
+  defp map_stops(subscriptions, informed_entities, %{"origin" => origin, "destination" => destination}, route_maps) do
     stop_entities =
       Enum.flat_map(route_maps, fn({route, _stop_list}) ->
         [%InformedEntity{route: route, route_type: @route_type_map[route], stop: origin}, %InformedEntity{route: route, route_type: @route_type_map[route], stop: destination}]
