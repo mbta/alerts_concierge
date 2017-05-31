@@ -17,7 +17,7 @@ defmodule AlertProcessor.Subscription.BusMapper do
   def map_subscription(subscription_params) do
     with {:ok, subscriptions} <- map_timeframe(subscription_params),
          {:ok, subscriptions} <- map_priority(subscriptions, subscription_params),
-         {:ok, subscriptions, informed_entities} <- map_entities(subscriptions, subscription_params) do
+         {:ok, informed_entities} <- map_entities(subscription_params) do
       {:ok, subscriptions, informed_entities}
     else
       _ -> :error
@@ -53,21 +53,21 @@ defmodule AlertProcessor.Subscription.BusMapper do
     end)}
   end
 
-  defp map_entities(subscriptions, params) do
+  defp map_entities(params) do
     with %{"route" => route} <- params,
-         {subscriptions, informed_entities} <- map_route_type(subscriptions),
-         {subscriptions, informed_entities} <- map_routes(subscriptions, informed_entities, route) do
-      {:ok, subscriptions, informed_entities}
+         informed_entities <- map_route_type(),
+         informed_entities <- map_routes(informed_entities, route) do
+      {:ok, informed_entities}
     else
       _ -> :error
     end
   end
 
-  defp map_route_type(subscriptions) do
-    {subscriptions, [%InformedEntity{route_type: 3}]}
+  defp map_route_type do
+    [%InformedEntity{route_type: 3}]
   end
 
-  defp map_routes(subscriptions, informed_entities, route) do
+  defp map_routes(informed_entities, route) do
     route_entities =
       [
         %InformedEntity{route: route, route_type: 3},
@@ -75,6 +75,6 @@ defmodule AlertProcessor.Subscription.BusMapper do
         %InformedEntity{route: route, route_type: 3, direction_id: 1}
       ]
 
-    {subscriptions, informed_entities ++ route_entities}
+    informed_entities ++ route_entities
   end
 end
