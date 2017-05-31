@@ -16,7 +16,7 @@ defmodule AlertProcessor.DigestSerializer do
     |> Enum.reduce(%{}, fn({name, value}, acc) ->
       filtered_alerts = filter_alerts(digest.alerts, value.alert_ids)
       header = header(name, value.timeframe)
-      {_res, acc} = get_and_update_in(acc[:name], &{&1, %{title: header, alerts: filtered_alerts}})
+      {_res, acc} = get_and_update_in(acc[name], &{&1, %{title: header, alerts: filtered_alerts}})
       acc
     end)
   end
@@ -28,9 +28,9 @@ defmodule AlertProcessor.DigestSerializer do
   defp header(date_group, {start_date, end_date}) do
     prefix = prefix(date_group)
     range_text = if start_date.month == end_date.month do
-      "#{DateTimeHelper.month_name(start_date.month)} #{start_date.day} - #{end_date.day}"
+      "#{DateTimeHelper.month_name(start_date)} #{start_date.day} - #{end_date.day}"
     else
-      "#{DateTimeHelper.month_name(start_date.month)} #{start_date.day} - #{DateTimeHelper.month_name(end_date.month)} #{end_date.day}"
+      "#{DateTimeHelper.month_name(start_date)} #{start_date.day} - #{DateTimeHelper.month_name(end_date)} #{end_date.day}"
     end
     "#{prefix}, #{range_text}"
   end
