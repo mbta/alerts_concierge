@@ -59,8 +59,8 @@ defmodule AlertProcessor.Helpers.DateTimeHelper do
          local_date <- D.today!(time_zone),
          {:ok, local_datetime} <- DT.from_date_and_time_and_zone(local_date, local_time, time_zone),
          {:ok, utc_datetime} <- DT.shift_zone(local_datetime, "UTC"),
-         {:ok, utc_timesatmp} <- DateTime.to_time(utc_datetime) do
-      utc_timesatmp
+         {:ok, utc_timestamp} <- DateTime.to_time(utc_datetime) do
+      utc_timestamp
     end
   end
 

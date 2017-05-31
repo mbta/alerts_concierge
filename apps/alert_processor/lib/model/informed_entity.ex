@@ -41,4 +41,12 @@ defmodule AlertProcessor.Model.InformedEntity do
   def queryable_fields do
     [:direction_id, :facility_type, :route, :route_type, :stop, :trip]
   end
+
+  @spec entity_type(__MODULE__.t) :: :amenity | :stop | :trip | :route | :mode | :unknown
+  def entity_type(%__MODULE__{stop: s, facility_type: ft}) when is_binary(s) and is_atom(ft) and not is_nil(ft), do: :amenity
+  def entity_type(%__MODULE__{route: r, route_type: rt, stop: s}) when is_binary(r) and is_number(rt) and is_binary(s), do: :stop
+  def entity_type(%__MODULE__{route: r, route_type: rt, trip: t}) when is_binary(r) and is_number(rt) and is_binary(t), do: :trip
+  def entity_type(%__MODULE__{route: r, route_type: rt}) when is_binary(r) and is_number(rt), do: :route
+  def entity_type(%__MODULE__{route_type: rt}) when is_number(rt), do: :mode
+  def entity_type(_), do: :unknown
 end
