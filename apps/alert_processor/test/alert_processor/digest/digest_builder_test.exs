@@ -4,7 +4,9 @@ defmodule AlertProcessor.DigestBuilderTest do
   import AlertProcessor.Factory
 
   alias AlertProcessor.{DigestBuilder, Model}
-  alias Model.{Alert, Digest, InformedEntity}
+  alias Model.{Alert, Digest, DigestDateGroup, InformedEntity}
+
+  @ddg %DigestDateGroup{}
 
   @ie1 %{
     route: "16",
@@ -54,9 +56,9 @@ defmodule AlertProcessor.DigestBuilderTest do
     |> Map.merge(%{subscription_id: sub2.id})
     |> insert
 
-    digests = DigestBuilder.build_digests([@alert1, @alert2])
-    expected = [%Digest{user: user1, alerts: [@alert1]},
-                %Digest{user: user2, alerts: [@alert2, @alert1]}]
+    digests = DigestBuilder.build_digests({[@alert1, @alert2], @ddg})
+    expected = [%Digest{user: user1, alerts: [@alert1], digest_date_group: @ddg},
+                %Digest{user: user2, alerts: [@alert2, @alert1], digest_date_group: @ddg}]
 
     assert digests == expected
   end
@@ -70,7 +72,7 @@ defmodule AlertProcessor.DigestBuilderTest do
     |> Map.merge(%{subscription_id: sub.id})
     |> insert
 
-    digests = DigestBuilder.build_digests([@alert2])
-    assert digests == [%Digest{user: user, alerts: [@alert2]}]
+    digests = DigestBuilder.build_digests({[@alert2], @ddg})
+    assert digests == [%Digest{user: user, alerts: [@alert2], digest_date_group: @ddg}]
   end
 end
