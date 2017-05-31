@@ -22,6 +22,9 @@ defmodule AlertProcessor.ApiClient do
     end
   end
 
+  @doc """
+  enpoint to fetch route info including name, id and route_type
+  """
   @spec routes([String.t], [String.t]) :: {:ok, [map]} | {:error, String.t}
   def routes(types \\ [], fields \\ ["long_name", "type"]) do
     case get("/routes?filter[type]=#{Enum.join(types, ",")}&fields[route]=#{Enum.join(fields, ",")}") do
@@ -34,6 +37,9 @@ defmodule AlertProcessor.ApiClient do
     end
   end
 
+  @doc """
+  endpoint to fetch stop info per route including name and id
+  """
   @spec route_stops(String.t) :: {:ok, [map]} | {:error, String.t}
   def route_stops(route) do
     case get("/stops/?route=#{route}&direction_id=1") do
