@@ -2,7 +2,7 @@
 <html>
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-    <title><%= @subject %></title>
+    <title>MBTA Alerts</title>
     <style type="text/css">
       /* Client-specific Styles */
       #outlook a { padding:0; } /* Force Outlook to provide a "view in browser" button. */
@@ -41,11 +41,19 @@
     <center>
 
 
-<h1>Massachusetts Bay Transportation Authority</h1>
+<h1 class="digest-header">
+  # Left
+    # LOGO
+  # Right
+    # Massachusetts Bay
+    # Transportation Authority
+</h1>
 
 # Blue line
 
-T-Alerts Weekly Digest:
+<h2>
+  T-Alerts: Weekly Digest
+</h2>
 
 <%= digest_date_group.upcoming_weekend.title %>:
 <%= for alert <- digest_date_group.upcoming_weekend.alerts do %>
@@ -71,7 +79,7 @@ T-Alerts Weekly Digest:
   <%= alert.header %>
 <% end %>
 
-# line
+# lower line
 
 The digest of upcoming events has been personalized to you based on your
 subscription, for full list: https://beta.mbta.com/alerts

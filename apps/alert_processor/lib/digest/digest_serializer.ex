@@ -4,6 +4,7 @@ defmodule AlertProcessor.DigestSerializer do
   """
   alias AlertProcessor.{Helpers.DateTimeHelper, Model}
   alias Model.{Alert, Digest}
+  @date_groups [:upcoming_weekend, :upcoming_week, :next_weekend, :future]
 
   @doc """
   Takes a Digest and serializes each alert into
@@ -16,8 +17,15 @@ defmodule AlertProcessor.DigestSerializer do
     |> Enum.reduce(%{}, fn({name, value}, acc) ->
       filtered_alerts = filter_alerts(digest.alerts, value.alert_ids)
       header = header(name, value.timeframe)
-      {_res, acc} = get_and_update_in(acc[name], &{&1, %{title: header, alerts: filtered_alerts}})
-      acc
+      if Enum.empty?(filtered_alerts) do
+        Map.take(acc, @date_groups -- [name])
+      else
+        {_res, acc} = get_and_update_in(
+          acc[name],
+          &{&1, %{title: header, alerts: filtered_alerts}}
+        )
+        acc
+      end
     end)
   end
 
@@ -27,12 +35,14 @@ defmodule AlertProcessor.DigestSerializer do
 
   defp header(date_group, {start_date, end_date}) do
     prefix = prefix(date_group)
-    range_text = if start_date.month == end_date.month do
-      "#{DateTimeHelper.month_name(start_date)} #{start_date.day} - #{end_date.day}"
-    else
-      "#{DateTimeHelper.month_name(start_date)} #{start_date.day} - #{DateTimeHelper.month_name(end_date)} #{end_date.day}"
+    cond do
+      date_group == :future ->
+        prefix
+      start_date.month == end_date.month ->
+        "#{prefix}, #{DateTimeHelper.month_name(start_date)} #{start_date.day} - #{end_date.day}"
+      true ->
+        "#{prefix}, #{DateTimeHelper.month_name(start_date)} #{start_date.day} - #{DateTimeHelper.month_name(end_date)} #{end_date.day}"
     end
-    "#{prefix}, #{range_text}"
   end
 
   defp prefix(date_group) do
