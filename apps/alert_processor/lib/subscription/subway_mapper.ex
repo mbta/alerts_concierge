@@ -4,17 +4,6 @@ defmodule AlertProcessor.Subscription.SubwayMapper do
   subway into the relevant subscription and informed entity structs.
   """
 
-  @route_type_map %{
-    "Green-B" => 0,
-    "Green-C" => 0,
-    "Green-D" => 0,
-    "Green-E" => 0,
-    "Mattapan" => 0,
-    "Blue" => 1,
-    "Orange" => 1,
-    "Red" => 1
-  }
-
   alias AlertProcessor.{Helpers.DateTimeHelper, ServiceInfoCache}
   alias AlertProcessor.Model.{InformedEntity, Subscription}
 
@@ -64,7 +53,7 @@ defmodule AlertProcessor.Subscription.SubwayMapper do
   defp map_entities(subscriptions, params) do
     with {:ok, subway_info} = ServiceInfoCache.get_subway_info(),
          %{"origin" => origin, "destination" => destination} <- params,
-         route_maps <- Enum.filter(subway_info, fn({_route, stop_list}) -> List.keymember?(stop_list, origin, 1) && List.keymember?(stop_list, destination, 1) end),
+         route_maps <- Enum.filter(subway_info, fn({{_route, _type}, stop_list}) -> List.keymember?(stop_list, origin, 1) && List.keymember?(stop_list, destination, 1) end),
          {subscriptions, informed_entities} <- map_amenities(subscriptions, params),
          {subscriptions, informed_entities} <- map_route_type(subscriptions, informed_entities, route_maps),
          {subscriptions, informed_entities} <- map_routes(subscriptions, informed_entities, route_maps),
@@ -86,8 +75,8 @@ defmodule AlertProcessor.Subscription.SubwayMapper do
 
   defp map_route_type(subscriptions, informed_entities, route_maps) do
     route_type_entities =
-      Enum.map(route_maps, fn({route, _stop_list}) ->
-        %InformedEntity{route_type: @route_type_map[route]}
+      Enum.map(route_maps, fn({{_route, type}, _stop_list}) ->
+        %InformedEntity{route_type: type}
       end)
 
     {subscriptions, informed_entities ++ route_type_entities}
@@ -95,11 +84,11 @@ defmodule AlertProcessor.Subscription.SubwayMapper do
 
   defp map_routes(subscriptions, informed_entities, route_maps) do
     route_entities =
-      Enum.flat_map(route_maps, fn({route, _stop_list}) ->
+      Enum.flat_map(route_maps, fn({{route, type}, _stop_list}) ->
         [
-          %InformedEntity{route: route, route_type: @route_type_map[route]},
-          %InformedEntity{route: route, route_type: @route_type_map[route], direction_id: 0},
-          %InformedEntity{route: route, route_type: @route_type_map[route], direction_id: 1}
+          %InformedEntity{route: route, route_type: type},
+          %InformedEntity{route: route, route_type: type, direction_id: 0},
+          %InformedEntity{route: route, route_type: type, direction_id: 1}
         ]
       end)
 
@@ -108,13 +97,13 @@ defmodule AlertProcessor.Subscription.SubwayMapper do
 
   defp map_stops(subscriptions, informed_entities, %{"origin" => origin, "destination" => destination, "roaming" => "true"}, route_maps) do
     stop_entities =
-      Enum.flat_map(route_maps, fn({route, stop_list}) ->
+      Enum.flat_map(route_maps, fn({{route, type}, stop_list}) ->
         stop_list
         |> Enum.drop_while(fn({_k, v}) -> v != origin && v != destination end)
         |> Enum.reverse()
         |> Enum.drop_while(fn({_k, v}) -> v != origin && v != destination end)
         |> Enum.map(fn({_k, stop}) ->
-          %InformedEntity{route: route, route_type: @route_type_map[route], stop: stop}
+          %InformedEntity{route: route, route_type: type, stop: stop}
         end)
       end)
 
@@ -123,8 +112,11 @@ defmodule AlertProcessor.Subscription.SubwayMapper do
 
   defp map_stops(subscriptions, informed_entities, %{"origin" => origin, "destination" => destination}, route_maps) do
     stop_entities =
-      Enum.flat_map(route_maps, fn({route, _stop_list}) ->
-        [%InformedEntity{route: route, route_type: @route_type_map[route], stop: origin}, %InformedEntity{route: route, route_type: @route_type_map[route], stop: destination}]
+      Enum.flat_map(route_maps, fn({{route, type}, _stop_list}) ->
+        [
+          %InformedEntity{route: route, route_type: type, stop: origin},
+          %InformedEntity{route: route, route_type: type, stop: destination}
+        ]
       end)
 
     {subscriptions, informed_entities ++ stop_entities}
