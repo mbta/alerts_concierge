@@ -22,6 +22,17 @@ defmodule AlertProcessor.ApiClient do
     end
   end
 
+  def routes(types \\ [], fields \\ ["long_name", "type"]) do
+    case get("/routes?filter[type]=#{Enum.join(types, ",")}&fields[route]=#{Enum.join(fields, ",")}") do
+      {:ok, %{body: %{"errors" => errors}}} ->
+        {:error, errors |> Enum.map_join(", ", &(&1["code"]))}
+      {:ok, %{body: %{"data" => routes}}} ->
+        routes
+      {:error, message} ->
+        {:error, message}
+    end
+  end
+
   @spec route_stops(String.t) :: {:ok, [map]} | {:error, String.t}
   def route_stops(route) do
     case get("/stops/?route=#{route}&direction_id=1") do
