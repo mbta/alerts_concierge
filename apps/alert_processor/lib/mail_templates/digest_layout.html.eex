@@ -1,0 +1,90 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html>
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <title><%= @subject %></title>
+    <style type="text/css">
+      /* Client-specific Styles */
+      #outlook a { padding:0; } /* Force Outlook to provide a "view in browser" button. */
+      body{ width:800px !important; }
+      .ReadMsgBody{ width:100%; }
+      .ExternalClass{ width:100%; } /* Force Hotmail to display emails at full width */
+      body{ -webkit-text-size-adjust:none; } /* Prevent Webkit platforms from changing default text sizes. */
+      /* End Client-specific Styles */
+
+      /* Reset Styles */
+      body{
+        margin:0;
+        padding:0;
+      }
+      img{ border:0;
+        height:auto;
+        line-height:100%;
+        outline:none;
+        text-decoration:none;
+      }
+      table td { border-collapse:collapse; }
+      #backgroundTable{
+        height:100% !important;
+        margin:0;
+        padding:0;
+        width:100% !important;
+      }
+      /* End Reset Styles */
+
+      /* Template Styles */
+      body {
+      }
+    </style>
+  </head>
+  <body leftmargin="0" marginwidth="0" topmargin="0" marginheight="0" offset="0">
+    <center>
+
+
+<h1>Massachusetts Bay Transportation Authority</h1>
+
+# Blue line
+
+T-Alerts Weekly Digest:
+
+<%= digest_date_group.upcoming_weekend.title %>:
+<%= for alert <- digest_date_group.upcoming_weekend.alerts do %>
+  <%= alert.service_effect %>
+  <%= alert.header %>
+<% end %>
+
+<%= digest_date_group.upcoming_week.title %>:
+<%= for alert <- digest_date_group.upcoming_week.alerts do %>
+  <%= alert.service_effect %>
+  <%= alert.header %>
+<% end %>
+
+<%= digest_date_group.next_weekend.title %>:
+<%= for alert <- digest_date_group.next_weekend.alerts do %>
+  <%= alert.service_effect %>
+  <%= alert.header %>
+<% end %>
+
+<%= digest_date_group.future.title %>:
+<%= for alert <- digest_date_group.future.alerts do %>
+  <%= alert.service_effect %>
+  <%= alert.header %>
+<% end %>
+
+# line
+
+The digest of upcoming events has been personalized to you based on your
+subscription, for full list: https://beta.mbta.com/alerts
+
+# Footer
+  # copyright
+  # links
+    # unsub
+    # bullet
+    # feeback
+    # bullet
+    # edit subs
+
+		</center>
+	</body>
+</html>

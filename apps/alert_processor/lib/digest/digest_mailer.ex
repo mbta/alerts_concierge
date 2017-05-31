@@ -3,8 +3,21 @@ defmodule AlertProcessor.DigestMailer do
   use Bamboo.Mailer, otp_app: :alert_processor
   import Bamboo.Email
   alias AlertProcessor.Model.DigestMessage
+  require EEx
 
   @from Application.get_env(:alert_processor, __MODULE__)[:from]
+  @template_dir Path.join(~w(#{File.cwd!} lib mail_templates))
+
+  EEx.function_from_file(
+    :def,
+    :html_email,
+    Path.join(@template_dir, "digest_layout.html.eex"),
+    [:digest_date_group])
+  EEx.function_from_file(
+    :def,
+    :text_email,
+    Path.join(@template_dir, "digest_layout.text.eex"),
+    [:digest_date_group])
 
   @doc "digest_email/1 takes a digest and builds a message to a user"
   @spec digest_email(DigestMessage.t) :: Elixir.Bamboo.Email.t
@@ -12,8 +25,8 @@ defmodule AlertProcessor.DigestMailer do
     base_email()
     |> to(digest_message.user.email)
     |> subject("MBTA Alerts Digest")
-    |> html_body(digest_message.body)
-    |> text_body(digest_message.body)
+    |> html_body(html_email(digest_message.body))
+    |> text_body(text_email(digest_message.body))
   end
 
   @spec base_email() :: Elixir.Bamboo.Email.t
