@@ -5,6 +5,7 @@ defmodule AlertProcessor.Helpers.DateTimeHelper do
   """
   @seconds_in_a_day 86_400
 
+  alias Calendar.Date, as: D
   alias Calendar.DateTime, as: DT
   alias Calendar.Time, as: T
   alias Calendar.Date, as: D
@@ -46,6 +47,21 @@ defmodule AlertProcessor.Helpers.DateTimeHelper do
   def seconds_of_day(timestamp) do
     {hour, minute, second} = Time.to_erl(timestamp)
     (hour * 3600) + (minute * 60) + second
+  end
+
+  @doc """
+  converts 24hr format timestamp to utc time using optional
+  timezone, otherwise uses America/New_York
+  """
+  @spec timestamp_to_utc(String.t, String.t) :: Time.t
+  def timestamp_to_utc(timestamp, time_zone \\ "America/New_York") do
+    with {:ok, local_time} <- Time.from_iso8601(timestamp),
+         local_date <- D.today!(time_zone),
+         {:ok, local_datetime} <- DT.from_date_and_time_and_zone(local_date, local_time, time_zone),
+         {:ok, utc_datetime} <- DT.shift_zone(local_datetime, "UTC"),
+         {:ok, utc_timestamp} <- DateTime.to_time(utc_datetime) do
+      utc_timestamp
+    end
   end
 
 
