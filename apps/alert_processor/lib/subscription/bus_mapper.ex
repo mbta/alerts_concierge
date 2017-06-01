@@ -15,8 +15,8 @@ defmodule AlertProcessor.Subscription.BusMapper do
   """
   @spec map_subscription(map) :: {:ok, [Subscription.t], [InformedEntity.t]} | :error
   def map_subscription(subscription_params) do
-    with {:ok, subscriptions} <- map_timeframe(subscription_params),
-         {:ok, subscriptions} <- map_priority(subscriptions, subscription_params),
+    with subscriptions <- map_timeframe(subscription_params),
+         subscriptions <- map_priority(subscriptions, subscription_params),
          {:ok, informed_entities} <- map_entities(subscription_params) do
       {:ok, subscriptions, informed_entities}
     else
@@ -25,9 +25,7 @@ defmodule AlertProcessor.Subscription.BusMapper do
   end
 
   defp map_timeframe(%{"departure_start" => ds, "departure_end" => de, "return_start" => nil, "return_end" => nil, "relevant_days" => rd}) do
-    subscription = %Subscription{start_time: DateTimeHelper.timestamp_to_utc(ds), end_time: DateTimeHelper.timestamp_to_utc(de), relevant_days: Enum.map(rd, &String.to_existing_atom/1)}
-
-    {:ok, [subscription]}
+    [%Subscription{start_time: DateTimeHelper.timestamp_to_utc(ds), end_time: DateTimeHelper.timestamp_to_utc(de), relevant_days: Enum.map(rd, &String.to_existing_atom/1)}]
   end
 
   defp map_timeframe(%{"departure_start" => ds, "departure_end" => de, "return_start" => rs, "return_end" => re, "relevant_days" => rd}) do
@@ -44,13 +42,13 @@ defmodule AlertProcessor.Subscription.BusMapper do
         relevant_days: Enum.map(rd, &String.to_existing_atom/1)
       }
 
-    {:ok, [sub1, sub2]}
+    [sub1, sub2]
   end
 
   defp map_priority(subscriptions, %{"alert_priority_type" => alert_priority_type}) when is_list(subscriptions) do
-    {:ok, Enum.map(subscriptions, fn(subscription) ->
+    Enum.map(subscriptions, fn(subscription) ->
       %{subscription | alert_priority_type: String.to_existing_atom(alert_priority_type)}
-    end)}
+    end)
   end
 
   defp map_entities(params) do
