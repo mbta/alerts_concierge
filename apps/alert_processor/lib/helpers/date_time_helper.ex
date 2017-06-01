@@ -53,7 +53,7 @@ defmodule AlertProcessor.Helpers.DateTimeHelper do
   converts 24hr format timestamp to utc time using optional
   timezone, otherwise uses America/New_York
   """
-  @spec timestamp_to_utc(String.t, String.t) :: Time.t
+  @spec timestamp_to_utc(String.t, String.t) :: Time.t | {:error, any}
   def timestamp_to_utc(timestamp, time_zone \\ "America/New_York") do
     with {:ok, local_time} <- Time.from_iso8601(timestamp),
          local_date <- D.today!(time_zone),
