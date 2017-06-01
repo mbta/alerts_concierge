@@ -8,9 +8,7 @@ defmodule AlertProcessor.ServiceInfoCache do
   alias AlertProcessor.Helpers.ConfigHelper
   alias AlertProcessor.ApiClient
 
-  @service_map %{
-    subway: ["Blue", "Green-B", "Green-C", "Green-D", "Green-E", "Mattapan", "Orange", "Red"]
-  }
+  @services [:subway]
 
   @doc false
   def start_link(opts \\ [name: __MODULE__]) do
@@ -42,20 +40,24 @@ defmodule AlertProcessor.ServiceInfoCache do
   end
 
   defp fetch_service_info do
-    for {service, routes} <- @service_map, into: %{} do
-      {service, fetch_route_info(routes)}
+    for service <- @services, into: %{} do
+      {service, fetch_route_info(service)}
     end
   end
 
-  defp fetch_route_info(routes) do
-    for route <- routes, into: %{} do
+  defp fetch_route_info(:subway) do
+    routes =
+      ApiClient.routes()
+      |> Enum.filter_map(fn(%{"attributes" => %{"type" => route_type}}) -> route_type <= 1 end, fn(%{"attributes" => %{"type" => route_type}, "id" => id}) -> {id, route_type} end)
+
+    for {route_id, route_type} <- routes, into: %{} do
       stop_list =
-        route
+        route_id
         |> ApiClient.route_stops
         |> Enum.map(fn(%{"attributes" => %{"name" => name}, "id" => id}) ->
           {name, id}
         end)
-      {route, stop_list}
+      {{route_id, route_type}, stop_list}
     end
   end
 
