@@ -14,3 +14,6 @@ config :alert_processor, AlertProcessor.NotificationMailer,
 
 # Config for ExAws lib
 config :alert_processor, :ex_aws, ExAws
+
+config :alert_processor,
+  asset_url: "https://s3.amazonaws.com/mbta-assets"

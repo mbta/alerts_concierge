@@ -30,10 +30,16 @@ defmodule AlertProcessor.DigestMailerTest do
     }
   }
 
+  @alert %Alert{
+    id: "1",
+    header: "This is a Test",
+    service_effect: "Service Effect",
+    informed_entities: [%{route_type: 1, route: "Red"}]
+  }
+
   test "text_email/1 has all content and link for alerts page" do
     user = %User{email: "abc@123.com"}
-    alert = %Alert{id: "1", header: "This is a Test", service_effect: "Service Effect"}
-    digest = %Digest{user: user, alerts: [alert], digest_date_group: @ddg}
+    digest = %Digest{user: user, alerts: [@alert], digest_date_group: @ddg}
     message = DigestMessage.from_digest(digest)
     email = DigestMailer.digest_email(message)
     body = email.text_body
@@ -47,8 +53,7 @@ defmodule AlertProcessor.DigestMailerTest do
 
   test "html_email/1 has all content and link for alerts page" do
     user = %User{email: "abc@123.com"}
-    alert = %Alert{id: "1", header: "This is a Test", service_effect: "Service Effect"}
-    digest = %Digest{user: user, alerts: [alert], digest_date_group: @ddg}
+    digest = %Digest{user: user, alerts: [@alert], digest_date_group: @ddg}
     message = DigestMessage.from_digest(digest)
     email = DigestMailer.digest_email(message)
     body = email.html_body
@@ -56,7 +61,7 @@ defmodule AlertProcessor.DigestMailerTest do
     assert email.to == user.email
     assert body =~ "This is a Test"
     assert body =~ "Service Effect"
-    assert body =~ "<a href=\"https://t.mbta.com/\">"
+    assert body =~ "href=\"https://t.mbta.com/\""
     assert body =~ "This Weekend, May 26 - 27"
   end
 end

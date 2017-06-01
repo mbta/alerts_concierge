@@ -6,25 +6,25 @@
     <style type="text/css">
       /* Client-specific Styles */
       #outlook a { padding:0; } /* Force Outlook to provide a "view in browser" button. */
-      body{ width:800px !important; }
-      .ReadMsgBody{ width:100%; }
-      .ExternalClass{ width:100%; } /* Force Hotmail to display emails at full width */
-      body{ -webkit-text-size-adjust:none; } /* Prevent Webkit platforms from changing default text sizes. */
+      body { width:800px !important; }
+      .ReadMsgBody { width:100%; }
+      .ExternalClass { width:100%; } /* Force Hotmail to display emails at full width */
+      body { -webkit-text-size-adjust:none; } /* Prevent Webkit platforms from changing default text sizes. */
       /* End Client-specific Styles */
 
       /* Reset Styles */
-      body{
+      body {
         margin:0;
         padding:0;
       }
-      img{ border:0;
+      img { border:0;
         height:auto;
         line-height:100%;
         outline:none;
         text-decoration:none;
       }
       table td { border-collapse:collapse; }
-      #backgroundTable{
+      #backgroundTable {
         height:100% !important;
         margin:0;
         padding:0;
@@ -34,48 +34,181 @@
 
       /* Template Styles */
       body {
+        font-family: Arial, Helvetica Neue, Helvetica, sans-serif;
+      }
+
+      .digest-header {
+        border-bottom-color: #3324ae;
+        border-bottom-style: solid;
+        border-bottom-width: 0.25rem;
+        font-weight: bold;
+        padding: 1.75rem 0 0.5rem;
+        width: 100%;
+      }
+
+      .digest-group-section:nth-child(odd) {
+        background-color: #f4f4f6;
+      }
+
+      .digest-group-section-title {
+        font-size: 19px;
+        font-weight: bold;
+        line-height: 1.58;
+        color: #1c1e23;
+        text-align: left;
+      }
+
+      .digest-group-alert {
+        width: 100%;
+      }
+
+      .alert-logo {
+        width: 10%;
+      }
+
+      .alert-details {
+        width: 90%;
+      }
+
+      .alert-separator {
+        width: 100%;
+        height: 2px;
+        background-color: #dddddd;
+      }
+
+      .line {
+        width: 100%;
+        height: 2px;
+        background-color: #061d2e;
+      }
+
+      .digest-footer-description {
+      	font-size: 18px;
+        line-height: 1.44;
+        text-align: center;
+        color: #1c1e23;
+      }
+
+      .digest-footer-link {
+      	width: 290px;
+        height: 40px;
+      }
+
+      .digest-footer-button {
+      	width: 244px;
+        height: 28px;
+        border-radius: 5px;
+        background-color: #1c77c3;
+        font-size: 16px;
+        line-height: 1.75;
+        text-align: center;
+        color: #ffffff;
+       }
+
+       .footer {
+         width: 100%;
+         height: 120px;
+         background-color: #061d2e;
+       }
+
+       .footer-copyright {
+        font-size: 16px;
+        line-height: 1.5;
+        text-align: center;
+        color: #ffffff;
+      }
+
+      .footer-link {
+      	font-size: 15px;
+        line-height: 1.6;
+        text-align: center;
+        color: #67a0d1;
+      }
+
+      .footer-link-separator {
+        color: #ffffff;
       }
     </style>
   </head>
   <body leftmargin="0" marginwidth="0" topmargin="0" marginheight="0" offset="0">
     <center>
+      <table class="digest-header">
+        <tr>
+          <td>
+            <img
+              src="<%= AlertProcessor.DigestMailHelper.mbta_logo() %>"
+              alt="mbta-logo"
+              height="48px"
+              width="48px">
+          </td>
+          <td>
+            Massachusetts Bay
+            </br>
+            Transportation Authority
+          </td>
+        </tr>
+      </table>
 
+      <h2>
+        T-Alerts: Weekly Digest
+      </h2>
 
-<h1 class="digest-header">
-  # Left
-    # LOGO
-  # Right
-    # Massachusetts Bay
-    # Transportation Authority
-</h1>
+      <div class="digest-group">
+        <%= for group <- digest_date_groups do %>
+          <div class="digest-group-section">
+            <div class="digest-group-section-title">
+              <%= group.title %>:
+            </div>
+            <%= for alert <- group.alerts do %>
+              <table class="digest-group-alert">
+                <tr>
+                  <td class="alert-logo">
+                    <img src="<%= AlertProcessor.DigestMailHelper.logo_for_alert(alert) %>" alt="alert-logo">
+                  </td>
+                  <td class="alert-details">
+                    <%= alert.service_effect %>
+                    <br>
+                    <%= alert.header %>
+                    <div class="alert-separator" />
+                  </td>
+                </tr>
+              </table>
+            <% end %>
+          </div>
+        <% end %>
+      </div>
 
-# Blue line
+      <div class="line" />
 
-<h2>
-  T-Alerts: Weekly Digest
-</h2>
+      <div class="digest-footer">
+        <div class="digest-footer-description">
+          The digest of upcoming events has been personalized to you based on your subscription, for full list:
+        </div>
 
-<%= for group <- digest_date_groups do %>
-  <%= group.title %>:
-  <%= for alert <- group.alerts do %>
-    <%= alert.service_effect %> <%= alert.header %>
-  <% end %>
-<% end %>
+        <a class="digest-footer-link" href="https://t.mbta.com/">
+          <span class="digest-footer-button">
+            View All Alerts
+          </span>
+        </a>
+      </div>
 
-# lower line
+      <div class="footer">
+        <div class="footer-copyright">
+          &copy; Massachusetts Bay Transportation Authority, all rights reserved.
+        </div>
 
-The digest of upcoming events has been personalized to you based on your
-subscription, for full list: <a href="https://t.mbta.com/">https://t.mbta.com/</a>
-
-# Footer
-  # copyright
-  # links
-    # unsub
-    # bullet
-    # feeback
-    # bullet
-    # edit subs
-
+        <table class="footer-links">
+          <tr>
+            <td class="footer-link">Unsubscribe</td>
+            <td class="footer-link-separator">*</td>
+            <td class="footer-link">
+              <a href="https://t.mbta.com/customer-support">Feedback</a>
+            </td>
+            <td class="footer-link-separator">*</td>
+            <td class="footer-link">Edit Your Subscriptions</td>
+          </tr>
+        </table>
+      </div>
 		</center>
 	</body>
 </html>
