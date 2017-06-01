@@ -8,7 +8,7 @@ defmodule AlertProcessor.ServiceInfoCache do
   alias AlertProcessor.Helpers.ConfigHelper
   alias AlertProcessor.{ApiClient, Model.Route}
 
-  @services [:subway]
+  @services [:bus, :subway]
 
   @doc false
   def start_link(opts \\ [name: __MODULE__]) do
@@ -19,12 +19,15 @@ defmodule AlertProcessor.ServiceInfoCache do
   Initialize GenServer and schedule recurring service info fetching.
   """
   def init(_) do
-    send self(), :work
-    {:ok, %{}}
+    {:ok, fetch_service_info()}
   end
 
   def get_subway_info(name \\ __MODULE__) do
     GenServer.call(name, :get_subway_info)
+  end
+
+  def get_bus_info(name \\ __MODULE__) do
+    GenServer.call(name, :get_bus_info)
   end
 
   @doc """
@@ -39,13 +42,17 @@ defmodule AlertProcessor.ServiceInfoCache do
     {:reply, {:ok, subway_state}, state}
   end
 
+  def handle_call(:get_bus_info, _from, %{bus: bus_state} = state) do
+    {:reply, {:ok, bus_state}, state}
+  end
+
   defp fetch_service_info do
     for service <- @services, into: %{} do
-      {service, fetch_route_info(service)}
+      {service, fetch_service_info(service)}
     end
   end
 
-  defp fetch_route_info(:subway) do
+  defp fetch_service_info(:subway) do
     routes =
       ["0", "1"]
       |> ApiClient.routes()
@@ -63,6 +70,36 @@ defmodule AlertProcessor.ServiceInfoCache do
         end)
       %Route{route_id: route_id, route_type: route_type, direction_names: direction_names, stop_list: stop_list}
     end
+  end
+
+  defp fetch_service_info(:bus) do
+    for route_id <- fetch_bus_routes(), into: %{} do
+      [zero_task, one_task] =
+        for direction_id <- [0, 1] do
+          Task.async(__MODULE__, :do_headsigns, [route_id, direction_id])
+        end
+      {route_id, %{
+        0 => Task.await(zero_task),
+        1 => Task.await(one_task)
+      }}
+    end
+  end
+
+  defp fetch_bus_routes do
+    Enum.filter_map(ApiClient.routes([3]), fn(%{"attributes" => %{"type" => route_type}}) -> route_type == 3 end, &(&1["id"]))
+  end
+
+  def do_headsigns(route_id, direction_id) do
+    route_id
+    |> ApiClient.trips(direction_id)
+    |> Enum.filter_map(
+        fn %{"attributes" => attributes} -> attributes["headsign"] != "" end,
+        fn %{"attributes" => attributes} -> attributes["headsign"] end
+      )
+    |> Enum.group_by(&(&1))
+    |> Enum.sort_by(fn({value, values}) -> {values |> length |> (fn v -> Float.round(v / -4) end).(), value} end)
+    |> Enum.map(&(elem(&1, 0)))
+
   end
 
   defp schedule_work do

@@ -37,6 +37,17 @@ defmodule AlertProcessor.ApiClient do
     end
   end
 
+  def trips(route, direction_id, fields \\ ["headsign"]) do
+    case get("/trips?route=#{route}&direction_id=#{direction_id}&fields[trip]=#{Enum.join(fields, ",")}") do
+      {:ok, %{body: %{"errors" => errors}}} ->
+        {:error, errors |> Enum.map_join(", ", &(&1["code"]))}
+      {:ok, %{body: %{"data" => trips}}} ->
+        trips
+      {:error, message} ->
+        {:error, message}
+    end
+  end
+
   @doc """
   endpoint to fetch stop info per route including name and id
   """
