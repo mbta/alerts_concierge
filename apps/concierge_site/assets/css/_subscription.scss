@@ -1,5 +1,6 @@
 .select-service,
-.select-trip-type {
+.select-trip-type,
+.enter-trip-info {
   @include media-breakpoint-up(sm) {
     @include make-col(8);
     @include make-col-offset(2);
@@ -95,7 +96,6 @@
   }
 }
 
-
 .mbta-icon {
 
   img {
@@ -114,4 +114,58 @@
     margin-right: .125rem;
     position: relative;
   }
+}
+
+.subscription-select-origin,
+.subscription-select-destination {
+  width: 100%;
+}
+
+.station-input-label {
+  margin-bottom: .25rem;
+  text-align: left;
+}
+
+.station-input {
+  border: $border-width solid $steel;
+  border-radius: 4px;
+  font-family: $font-family-base;
+  padding: .5rem 0 .5rem .75rem;
+}
+
+.station-suggestion {
+  background-color: $pale-grey-50;
+  border-bottom: $border-width solid $white;
+  color: $dark-blue;
+  display: flex;
+  justify-content: space-between;
+  font-weight: $suggestion-font-weight;
+  padding: .75rem 0 .75rem 1rem;
+}
+
+.station-suggestion.hidden {
+  display: none;
+}
+
+.station-suggestion:hover {
+  cursor: pointer;
+}
+
+.station-lines {
+  align-items: center;
+  display: flex;
+}
+
+.line-name {
+  color: $gray-dark;
+  font-size: $base-font-size;
+  font-weight: normal;
+  margin: 0 1rem 0 .25rem;
+}
+
+.subscription-select-origin.no-js,
+.subscription-select-destination.no-js {
+  background-color: $white;
+  font-family: $font-family-base;
+  height: 3rem;
 }

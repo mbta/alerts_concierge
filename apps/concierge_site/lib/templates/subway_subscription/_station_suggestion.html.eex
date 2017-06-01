@@ -1,0 +1,11 @@
+<div class="<%= @class %> station-suggestion hidden">
+  <div class="station-name"><%= @station[:name] %></div>
+  <div class="station-lines">
+    <%= for line <- @station[:lines] do %>
+      <%= render "_circle_icon.html",
+                 title: line[:name],
+                 circle_class: line[:icon_circle_class] %>
+      <div class="line-name"><%= line[:name] %></div>
+    <% end %>
+  </div>
+</div>

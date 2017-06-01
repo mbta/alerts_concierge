@@ -33,4 +33,61 @@ defmodule ConciergeSite.SubwaySubscriptionViewTest do
       assert classes == %{}
     end
   end
+
+  describe "station_select_list_options" do
+    test "changes a map of lines into a select helper friendly list" do
+      stations = %{{"Blue", 1} => [], {"Green", 0} => [], {"Red", 0} => []}
+      select_options = SubwaySubscriptionView.station_list_select_options(stations)
+
+      assert select_options == [{"Blue", []}, {"Green", []}, {"Red", []}]
+    end
+  end
+
+  describe "station_suggestion_options" do
+    test "it returns a list of station tuples from a map of lines" do
+      stations = %{
+        {"Blue",1} => [
+          {"Bowdoin", "place-bomnl"},
+          {"Government Center", "place-gover"},
+          {"State Street", "place-state"}
+        ]
+      }
+
+      suggestion_options = SubwaySubscriptionView.station_suggestion_options(stations)
+
+      assert suggestion_options == [
+        {"Bowdoin", "place-bomnl", ["Blue"]},
+        {"Government Center", "place-gover", ["Blue"]},
+        {"State Street", "place-state", ["Blue"]}
+      ]
+    end
+
+    test "it combines all the green lines for display purposes" do
+      stations = %{
+        {"Green-B",1} => [{"Boston College", "place-lake"}],
+        {"Green-C",1} => [{"Cleveland Circle", "place-clmnl"}],
+        {"Green-D",1} => [{"Riverside", "place-river"}]
+      }
+
+      suggestion_options = SubwaySubscriptionView.station_suggestion_options(stations)
+
+      assert suggestion_options == [
+        {"Boston College", "place-lake", ["Green"]},
+        {"Cleveland Circle", "place-clmnl", ["Green"]},
+        {"Riverside", "place-river", ["Green"]}
+      ]
+    end
+
+    test "it merges stations on multiple lines" do
+      stations = %{
+        {"Red",1} => [{"Park Street", "place-pktrm"}],
+        {"Green-C",1} => [{"Park Street", "place-pktrm"}],
+        {"Green-D",1} => [{"Park Street", "place-pktrm"}]
+      }
+
+      suggestion_options = SubwaySubscriptionView.station_suggestion_options(stations)
+
+      assert suggestion_options == [{"Park Street", "place-pktrm", ["Green", "Red"]}]
+    end
+  end
 end
