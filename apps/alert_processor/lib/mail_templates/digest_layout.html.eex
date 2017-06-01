@@ -55,34 +55,17 @@
   T-Alerts: Weekly Digest
 </h2>
 
-<%= digest_date_group.upcoming_weekend.title %>:
-<%= for alert <- digest_date_group.upcoming_weekend.alerts do %>
-  <%= alert.service_effect %>
-  <%= alert.header %>
-<% end %>
-
-<%= digest_date_group.upcoming_week.title %>:
-<%= for alert <- digest_date_group.upcoming_week.alerts do %>
-  <%= alert.service_effect %>
-  <%= alert.header %>
-<% end %>
-
-<%= digest_date_group.next_weekend.title %>:
-<%= for alert <- digest_date_group.next_weekend.alerts do %>
-  <%= alert.service_effect %>
-  <%= alert.header %>
-<% end %>
-
-<%= digest_date_group.future.title %>:
-<%= for alert <- digest_date_group.future.alerts do %>
-  <%= alert.service_effect %>
-  <%= alert.header %>
+<%= for group <- digest_date_groups do %>
+  <%= group.title %>:
+  <%= for alert <- group.alerts do %>
+    <%= alert.service_effect %> <%= alert.header %>
+  <% end %>
 <% end %>
 
 # lower line
 
 The digest of upcoming events has been personalized to you based on your
-subscription, for full list: https://beta.mbta.com/alerts
+subscription, for full list: <a href="https://t.mbta.com/">https://t.mbta.com/</a>
 
 # Footer
   # copyright

@@ -10,22 +10,22 @@ defmodule AlertProcessor.DigestSerializer do
   Takes a Digest and serializes each alert into
   the format it will be presented in an email
   """
-  @spec serialize(Digest.t) :: [{String.t, [Alert.t]}]
+  @spec serialize(Digest.t)
+  :: [%{name: atom, title: String.t, alerts: [Alert.t]}]
   def serialize(digest) do
     digest.digest_date_group
     |> Map.from_struct()
-    |> Enum.reduce(%{}, fn({name, value}, acc) ->
+    |> Enum.reduce([], fn({name, value}, acc) ->
       filtered_alerts = filter_alerts(digest.alerts, value.alert_ids)
-      header = header(name, value.timeframe)
+      title = title(name, value.timeframe)
       if Enum.empty?(filtered_alerts) do
-        Map.take(acc, @date_groups -- [name])
-      else
-        {_res, acc} = get_and_update_in(
-          acc[name],
-          &{&1, %{title: header, alerts: filtered_alerts}}
-        )
         acc
+      else
+        acc ++ [%{name: name, title: title, alerts: filtered_alerts}]
       end
+    end)
+    |> Enum.sort_by(fn(%{name: name}) ->
+      Enum.find_index(@date_groups, &(&1 == name))
     end)
   end
 
@@ -33,7 +33,7 @@ defmodule AlertProcessor.DigestSerializer do
     Enum.filter(alerts, &(Enum.member?(alert_ids, &1.id)))
   end
 
-  defp header(date_group, {start_date, end_date}) do
+  defp title(date_group, {start_date, end_date}) do
     prefix = prefix(date_group)
     cond do
       date_group == :future ->

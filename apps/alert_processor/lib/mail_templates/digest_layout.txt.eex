@@ -1,0 +1,11 @@
+T-Alerts Weekly Digest:
+
+<%= for group <- digest_date_groups do %>
+  <%= group.title %>:
+  <%= for alert <- group.alerts do %>
+    <%= alert.service_effect %> <%= alert.header %>
+  <% end %>
+<% end %>
+
+The digest of upcoming events has been personalized to you based on your
+subscription, for full list: https://t.mbta.com/

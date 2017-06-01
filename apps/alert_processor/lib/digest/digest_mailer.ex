@@ -12,12 +12,12 @@ defmodule AlertProcessor.DigestMailer do
     :def,
     :html_email,
     Path.join(@template_dir, "digest_layout.html.eex"),
-    [:digest_date_group])
+    [:digest_date_groups])
   EEx.function_from_file(
     :def,
     :text_email,
-    Path.join(@template_dir, "digest_layout.text.eex"),
-    [:digest_date_group])
+    Path.join(@template_dir, "digest_layout.txt.eex"),
+    [:digest_date_groups])
 
   @doc "digest_email/1 takes a digest and builds a message to a user"
   @spec digest_email(DigestMessage.t) :: Elixir.Bamboo.Email.t

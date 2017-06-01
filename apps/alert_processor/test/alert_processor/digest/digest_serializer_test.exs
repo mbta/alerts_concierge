@@ -57,24 +57,28 @@ defmodule AlertProcessor.DigestSerializerTest do
 
     serialized_digest = DigestSerializer.serialize(digest)
 
-    expected = %{
-      upcoming_weekend: %{
-        alerts: [@alert1],
-        title: "This Weekend, June 3 - 4"
+    expected = [
+      %{
+        name: :upcoming_weekend,
+        title: "This Weekend, June 3 - 4",
+        alerts: [@alert1]
       },
-      upcoming_week: %{
-        alerts: [@alert1, @alert2],
-        title: "Next Week, June 5 - 9"
+      %{
+        name: :upcoming_week,
+        title: "Next Week, June 5 - 9",
+        alerts: [@alert1, @alert2]
       },
-      next_weekend: %{
-        alerts: [@alert1],
-        title: "Next Weekend, June 10 - 11"
+      %{
+        name: :next_weekend,
+        title: "Next Weekend, June 10 - 11",
+        alerts: [@alert1]
       },
-      future: %{
-        alerts: [@alert1],
-        title: "Future Alerts"
-      },
-    }
+      %{
+        name: :future,
+        title: "Future Alerts",
+        alerts: [@alert1]
+      }
+    ]
 
     assert serialized_digest == expected
   end
@@ -88,24 +92,28 @@ defmodule AlertProcessor.DigestSerializerTest do
 
     serialized_digest = DigestSerializer.serialize(digest)
 
-    expected = %{
-      upcoming_weekend: %{
-        alerts: [@alert1],
-        title: "This Weekend, June 3 - 4"
+    expected = [
+      %{
+        name: :upcoming_weekend,
+        title: "This Weekend, June 3 - 4",
+        alerts: [@alert1]
       },
-      upcoming_week: %{
-        alerts: [@alert1],
-        title: "Next Week, June 5 - 9"
+      %{
+        name: :upcoming_week,
+        title: "Next Week, June 5 - 9",
+        alerts: [@alert1]
       },
-      next_weekend: %{
-        alerts: [@alert1],
-        title: "Next Weekend, June 10 - 11"
+      %{
+        name: :next_weekend,
+        title: "Next Weekend, June 10 - 11",
+        alerts: [@alert1]
       },
-      future: %{
-        alerts: [@alert1],
-        title: "Future Alerts"
-      },
-    }
+      %{
+        name: :future,
+        title: "Future Alerts",
+        alerts: [@alert1]
+      }
+    ]
 
     assert serialized_digest == expected
   end
@@ -119,12 +127,13 @@ defmodule AlertProcessor.DigestSerializerTest do
 
     serialized_digest = DigestSerializer.serialize(digest)
 
-    expected = %{
-      upcoming_week: %{
-        alerts: [@alert2],
-        title: "Next Week, June 5 - 9"
+    expected = [
+      %{
+        name: :upcoming_week,
+        title: "Next Week, June 5 - 9",
+        alerts: [@alert2]
       }
-    }
+    ]
 
     assert serialized_digest == expected
   end
