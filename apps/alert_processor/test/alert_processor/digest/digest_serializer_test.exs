@@ -59,22 +59,18 @@ defmodule AlertProcessor.DigestSerializerTest do
 
     expected = [
       %{
-        name: :upcoming_weekend,
         title: "This Weekend, June 3 - 4",
         alerts: [@alert1]
       },
       %{
-        name: :upcoming_week,
         title: "Next Week, June 5 - 9",
         alerts: [@alert1, @alert2]
       },
       %{
-        name: :next_weekend,
         title: "Next Weekend, June 10 - 11",
         alerts: [@alert1]
       },
       %{
-        name: :future,
         title: "Future Alerts",
         alerts: [@alert1]
       }
@@ -94,22 +90,18 @@ defmodule AlertProcessor.DigestSerializerTest do
 
     expected = [
       %{
-        name: :upcoming_weekend,
         title: "This Weekend, June 3 - 4",
         alerts: [@alert1]
       },
       %{
-        name: :upcoming_week,
         title: "Next Week, June 5 - 9",
         alerts: [@alert1]
       },
       %{
-        name: :next_weekend,
         title: "Next Weekend, June 10 - 11",
         alerts: [@alert1]
       },
       %{
-        name: :future,
         title: "Future Alerts",
         alerts: [@alert1]
       }
@@ -129,7 +121,6 @@ defmodule AlertProcessor.DigestSerializerTest do
 
     expected = [
       %{
-        name: :upcoming_week,
         title: "Next Week, June 5 - 9",
         alerts: [@alert2]
       }
@@ -171,7 +162,6 @@ defmodule AlertProcessor.DigestSerializerTest do
 
     expected = [
       %{
-        name: :upcoming_week,
         title: "Next Week, May 29 - June 2",
         alerts: [@alert2]
       }
