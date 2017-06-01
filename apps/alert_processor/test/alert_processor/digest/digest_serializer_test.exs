@@ -1,4 +1,4 @@
-defmodule AlertProcessor.DigestDispatcherTest do
+defmodule AlertProcessor.DigestSerializerTest do
   @moduledoc false
   use AlertProcessor.DataCase
 
@@ -126,6 +126,6 @@ defmodule AlertProcessor.DigestDispatcherTest do
       }
     }
 
-    assert serialized_digest == expecte
+    assert serialized_digest == expected
   end
 end
