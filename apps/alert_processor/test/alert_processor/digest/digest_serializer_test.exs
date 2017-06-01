@@ -137,4 +137,46 @@ defmodule AlertProcessor.DigestSerializerTest do
 
     assert serialized_digest == expected
   end
+
+  test "serialize/1 serializes title for month boundaries" do
+    may = DT.from_erl!({{2017, 05, 29}, {0, 0, 0}}, "America/New_York")
+    june = DT.from_erl!({{2017, 06, 02}, {23, 59, 59}}, "America/New_York")
+
+    ddg = %DigestDateGroup{
+      upcoming_weekend: %{
+        timeframe: {@friday, @saturday},
+        alert_ids: []
+      },
+      upcoming_week: %{
+        timeframe: {may, june},
+        alert_ids: ["2"]
+      },
+      next_weekend: %{
+        timeframe: {@next_saturday, @next_sunday},
+        alert_ids: []
+      },
+      future: %{
+        timeframe: {@next_monday, @future},
+        alert_ids: []
+      }
+    }
+
+    digest = %Digest{
+      user: @user,
+      alerts: [@alert2],
+      digest_date_group: ddg
+    }
+
+    serialized_digest = DigestSerializer.serialize(digest)
+
+    expected = [
+      %{
+        name: :upcoming_week,
+        title: "Next Week, May 29 - June 2",
+        alerts: [@alert2]
+      }
+    ]
+
+    assert serialized_digest == expected
+  end
 end
