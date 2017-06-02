@@ -15,7 +15,7 @@ defmodule AlertProcessor.HoldingQueue do
   @doc """
   Updates state to Notifications that can't be sent yet, returns ones that are ready.
   """
-  @spec notifications_to_send(DateTime.t | nil) :: {:ok, notifications} | :error
+  @spec notifications_to_send(atom, DateTime.t | nil) :: {:ok, notifications} | :error
   def notifications_to_send(name \\ __MODULE__)
   def notifications_to_send(name) do
     now = DateTime.utc_now()
