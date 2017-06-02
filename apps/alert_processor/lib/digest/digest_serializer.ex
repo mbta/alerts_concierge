@@ -4,20 +4,24 @@ defmodule AlertProcessor.DigestSerializer do
   """
   alias AlertProcessor.{Helpers.DateTimeHelper, Model}
   alias Model.{Alert, Digest}
+  @date_groups [:upcoming_weekend, :upcoming_week, :next_weekend, :future]
 
   @doc """
   Takes a Digest and serializes each alert into
   the format it will be presented in an email
   """
-  @spec serialize(Digest.t) :: [{String.t, [Alert.t]}]
+  @spec serialize(Digest.t)
+  :: [%{name: atom, title: String.t, alerts: [Alert.t]}]
   def serialize(digest) do
-    digest.digest_date_group
-    |> Map.from_struct()
-    |> Enum.reduce(%{}, fn({name, value}, acc) ->
-      filtered_alerts = filter_alerts(digest.alerts, value.alert_ids)
-      header = header(name, value.timeframe)
-      {_res, acc} = get_and_update_in(acc[name], &{&1, %{title: header, alerts: filtered_alerts}})
-      acc
+    ddg = digest.digest_date_group
+    Enum.flat_map(@date_groups, fn date_group ->
+      section = Map.get(ddg, date_group)
+      case filter_alerts(digest.alerts, section.alert_ids) do
+        [] -> []
+        alerts ->
+          title = title(date_group, section.timeframe)
+          [%{title: title, alerts: alerts}]
+      end
     end)
   end
 
@@ -25,14 +29,16 @@ defmodule AlertProcessor.DigestSerializer do
     Enum.filter(alerts, &(Enum.member?(alert_ids, &1.id)))
   end
 
-  defp header(date_group, {start_date, end_date}) do
+  defp title(date_group, {start_date, end_date}) do
     prefix = prefix(date_group)
-    range_text = if start_date.month == end_date.month do
-      "#{DateTimeHelper.month_name(start_date)} #{start_date.day} - #{end_date.day}"
-    else
-      "#{DateTimeHelper.month_name(start_date)} #{start_date.day} - #{DateTimeHelper.month_name(end_date)} #{end_date.day}"
+    cond do
+      date_group == :future ->
+        prefix
+      start_date.month == end_date.month ->
+        "#{prefix}, #{DateTimeHelper.month_name(start_date)} #{start_date.day} - #{end_date.day}"
+      true ->
+        "#{prefix}, #{DateTimeHelper.month_name(start_date)} #{start_date.day} - #{DateTimeHelper.month_name(end_date)} #{end_date.day}"
     end
-    "#{prefix}, #{range_text}"
   end
 
   defp prefix(date_group) do

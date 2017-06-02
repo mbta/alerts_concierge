@@ -52,7 +52,8 @@ defmodule AlertProcessor.AlertParser do
         "header" => header,
         "informed_entity" => informed_entities,
         "severity" => severity,
-        "updated_at" => updated_at
+        "updated_at" => updated_at,
+        "service_effect" => service_effect
       },
       "id" => alert_id
     }, facilities_map, accumulator
@@ -67,7 +68,8 @@ defmodule AlertProcessor.AlertParser do
         header: header,
         informed_entities: parse_informed_entities(informed_entities, facilities_map),
         severity: severity |> String.downcase |> String.to_existing_atom,
-        last_push_notification: parse_datetime(updated_at)
+        last_push_notification: parse_datetime(updated_at),
+        service_effect: service_effect
       })
     )
   end
