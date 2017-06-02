@@ -10,65 +10,58 @@
     </style>
   </head>
   <body leftmargin="0" marginwidth="0" topmargin="0" marginheight="0" offset="0">
-    <center>
-      <table class="digest-header">
-        <tr>
-          <td>
-            <img
-              src="<%= AlertProcessor.DigestMailHelper.mbta_logo() %>"
-              alt="mbta-logo"
-              height="48px"
-              width="48px">
-          </td>
-          <td>
-            Massachusetts Bay
-            </br>
-            Transportation Authority
-          </td>
-        </tr>
-      </table>
+    <div class="digest-header">
+      <img
+        src="<%= AlertProcessor.DigestMailHelper.mbta_logo() %>"
+        alt="mbta-logo"
+        height="48px"
+      >
+    </div>
 
-      <h2>
-        T-Alerts: Weekly Digest
-      </h2>
+    <h1 class="digest-title">
+      T-Alerts: Weekly Digest
+    </h1>
 
-      <div class="digest-group">
-        <%= for group <- digest_date_groups do %>
-          <div class="digest-group-section">
-            <div class="digest-group-section-title">
-              <%= group.title %>:
-            </div>
-            <%= for alert <- group.alerts do %>
-              <table class="digest-group-alert">
-                <tr>
-                  <td class="alert-logo">
-                    <img src="<%= AlertProcessor.DigestMailHelper.logo_for_alert(alert) %>"
-                         alt="<%= AlertProcessor.DigestMailHelper.alt_text_for_alert(alert) %>">
-                  </td>
-                  <td class="alert-details">
-                    <%= alert.service_effect %>
-                    <br>
-                    <%= alert.header %>
-                    <div class="alert-separator" />
-                  </td>
-                </tr>
-              </table>
-            <% end %>
+    <div class="digest-group">
+      <%= for group <- digest_date_groups do %>
+        <div class="digest-group-section">
+          <div class="digest-group-section-title">
+            <%= group.title %>:
           </div>
-        <% end %>
-      </div>
+          <%= for alert <- group.alerts do %>
+            <table class="digest-group-alert">
+              <tr>
+                <td class="alert-logo">
+                  <img src="<%= AlertProcessor.DigestMailHelper.logo_for_alert(alert) %>"
+                   alt="<%= AlertProcessor.DigestMailHelper.alt_text_for_alert(alert) %>">
+                </td>
+                <td class="alert-details">
+                  <p class="alert-service-effect">
+                    <%= alert.service_effect %>:
+                  </p>
+                  <p class="alert-header">
+                    <%= alert.header %>
+                  </p>
+                </td>
+              </tr>
+            </table>
+          <% end %>
+        </div>
+      <% end %>
+    </div>
 
-      <div class="line" />
+    <div class="line" />
 
+    <center>
       <div class="digest-footer">
         <div class="digest-footer-description">
           The digest of upcoming events has been personalized to you based on your subscription, for full list:
         </div>
 
         <a class="digest-footer-link" href="https://t.mbta.com/">
-          <span class="digest-footer-button">
+          <div class="digest-footer-button">
             View All Alerts
-          </span>
+          </div>
         </a>
       </div>
 
@@ -79,16 +72,24 @@
 
         <table class="footer-links">
           <tr>
-            <td class="footer-link">Unsubscribe</td>
-            <td class="footer-link-separator">*</td>
+            <td >
+              <a class="footer-link" href="#">Unsubscribe</a>
+            </td>
+            <td class="footer-link-separator">
+              <div class="footer-link-separator-bullet" />
+            </td>
             <td class="footer-link">
               <a href="https://t.mbta.com/customer-support">Feedback</a>
             </td>
-            <td class="footer-link-separator">*</td>
-            <td class="footer-link">Edit Your Subscriptions</td>
+            <td class="footer-link-separator">
+              <div class="footer-link-separator-bullet" />
+            </td>
+            <td class="footer-link">
+              <a href="#">Edit Your Subscriptions</a>
+            </td>
           </tr>
         </table>
       </div>
-		</center>
+    </center>
 	</body>
 </html>
