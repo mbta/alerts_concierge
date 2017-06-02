@@ -12,12 +12,12 @@ defmodule AlertProcessor.Subscription.SubwayMapper do
   arrays of subscription(s) and informed entities to creat in the database
   to be used for matching against alerts.
   """
-  @spec map_subscription(map) :: {:ok, [Subscription.t], [InformedEntity.t]} | :error
+  @spec map_subscription(map) :: {:ok, [{Subscription.t, InformedEntity.t}]} | :error
   def map_subscription(subscription_params) do
     with subscriptions <- map_timeframe(subscription_params),
          subscriptions <- map_priority(subscriptions, subscription_params),
-         {:ok, subscriptions, informed_entities} <- map_entities(subscriptions, subscription_params) do
-      {:ok, subscriptions, informed_entities}
+         {:ok, subscriptions} <- map_entities(subscriptions, subscription_params) do
+      {:ok, subscriptions}
     else
       _ -> :error
     end
@@ -53,33 +53,41 @@ defmodule AlertProcessor.Subscription.SubwayMapper do
   defp map_entities(subscriptions, params) do
     with {:ok, subway_info} = ServiceInfoCache.get_subway_info(),
          %{"origin" => origin, "destination" => destination} <- params,
-         route_maps <- Enum.filter(subway_info, fn({{_route, _type}, stop_list}) -> List.keymember?(stop_list, origin, 1) && List.keymember?(stop_list, destination, 1) end),
-         informed_entities <- map_amenities(params),
-         informed_entities <- map_route_type(informed_entities, route_maps),
-         informed_entities <- map_routes(informed_entities, route_maps),
-         informed_entities <- map_stops(informed_entities, params, route_maps) do
-      {:ok, subscriptions, informed_entities}
+         route_maps <- Enum.filter_map(
+           subway_info,
+           fn({{_route, _type, _direction_names}, stop_list}) -> List.keymember?(stop_list, origin, 1) && List.keymember?(stop_list, destination, 1) end,
+           fn({{route, type, _direction_names}, stop_list}) -> {{route, type}, stop_list}
+         end),
+         subscriptions <- map_amenities(subscriptions, params),
+         subscriptions <- map_route_type(subscriptions, route_maps),
+         subscriptions <- map_routes(subscriptions, params, route_maps),
+         subscriptions <- map_stops(subscriptions, params, route_maps) do
+      {:ok, subscriptions}
     else
       _ -> :error
     end
   end
 
-  defp map_amenities(%{"origin" => origin, "amenities" => amenities}) do
-    Enum.map(amenities, fn(amenity) ->
-      %InformedEntity{stop: origin, facility_type: String.to_existing_atom(amenity)}
+  defp map_amenities(subscriptions, %{"origin" => origin, "amenities" => amenities}) do
+    Enum.map(subscriptions, fn(subscription) ->
+      {subscription, Enum.map(amenities, fn(amenity) ->
+        %InformedEntity{stop: origin, facility_type: String.to_existing_atom(amenity)}
+      end)}
     end)
   end
 
-  defp map_route_type(informed_entities, route_maps) do
+  defp map_route_type(subscriptions, route_maps) do
     route_type_entities =
       Enum.map(route_maps, fn({{_route, type}, _stop_list}) ->
         %InformedEntity{route_type: type}
       end)
 
-    informed_entities ++ route_type_entities
+    Enum.map(subscriptions, fn({subscription, informed_entities}) ->
+      {subscription, informed_entities ++ route_type_entities}
+    end)
   end
 
-  defp map_routes(informed_entities, route_maps) do
+  defp map_routes(subscriptions, %{"roaming" => "true"}, route_maps) do
     route_entities =
       Enum.flat_map(route_maps, fn({{route, type}, _stop_list}) ->
         [
@@ -89,10 +97,52 @@ defmodule AlertProcessor.Subscription.SubwayMapper do
         ]
       end)
 
-    informed_entities ++ route_entities
+    Enum.map(subscriptions, fn({subscription, informed_entities}) ->
+      {subscription, informed_entities ++ route_entities}
+    end)
   end
 
-  defp map_stops(informed_entities, %{"origin" => origin, "destination" => destination, "roaming" => "true"}, route_maps) do
+  defp map_routes([{subscription, informed_entities}], %{"origin" => origin, "destination" => destination}, route_maps) do
+    route_entities =
+      Enum.flat_map(route_maps, fn({{route, type}, stop_list}) ->
+        direction_id =
+          case Enum.filter_map(
+            stop_list,
+            fn({_name, id}) -> Enum.member?([origin, destination], id) end,
+            fn({_name, id}) -> id
+          end) do
+            [^origin, ^destination] -> 1
+            [^destination, ^origin] -> 0
+          end
+        [
+          %InformedEntity{route: route, route_type: type},
+          %InformedEntity{route: route, route_type: type, direction_id: direction_id}
+        ]
+      end)
+
+    [{subscription, informed_entities ++ route_entities}]
+  end
+
+  defp map_routes([{sub1, ie1}, {sub2, ie2}], _params, route_maps) do
+    route_entities_1 =
+      Enum.flat_map(route_maps, fn({{route, type}, _stop_list}) ->
+        [
+          %InformedEntity{route: route, route_type: type},
+          %InformedEntity{route: route, route_type: type, direction_id: 0}
+        ]
+      end)
+    route_entities_2 =
+      Enum.flat_map(route_maps, fn({{route, type}, _stop_list}) ->
+        [
+          %InformedEntity{route: route, route_type: type},
+          %InformedEntity{route: route, route_type: type, direction_id: 1}
+        ]
+      end)
+
+    [{sub1, ie1 ++ route_entities_1}, {sub2, ie2 ++ route_entities_2}]
+  end
+
+  defp map_stops(subscriptions, %{"origin" => origin, "destination" => destination, "roaming" => "true"}, route_maps) do
     stop_entities =
       Enum.flat_map(route_maps, fn({{route, type}, stop_list}) ->
         stop_list
@@ -104,10 +154,12 @@ defmodule AlertProcessor.Subscription.SubwayMapper do
         end)
       end)
 
-    informed_entities ++ stop_entities
+    Enum.map(subscriptions, fn({subscription, informed_entities}) ->
+      {subscription, informed_entities ++ stop_entities}
+    end)
   end
 
-  defp map_stops(informed_entities, %{"origin" => origin, "destination" => destination}, route_maps) do
+  defp map_stops(subscriptions, %{"origin" => origin, "destination" => destination}, route_maps) do
     stop_entities =
       Enum.flat_map(route_maps, fn({{route, type}, _stop_list}) ->
         [
@@ -116,6 +168,8 @@ defmodule AlertProcessor.Subscription.SubwayMapper do
         ]
       end)
 
-    informed_entities ++ stop_entities
+    Enum.map(subscriptions, fn({subscription, informed_entities}) ->
+      {subscription, informed_entities ++ stop_entities}
+    end)
   end
 end

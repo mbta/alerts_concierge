@@ -7,14 +7,14 @@ defmodule AlertProcessor.ServiceInfoCacheTest do
     use_cassette "service_info", custom: true, clear_mock: true do
       ServiceInfoCache.start_link()
       assert {:ok, %{
-        {"Blue", 1} => [{_, _} | _],
-        {"Green-B", 0} => [{_, _}| _],
-        {"Green-C", 0} => [{_, _}| _],
-        {"Green-D", 0} => [{_, _}| _],
-        {"Green-E", 0} => [{_, _}| _],
-        {"Mattapan", 0} => [{_, _}| _],
-        {"Orange", 1} => [{_, _}| _],
-        {"Red", 1} => [{_, _}| _]
+        {"Blue", 1, ["Westbound", "Eastbound"]} => [{_, _} | _],
+        {"Green-B", 0, ["Westbound", "Eastbound"]} => [{_, _}| _],
+        {"Green-C", 0, ["Westbound", "Eastbound"]} => [{_, _}| _],
+        {"Green-D", 0, ["Westbound", "Eastbound"]} => [{_, _}| _],
+        {"Green-E", 0, ["Westbound", "Eastbound"]} => [{_, _}| _],
+        {"Mattapan", 0, ["Outbound", "Inbound"]} => [{_, _}| _],
+        {"Orange", 1, ["Southbound", "Northbound"]} => [{_, _}| _],
+        {"Red", 1, ["Southbound", "Northbound"]} => [{_, _}| _]
       }} = ServiceInfoCache.get_subway_info()
     end
   end
