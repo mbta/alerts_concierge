@@ -41,12 +41,6 @@ defmodule AlertProcessor.Subscription.SubwayMapperTest do
 
   @roaming_params Map.put(@one_way_params, "roaming", "true")
 
-  setup_all do
-    {:ok, _} = Application.ensure_all_started(:alert_processor)
-    refute %{} == :sys.get_state(AlertProcessor.ServiceInfoCache, 10_000)
-    :ok
-  end
-
   describe "one way" do
     test "constructs subscription with severity" do
       {:ok, [{subscription, _ie}]} = SubwayMapper.map_subscriptions(@one_way_params)
