@@ -14,16 +14,15 @@ defmodule AlertProcessor.DigestSerializer do
   :: [%{name: atom, title: String.t, alerts: [Alert.t]}]
   def serialize(digest) do
     ddg = digest.digest_date_group
-    @date_groups
-    |> Enum.map(fn(date_group) ->
-      dg_section = Map.get(ddg, date_group)
-      filtered_alerts = filter_alerts(digest.alerts, dg_section.alert_ids)
-      title = title(date_group, dg_section.timeframe)
-      if !Enum.empty?(filtered_alerts) do
-        %{title: title, alerts: filtered_alerts}
+    Enum.flat_map(@date_groups, fn date_group ->
+      section = Map.get(ddg, date_group)
+      case filter_alerts(digest.alerts, section.alert_ids) do
+        [] -> []
+        alerts ->
+          title = title(date_group, section.timeframe)
+          [%{title: title, alerts: alerts}]
       end
     end)
-    |> Enum.reject(&is_nil/1)
   end
 
   defp filter_alerts(alerts, alert_ids) do
