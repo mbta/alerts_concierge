@@ -3,12 +3,6 @@ defmodule AlertProcessor.ServiceInfoCacheTest do
   use ExVCR.Mock, adapter: ExVCR.Adapter.Hackney
   alias AlertProcessor.ServiceInfoCache
 
-  setup_all do
-    Application.stop(:alert_processor)
-    on_exit(self(), fn() -> {:ok, _} = Application.ensure_all_started(:alert_processor) end)
-    :ok
-  end
-
   test "get_subway_info/0 returns subway branch lists" do
     use_cassette "service_info", custom: true, clear_mock: true do
       ServiceInfoCache.start_link()

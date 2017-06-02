@@ -8,33 +8,37 @@ defmodule AlertProcessor.HoldingQueue do
   @type notifications :: [Notification.t]
 
   @doc false
-  def start_link(notifications \\ []) do
-    GenServer.start_link(__MODULE__, Enum.uniq(notifications), [name: __MODULE__])
+  def start_link(notifications \\ [], opts \\ [name: __MODULE__]) do
+    GenServer.start_link(__MODULE__, Enum.uniq(notifications), opts)
   end
 
   @doc """
   Updates state to Notifications that can't be sent yet, returns ones that are ready.
   """
-  @spec notifications_to_send(DateTime.t | nil) :: {:ok, notifications} | :error
-  def notifications_to_send(now \\ nil) do
-    now = now || DateTime.utc_now()
-    GenServer.call(__MODULE__, {:filter, now})
+  @spec notifications_to_send(atom, DateTime.t | nil) :: {:ok, notifications} | :error
+  def notifications_to_send(name \\ __MODULE__)
+  def notifications_to_send(name) do
+    now = DateTime.utc_now()
+    GenServer.call(name, {:filter, now})
+  end
+  def notifications_to_send(name, now) do
+    GenServer.call(name, {:filter, now})
   end
 
   @doc """
   Add notification to holding queue
   """
   @spec enqueue(Notification.t) :: :ok
-  def enqueue(%Notification{} = notification) do
-    GenServer.call(__MODULE__, {:push, notification})
+  def enqueue(name \\ __MODULE__, %Notification{} = notification) do
+    GenServer.call(name, {:push, notification})
   end
 
   @doc """
   Returns notification from queue
   """
   @spec pop() :: Notification.t | :error
-  def pop do
-    GenServer.call(__MODULE__, :pop)
+  def pop(name \\ __MODULE__) do
+    GenServer.call(name, :pop)
   end
 
   @doc """
@@ -42,20 +46,20 @@ defmodule AlertProcessor.HoldingQueue do
   waiting to be sent.
   """
   @spec remove_notifications([String.t]) :: :ok
-  def remove_notifications([]) do
+  def remove_notifications(name \\ __MODULE__, removed_alert_ids)
+  def remove_notifications(_name, []) do
     :ok
   end
-
-  def remove_notifications(removed_alert_ids) do
-    GenServer.call(__MODULE__, {:remove, removed_alert_ids})
+  def remove_notifications(name, removed_alert_ids) do
+    GenServer.call(name, {:remove, removed_alert_ids})
   end
 
   @doc """
   take user_id and clears out all notifications waiting to be sent to that user
   """
   @spec remove_user_notifications(String.t) :: :ok
-  def remove_user_notifications(user_id) do
-    GenServer.call(__MODULE__, {:clear_user, user_id})
+  def remove_user_notifications(name \\ __MODULE__, user_id) do
+    GenServer.call(name, {:clear_user, user_id})
   end
 
   defp send_notification?(notification, now) do

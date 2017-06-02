@@ -5,8 +5,8 @@ defmodule AlertProcessor.SendingQueue do
   use GenServer
   alias AlertProcessor.Model.Notification
 
-  def start_link do
-    GenServer.start_link(__MODULE__, [], [name: __MODULE__])
+  def start_link(opts \\ [name: __MODULE__]) do
+    GenServer.start_link(__MODULE__, [], opts)
   end
 
   def init(state) do
@@ -17,16 +17,16 @@ defmodule AlertProcessor.SendingQueue do
   Adds notification to qeue
   """
   @spec enqueue(Notification.t) :: :ok
-  def enqueue(%Notification{} = notification) do
-    GenServer.call(__MODULE__, {:push, notification})
+  def enqueue(name \\ __MODULE__, %Notification{} = notification) do
+    GenServer.call(name, {:push, notification})
   end
 
   @doc """
   Returns notification from queue
   """
   @spec pop() :: {:ok, Notification.t} | :error
-  def pop do
-    GenServer.call(__MODULE__, :pop)
+  def pop(name \\ __MODULE__) do
+    GenServer.call(name, :pop)
   end
 
   @doc false
