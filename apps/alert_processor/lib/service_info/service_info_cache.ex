@@ -54,7 +54,7 @@ defmodule AlertProcessor.ServiceInfoCache do
 
   defp fetch_service_info(:subway) do
     routes =
-      ["0", "1"]
+      [0, 1]
       |> ApiClient.routes()
       |> Enum.filter_map(
           fn(%{"attributes" => %{"type" => route_type}}) -> route_type <= 1 end,
@@ -96,10 +96,20 @@ defmodule AlertProcessor.ServiceInfoCache do
         fn %{"attributes" => attributes} -> attributes["headsign"] != "" end,
         fn %{"attributes" => attributes} -> attributes["headsign"] end
       )
+    |> order_headsigns_by_frequency()
+  end
+
+  defp order_headsigns_by_frequency(trips) do
+    # the complicated function in the middle collapses some lengths which are
+    # close together and allows us to instead sort by the name.  For example,
+    # on the Red line, Braintree has 649 trips, Ashmont has 647.  The
+    # division by -4 with a round makes them both -162 and so equal.  We
+    # divide by -4 so that the ordering by count is large to small, but the
+    # name ordering is small to large.
+    trips
     |> Enum.group_by(&(&1))
     |> Enum.sort_by(fn({value, values}) -> {values |> length |> (fn v -> Float.round(v / -4) end).(), value} end)
     |> Enum.map(&(elem(&1, 0)))
-
   end
 
   defp schedule_work do

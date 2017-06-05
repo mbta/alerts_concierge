@@ -11,7 +11,7 @@ defmodule ConciergeSite.SubwaySubscriptionView do
   def progress_link_class(:trip_type, _step), do: "disabled-progress-link"
 
   def progress_link_class(page, step) do
-    if Map.get(@disabled_progress_bar_links, page) |> Enum.member?(step) do
+    if @disabled_progress_bar_links |> Map.get(page) |> Enum.member?(step) do
       "disabled-progress-link"
     end
   end
