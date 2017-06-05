@@ -6,7 +6,7 @@ defmodule AlertProcessor.ServiceInfoCache do
   """
   use GenServer
   alias AlertProcessor.Helpers.ConfigHelper
-  alias AlertProcessor.ApiClient
+  alias AlertProcessor.{ApiClient, Model.Route}
 
   @services [:subway]
 
@@ -54,14 +54,14 @@ defmodule AlertProcessor.ServiceInfoCache do
           fn(%{"attributes" => %{"type" => route_type, "direction_names" => direction_names}, "id" => id}) -> {id, route_type, direction_names}
         end)
 
-    for {route_id, route_type, direction_names} <- routes, into: %{} do
+    for {route_id, route_type, direction_names} <- routes, into: [] do
       stop_list =
         route_id
         |> ApiClient.route_stops
         |> Enum.map(fn(%{"attributes" => %{"name" => name}, "id" => id}) ->
           {name, id}
         end)
-      {{route_id, route_type, direction_names}, stop_list}
+      %Route{route_id: route_id, route_type: route_type, direction_names: direction_names, stop_list: stop_list}
     end
   end
 
