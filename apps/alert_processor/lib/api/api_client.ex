@@ -26,7 +26,7 @@ defmodule AlertProcessor.ApiClient do
   enpoint to fetch route info including name, id and route_type
   """
   @spec routes([String.t], [String.t]) :: {:ok, [map]} | {:error, String.t}
-  def routes(types \\ [], fields \\ ["long_name", "type"]) do
+  def routes(types \\ [], fields \\ ["long_name", "type", "direction_names"]) do
     case get("/routes?filter[type]=#{Enum.join(types, ",")}&fields[route]=#{Enum.join(fields, ",")}") do
       {:ok, %{body: %{"errors" => errors}}} ->
         {:error, errors |> Enum.map_join(", ", &(&1["code"]))}
