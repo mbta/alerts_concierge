@@ -25,13 +25,24 @@ defmodule AlertProcessor.ApiClient do
   @doc """
   enpoint to fetch route info including name, id and route_type
   """
-  @spec routes([String.t], [String.t]) :: {:ok, [map]} | {:error, String.t}
+  @spec routes([integer], [String.t]) :: {:ok, [map]} | {:error, String.t}
   def routes(types \\ [], fields \\ ["long_name", "type", "direction_names"]) do
     case get("/routes?filter[type]=#{Enum.join(types, ",")}&fields[route]=#{Enum.join(fields, ",")}") do
       {:ok, %{body: %{"errors" => errors}}} ->
         {:error, errors |> Enum.map_join(", ", &(&1["code"]))}
       {:ok, %{body: %{"data" => routes}}} ->
         routes
+      {:error, message} ->
+        {:error, message}
+    end
+  end
+
+  def trips(route, direction_id, fields \\ ["headsign"]) do
+    case get("/trips?route=#{route}&direction_id=#{direction_id}&fields[trip]=#{Enum.join(fields, ",")}") do
+      {:ok, %{body: %{"errors" => errors}}} ->
+        {:error, errors |> Enum.map_join(", ", &(&1["code"]))}
+      {:ok, %{body: %{"data" => trips}}} ->
+        trips
       {:error, message} ->
         {:error, message}
     end
