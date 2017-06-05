@@ -4,7 +4,7 @@ defmodule AlertProcessor.DigestDispatcherTest do
   use Bamboo.Test, shared: true
 
   alias AlertProcessor.{DigestDispatcher, DigestMailer, Model}
-  alias Model.{Alert, Digest, DigestDateGroup, DigestMessage, User}
+  alias Model.{Alert, Digest, DigestDateGroup, DigestMessage, InformedEntity, User}
 
   @now Calendar.DateTime.now!("America/New_York")
   @ddg %DigestDateGroup{
@@ -28,7 +28,9 @@ defmodule AlertProcessor.DigestDispatcherTest do
 
   test "send_email/1 sends emails from digest list" do
     user = %User{email: "abc@123.com"}
-    alert = %Alert{id: "1", header: "Test"}
+    alert = %Alert{id: "1",
+                   header: "Test",
+                   informed_entities: [%InformedEntity{route_type: 1, route: "Red"}]}
     digest = %Digest{user: user, alerts: [alert], digest_date_group: @ddg}
     message = DigestMessage.from_digest(digest)
 
