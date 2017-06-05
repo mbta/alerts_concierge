@@ -21,7 +21,15 @@ defmodule AlertProcessor.DigestMailHelper do
   """
   @spec logo_for_alert(Alert.t) :: iodata
   def logo_for_alert(%Alert{informed_entities: [ie | _]}) do
-    logo_for_route_type(ie.route_type, ie)
+    logo_for_route_type(ie)
+  end
+
+  @doc """
+  For a given alert, return the alt text of it's route_type
+  """
+  @spec alt_text_for_alert(Alert.t) :: iodata
+  def alt_text_for_alert(%Alert{informed_entities: [ie | _]}) do
+    alt_text_for_route_type(ie)
   end
 
   @doc """
@@ -32,16 +40,12 @@ defmodule AlertProcessor.DigestMailHelper do
     @logo
   end
 
-  @spec logo_for_route_type(0..4, InformedEntity.t) :: iodata
-  defp logo_for_route_type(route_type, informed_entity) do
-    case route_type do
-      0 -> logo_for_subway(informed_entity.route)
-      1 -> logo_for_subway(informed_entity.route)
-      2 -> @commuter_rail
-      3 -> @bus
-      4 -> @ferry
-   end
-  end
+  @spec logo_for_route_type(InformedEntity.t) :: iodata
+  defp logo_for_route_type(%InformedEntity{route_type: 0, route: r}), do: logo_for_subway(r)
+  defp logo_for_route_type(%InformedEntity{route_type: 1, route: r}), do: logo_for_subway(r)
+  defp logo_for_route_type(%InformedEntity{route_type: 2}), do: @commuter_rail
+  defp logo_for_route_type(%InformedEntity{route_type: 3}), do: @bus
+  defp logo_for_route_type(%InformedEntity{route_type: 4}), do: @ferry
 
   defp logo_for_subway(route) do
     case route do
@@ -53,6 +57,26 @@ defmodule AlertProcessor.DigestMailHelper do
       "Green-C" -> @green
       "Green-D" -> @green
       "Green-E" -> @green
+    end
+  end
+
+  @spec alt_text_for_route_type(InformedEntity.t) :: iodata
+  defp alt_text_for_route_type(%InformedEntity{route_type: 0, route: r}), do: alt_text_for_subway(r)
+  defp alt_text_for_route_type(%InformedEntity{route_type: 1, route: r}), do: alt_text_for_subway(r)
+  defp alt_text_for_route_type(%InformedEntity{route_type: 2}), do: "logo-commuter-rail"
+  defp alt_text_for_route_type(%InformedEntity{route_type: 3}), do: "logo-bus"
+  defp alt_text_for_route_type(%InformedEntity{route_type: 4}), do: "logo-ferry"
+
+  defp alt_text_for_subway(route) do
+    case route do
+      "Red" -> "logo-red-line"
+      "Mattapan" -> "logo-red-line"
+      "Orange" -> "logo-orange-line"
+      "Blue" -> "logo-blue-line"
+      "Green-B" -> "logo-green-line"
+      "Green-C" -> "logo-green-line"
+      "Green-D" -> "logo-green-line"
+      "Green-E" -> "logo-green-line"
     end
   end
 end

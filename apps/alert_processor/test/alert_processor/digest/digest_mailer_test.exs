@@ -4,7 +4,7 @@ defmodule AlertProcessor.DigestMailerTest do
   use Bamboo.Test, shared: true
 
   alias AlertProcessor.{DigestMailer, Model}
-  alias Model.{Alert, Digest, DigestDateGroup, DigestMessage, User}
+  alias Model.{Alert, Digest, DigestDateGroup, DigestMessage, InformedEntity, User}
   alias Calendar.DateTime, as: DT
 
   @now Calendar.DateTime.now!("America/New_York")
@@ -34,7 +34,7 @@ defmodule AlertProcessor.DigestMailerTest do
     id: "1",
     header: "This is a Test",
     service_effect: "Service Effect",
-    informed_entities: [%{route_type: 1, route: "Red"}]
+    informed_entities: [%InformedEntity{route_type: 1, route: "Red"}]
   }
 
   test "text_email/1 has all content and link for alerts page" do
