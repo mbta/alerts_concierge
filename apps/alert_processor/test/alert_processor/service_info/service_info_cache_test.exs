@@ -16,7 +16,7 @@ defmodule AlertProcessor.ServiceInfoCacheTest do
         %Route{route_id: "Mattapan", route_type: 0, direction_names: ["Outbound", "Inbound"], stop_list: [{_, _}| _]},
         %Route{route_id: "Orange", route_type: 1, direction_names: ["Southbound", "Northbound"], stop_list: [{_, _}| _]},
         %Route{route_id: "Red", route_type: 1, direction_names: ["Southbound", "Northbound"], stop_list: [{_, _}| _]}
-      ] = Enum.sort(route_info, fn(x, y) -> x.route_id <= y.route_id end)
+      ] = Enum.sort_by(route_info, &(&1.route_id))
     end
   end
 end
