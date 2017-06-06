@@ -30,6 +30,10 @@ defmodule AlertProcessor.ServiceInfoCache do
     GenServer.call(name, :get_bus_info)
   end
 
+  def get_stop(name \\ __MODULE__, mode, stop_id) do
+    GenServer.call(name, {:get_stop, mode, stop_id})
+  end
+
   @doc """
   Update service info and then reschedule next time to process.
   """
@@ -44,6 +48,17 @@ defmodule AlertProcessor.ServiceInfoCache do
 
   def handle_call(:get_bus_info, _from, %{bus: bus_state} = state) do
     {:reply, {:ok, bus_state}, state}
+  end
+
+  def handle_call({:get_stop, :subway, stop_id}, _from, %{subway: subway_state} = state),
+    do: {:reply, {:ok, get_stop_from_state(stop_id, subway_state)}, state}
+
+  defp get_stop_from_state(stop_id, state) do
+    Enum.find_value(state, fn(%Route{stop_list: stop_list}) ->
+      Enum.find(stop_list, fn({_name, id}) ->
+        id == stop_id
+      end)
+    end)
   end
 
   defp fetch_service_info do

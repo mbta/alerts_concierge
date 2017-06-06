@@ -29,6 +29,11 @@ defmodule AlertProcessor.Subscription.BusMapperTest do
       assert subscription.alert_priority_type == :low
     end
 
+    test "constructs subscription with type" do
+      {:ok, [subscription], _informed_entities} = BusMapper.map_subscription(@one_way_params)
+      assert subscription.type == :bus
+    end
+
     test "constructs subscription with timeframe" do
       {:ok, [subscription], _informed_entities} = BusMapper.map_subscription(@one_way_params)
       assert subscription.start_time == ~T[16:00:00]
@@ -70,6 +75,12 @@ defmodule AlertProcessor.Subscription.BusMapperTest do
       {:ok, [sub1, sub2], _informed_entities} = BusMapper.map_subscription(@round_trip_params)
       assert sub1.alert_priority_type == :low
       assert sub2.alert_priority_type == :low
+    end
+
+    test "constructs subscription with type" do
+      {:ok, [sub1, sub2], _informed_entities} = BusMapper.map_subscription(@round_trip_params)
+      assert sub1.type == :bus
+      assert sub2.type == :bus
     end
 
     test "constructs subscription with timeframe" do

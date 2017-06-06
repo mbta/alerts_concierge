@@ -11,7 +11,10 @@ defmodule AlertProcessor.Model.Subscription do
     user_id: String.t,
     relevant_days: [:weekday | :saturday | :sunday],
     start_time: Time.t,
-    end_time: Time.t
+    end_time: Time.t,
+    origin: String.t,
+    destination: String.t,
+    type: :bus | :subway | :commuter_rail | :boat | :amenity
   }
 
   @type id :: String.t
@@ -44,6 +47,9 @@ defmodule AlertProcessor.Model.Subscription do
     field :relevant_days, AlertProcessor.AtomArrayType
     field :start_time, :time, null: false
     field :end_time, :time, null: false
+    field :origin, :string
+    field :destination, :string
+    field :type, AlertProcessor.AtomType
 
     timestamps()
   end

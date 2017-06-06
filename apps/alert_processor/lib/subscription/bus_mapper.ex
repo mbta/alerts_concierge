@@ -17,6 +17,7 @@ defmodule AlertProcessor.Subscription.BusMapper do
   def map_subscription(subscription_params) do
     with subscriptions <- map_timeframe(subscription_params),
          subscriptions <- map_priority(subscriptions, subscription_params),
+         subscriptions <- map_type(subscriptions),
          {:ok, informed_entities} <- map_entities(subscription_params) do
       {:ok, subscriptions, informed_entities}
     else
@@ -48,6 +49,12 @@ defmodule AlertProcessor.Subscription.BusMapper do
   defp map_priority(subscriptions, %{"alert_priority_type" => alert_priority_type}) when is_list(subscriptions) do
     Enum.map(subscriptions, fn(subscription) ->
       %{subscription | alert_priority_type: String.to_existing_atom(alert_priority_type)}
+    end)
+  end
+
+  defp map_type(subscriptions) do
+    Enum.map(subscriptions, fn(subscription) ->
+      Map.put(subscription, :type, :bus)
     end)
   end
 
