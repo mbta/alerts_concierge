@@ -26,3 +26,4 @@ config :alert_processor, :alert_parser, AlertProcessor.AlertParserMock
 
 config :alert_processor,
   asset_url: "https://example.com/assets"
+

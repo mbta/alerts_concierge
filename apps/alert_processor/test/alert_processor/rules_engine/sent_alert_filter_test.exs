@@ -18,7 +18,9 @@ defmodule AlertProcessor.SentAlertFilterTest do
         alert_id: "123",
         user_id: notified_user.id,
         email: "a@b.com",
-        message: "You are being notified",
+        header: "You are being notified",
+        service_effect: "test",
+        description: "test",
         status: :sent
       }
 
@@ -26,7 +28,9 @@ defmodule AlertProcessor.SentAlertFilterTest do
         alert_id: "456",
         user_id: other_notification_user.id,
         email: "c@d.com",
-        message: "You have been notified",
+        header: "You have been notified",
+        service_effect: "test",
+        description: "test",
         status: :sent
       }
 
@@ -50,7 +54,9 @@ defmodule AlertProcessor.SentAlertFilterTest do
         alert_id: "123",
         user_id: user.id,
         email: "a@b.com",
-        message: "You are being notified",
+        header: "You are being notified",
+        service_effect: "test",
+        description: "test",
         status: :failed
       }
 
@@ -71,7 +77,9 @@ defmodule AlertProcessor.SentAlertFilterTest do
         alert_id: "123",
         user_id: user.id,
         email: "a@b.com",
-        message: "You are being notified",
+        header: "You are being notified",
+        service_effect: "test",
+        description: "test",
         status: :sent,
         last_push_notification: now
       }

@@ -10,8 +10,9 @@ defmodule AlertProcessor.Factory do
 
   def notification_factory do
     %Notification{
-      message: "Test Message",
-      header: "Test Message"
+      service_effect: "Test Message",
+      header: "Test Message",
+      description: "Test Message"
     }
   end
 

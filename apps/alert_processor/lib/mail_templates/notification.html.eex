@@ -1,0 +1,36 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html>
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <title>MBTA Alert</title>
+    <style type="text/css">
+      /* Using comments a hack to preserve syntax highlighting
+        <%= notification_styles %>
+        <%= AlertProcessor.MailHelper.header_styles %>
+        <%= AlertProcessor.MailHelper.footer_styles %>
+      */
+    </style>
+  </head>
+  <body leftmargin="0" marginwidth="0" topmargin="0" marginheight="0" offset="0">
+    <%= AlertProcessor.MailHelper.header %>
+
+    <h1>
+      <span>
+        <img src="<%= AlertProcessor.MailHelper.logo_for_alert(notification.alert) %>"
+             alt="<%= AlertProcessor.MailHelper.alt_text_for_alert(notification.alert) %>">
+      </span>
+      <%= notification.service_effect %>
+    </h1>
+    <p>
+      <%= notification.header %>
+    </p>
+    <p>
+      <%= notification.description %>
+    </p>
+
+    <a href="https://t.mbta.com/">View all alerts -></a>
+    <center>
+      <%= AlertProcessor.MailHelper.footer %>
+    </center>
+	</body>
+</html>

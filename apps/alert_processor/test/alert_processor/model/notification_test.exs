@@ -9,7 +9,8 @@ defmodule AlertProcessor.Model.NotificationTest do
     email: "test@test.com",
     phone_number: "2345678910",
     header: "Short header",
-    message: "There is a delay",
+    service_effect: "There is a delay",
+    description: "The delay is for 1 hour at south station",
     send_after: DateTime.utc_now,
     alert_id: "12345678",
     status: :sent
@@ -41,8 +42,22 @@ defmodule AlertProcessor.Model.NotificationTest do
     refute changeset.valid?
   end
 
-  test "create_changeset/2 requires a message", %{valid_attrs: valid_attrs} do
-    attrs = Map.delete(valid_attrs, :message)
+  test "create_changeset/2 requires a header", %{valid_attrs: valid_attrs} do
+    attrs = Map.delete(valid_attrs, :header)
+    changeset = Notification.create_changeset(%Notification{}, attrs)
+
+    refute changeset.valid?
+  end
+
+  test "create_changeset/2 requires a service_effect", %{valid_attrs: valid_attrs} do
+    attrs = Map.delete(valid_attrs, :service_effect)
+    changeset = Notification.create_changeset(%Notification{}, attrs)
+
+    refute changeset.valid?
+  end
+
+  test "create_changeset/2 requires a description", %{valid_attrs: valid_attrs} do
+    attrs = Map.delete(valid_attrs, :description)
     changeset = Notification.create_changeset(%Notification{}, attrs)
 
     refute changeset.valid?

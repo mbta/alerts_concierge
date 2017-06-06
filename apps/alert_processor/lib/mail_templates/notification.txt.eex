@@ -1,0 +1,5 @@
+<%= notification.service_effect %>
+
+<%= notification.header %>
+
+<%= notification.description %>
