@@ -8,7 +8,7 @@ defmodule AlertProcessor.DigestMailHelper do
   @commuter_rail "#{@asset_url}/icons/commuter-rail.png"
   @bus "#{@asset_url}/icons/bus.png"
   @ferry "#{@asset_url}/icons/ferry.png"
-  @logo "#{@asset_url}/icons/icn_accessibility@2x.png"
+  @logo "#{@asset_url}/icons/t-logo@2x.png"
   @red "#{@asset_url}/icons/icn_red-line.png"
   @blue "#{@asset_url}/icons/icn_blue-line.png"
   @orange "#{@asset_url}/icons/icn_orange-line.png"

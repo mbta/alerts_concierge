@@ -11,7 +11,7 @@ defmodule AlertProcessor.DigestMailHelperTest do
 
   describe "Logo function" do
     test "mbta_logo/0 returns URL of MBTA Logo" do
-      assert DigestMailHelper.mbta_logo() == "https://example.com/assets/icons/icn_accessibility@2x.png"
+      assert DigestMailHelper.mbta_logo() == "https://example.com/assets/icons/t-logo@2x.png"
     end
   end
 
