@@ -4,7 +4,7 @@ defmodule ConciergeSite.SubwaySubscriptionView do
   @typedoc """
   Possible values for trip types in Create Subscription flow
   """
-  @type trip_type :: :"one-way" | :"round-trip" | :roaming
+  @type trip_type :: :one_way | :round_trip | :roaming
 
   @disabled_progress_bar_links %{trip_info: [:trip_info, :preferences],
     preferences: [:preferences]}
@@ -37,13 +37,13 @@ defmodule ConciergeSite.SubwaySubscriptionView do
   """
 
   @spec trip_info_description(trip_type) :: String.t
-  def trip_info_description(:"one-way") do
+  def trip_info_description(:one_way) do
     "Please note: We will only send you alerts about service updates that affect your origin and destination stations."
   end
 
-  def trip_info_description(:"round-trip") do
+  def trip_info_description(:round_trip) do
     [
-      :"one-way" |> trip_info_description |> String.trim_trailing("."),
+      :one_way |> trip_info_description |> String.trim_trailing("."),
       ", in both directions."
     ]
   end
