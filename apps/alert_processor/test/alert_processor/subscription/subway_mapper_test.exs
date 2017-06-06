@@ -47,6 +47,17 @@ defmodule AlertProcessor.Subscription.SubwayMapperTest do
       assert subscription.alert_priority_type == :low
     end
 
+    test "constructs subscription with type" do
+      {:ok, [{subscription, _ie}]} = SubwayMapper.map_subscriptions(@one_way_params)
+      assert subscription.type == :subway
+    end
+
+    test "constructs subscription with origin and destination" do
+      {:ok, [{subscription, _ie}]} = SubwayMapper.map_subscriptions(@one_way_params)
+      assert subscription.origin == "Davis"
+      assert subscription.destination == "Harvard"
+    end
+
     test "constructs subscription with timeframe" do
       {:ok, [{subscription, _ie}]} = SubwayMapper.map_subscriptions(@one_way_params)
       assert subscription.start_time == ~T[16:00:00]
@@ -126,6 +137,20 @@ defmodule AlertProcessor.Subscription.SubwayMapperTest do
       {:ok, [{sub1, _ie1}, {sub2, _ie2}]} = SubwayMapper.map_subscriptions(@round_trip_params)
       assert sub1.alert_priority_type == :low
       assert sub2.alert_priority_type == :low
+    end
+
+    test "constructs subscription with type" do
+      {:ok, [{sub1, _ie1}, {sub2, _ie2}]} = SubwayMapper.map_subscriptions(@round_trip_params)
+      assert sub1.type == :subway
+      assert sub2.type == :subway
+    end
+
+    test "constructs subscription with origin and destination" do
+      {:ok, [{sub1, _ie1}, {sub2, _ie2}]} = SubwayMapper.map_subscriptions(@round_trip_params)
+      assert sub1.origin == "Davis"
+      assert sub1.destination == "Harvard"
+      assert sub2.origin == "Harvard"
+      assert sub2.destination == "Davis"
     end
 
     test "constructs subscription with timeframe" do
@@ -231,6 +256,17 @@ defmodule AlertProcessor.Subscription.SubwayMapperTest do
       assert subscription.alert_priority_type == :low
     end
 
+    test "constructs subscription with type" do
+      {:ok, [{subscription, _ie}]} = SubwayMapper.map_subscriptions(@green_line_one_way_params)
+      assert subscription.type == :subway
+    end
+
+    test "constructs subscription with origin and destination" do
+      {:ok, [{subscription, _ie}]} = SubwayMapper.map_subscriptions(@green_line_one_way_params)
+      assert subscription.origin == "North Station"
+      assert subscription.destination == "Kenmore"
+    end
+
     test "constructs subscription with timeframe" do
       {:ok, [{subscription, _ie}]} = SubwayMapper.map_subscriptions(@green_line_one_way_params)
       assert subscription.start_time == ~T[16:00:00]
@@ -294,6 +330,17 @@ defmodule AlertProcessor.Subscription.SubwayMapperTest do
     test "constructs subscription with severity" do
       {:ok, [{subscription, _ie}]} = SubwayMapper.map_subscriptions(@roaming_params)
       assert subscription.alert_priority_type == :low
+    end
+
+    test "constructs subscription with type" do
+      {:ok, [{subscription, _ie}]} = SubwayMapper.map_subscriptions(@roaming_params)
+      assert subscription.type == :subway
+    end
+
+    test "constructs subscription with origin and destination" do
+      {:ok, [{subscription, _ie}]} = SubwayMapper.map_subscriptions(@roaming_params)
+      assert subscription.origin == "Davis"
+      assert subscription.destination == "Harvard"
     end
 
     test "constructs subscription with timeframe" do

@@ -11,14 +11,16 @@ defmodule AlertProcessor.Subscription.SubwayMapper do
 
   @doc """
   map_subscription/1 receives a map of subway subscription params and returns
-  arrays of subscription(s) and informed entities to creat in the database
+  arrays of subscription_info to create in the database
   to be used for matching against alerts.
   """
   @spec map_subscriptions(map) :: {:ok, [subscription_info]} | :error
   def map_subscriptions(subscription_params) do
     with subscriptions <- map_timeframe(subscription_params),
          subscriptions <- map_priority(subscriptions, subscription_params),
-         {:ok, subscription_infos} <- map_entities(subscriptions, subscription_params) do
+         subscriptions <- map_type(subscriptions),
+         {:ok, subscription_infos} <- map_entities(subscriptions, subscription_params)
+          do
       {:ok, subscription_infos}
     else
       _ -> :error
@@ -49,6 +51,12 @@ defmodule AlertProcessor.Subscription.SubwayMapper do
   defp map_priority(subscriptions, %{"alert_priority_type" => alert_priority_type}) when is_list(subscriptions) do
     Enum.map(subscriptions, fn(subscription) ->
       %{subscription | alert_priority_type: String.to_existing_atom(alert_priority_type)}
+    end)
+  end
+
+  defp map_type(subscriptions) do
+    Enum.map(subscriptions, fn(subscription) ->
+      Map.put(subscription, :type, :subway)
     end)
   end
 
@@ -154,10 +162,35 @@ defmodule AlertProcessor.Subscription.SubwayMapper do
           %InformedEntity{route: route, route_type: type, stop: stop}
         end)
       end)
+    {:ok, {origin_name, ^origin}} = ServiceInfoCache.get_stop(:subway, origin)
+    {:ok, {destination_name, ^destination}} = ServiceInfoCache.get_stop(:subway, destination)
 
     Enum.map(subscription_infos, fn({subscription, informed_entities}) ->
-      {subscription, informed_entities ++ stop_entities}
+      {Map.merge(subscription, %{origin: origin_name, destination: destination_name}), informed_entities ++ stop_entities}
     end)
+  end
+
+  defp map_stops([{sub1, ie1}, {sub2, ie2}], %{"origin" => origin, "destination" => destination}, routes) do
+    stop_entities =
+      Enum.flat_map(routes, fn(%Route{route_id: route, route_type: type}) ->
+        [
+          %InformedEntity{route: route, route_type: type, stop: origin},
+          %InformedEntity{route: route, route_type: type, stop: destination}
+        ]
+      end)
+
+    {:ok, {origin_name, ^origin}} = ServiceInfoCache.get_stop(:subway, origin)
+    {:ok, {destination_name, ^destination}} = ServiceInfoCache.get_stop(:subway, destination)
+
+    [
+      {
+        Map.merge(sub1, %{origin: origin_name, destination: destination_name}),
+        ie1 ++ stop_entities
+      }, {
+        Map.merge(sub2, %{origin: destination_name, destination: origin_name}),
+        ie2 ++ stop_entities
+      }
+    ]
   end
 
   defp map_stops(subscription_infos, %{"origin" => origin, "destination" => destination}, routes) do
@@ -169,8 +202,11 @@ defmodule AlertProcessor.Subscription.SubwayMapper do
         ]
       end)
 
+    {:ok, {origin_name, ^origin}} = ServiceInfoCache.get_stop(:subway, origin)
+    {:ok, {destination_name, ^destination}} = ServiceInfoCache.get_stop(:subway, destination)
+
     Enum.map(subscription_infos, fn({subscription, informed_entities}) ->
-      {subscription, informed_entities ++ stop_entities}
+      {Map.merge(subscription, %{origin: origin_name, destination: destination_name}), informed_entities ++ stop_entities}
     end)
   end
 end
