@@ -76,16 +76,22 @@ defmodule AlertProcessor.ServiceInfoCache do
           fn(%{"attributes" => %{"type" => route_type, "direction_names" => direction_names}, "id" => id}) -> {id, route_type, direction_names}
         end)
 
-    for {route_id, route_type, direction_names} <- routes, into: [] do
+    Enum.flat_map(routes, fn({route_id, route_type, direction_names}) ->
       stop_list =
         route_id
         |> ApiClient.route_stops
         |> Enum.map(fn(%{"attributes" => %{"name" => name}, "id" => id}) ->
           {name, id}
         end)
-      %Route{route_id: route_id, route_type: route_type, direction_names: direction_names, stop_list: stop_list}
-    end
+      case fetch_route_branches(route_id) do
+        [] ->
+          [%Route{route_id: route_id, route_type: route_type, direction_names: direction_names, stop_list: stop_list}]
+        branches ->
+          parse_branches(%Route{route_id: route_id, route_type: route_type, direction_names: direction_names}, stop_list, branches)
+      end
+    end)
   end
+
 
   defp fetch_service_info(:bus) do
     for route_id <- fetch_bus_routes(), into: %{} do
@@ -98,6 +104,21 @@ defmodule AlertProcessor.ServiceInfoCache do
         1 => Task.await(one_task)
       }}
     end
+  end
+
+  defp fetch_route_branches("Red") do
+    ApiClient.route_shapes("Red")
+    |> Enum.map(fn(%{"relationships" => %{"stops" => %{"data" => stops}}}) ->
+         Enum.map(stops, & &1["id"])
+       end)
+  end
+  defp fetch_route_branches(_), do: []
+
+  defp parse_branches(route, stop_list, branches) do
+    Enum.map(branches, fn(branch) ->
+      stops = Enum.filter(stop_list, fn({_name, stop_id}) -> Enum.member?(branch, stop_id) end)
+      Map.put(route, :stop_list, stops)
+    end)
   end
 
   defp fetch_bus_routes do

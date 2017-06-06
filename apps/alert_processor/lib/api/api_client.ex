@@ -37,6 +37,9 @@ defmodule AlertProcessor.ApiClient do
     end
   end
 
+  @doc """
+  endpoint to fetch trips for a specific route
+  """
   def trips(route, direction_id, fields \\ ["headsign"]) do
     case get("/trips?route=#{route}&direction_id=#{direction_id}&fields[trip]=#{Enum.join(fields, ",")}") do
       {:ok, %{body: %{"errors" => errors}}} ->
@@ -58,6 +61,20 @@ defmodule AlertProcessor.ApiClient do
         {:error, errors |> Enum.map_join(", ", &(&1["code"]))}
       {:ok, %{body: %{"data" => stops}}} ->
         stops
+      {:error, message} ->
+        {:error, message}
+    end
+  end
+
+  @doc """
+  endpoint to fetch shapes for a specific route
+  """
+  def route_shapes(route) do
+    case get("/shapes/?route=#{route}&direction_id=1&fields[shape]=relationships,priority") do
+      {:ok, %{body: %{"errors" => errors}}} ->
+        {:error, errors |> Enum.map_join(", ", &(&1["code"]))}
+      {:ok, %{body: %{"data" => shapes}}} ->
+        shapes
       {:error, message} ->
         {:error, message}
     end

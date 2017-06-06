@@ -70,7 +70,8 @@ defmodule AlertProcessor.Subscription.SubwayMapper do
          subscription_infos <- map_amenities(subscriptions, params),
          subscription_infos <- map_route_type(subscription_infos, routes),
          subscription_infos <- map_routes(subscription_infos, params, routes),
-         subscription_infos <- map_stops(subscription_infos, params, routes) do
+         subscription_infos <- map_stops(subscription_infos, params, routes),
+         subscription_infos <- filter_duplicate_entities(subscription_infos) do
       {:ok, subscription_infos}
     else
       _ -> :error
@@ -162,6 +163,7 @@ defmodule AlertProcessor.Subscription.SubwayMapper do
           %InformedEntity{route: route, route_type: type, stop: stop}
         end)
       end)
+
     {:ok, {origin_name, ^origin}} = ServiceInfoCache.get_stop(:subway, origin)
     {:ok, {destination_name, ^destination}} = ServiceInfoCache.get_stop(:subway, destination)
 
@@ -207,6 +209,12 @@ defmodule AlertProcessor.Subscription.SubwayMapper do
 
     Enum.map(subscription_infos, fn({subscription, informed_entities}) ->
       {Map.merge(subscription, %{origin: origin_name, destination: destination_name}), informed_entities ++ stop_entities}
+    end)
+  end
+
+  defp filter_duplicate_entities(subscription_infos) do
+    Enum.map(subscription_infos, fn({subscription, informed_entities}) ->
+      {subscription, Enum.uniq(informed_entities)}
     end)
   end
 end
