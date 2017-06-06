@@ -1,4 +1,4 @@
-defmodule AlertProcessor.DigestMailHelper do
+defmodule AlertProcessor.MailHelper do
   @moduledoc """
   Functions to use in rendering dynamically generated properties on
   digest emails

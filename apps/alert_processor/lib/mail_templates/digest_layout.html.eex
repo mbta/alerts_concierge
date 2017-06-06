@@ -12,7 +12,7 @@
   <body leftmargin="0" marginwidth="0" topmargin="0" marginheight="0" offset="0">
     <div class="digest-header">
       <img
-        src="<%= AlertProcessor.DigestMailHelper.mbta_logo() %>"
+        src="<%= AlertProcessor.MailHelper.mbta_logo() %>"
         alt="mbta-logo"
         height="48px"
       >
@@ -32,8 +32,8 @@
             <table class="digest-group-alert">
               <tr>
                 <td class="alert-logo">
-                  <img src="<%= AlertProcessor.DigestMailHelper.logo_for_alert(alert) %>"
-                   alt="<%= AlertProcessor.DigestMailHelper.alt_text_for_alert(alert) %>">
+                  <img src="<%= AlertProcessor.MailHelper.logo_for_alert(alert) %>"
+                   alt="<%= AlertProcessor.MailHelper.alt_text_for_alert(alert) %>">
                 </td>
                 <td class="alert-details">
                   <p class="alert-service-effect">
