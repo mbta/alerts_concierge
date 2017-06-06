@@ -70,7 +70,7 @@ defmodule AlertProcessor.ApiClient do
   endpoint to fetch shapes for a specific route
   """
   def route_shapes(route) do
-    case get("/shapes/?route=#{route}&direction_id=1&fields[shape]=relationships,priority") do
+    case get("/shapes/?route=#{route}&direction_id=1&fields[shape]=priority") do
       {:ok, %{body: %{"errors" => errors}}} ->
         {:error, errors |> Enum.map_join(", ", &(&1["code"]))}
       {:ok, %{body: %{"data" => shapes}}} ->
