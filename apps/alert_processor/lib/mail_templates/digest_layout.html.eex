@@ -6,17 +6,13 @@
     <style type="text/css">
       /* Using comments a hack to preserve syntax highlighting
         <%= digest_styles %>
+        <%= AlertProcessor.MailHelper.header_styles %>
+        <%= AlertProcessor.MailHelper.footer_styles %>
       */
     </style>
   </head>
   <body leftmargin="0" marginwidth="0" topmargin="0" marginheight="0" offset="0">
-    <div class="digest-header">
-      <img
-        src="<%= AlertProcessor.MailHelper.mbta_logo() %>"
-        alt="mbta-logo"
-        height="48px"
-      >
-    </div>
+    <%= AlertProcessor.MailHelper.header %>
 
     <h1 class="digest-title">
       T-Alerts: Weekly Digest
@@ -65,31 +61,7 @@
         </a>
       </div>
 
-      <div class="footer">
-        <div class="footer-copyright">
-          &copy; Massachusetts Bay Transportation Authority, all rights reserved.
-        </div>
-
-        <table class="footer-links">
-          <tr>
-            <td >
-              <a class="footer-link" href="#">Unsubscribe</a>
-            </td>
-            <td class="footer-link-separator">
-              <div class="footer-link-separator-bullet" />
-            </td>
-            <td class="footer-link">
-              <a href="https://t.mbta.com/customer-support">Feedback</a>
-            </td>
-            <td class="footer-link-separator">
-              <div class="footer-link-separator-bullet" />
-            </td>
-            <td class="footer-link">
-              <a href="#">Edit Your Subscriptions</a>
-            </td>
-          </tr>
-        </table>
-      </div>
+      <%= AlertProcessor.MailHelper.footer %>
     </center>
 	</body>
 </html>

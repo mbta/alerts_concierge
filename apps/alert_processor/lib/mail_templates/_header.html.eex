@@ -1,0 +1,7 @@
+<div class="header">
+  <img
+    src="<%= AlertProcessor.MailHelper.mbta_logo() %>"
+    alt="mbta-logo"
+    height="48px"
+  >
+</div>
