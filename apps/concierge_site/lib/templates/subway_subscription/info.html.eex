@@ -14,25 +14,17 @@
   <form>
     <div class="form-group select-station">
       <label for="origin" class="station-input-label form-label">Origin</label>
-      <input type="text" name="origin" placeholder="Enter a station" class="subscription-select-origin station-input js" />
-      <%= for station <- station_suggestion_options(@stations) do %>
-        <%= render "_station_suggestion.html", class: "origin-station-suggestion", station: station_attrs(station) %>
-      <% end %>
       <%= select :subscription,
                  :origin,
-                 station_list_select_options(@stations),
+                 @station_list_select_options,
                  class: "subscription-select-origin no-js",
                  prompt: "Select a station" %>
     </div>
     <div class="form-group select-station">
       <label for="destination" class="station-input-label form-label">Destination</label>
-      <input type="text" name="destination" placeholder="Enter a station" class="subscription-select-destination station-input js" />
-      <%= for station <- station_suggestion_options(@stations) do %>
-        <%= render "_station_suggestion.html", class: "destination-station-suggestion", station: station_attrs(station) %>
-      <% end %>
       <%= select :subscription,
                  :destination,
-                 station_list_select_options(@stations),
+                 @station_list_select_options,
                  class: "subscription-select-destination no-js",
                  prompt: "Select a station" %>
     </div>
