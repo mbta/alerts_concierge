@@ -5,7 +5,7 @@ defmodule AlertProcessor.ServiceInfoCache do
   mode, line, then branch.
   """
   use GenServer
-  alias AlertProcessor.Helpers.ConfigHelper
+  alias AlertProcessor.Helpers.{ConfigHelper, StringHelper}
   alias AlertProcessor.{ApiClient, Model.Route}
 
   @services [:bus, :subway]
@@ -34,6 +34,14 @@ defmodule AlertProcessor.ServiceInfoCache do
     GenServer.call(name, {:get_stop, mode, stop_id})
   end
 
+  def get_direction_name(name \\ __MODULE__, route_type, route, direction_id) do
+    GenServer.call(name, {:get_direction_name, route_type, route, direction_id})
+  end
+
+  def get_headsign(name \\ __MODULE__, route_type, origin, destination, direction_id) do
+    GenServer.call(name, {:get_headsign, route_type, origin, destination, direction_id})
+  end
+
   @doc """
   Update service info and then reschedule next time to process.
   """
@@ -52,6 +60,52 @@ defmodule AlertProcessor.ServiceInfoCache do
 
   def handle_call({:get_stop, :subway, stop_id}, _from, %{subway: subway_state} = state),
     do: {:reply, {:ok, get_stop_from_state(stop_id, subway_state)}, state}
+
+  def handle_call({:get_direction_name, :subway, route, direction_id}, _from, %{subway: subway_state} = state) do
+    case Enum.find(subway_state, fn(%{route_id: route_id}) -> route_id == route end) do
+      %{direction_names: direction_names} ->
+        {:reply, {:ok, Enum.at(direction_names, direction_id)}, state}
+      _ ->
+        {:reply, :error, state}
+    end
+  end
+
+  def handle_call({:get_headsign, :subway, origin, destination, direction_id}, _from, %{subway: subway_state} = state) do
+    relevant_routes =
+      subway_state
+      |> Enum.filter(fn(%Route{stop_list: stop_list}) -> List.keymember?(stop_list, origin, 0) && List.keymember?(stop_list, destination, 0) end)
+
+    case relevant_routes do
+      [] -> {:reply, :error, state}
+      relevant_routes -> {:reply, {:ok, parse_headsign(relevant_routes, direction_id)}, state}
+    end
+  end
+
+  defp parse_headsign(relevant_routes, direction_id) do
+    case relevant_routes do
+      [%Route{route_id: "Green-" <> _} | _t] ->
+        relevant_routes
+        |> Enum.map(& String.replace(&1.route_id, ~r/(.+)-/, ""))
+        |> StringHelper.or_join()
+      _ ->
+      case direction_id do
+        1 ->
+          relevant_routes
+          |> Enum.map(fn(%Route{stop_list: stop_list}) ->
+              stop_list |> List.last() |> elem(0)
+            end)
+          |> Enum.uniq()
+          |> Enum.join(", ")
+        0 ->
+          relevant_routes
+          |> Enum.map(fn(%Route{stop_list: stop_list}) ->
+              stop_list |> List.first() |> elem(0)
+            end)
+          |> Enum.uniq()
+          |> Enum.join(", ")
+      end
+    end
+  end
 
   defp get_stop_from_state(stop_id, state) do
     Enum.find_value(state, fn(%Route{stop_list: stop_list}) ->
@@ -91,7 +145,6 @@ defmodule AlertProcessor.ServiceInfoCache do
       end
     end)
   end
-
 
   defp fetch_service_info(:bus) do
     for route_id <- fetch_bus_routes(), into: %{} do
