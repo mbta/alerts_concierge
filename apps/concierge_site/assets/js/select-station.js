@@ -3,6 +3,11 @@ export default function($) {
 
   let props = {};
 
+  if ($(".enter-trip-info").length) {
+    props.allStations = generateStationList();
+    attachSuggestionInputs();
+  }
+
   function typeahead(event) {
     const query = event.target.value;
     const originDestination = event.data.originDestination;
@@ -66,7 +71,7 @@ export default function($) {
           alreadyAddedStation.allLineNames.push(group.label)
         } else {
           const station = {
-            name: option.innerText,
+            name: option.text,
             code: option.value,
             allLineNames: [group.label]
           };
@@ -75,7 +80,6 @@ export default function($) {
         }
       });
     });
-
     return stations;
   }
 
@@ -114,7 +118,7 @@ export default function($) {
           <path d="M0,0 l0,7 l9,0 l0,15.5 l7,0 l0,-15.5 l9,0 l0,-7 Z">
         </path></g>
       </svg>
-      <div class="line-name">${lineName}</div>
+      <div class="line-name">${lineName} Line</div>
     `
   }
 
@@ -131,13 +135,6 @@ export default function($) {
 
     return lines;
   }
-
-  $(document).ready(function() {
-    if ($(".enter-trip-info").length) {
-      attachSuggestionInputs();
-      props.allStations = generateStationList();
-    }
-  });
 
   $(document).on(
     "keyup", ".subscription-select-origin", { originDestination: "origin" }, typeahead);
