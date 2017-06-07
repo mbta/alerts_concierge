@@ -64,7 +64,7 @@ defmodule AlertProcessor.DigestMailHelperTest do
   end
 
   describe "Alt text functions" do
-   test "alt_text_for_alert/1 for subway returns correct line icon" do
+    test "alt_text_for_alert/1 for subway returns correct line icon" do
       red_alert = Map.merge(@alert, %{informed_entities: [%InformedEntity{route_type: 0, route: "Red"}]})
       blue_alert = Map.merge(@alert, %{informed_entities: [%InformedEntity{route_type: 1, route: "Blue"}]})
       orange_alert = Map.merge(@alert, %{informed_entities: [%InformedEntity{route_type: 0, route: "Orange"}]})

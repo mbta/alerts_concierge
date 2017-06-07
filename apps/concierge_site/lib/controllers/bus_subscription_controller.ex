@@ -1,4 +1,4 @@
-defmodule ConciergeSite.SubwaySubscriptionController do
+defmodule ConciergeSite.BusSubscriptionController do
   use ConciergeSite.Web, :controller
   use Guardian.Phoenix.Controller
   alias ConciergeSite.Subscriptions.TemporaryState
@@ -8,7 +8,7 @@ defmodule ConciergeSite.SubwaySubscriptionController do
   end
 
   def info(conn, params, user, _claims) do
-    subscription_params = Map.merge(params, %{user_id: user.id, route_type: 1})
+    subscription_params = Map.merge(params, %{user_id: user.id, route_type: 3})
     token = TemporaryState.encode(subscription_params)
     render conn, "info.html", token: token, subscription_params: subscription_params
   end
