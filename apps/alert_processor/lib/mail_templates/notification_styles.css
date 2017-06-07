@@ -1,0 +1,80 @@
+/* Client-specific Styles */
+#outlook a { padding:0; } /* Force Outlook to provide a "view in browser" button. */
+body { width:800px !important; }
+.ReadMsgBody { width:100%; }
+.ExternalClass { width:100%; } /* Force Hotmail to display emails at full width */
+body { -webkit-text-size-adjust:none; } /* Prevent Webkit platforms from changing default text sizes. */
+/* End Client-specific Styles */
+
+/* Reset Styles */
+body {
+  margin: 0;
+  padding: 0;
+}
+
+h1 {
+  margin: 0;
+  padding: 0;
+}
+
+p {
+  margin: 0;
+  padding: 0;
+}
+
+img { border: 0;
+  line-height: 100%;
+  outline: none;
+  text-decoration: none;
+}
+/* End Reset Styles */
+
+/* Template Styles */
+a:link { text-decoration: none; color: #67a0d1; }
+a:visited { text-decoration: none; color: #67a0d1; }
+a:active { text-decoration: none; color: #67a0d1; }
+a:hover { text-decoration: none; color: #67a0d1; }
+
+body {
+  font-family: Arial, Helvetica Neue, Helvetica, sans-serif;
+  width: 600px;
+  padding: 0px 10px;
+}
+
+.notification-content {
+  padding: 32px 20px 24px 20px;
+}
+
+h1.notification-service-effect {
+  font-size: 26px;
+  font-weight: bold;
+  text-align: center;
+  color: #000000;
+  vertical-align: middle;
+}
+
+.notification-logo {
+  width: 24px;
+  height: 24px;
+}
+
+.notification-header {
+  font-size: 16px;
+  line-height: 1.5;
+  color: #1c1e23;
+  padding-top: 24px;
+}
+
+.notification-description {
+  font-size: 16px;
+  line-height: 1.5;
+  color: #1c1e23;
+}
+
+.notification-link {
+  font-size: 16px;
+  line-height: 1.5;
+  color: #1c77c3;
+  padding-top: 24px;
+  text-align: right;
+}

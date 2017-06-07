@@ -13,22 +13,26 @@
   </head>
   <body leftmargin="0" marginwidth="0" topmargin="0" marginheight="0" offset="0">
     <%= AlertProcessor.MailHelper.header %>
+    <div class="notification-content">
+      <h1 class"notification-service-effect">
+        <span class="notification-logo">
+          <img src="<%= AlertProcessor.MailHelper.logo_for_alert(notification.alert) %>"
+              alt="<%= AlertProcessor.MailHelper.alt_text_for_alert(notification.alert) %>">
+        </span>
+        <%= notification.service_effect %>
+      </h1>
+      <p class="notification-header">
+        <%= notification.header %>
+      </p>
+      <br>
+      <p class="notification-description">
+        <%= notification.description %>
+      </p>
 
-    <h1>
-      <span>
-        <img src="<%= AlertProcessor.MailHelper.logo_for_alert(notification.alert) %>"
-             alt="<%= AlertProcessor.MailHelper.alt_text_for_alert(notification.alert) %>">
-      </span>
-      <%= notification.service_effect %>
-    </h1>
-    <p>
-      <%= notification.header %>
-    </p>
-    <p>
-      <%= notification.description %>
-    </p>
-
-    <a href="https://t.mbta.com/">View all alerts -></a>
+      <p class="notification-link">
+        <a href="https://t.mbta.com/">View all alerts &rarr;</a>
+      </p>
+    </div>
     <center>
       <%= AlertProcessor.MailHelper.footer %>
     </center>
