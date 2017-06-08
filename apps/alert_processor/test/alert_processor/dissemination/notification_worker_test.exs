@@ -8,13 +8,12 @@ defmodule AlertProcessor.NotificationWorkerTest do
     email = "test@example.com"
     body = "This is a test alert"
     body_2 = "Another alert"
-    phone_number = "5555551234"
     status = "unsent"
 
     notification = %Notification{
       message: body,
       email: email,
-      phone_number: phone_number,
+      phone_number: nil,
       send_after: DateTime.utc_now(),
       status: status
     }
@@ -22,7 +21,7 @@ defmodule AlertProcessor.NotificationWorkerTest do
     notification_2 = %Notification{
       message: body_2,
       email: email,
-      phone_number: phone_number,
+      phone_number: nil,
       send_after: DateTime.utc_now(),
       status: status
     }

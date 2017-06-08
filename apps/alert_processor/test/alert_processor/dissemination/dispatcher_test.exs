@@ -51,14 +51,14 @@ defmodule AlertProcessor.DispatcherTest do
     assert_delivered_email NotificationMailer.notification_email(@body, @email)
   end
 
-  test "notification_email/1 can send sms and email" do
+  test "notification_email/1 cannot send both sms and email" do
     notification = %Notification{
       message: @body,
       email: @email,
       phone_number: @phone_number
     }
     {:ok, _} = Dispatcher.send_notification(notification)
-    assert_delivered_email NotificationMailer.notification_email(@body, @email)
+    refute_delivered_email NotificationMailer.notification_email(@body, @email)
     assert_received :publish
   end
 end

@@ -33,23 +33,14 @@ defmodule AlertProcessor.Dispatcher do
     {:error, "no contact information"}
   end
 
-  defp do_send_notification(nil, phone_number, notification) do
-    notification
-    |> NotificationSmser.notification_sms(phone_number)
-    |> @ex_aws.request([])
-  end
-
-  defp do_send_notification(email, nil, notification) do
+ defp do_send_notification(email, nil, notification) do
     email = notification
     |> NotificationMailer.notification_email(email)
     |> NotificationMailer.deliver_later
     {:ok, email}
   end
 
-  defp do_send_notification(email, phone_number, notification) do
-    notification
-    |> NotificationMailer.notification_email(email)
-    |> NotificationMailer.deliver_later
+  defp do_send_notification(_email, phone_number, notification) do
     notification
     |> NotificationSmser.notification_sms(phone_number)
     |> @ex_aws.request([])
