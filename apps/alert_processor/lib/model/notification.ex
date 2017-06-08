@@ -3,17 +3,21 @@ defmodule AlertProcessor.Model.Notification do
   An individual message generated from an alert
   """
 
+  alias AlertProcessor.Model.Alert
+
   @type t :: %__MODULE__{
     alert_id: String.t,
     user_id: String.t,
     send_after: DateTime.t,
-    message: String.t,
+    service_effect: String.t,
+    description: String.t,
     header: String.t,
     phone_number: String.t,
     email: String.t,
     status: atom,
-    last_push_notification: DateTime.t
-  }
+    last_push_notification: DateTime.t,
+    alert: Alert.t
+ }
 
   use Ecto.Schema
   import Ecto.Changeset
@@ -32,18 +36,20 @@ defmodule AlertProcessor.Model.Notification do
 
     field :alert_id, :string
     field :send_after, :utc_datetime
-    field :message, :string
+    field :service_effect, :string
+    field :description, :string
     field :header, :string
     field :phone_number, :string
     field :email, :string
     field :status, AlertProcessor.AtomType
     field :last_push_notification, :utc_datetime
+    field :alert, :string, virtual: true
 
     timestamps()
   end
 
-  @permitted_fields ~w(alert_id user_id send_after message header phone_number email status last_push_notification)a
-  @required_fields ~w(alert_id user_id message)a
+  @permitted_fields ~w(alert_id user_id send_after description service_effect header phone_number email status last_push_notification)a
+  @required_fields ~w(alert_id user_id header service_effect description)a
 
   @doc """
   Changeset for persisting a sent Notification

@@ -30,12 +30,14 @@ defmodule AlertProcessor.NotificationBuilder do
               alert_id: alert.id,
               user_id: user.id,
               header: alert.header,
-              message: alert.header,
+              service_effect: alert.service_effect,
+              description: alert.description,
               phone_number: user.phone_number,
               email: user.email,
               status: :unsent,
               send_after: time,
-              last_push_notification: alert.last_push_notification
+              last_push_notification: alert.last_push_notification,
+              alert: alert
             }
           [notification | result]
       end

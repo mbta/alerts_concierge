@@ -16,16 +16,16 @@ defmodule AlertProcessor.Dispatcher do
   """
   @spec send_notification(Notification.t) ::
   ex_aws_success | ex_aws_error | request_error
-  def send_notification(%Notification{message: message, email: email, phone_number: phone_number}) do
-    do_send_notification(email, phone_number, message)
+  def send_notification(%Notification{email: email, phone_number: phone_number} = notification) do
+    do_send_notification(email, phone_number, notification)
   end
 
   def send_notification(_) do
     {:error, "invalid or missing params"}
   end
 
-  @spec do_send_notification(String.t, String.t, nil) :: request_error
-  defp do_send_notification(_, _, nil) do
+  @spec do_send_notification(String.t, String.t, Notification.t) :: request_error
+  defp do_send_notification(_, _, %Notification{header: nil}) do
     {:error, "no notification"}
   end
 

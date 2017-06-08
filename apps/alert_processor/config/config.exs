@@ -16,7 +16,8 @@ config :logger, :console,
 
 # Bamboo
 config :alert_processor, AlertProcessor.NotificationMailer,
-  adapter: Bamboo.LocalAdapter
+  adapter: Bamboo.LocalAdapter,
+  from: "faizaan@intrepid.io"
 
 config :alert_processor, AlertProcessor.DigestMailer,
   adapter: Bamboo.LocalAdapter,

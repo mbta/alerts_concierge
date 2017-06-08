@@ -11,12 +11,12 @@ defmodule AlertProcessor.DigestMailer do
   EEx.function_from_file(
     :def,
     :html_email,
-    Path.join(@template_dir, "digest_layout.html.eex"),
+    Path.join(@template_dir, "digest.html.eex"),
     [:digest_date_groups, :digest_styles])
   EEx.function_from_file(
     :def,
     :text_email,
-    Path.join(@template_dir, "digest_layout.txt.eex"),
+    Path.join(@template_dir, "digest.txt.eex"),
     [:digest_date_groups])
   EEx.function_from_file(
     :def,
