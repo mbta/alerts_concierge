@@ -1,9 +1,26 @@
 defmodule ConciergeSite.SubscriptionView do
+  @moduledoc """
+  Subscription view which includes helper functions for displaying subscriptions
+  """
   use ConciergeSite.Web, :view
 
   alias AlertProcessor.Helpers.DateTimeHelper
-  alias AlertProcessor.Model.InformedEntity
+  alias AlertProcessor.Model.{InformedEntity, Subscription}
 
+  @type subscription_info :: %{
+    amenity: [Subscription.t],
+    boat: [Subscription.t],
+    bus: [Subscription.t],
+    commuter_rail: [Subscription.t],
+    subway: [Subscription.t]
+  }
+
+  @doc """
+  sorted_subscriptions/1 takes a list of subscriptions and returns it in a grouped
+  and sorted format to easily display all the subscriptions in a meaningful way
+  to a user.
+  """
+  @spec sorted_subscriptions([Subscription.t]) :: subscription_info
   def sorted_subscriptions(subscriptions) do
     with grouped_subscriptions <- group_subscriptions_by_mode_route_and_stations(subscriptions),
          sorted_by_earliest_time <- order_subscriptions_for_stations_by_earliest_time(grouped_subscriptions),
@@ -15,7 +32,7 @@ defmodule ConciergeSite.SubscriptionView do
   defp group_subscriptions_by_mode_route_and_stations(subscriptions) do
     Enum.reduce(subscriptions, %{}, fn(subscription, acc) ->
       route_key = subscription |> parse_route() |> String.split("-") |> List.first()
-      origin_dest_key = Enum.sort([subscription.origin, subscription.destination]) |> Enum.join()
+      origin_dest_key = [subscription.origin, subscription.destination] |> Enum.sort() |> Enum.join()
       update = %{{subscription.type, route_key, origin_dest_key} => [subscription]}
 
       Map.merge(acc, update, fn(_, s1, s2) ->
