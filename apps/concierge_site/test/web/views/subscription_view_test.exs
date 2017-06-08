@@ -6,8 +6,9 @@ defmodule ConciergeSite.SubscriptionViewTest do
   test "sorted_subscriptions groups subscriptions by mode" do
     sub1 = %Subscription{origin: "Davis", destination: "Park Street", type: :subway, informed_entities: [%InformedEntity{route: "Red", route_type: 1}]}
     sub2 = %Subscription{type: :bus, informed_entities: [%InformedEntity{route: "1", route_type: 3}]}
-    sub3 = %Subscription{type: :commuter_rail, informed_entities: [%InformedEntity{route: "CR-Lowell", route_type: 2}]}
-    assert %{amenity: [], boat: [], bus: [^sub2], commuter_rail: [^sub3], subway: [^sub1]} = SubscriptionView.sorted_subscriptions([sub1, sub2, sub3])
+    sub3 = %Subscription{origin: "Park Street", destination: "Davis", type: :subway, informed_entities: [%InformedEntity{route: "Red", route_type: 1}]}
+    sub4 = %Subscription{type: :bus, informed_entities: [%InformedEntity{route: "16", route_type: 3}]}
+    assert %{amenity: [], boat: [], bus: [^sub2, ^sub4], commuter_rail: [], subway: [^sub1, ^sub3]} = SubscriptionView.sorted_subscriptions([sub1, sub2, sub3, sub4])
   end
 
   test "sorted_subscriptions groups subscriptions by line" do

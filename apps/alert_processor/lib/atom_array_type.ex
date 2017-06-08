@@ -11,19 +11,16 @@ defmodule AlertProcessor.AtomArrayType do
   def dump(value) when is_list(value) do
     {:ok,
       Enum.map(value, fn(val) ->
-        case val do
-          {:array, x} ->
-            if is_atom(x) do
-              Atom.to_string(x)
-            else
-              x
-            end
-          x ->
-            if is_atom(x) do
-              Atom.to_string(x)
-            else
-              x
-            end
+        value =
+          case val do
+            {:array, x} -> x
+            x -> x
+          end
+
+        if is_atom(value) do
+          Atom.to_string(value)
+        else
+          value
         end
       end)
     }

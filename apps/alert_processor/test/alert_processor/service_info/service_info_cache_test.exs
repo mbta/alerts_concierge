@@ -24,20 +24,39 @@ defmodule AlertProcessor.ServiceInfoCacheTest do
   test "get_bus_info/0 returns bus headsign lists" do
     use_cassette "service_info", custom: true, clear_mock: true, match_requests_on: [:query] do
       {:ok, pid} = ServiceInfoCache.start_link([name: :service_info_cache_test_bus])
-      assert {:ok, %{
-        "57" => %{
-          0 => ["Watertown Yard", "Watertown via Kenmore"],
-          1 => ["Kenmore", "Haymarket via Kenmore", "Union Square, Allston"]
+      {:ok, route_info} = ServiceInfoCache.get_bus_info(pid)
+      assert [
+        %Route{
+          route_id: "57",
+          long_name: "57",
+          route_type: 3,
+          direction_names: ["Outbound", "Inbound"],
+          headsigns: %{
+            0 => ["Watertown Yard", "Watertown via Kenmore"],
+            1 => ["Kenmore", "Haymarket via Kenmore", "Union Square, Allston"]
+          }
         },
-        "741" => %{
-          0 => ["Logan Airport", "Silver Line Way"],
-          1 => ["South Station"]
+        %Route{
+          route_id: "741",
+          long_name: "Silver Line SL1",
+          route_type: 3,
+          direction_names: ["Outbound", "Inbound"],
+          headsigns: %{
+            0 => ["Logan Airport", "Silver Line Way"],
+            1 => ["South Station"]
+          }
         },
-        "87" => %{
-          0 => ["Arlington Center", "Clarendon Hill"],
-          1 => ["Lechmere"]
+        %Route{
+          route_id: "87",
+          long_name: "87",
+          route_type: 3,
+          direction_names: ["Outbound", "Inbound"],
+          headsigns: %{
+            0 => ["Arlington Center", "Clarendon Hill"],
+            1 => ["Lechmere"]
+          }
         }
-      }} = ServiceInfoCache.get_bus_info(pid)
+      ] = Enum.sort_by(route_info, &(&1.route_id))
     end
   end
 
@@ -77,5 +96,13 @@ defmodule AlertProcessor.ServiceInfoCacheTest do
       assert {:ok, "B, C, D, or E"} == ServiceInfoCache.get_headsign(pid, :subway, "Government Center", "Haymarket", 0)
       assert :error == ServiceInfoCache.get_headsign(pid, :subway, "garbage", "more garbage", 1)
     end
+  end
+
+  test "get_route :subway returns the correct Route" do
+    {:ok, pid} = ServiceInfoCache.start_link([name: :service_info_cache_test_get_route])
+    assert {:ok, %Route{long_name: "Red Line"}} = ServiceInfoCache.get_route(pid, :subway, "Red")
+    assert {:ok, %Route{long_name: "Green Line B"}} = ServiceInfoCache.get_route(pid, :subway, "Green-B")
+    assert {:ok, %Route{long_name: "Mattapan Trolley"}} = ServiceInfoCache.get_route(pid, :subway, "Mattapan")
+    assert {:ok, %Route{long_name: "Orange Line"}} = ServiceInfoCache.get_route(pid, :subway, "Orange")
   end
 end

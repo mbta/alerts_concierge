@@ -42,6 +42,10 @@ defmodule AlertProcessor.ServiceInfoCache do
     GenServer.call(name, {:get_headsign, route_type, origin, destination, direction_id})
   end
 
+  def get_route(name \\ __MODULE__, route_type, route) do
+    GenServer.call(name, {:get_route, route_type, route})
+  end
+
   @doc """
   Update service info and then reschedule next time to process.
   """
@@ -79,6 +83,12 @@ defmodule AlertProcessor.ServiceInfoCache do
       [] -> {:reply, :error, state}
       relevant_routes -> {:reply, {:ok, parse_headsign(relevant_routes, direction_id)}, state}
     end
+  end
+
+  def handle_call({:get_route, route_type, route_id}, _from, state) do
+    mode_state = Map.get(state, route_type)
+    route = Enum.find(mode_state, & &1.route_id == route_id)
+    {:reply, {:ok, route}, state}
   end
 
   defp parse_headsign(relevant_routes, direction_id) do
@@ -144,16 +154,31 @@ defmodule AlertProcessor.ServiceInfoCache do
   end
 
   defp fetch_service_info(:bus) do
-    for route_id <- fetch_bus_routes(), into: %{} do
+    routes =
+      [3]
+      |> ApiClient.routes()
+      |> Enum.filter_map(
+          fn(%{"attributes" => %{"type" => route_type}}) -> route_type == 3 end,
+          fn(%{"attributes" => %{"type" => route_type, "long_name" => long_name, "direction_names" => direction_names}, "id" => id}) ->
+            case long_name do
+              "" -> {id, route_type, id, direction_names}
+              _ -> {id, route_type, long_name, direction_names}
+            end
+        end)
+
+    Enum.map(routes, fn({route_id, route_type, long_name, direction_names}) ->
       [zero_task, one_task] =
         for direction_id <- [0, 1] do
           Task.async(__MODULE__, :do_headsigns, [route_id, direction_id])
         end
-      {route_id, %{
-        0 => Task.await(zero_task),
-        1 => Task.await(one_task)
-      }}
-    end
+      %Route{
+        route_id: route_id,
+        long_name: long_name,
+        route_type: route_type,
+        direction_names: direction_names,
+        headsigns: %{0 => Task.await(zero_task), 1 => Task.await(one_task)}
+      }
+    end)
   end
 
   defp fetch_route_branches("Red") do
@@ -170,10 +195,6 @@ defmodule AlertProcessor.ServiceInfoCache do
       stops = Enum.filter(stop_list, fn({_name, stop_id}) -> Enum.member?(branch, stop_id) end)
       Map.put(route, :stop_list, stops)
     end)
-  end
-
-  defp fetch_bus_routes do
-    Enum.filter_map(ApiClient.routes([3]), fn(%{"attributes" => %{"type" => route_type}}) -> route_type == 3 end, &(&1["id"]))
   end
 
   def do_headsigns(route_id, direction_id) do
