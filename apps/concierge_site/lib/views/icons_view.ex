@@ -2,16 +2,14 @@ defmodule ConciergeSite.IconsView do
   use ConciergeSite.Web, :view
 
   def render("_circle_icon.html", %{route: route, large: true}) do
-    name = String.split(route, "-") |> List.first
-    downcase_name = String.downcase(name)
+    downcase_route_name = route |> String.split() |> List.first() |> String.downcase()
 
-    render "_circle_icon.html", %{svg_class: "large-icon-with-circle", title: "#{name} Line", circle_class: "icon-#{downcase_name}-line-circle"}
+    render "_circle_icon.html", %{svg_class: "large-icon-with-circle", title: route, circle_class: ["icon-", downcase_route_name, "-line-circle"]}
   end
 
   def render("_circle_icon.html", %{route: route}) do
-    name = String.split(route, "-") |> List.first
-    downcase_name = String.downcase(name)
+    downcase_route_name = route |> String.split() |> List.first() |> String.downcase()
 
-    render "_circle_icon.html", %{svg_class: "icon-with-circle", title: "#{name} Line", circle_class: "icon-#{downcase_name}-line-circle"}
+    render "_circle_icon.html", %{svg_class: "icon-with-circle", title: route, circle_class: ["icon-", downcase_route_name, "-line-circle"]}
   end
 end
