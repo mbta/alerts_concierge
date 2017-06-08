@@ -15,6 +15,7 @@
   },
   "devDependencies": {
     "babel-brunch": "6.0.6",
+    "babel-register": "^6.24.1",
     "brunch": "2.10.7",
     "chai": "^4.0.2",
     "clean-css-brunch": "2.10.0",
