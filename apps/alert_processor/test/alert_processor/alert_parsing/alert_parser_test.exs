@@ -4,7 +4,7 @@ defmodule AlertProcessor.AlertParserTest do
   use Bamboo.Test, shared: :true
   import AlertProcessor.Factory
   alias AlertProcessor.{AlertParser, Model}
-  alias Model.{Alert, InformedEntity}
+  alias Model.InformedEntity
 
   setup_all do
     {:ok, _} = Application.ensure_all_started(:alert_processor)

@@ -67,7 +67,7 @@ defmodule AlertProcessor.DispatcherTest do
       alert: @alert
     }
     {:ok, _} = Dispatcher.send_notification(notification)
-    refute_delivered_email NotificationMailer.notification_email(@body, @email)
+    refute_delivered_email NotificationMailer.notification_email(notification, @email)
     assert_received :publish
   end
 end

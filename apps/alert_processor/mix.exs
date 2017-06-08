@@ -60,7 +60,7 @@ defmodule AlertProcessor.Mixfile do
       {:excoveralls, "~> 0.5", only: [:dev, :test]},
       {:ex_aws, git: "https://github.com/bfauble/ex_aws", ref: "fde7a918c90a640b6c8389fe4c36566957d0555c"},
       {:ex_machina, "~> 2.0", only: :test},
-      {:exvcr, "~> 0.8", only: :test},
+      {:exvcr, "~> 0.8", runtime: :false},
       {:gettext, "~> 0.11"},
       {:hackney, "~> 1.6"},
       {:httpoison, "~> 0.1"},
