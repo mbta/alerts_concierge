@@ -88,23 +88,20 @@ defmodule AlertProcessor.ServiceInfoCache do
         |> Enum.map(& String.replace(&1.route_id, ~r/(.+)-/, ""))
         |> StringHelper.or_join()
       _ ->
-      case direction_id do
-        1 ->
-          relevant_routes
-          |> Enum.map(fn(%Route{stop_list: stop_list}) ->
-              stop_list |> List.last() |> elem(0)
-            end)
-          |> Enum.uniq()
-          |> Enum.join(", ")
-        0 ->
-          relevant_routes
-          |> Enum.map(fn(%Route{stop_list: stop_list}) ->
-              stop_list |> List.first() |> elem(0)
-            end)
-          |> Enum.uniq()
-          |> Enum.join(", ")
-      end
+        case direction_id do
+          0 -> select_headsign(relevant_routes, &List.first/1)
+          1 -> select_headsign(relevant_routes, &List.last/1)
+        end
     end
+  end
+
+  defp select_headsign(relevant_routes, selector_func) do
+    relevant_routes
+    |> Enum.map(fn(%Route{stop_list: stop_list}) ->
+        stop_list |> selector_func.() |> elem(0)
+      end)
+    |> Enum.uniq()
+    |> StringHelper.or_join()
   end
 
   defp get_stop_from_state(stop_id, state) do

@@ -70,7 +70,7 @@ defmodule AlertProcessor.ServiceInfoCacheTest do
       assert {:ok, "Braintree"} == ServiceInfoCache.get_headsign(pid, :subway, "Davis", "Braintree", 0)
       assert {:ok, "Alewife"} == ServiceInfoCache.get_headsign(pid, :subway, "Ashmont", "Davis", 1)
       assert {:ok, "Alewife"} == ServiceInfoCache.get_headsign(pid, :subway, "Braintree", "Davis", 1)
-      assert {:ok, "Ashmont, Braintree"} == ServiceInfoCache.get_headsign(pid, :subway, "Davis", "Park Street", 0)
+      assert {:ok, "Ashmont or Braintree"} == ServiceInfoCache.get_headsign(pid, :subway, "Davis", "Park Street", 0)
       assert {:ok, "Alewife"} == ServiceInfoCache.get_headsign(pid, :subway, "Park Street", "Davis", 1)
       assert {:ok, "C"} == ServiceInfoCache.get_headsign(pid, :subway, "North Station", "Cleveland Circle", 0)
       assert {:ok, "C"} == ServiceInfoCache.get_headsign(pid, :subway, "Cleveland Circle", "North Station", 1)

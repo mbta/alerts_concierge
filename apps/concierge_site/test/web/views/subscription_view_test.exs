@@ -28,6 +28,6 @@ defmodule ConciergeSite.SubscriptionViewTest do
     sub1 = %Subscription{origin: "Davis", destination: "Park Street", type: :subway, start_time: ~T[14:00:00], end_time: ~T[15:00:00], informed_entities: [%InformedEntity{route: "Red", route_type: 1}]}
     sub2 = %Subscription{origin: "Davis", destination: "Harvard", type: :subway, start_time: ~T[12:00:00], end_time: ~T[13:00:00], informed_entities: [%InformedEntity{route: "Red", route_type: 1}]}
     sub3 = %Subscription{origin: "Park Street", destination: "Davis", type: :subway, start_time: ~T[10:00:00], end_time: ~T[11:00:00], informed_entities: [%InformedEntity{route: "Red", route_type: 1}]}
-    assert %{amenity: [], boat: [], bus: [], commuter_rail: [], subway: [^sub3, ^sub1, ^sub2]} = SubscriptionView.sorted_subscriptions([sub1, sub2, sub3])
+    assert %{amenity: [], boat: [], bus: [], commuter_rail: [], subway: [^sub2, ^sub3, ^sub1]} = SubscriptionView.sorted_subscriptions([sub1, sub2, sub3])
   end
 end
