@@ -6,6 +6,8 @@ defmodule AlertProcessor.Model.Subscription do
   alias AlertProcessor.{Helpers.DateTimeHelper, Model.InformedEntity, Model.User, Repo, TimeFrameComparison}
   import Ecto.Query
 
+  @type id :: String.t
+  @type subscription_type :: :bus | :subway | :commuter_rail | :boat | :amenity
   @type t :: %__MODULE__{
     alert_priority_type: atom,
     user_id: String.t,
@@ -14,10 +16,8 @@ defmodule AlertProcessor.Model.Subscription do
     end_time: Time.t,
     origin: String.t,
     destination: String.t,
-    type: :bus | :subway | :commuter_rail | :boat | :amenity
+    type: subscription_type
   }
-
-  @type id :: String.t
 
   @alert_priority_type_values %{
     low: 1,
@@ -97,6 +97,14 @@ defmodule AlertProcessor.Model.Subscription do
     query
     |> Repo.all
     |> Repo.preload(:user)
+  end
+
+  def for_user(user) do
+    query = from s in __MODULE__,
+      where: s.user_id == ^user.id,
+      preload: [:informed_entities]
+
+    Repo.all(query)
   end
 
   @doc """

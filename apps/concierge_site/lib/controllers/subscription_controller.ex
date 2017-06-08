@@ -2,8 +2,13 @@ defmodule ConciergeSite.SubscriptionController do
   use ConciergeSite.Web, :controller
   use Guardian.Phoenix.Controller
 
-  def index(conn, _params, _user, _claims) do
-    render conn, "index.html"
+  alias AlertProcessor.Model.Subscription
+
+  def index(conn, _params, user, _claims) do
+    case Subscription.for_user(user) do
+      [] -> redirect(conn, to: subscription_path(conn, :new))
+      subscriptions -> render conn, "index.html", subscriptions: subscriptions
+    end
   end
 
   def new(conn, _params, _user, _claims) do
