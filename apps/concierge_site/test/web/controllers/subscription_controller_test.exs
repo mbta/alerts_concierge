@@ -12,18 +12,15 @@ defmodule ConciergeSite.SubscriptionControllerTest do
       user = Repo.insert!(%User{email: "test@email.com",
                                 role: "user",
                                 encrypted_password: @encrypted_password})
-      sub =
-        build(:subscription, user: user)
-        |> weekday_subscription()
-        |> subway_subscription()
 
-      sub
+      :subscription
+      |> build(user: user)
+      |> weekday_subscription()
+      |> subway_subscription()
       |> Repo.preload(:informed_entities)
-      |> Ecto.Changeset.change
+      |> Ecto.Changeset.change()
       |> Ecto.Changeset.put_assoc(:informed_entities, subway_subscription_entities())
-      |> Repo.insert!
-
-
+      |> Repo.insert()
 
       conn = user
       |> guardian_login(conn)

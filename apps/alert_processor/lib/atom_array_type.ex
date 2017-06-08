@@ -13,15 +13,17 @@ defmodule AlertProcessor.AtomArrayType do
       Enum.map(value, fn(val) ->
         case val do
           {:array, x} ->
-            cond do
-              is_atom(x) -> Atom.to_string(x)
-              true -> x
+            if is_atom(x) do
+              Atom.to_string(x)
+            else
+              x
             end
           x ->
-           cond do
-             is_atom(x) -> Atom.to_string(x)
-             true -> x
-           end
+            if is_atom(x) do
+              Atom.to_string(x)
+            else
+              x
+            end
         end
       end)
     }
