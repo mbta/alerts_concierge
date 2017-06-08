@@ -14,4 +14,8 @@ defmodule ConciergeSite.SubscriptionController do
   def new(conn, _params, _user, _claims) do
     render conn, "new.html"
   end
+
+  def edit(conn, _params, _user, _claims) do
+    render conn, "edit.html"
+  end
 end
