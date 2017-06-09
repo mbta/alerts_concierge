@@ -26,8 +26,7 @@ defmodule ConciergeSite.SubscriptionView do
       subscriptions
       |> Enum.sort_by(fn(subscription) ->
         route_key = subscription |> parse_route() |> String.split("-") |> List.first()
-        origin_dest_key = [subscription.origin, subscription.destination] |> Enum.sort() |> Enum.join()
-        {route_key, origin_dest_key, subscription.start_time}
+        {route_key, subscription.start_time}
       end)
       |> Enum.group_by(& &1.type)
     Map.merge(%{amenity: [], boat: [], bus: [], commuter_rail: [], subway: []}, subscription_map)
