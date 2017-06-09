@@ -136,7 +136,7 @@
   font-family: $font-family-base;
   padding: .5rem 0 .5rem .75rem;
 
-  ~ .fa-check-circle {
+  ~ .valid-checkmark-icon {
     display: none;
   }
 }
@@ -144,7 +144,7 @@
 .station-input[data-valid='true'] {
   border-color: $valid-station-color;
 
-  ~ .fa-check-circle {
+  ~ .valid-checkmark-icon {
     color: $valid-station-color;
     display: block;
     position: absolute;
