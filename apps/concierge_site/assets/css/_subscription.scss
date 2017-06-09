@@ -116,6 +116,10 @@
   }
 }
 
+.select-station {
+  position: relative;
+}
+
 .subscription-select-origin,
 .subscription-select-destination {
   width: 100%;
@@ -131,6 +135,22 @@
   border-radius: 4px;
   font-family: $font-family-base;
   padding: .5rem 0 .5rem .75rem;
+
+  ~ .valid-checkmark-icon {
+    display: none;
+  }
+}
+
+.station-input[data-valid='true'] {
+  border-color: $valid-station-color;
+
+  ~ .valid-checkmark-icon {
+    color: $valid-station-color;
+    display: block;
+    position: absolute;
+    right: 1rem;
+    top: 2.5rem;
+  }
 }
 
 .station-suggestion {

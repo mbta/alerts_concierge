@@ -178,6 +178,94 @@ describe("selectStation", function() {
     });
   });
 
+  describe("station input field validation", () => {
+    describe("typing in the station input fields", () => {
+      it("changes the data-valid attribute of the origin input to true when the value exactly matches a station name", () => {
+        const $originInput = $("input.subscription-select-origin");
+        $originInput.val("Park Street");
+        simulateKeyUp($originInput[0])
+
+        assert.equal("true", $originInput.attr("data-valid"));
+      });
+
+      it("changes the data-valid attribute of the origin input to false when the value does not match a station name", () => {
+        const $originInput = $("input.subscription-select-origin");
+        $originInput.val("abc123");
+        simulateKeyUp($originInput[0])
+
+        assert.equal("false", $originInput.attr("data-valid"));
+      });
+
+      it("changes the data-valid attribute of the destination input to true when the value exactly matches a station name", () => {
+        const $destinationInput = $("input.subscription-select-destination");
+        $destinationInput.val("Braintree");
+        simulateKeyUp($destinationInput[0])
+
+        assert.equal("true", $destinationInput.attr("data-valid"));
+      });
+
+      it("changes the data-valid attribute of the destination input to false when the value does not match a station name", () => {
+        const $destinationInput = $("input.subscription-select-destination");
+        $destinationInput.val("123abc");
+        simulateKeyUp($destinationInput[0])
+
+        assert.equal("false", $destinationInput.attr("data-valid"));
+      });
+    });
+
+    describe("clicking on a suggestion", () => {
+      it("changes the data-valid attribute of the origin input to true", () => {
+        const $originInput = $("input.subscription-select-origin");
+        $originInput.val("Park");
+        const $suggestionContainer = $("input.subscription-select-origin + .suggestion-container");
+
+        simulateKeyUp($originInput[0])
+
+        $(".origin-station-suggestion").first().mousedown();
+
+        assert.equal("true", $originInput.attr("data-valid"));
+      });
+
+      it("changes the data-valid attribute of the destination input to true", () => {
+        const $destinationInput = $("input.subscription-select-destination");
+        $destinationInput.val("Brain");
+        const $suggestionContainer = $("input.subscription-select-destination + .suggestion-container");
+
+        simulateKeyUp($destinationInput[0])
+
+        $(".destination-station-suggestion").first().mousedown();
+
+        assert.equal("true", $destinationInput.attr("data-valid"));
+      });
+    });
+
+    describe("station input losing focus", () => {
+      it("changes the data-valid attribute of the origin input to true when there is at least one suggestion", () => {
+        const $originInput = $("input.subscription-select-origin");
+        $originInput.val("Park");
+        const $suggestionContainer = $("input.subscription-select-origin + .suggestion-container");
+
+        $originInput.focus();
+        simulateKeyUp($originInput[0])
+        $("input.subscription-select-destination").focus();
+
+        assert.equal("true", $originInput.attr("data-valid"));
+      });
+
+      it("changes the data-valid attribute of the destination input to true when there is at least one suggestion", () => {
+        const $destinationInput = $("input.subscription-select-destination");
+        $destinationInput.val("brain");
+        const $suggestionContainer = $("input.subscription-select-destination + .suggestion-container");
+
+        $destinationInput.focus();
+        simulateKeyUp($destinationInput[0])
+        $("input.subscription-select-origin").focus();
+
+        assert.equal("true", $destinationInput.attr("data-valid"));
+      });
+    })
+  });
+
   const tripInfoPageHtml = `
     <div class="enter-trip-info">
       <form>
