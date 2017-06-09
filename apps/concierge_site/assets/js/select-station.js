@@ -5,14 +5,14 @@ export default function($) {
 
   if ($(".enter-trip-info").length) {
     props.allStations = generateStationList();
+    props.trolleyRoutes = ["Mattapan"];
+    props.lineRoutes = ["Red", "Green", "Blue", "Orange"];
     attachSuggestionInputs();
   }
 
   function typeahead(event) {
     const query = event.target.value;
     const originDestination = event.data.originDestination;
-    const $suggestionContainer =
-      $(`.subscription-select-${originDestination} + .suggestion-container`);
 
     if (query.length > 0) {
       const queryRegExp = new RegExp(query, "i");
@@ -21,12 +21,14 @@ export default function($) {
       })
 
       const suggestionElements = matchingStations.map(function(station) {
-        return renderStationOption(originDestination, station);
+        return renderStationSuggestion(originDestination, station);
       });
 
+      const $suggestionContainer =
+        $(`.subscription-select-${originDestination} + .suggestion-container`);
       $suggestionContainer.html(suggestionElements);
     } else {
-      $(`.${originDestination}-station-suggestion`).remove();
+      unmountStationSuggestions(originDestination);
     }
   }
 
@@ -37,7 +39,7 @@ export default function($) {
 
     $stationInput.val(stationName);
 
-    $( `.${originDestination}-station-suggestion` ).remove();
+    unmountStationSuggestions(originDestination);
   }
 
   function pickFirstSuggestion(event) {
@@ -51,18 +53,17 @@ export default function($) {
       $stationInput.val(stationName);
     }
 
-    $(`.${originDestination}-station-suggestion`).remove();
+    unmountStationSuggestions(originDestination);
   }
 
   function generateStationList() {
     let stations = [];
-    const optgroups =
-      document.querySelectorAll("select.subscription-select-origin optgroup");
+    const $optgroups = $("select.subscription-select-origin optgroup");
 
-    optgroups.forEach(function(group) {
-      const options = group.querySelectorAll("option");
+    $optgroups.each(function(_i, group) {
+      const $options = $("option", group);
 
-      options.forEach(function(option) {
+      $options.each(function(_i, option) {
         const alreadyAddedStation = stations.find(function(station) {
           return station.name === option.innerText;
         });
@@ -83,6 +84,10 @@ export default function($) {
     return stations;
   }
 
+  function unmountStationSuggestions(classPrefix) {
+    $(`.${classPrefix}-station-suggestion`).remove();
+  }
+
   function attachSuggestionInputs() {
     $("label[for='origin']").after(renderStationInput("origin"));
     $("label[for='destination']").after(renderStationInput("destination"));
@@ -90,18 +95,17 @@ export default function($) {
 
   function renderStationInput(originDestination) {
     return `
-      <input type="text" name="${originDestination}" placeholder="Enter a station" class="subscription-select-${originDestination} station-input" />
+      <input type="text" name="${originDestination}" placeholder="Enter a station" class="${stationInputClass(originDestination)}" />
       <div class="suggestion-container"></div>
     `
   }
 
-  function renderStationOption(originDestination, station) {
-    const stationClass = `${originDestination}-station-suggestion`;
+  function renderStationSuggestion(originDestination, station) {
     const lineNames = compactLineNames(station.allLineNames);
     const circleIcons = lineNames.map(renderCircleIcon).join("");
 
     return `
-      <div class="${stationClass} station-suggestion">
+      <div class="${stationSuggestionClass(originDestination)}">
         <div class="station-name">${station.name}</div>
         <div class="station-lines">
           ${circleIcons}
@@ -113,13 +117,25 @@ export default function($) {
   function renderCircleIcon(lineName) {
     return `
       <svg class="icon-with-circle" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 42 42" title="${lineName}" preserveAspectRatio="xMidYMid meet">
-        <circle r="20" cx="20" cy="20" class="icon-${lineName.toLowerCase()}-line-circle" transform="translate(1,1)"></circle>
+        <circle r="20" cx="20" cy="20" class="${circleIconClass(lineName)}" transform="translate(1,1)"></circle>
         <g fill-rule="evenodd" class="icon-image" transform="translate(8,11) scale(1)">
           <path d="M0,0 l0,7 l9,0 l0,15.5 l7,0 l0,-15.5 l9,0 l0,-7 Z">
         </path></g>
       </svg>
-      <div class="line-name">${lineName} Line</div>
+      <div class="line-name">${fullLineName(lineName)}</div>
     `
+  }
+
+  function stationInputClass(originDestination) {
+    return `subscription-select-${originDestination} station-input`;
+  }
+
+  function stationSuggestionClass(originDestination) {
+    return `${originDestination}-station-suggestion station-suggestion`
+  }
+
+  function circleIconClass(lineName) {
+    return `icon-${lineName.toLowerCase()}-line-circle`
   }
 
   function compactLineNames(lineNames) {
@@ -134,6 +150,16 @@ export default function($) {
     });
 
     return lines;
+  }
+
+  function fullLineName(lineName) {
+    if (props.trolleyRoutes.includes(lineName)) {
+      return `${lineName} Trolley`;
+    } else if (props.lineRoutes.includes(lineName)) {
+      return `${lineName} Line`
+    } else {
+      return lineName;
+    }
   }
 
   $(document).on(
