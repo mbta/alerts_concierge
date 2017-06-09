@@ -25,7 +25,7 @@ export default function($) {
       });
 
       const $suggestionContainer =
-        $(`.subscription-select-${originDestination} + .suggestion-container`);
+        $(`.${subscriptionSelectClass(originDestination)} + .suggestion-container`);
       $suggestionContainer.html(suggestionElements);
     } else {
       unmountStationSuggestions(originDestination);
@@ -35,7 +35,7 @@ export default function($) {
   function assignSuggestion(event) {
     const originDestination = event.data.originDestination;
     const stationName = $(".station-name", $(this)).text();
-    const $stationInput = $(`.subscription-select-${originDestination}`);
+    const $stationInput = $(`.${subscriptionSelectClass(originDestination)}`);
 
     $stationInput.val(stationName);
 
@@ -44,7 +44,7 @@ export default function($) {
 
   function pickFirstSuggestion(event) {
     const originDestination = event.data.originDestination;
-    const $stationInput = $(`.subscription-select-${originDestination}`);
+    const $stationInput = $(`.${subscriptionSelectClass(originDestination)}`);
     const $firstSuggestion =
       $(`.${originDestination}-station-suggestion`).first();
 
@@ -127,7 +127,11 @@ export default function($) {
   }
 
   function stationInputClass(originDestination) {
-    return `subscription-select-${originDestination} station-input`;
+    return `${subscriptionSelectClass(originDestination)} station-input`;
+  }
+
+  function subscriptionSelectClass(originDestination) {
+    return `subscription-select-${originDestination}`
   }
 
   function stationSuggestionClass(originDestination) {
