@@ -38,10 +38,10 @@ defmodule AlertProcessor.Factory do
   end
 
   def subway_subscription(%Subscription{} = subscription) do
-    subscription
-    |> Map.put(:type, :subway)
-    |> Map.put(:origin, "Davis")
-    |> Map.put(:destination, "Harvard")
+    %{subscription |
+      type: :subway,
+      origin: "Davis",
+      destination: "Harvard"}
   end
 
   def subway_subscription_entities() do

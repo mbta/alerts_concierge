@@ -129,15 +129,9 @@ defmodule AlertProcessor.ServiceInfoCache do
   end
 
   defp fetch_service_info(:subway) do
-    routes =
-      [0, 1]
-      |> ApiClient.routes()
-      |> Enum.filter_map(
-          fn(%{"attributes" => %{"type" => route_type}}) -> route_type <= 1 end,
-          fn(%{"attributes" => %{"type" => route_type, "long_name" => long_name, "direction_names" => direction_names}, "id" => id}) -> {id, route_type, long_name, direction_names}
-        end)
-
-    Enum.flat_map(routes, fn({route_id, route_type, long_name, direction_names}) ->
+    [0, 1]
+    |> do_fetch_service_info()
+    |> Enum.flat_map(fn({route_id, route_type, long_name, direction_names}) ->
       stop_list =
         route_id
         |> ApiClient.route_stops
@@ -154,19 +148,9 @@ defmodule AlertProcessor.ServiceInfoCache do
   end
 
   defp fetch_service_info(:bus) do
-    routes =
-      [3]
-      |> ApiClient.routes()
-      |> Enum.filter_map(
-          fn(%{"attributes" => %{"type" => route_type}}) -> route_type == 3 end,
-          fn(%{"attributes" => %{"type" => route_type, "long_name" => long_name, "direction_names" => direction_names}, "id" => id}) ->
-            case long_name do
-              "" -> {id, route_type, id, direction_names}
-              _ -> {id, route_type, long_name, direction_names}
-            end
-        end)
-
-    Enum.map(routes, fn({route_id, route_type, long_name, direction_names}) ->
+    [3]
+    |> do_fetch_service_info()
+    |> Enum.map(fn({route_id, route_type, long_name, direction_names}) ->
       [zero_task, one_task] =
         for direction_id <- [0, 1] do
           Task.async(__MODULE__, :do_headsigns, [route_id, direction_id])
@@ -179,6 +163,18 @@ defmodule AlertProcessor.ServiceInfoCache do
         headsigns: %{0 => Task.await(zero_task), 1 => Task.await(one_task)}
       }
     end)
+  end
+
+  defp do_fetch_service_info(route_types) do
+    route_types
+    |> ApiClient.routes()
+    |> Enum.map(
+        fn(%{"attributes" => %{"type" => route_type, "long_name" => long_name, "direction_names" => direction_names}, "id" => id}) ->
+          case long_name do
+            "" -> {id, route_type, id, direction_names}
+            _ -> {id, route_type, long_name, direction_names}
+          end
+      end)
   end
 
   defp fetch_route_branches("Red") do

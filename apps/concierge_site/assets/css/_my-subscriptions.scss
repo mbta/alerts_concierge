@@ -3,33 +3,38 @@
     @include make-col(7);
     @include make-col-offset(2.5);
   }
+}
 
-  a {
-    color: $black;
+.subscription-link {
+  color: $black;
 
-    &.btn-create-new-sub {
-      color: $white;
-      width: 20rem;
-      margin: 0 auto;
-      display: block;
-      margin-top: 2.4rem;
+  &:hover,
+  &:active,
+  &:focus {
+    text-decoration: none;
+
+    .subscription-route {
+      transition: all 0.2s ease-in-out;
+      color: $link-hover-color;
     }
 
-    &:hover,
-    &:active,
-    &:focus {
-      text-decoration: none;
+    .subscription-edit-link {
+      transition: all 0.2s ease-in-out;
+      background-color: $link-hover-color;
+    }
 
-      .subscription-route {
-        transition: all 0.2s ease-in-out;
-        color: $link-hover-color;
-      }
-      .subscription-edit-link {
-        transition: all 0.2s ease-in-out;
-        background-color: $link-hover-color;
-      }
+    .subscription-details {
+      color: $black;
     }
   }
+}
+
+.btn-create-new-sub {
+  color: $white;
+  width: 20rem;
+  margin: 0 auto;
+  display: block;
+  margin-top: 2.4rem;
 }
 
 .subscription {
@@ -57,25 +62,25 @@
   justify-content: space-around;
   align-content: flex-start;
   margin: 1rem;
+}
 
-  .subscription-route {
-    color: $brand-primary;
-    font-size: 1.25rem;
-    font-weight: bold;
-    flex-basis: 33%;
-    align-self: flex-start;
-    margin-bottom: 0.2rem;
+.subscription-route {
+  color: $brand-primary;
+  font-size: 1.25rem;
+  font-weight: bold;
+  flex-basis: 33%;
+  align-self: flex-start;
+  margin-bottom: 0.2rem;
 
-    i {
-      margin: 0 0.4rem;
-    }
+  i {
+    margin: 0 0.4rem;
   }
+}
 
-  .subscription-details {
-    flex-basis: 66%;
-    align-self: flex-start;
-    font-size: 0.85rem;
-  }
+.subscription-details {
+  flex-basis: 66%;
+  align-self: flex-start;
+  font-size: 0.85rem;
 }
 
 .subscription-edit-link {
