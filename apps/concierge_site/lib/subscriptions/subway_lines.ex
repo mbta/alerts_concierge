@@ -12,6 +12,6 @@ defmodule ConciergeSite.Subscriptions.SubwayLines do
 
   @spec station_list_select_options(%AlertProcessor.Model.Route{}) :: [{String.t, list}]
   def station_list_select_options(routes) do
-    Enum.map(routes, fn(route) -> {route.route_id, route.stop_list} end)
+    Enum.map(routes, fn(route) -> {route.long_name, route.stop_list} end)
   end
 end

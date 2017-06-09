@@ -5,14 +5,14 @@ defmodule ConciergeSite.Subscriptions.SubwayLinesTest do
   describe "station_select_list_options" do
     test "changes a map of routes into a keyword list" do
       routes = [
-        %AlertProcessor.Model.Route{direction_names: [],route_id: "Green", route_type: 0, stop_list: []},
-        %AlertProcessor.Model.Route{direction_names: [],route_id: "Red", route_type: 0, stop_list: []},
-        %AlertProcessor.Model.Route{direction_names: [],route_id: "Blue", route_type: 0, stop_list: []}
+        %AlertProcessor.Model.Route{direction_names: [],long_name: "Green Line D", route_type: 0, stop_list: []},
+        %AlertProcessor.Model.Route{direction_names: [],long_name: "Red Line", route_type: 0, stop_list: []},
+        %AlertProcessor.Model.Route{direction_names: [],long_name: "Blue Line", route_type: 0, stop_list: []}
       ]
 
       select_options = SubwayLines.station_list_select_options(routes)
 
-      assert select_options == [{"Green", []}, {"Red", []}, {"Blue", []}]
+      assert select_options == [{"Green Line D", []}, {"Red Line", []}, {"Blue Line", []}]
     end
   end
 end

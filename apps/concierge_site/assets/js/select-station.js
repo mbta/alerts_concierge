@@ -5,8 +5,6 @@ export default function($) {
 
   if ($(".enter-trip-info").length) {
     props.allStations = generateStationList();
-    props.trolleyRoutes = ["Mattapan"];
-    props.lineRoutes = ["Red", "Green", "Blue", "Orange"];
     attachSuggestionInputs();
   }
 
@@ -122,7 +120,7 @@ export default function($) {
           <path d="M0,0 l0,7 l9,0 l0,15.5 l7,0 l0,-15.5 l9,0 l0,-7 Z">
         </path></g>
       </svg>
-      <div class="line-name">${fullLineName(lineName)}</div>
+      <div class="line-name">${lineName}</div>
     `
   }
 
@@ -139,14 +137,15 @@ export default function($) {
   }
 
   function circleIconClass(lineName) {
-    return `icon-${lineName.toLowerCase()}-line-circle`
+    const lineColor = lineName.toLowerCase().split(" ")[0]
+    return `icon-${lineColor}-line-circle`
   }
 
   function compactLineNames(lineNames) {
     let lines = [];
 
     lineNames.forEach(function(name) {
-      const displayName = name.split("-")[0]
+      const displayName = name.split(" ").slice(0, 2).join(" ");
 
       if (!lines.includes(displayName)) {
         lines.push(displayName);
@@ -154,16 +153,6 @@ export default function($) {
     });
 
     return lines;
-  }
-
-  function fullLineName(lineName) {
-    if (props.trolleyRoutes.includes(lineName)) {
-      return `${lineName} Trolley`;
-    } else if (props.lineRoutes.includes(lineName)) {
-      return `${lineName} Line`
-    } else {
-      return lineName;
-    }
   }
 
   $(document).on(

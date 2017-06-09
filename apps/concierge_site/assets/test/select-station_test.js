@@ -184,11 +184,11 @@ describe("selectStation", function() {
         <div class="form-group select-station">
           <label for="origin" class="station-input-label form-label">Origin</label>
           <select class="subscription-select-origin no-js" id="subscription_origin" name="subscription[origin]">
-            <optgroup label="Red">
+            <optgroup label="Red Line">
               <option value="place-brntn">Braintree</option>
               <option value="place-pktrm">Park Street</option>
             </optgroup>
-            <optgroup label="Green-C">
+            <optgroup label="Green Line C">
               <option value="place-pktrm">Park Street</option>
             </optgroup>
           </select>
@@ -196,11 +196,11 @@ describe("selectStation", function() {
         <div class="form-group select-station">
           <label for="destination" class="station-input-label form-label">Destination</label>
           <select class="subscription-select-destination no-js" id="subscription_destination" name="subscription[destination]">
-            <optgroup label="Red">
+            <optgroup label="Red Line">
               <option value="place-brntn">Braintree</option>
               <option value="place-pktrm">Park Street</option>
             </optgroup>
-            <optgroup label="Green-C">
+            <optgroup label="Green Line C">
               <option value="place-pktrm">Park Street</option>
             </optgroup>
           </select>
