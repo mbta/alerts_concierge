@@ -109,6 +109,7 @@ export default function($) {
     return `
       <input type="text" name="${originDestination}" placeholder="Enter a station" class="${stationInputClass(originDestination)}"/>
       <div class="suggestion-container"></div>
+      <i class="fa fa-check-circle"></i>
     `
   }
 
