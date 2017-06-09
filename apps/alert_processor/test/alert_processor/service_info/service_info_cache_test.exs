@@ -48,4 +48,34 @@ defmodule AlertProcessor.ServiceInfoCacheTest do
       assert {:ok, nil} == ServiceInfoCache.get_stop(pid, :subway, "place-doesnt-exist")
     end
   end
+
+  test "get_direction_name :subway returns the correct direction name" do
+    use_cassette "service_info", custom: true, clear_mock: true, match_requests_on: [:query] do
+      {:ok, pid} = ServiceInfoCache.start_link([name: :service_info_cache_test_direction_name])
+      assert {:ok, "Westbound"} == ServiceInfoCache.get_direction_name(pid, :subway, "Blue", 0)
+      assert {:ok, "Northbound"} == ServiceInfoCache.get_direction_name(pid, :subway, "Red", 1)
+      assert {:ok, "Southbound"} == ServiceInfoCache.get_direction_name(pid, :subway, "Orange", 0)
+      assert {:ok, "Eastbound"} == ServiceInfoCache.get_direction_name(pid, :subway, "Green-B", 1)
+      assert {:ok, "Westbound"} == ServiceInfoCache.get_direction_name(pid, :subway, "Green-C", 0)
+      assert {:ok, "Eastbound"} == ServiceInfoCache.get_direction_name(pid, :subway, "Green-D", 1)
+      assert {:ok, "Westbound"} == ServiceInfoCache.get_direction_name(pid, :subway, "Green-E", 0)
+      assert :error == ServiceInfoCache.get_direction_name(pid, :subway, "garbage", 1)
+    end
+  end
+
+  test "get_headsign :subway returns the correct headsigns" do
+    use_cassette "service_info", custom: true, clear_mock: true, match_requests_on: [:query] do
+      {:ok, pid} = ServiceInfoCache.start_link([name: :service_info_cache_test_headsigns])
+      assert {:ok, "Ashmont"} == ServiceInfoCache.get_headsign(pid, :subway, "Davis", "Ashmont", 0)
+      assert {:ok, "Braintree"} == ServiceInfoCache.get_headsign(pid, :subway, "Davis", "Braintree", 0)
+      assert {:ok, "Alewife"} == ServiceInfoCache.get_headsign(pid, :subway, "Ashmont", "Davis", 1)
+      assert {:ok, "Alewife"} == ServiceInfoCache.get_headsign(pid, :subway, "Braintree", "Davis", 1)
+      assert {:ok, "Ashmont or Braintree"} == ServiceInfoCache.get_headsign(pid, :subway, "Davis", "Park Street", 0)
+      assert {:ok, "Alewife"} == ServiceInfoCache.get_headsign(pid, :subway, "Park Street", "Davis", 1)
+      assert {:ok, "C"} == ServiceInfoCache.get_headsign(pid, :subway, "North Station", "Cleveland Circle", 0)
+      assert {:ok, "C"} == ServiceInfoCache.get_headsign(pid, :subway, "Cleveland Circle", "North Station", 1)
+      assert {:ok, "B, C, D, or E"} == ServiceInfoCache.get_headsign(pid, :subway, "Government Center", "Haymarket", 0)
+      assert :error == ServiceInfoCache.get_headsign(pid, :subway, "garbage", "more garbage", 1)
+    end
+  end
 end

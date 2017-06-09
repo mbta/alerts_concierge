@@ -64,6 +64,19 @@ defmodule AlertProcessor.Helpers.DateTimeHelper do
     end
   end
 
+  @doc """
+  convert utc time to local time using optional timezone,
+  otherwise uses America/New_York
+  """
+  @spec utc_time_to_local(Time.t, String.t) :: Time.t | {:error, any}
+  def utc_time_to_local(timestamp, timezone \\ "America/New_York") do
+    with utc_date <- D.today!("UTC"),
+         {:ok, utc_datetime} <- DT.from_date_and_time_and_zone(utc_date, timestamp, "UTC"),
+         {:ok, local_datetime} <- DT.shift_zone(utc_datetime, timezone),
+         {:ok, local_timestamp} <- DateTime.to_time(local_datetime) do
+      local_timestamp
+    end
+  end
 
   @doc """
   Takes 4 arguments:
