@@ -36,6 +36,13 @@ defmodule AlertProcessor.DigestDateHelperTest do
     }
   ]
 
+  @ap5 [
+    %{
+      start: DT.from_erl!({{2017, 05, 27}, {1, 0, 1}}, "America/New_York"),
+      end: nil
+    }
+  ]
+
 
   @alert1 %Alert{
     id: "1",
@@ -59,6 +66,12 @@ defmodule AlertProcessor.DigestDateHelperTest do
     id: "4",
     header: "test4",
     active_period: @ap4
+  }
+
+  @alert5 %Alert{
+    id: "5",
+    header: "test5",
+    active_period: @ap5
   }
 
   test "calculate_date_groups/1 adds date group array to each alert" do
@@ -92,5 +105,29 @@ defmodule AlertProcessor.DigestDateHelperTest do
     assert u_week == upcoming_week
     assert n_weekend == next_weekend
     assert fut == future
+  end
+
+  test "handle for nil active_period.end" do
+    alerts = [@alert5]
+
+    assert {_alerts, digest_date_group} = DigestDateHelper.calculate_date_groups(alerts, @thursday)
+    assert %DigestDateGroup{
+     upcoming_weekend: %{
+        timeframe: _u_weekend,
+        alert_ids: []
+      },
+     upcoming_week: %{
+        timeframe: _u_week,
+        alert_ids: ["5"]
+      },
+      next_weekend: %{
+        timeframe: _n_weekend,
+        alert_ids: ["5"]
+      },
+      future: %{
+        timeframe: _fut,
+        alert_ids: ["5"]
+      }
+    } = digest_date_group
   end
 end
