@@ -1,6 +1,11 @@
 defmodule ConciergeSite.SubwaySubscriptionView do
   use ConciergeSite.Web, :view
 
+  @typedoc """
+  Possible values for trip types in Create Subscription flow
+  """
+  @type trip_type :: :one_way | :round_trip | :roaming
+
   @disabled_progress_bar_links %{trip_info: [:trip_info, :preferences],
     preferences: [:preferences]}
 
@@ -25,5 +30,29 @@ defmodule ConciergeSite.SubwaySubscriptionView do
 
   def progress_step_classes(_page, _step) do
     %{}
+  end
+
+  @doc """
+  Provide description text for Trip Info page based on which trip type selected
+  """
+
+  @spec trip_info_description(trip_type) :: String.t
+  def trip_info_description(:one_way) do
+    "Please note: We will only send you alerts about service updates that affect your origin and destination stations."
+  end
+
+  def trip_info_description(:round_trip) do
+    [
+      :one_way |> trip_info_description |> String.trim_trailing("."),
+      ", in both directions."
+    ]
+  end
+
+  def trip_info_description(:roaming) do
+    "We will send you alerts and service updates that affect all stations along your specified route."
+  end
+
+  def trip_info_description(_trip_type) do
+    ""
   end
 end

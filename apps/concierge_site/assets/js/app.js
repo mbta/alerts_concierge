@@ -20,4 +20,8 @@ import "phoenix_html"
 
 // import socket from "./socket"
 
+import selectStation from './select-station';
+
+selectStation();
+
 document.body.className = document.body.className.replace("no-js", "js");

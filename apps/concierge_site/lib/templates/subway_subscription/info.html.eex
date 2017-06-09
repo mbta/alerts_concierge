@@ -2,4 +2,35 @@
 
 <%= render "_progress_bar.html", current_page: :trip_info, conn: @conn %>
 
-Trip Info
+<div class="enter-trip-info">
+  <h2>Enter your trip info</h2>
+
+  <p>
+    <%= Map.get(@subscription_params, "trip_type", "")
+        |> String.to_existing_atom
+        |> trip_info_description %>
+  </p>
+
+  <form>
+    <div class="form-group select-station">
+      <label for="origin" class="station-input-label form-label">Origin</label>
+      <%= select :subscription,
+                 :origin,
+                 @station_list_select_options,
+                 class: "subscription-select-origin no-js",
+                 prompt: "Select a station" %>
+    </div>
+    <div class="form-group select-station">
+      <label for="destination" class="station-input-label form-label">Destination</label>
+      <%= select :subscription,
+                 :destination,
+                 @station_list_select_options,
+                 class: "subscription-select-destination no-js",
+                 prompt: "Select a station" %>
+    </div>
+  </form>
+</div>
+
+<%= link to: subway_subscription_path(@conn, :new), class: "subscription-back-link" do %>
+  <i class="fa fa-arrow-left" aria-hidden="true"></i> Go Back
+<% end %>
