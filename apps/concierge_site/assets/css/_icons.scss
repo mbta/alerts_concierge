@@ -1,0 +1,33 @@
+.icon-blue-line-circle {
+  fill: $brand-blue-line;
+}
+
+.icon-red-line-circle,
+.icon-mattapan-line-circle {
+  fill: $brand-red-line;
+}
+
+.icon-orange-line-circle {
+  fill: $brand-orange-line;
+}
+
+.icon-green-line-circle {
+  fill: $brand-green-line;
+}
+
+.large-icon-with-circle {
+  height: 2rem;
+
+  .icon-image {
+    fill: $white;
+  }
+}
+
+.icon-with-circle {
+  display: inline-block;
+  height: 1.25rem;
+
+  .icon-image {
+    fill: $white;
+  }
+}

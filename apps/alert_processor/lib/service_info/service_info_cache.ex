@@ -73,10 +73,10 @@ defmodule AlertProcessor.ServiceInfoCache do
       |> ApiClient.routes()
       |> Enum.filter_map(
           fn(%{"attributes" => %{"type" => route_type}}) -> route_type <= 1 end,
-          fn(%{"attributes" => %{"type" => route_type, "direction_names" => direction_names}, "id" => id}) -> {id, route_type, direction_names}
+          fn(%{"attributes" => %{"type" => route_type, "long_name" => long_name, "direction_names" => direction_names}, "id" => id}) -> {id, route_type, long_name, direction_names}
         end)
 
-    Enum.flat_map(routes, fn({route_id, route_type, direction_names}) ->
+    Enum.flat_map(routes, fn({route_id, route_type, long_name, direction_names}) ->
       stop_list =
         route_id
         |> ApiClient.route_stops
@@ -85,9 +85,9 @@ defmodule AlertProcessor.ServiceInfoCache do
         end)
       case fetch_route_branches(route_id) do
         [] ->
-          [%Route{route_id: route_id, route_type: route_type, direction_names: direction_names, stop_list: stop_list}]
+          [%Route{route_id: route_id, long_name: long_name, route_type: route_type, direction_names: direction_names, stop_list: stop_list}]
         branches ->
-          parse_branches(%Route{route_id: route_id, route_type: route_type, direction_names: direction_names}, stop_list, branches)
+          parse_branches(%Route{route_id: route_id, long_name: long_name, route_type: route_type, direction_names: direction_names}, stop_list, branches)
       end
     end)
   end
