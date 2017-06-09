@@ -5,6 +5,7 @@ export default function($) {
 
   if ($(".enter-trip-info").length) {
     props.allStations = generateStationList();
+    props.validStationNames = props.allStations.map(station => station.name);
     attachSuggestionInputs();
   }
 
@@ -30,12 +31,24 @@ export default function($) {
     }
   }
 
+  function validateStationInput(event) {
+    const originDestination = event.data.originDestination;
+    const $stationInput = $(`.${subscriptionSelectClass(originDestination)}`);
+
+    if (props.validStationNames.includes(event.target.value)) {
+      $stationInput.attr("data-valid", true);
+    } else {
+      $stationInput.attr("data-valid", false)
+    }
+  }
+
   function assignSuggestion(event) {
     const originDestination = event.data.originDestination;
     const stationName = $(".station-name", $(this)).text();
     const $stationInput = $(`.${subscriptionSelectClass(originDestination)}`);
 
     $stationInput.val(stationName);
+    $stationInput.attr("data-valid", true);
 
     unmountStationSuggestions(originDestination);
   }
@@ -49,6 +62,7 @@ export default function($) {
     if ($firstSuggestion.length) {
       const stationName = $(".station-name", $firstSuggestion).text();
       $stationInput.val(stationName);
+      $stationInput.attr("data-valid", true);
     }
 
     unmountStationSuggestions(originDestination);
@@ -93,7 +107,7 @@ export default function($) {
 
   function renderStationInput(originDestination) {
     return `
-      <input type="text" name="${originDestination}" placeholder="Enter a station" class="${stationInputClass(originDestination)}" />
+      <input type="text" name="${originDestination}" placeholder="Enter a station" class="${stationInputClass(originDestination)}"/>
       <div class="suggestion-container"></div>
     `
   }
@@ -159,6 +173,10 @@ export default function($) {
     "keyup", ".subscription-select-origin", { originDestination: "origin" }, typeahead);
   $(document).on(
     "keyup", ".subscription-select-destination", { originDestination: "destination" }, typeahead);
+  $(document).on(
+    "keyup", ".subscription-select-origin", { originDestination: "origin" }, validateStationInput);
+  $(document).on(
+    "keyup", ".subscription-select-destination", { originDestination: "destination" }, validateStationInput);
   $(document).on(
     "focusout", ".subscription-select-origin", { originDestination: "origin" }, pickFirstSuggestion);
   $(document).on(
