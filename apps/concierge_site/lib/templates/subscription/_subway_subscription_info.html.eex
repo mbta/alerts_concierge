@@ -1,0 +1,18 @@
+<%= if @subscription_info != [] do %>
+  <div class="subway-subscriptions">
+    <h6>Subway</h6>
+    <%= for subscription <- @subscription_info do %>
+      <%= link(to: subscription_path(@conn, :edit, subscription), class: "subscription-link") do %>
+        <div class="subscription">
+          <div class="subscription-icon-container">
+            <%= render ConciergeSite.IconsView, "_circle_icon.html", route: parse_route(subscription), large: true %>
+          </div>
+          <%= subway_subscription_info(subscription) %>
+          <div class="subscription-edit-link">
+            <i class="fa fa-chevron-right" aria-hidden="true"></i>
+          </div>
+        </div>
+      <% end %>
+    <% end %>
+  </div>
+<% end %>

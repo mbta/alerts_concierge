@@ -25,7 +25,8 @@ defmodule ConciergeSite.SubscriptionView do
     subscription_map =
       subscriptions
       |> Enum.sort_by(fn(subscription) ->
-        route_key = subscription |> parse_route() |> String.split("-") |> List.first()
+        route = parse_route(subscription)
+        route_key = route.long_name |> String.split() |> List.first()
         {route_key, subscription.start_time}
       end)
       |> Enum.group_by(& &1.type)
@@ -81,8 +82,13 @@ defmodule ConciergeSite.SubscriptionView do
     output
   end
 
-  defp parse_route(subscription) do
+  defp parse_route_id(subscription) do
     %InformedEntity{route: route} = Enum.find(subscription.informed_entities, fn(%InformedEntity{route: route}) -> !is_nil(route) end)
+    route
+  end
+
+  defp parse_route(subscription) do
+    {:ok, route} = AlertProcessor.ServiceInfoCache.get_route(subscription.type, parse_route_id(subscription))
     route
   end
 
@@ -91,7 +97,7 @@ defmodule ConciergeSite.SubscriptionView do
       :roaming ->
         :roaming
       direction ->
-        {:ok, direction_name} = AlertProcessor.ServiceInfoCache.get_direction_name(:subway, parse_route(subscription), direction)
+        {:ok, direction_name} = AlertProcessor.ServiceInfoCache.get_direction_name(:subway, parse_route_id(subscription), direction)
         direction_name
     end
   end

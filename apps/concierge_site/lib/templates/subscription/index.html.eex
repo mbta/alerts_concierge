@@ -1,1 +1,7 @@
-My Subscriptions
+<h1>My Subscriptions</h1>
+<div class="my-subscriptions-container">
+  <% subscription_info = sorted_subscriptions(@subscriptions) %>
+  <%= render "_subway_subscription_info.html", conn: @conn, subscription_info: subscription_info[:subway] %>
+
+  <%= link("Create a new subscription", to: subscription_path(@conn, :new), class: "btn btn-primary btn-create-new-sub") %>
+</div>

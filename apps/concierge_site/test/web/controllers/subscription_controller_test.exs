@@ -4,6 +4,7 @@ defmodule ConciergeSite.SubscriptionControllerTest do
   @password "password1"
   @encrypted_password Comeonin.Bcrypt.hashpwsalt(@password)
 
+  import AlertProcessor.Factory
   alias AlertProcessor.{Model.User, Repo}
 
   describe "authorized" do
@@ -11,11 +12,34 @@ defmodule ConciergeSite.SubscriptionControllerTest do
       user = Repo.insert!(%User{email: "test@email.com",
                                 role: "user",
                                 encrypted_password: @encrypted_password})
+
+      :subscription
+      |> build(user: user)
+      |> weekday_subscription()
+      |> subway_subscription()
+      |> Repo.preload(:informed_entities)
+      |> Ecto.Changeset.change()
+      |> Ecto.Changeset.put_assoc(:informed_entities, subway_subscription_entities())
+      |> Repo.insert()
+
       conn = user
       |> guardian_login(conn)
       |> get("/my-subscriptions")
 
       assert html_response(conn, 200) =~ "My Subscriptions"
+      assert html_response(conn, 200) =~ "Davis"
+      assert html_response(conn, 200) =~ "Harvard"
+    end
+
+    test "GET /my-subscriptions redirects if no subscriptions", %{conn: conn}  do
+      user = Repo.insert!(%User{email: "test@email.com",
+                                role: "user",
+                                encrypted_password: @encrypted_password})
+      conn = user
+      |> guardian_login(conn)
+      |> get("/my-subscriptions")
+
+      assert redirected_to(conn, 302) =~ subscription_path(conn, :new)
     end
 
     test "GET /subscriptions/new", %{conn: conn}  do

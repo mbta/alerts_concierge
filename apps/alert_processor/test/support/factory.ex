@@ -37,6 +37,23 @@ defmodule AlertProcessor.Factory do
     Map.put(subscription, :relevant_days, [:saturday | subscription.relevant_days])
   end
 
+  def subway_subscription(%Subscription{} = subscription) do
+    %{subscription |
+      type: :subway,
+      origin: "Davis",
+      destination: "Harvard"}
+  end
+
+  def subway_subscription_entities() do
+    [
+      %InformedEntity{route_type: 1},
+      %InformedEntity{route_type: 1, route: "Red"},
+      %InformedEntity{route_type: 1, route: "Red", direction_id: 0},
+      %InformedEntity{route_type: 1, route: "Red", stop: "place-davis"},
+      %InformedEntity{route_type: 1, route: "Red", stop: "place-harsq"}
+    ]
+  end
+
   def user_factory do
     %User{
       email: sequence(:email, &"email-#{&1}@example.com"),
