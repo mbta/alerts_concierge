@@ -3,13 +3,6 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
     <title>MBTA Alerts</title>
-    <style type="text/css">
-      /* Using comments a hack to preserve syntax highlighting
-        <%= digest_styles %>
-        <%= AlertProcessor.MailHelper.header_styles %>
-        <%= AlertProcessor.MailHelper.footer_styles %>
-      */
-    </style>
   </head>
   <body leftmargin="0" marginwidth="0" topmargin="0" marginheight="0" offset="0">
     <%= AlertProcessor.MailHelper.header %>

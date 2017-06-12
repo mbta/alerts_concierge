@@ -6,24 +6,18 @@ defmodule AlertProcessor.DigestMailer do
   require EEx
 
   @from Application.get_env(:alert_processor, __MODULE__)[:from]
-  @template_dir Path.join(~w(#{File.cwd!} lib mail_templates))
+  @template_dir Application.get_env(:alert_processor, :mail_template_dir)
 
   EEx.function_from_file(
     :def,
     :html_email,
     Path.join(@template_dir, "digest.html.eex"),
-    [:digest_date_groups, :digest_styles])
+    [:digest_date_groups])
   EEx.function_from_file(
     :def,
     :text_email,
     Path.join(@template_dir, "digest.txt.eex"),
     [:digest_date_groups])
-  EEx.function_from_file(
-    :def,
-    :digest_styles,
-    Path.join(@template_dir, "digest_styles.css"),
-    []
-  )
 
   @doc "digest_email/1 takes a digest and builds a message to a user"
   @spec digest_email(DigestMessage.t) :: Elixir.Bamboo.Email.t
@@ -31,7 +25,7 @@ defmodule AlertProcessor.DigestMailer do
     base_email()
     |> to(digest_message.user.email)
     |> subject("MBTA Alerts Digest")
-    |> html_body(html_email(digest_message.body, digest_styles()))
+    |> html_body(html_email(digest_message.body))
     |> text_body(text_email(digest_message.body))
   end
 

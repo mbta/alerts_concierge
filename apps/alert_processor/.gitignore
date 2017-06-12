@@ -13,3 +13,4 @@ npm-debug.log
 .iex.exs
 .env
 .DS_Store
+/mail_inlining/node_modules

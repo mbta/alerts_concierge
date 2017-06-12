@@ -1,0 +1,60 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html>
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <title>MBTA Alerts</title>
+  </head>
+  <body leftmargin="0" marginwidth="0" topmargin="0" marginheight="0" offset="0" style="-webkit-text-size-adjust: none; margin: 0; font-family: Arial, Helvetica Neue, Helvetica, sans-serif; padding: 0px 10px; width: 800px;">
+    <%= AlertProcessor.MailHelper.header %>
+
+    <h1 class="digest-title" style="margin: 0; padding: 36px 0px; font-size: 26px; text-align: center;">
+      T-Alerts: Weekly Digest
+    </h1>
+
+    <div class="digest-group" style="padding-bottom: 30px;">
+      <%= for group <- digest_date_groups do %>
+        <div class="digest-group-section" style="background-color: #f4f4f6;">
+          <div class="digest-group-section-title" style="font-size: 19px; font-weight: bold; line-height: 1.58; color: #1c1e23; text-align: left; padding: 16px 0px; padding-left: 16px;">
+            <%= group.title %>:
+          </div>
+          <%= for alert <- group.alerts do %>
+            <table class="digest-group-alert" style="width: 100%; padding-bottom: 18px;">
+              <tr>
+                <td class="alert-logo" style="border-collapse: collapse; vertical-align: top; padding-left: 16px; padding-right: 12px;">
+                  <img src="<%= AlertProcessor.MailHelper.logo_for_alert(alert) %>" alt="<%= AlertProcessor.MailHelper.alt_text_for_alert(alert) %>" style="border: 0; line-height: 100%; outline: none; text-decoration: none;">
+                </td>
+                <td class="alert-details" style="border-collapse: collapse; font-size: 16px; line-height: 1.5; letter-spacing: normal; color: #1c1e23;">
+                  <p class="alert-service-effect" style="margin: 0; padding: 0; font-weight: bold;">
+                    <%= alert.service_effect %>:
+                  </p>
+                  <p class="alert-header" style="margin: 0; padding: 0;">
+                    <%= alert.header %>
+                  </p>
+                </td>
+              </tr>
+            </table>
+          <% end %>
+        </div>
+      <% end %>
+    </div>
+
+    <div class="line" style="width: 100%; height: 2px; background-color: #061d2e;">
+
+    <center>
+      <div class="digest-footer" style="padding-bottom: 40px;">
+        <div class="digest-footer-description" style="padding: 35px 50px 30px 50px; font-size: 18px; line-height: 1.44; text-align: center; color: #1c1e23;">
+          The digest of upcoming events has been personalized to you based on your subscription, for full list:
+        </div>
+
+        <a class="digest-footer-link" href="https://t.mbta.com/" style="width: 290px; height: 40px; text-decoration: none;">
+          <div class="digest-footer-button" style="width: 244px; padding: 6px 0px; border-radius: 5px; vertical-align: middle; background-color: #1c77c3; font-size: 16px; line-height: 1.75; text-align: center; color: #ffffff;">
+            View All Alerts
+          </div>
+        </a>
+      </div>
+
+      <%= AlertProcessor.MailHelper.footer %>
+    </center>
+	</div></body>
+</html>
+
