@@ -10,7 +10,7 @@ defmodule AlertProcessor.SubscriptionFilterEngineTest do
       effect_name: "Delay",
       header: "This is a test message",
       id: "1",
-      informed_entities: [%{route_type: 1}],
+      informed_entities: [%InformedEntity{route_type: 1}],
       severity: :minor
     }
     {:ok, alert: alert}

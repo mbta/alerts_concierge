@@ -260,10 +260,9 @@ defmodule AlertProcessor.Model.Alert do
       |> Enum.map(fn(informed_entity) ->
         mode =
           case informed_entity do
-            %{route_type: _, route: nil} -> "Systemwide"
-            %{route_type: route_type, route: _} -> route_string(route_type)
-            %{route_type: _} -> "Systemwide"
-            %{stop: _, facility: _} -> "Facility"
+            %{route_type: rt, route: nil} when not is_nil(rt) -> "Systemwide"
+            %{route_type: rt, route: r} when not is_nil(rt) and not is_nil(r) -> route_string(rt)
+            %{stop: s} when not is_nil(s) -> "Facility"
           end
         priority_value(mode, effect_name, severity)
       end)

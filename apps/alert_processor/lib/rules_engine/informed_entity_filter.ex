@@ -19,7 +19,7 @@ defmodule AlertProcessor.InformedEntityFilter do
   def filter({:ok, previous_query, %Alert{informed_entities: informed_entities} = alert}) do
     where_clause =
       Enum.reduce(informed_entities, false, fn(informed_entity), dynamic_query ->
-        informed_entity_where_clause = informed_entity_where_clause(struct(InformedEntity, informed_entity))
+        informed_entity_where_clause = informed_entity_where_clause(informed_entity)
         dynamic(^informed_entity_where_clause or ^dynamic_query)
       end)
 
