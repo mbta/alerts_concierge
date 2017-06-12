@@ -43,21 +43,21 @@ defmodule AlertProcessor.MailHelperTest do
 
     test "logo_for_alert/1 returns commuter rail" do
       alert = Map.merge(@alert, %{informed_entities: [%InformedEntity{route_type: 2}]})
-      commuter_rail = "https://example.com/assets/icons/commuter-rail.png"
+      commuter_rail = "https://example.com/assets/icons/icn_commuter.png"
 
       assert MailHelper.logo_for_alert(alert) == commuter_rail
     end
 
     test "logo_for_alert/1 return bus" do
       alert = Map.merge(@alert, %{informed_entities: [%InformedEntity{route_type: 3}]})
-      bus = "https://example.com/assets/icons/bus.png"
+      bus = "https://example.com/assets/icons/icn_bus.png"
 
       assert MailHelper.logo_for_alert(alert) == bus
     end
 
     test "logo_for_alert/1 return ferry" do
       alert = Map.merge(@alert, %{informed_entities: [%InformedEntity{route_type: 4}]})
-      ferry = "https://example.com/assets/icons/ferry.png"
+      ferry = "https://example.com/assets/icons/icn_ferry.png"
 
       assert MailHelper.logo_for_alert(alert) == ferry
     end

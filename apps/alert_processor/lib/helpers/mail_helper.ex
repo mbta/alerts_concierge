@@ -5,9 +5,9 @@ defmodule AlertProcessor.MailHelper do
   """
   @template_dir Path.join(~w(#{File.cwd!} lib mail_templates))
   @asset_url Application.get_env(:alert_processor, :asset_url)
-  @commuter_rail "#{@asset_url}/icons/commuter-rail.png"
-  @bus "#{@asset_url}/icons/bus.png"
-  @ferry "#{@asset_url}/icons/ferry.png"
+  @commuter_rail "#{@asset_url}/icons/icn_commuter.png"
+  @bus "#{@asset_url}/icons/icn_bus.png"
+  @ferry "#{@asset_url}/icons/icn_ferry.png"
   @logo "#{@asset_url}/icons/t-logo@2x.png"
   @red "#{@asset_url}/icons/icn_red-line.png"
   @blue "#{@asset_url}/icons/icn_blue-line.png"
