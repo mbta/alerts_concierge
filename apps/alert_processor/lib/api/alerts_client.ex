@@ -11,8 +11,6 @@ defmodule AlertProcessor.AlertsClient do
   @spec get_alerts() :: [map] | {atom, map}
   def get_alerts do
    case get(alerts_url()) do
-      {:ok, %{body: %{"errors" => errors}}} ->
-        {:error, errors |> Enum.map_join(", ", &(&1["code"]))}
       {:ok, %{body: %{"alerts" => alerts}}} ->
         {:ok, alerts}
       {:error, message} ->
