@@ -8,7 +8,7 @@ defmodule AlertProcessor.ServiceInfoCache do
   alias AlertProcessor.Helpers.{ConfigHelper, StringHelper}
   alias AlertProcessor.{ApiClient, Model.Route}
 
-  @services [:bus, :subway]
+  @info_types [:bus, :parent_stop_info, :subway]
 
   @doc false
   def start_link(opts \\ [name: __MODULE__]) do
@@ -44,6 +44,10 @@ defmodule AlertProcessor.ServiceInfoCache do
 
   def get_route(name \\ __MODULE__, route_type, route) do
     GenServer.call(name, {:get_route, route_type, route})
+  end
+
+  def get_parent_stop_id(name \\ __MODULE__, stop_id) do
+    GenServer.call(name, {:get_parent_stop_id, stop_id})
   end
 
   @doc """
@@ -91,6 +95,11 @@ defmodule AlertProcessor.ServiceInfoCache do
     {:reply, {:ok, route}, state}
   end
 
+  def handle_call({:get_parent_stop_id, stop_id}, _from, %{parent_stop_info: parent_stop_info} = state) do
+    parent_stop_id = Map.get(parent_stop_info, stop_id)
+    {:reply, {:ok, parent_stop_id}, state}
+  end
+
   defp parse_headsign(relevant_routes, direction_id) do
     case relevant_routes do
       [%Route{route_id: "Green-" <> _} | _t] ->
@@ -123,8 +132,15 @@ defmodule AlertProcessor.ServiceInfoCache do
   end
 
   defp fetch_service_info do
-    for service <- @services, into: %{} do
-      {service, fetch_service_info(service)}
+    for info_type <- @info_types, into: %{} do
+      {info_type, fetch_service_info(info_type)}
+    end
+  end
+
+  defp fetch_service_info(:parent_stop_info) do
+    for subway_stop <- ApiClient.subway_parent_stops(), into: %{} do
+      %{"id" => id, "relationships" => %{"parent_station" => %{"data" => %{"id" => parent_station_id}}}} = subway_stop
+      {id, parent_station_id}
     end
   end
 
