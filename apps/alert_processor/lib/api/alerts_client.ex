@@ -10,7 +10,7 @@ defmodule AlertProcessor.AlertsClient do
   """
   @spec get_alerts() :: [map] | {atom, map}
   def get_alerts do
-   case get("alerts_enhanced.json") do
+   case get(alerts_url()) do
       {:ok, %{body: %{"errors" => errors}}} ->
         {:error, errors |> Enum.map_join(", ", &(&1["code"]))}
       {:ok, %{body: %{"alerts" => alerts}}} ->
@@ -20,8 +20,8 @@ defmodule AlertProcessor.AlertsClient do
     end
   end
 
-  defp process_url(url) do
-    :alert_api_url |> ConfigHelper.get_string() |> URI.merge(url) |> URI.to_string
+  defp alerts_url do
+    ConfigHelper.get_string(:alert_api_url)
   end
 
   defp process_response_body(body) do
