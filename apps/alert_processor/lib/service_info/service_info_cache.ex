@@ -8,7 +8,8 @@ defmodule AlertProcessor.ServiceInfoCache do
   alias AlertProcessor.Helpers.{ConfigHelper, StringHelper}
   alias AlertProcessor.{ApiClient, Model.Route}
 
-  @info_types [:bus, :parent_stop_info, :subway, :subway_full_routes]
+  @service_types [:bus, :subway]
+  @info_types [:parent_stop_info, :subway_full_routes]
 
   @doc false
   def start_link(opts \\ [name: __MODULE__]) do
@@ -46,8 +47,8 @@ defmodule AlertProcessor.ServiceInfoCache do
     GenServer.call(name, {:get_headsign, route_type, origin, destination, direction_id})
   end
 
-  def get_route(name \\ __MODULE__, route_type, route) do
-    GenServer.call(name, {:get_route, route_type, route})
+  def get_route(name \\ __MODULE__, route) do
+    GenServer.call(name, {:get_route, route})
   end
 
   def get_parent_stop_id(name \\ __MODULE__, stop_id) do
@@ -97,9 +98,11 @@ defmodule AlertProcessor.ServiceInfoCache do
     end
   end
 
-  def handle_call({:get_route, route_type, route_id}, _from, state) do
-    mode_state = Map.get(state, route_type)
-    route = Enum.find(mode_state, & &1.route_id == route_id)
+  def handle_call({:get_route, route_id}, _from, state) do
+    route =
+      @service_types
+      |> Enum.flat_map(& Map.get(state, &1))
+      |> Enum.find(& &1.route_id == route_id)
     {:reply, {:ok, route}, state}
   end
 

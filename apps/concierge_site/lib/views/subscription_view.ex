@@ -88,7 +88,7 @@ defmodule ConciergeSite.SubscriptionView do
   end
 
   defp parse_route(subscription) do
-    {:ok, route} = AlertProcessor.ServiceInfoCache.get_route(subscription.type, parse_route_id(subscription))
+    {:ok, route} = subscription |> parse_route_id() |> AlertProcessor.ServiceInfoCache.get_route()
     route
   end
 

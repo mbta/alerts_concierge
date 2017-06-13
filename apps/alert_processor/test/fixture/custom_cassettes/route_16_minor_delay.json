@@ -9,11 +9,11 @@
       "url": "http://s3.amazonaws.com/mbta-realtime-test/alerts_enhanced.json"
     },
     "response": {
-      "body": "{\r\n  \"timestamp\": 1497297693,\r\n  \"alerts\": [\r\n    {\r\n      \"id\": 113687,\r\n      \"effect\": \"OTHER_EFFECT\",\r\n      \"effect_name\": \"ACCESS_ISSUE\",\r\n      \"cause\": \"MAINTENANCE\",\r\n      \"cause_name\": \"MAINTENANCE\",\r\n      \"header_text\": [\r\n        {\r\n          \"translation\": {\r\n            \"text\": \"Chinatown elevator unavailable\",\r\n            \"language\": \"en\"\r\n          }\r\n        }\r\n      ],\r\n      \"description_text\": [\r\n        {\r\n          \"translation\": {\r\n            \"text\": \"Elevator 922 CHINATOWN - Forest Hills Platform to Boylston & Washington Sts unavailable due to maintenance.\\r\\n\\r\\nIf exiting, exit the train at Tufts Medical Center and switch to an Oak Grove-bound train. Exit at Chinatown using Chinatown Elevator 876. If boarding, take the Silver Line to Tufts Medical Center. Alternatively, if you are able, follow Washington Street for one-quarter of a mile to Downtown Crossing Elevator 892 (corner of Winter and Washington Streets).\",\r\n            \"language\": \"en\"\r\n          }\r\n        }\r\n      ],\r\n      \"service_effect_text\": [\r\n        {\r\n          \"translation\": {\r\n            \"text\": \"Chinatown elevator unavailable\",\r\n            \"language\": \"en\"\r\n          }\r\n        }\r\n      ],\r\n      \"short_description_text\": [\r\n        {\r\n          \"translation\": {\r\n            \"text\": \"Elevator 922 CHINATOWN - Forest Hills Platform to Boylston & Washington Sts unavailable due to maintenance\",\r\n            \"language\": \"en\"\r\n          }\r\n        }\r\n      ],\r\n      \"severity_name\": \"MINOR\",\r\n      \"severity_code\": 1,\r\n      \"created_timestamp\": 1494078771,\r\n      \"last_modified_timestamp\": 1494078771,\r\n      \"timeframe_text\": [\r\n        {\r\n          \"translation\": {\r\n            \"text\": \"ongoing\",\r\n            \"language\": \"en\"\r\n          }\r\n        }\r\n      ],\r\n      \"alert_lifecycle\": \"ONGOING\",\r\n      \"duration_certainty\": \"UNKNOWN\",\r\n      \"active_period\": [\r\n        {\r\n          \"start\": 1494078771\r\n        }\r\n      ],\r\n      \"informed_entity\": [\r\n        {\r\n          \"stop_id\": \"70018\",\r\n          \"facility_id\": \"922\"\r\n        }\r\n      ]\r\n    }]}",
+      "body": "{\r\n  \"timestamp\": 1497297693,\r\n  \"alerts\": [\r\n    {\r\n      \"id\": 113724,\r\n      \"effect\": \"OTHER_EFFECT\",\r\n      \"effect_name\": \"DELAY\",\r\n      \"cause\": \"TECHNICAL_PROBLEM\",\r\n      \"cause_name\": \"FIRE\",\r\n      \"header_text\": [\r\n        {\r\n          \"translation\": {\r\n            \"text\": \"Route 16 delay\",\r\n            \"language\": \"en\"\r\n          }\r\n        }\r\n      ],\r\n      \"description_text\": [\r\n        {\r\n          \"translation\": {\r\n            \"text\": \"Route 16 experiencing delays due to fire.\",\r\n            \"language\": \"en\"\r\n          }\r\n        }\r\n      ],\r\n      \"service_effect_text\": [\r\n        {\r\n          \"translation\": {\r\n            \"text\": \"Route 16 delay\",\r\n            \"language\": \"en\"\r\n          }\r\n        }\r\n      ],\r\n      \"short_description_text\": [\r\n        {\r\n          \"translation\": {\r\n            \"text\": \"Route 16 experiencing delays due to fire\",\r\n            \"language\": \"en\"\r\n          }\r\n        }\r\n      ],\r\n      \"severity_name\": \"MINOR\",\r\n      \"severity_code\": 1,\r\n      \"created_timestamp\": 1494437995,\r\n      \"last_modified_timestamp\": 1494438770,\r\n      \"last_push_notification_timestamp\": 1494438770,\r\n      \"timeframe_text\": [\r\n        {\r\n          \"translation\": {\r\n            \"text\": \"ongoing\",\r\n            \"language\": \"en\"\r\n          }\r\n        }\r\n      ],\r\n      \"alert_lifecycle\": \"ONGOING\",\r\n      \"duration_certainty\": \"UNKNOWN\",\r\n      \"active_period\": [\r\n        {\r\n          \"start\": 1494437994\r\n        }\r\n      ],\r\n      \"informed_entity\": [\r\n        {\r\n          \"agency_id\": \"1\",\r\n          \"route_id\": \"16\"\r\n        }\r\n      ]\r\n    }\r\n  ]\r\n}",
       "headers": {
-        "x-amz-id-2": "dIXV2gtomYQW9YA8Cbxx3r/MHp5Iggiaf8PNWcWXIZ9zd8ubZLLu4QZ3IQEA4l9I5ZUKy4QOm9I=",
-        "x-amz-request-id": "6F23F00F6D9463DF",
-        "Date": "Mon, 12 Jun 2017 20:02:28 GMT",
+        "x-amz-id-2": "ouRQdG1H4oLbDpjZmvIxuJIxW/Wgyz+DTBPx8FWn4S5FQEuyH6nyTudLulMHYhZ/ExqW+/mSxVc=",
+        "x-amz-request-id": "2B15F0A1A7FA56AF",
+        "Date": "Mon, 12 Jun 2017 20:02:27 GMT",
         "Last-Modified": "Mon, 12 Jun 2017 20:01:35 GMT",
         "ETag": "\"6626d8270692545df9906cb471036a13\"",
         "x-amz-meta-title": "someTitle",
@@ -40,9 +40,9 @@
       "headers": {
         "cache-control": "max-age=0, private, must-revalidate",
         "Content-Type": "application/vnd.api+json; charset=utf-8",
-        "Date": "Mon, 12 Jun 2017 20:02:27 GMT",
+        "Date": "Mon, 12 Jun 2017 20:02:26 GMT",
         "Server": "nginx/1.10.2",
-        "x-request-id": "nhka8jkm8gt0vsl21ko7kj81f8m7si0t",
+        "x-request-id": "ch23ufftrekhrvk1imiktlanvv9nrkve",
         "Content-Length": "79117",
         "Connection": "keep-alive"
       },

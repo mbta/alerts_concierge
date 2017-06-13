@@ -115,13 +115,13 @@ defmodule AlertProcessor.ServiceInfoCacheTest do
     end
   end
 
-  test "get_route :subway returns the correct Route" do
+  test "get_route returns the correct Route" do
     use_cassette "service_info", custom: true, clear_mock: true, match_requests_on: [:query] do
       {:ok, pid} = ServiceInfoCache.start_link([name: :service_info_cache_test_get_route])
-      assert {:ok, %Route{long_name: "Red Line"}} = ServiceInfoCache.get_route(pid, :subway, "Red")
-      assert {:ok, %Route{long_name: "Green Line B"}} = ServiceInfoCache.get_route(pid, :subway, "Green-B")
-      assert {:ok, %Route{long_name: "Mattapan Trolley"}} = ServiceInfoCache.get_route(pid, :subway, "Mattapan")
-      assert {:ok, %Route{long_name: "Orange Line"}} = ServiceInfoCache.get_route(pid, :subway, "Orange")
+      assert {:ok, %Route{long_name: "Red Line"}} = ServiceInfoCache.get_route(pid, "Red")
+      assert {:ok, %Route{long_name: "Green Line B"}} = ServiceInfoCache.get_route(pid, "Green-B")
+      assert {:ok, %Route{long_name: "Mattapan Trolley"}} = ServiceInfoCache.get_route(pid, "Mattapan")
+      assert {:ok, %Route{long_name: "Orange Line"}} = ServiceInfoCache.get_route(pid, "Orange")
     end
   end
 

@@ -29,12 +29,12 @@ defmodule AlertProcessor.AlertParserTest do
   test "process_alerts/1 sends to correct users via filter chain" do
     user1 = insert(:user, phone_number: nil)
     :subscription
-    |> build(user: user1, alert_priority_type: :low, informed_entities: [%InformedEntity{route_type: 3, route: "19"}])
+    |> build(user: user1, alert_priority_type: :low, informed_entities: [%InformedEntity{route_type: 3, route: "16"}])
     |> weekday_subscription
     |> insert
     user2 = insert(:user, phone_number: nil)
     :subscription
-    |> build(user: user2, alert_priority_type: :high, informed_entities: [%InformedEntity{route_type: 3, route: "19"}])
+    |> build(user: user2, alert_priority_type: :high, informed_entities: [%InformedEntity{route_type: 3, route: "16"}])
     |> weekday_subscription
     |> insert
     user3 = insert(:user, phone_number: nil)
@@ -44,15 +44,15 @@ defmodule AlertProcessor.AlertParserTest do
     |> insert
     user4 = insert(:user, phone_number: nil)
     :subscription
-    |> build(user: user4, alert_priority_type: :low, informed_entities: [%InformedEntity{route_type: 3, route: "19"}])
+    |> build(user: user4, alert_priority_type: :low, informed_entities: [%InformedEntity{route_type: 3, route: "16"}])
     |> weekday_subscription
     |> insert
-    insert(:notification, alert_id: "177528", last_push_notification: ~N[2017-04-11 11:53:33], user: user4, email: user4.email, phone_number: user4.phone_number, status: "sent", send_after: ~N[2017-04-25 10:00:00])
+    insert(:notification, alert_id: "113724", last_push_notification: ~N[2017-05-10 17:52:50], user: user4, email: user4.email, phone_number: user4.phone_number, status: "sent", send_after: ~N[2017-04-25 10:00:00])
 
-    use_cassette "route_19_minor_delay", custom: true, clear_mock: true, match_requests_on: [:query] do
+    use_cassette "route_16_minor_delay", custom: true, clear_mock: true, match_requests_on: [:query] do
       assert [{:ok, [%{
-        service_effect: "Minor Route 19 delay",
-        header: "Route 19 experiencing minor delays due to traffic"
+        service_effect: "Route 16 delay",
+        header: "Route 16 experiencing delays due to fire"
       }]} | _t] = AlertParser.process_alerts
     end
   end
@@ -60,15 +60,15 @@ defmodule AlertProcessor.AlertParserTest do
   test "process_alerts/1 parses alerts and replaces facility id with type" do
     user1 = insert(:user, phone_number: nil)
     :subscription
-    |> build(user: user1, alert_priority_type: :low, informed_entities: [%InformedEntity{stop: "place-pktrm", facility_type: :elevator}])
+    |> build(user: user1, alert_priority_type: :low, informed_entities: [%InformedEntity{stop: "place-chncl", facility_type: :elevator}])
     |> weekday_subscription
     |> insert
 
     use_cassette "facilities_alerts", custom: true, clear_mock: true, match_requests_on: [:query] do
       result = AlertParser.process_alerts
       [notification] = Enum.reduce(result, [], fn({:ok, x}, acc) -> acc ++ x end)
-      assert notification.header == "Elevator 804 PARK STREET - Tremont Street to the Lobby will be reconstructed and will be out of service through June 2017."
-      assert notification.description == "If entering the station, cross Tremont Street to the Boston Common and use Park Street Elevator 978 to the Green Line westbound platform. Red Line platform access is available via the elevator beyond the fare gates. If exiting the station, please travel down the Winter Street Concourse toward Downtown Crossing Station, exit through the fare gates, and take Downtown Crossing Elevator 892 to the street level."
+      assert notification.header == "Elevator 922 CHINATOWN - Forest Hills Platform to Boylston & Washington Sts unavailable due to maintenance"
+      assert notification.description == "Elevator 922 CHINATOWN - Forest Hills Platform to Boylston & Washington Sts unavailable due to maintenance.\r\n\r\nIf exiting, exit the train at Tufts Medical Center and switch to an Oak Grove-bound train. Exit at Chinatown using Chinatown Elevator 876. If boarding, take the Silver Line to Tufts Medical Center. Alternatively, if you are able, follow Washington Street for one-quarter of a mile to Downtown Crossing Elevator 892 (corner of Winter and Washington Streets)."
     end
   end
 end
