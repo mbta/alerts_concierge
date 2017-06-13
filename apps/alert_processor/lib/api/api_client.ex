@@ -27,14 +27,9 @@ defmodule AlertProcessor.ApiClient do
   """
   @spec facilities() :: [map] | {:error, String.t}
   def facilities do
-    case get("/facilities?fields[facility]=type") do
-      {:ok, %{body: %{"errors" => errors}}} ->
-        {:error, errors |> Enum.map_join(", ", &(&1["code"]))}
-      {:ok, %{body: %{"data" => facilities}}} ->
-        facilities
-      {:error, message} ->
-        {:error, message}
-    end
+    "/facilities?fields[facility]=type"
+    |> get()
+    |> parse_response()
   end
 
   @doc """
@@ -42,14 +37,9 @@ defmodule AlertProcessor.ApiClient do
   """
   @spec routes([integer], [String.t]) :: [map] | {:error, String.t}
   def routes(types \\ [], fields \\ ["long_name", "type", "direction_names"]) do
-    case get("/routes?filter[type]=#{Enum.join(types, ",")}&fields[route]=#{Enum.join(fields, ",")}") do
-      {:ok, %{body: %{"errors" => errors}}} ->
-        {:error, errors |> Enum.map_join(", ", &(&1["code"]))}
-      {:ok, %{body: %{"data" => routes}}} ->
-        routes
-      {:error, message} ->
-        {:error, message}
-    end
+    "/routes?filter[type]=#{Enum.join(types, ",")}&fields[route]=#{Enum.join(fields, ",")}"
+    |> get()
+    |> parse_response()
   end
 
   @doc """
@@ -57,14 +47,9 @@ defmodule AlertProcessor.ApiClient do
   """
   @spec trips(String.t, integer, [String.t]) :: [map] | {:error, String.t}
   def trips(route, direction_id, fields \\ ["headsign"]) do
-    case get("/trips?route=#{route}&direction_id=#{direction_id}&fields[trip]=#{Enum.join(fields, ",")}") do
-      {:ok, %{body: %{"errors" => errors}}} ->
-        {:error, errors |> Enum.map_join(", ", &(&1["code"]))}
-      {:ok, %{body: %{"data" => trips}}} ->
-        trips
-      {:error, message} ->
-        {:error, message}
-    end
+    "/trips?route=#{route}&direction_id=#{direction_id}&fields[trip]=#{Enum.join(fields, ",")}"
+    |> get()
+    |> parse_response()
   end
 
   @doc """
@@ -72,14 +57,9 @@ defmodule AlertProcessor.ApiClient do
   """
   @spec route_stops(String.t) :: [map] | {:error, String.t}
   def route_stops(route) do
-    case get("/stops/?route=#{route}&direction_id=1") do
-      {:ok, %{body: %{"errors" => errors}}} ->
-        {:error, errors |> Enum.map_join(", ", &(&1["code"]))}
-      {:ok, %{body: %{"data" => stops}}} ->
-        stops
-      {:error, message} ->
-        {:error, message}
-    end
+    "/stops/?route=#{route}&direction_id=1"
+    |> get()
+    |> parse_response()
   end
 
   @doc """
@@ -87,14 +67,9 @@ defmodule AlertProcessor.ApiClient do
   """
   @spec subway_parent_stops() :: [map] | {:error, String.t}
   def subway_parent_stops do
-    case get("/stops?filter[route_type]=0,1") do
-      {:ok, %{body: %{"errors" => errors}}} ->
-        {:error, errors |> Enum.map_join(", ", &(&1["code"]))}
-      {:ok, %{body: %{"data" => stops}}} ->
-        stops
-      {:error, message} ->
-        {:error, message}
-    end
+    "/stops?filter[route_type]=0,1"
+    |> get()
+    |> parse_response()
   end
 
   @doc """
@@ -102,11 +77,17 @@ defmodule AlertProcessor.ApiClient do
   """
   @spec route_shapes(String.t) :: [map] | {:error, String.t}
   def route_shapes(route) do
-    case get("/shapes/?route=#{route}&direction_id=1&fields[shape]=priority") do
+    "/shapes/?route=#{route}&direction_id=1&fields[shape]=priority"
+    |> get()
+    |> parse_response()
+  end
+
+  defp parse_response(response) do
+    case response do
       {:ok, %{body: %{"errors" => errors}}} ->
         {:error, errors |> Enum.map_join(", ", &(&1["code"]))}
-      {:ok, %{body: %{"data" => shapes}}} ->
-        shapes
+      {:ok, %{body: %{"data" => data}}} ->
+        data
       {:error, message} ->
         {:error, message}
     end
