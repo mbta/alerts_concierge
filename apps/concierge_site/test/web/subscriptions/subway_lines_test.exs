@@ -5,11 +5,6 @@ defmodule ConciergeSite.Subscriptions.SubwayLinesTest do
   describe "station_select_list_options" do
     test "changes a map of routes into a keyword list" do
       routes = [
-<<<<<<< 41fef6e539de13df2bf7766a4e5b566084d0e377
-        %AlertProcessor.Model.Route{direction_names: [], long_name: "Green Line D", route_type: 0, stop_list: []},
-        %AlertProcessor.Model.Route{direction_names: [], long_name: "Red Line", route_type: 0, stop_list: []},
-        %AlertProcessor.Model.Route{direction_names: [], long_name: "Blue Line", route_type: 0, stop_list: []}
-=======
         %AlertProcessor.Model.Route{
           direction_names: [],
           long_name: "Red Line",
@@ -40,7 +35,6 @@ defmodule ConciergeSite.Subscriptions.SubwayLinesTest do
           route_type: 0,
           stop_list: [{"Bowdoin", "place-bomnl"}]
         }
->>>>>>> Return Braintree and Ashmont Red Line names for select options
       ]
 
       select_options = SubwayLines.station_list_select_options(routes)
