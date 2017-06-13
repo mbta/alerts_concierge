@@ -102,13 +102,14 @@ defmodule AlertProcessor.AlertParser do
   defp parse_informed_entities(informed_entities, facilities_map) do
     InformedEntity.queryable_fields
     Enum.map(informed_entities, fn(ie) ->
-      informed_entity = Map.new(ie, fn({k, v}) -> {String.to_existing_atom(k), v} end)
-      with %{facility: facility_id} <- informed_entity,
+      struct_params = for {k, v} <- ie, do: {String.to_existing_atom(k), v}
+      informed_entity = struct(InformedEntity, struct_params)
+      with {:facility, facility_id} <- Enum.find(struct_params, &(elem(&1, 0) == :facility)),
            %{^facility_id => facility_type} <- facilities_map
       do
-        %{struct(InformedEntity, informed_entity) | facility_type: facility_type |> String.downcase() |> String.to_existing_atom()}
+        %{informed_entity | facility_type: facility_type |> String.downcase() |> String.to_existing_atom()}
       else
-        _ -> struct(InformedEntity, informed_entity)
+        _ -> informed_entity
       end
     end)
   end
