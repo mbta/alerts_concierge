@@ -118,7 +118,7 @@ export default function($) {
     const circleIcons = lineNames.map(renderCircleIcon).join("");
 
     return `
-      <div class="${stationSuggestionClass(originDestination)}">
+      <div class="${stationSuggestionClass(originDestination)}" data-lines="${station.allLineNames.join(",")}">
         <div class="station-name">${station.name}</div>
         <div class="station-lines">
           ${circleIcons}
