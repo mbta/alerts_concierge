@@ -99,10 +99,23 @@ defmodule AlertProcessor.ServiceInfoCacheTest do
   end
 
   test "get_route :subway returns the correct Route" do
-    {:ok, pid} = ServiceInfoCache.start_link([name: :service_info_cache_test_get_route])
-    assert {:ok, %Route{long_name: "Red Line"}} = ServiceInfoCache.get_route(pid, :subway, "Red")
-    assert {:ok, %Route{long_name: "Green Line B"}} = ServiceInfoCache.get_route(pid, :subway, "Green-B")
-    assert {:ok, %Route{long_name: "Mattapan Trolley"}} = ServiceInfoCache.get_route(pid, :subway, "Mattapan")
-    assert {:ok, %Route{long_name: "Orange Line"}} = ServiceInfoCache.get_route(pid, :subway, "Orange")
+    use_cassette "service_info", custom: true, clear_mock: true, match_requests_on: [:query] do
+      {:ok, pid} = ServiceInfoCache.start_link([name: :service_info_cache_test_get_route])
+      assert {:ok, %Route{long_name: "Red Line"}} = ServiceInfoCache.get_route(pid, :subway, "Red")
+      assert {:ok, %Route{long_name: "Green Line B"}} = ServiceInfoCache.get_route(pid, :subway, "Green-B")
+      assert {:ok, %Route{long_name: "Mattapan Trolley"}} = ServiceInfoCache.get_route(pid, :subway, "Mattapan")
+      assert {:ok, %Route{long_name: "Orange Line"}} = ServiceInfoCache.get_route(pid, :subway, "Orange")
+    end
+  end
+
+  test "get_parent_stop_id returns the correct parent stop id" do
+    use_cassette "service_info", custom: true, clear_mock: true, match_requests_on: [:query] do
+      {:ok, pid} = ServiceInfoCache.start_link([name: :service_info_cache_test_get_parent_stop_id])
+      assert {:ok, "place-gover"} = ServiceInfoCache.get_parent_stop_id(pid, "70039")
+      assert {:ok, "place-fenwy"} = ServiceInfoCache.get_parent_stop_id(pid, "70186")
+      assert {:ok, "place-ogmnl"} = ServiceInfoCache.get_parent_stop_id(pid, "70036")
+      assert {:ok, "place-davis"} = ServiceInfoCache.get_parent_stop_id(pid, "70063")
+      assert {:ok, nil} = ServiceInfoCache.get_parent_stop_id(pid, "garbage")
+    end
   end
 end
