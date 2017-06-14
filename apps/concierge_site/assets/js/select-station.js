@@ -2,6 +2,7 @@ export default function($) {
   $ = $ || window.jQuery;
 
   let props = {};
+  let state = {};
 
   if ($(".enter-trip-info").length) {
     props.allStations = generateStationList();
@@ -32,13 +33,16 @@ export default function($) {
   }
 
   function validateStationInput(event) {
+    const inputText = event.target.value;
     const originDestination = event.data.originDestination;
     const $stationInput = $(`.${subscriptionSelectClass(originDestination)}`);
 
     if (props.validStationNames.includes(event.target.value)) {
       $stationInput.attr("data-valid", true);
+      setSelectedStation(originDestination, inputText, associatedLines(inputText))
     } else {
-      $stationInput.attr("data-valid", false)
+      $stationInput.attr("data-valid", false);
+      clearSelectedStation(originDestination);
     }
   }
 
@@ -49,7 +53,7 @@ export default function($) {
 
     $stationInput.val(stationName);
     $stationInput.attr("data-valid", true);
-
+    setSelectedStation(originDestination, stationName, $(this).attr("data-lines"));
     unmountStationSuggestions(originDestination);
   }
 
@@ -63,6 +67,7 @@ export default function($) {
       const stationName = $(".station-name", $firstSuggestion).text();
       $stationInput.val(stationName);
       $stationInput.attr("data-valid", true);
+      setSelectedStation(originDestination, stationName, $firstSuggestion.attr("data-lines"));
     }
 
     unmountStationSuggestions(originDestination);
@@ -156,6 +161,16 @@ export default function($) {
     return `icon-${lineColor}-line-circle`
   }
 
+  function setSelectedStation(originDestination, stationName, lines) {
+    state[`${originDestination}SelectedName`] = stationName;
+    state[`${originDestination}SelectedLines`] = lines;
+  }
+
+  function clearSelectedStation(originDestination) {
+    state[`${originDestination}SelectedName`] = null;
+    state[`${originDestination}SelectedLines`] = null;
+  }
+
   function compactLineNames(lineNames) {
     let lines = [];
 
@@ -168,6 +183,14 @@ export default function($) {
     });
 
     return lines;
+  }
+
+  function associatedLines(name) {
+    const station = props.allStations.find(function(station) {
+      return station.name == name;
+    });
+
+    return station.allLineNames.join(",");
   }
 
   $(document).on(
