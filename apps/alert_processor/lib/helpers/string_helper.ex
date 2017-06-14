@@ -22,4 +22,13 @@ defmodule AlertProcessor.Helpers.StringHelper do
   def or_join(str, [h | t]) do
     or_join("#{str}, #{h}", t)
   end
+
+  @doc """
+  split_capitalize takes a string and optional split string and returns
+  the string split and joined with a space with each word capitalized.
+  """
+  @spec split_capitalize(String.t) :: String.t
+  def split_capitalize(str, split \\ " ") do
+    str |> String.split(split) |> Enum.map_join(" ", &String.capitalize/1)
+  end
 end

@@ -88,7 +88,7 @@ defmodule ConciergeSite.SubscriptionView do
   end
 
   defp parse_route(subscription) do
-    {:ok, route} = AlertProcessor.ServiceInfoCache.get_route(subscription.type, parse_route_id(subscription))
+    {:ok, route} = subscription |> parse_route_id() |> AlertProcessor.ServiceInfoCache.get_route()
     route
   end
 
@@ -97,7 +97,7 @@ defmodule ConciergeSite.SubscriptionView do
       :roaming ->
         :roaming
       direction ->
-        {:ok, direction_name} = AlertProcessor.ServiceInfoCache.get_direction_name(:subway, parse_route_id(subscription), direction)
+        {:ok, direction_name} = AlertProcessor.ServiceInfoCache.get_direction_name(parse_route_id(subscription), direction)
         direction_name
     end
   end
@@ -117,7 +117,7 @@ defmodule ConciergeSite.SubscriptionView do
       nil ->
         ""
       direction ->
-        {:ok, headsign} = AlertProcessor.ServiceInfoCache.get_headsign(:subway, subscription.origin, subscription.destination, direction)
+        {:ok, headsign} = AlertProcessor.ServiceInfoCache.get_headsign(subscription.origin, subscription.destination, direction)
         [" to ", headsign]
     end
   end

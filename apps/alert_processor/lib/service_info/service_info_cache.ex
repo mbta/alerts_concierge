@@ -8,7 +8,8 @@ defmodule AlertProcessor.ServiceInfoCache do
   alias AlertProcessor.Helpers.{ConfigHelper, StringHelper}
   alias AlertProcessor.{ApiClient, Model.Route}
 
-  @info_types [:bus, :parent_stop_info, :subway, :subway_full_routes]
+  @service_types [:bus, :subway]
+  @info_types [:parent_stop_info, :subway_full_routes]
 
   @doc false
   def start_link(opts \\ [name: __MODULE__]) do
@@ -38,16 +39,16 @@ defmodule AlertProcessor.ServiceInfoCache do
     GenServer.call(name, {:get_stop, mode, stop_id})
   end
 
-  def get_direction_name(name \\ __MODULE__, route_type, route, direction_id) do
-    GenServer.call(name, {:get_direction_name, route_type, route, direction_id})
+  def get_direction_name(name \\ __MODULE__, route, direction_id) do
+    GenServer.call(name, {:get_direction_name, route, direction_id})
   end
 
-  def get_headsign(name \\ __MODULE__, route_type, origin, destination, direction_id) do
-    GenServer.call(name, {:get_headsign, route_type, origin, destination, direction_id})
+  def get_headsign(name \\ __MODULE__, origin, destination, direction_id) do
+    GenServer.call(name, {:get_headsign, origin, destination, direction_id})
   end
 
-  def get_route(name \\ __MODULE__, route_type, route) do
-    GenServer.call(name, {:get_route, route_type, route})
+  def get_route(name \\ __MODULE__, route) do
+    GenServer.call(name, {:get_route, route})
   end
 
   def get_parent_stop_id(name \\ __MODULE__, stop_id) do
@@ -62,7 +63,8 @@ defmodule AlertProcessor.ServiceInfoCache do
     {:noreply, fetch_service_info()}
   end
 
-  def handle_call(:get_subway_info, _from, %{subway: subway_state} = state) do
+  def handle_call(:get_subway_info, _from, %{routes: route_state} = state) do
+    subway_state = Enum.filter(route_state, fn(%{route_type: route_type}) -> route_type == 0 || route_type == 1 end)
     {:reply, {:ok, subway_state}, state}
   end
 
@@ -70,15 +72,18 @@ defmodule AlertProcessor.ServiceInfoCache do
     {:reply, {:ok, subway_full_routes_state}, state}
   end
 
-  def handle_call(:get_bus_info, _from, %{bus: bus_state} = state) do
+  def handle_call(:get_bus_info, _from, %{routes: route_state} = state) do
+    bus_state = Enum.filter(route_state, fn(%{route_type: route_type}) -> route_type == 3 end)
     {:reply, {:ok, bus_state}, state}
   end
 
-  def handle_call({:get_stop, :subway, stop_id}, _from, %{subway: subway_state} = state),
-    do: {:reply, {:ok, get_stop_from_state(stop_id, subway_state)}, state}
+  def handle_call({:get_stop, :subway, stop_id}, _from, %{routes: route_state} = state) do
+    stop = get_stop_from_state(stop_id, route_state)
+    {:reply, {:ok, stop}, state}
+  end
 
-  def handle_call({:get_direction_name, :subway, route, direction_id}, _from, %{subway: subway_state} = state) do
-    case Enum.find(subway_state, fn(%{route_id: route_id}) -> route_id == route end) do
+  def handle_call({:get_direction_name, route, direction_id}, _from, %{routes: route_state} = state) do
+    case Enum.find(route_state, fn(%{route_id: route_id}) -> route_id == route end) do
       %{direction_names: direction_names} ->
         {:reply, {:ok, Enum.at(direction_names, direction_id)}, state}
       _ ->
@@ -86,9 +91,9 @@ defmodule AlertProcessor.ServiceInfoCache do
     end
   end
 
-  def handle_call({:get_headsign, :subway, origin, destination, direction_id}, _from, %{subway: subway_state} = state) do
+  def handle_call({:get_headsign, origin, destination, direction_id}, _from, %{routes: route_state} = state) do
     relevant_routes =
-      subway_state
+      route_state
       |> Enum.filter(fn(%Route{stop_list: stop_list}) -> List.keymember?(stop_list, origin, 0) && List.keymember?(stop_list, destination, 0) end)
 
     case relevant_routes do
@@ -97,9 +102,8 @@ defmodule AlertProcessor.ServiceInfoCache do
     end
   end
 
-  def handle_call({:get_route, route_type, route_id}, _from, state) do
-    mode_state = Map.get(state, route_type)
-    route = Enum.find(mode_state, & &1.route_id == route_id)
+  def handle_call({:get_route, route}, _from, %{routes: route_state} = state) do
+    route = Enum.find(route_state, fn(%{route_id: route_id}) -> route_id == route end)
     {:reply, {:ok, route}, state}
   end
 
@@ -140,7 +144,11 @@ defmodule AlertProcessor.ServiceInfoCache do
   end
 
   defp fetch_service_info do
-    for info_type <- @info_types, into: %{} do
+    route_state =
+      Enum.flat_map(@service_types, fn(service_type) ->
+        fetch_service_info(service_type)
+      end)
+    for info_type <- @info_types, into: %{routes: route_state} do
       {info_type, fetch_service_info(info_type)}
     end
   end

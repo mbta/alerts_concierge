@@ -1,5 +1,5 @@
 defmodule AlertProcessor.Model.Route do
-  defstruct [:direction_names, :headsigns, :long_name, :route_id, :route_type, :stop_list]
+  defstruct [:direction_names, :headsigns, :long_name, :route_id, :route_type, stop_list: []]
 
   @type headsigns :: %{
     0 => [String.t],
