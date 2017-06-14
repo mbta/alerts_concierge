@@ -16,7 +16,7 @@ defmodule AlertProcessor.DigestMailer do
   EEx.function_from_file(
     :def,
     :text_email,
-    Path.join(@template_dir, "digest.txt.eex"),
+    Path.join(~w(#{System.cwd!} lib mail_templates digest.txt.eex)),
     [:digest_date_groups])
 
   @doc "digest_email/1 takes a digest and builds a message to a user"

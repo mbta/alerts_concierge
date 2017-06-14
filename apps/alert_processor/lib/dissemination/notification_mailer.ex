@@ -16,7 +16,7 @@ defmodule AlertProcessor.NotificationMailer do
   EEx.function_from_file(
     :def,
     :text_email,
-    Path.join(@template_dir, "notification.txt.eex"),
+    Path.join(~w(#{System.cwd!} lib mail_templates notification.txt.eex)),
     [:notification])
 
   @doc "notification_email/2 takes a message and a user's email address and builds an email to be sent to user."

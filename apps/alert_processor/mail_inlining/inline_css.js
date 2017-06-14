@@ -6,7 +6,7 @@ function read(file) {
   return fs.readFileSync(file, 'utf8');
 }
 
-var css = read(argv.cssFile);
+var css = read(argv.globalCssFile) + read(argv.cssFile);
 var html = read(argv.htmlFile);
 var options = {};
 

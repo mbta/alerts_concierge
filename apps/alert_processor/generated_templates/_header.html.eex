@@ -1,4 +1,4 @@
 <div class="header" style="border-bottom-color: #3324ae; border-bottom-style: solid; border-bottom-width: 0.25rem; font-weight: bold; width: 100%; padding-bottom: 18px;">
-  <img src="<%= AlertProcessor.MailHelper.mbta_logo() %>" alt="mbta-logo" height="48px">
+  <img src="<%= AlertProcessor.MailHelper.mbta_logo() %>" alt="mbta-logo" height="48px" style="border: 0; line-height: 100%; outline: none; text-decoration: none;">
 </div>
 

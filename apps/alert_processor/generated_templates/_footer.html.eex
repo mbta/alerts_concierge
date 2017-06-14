@@ -5,19 +5,19 @@
 
   <table class="footer-links">
     <tr>
-      <td>
+      <td style="border-collapse: collapse;">
         <a class="footer-link" href="#" style="font-size: 15px; line-height: 1.6; text-align: center; color: #67a0d1; text-decoration: none;">Unsubscribe</a>
       </td>
-      <td class="footer-link-separator" style="width: 10px; height: 10px;">
+      <td class="footer-link-separator" style="border-collapse: collapse; width: 10px; height: 10px;">
         <div class="footer-link-separator-bullet" style="height: 5px; width: 5px; border-radius: 100%; background-color: #ffffff;">
       </div></td>
-      <td class="footer-link" style="font-size: 15px; line-height: 1.6; text-align: center; color: #67a0d1; text-decoration: none;">
+      <td class="footer-link" style="border-collapse: collapse; font-size: 15px; line-height: 1.6; text-align: center; color: #67a0d1; text-decoration: none;">
         <a href="https://t.mbta.com/customer-support">Feedback</a>
       </td>
-      <td class="footer-link-separator" style="width: 10px; height: 10px;">
+      <td class="footer-link-separator" style="border-collapse: collapse; width: 10px; height: 10px;">
         <div class="footer-link-separator-bullet" style="height: 5px; width: 5px; border-radius: 100%; background-color: #ffffff;">
       </div></td>
-      <td class="footer-link" style="font-size: 15px; line-height: 1.6; text-align: center; color: #67a0d1; text-decoration: none;">
+      <td class="footer-link" style="border-collapse: collapse; font-size: 15px; line-height: 1.6; text-align: center; color: #67a0d1; text-decoration: none;">
         <a href="#">Edit Your Subscriptions</a>
       </td>
     </tr>
