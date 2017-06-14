@@ -3,7 +3,7 @@ defmodule AlertProcessor.AlertParser do
   Module used to parse alerts from api and transform into Alert structs and pass along
   relevant information to subscription filter engine.
   """
-  alias AlertProcessor.{AlertCache, AlertsClient, ApiClient, HoldingQueue, Parser, ServiceInfoCache, SubscriptionFilterEngine}
+  alias AlertProcessor.{AlertCache, AlertsClient, ApiClient, Helpers.StringHelper, HoldingQueue, Parser, ServiceInfoCache, SubscriptionFilterEngine}
   alias AlertProcessor.Model.{Alert, InformedEntity, Notification}
 
   @behaviour Parser
@@ -42,68 +42,38 @@ defmodule AlertProcessor.AlertParser do
   end
 
   @spec parse_alert(map, [map], map) :: [%{String.t => Alert.t}]
-  defp parse_alert(
-    %{
-      "active_period" => active_periods,
-      "description_text" => description_text_translations,
-      "effect_name" => effect_name,
-      "id" => alert_id,
-      "informed_entity" => informed_entities,
-      "last_push_notification_timestamp" => last_push_notification_timestamp,
-      "service_effect_text" => service_effect_text_translations,
-      "severity_name" => severity,
-      "short_description_text" => header_text_translations
-    }, facilities_map, accumulator
-  ) do
-    Map.put(
-      accumulator,
-      to_string(alert_id),
-      struct(Alert, %{
-        active_period: parse_active_periods(active_periods),
-        description: parse_translation(description_text_translations),
-        effect_name: effect_name |> String.split("_") |> Enum.map_join(" ", &String.capitalize/1),
-        header: parse_translation(header_text_translations),
-        id: to_string(alert_id),
-        informed_entities: parse_informed_entities(informed_entities, facilities_map),
-        last_push_notification: parse_datetime(last_push_notification_timestamp),
-        service_effect: parse_translation(service_effect_text_translations),
-        severity: severity |> String.downcase |> String.to_existing_atom,
-      })
-    )
+  defp parse_alert(alert_data, facilities_map, accumulator) do
+    case do_parse_alert(alert_data, facilities_map) do
+      nil -> accumulator
+      alert -> Map.put(accumulator, alert.id, alert)
+    end
   end
 
-  defp parse_alert(
-    %{
-      "active_period" => active_periods,
-      "created_timestamp" => created_timestamp,
-      "description_text" => description_text_translations,
-      "effect_name" => effect_name,
-      "id" => alert_id,
-      "informed_entity" => informed_entities,
-      "service_effect_text" => service_effect_text_translations,
-      "severity_name" => severity,
-      "short_description_text" => header_text_translations
-    }, facilities_map, accumulator
-  ) do
-    Map.put(
-      accumulator,
-      to_string(alert_id),
-      struct(Alert, %{
-        active_period: parse_active_periods(active_periods),
-        description: parse_translation(description_text_translations),
-        effect_name: effect_name |> String.split("_") |> Enum.map_join(" ", &String.capitalize/1),
-        header: parse_translation(header_text_translations),
-        id: to_string(alert_id),
-        informed_entities: parse_informed_entities(informed_entities, facilities_map),
-        last_push_notification: parse_datetime(created_timestamp),
-        service_effect: parse_translation(service_effect_text_translations),
-        severity: severity |> String.downcase |> String.to_existing_atom
-      })
-    )
+  defp do_parse_alert(%{
+    "active_period" => active_periods,
+    "description_text" => description_text_translations,
+    "effect_name" => effect_name,
+    "id" => alert_id,
+    "informed_entity" => informed_entities,
+    "service_effect_text" => service_effect_text_translations,
+    "severity_name" => severity,
+    "short_description_text" => header_text_translations
+  } = alert_data, facilities_map) do
+    struct(Alert, %{
+      active_period: parse_active_periods(active_periods),
+      description: parse_translation(description_text_translations),
+      effect_name: StringHelper.split_capitalize(effect_name, "_"),
+      header: parse_translation(header_text_translations),
+      id: to_string(alert_id),
+      informed_entities: parse_informed_entities(informed_entities, facilities_map),
+      last_push_notification: Map.get_lazy(alert_data, "last_push_notification_timestamp", fn -> Map.get(alert_data, "created_timestamp") end) |> parse_datetime(),
+      service_effect: parse_translation(service_effect_text_translations),
+      severity: severity |> String.downcase |> String.to_existing_atom,
+    })
   end
 
-  defp parse_alert(_, _, accumulator) do
-    accumulator
+  defp do_parse_alert(_, _) do
+    nil
   end
 
   defp parse_datetime(datetime) do
@@ -151,7 +121,9 @@ defmodule AlertProcessor.AlertParser do
         "route_id" ->
           Map.merge(acc, parse_route(v))
         "facility_id" ->
-          Map.merge(acc, %{facility_id: v})
+          Map.put(acc, :facility_id, v)
+        "direction_id" ->
+          Map.put(acc, :direction_id, v)
         _ ->
           acc
       end
@@ -167,11 +139,12 @@ defmodule AlertProcessor.AlertParser do
   end
 
   defp parse_stop(stop_id) do
-    {:ok, parent_stop_id} = ServiceInfoCache.get_parent_stop_id(stop_id)
-    case parent_stop_id do
-      nil -> %{stop: stop_id}
-      _ -> %{stop: parent_stop_id}
-    end
+    stop =
+      case ServiceInfoCache.get_parent_stop_id(stop_id) do
+        {:ok, parent_stop_id} when is_binary(parent_stop_id) -> parent_stop_id
+        _ -> stop_id
+      end
+     %{stop: stop}
   end
 
   defp parse_route("CR-" <> _ = route_id) do
