@@ -9,13 +9,7 @@ defmodule ConciergeSite.Subscriptions.SubwayLinesTest do
           direction_names: [],
           long_name: "Red Line",
           route_type: 0,
-          stop_list: [{"Ashmont", "place-asmnl"},{"Savin Hill", "place-shmnl"},{"JFK/Umass", "place-jfk"}]
-        },
-        %AlertProcessor.Model.Route{
-          direction_names: [],
-          long_name: "Red Line",
-          route_type: 0,
-          stop_list: [{"Braintree", "place-river"},{"North Quincy", "place-nqncy"}, {"JFK/Umass", "place-jfk"}]
+          stop_list: [{"Braintree", "place-river"}]
         },
         %AlertProcessor.Model.Route{
           direction_names: [],
@@ -40,66 +34,10 @@ defmodule ConciergeSite.Subscriptions.SubwayLinesTest do
       select_options = SubwayLines.station_list_select_options(routes)
 
       assert select_options == [
-        {"Red Line", [{"Braintree", "place-river"},{"North Quincy", "place-nqncy"},{"Ashmont", "place-asmnl"},{"Savin Hill", "place-shmnl"},{"JFK/Umass", "place-jfk"}]},
+        {"Red Line", [{"Braintree", "place-river"}]},
         {"Green Line D", [{"Riverside", "place-river"}]},
         {"Orange Line", [{"Forest Hills", "place-forhl"}]},
         {"Blue Line", [{"Bowdoin", "place-bomnl"}]}
-      ]
-    end
-
-    test "orders the Red Line by Braintree stops, Ashmont stops, then stops on both branches" do
-      routes = [
-        %AlertProcessor.Model.Route{direction_names: ["Southbound", "Northbound"],
-         long_name: "Red Line", route_id: "Red", route_type: 1,
-         stop_list: [{"Ashmont", "place-asmnl"}, {"Shawmut", "place-smmnl"},
-          {"Fields Corner", "place-fldcr"}, {"Savin Hill", "place-shmnl"},
-          {"JFK/Umass", "place-jfk"}, {"Andrew", "place-andrw"},
-          {"Broadway", "place-brdwy"}, {"South Station", "place-sstat"},
-          {"Downtown Crossing", "place-dwnxg"}, {"Park Street", "place-pktrm"},
-          {"Charles/MGH", "place-chmnl"}, {"Kendall/MIT", "place-knncl"},
-          {"Central", "place-cntsq"}, {"Harvard", "place-harsq"},
-          {"Porter", "place-portr"}, {"Davis", "place-davis"},
-          {"Alewife", "place-alfcl"}]},
-        %AlertProcessor.Model.Route{direction_names: ["Southbound", "Northbound"],
-         long_name: "Red Line", route_id: "Red", route_type: 1,
-         stop_list: [{"Braintree", "place-brntn"}, {"Quincy Adams", "place-qamnl"},
-          {"Quincy Center", "place-qnctr"}, {"Wollaston", "place-wlsta"},
-          {"North Quincy", "place-nqncy"}, {"JFK/Umass", "place-jfk"},
-          {"Andrew", "place-andrw"}, {"Broadway", "place-brdwy"},
-          {"South Station", "place-sstat"}, {"Downtown Crossing", "place-dwnxg"},
-          {"Park Street", "place-pktrm"}, {"Charles/MGH", "place-chmnl"},
-          {"Kendall/MIT", "place-knncl"}, {"Central", "place-cntsq"},
-          {"Harvard", "place-harsq"}, {"Porter", "place-portr"},
-          {"Davis", "place-davis"}, {"Alewife", "place-alfcl"}]}
-      ]
-
-      select_options = SubwayLines.station_list_select_options(routes)
-
-      assert select_options == [
-        {"Red Line" , [
-          {"Braintree", "place-brntn"},
-          {"Quincy Adams", "place-qamnl"},
-          {"Quincy Center", "place-qnctr"},
-          {"Wollaston", "place-wlsta"},
-          {"North Quincy", "place-nqncy"},
-          {"Ashmont", "place-asmnl"},
-          {"Shawmut", "place-smmnl"},
-          {"Fields Corner", "place-fldcr"},
-          {"Savin Hill", "place-shmnl"},
-          {"JFK/Umass", "place-jfk"},
-          {"Andrew", "place-andrw"},
-          {"Broadway", "place-brdwy"},
-          {"South Station", "place-sstat"},
-          {"Downtown Crossing", "place-dwnxg"},
-          {"Park Street", "place-pktrm"},
-          {"Charles/MGH", "place-chmnl"},
-          {"Kendall/MIT", "place-knncl"},
-          {"Central", "place-cntsq"},
-          {"Harvard", "place-harsq"},
-          {"Porter", "place-portr"},
-          {"Davis", "place-davis"},
-          {"Alewife", "place-alfcl"}]
-        }
       ]
     end
   end
