@@ -1,10 +1,9 @@
 defmodule Mix.Tasks.Compile.AlertMail do
   use Mix.Task
 
-  @base_dir Path.join(~w(#{System.cwd!} lib mail_templates))
+  @template_dir Path.join(~w(#{System.cwd!} lib mail_templates))
   @output_dir Path.join(~w(#{System.cwd!} generated_templates))
-  @template_dir Path.join(~w(#{@base_dir} base_templates))
-  @style_dir Path.join(~w(#{@base_dir} base_styles))
+  @style_dir Path.join(~w(#{@template_dir} styles))
   @command "#{System.cwd!}/mail_inlining/inline_css.js"
 
   def run(_args) do
@@ -14,7 +13,7 @@ defmodule Mix.Tasks.Compile.AlertMail do
 
   defp template_files do
     File.ls!(@template_dir)
-    |> Enum.map(&(String.replace_suffix(&1, "_base.html.eex", "")))
+    |> Enum.filter_map(&(String.ends_with?(&1, ".html.eex")), &(String.replace_suffix(&1, ".html.eex", "")))
   end
 
   defp build_templates_with_inline_css(template_names) do
@@ -28,7 +27,7 @@ defmodule Mix.Tasks.Compile.AlertMail do
 
   defp build_template_with_inline_css(template_name) do
     touch_if_not_present(template_name)
-    template_path = Path.join([@template_dir, template_name]) <> "_base.html.eex"
+    template_path = Path.join([@template_dir, template_name]) <> ".html.eex"
     style_path = Path.join([@style_dir, template_name]) <> "_styles.css"
     global_path = @style_dir <> "/_global_styles.css"
     output_template = Path.join([@output_dir, template_name]) <> ".html.eex"

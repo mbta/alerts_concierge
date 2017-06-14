@@ -14,4 +14,3 @@ npm-debug.log
 .env
 .DS_Store
 excoveralls.json
-/generated_templates/*

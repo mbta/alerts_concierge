@@ -14,3 +14,4 @@ npm-debug.log
 .env
 .DS_Store
 /mail_inlining/node_modules
+/generated_templates/*
