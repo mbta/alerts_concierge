@@ -10,7 +10,7 @@ defmodule ConciergeSite.Subscriptions.SubwayLines do
   become the label of an <optgroup> containing <option>s for each station.
   """
 
-  @spec station_list_select_options(%AlertProcessor.Model.Route{}) :: [{String.t, list}]
+  @spec station_list_select_options([%AlertProcessor.Model.Route{}]) :: [{String.t, list}]
   def station_list_select_options(routes) do
     Enum.map(routes, fn(route) -> {route.long_name, route.stop_list} end)
   end

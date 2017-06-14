@@ -13,7 +13,7 @@ defmodule ConciergeSite.SubwaySubscriptionController do
     subscription_params = Map.merge(params, %{user_id: user.id, route_type: 1})
     token = TemporaryState.encode(subscription_params)
 
-    case ServiceInfoCache.get_subway_info do
+    case ServiceInfoCache.get_subway_full_routes do
       {:ok, stations} ->
         station_list_select_options =
             SubwayLines.station_list_select_options(stations)
