@@ -36,20 +36,12 @@ defmodule AlertProcessor.AlertParser do
   end
 
   defp parse_alerts({alerts, facilities_map}) do
-    Enum.reduce(alerts, %{}, fn(x, acc) ->
-      parse_alert(x, facilities_map, acc)
-    end)
-  end
-
-  @spec parse_alert(map, [map], map) :: [%{String.t => Alert.t}]
-  defp parse_alert(alert_data, facilities_map, accumulator) do
-    case do_parse_alert(alert_data, facilities_map) do
-      nil -> accumulator
-      alert -> Map.put(accumulator, alert.id, alert)
+    for alert_json <- alerts, alert = parse_alert(alert_json, facilities_map), into: %{} do
+      {alert.id, alert}
     end
   end
 
-  defp do_parse_alert(%{
+  defp parse_alert(%{
     "active_period" => active_periods,
     "description_text" => description_text_translations,
     "effect_name" => effect_name,
@@ -59,7 +51,7 @@ defmodule AlertProcessor.AlertParser do
     "severity_name" => severity,
     "short_description_text" => header_text_translations
   } = alert_data, facilities_map) do
-    struct(Alert, %{
+    %Alert{
       active_period: parse_active_periods(active_periods),
       description: parse_translation(description_text_translations),
       effect_name: StringHelper.split_capitalize(effect_name, "_"),
@@ -69,10 +61,10 @@ defmodule AlertProcessor.AlertParser do
       last_push_notification: Map.get_lazy(alert_data, "last_push_notification_timestamp", fn -> Map.get(alert_data, "created_timestamp") end) |> parse_datetime(),
       service_effect: parse_translation(service_effect_text_translations),
       severity: severity |> String.downcase |> String.to_existing_atom,
-    })
+    }
   end
 
-  defp do_parse_alert(_, _) do
+  defp parse_alert(_, _) do
     nil
   end
 
