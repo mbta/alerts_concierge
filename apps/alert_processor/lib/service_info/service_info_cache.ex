@@ -200,18 +200,16 @@ defmodule AlertProcessor.ServiceInfoCache do
         |> Enum.map(fn(%{"attributes" => %{"name" => name}, "id" => id}) ->
           {name, id}
         end)
-      cond do
-        split_red_line_branches ->
-          case fetch_route_branches(route_id) do
-            [] ->
-              [%Route{route_id: route_id, long_name: long_name, route_type: route_type, direction_names: direction_names, stop_list: stop_list}]
-            branches ->
-              parse_branches(%Route{route_id: route_id, long_name: long_name, route_type: route_type, direction_names: direction_names}, stop_list, branches)
-          end
-        true ->
-          [%Route{route_id: route_id, long_name: long_name, route_type: route_type, direction_names: direction_names, stop_list: stop_list}]
-      end
+      route = %Route{route_id: route_id, long_name: long_name, route_type: route_type, direction_names: direction_names, stop_list: stop_list}
+      fetch_route_branches(route_id)
+      |> handle_red_line_branches(route, split_red_line_branches)
     end)
+  end
+
+  defp handle_red_line_branches(_branches, route, false), do: [route]
+  defp handle_red_line_branches([], route, true), do: [route]
+  defp handle_red_line_branches(branches, route, true) do
+    parse_branches(route, route.stop_list, branches)
   end
 
   defp fetch_route_branches("Red") do
