@@ -24,7 +24,7 @@ defmodule ConciergeSite.Mixfile do
   # Type `mix help compile.app` for more information.
   def application do
     [mod: {ConciergeSite, []},
-     extra_applications: [:alert_processor, :logger, :runtime_tools]]
+     extra_applications: [:alert_processor, :logger, :logger_logentries_backend, :runtime_tools]]
   end
 
   # Specifies which paths to compile per environment.

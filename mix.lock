@@ -33,6 +33,7 @@
   "idna": {:hex, :idna, "4.0.0", "10aaa9f79d0b12cf0def53038547855b91144f1bfcc0ec73494f38bb7b9c4961", [:rebar3], []},
   "jose": {:hex, :jose, "1.8.4", "7946d1e5c03a76ac9ef42a6e6a20001d35987afd68c2107bcd8f01a84e75aa73", [:mix, :rebar3], [{:base64url, "~> 0.0.1", [hex: :base64url, optional: false]}]},
   "jsx": {:hex, :jsx, "2.8.2", "7acc7d785b5abe8a6e9adbde926a24e481f29956dd8b4df49e3e4e7bcc92a018", [:mix, :rebar3], []},
+  "logger_logentries_backend": {:git, "https://github.com/paulswartz/logger_logentries_backend.git", "78c199ae08d9187e1315f6d4e9c03ffd22442349", []},
   "meck": {:hex, :meck, "0.8.4", "59ca1cd971372aa223138efcf9b29475bde299e1953046a0c727184790ab1520", [:make, :rebar], []},
   "metrics": {:hex, :metrics, "1.0.1", "25f094dea2cda98213cecc3aeff09e940299d950904393b2a29d191c346a8486", [:rebar3], []},
   "mime": {:hex, :mime, "1.1.0", "01c1d6f4083d8aa5c7b8c246ade95139620ef8effb009edde934e0ec3b28090a", [:mix], []},

@@ -33,6 +33,7 @@ defmodule AlertProcessor.Mixfile do
         :hackney,
         :httpoison,
         :logger,
+        :logger_logentries_backend,
         :poison,
         :poolboy,
         :postgrex,
