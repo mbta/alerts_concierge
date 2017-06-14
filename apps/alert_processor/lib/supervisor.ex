@@ -36,6 +36,7 @@ defmodule AlertProcessor.Supervisor do
 
     children = [
       supervisor(AlertProcessor.Repo, []),
+      worker(Logger.Backend.Logentries.Output.SslKeepOpen.Server, []),
       worker(ServiceInfoCache, []),
       worker(AlertWorker, []),
       worker(AlertCache, []),
