@@ -29,10 +29,19 @@
                  prompt: "Select a station" %>
     </div>
     <div class="form-group select-days">
-      <label for="travel_days" class="form-label">Travel Days</label>
-      <%= checkbox(:subscription, :weekdays, class: "subscription-day-checkbox") %> Weekdays
-      <%= checkbox(:subscription, :saturday, class: "subscription-day-checkbox") %> Saturday
-      <%= checkbox(:subscription, :sunday, class: "subscription-day-checkbox") %> Sunday
+      <div class="form-label">Travel Days</div>
+      <label>
+        <%= checkbox(:subscription, :weekdays, class: "subscription-day-checkbox") %>
+        Weekdays
+      </label>
+      <label>
+        <%= checkbox(:subscription, :saturday, class: "subscription-day-checkbox") %>
+        Saturday
+      </label>
+      <label>
+        <%= checkbox(:subscription, :sunday, class: "subscription-day-checkbox") %>
+        Sunday
+      </label>
     </div>
   </form>
 </div>
