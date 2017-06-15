@@ -2,7 +2,10 @@ export default function($) {
   $ = $ || window.jQuery;
 
   let props = {};
-  let state = {};
+  let state = {
+    origin: {},
+    destination: {}
+  };
 
   if ($(".enter-trip-info").length) {
     props.allStations = generateStationList();
@@ -162,13 +165,13 @@ export default function($) {
   }
 
   function setSelectedStation(originDestination, stationName, lines) {
-    state[`${originDestination}SelectedName`] = stationName;
-    state[`${originDestination}SelectedLines`] = lines;
+    state[originDestination]["selectedName"] = stationName;
+    state[originDestination]["selectedLines"] = lines;
   }
 
   function clearSelectedStation(originDestination) {
-    state[`${originDestination}SelectedName`] = null;
-    state[`${originDestination}SelectedLines`] = null;
+    state[originDestination]["selectedName"] = null;
+    state[originDestination]["selectedLines"] = null;
   }
 
   function compactLineNames(lineNames) {
