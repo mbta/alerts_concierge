@@ -2,8 +2,13 @@ export default function($) {
   $ = $ || window.jQuery;
 
   let props = {};
+  let state = {
+    origin: {},
+    destination: {}
+  };
 
   if ($(".enter-trip-info").length) {
+    props.allRoutes = generateRouteList();
     props.allStations = generateStationList();
     props.validStationNames = props.allStations.map(station => station.name);
     attachSuggestionInputs();
@@ -14,11 +19,7 @@ export default function($) {
     const originDestination = event.data.originDestination;
 
     if (query.length > 0) {
-      const queryRegExp = new RegExp(query, "i");
-      const matchingStations = props.allStations.filter(function(station) {
-        return station.name.match(queryRegExp);
-      })
-
+      const matchingStations = filterSuggestions(originDestination, query);
       const suggestionElements = matchingStations.map(function(station) {
         return renderStationSuggestion(originDestination, station);
       });
@@ -32,13 +33,16 @@ export default function($) {
   }
 
   function validateStationInput(event) {
+    const inputText = event.target.value;
     const originDestination = event.data.originDestination;
     const $stationInput = $(`.${subscriptionSelectClass(originDestination)}`);
 
     if (props.validStationNames.includes(event.target.value)) {
       $stationInput.attr("data-valid", true);
+      setSelectedStation(originDestination, inputText, associatedLines(inputText))
     } else {
-      $stationInput.attr("data-valid", false)
+      $stationInput.attr("data-valid", false);
+      clearSelectedStation(originDestination);
     }
   }
 
@@ -49,7 +53,7 @@ export default function($) {
 
     $stationInput.val(stationName);
     $stationInput.attr("data-valid", true);
-
+    setSelectedStation(originDestination, stationName, $(this).attr("data-lines"));
     unmountStationSuggestions(originDestination);
   }
 
@@ -63,9 +67,56 @@ export default function($) {
       const stationName = $(".station-name", $firstSuggestion).text();
       $stationInput.val(stationName);
       $stationInput.attr("data-valid", true);
+      setSelectedStation(originDestination, stationName, $firstSuggestion.attr("data-lines"));
     }
 
     unmountStationSuggestions(originDestination);
+  }
+
+  function filterSuggestions(originDestination, query) {
+    const queryRegExp = new RegExp(query, "i");
+
+    let matchingStations = props.allStations.filter(function(station) {
+      return station.name.match(queryRegExp);
+    });
+
+    if (otherStationHasValidSelection(originDestination)) {
+      matchingStations = matchingStations.filter(function(station) {
+        return (stationsOnSelectedLines(originDestination).includes(station.name));
+      });
+    }
+
+    return matchingStations;
+  }
+
+  function stationsOnSelectedLines(originDestination) {
+    const otherStation = oppositeStation(originDestination);
+    const selectedLines = state[otherStation]["selectedLines"].split(",");
+    let stations = [];
+    
+    selectedLines.forEach(function(line) {
+      stations = stations.concat(props.allRoutes[line])
+    });
+
+    return stations;
+  }
+
+  function generateRouteList() {
+    let routes = {};
+
+    const $optgroups = $("select.subscription-select-origin optgroup");
+
+    $optgroups.each(function(_i, group) {
+      const options = $("option", group).map(function(i, option) {
+        return option.text;
+      }).get();
+
+      const routeName = group.label;
+
+      routes[routeName] = options;
+    });
+
+    return routes;
   }
 
   function generateStationList() {
@@ -118,7 +169,7 @@ export default function($) {
     const circleIcons = lineNames.map(renderCircleIcon).join("");
 
     return `
-      <div class="${stationSuggestionClass(originDestination)}">
+      <div class="${stationSuggestionClass(originDestination)}" data-lines="${station.allLineNames.join(",")}">
         <div class="station-name">${station.name}</div>
         <div class="station-lines">
           ${circleIcons}
@@ -156,6 +207,25 @@ export default function($) {
     return `icon-${lineColor}-line-circle`
   }
 
+  function otherStationHasValidSelection(originDestination) {
+    const otherStation = oppositeStation(originDestination);
+    return (state[otherStation].selectedName && state[otherStation].selectedLines);
+  }
+
+  function setSelectedStation(originDestination, stationName, lines) {
+    state[originDestination] = {
+      selectedName: stationName,
+      selectedLines: lines
+    };
+  }
+
+  function clearSelectedStation(originDestination) {
+    state[originDestination] = {
+      selectedName: null,
+      selectedLines: null
+    };
+  }
+
   function compactLineNames(lineNames) {
     let lines = [];
 
@@ -168,6 +238,18 @@ export default function($) {
     });
 
     return lines;
+  }
+
+  function associatedLines(name) {
+    const station = props.allStations.find(function(station) {
+      return station.name == name;
+    });
+
+    return station.allLineNames.join(",");
+  }
+
+  function oppositeStation(originDestination) {
+    return originDestination == "origin" ? "destination" : "origin"
   }
 
   $(document).on(
