@@ -95,7 +95,7 @@ export default function($) {
     let stations = [];
     
     selectedLines.forEach(function(line) {
-      stations = [...props.allRoutes[line], ...stations];
+      stations = stations.concat(props.allRoutes[line])
     });
 
     return stations;
@@ -209,17 +209,21 @@ export default function($) {
 
   function otherStationHasValidSelection(originDestination) {
     const otherStation = oppositeStation(originDestination);
-    return (state[otherStation]["selectedName"] && state[otherStation]["selectedLines"]);
+    return (state[otherStation].selectedName && state[otherStation].selectedLines);
   }
 
   function setSelectedStation(originDestination, stationName, lines) {
-    state[originDestination]["selectedName"] = stationName;
-    state[originDestination]["selectedLines"] = lines;
+    state[originDestination] = {
+      selectedName: stationName,
+      selectedLines: lines
+    };
   }
 
   function clearSelectedStation(originDestination) {
-    state[originDestination]["selectedName"] = null;
-    state[originDestination]["selectedLines"] = null;
+    state[originDestination] = {
+      selectedName: null,
+      selectedLines: null
+    };
   }
 
   function compactLineNames(lineNames) {
