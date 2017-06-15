@@ -308,16 +308,16 @@ defmodule AlertProcessor.Subscription.SubwayMapperTest do
 
     test "constructs subscription with stops" do
       {:ok, [{_sub, informed_entities}]} = SubwayMapper.map_subscriptions(@green_line_one_way_params)
-      davis_station_count =
+      north_station_count =
         Enum.count(informed_entities, fn(informed_entity) ->
-          match?(%InformedEntity{route: "Green-C", route_type: 0, stop: "place-north"}, informed_entity)
+          match?(%InformedEntity{route: "Green-" <> _, route_type: 0, stop: "place-north"}, informed_entity)
         end)
-      assert davis_station_count == 1
-      harvard_station_count =
+      assert north_station_count == 3
+      kenmore_station_count =
         Enum.count(informed_entities, fn(informed_entity) ->
-          match?(%InformedEntity{route: "Green-C", route_type: 0, stop: "place-kencl"}, informed_entity)
+          match?(%InformedEntity{route: "Green-" <> _, route_type: 0, stop: "place-kencl"}, informed_entity)
         end)
-      assert harvard_station_count == 1
+      assert kenmore_station_count == 3
       total_station_count =
         Enum.count(informed_entities, fn(informed_entity) ->
           InformedEntity.entity_type(informed_entity) == :stop

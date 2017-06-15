@@ -77,6 +77,27 @@ defmodule AlertProcessor.ServiceInfoCacheTest do
     end
   end
 
+  test "get_commuter_rail_info/0 returns commuter rail info" do
+    use_cassette "service_info", custom: true, clear_mock: true, match_requests_on: [:query] do
+      {:ok, pid} = ServiceInfoCache.start_link([name: :service_info_cache_test_commuter_rail])
+      {:ok, route_info} = ServiceInfoCache.get_commuter_rail_info(pid)
+      assert [
+        %Route{route_id: "CR-Fairmount"},
+        %Route{route_id: "CR-Fitchburg"},
+        %Route{route_id: "CR-Worcester"},
+        %Route{route_id: "CR-Franklin"},
+        %Route{route_id: "CR-Greenbush"},
+        %Route{route_id: "CR-Haverhill"},
+        %Route{route_id: "CR-Kingston"},
+        %Route{route_id: "CR-Lowell"},
+        %Route{route_id: "CR-Middleborough"},
+        %Route{route_id: "CR-Needham"},
+        %Route{route_id: "CR-Newburyport"},
+        %Route{route_id: "CR-Providence"}
+      ] = route_info
+    end
+  end
+
   test "get_stop returns the correct stop" do
     use_cassette "service_info", custom: true, clear_mock: true, match_requests_on: [:query] do
       {:ok, pid} = ServiceInfoCache.start_link([name: :service_info_cache_test_stop])

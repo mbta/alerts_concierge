@@ -8,7 +8,7 @@ defmodule AlertProcessor.ServiceInfoCache do
   alias AlertProcessor.Helpers.{ConfigHelper, StringHelper}
   alias AlertProcessor.{ApiClient, Model.Route}
 
-  @service_types [:bus, :subway]
+  @service_types [:bus, :commuter_rail, :subway]
   @info_types [:parent_stop_info, :subway_full_routes]
 
   @doc false
@@ -33,6 +33,10 @@ defmodule AlertProcessor.ServiceInfoCache do
 
   def get_bus_info(name \\ __MODULE__) do
     GenServer.call(name, :get_bus_info)
+  end
+
+  def get_commuter_rail_info(name \\ __MODULE__) do
+    GenServer.call(name, :get_commuter_rail_info)
   end
 
   def get_stop(name \\ __MODULE__, mode, stop_id) do
@@ -75,6 +79,11 @@ defmodule AlertProcessor.ServiceInfoCache do
   def handle_call(:get_bus_info, _from, %{routes: route_state} = state) do
     bus_state = Enum.filter(route_state, fn(%{route_type: route_type}) -> route_type == 3 end)
     {:reply, {:ok, bus_state}, state}
+  end
+
+  def handle_call(:get_commuter_rail_info, _from, %{routes: route_state} = state) do
+    commuter_rail_state = Enum.filter(route_state, fn(%{route_type: route_type}) -> route_type == 2 end)
+    {:reply, {:ok, commuter_rail_state}, state}
   end
 
   def handle_call({:get_stop, :subway, stop_id}, _from, %{routes: route_state} = state) do
@@ -166,6 +175,19 @@ defmodule AlertProcessor.ServiceInfoCache do
 
   defp fetch_service_info(:subway) do
     fetch_subway({:split_red_line_branches, true})
+  end
+
+  defp fetch_service_info(:commuter_rail) do
+    [2]
+    |> do_fetch_service_info()
+    |> Enum.map(fn({route_id, route_type, long_name, direction_names}) ->
+      %Route{
+        route_id: route_id,
+        long_name: long_name,
+        route_type: route_type,
+        direction_names: direction_names
+      }
+    end)
   end
 
   defp fetch_service_info(:bus) do

@@ -430,5 +430,29 @@
       "status_code": 200,
       "type": "ok"
     }
+  },
+  {
+    "request": {
+      "body": "",
+      "headers": [],
+      "method": "get",
+      "options": [],
+      "request_body": "",
+      "url": "https://dev.api.mbtace.com/routes?filter[type]=2&fields[route]=long_name,type,direction_names"
+    },
+    "response": {
+      "body": "{\"jsonapi\":{\"version\":\"1.0\"},\"data\":[{\"type\":\"route\",\"links\":{\"self\":\"/routes/CR-Fairmount\"},\"id\":\"CR-Fairmount\",\"attributes\":{\"type\":2,\"long_name\":\"Fairmount Line\",\"direction_names\":[\"Outbound\",\"Inbound\"]}},{\"type\":\"route\",\"links\":{\"self\":\"/routes/CR-Fitchburg\"},\"id\":\"CR-Fitchburg\",\"attributes\":{\"type\":2,\"long_name\":\"Fitchburg Line\",\"direction_names\":[\"Outbound\",\"Inbound\"]}},{\"type\":\"route\",\"links\":{\"self\":\"/routes/CR-Worcester\"},\"id\":\"CR-Worcester\",\"attributes\":{\"type\":2,\"long_name\":\"Framingham/Worcester Line\",\"direction_names\":[\"Outbound\",\"Inbound\"]}},{\"type\":\"route\",\"links\":{\"self\":\"/routes/CR-Franklin\"},\"id\":\"CR-Franklin\",\"attributes\":{\"type\":2,\"long_name\":\"Franklin Line\",\"direction_names\":[\"Outbound\",\"Inbound\"]}},{\"type\":\"route\",\"links\":{\"self\":\"/routes/CR-Greenbush\"},\"id\":\"CR-Greenbush\",\"attributes\":{\"type\":2,\"long_name\":\"Greenbush Line\",\"direction_names\":[\"Outbound\",\"Inbound\"]}},{\"type\":\"route\",\"links\":{\"self\":\"/routes/CR-Haverhill\"},\"id\":\"CR-Haverhill\",\"attributes\":{\"type\":2,\"long_name\":\"Haverhill Line\",\"direction_names\":[\"Outbound\",\"Inbound\"]}},{\"type\":\"route\",\"links\":{\"self\":\"/routes/CR-Kingston\"},\"id\":\"CR-Kingston\",\"attributes\":{\"type\":2,\"long_name\":\"Kingston/Plymouth Line\",\"direction_names\":[\"Outbound\",\"Inbound\"]}},{\"type\":\"route\",\"links\":{\"self\":\"/routes/CR-Lowell\"},\"id\":\"CR-Lowell\",\"attributes\":{\"type\":2,\"long_name\":\"Lowell Line\",\"direction_names\":[\"Outbound\",\"Inbound\"]}},{\"type\":\"route\",\"links\":{\"self\":\"/routes/CR-Middleborough\"},\"id\":\"CR-Middleborough\",\"attributes\":{\"type\":2,\"long_name\":\"Middleborough/Lakeville Line\",\"direction_names\":[\"Outbound\",\"Inbound\"]}},{\"type\":\"route\",\"links\":{\"self\":\"/routes/CR-Needham\"},\"id\":\"CR-Needham\",\"attributes\":{\"type\":2,\"long_name\":\"Needham Line\",\"direction_names\":[\"Outbound\",\"Inbound\"]}},{\"type\":\"route\",\"links\":{\"self\":\"/routes/CR-Newburyport\"},\"id\":\"CR-Newburyport\",\"attributes\":{\"type\":2,\"long_name\":\"Newburyport/Rockport Line\",\"direction_names\":[\"Outbound\",\"Inbound\"]}},{\"type\":\"route\",\"links\":{\"self\":\"/routes/CR-Providence\"},\"id\":\"CR-Providence\",\"attributes\":{\"type\":2,\"long_name\":\"Providence/Stoughton Line\",\"direction_names\":[\"Outbound\",\"Inbound\"]}}]}",
+      "headers": {
+        "cache-control": "max-age=0, private, must-revalidate",
+        "Content-Type": "application/vnd.api+json; charset=utf-8",
+        "Date": "Thu, 15 Jun 2017 17:12:31 GMT",
+        "Server": "nginx/1.10.2",
+        "x-request-id": "luemv6ucpevt5v6gthmdo7u5ifn44is3",
+        "Content-Length": "2139",
+        "Connection": "keep-alive"
+      },
+      "status_code": 200,
+      "type": "ok"
+    }
   }
 ]
