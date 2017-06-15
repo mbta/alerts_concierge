@@ -454,5 +454,29 @@
       "status_code": 200,
       "type": "ok"
     }
+  },
+  {
+    "request": {
+      "body": "",
+      "headers": [],
+      "method": "get",
+      "options": [],
+      "request_body": "",
+      "url": "https://dev.api.mbtace.com/routes?filter[type]=4&fields[route]=long_name,type,direction_names"
+    },
+    "response": {
+      "body": "{\"jsonapi\":{\"version\":\"1.0\"},\"data\":[{\"type\":\"route\",\"links\":{\"self\":\"/routes/Boat-F4\"},\"id\":\"Boat-F4\",\"attributes\":{\"type\":4,\"long_name\":\"Charlestown Ferry\",\"direction_names\":[\"Outbound\",\"Inbound\"]}},{\"type\":\"route\",\"links\":{\"self\":\"/routes/Boat-F1\"},\"id\":\"Boat-F1\",\"attributes\":{\"type\":4,\"long_name\":\"Hingham Ferry\",\"direction_names\":[\"Outbound\",\"Inbound\"]}},{\"type\":\"route\",\"links\":{\"self\":\"/routes/Boat-F3\"},\"id\":\"Boat-F3\",\"attributes\":{\"type\":4,\"long_name\":\"Hull Ferry\",\"direction_names\":[\"Outbound\",\"Inbound\"]}}]}",
+      "headers": {
+        "cache-control": "max-age=0, private, must-revalidate",
+        "Content-Type": "application/vnd.api+json; charset=utf-8",
+        "Date": "Thu, 15 Jun 2017 18:51:20 GMT",
+        "Server": "nginx/1.10.2",
+        "x-request-id": "b7spe4anp4kb8m196nbos7sruauajcf5",
+        "Content-Length": "519",
+        "Connection": "keep-alive"
+      },
+      "status_code": 200,
+      "type": "ok"
+    }
   }
 ]

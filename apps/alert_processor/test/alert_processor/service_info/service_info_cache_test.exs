@@ -82,18 +82,30 @@ defmodule AlertProcessor.ServiceInfoCacheTest do
       {:ok, pid} = ServiceInfoCache.start_link([name: :service_info_cache_test_commuter_rail])
       {:ok, route_info} = ServiceInfoCache.get_commuter_rail_info(pid)
       assert [
-        %Route{route_id: "CR-Fairmount"},
-        %Route{route_id: "CR-Fitchburg"},
-        %Route{route_id: "CR-Worcester"},
-        %Route{route_id: "CR-Franklin"},
-        %Route{route_id: "CR-Greenbush"},
-        %Route{route_id: "CR-Haverhill"},
-        %Route{route_id: "CR-Kingston"},
-        %Route{route_id: "CR-Lowell"},
-        %Route{route_id: "CR-Middleborough"},
-        %Route{route_id: "CR-Needham"},
-        %Route{route_id: "CR-Newburyport"},
-        %Route{route_id: "CR-Providence"}
+        %Route{route_id: "CR-Fairmount", long_name: "Fairmount Line", route_type: 2, direction_names: ["Outbound", "Inbound"]},
+        %Route{route_id: "CR-Fitchburg", long_name: "Fitchburg Line", route_type: 2, direction_names: ["Outbound", "Inbound"]},
+        %Route{route_id: "CR-Worcester", long_name: "Framingham/Worcester Line", route_type: 2, direction_names: ["Outbound", "Inbound"]},
+        %Route{route_id: "CR-Franklin", long_name: "Franklin Line", route_type: 2, direction_names: ["Outbound", "Inbound"]},
+        %Route{route_id: "CR-Greenbush", long_name: "Greenbush Line", route_type: 2, direction_names: ["Outbound", "Inbound"]},
+        %Route{route_id: "CR-Haverhill", long_name: "Haverhill Line", route_type: 2, direction_names: ["Outbound", "Inbound"]},
+        %Route{route_id: "CR-Kingston", long_name: "Kingston/Plymouth Line", route_type: 2, direction_names: ["Outbound", "Inbound"]},
+        %Route{route_id: "CR-Lowell", long_name: "Lowell Line", route_type: 2, direction_names: ["Outbound", "Inbound"]},
+        %Route{route_id: "CR-Middleborough", long_name: "Middleborough/Lakeville Line", route_type: 2, direction_names: ["Outbound", "Inbound"]},
+        %Route{route_id: "CR-Needham", long_name: "Needham Line", route_type: 2, direction_names: ["Outbound", "Inbound"]},
+        %Route{route_id: "CR-Newburyport", long_name: "Newburyport/Rockport Line", route_type: 2, direction_names: ["Outbound", "Inbound"]},
+        %Route{route_id: "CR-Providence", long_name: "Providence/Stoughton Line", route_type: 2, direction_names: ["Outbound", "Inbound"]}
+      ] = route_info
+    end
+  end
+
+  test "get_ferry_info/0 returns ferry info" do
+    use_cassette "service_info", custom: true, clear_mock: true, match_requests_on: [:query] do
+      {:ok, pid} = ServiceInfoCache.start_link([name: :service_info_cache_test_ferry])
+      {:ok, route_info} = ServiceInfoCache.get_ferry_info(pid)
+      assert [
+        %Route{route_id: "Boat-F4", long_name: "Charlestown Ferry", route_type: 4, direction_names: ["Outbound", "Inbound"]},
+        %Route{route_id: "Boat-F1", long_name: "Hingham Ferry", route_type: 4, direction_names: ["Outbound", "Inbound"]},
+        %Route{route_id: "Boat-F3", long_name: "Hull Ferry", route_type: 4, direction_names: ["Outbound", "Inbound"]}
       ] = route_info
     end
   end
