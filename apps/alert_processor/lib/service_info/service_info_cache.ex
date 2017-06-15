@@ -189,27 +189,13 @@ defmodule AlertProcessor.ServiceInfoCache do
   defp fetch_service_info(:commuter_rail) do
     [2]
     |> do_fetch_service_info()
-    |> Enum.map(fn({route_id, route_type, long_name, direction_names}) ->
-      %Route{
-        route_id: route_id,
-        long_name: long_name,
-        route_type: route_type,
-        direction_names: direction_names
-      }
-    end)
+    |> Enum.map(&map_route_struct/1)
   end
 
   defp fetch_service_info(:ferry) do
     [4]
     |> do_fetch_service_info()
-    |> Enum.map(fn({route_id, route_type, long_name, direction_names}) ->
-      %Route{
-        route_id: route_id,
-        long_name: long_name,
-        route_type: route_type,
-        direction_names: direction_names
-      }
-    end)
+    |> Enum.map(&map_route_struct/1)
   end
 
   defp fetch_service_info(:bus) do
@@ -240,6 +226,15 @@ defmodule AlertProcessor.ServiceInfoCache do
             _ -> {id, route_type, long_name, direction_names}
           end
       end)
+  end
+
+  defp map_route_struct({route_id, route_type, long_name, direction_names}) do
+    %Route{
+      route_id: route_id,
+      long_name: long_name,
+      route_type: route_type,
+      direction_names: direction_names
+    }
   end
 
   defp fetch_subway({:split_red_line_branches, split_red_line_branches}) do
