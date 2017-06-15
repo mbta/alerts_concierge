@@ -139,12 +139,6 @@ defmodule AlertProcessor.AlertParser do
      %{stop: stop}
   end
 
-  defp parse_route("CR-" <> _ = route_id) do
-    %{route: route_id, route_type: 2}
-  end
-  defp parse_route("Boat-" <> _ = route_id) do
-    %{route: route_id, route_type: 4}
-  end
   defp parse_route(route_id) do
     {:ok, route} = ServiceInfoCache.get_route(route_id)
     case route do
