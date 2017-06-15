@@ -3,7 +3,7 @@ defmodule AlertProcessor.MailHelper do
   Functions to use in rendering dynamically generated properties on
   digest emails
   """
-  @template_dir Path.join(~w(#{File.cwd!} lib mail_templates))
+  @template_dir Application.get_env(:alert_processor, :mail_template_dir)
   @asset_url Application.get_env(:alert_processor, :asset_url)
   @commuter_rail "#{@asset_url}/icons/icn_commuter.png"
   @bus "#{@asset_url}/icons/icn_bus.png"
@@ -26,22 +26,8 @@ defmodule AlertProcessor.MailHelper do
 
   EEx.function_from_file(
     :def,
-    :footer_styles,
-    Path.join(@template_dir, "_footer_styles.css"),
-    []
-  )
-
-  EEx.function_from_file(
-    :def,
     :header,
     Path.join(@template_dir, "_header.html.eex"),
-    []
-  )
-
-  EEx.function_from_file(
-    :def,
-    :header_styles,
-    Path.join(@template_dir, "_header_styles.css"),
     []
   )
 

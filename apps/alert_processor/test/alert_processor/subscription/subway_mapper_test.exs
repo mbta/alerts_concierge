@@ -322,7 +322,7 @@ defmodule AlertProcessor.Subscription.SubwayMapperTest do
         Enum.count(informed_entities, fn(informed_entity) ->
           InformedEntity.entity_type(informed_entity) == :stop
         end)
-      assert total_station_count == 2
+      assert total_station_count == 6
     end
   end
 

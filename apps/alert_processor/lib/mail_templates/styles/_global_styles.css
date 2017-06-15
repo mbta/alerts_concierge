@@ -27,6 +27,15 @@ img { border: 0;
   outline: none;
   text-decoration: none;
 }
+
+table td { border-collapse:collapse; }
+
+#backgroundTable {
+  height:100% !important;
+  margin:0;
+  padding:0;
+  width:100% !important;
+}
 /* End Reset Styles */
 
 /* Template Styles */
@@ -39,42 +48,4 @@ body {
   font-family: Arial, Helvetica Neue, Helvetica, sans-serif;
   width: 600px;
   padding: 0px 10px;
-}
-
-.notification-content {
-  padding: 32px 20px 24px 20px;
-}
-
-h1.notification-service-effect {
-  font-size: 26px;
-  font-weight: bold;
-  text-align: center;
-  color: #000000;
-  vertical-align: middle;
-}
-
-.notification-logo {
-  width: 24px;
-  height: 24px;
-}
-
-.notification-header {
-  font-size: 16px;
-  line-height: 1.5;
-  color: #1c1e23;
-  padding-top: 24px;
-}
-
-.notification-description {
-  font-size: 16px;
-  line-height: 1.5;
-  color: #1c1e23;
-}
-
-.notification-link {
-  font-size: 16px;
-  line-height: 1.5;
-  color: #1c77c3;
-  padding-top: 24px;
-  text-align: right;
 }

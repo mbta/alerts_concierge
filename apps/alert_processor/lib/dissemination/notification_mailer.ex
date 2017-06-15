@@ -6,24 +6,18 @@ defmodule AlertProcessor.NotificationMailer do
   require EEx
 
   @from Application.get_env(:alert_processor, __MODULE__)[:from]
-  @template_dir Path.join(~w(#{File.cwd!} lib mail_templates))
+  @template_dir Application.get_env(:alert_processor, :mail_template_dir)
 
   EEx.function_from_file(
     :def,
     :html_email,
     Path.join(@template_dir, "notification.html.eex"),
-    [:notification, :notification_styles])
-  EEx.function_from_file(
-    :def,
-    :text_email,
-    Path.join(@template_dir, "notification.txt.eex"),
     [:notification])
   EEx.function_from_file(
     :def,
-    :notification_styles,
-    Path.join(@template_dir, "notification_styles.css"),
-    []
-  )
+    :text_email,
+    Path.join(~w(#{System.cwd!} lib mail_templates notification.txt.eex)),
+    [:notification])
 
   @doc "notification_email/2 takes a message and a user's email address and builds an email to be sent to user."
   @spec notification_email(Notification.t, String.t) :: Elixir.Bamboo.Email.t
@@ -31,7 +25,7 @@ defmodule AlertProcessor.NotificationMailer do
     base_email()
     |> to(user_email)
     |> subject("MBTA Alert")
-    |> html_body(html_email(notification, notification_styles()))
+    |> html_body(html_email(notification))
     |> text_body(text_email(notification))
   end
 
