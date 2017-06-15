@@ -28,10 +28,15 @@ h1.notification-service-effect {
   color: #1c1e23;
 }
 
+.notification-link-wrapper {
+  text-align: right;
+  padding-top: 10px;
+}
+
 .notification-link {
   font-size: 16px;
   line-height: 1.5;
   color: #1c77c3;
   padding-top: 24px;
-  text-align: right;
+  text-decoration: none !important;
 }

@@ -67,6 +67,11 @@
   color: #1c1e23;
 }
 
+.digest-footer-link-wrapper {
+  width: 290px;
+  height: 40px;
+}
+
 .digest-footer-link {
   width: 290px;
   height:  40px;

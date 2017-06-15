@@ -22,8 +22,8 @@
         <%= notification.description %>
       </p>
 
-      <p class="notification-link">
-        <a href="https://t.mbta.com/">View all alerts &rarr;</a>
+      <p class="notification-link-wrapper">
+        <a class="notification-link" href="https://t.mbta.com/">View all alerts &rarr;</a>
       </p>
     </div>
     <center>

@@ -47,11 +47,13 @@
           The digest of upcoming events has been personalized to you based on your subscription, for full list:
         </div>
 
-        <a class="digest-footer-link" href="https://t.mbta.com/">
-          <div class="digest-footer-button">
-            View All Alerts
-          </div>
-        </a>
+        <div class="digest-footer-link-wrapper">
+          <a class="digest-footer-link" href="https://t.mbta.com/">
+            <div class="digest-footer-button">
+              View All Alerts
+            </div>
+          </a>
+        </div>
       </div>
 
       <%= AlertProcessor.MailHelper.footer %>
