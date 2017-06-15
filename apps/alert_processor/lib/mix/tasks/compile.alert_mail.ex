@@ -20,13 +20,7 @@ defmodule Mix.Tasks.Compile.AlertMail do
     Enum.each(template_names, &build_template_with_inline_css/1)
   end
 
-  defp touch_if_not_present(template_name) do
-    file = Path.join([@output_dir, template_name]) <> ".html.eex"
-    File.touch!(file)
-  end
-
   defp build_template_with_inline_css(template_name) do
-    touch_if_not_present(template_name)
     template_path = Path.join([@template_dir, template_name]) <> ".html.eex"
     style_path = Path.join([@style_dir, template_name]) <> "_styles.css"
     global_path = @style_dir <> "/_global_styles.css"
