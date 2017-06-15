@@ -201,7 +201,8 @@ defmodule AlertProcessor.ServiceInfoCache do
   defp fetch_service_info(:bus) do
     [3]
     |> do_fetch_service_info()
-    |> Enum.map(fn({route_id, route_type, long_name, direction_names}) ->
+    |> Enum.with_index()
+    |> Enum.map(fn({{route_id, route_type, long_name, direction_names}, index}) ->
       [zero_task, one_task] =
         for direction_id <- [0, 1] do
           Task.async(__MODULE__, :do_headsigns, [route_id, direction_id])
@@ -211,7 +212,8 @@ defmodule AlertProcessor.ServiceInfoCache do
         long_name: long_name,
         route_type: route_type,
         direction_names: direction_names,
-        headsigns: %{0 => Task.await(zero_task), 1 => Task.await(one_task)}
+        headsigns: %{0 => Task.await(zero_task), 1 => Task.await(one_task)},
+        order: index
       }
     end)
   end
@@ -240,15 +242,17 @@ defmodule AlertProcessor.ServiceInfoCache do
   defp fetch_subway({:split_red_line_branches, split_red_line_branches}) do
     [0, 1]
     |> do_fetch_service_info()
-    |> Enum.flat_map(fn({route_id, route_type, long_name, direction_names}) ->
+    |> Enum.with_index()
+    |> Enum.flat_map(fn({{route_id, route_type, long_name, direction_names}, index}) ->
       stop_list =
         route_id
         |> ApiClient.route_stops
         |> Enum.map(fn(%{"attributes" => %{"name" => name}, "id" => id}) ->
           {name, id}
         end)
-      route = %Route{route_id: route_id, long_name: long_name, route_type: route_type, direction_names: direction_names, stop_list: stop_list}
-      fetch_route_branches(route_id)
+      route = %Route{route_id: route_id, long_name: long_name, route_type: route_type, direction_names: direction_names, stop_list: stop_list, order: index}
+      route_id
+      |> fetch_route_branches()
       |> handle_red_line_branches(route, split_red_line_branches)
     end)
   end
