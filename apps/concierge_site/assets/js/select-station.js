@@ -8,6 +8,7 @@ export default function($) {
   };
 
   if ($(".enter-trip-info").length) {
+    props.allRoutes = generateRouteList();
     props.allStations = generateStationList();
     props.validStationNames = props.allStations.map(station => station.name);
     attachSuggestionInputs();
@@ -18,11 +19,7 @@ export default function($) {
     const originDestination = event.data.originDestination;
 
     if (query.length > 0) {
-      const queryRegExp = new RegExp(query, "i");
-      const matchingStations = props.allStations.filter(function(station) {
-        return station.name.match(queryRegExp);
-      })
-
+      const matchingStations = filterSuggestions(originDestination, query);
       const suggestionElements = matchingStations.map(function(station) {
         return renderStationSuggestion(originDestination, station);
       });
@@ -74,6 +71,52 @@ export default function($) {
     }
 
     unmountStationSuggestions(originDestination);
+  }
+
+  function filterSuggestions(originDestination, query) {
+    const queryRegExp = new RegExp(query, "i");
+
+    let matchingStations = props.allStations.filter(function(station) {
+      return station.name.match(queryRegExp);
+    });
+
+    if (otherStationHasValidSelection(originDestination)) {
+      matchingStations = matchingStations.filter(function(station) {
+        return (stationsOnSelectedLines(originDestination).includes(station.name));
+      });
+    }
+
+    return matchingStations;
+  }
+
+  function stationsOnSelectedLines(originDestination) {
+    const otherStation = oppositeStation(originDestination);
+    const selectedLines = state[otherStation]["selectedLines"].split(",");
+    let stations = [];
+    
+    selectedLines.forEach(function(line) {
+      stations = [...props.allRoutes[line], ...stations];
+    });
+
+    return stations;
+  }
+
+  function generateRouteList() {
+    let routes = {};
+
+    const $optgroups = $("select.subscription-select-origin optgroup");
+
+    $optgroups.each(function(_i, group) {
+      const options = $("option", group).map(function(i, option) {
+        return option.text;
+      }).get();
+
+      const routeName = group.label;
+
+      routes[routeName] = options;
+    });
+
+    return routes;
   }
 
   function generateStationList() {
@@ -164,6 +207,11 @@ export default function($) {
     return `icon-${lineColor}-line-circle`
   }
 
+  function otherStationHasValidSelection(originDestination) {
+    const otherStation = oppositeStation(originDestination);
+    return (state[otherStation]["selectedName"] && state[otherStation]["selectedLines"]);
+  }
+
   function setSelectedStation(originDestination, stationName, lines) {
     state[originDestination]["selectedName"] = stationName;
     state[originDestination]["selectedLines"] = lines;
@@ -194,6 +242,10 @@ export default function($) {
     });
 
     return station.allLineNames.join(",");
+  }
+
+  function oppositeStation(originDestination) {
+    return originDestination == "origin" ? "destination" : "origin"
   }
 
   $(document).on(

@@ -101,6 +101,26 @@ describe("selectStation", function() {
       assert.include(parkStreetSuggestion, "Green Line");
       assert.include(parkStreetSuggestion, "Red Line");
     });
+
+    describe ("when one station has already been selected", () => {
+      it("only shows stations on the selected station's lines", () => {
+        const $originInput = $("input.subscription-select-origin");
+        $originInput.val("Braintree");
+        simulateKeyUp($originInput[0])
+        $(".origin-station-suggestion").first().mousedown();
+
+        const $destinationInput = $("input.subscription-select-destination");
+        $destinationInput.val("Ken");
+        const $suggestionContainer = $("input.subscription-select-destination + .suggestion-container");
+        simulateKeyUp($destinationInput[0]);
+
+        const $suggestions = $(".destination-station-suggestion");
+        const suggestionText = $(".station-name", $suggestions).text();
+
+        assert.lengthOf($suggestions, 1);
+        assert.equal(suggestionText, "Kendall/MIT");
+      });
+    });
   });
 
   describe("clicking on a suggestion", () => {
@@ -275,8 +295,10 @@ describe("selectStation", function() {
             <optgroup label="Red Line">
               <option value="place-brntn">Braintree</option>
               <option value="place-pktrm">Park Street</option>
+              <option value="place-knncl">Kendall/MIT</option>
             </optgroup>
             <optgroup label="Green Line C">
+              <option value="place-kencl">Kenmore</option>
               <option value="place-pktrm">Park Street</option>
             </optgroup>
           </select>
@@ -287,8 +309,10 @@ describe("selectStation", function() {
             <optgroup label="Red Line">
               <option value="place-brntn">Braintree</option>
               <option value="place-pktrm">Park Street</option>
+              <option value="place-knncl">Kendall/MIT</option>
             </optgroup>
             <optgroup label="Green Line C">
+              <option value="place-kencl">Kenmore</option>
               <option value="place-pktrm">Park Street</option>
             </optgroup>
           </select>
