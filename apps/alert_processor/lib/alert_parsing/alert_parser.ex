@@ -58,7 +58,7 @@ defmodule AlertProcessor.AlertParser do
       header: parse_translation(header_text_translations),
       id: to_string(alert_id),
       informed_entities: parse_informed_entities(informed_entities, facilities_map),
-      last_push_notification: Map.get_lazy(alert_data, "last_push_notification_timestamp", fn -> Map.get(alert_data, "created_timestamp") end) |> parse_datetime(),
+      last_push_notification: alert_data|>  Map.get_lazy("last_push_notification_timestamp", fn -> Map.get(alert_data, "created_timestamp") end) |> parse_datetime(),
       service_effect: parse_translation(service_effect_text_translations),
       severity: severity |> String.downcase |> String.to_existing_atom,
     }

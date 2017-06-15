@@ -20,7 +20,7 @@ defmodule AlertProcessor.ServiceInfoCache do
   Initialize GenServer and schedule recurring service info fetching.
   """
   def init(_) do
-    {:ok, fetch_service_info()}
+    {:ok, fetch_and_cache_service_info()}
   end
 
   def get_subway_info(name \\ __MODULE__) do
@@ -68,7 +68,7 @@ defmodule AlertProcessor.ServiceInfoCache do
   """
   def handle_info(:work, _) do
     schedule_work()
-    {:noreply, fetch_service_info()}
+    {:noreply, fetch_and_cache_service_info()}
   end
 
   def handle_call(:get_subway_info, _from, %{routes: route_state} = state) do
@@ -161,7 +161,7 @@ defmodule AlertProcessor.ServiceInfoCache do
     end)
   end
 
-  defp fetch_service_info do
+  defp fetch_and_cache_service_info do
     route_state =
       Enum.flat_map(@service_types, fn(service_type) ->
         fetch_service_info(service_type)
@@ -171,49 +171,16 @@ defmodule AlertProcessor.ServiceInfoCache do
     end
   end
 
+  defp fetch_service_info(:subway_full_routes), do: fetch_subway({:split_red_line_branches, false})
+  defp fetch_service_info(:subway), do: fetch_subway({:split_red_line_branches, true})
+  defp fetch_service_info(:commuter_rail), do: do_fetch_service_info([2])
+  defp fetch_service_info(:ferry), do: do_fetch_service_info([4])
+  defp fetch_service_info(:bus), do: do_fetch_service_info([3])
   defp fetch_service_info(:parent_stop_info) do
     for subway_stop <- ApiClient.subway_parent_stops(), into: %{} do
       %{"id" => id, "relationships" => %{"parent_station" => %{"data" => %{"id" => parent_station_id}}}} = subway_stop
       {id, parent_station_id}
     end
-  end
-
-  defp fetch_service_info(:subway_full_routes) do
-    fetch_subway({:split_red_line_branches, false})
-  end
-
-  defp fetch_service_info(:subway) do
-    fetch_subway({:split_red_line_branches, true})
-  end
-
-  defp fetch_service_info(:commuter_rail) do
-    [2]
-    |> do_fetch_service_info()
-    |> Enum.map(&map_route_struct/1)
-  end
-
-  defp fetch_service_info(:ferry) do
-    [4]
-    |> do_fetch_service_info()
-    |> Enum.map(&map_route_struct/1)
-  end
-
-  defp fetch_service_info(:bus) do
-    [3]
-    |> do_fetch_service_info()
-    |> Enum.map(fn({route_id, route_type, long_name, direction_names}) ->
-      [zero_task, one_task] =
-        for direction_id <- [0, 1] do
-          Task.async(__MODULE__, :do_headsigns, [route_id, direction_id])
-        end
-      %Route{
-        route_id: route_id,
-        long_name: long_name,
-        route_type: route_type,
-        direction_names: direction_names,
-        headsigns: %{0 => Task.await(zero_task), 1 => Task.await(one_task)}
-      }
-    end)
   end
 
   defp do_fetch_service_info(route_types) do
@@ -226,29 +193,47 @@ defmodule AlertProcessor.ServiceInfoCache do
             _ -> {id, route_type, long_name, direction_names}
           end
       end)
+    |> Enum.with_index()
+    |> Enum.map(&map_route_struct/1)
   end
 
-  defp map_route_struct({route_id, route_type, long_name, direction_names}) do
+  defp map_route_struct({{route_id, route_type, long_name, direction_names}, index}) do
     %Route{
       route_id: route_id,
       long_name: long_name,
       route_type: route_type,
-      direction_names: direction_names
+      direction_names: direction_names,
+      order: index,
+      stop_list: fetch_stops(route_type, route_id),
+      headsigns: fetch_headsigns(route_type, route_id)
     }
   end
+
+  defp fetch_stops(route_type, _) when route_type in [2, 3, 4], do: []
+  defp fetch_stops(_route_type, route_id) do
+    route_id
+    |> ApiClient.route_stops
+    |> Enum.map(fn(%{"attributes" => %{"name" => name}, "id" => id}) ->
+      {name, id}
+    end)
+  end
+
+
+  defp fetch_headsigns(3, route_id) do
+    [zero_task, one_task] =
+      for direction_id <- [0, 1] do
+        Task.async(__MODULE__, :do_headsigns, [route_id, direction_id])
+      end
+    %{0 => Task.await(zero_task), 1 => Task.await(one_task)}
+  end
+  defp fetch_headsigns(_, _), do: nil
 
   defp fetch_subway({:split_red_line_branches, split_red_line_branches}) do
     [0, 1]
     |> do_fetch_service_info()
-    |> Enum.flat_map(fn({route_id, route_type, long_name, direction_names}) ->
-      stop_list =
-        route_id
-        |> ApiClient.route_stops
-        |> Enum.map(fn(%{"attributes" => %{"name" => name}, "id" => id}) ->
-          {name, id}
-        end)
-      route = %Route{route_id: route_id, long_name: long_name, route_type: route_type, direction_names: direction_names, stop_list: stop_list}
-      fetch_route_branches(route_id)
+    |> Enum.flat_map(fn(route) ->
+      route.route_id
+      |> fetch_route_branches()
       |> handle_red_line_branches(route, split_red_line_branches)
     end)
   end

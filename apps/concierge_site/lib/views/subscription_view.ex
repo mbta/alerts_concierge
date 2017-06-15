@@ -26,14 +26,13 @@ defmodule ConciergeSite.SubscriptionView do
       subscriptions
       |> Enum.sort_by(fn(subscription) ->
         route = parse_route(subscription)
-        route_key = route.long_name |> String.split() |> List.first()
         relevant_days_key =
           {
             !Enum.member?(subscription.relevant_days, :weekday),
             !Enum.member?(subscription.relevant_days, :saturday),
             !Enum.member?(subscription.relevant_days, :sunday)
           }
-        {route_key, relevant_days_key, subscription.start_time}
+        {route.order, relevant_days_key, subscription.start_time}
       end)
       |> Enum.group_by(& &1.type)
     Map.merge(%{amenity: [], boat: [], bus: [], commuter_rail: [], subway: []}, subscription_map)

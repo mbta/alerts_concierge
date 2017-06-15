@@ -1,5 +1,11 @@
 defmodule AlertProcessor.Model.Route do
-  defstruct [:direction_names, :headsigns, :long_name, :route_id, :route_type, stop_list: []]
+  @moduledoc """
+  Module used for storing information
+  about different routes for use
+  when displaying subscriptions
+  """
+
+  defstruct [:direction_names, :headsigns, :long_name, :order, :route_id, :route_type, stop_list: []]
 
   @type headsigns :: %{
     0 => [String.t],
@@ -15,6 +21,7 @@ defmodule AlertProcessor.Model.Route do
     long_name: String.t,
     route_id: route_id,
     route_type: route_type,
-    stop_list: [stop]
+    stop_list: [stop],
+    order: integer
   }
 end
