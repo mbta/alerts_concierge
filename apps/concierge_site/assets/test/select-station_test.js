@@ -120,6 +120,22 @@ describe("selectStation", function() {
         assert.lengthOf($suggestions, 1);
         assert.equal(suggestionText, "Kendall/MIT");
       });
+
+      it("does not show the same station as a suggestion even if the text matches", () => {
+        const $originInput = $("input.subscription-select-origin");
+        $originInput.val("Braintree");
+        simulateKeyUp($originInput[0])
+        $(".origin-station-suggestion").first().mousedown();
+
+        const $destinationInput = $("input.subscription-select-destination");
+        $destinationInput.val("Braintree");
+        const $suggestionContainer = $("input.subscription-select-destination + .suggestion-container");
+        simulateKeyUp($destinationInput[0]);
+
+        const $suggestions = $(".destination-station-suggestion");
+
+        assert.lengthOf($suggestions, 0);
+      });
     });
   });
 

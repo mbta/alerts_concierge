@@ -81,8 +81,12 @@ export default function($) {
     });
 
     if (otherStationHasValidSelection(originDestination)) {
+      const otherStation = oppositeStation(originDestination);
       matchingStations = matchingStations.filter(function(station) {
-        return (stationsOnSelectedLines(originDestination).includes(station.name));
+        return (
+          state[otherStation].selectedName != station.name &&
+          stationsOnSelectedLines(originDestination).includes(station.name)
+        );
       });
     }
 
