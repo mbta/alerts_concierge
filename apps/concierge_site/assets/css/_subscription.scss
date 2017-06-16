@@ -192,9 +192,13 @@
 }
 
 .select-days {
+  margin-bottom: 1rem;
+  text-align: left;
+}
+
+.travel-times {
   margin-bottom: 2rem;
-  position: relative;
-  text-align: left
+  text-align: left;
 }
 
 .subscription-day-checkbox {
@@ -203,4 +207,31 @@
 
 #subscription_weekdays {
   margin-left: 0;
+}
+
+.travel-time-select-section {
+  margin-bottom: 1.5rem;
+}
+
+.travel-time-label {
+  display: inline-block;
+  margin-right: .5rem;
+}
+
+.travel-times-sub-label {
+  margin-bottom: 1rem;
+}
+
+.travel-time-select {
+  background-color: $white;
+  font-family: $font-family-base;
+  font-size: $base-font-size-xxl;
+  height: 2.25rem;
+  text-align-last: center;
+  width: 6.5rem;
+}
+
+.travel-time-connector {
+  display: inline-block;
+  margin: 0 1rem;
 }
