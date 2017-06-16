@@ -28,6 +28,21 @@
                  class: "subscription-select-destination no-js",
                  prompt: "Select a station" %>
     </div>
+    <div class="form-group select-days">
+      <div class="form-label">Travel Days</div>
+      <label>
+        <%= checkbox(:subscription, :weekdays, class: "subscription-day-checkbox") %>
+        Weekdays
+      </label>
+      <label>
+        <%= checkbox(:subscription, :saturday, class: "subscription-day-checkbox") %>
+        Saturday
+      </label>
+      <label>
+        <%= checkbox(:subscription, :sunday, class: "subscription-day-checkbox") %>
+        Sunday
+      </label>
+    </div>
   </form>
 </div>
 
