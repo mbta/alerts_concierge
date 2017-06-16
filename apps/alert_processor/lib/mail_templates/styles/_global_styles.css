@@ -48,4 +48,5 @@ body {
   font-family: Arial, Helvetica Neue, Helvetica, sans-serif;
   width: 600px;
   padding: 0px 10px;
+  overflow-y: scroll;
 }
