@@ -209,7 +209,7 @@ defmodule AlertProcessor.ServiceInfoCache do
     }
   end
 
-  defp fetch_stops(route_type, _) when route_type in [2, 3, 4], do: []
+  defp fetch_stops(3, _), do: []
   defp fetch_stops(_route_type, route_id) do
     route_id
     |> ApiClient.route_stops

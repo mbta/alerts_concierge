@@ -82,18 +82,19 @@ defmodule AlertProcessor.ServiceInfoCacheTest do
       {:ok, pid} = ServiceInfoCache.start_link([name: :service_info_cache_test_commuter_rail])
       {:ok, route_info} = ServiceInfoCache.get_commuter_rail_info(pid)
       assert [
-        %Route{route_id: "CR-Fairmount", long_name: "Fairmount Line", route_type: 2, direction_names: ["Outbound", "Inbound"]},
-        %Route{route_id: "CR-Fitchburg", long_name: "Fitchburg Line", route_type: 2, direction_names: ["Outbound", "Inbound"]},
-        %Route{route_id: "CR-Worcester", long_name: "Framingham/Worcester Line", route_type: 2, direction_names: ["Outbound", "Inbound"]},
-        %Route{route_id: "CR-Franklin", long_name: "Franklin Line", route_type: 2, direction_names: ["Outbound", "Inbound"]},
-        %Route{route_id: "CR-Greenbush", long_name: "Greenbush Line", route_type: 2, direction_names: ["Outbound", "Inbound"]},
-        %Route{route_id: "CR-Haverhill", long_name: "Haverhill Line", route_type: 2, direction_names: ["Outbound", "Inbound"]},
-        %Route{route_id: "CR-Kingston", long_name: "Kingston/Plymouth Line", route_type: 2, direction_names: ["Outbound", "Inbound"]},
-        %Route{route_id: "CR-Lowell", long_name: "Lowell Line", route_type: 2, direction_names: ["Outbound", "Inbound"]},
-        %Route{route_id: "CR-Middleborough", long_name: "Middleborough/Lakeville Line", route_type: 2, direction_names: ["Outbound", "Inbound"]},
-        %Route{route_id: "CR-Needham", long_name: "Needham Line", route_type: 2, direction_names: ["Outbound", "Inbound"]},
-        %Route{route_id: "CR-Newburyport", long_name: "Newburyport/Rockport Line", route_type: 2, direction_names: ["Outbound", "Inbound"]},
-        %Route{route_id: "CR-Providence", long_name: "Providence/Stoughton Line", route_type: 2, direction_names: ["Outbound", "Inbound"]}
+        %Route{route_id: "CR-Fairmount", long_name: "Fairmount Line", route_type: 2, direction_names: ["Outbound", "Inbound"], stop_list: [{"Readville", "Readville"} | _]},
+        %Route{route_id: "CR-Fitchburg", long_name: "Fitchburg Line", route_type: 2, direction_names: ["Outbound", "Inbound"], stop_list: [{"Wachusett", "Wachusett"} | _]},
+        %Route{route_id: "CR-Worcester", long_name: "Framingham/Worcester Line", route_type: 2, direction_names: ["Outbound", "Inbound"], stop_list: [{"Worcester", "Worcester"} | _]},
+        %Route{route_id: "CR-Franklin", long_name: "Franklin Line", route_type: 2, direction_names: ["Outbound", "Inbound"], stop_list: [{"Forge Park/495", "Forge Park / 495"} | _]},
+        %Route{route_id: "CR-Greenbush", long_name: "Greenbush Line", route_type: 2, direction_names: ["Outbound", "Inbound"], stop_list: [{"Greenbush", "Greenbush"} | _]},
+        %Route{route_id: "CR-Haverhill", long_name: "Haverhill Line", route_type: 2, direction_names: ["Outbound", "Inbound"], stop_list: [{"Haverhill", "Haverhill"} | _]},
+        %Route{route_id: "CR-Kingston", long_name: "Kingston/Plymouth Line", route_type: 2, direction_names: ["Outbound", "Inbound"], stop_list: [{"Plymouth", "Plymouth"} | _]},
+        %Route{route_id: "CR-Lowell", long_name: "Lowell Line", route_type: 2, direction_names: ["Outbound", "Inbound"], stop_list: [{"Lowell", "Lowell"} | _]},
+        %Route{route_id: "CR-Middleborough", long_name: "Middleborough/Lakeville Line", route_type: 2, direction_names: ["Outbound", "Inbound"], stop_list: [{"Middleborough/Lakeville",
+                "Middleborough/ Lakeville"} | _]},
+        %Route{route_id: "CR-Needham", long_name: "Needham Line", route_type: 2, direction_names: ["Outbound", "Inbound"], stop_list: [{"Needham Heights", "Needham Heights"} | _]},
+        %Route{route_id: "CR-Newburyport", long_name: "Newburyport/Rockport Line", route_type: 2, direction_names: ["Outbound", "Inbound"], stop_list: [{"Rockport", "Rockport"} | _]},
+        %Route{route_id: "CR-Providence", long_name: "Providence/Stoughton Line", route_type: 2, direction_names: ["Outbound", "Inbound"], stop_list: [{"Wickford Junction", "Wickford Junction"} | _]}
       ] = route_info
     end
   end
@@ -103,9 +104,9 @@ defmodule AlertProcessor.ServiceInfoCacheTest do
       {:ok, pid} = ServiceInfoCache.start_link([name: :service_info_cache_test_ferry])
       {:ok, route_info} = ServiceInfoCache.get_ferry_info(pid)
       assert [
-        %Route{route_id: "Boat-F4", long_name: "Charlestown Ferry", route_type: 4, direction_names: ["Outbound", "Inbound"]},
-        %Route{route_id: "Boat-F1", long_name: "Hingham Ferry", route_type: 4, direction_names: ["Outbound", "Inbound"]},
-        %Route{route_id: "Boat-F3", long_name: "Hull Ferry", route_type: 4, direction_names: ["Outbound", "Inbound"]}
+        %Route{route_id: "Boat-F4", long_name: "Charlestown Ferry", route_type: 4, direction_names: ["Outbound", "Inbound"], stop_list: [{"Charlestown Navy Yard", "Boat-Charlestown"} | _]},
+        %Route{route_id: "Boat-F1", long_name: "Hingham Ferry", route_type: 4, direction_names: ["Outbound", "Inbound"], stop_list: [{"Hewitt's Cove, Hingham", "Boat-Hingham"} | _]},
+        %Route{route_id: "Boat-F3", long_name: "Hull Ferry", route_type: 4, direction_names: ["Outbound", "Inbound"], stop_list: [{"Pemberton Point, Hull", "Boat-Hull"} | _]}
       ] = route_info
     end
   end

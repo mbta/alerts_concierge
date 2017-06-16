@@ -478,5 +478,365 @@
       "status_code": 200,
       "type": "ok"
     }
+  },
+  {
+    "request": {
+      "body": "",
+      "headers": [],
+      "method": "get",
+      "options": [],
+      "request_body": "",
+      "url": "https://dev.api.mbtace.com/stops/?route=CR-Fairmount&direction_id=1"
+    },
+    "response": {
+      "body": "{\"jsonapi\":{\"version\":\"1.0\"},\"data\":[{\"type\":\"stop\",\"relationships\":{\"parent_station\":{\"data\":null}},\"links\":{\"self\":\"/stops/Readville\"},\"id\":\"Readville\",\"attributes\":{\"wheelchair_boarding\":1,\"name\":\"Readville\",\"longitude\":-71.133246,\"latitude\":42.238405}},{\"type\":\"stop\",\"relationships\":{\"parent_station\":{\"data\":null}},\"links\":{\"self\":\"/stops/Fairmount\"},\"id\":\"Fairmount\",\"attributes\":{\"wheelchair_boarding\":1,\"name\":\"Fairmount\",\"longitude\":-71.11927,\"latitude\":42.253638}},{\"type\":\"stop\",\"relationships\":{\"parent_station\":{\"data\":null}},\"links\":{\"self\":\"/stops/Morton%20Street\"},\"id\":\"Morton Street\",\"attributes\":{\"wheelchair_boarding\":1,\"name\":\"Morton Street\",\"longitude\":-71.085475,\"latitude\":42.280994}},{\"type\":\"stop\",\"relationships\":{\"parent_station\":{\"data\":null}},\"links\":{\"self\":\"/stops/Talbot%20Avenue\"},\"id\":\"Talbot Avenue\",\"attributes\":{\"wheelchair_boarding\":1,\"name\":\"Talbot Avenue\",\"longitude\":-71.07814,\"latitude\":42.292246}},{\"type\":\"stop\",\"relationships\":{\"parent_station\":{\"data\":null}},\"links\":{\"self\":\"/stops/Four%20Corners%20%2F%20Geneva\"},\"id\":\"Four Corners / Geneva\",\"attributes\":{\"wheelchair_boarding\":1,\"name\":\"Four Corners/Geneva\",\"longitude\":-71.076833,\"latitude\":42.305037}},{\"type\":\"stop\",\"relationships\":{\"parent_station\":{\"data\":null}},\"links\":{\"self\":\"/stops/Uphams%20Corner\"},\"id\":\"Uphams Corner\",\"attributes\":{\"wheelchair_boarding\":1,\"name\":\"Uphams Corner\",\"longitude\":-71.069072,\"latitude\":42.31867}},{\"type\":\"stop\",\"relationships\":{\"parent_station\":{\"data\":null}},\"links\":{\"self\":\"/stops/Newmarket\"},\"id\":\"Newmarket\",\"attributes\":{\"wheelchair_boarding\":1,\"name\":\"Newmarket\",\"longitude\":-71.066314,\"latitude\":42.326701}},{\"type\":\"stop\",\"relationships\":{\"parent_station\":{\"data\":null}},\"links\":{\"self\":\"/stops/place-sstat\"},\"id\":\"place-sstat\",\"attributes\":{\"wheelchair_boarding\":1,\"name\":\"South Station\",\"longitude\":-71.055242,\"latitude\":42.352271}}]}",
+      "headers": {
+        "cache-control": "max-age=0, private, must-revalidate",
+        "Content-Type": "application/vnd.api+json; charset=utf-8",
+        "Date": "Fri, 16 Jun 2017 15:39:02 GMT",
+        "Server": "nginx/1.10.2",
+        "x-request-id": "n29ge48rgsl41rvofm2ctbkihenchd65",
+        "Content-Length": "1887",
+        "Connection": "keep-alive"
+      },
+      "status_code": 200,
+      "type": "ok"
+    }
+  },
+  {
+    "request": {
+      "body": "",
+      "headers": [],
+      "method": "get",
+      "options": [],
+      "request_body": "",
+      "url": "https://dev.api.mbtace.com/stops/?route=CR-Fitchburg&direction_id=1"
+    },
+    "response": {
+      "body": "{\"jsonapi\":{\"version\":\"1.0\"},\"data\":[{\"type\":\"stop\",\"relationships\":{\"parent_station\":{\"data\":null}},\"links\":{\"self\":\"/stops/Wachusett\"},\"id\":\"Wachusett\",\"attributes\":{\"wheelchair_boarding\":1,\"name\":\"Wachusett\",\"longitude\":-71.848488,\"latitude\":42.553477}},{\"type\":\"stop\",\"relationships\":{\"parent_station\":{\"data\":null}},\"links\":{\"self\":\"/stops/Fitchburg\"},\"id\":\"Fitchburg\",\"attributes\":{\"wheelchair_boarding\":1,\"name\":\"Fitchburg\",\"longitude\":-71.792611,\"latitude\":42.58072}},{\"type\":\"stop\",\"relationships\":{\"parent_station\":{\"data\":null}},\"links\":{\"self\":\"/stops/North%20Leominster\"},\"id\":\"North Leominster\",\"attributes\":{\"wheelchair_boarding\":1,\"name\":\"North Leominster\",\"longitude\":-71.739186,\"latitude\":42.539017}},{\"type\":\"stop\",\"relationships\":{\"parent_station\":{\"data\":null}},\"links\":{\"self\":\"/stops/Shirley\"},\"id\":\"Shirley\",\"attributes\":{\"wheelchair_boarding\":2,\"name\":\"Shirley\",\"longitude\":-71.648004,\"latitude\":42.545089}},{\"type\":\"stop\",\"relationships\":{\"parent_station\":{\"data\":null}},\"links\":{\"self\":\"/stops/Ayer\"},\"id\":\"Ayer\",\"attributes\":{\"wheelchair_boarding\":2,\"name\":\"Ayer\",\"longitude\":-71.588476,\"latitude\":42.559074}},{\"type\":\"stop\",\"relationships\":{\"parent_station\":{\"data\":null}},\"links\":{\"self\":\"/stops/Littleton%20%2F%20Rte%20495\"},\"id\":\"Littleton / Rte 495\",\"attributes\":{\"wheelchair_boarding\":1,\"name\":\"Littleton/Rte 495\",\"longitude\":-71.502643,\"latitude\":42.519236}},{\"type\":\"stop\",\"relationships\":{\"parent_station\":{\"data\":null}},\"links\":{\"self\":\"/stops/South%20Acton\"},\"id\":\"South Acton\",\"attributes\":{\"wheelchair_boarding\":1,\"name\":\"South Acton\",\"longitude\":-71.457804,\"latitude\":42.460574}},{\"type\":\"stop\",\"relationships\":{\"parent_station\":{\"data\":null}},\"links\":{\"self\":\"/stops/West%20Concord\"},\"id\":\"West Concord\",\"attributes\":{\"wheelchair_boarding\":1,\"name\":\"West Concord\",\"longitude\":-71.392892,\"latitude\":42.457043}},{\"type\":\"stop\",\"relationships\":{\"parent_station\":{\"data\":null}},\"links\":{\"self\":\"/stops/Concord\"},\"id\":\"Concord\",\"attributes\":{\"wheelchair_boarding\":2,\"name\":\"Concord\",\"longitude\":-71.357677,\"latitude\":42.456565}},{\"type\":\"stop\",\"relationships\":{\"parent_station\":{\"data\":null}},\"links\":{\"self\":\"/stops/Lincoln\"},\"id\":\"Lincoln\",\"attributes\":{\"wheelchair_boarding\":2,\"name\":\"Lincoln\",\"longitude\":-71.325344,\"latitude\":42.414229}},{\"type\":\"stop\",\"relationships\":{\"parent_station\":{\"data\":null}},\"links\":{\"self\":\"/stops/Silver%20Hill\"},\"id\":\"Silver Hill\",\"attributes\":{\"wheelchair_boarding\":2,\"name\":\"Silver Hill\",\"longitude\":-71.302357,\"latitude\":42.395625}},{\"type\":\"stop\",\"relationships\":{\"parent_station\":{\"data\":null}},\"links\":{\"self\":\"/stops/Hastings\"},\"id\":\"Hastings\",\"attributes\":{\"wheelchair_boarding\":2,\"name\":\"Hastings\",\"longitude\":-71.289203,\"latitude\":42.385755}},{\"type\":\"stop\",\"relationships\":{\"parent_station\":{\"data\":null}},\"links\":{\"self\":\"/stops/Kendal%20Green\"},\"id\":\"Kendal Green\",\"attributes\":{\"wheelchair_boarding\":2,\"name\":\"Kendal Green\",\"longitude\":-71.282411,\"latitude\":42.37897}},{\"type\":\"stop\",\"relationships\":{\"parent_station\":{\"data\":null}},\"links\":{\"self\":\"/stops/Brandeis%2F%20Roberts\"},\"id\":\"Brandeis/ Roberts\",\"attributes\":{\"wheelchair_boarding\":1,\"name\":\"Brandeis/Roberts\",\"longitude\":-71.260854,\"latitude\":42.361728}},{\"type\":\"stop\",\"relationships\":{\"parent_station\":{\"data\":null}},\"links\":{\"self\":\"/stops/Waltham\"},\"id\":\"Waltham\",\"attributes\":{\"wheelchair_boarding\":1,\"name\":\"Waltham\",\"longitude\":-71.235598,\"latitude\":42.374269}},{\"type\":\"stop\",\"relationships\":{\"parent_station\":{\"data\":null}},\"links\":{\"self\":\"/stops/Waverley\"},\"id\":\"Waverley\",\"attributes\":{\"wheelchair_boarding\":2,\"name\":\"Waverley\",\"longitude\":-71.190744,\"latitude\":42.3876}},{\"type\":\"stop\",\"relationships\":{\"parent_station\":{\"data\":null}},\"links\":{\"self\":\"/stops/Belmont\"},\"id\":\"Belmont\",\"attributes\":{\"wheelchair_boarding\":2,\"name\":\"Belmont\",\"longitude\":-71.17619,\"latitude\":42.395896}},{\"type\":\"stop\",\"relationships\":{\"parent_station\":{\"data\":null}},\"links\":{\"self\":\"/stops/place-portr\"},\"id\":\"place-portr\",\"attributes\":{\"wheelchair_boarding\":1,\"name\":\"Porter\",\"longitude\":-71.119149,\"latitude\":42.3884}},{\"type\":\"stop\",\"relationships\":{\"parent_station\":{\"data\":null}},\"links\":{\"self\":\"/stops/place-north\"},\"id\":\"place-north\",\"attributes\":{\"wheelchair_boarding\":1,\"name\":\"North Station\",\"longitude\":-71.06129,\"latitude\":42.365577}}]}",
+      "headers": {
+        "cache-control": "max-age=0, private, must-revalidate",
+        "Content-Type": "application/vnd.api+json; charset=utf-8",
+        "Date": "Fri, 16 Jun 2017 15:39:02 GMT",
+        "Server": "nginx/1.10.2",
+        "x-request-id": "78nrnvv6c4p22l29h9o0s9ktqor7dcon",
+        "Content-Length": "4292",
+        "Connection": "keep-alive"
+      },
+      "status_code": 200,
+      "type": "ok"
+    }
+  },
+  {
+    "request": {
+      "body": "",
+      "headers": [],
+      "method": "get",
+      "options": [],
+      "request_body": "",
+      "url": "https://dev.api.mbtace.com/stops/?route=CR-Worcester&direction_id=1"
+    },
+    "response": {
+      "body": "{\"jsonapi\":{\"version\":\"1.0\"},\"data\":[{\"type\":\"stop\",\"relationships\":{\"parent_station\":{\"data\":null}},\"links\":{\"self\":\"/stops/Worcester\"},\"id\":\"Worcester\",\"attributes\":{\"wheelchair_boarding\":1,\"name\":\"Worcester\",\"longitude\":-71.794888,\"latitude\":42.261461}},{\"type\":\"stop\",\"relationships\":{\"parent_station\":{\"data\":null}},\"links\":{\"self\":\"/stops/Grafton\"},\"id\":\"Grafton\",\"attributes\":{\"wheelchair_boarding\":1,\"name\":\"Grafton\",\"longitude\":-71.685325,\"latitude\":42.2466}},{\"type\":\"stop\",\"relationships\":{\"parent_station\":{\"data\":null}},\"links\":{\"self\":\"/stops/Westborough\"},\"id\":\"Westborough\",\"attributes\":{\"wheelchair_boarding\":1,\"name\":\"Westborough\",\"longitude\":-71.647076,\"latitude\":42.269644}},{\"type\":\"stop\",\"relationships\":{\"parent_station\":{\"data\":null}},\"links\":{\"self\":\"/stops/Southborough\"},\"id\":\"Southborough\",\"attributes\":{\"wheelchair_boarding\":1,\"name\":\"Southborough\",\"longitude\":-71.524371,\"latitude\":42.267024}},{\"type\":\"stop\",\"relationships\":{\"parent_station\":{\"data\":null}},\"links\":{\"self\":\"/stops/Ashland\"},\"id\":\"Ashland\",\"attributes\":{\"wheelchair_boarding\":1,\"name\":\"Ashland\",\"longitude\":-71.482161,\"latitude\":42.26149}},{\"type\":\"stop\",\"relationships\":{\"parent_station\":{\"data\":null}},\"links\":{\"self\":\"/stops/Framingham\"},\"id\":\"Framingham\",\"attributes\":{\"wheelchair_boarding\":1,\"name\":\"Framingham\",\"longitude\":-71.416792,\"latitude\":42.276719}},{\"type\":\"stop\",\"relationships\":{\"parent_station\":{\"data\":null}},\"links\":{\"self\":\"/stops/West%20Natick\"},\"id\":\"West Natick\",\"attributes\":{\"wheelchair_boarding\":1,\"name\":\"West Natick\",\"longitude\":-71.391797,\"latitude\":42.283064}},{\"type\":\"stop\",\"relationships\":{\"parent_station\":{\"data\":null}},\"links\":{\"self\":\"/stops/Natick%20Center\"},\"id\":\"Natick Center\",\"attributes\":{\"wheelchair_boarding\":2,\"name\":\"Natick Center\",\"longitude\":-71.347133,\"latitude\":42.285719}},{\"type\":\"stop\",\"relationships\":{\"parent_station\":{\"data\":null}},\"links\":{\"self\":\"/stops/Wellesley%20Square\"},\"id\":\"Wellesley Square\",\"attributes\":{\"wheelchair_boarding\":2,\"name\":\"Wellesley Square\",\"longitude\":-71.294173,\"latitude\":42.297526}},{\"type\":\"stop\",\"relationships\":{\"parent_station\":{\"data\":null}},\"links\":{\"self\":\"/stops/Wellesley%20Hills\"},\"id\":\"Wellesley Hills\",\"attributes\":{\"wheelchair_boarding\":2,\"name\":\"Wellesley Hills\",\"longitude\":-71.277044,\"latitude\":42.31037}},{\"type\":\"stop\",\"relationships\":{\"parent_station\":{\"data\":null}},\"links\":{\"self\":\"/stops/Wellesley%20Farms\"},\"id\":\"Wellesley Farms\",\"attributes\":{\"wheelchair_boarding\":2,\"name\":\"Wellesley Farms\",\"longitude\":-71.272288,\"latitude\":42.323608}},{\"type\":\"stop\",\"relationships\":{\"parent_station\":{\"data\":null}},\"links\":{\"self\":\"/stops/Auburndale\"},\"id\":\"Auburndale\",\"attributes\":{\"wheelchair_boarding\":2,\"name\":\"Auburndale\",\"longitude\":-71.250826,\"latitude\":42.345725}},{\"type\":\"stop\",\"relationships\":{\"parent_station\":{\"data\":null}},\"links\":{\"self\":\"/stops/West%20Newton\"},\"id\":\"West Newton\",\"attributes\":{\"wheelchair_boarding\":2,\"name\":\"West Newton\",\"longitude\":-71.230528,\"latitude\":42.347878}},{\"type\":\"stop\",\"relationships\":{\"parent_station\":{\"data\":null}},\"links\":{\"self\":\"/stops/Newtonville\"},\"id\":\"Newtonville\",\"attributes\":{\"wheelchair_boarding\":2,\"name\":\"Newtonville\",\"longitude\":-71.207338,\"latitude\":42.351603}},{\"type\":\"stop\",\"relationships\":{\"parent_station\":{\"data\":null}},\"links\":{\"self\":\"/stops/Boston%20Landing\"},\"id\":\"Boston Landing\",\"attributes\":{\"wheelchair_boarding\":1,\"name\":\"Boston Landing\",\"longitude\":-71.139883,\"latitude\":42.357293}},{\"type\":\"stop\",\"relationships\":{\"parent_station\":{\"data\":null}},\"links\":{\"self\":\"/stops/Yawkey\"},\"id\":\"Yawkey\",\"attributes\":{\"wheelchair_boarding\":1,\"name\":\"Yawkey\",\"longitude\":-71.099974,\"latitude\":42.347581}},{\"type\":\"stop\",\"relationships\":{\"parent_station\":{\"data\":null}},\"links\":{\"self\":\"/stops/place-bbsta\"},\"id\":\"place-bbsta\",\"attributes\":{\"wheelchair_boarding\":1,\"name\":\"Back Bay\",\"longitude\":-71.075727,\"latitude\":42.34735}},{\"type\":\"stop\",\"relationships\":{\"parent_station\":{\"data\":null}},\"links\":{\"self\":\"/stops/place-sstat\"},\"id\":\"place-sstat\",\"attributes\":{\"wheelchair_boarding\":1,\"name\":\"South Station\",\"longitude\":-71.055242,\"latitude\":42.352271}}]}",
+      "headers": {
+        "cache-control": "max-age=0, private, must-revalidate",
+        "Content-Type": "application/vnd.api+json; charset=utf-8",
+        "Date": "Fri, 16 Jun 2017 15:39:02 GMT",
+        "Server": "nginx/1.10.2",
+        "x-request-id": "ur51hrnm61akke440muotcikkptc6rbr",
+        "Content-Length": "4120",
+        "Connection": "keep-alive"
+      },
+      "status_code": 200,
+      "type": "ok"
+    }
+  },
+  {
+    "request": {
+      "body": "",
+      "headers": [],
+      "method": "get",
+      "options": [],
+      "request_body": "",
+      "url": "https://dev.api.mbtace.com/stops/?route=CR-Franklin&direction_id=1"
+    },
+    "response": {
+      "body": "{\"jsonapi\":{\"version\":\"1.0\"},\"data\":[{\"type\":\"stop\",\"relationships\":{\"parent_station\":{\"data\":null}},\"links\":{\"self\":\"/stops/Forge%20Park%20%2F%20495\"},\"id\":\"Forge Park / 495\",\"attributes\":{\"wheelchair_boarding\":1,\"name\":\"Forge Park/495\",\"longitude\":-71.43902,\"latitude\":42.089941}},{\"type\":\"stop\",\"relationships\":{\"parent_station\":{\"data\":null}},\"links\":{\"self\":\"/stops/Franklin\"},\"id\":\"Franklin\",\"attributes\":{\"wheelchair_boarding\":2,\"name\":\"Franklin\",\"longitude\":-71.396102,\"latitude\":42.083238}},{\"type\":\"stop\",\"relationships\":{\"parent_station\":{\"data\":null}},\"links\":{\"self\":\"/stops/Norfolk\"},\"id\":\"Norfolk\",\"attributes\":{\"wheelchair_boarding\":1,\"name\":\"Norfolk\",\"longitude\":-71.325217,\"latitude\":42.120694}},{\"type\":\"stop\",\"relationships\":{\"parent_station\":{\"data\":null}},\"links\":{\"self\":\"/stops/Walpole\"},\"id\":\"Walpole\",\"attributes\":{\"wheelchair_boarding\":2,\"name\":\"Walpole\",\"longitude\":-71.25779,\"latitude\":42.145477}},{\"type\":\"stop\",\"relationships\":{\"parent_station\":{\"data\":null}},\"links\":{\"self\":\"/stops/Plimptonville\"},\"id\":\"Plimptonville\",\"attributes\":{\"wheelchair_boarding\":2,\"name\":\"Plimptonville\",\"longitude\":-71.236125,\"latitude\":42.159123}},{\"type\":\"stop\",\"relationships\":{\"parent_station\":{\"data\":null}},\"links\":{\"self\":\"/stops/Windsor%20Gardens\"},\"id\":\"Windsor Gardens\",\"attributes\":{\"wheelchair_boarding\":2,\"name\":\"Windsor Gardens\",\"longitude\":-71.219366,\"latitude\":42.172127}},{\"type\":\"stop\",\"relationships\":{\"parent_station\":{\"data\":null}},\"links\":{\"self\":\"/stops/Norwood%20Central\"},\"id\":\"Norwood Central\",\"attributes\":{\"wheelchair_boarding\":1,\"name\":\"Norwood Central\",\"longitude\":-71.199665,\"latitude\":42.188775}},{\"type\":\"stop\",\"relationships\":{\"parent_station\":{\"data\":null}},\"links\":{\"self\":\"/stops/Norwood%20Depot\"},\"id\":\"Norwood Depot\",\"attributes\":{\"wheelchair_boarding\":1,\"name\":\"Norwood Depot\",\"longitude\":-71.196688,\"latitude\":42.196857}},{\"type\":\"stop\",\"relationships\":{\"parent_station\":{\"data\":null}},\"links\":{\"self\":\"/stops/Islington\"},\"id\":\"Islington\",\"attributes\":{\"wheelchair_boarding\":2,\"name\":\"Islington\",\"longitude\":-71.183961,\"latitude\":42.22105}},{\"type\":\"stop\",\"relationships\":{\"parent_station\":{\"data\":null}},\"links\":{\"self\":\"/stops/Dedham%20Corp%20Center\"},\"id\":\"Dedham Corp Center\",\"attributes\":{\"wheelchair_boarding\":1,\"name\":\"Dedham Corp Center\",\"longitude\":-71.173806,\"latitude\":42.225896}},{\"type\":\"stop\",\"relationships\":{\"parent_station\":{\"data\":null}},\"links\":{\"self\":\"/stops/Endicott\"},\"id\":\"Endicott\",\"attributes\":{\"wheelchair_boarding\":2,\"name\":\"Endicott\",\"longitude\":-71.158647,\"latitude\":42.233249}},{\"type\":\"stop\",\"relationships\":{\"parent_station\":{\"data\":null}},\"links\":{\"self\":\"/stops/Readville\"},\"id\":\"Readville\",\"attributes\":{\"wheelchair_boarding\":1,\"name\":\"Readville\",\"longitude\":-71.133246,\"latitude\":42.238405}},{\"type\":\"stop\",\"relationships\":{\"parent_station\":{\"data\":null}},\"links\":{\"self\":\"/stops/place-rugg\"},\"id\":\"place-rugg\",\"attributes\":{\"wheelchair_boarding\":1,\"name\":\"Ruggles\",\"longitude\":-71.088961,\"latitude\":42.336377}},{\"type\":\"stop\",\"relationships\":{\"parent_station\":{\"data\":null}},\"links\":{\"self\":\"/stops/place-bbsta\"},\"id\":\"place-bbsta\",\"attributes\":{\"wheelchair_boarding\":1,\"name\":\"Back Bay\",\"longitude\":-71.075727,\"latitude\":42.34735}},{\"type\":\"stop\",\"relationships\":{\"parent_station\":{\"data\":null}},\"links\":{\"self\":\"/stops/place-sstat\"},\"id\":\"place-sstat\",\"attributes\":{\"wheelchair_boarding\":1,\"name\":\"South Station\",\"longitude\":-71.055242,\"latitude\":42.352271}}]}",
+      "headers": {
+        "cache-control": "max-age=0, private, must-revalidate",
+        "Content-Type": "application/vnd.api+json; charset=utf-8",
+        "Date": "Fri, 16 Jun 2017 15:39:02 GMT",
+        "Server": "nginx/1.10.2",
+        "x-request-id": "4996fd469gus5bk564dmj5ug3m1fndlm",
+        "Content-Length": "3451",
+        "Connection": "keep-alive"
+      },
+      "status_code": 200,
+      "type": "ok"
+    }
+  },
+  {
+    "request": {
+      "body": "",
+      "headers": [],
+      "method": "get",
+      "options": [],
+      "request_body": "",
+      "url": "https://dev.api.mbtace.com/stops/?route=CR-Greenbush&direction_id=1"
+    },
+    "response": {
+      "body": "{\"jsonapi\":{\"version\":\"1.0\"},\"data\":[{\"type\":\"stop\",\"relationships\":{\"parent_station\":{\"data\":null}},\"links\":{\"self\":\"/stops/Greenbush\"},\"id\":\"Greenbush\",\"attributes\":{\"wheelchair_boarding\":1,\"name\":\"Greenbush\",\"longitude\":-70.746641,\"latitude\":42.178776}},{\"type\":\"stop\",\"relationships\":{\"parent_station\":{\"data\":null}},\"links\":{\"self\":\"/stops/North%20Scituate\"},\"id\":\"North Scituate\",\"attributes\":{\"wheelchair_boarding\":1,\"name\":\"North Scituate\",\"longitude\":-70.788602,\"latitude\":42.219528}},{\"type\":\"stop\",\"relationships\":{\"parent_station\":{\"data\":null}},\"links\":{\"self\":\"/stops/Cohasset\"},\"id\":\"Cohasset\",\"attributes\":{\"wheelchair_boarding\":1,\"name\":\"Cohasset\",\"longitude\":-70.837529,\"latitude\":42.24421}},{\"type\":\"stop\",\"relationships\":{\"parent_station\":{\"data\":null}},\"links\":{\"self\":\"/stops/Nantasket%20Junction\"},\"id\":\"Nantasket Junction\",\"attributes\":{\"wheelchair_boarding\":1,\"name\":\"Nantasket Junction\",\"longitude\":-70.869205,\"latitude\":42.244959}},{\"type\":\"stop\",\"relationships\":{\"parent_station\":{\"data\":null}},\"links\":{\"self\":\"/stops/West%20Hingham\"},\"id\":\"West Hingham\",\"attributes\":{\"wheelchair_boarding\":1,\"name\":\"West Hingham\",\"longitude\":-70.902708,\"latitude\":42.235838}},{\"type\":\"stop\",\"relationships\":{\"parent_station\":{\"data\":null}},\"links\":{\"self\":\"/stops/East%20Weymouth\"},\"id\":\"East Weymouth\",\"attributes\":{\"wheelchair_boarding\":1,\"name\":\"East Weymouth\",\"longitude\":-70.9214,\"latitude\":42.2191}},{\"type\":\"stop\",\"relationships\":{\"parent_station\":{\"data\":null}},\"links\":{\"self\":\"/stops/Weymouth%20Landing%2F%20East%20Braintree\"},\"id\":\"Weymouth Landing/ East Braintree\",\"attributes\":{\"wheelchair_boarding\":1,\"name\":\"Weymouth Landing/East Braintree\",\"longitude\":-70.968152,\"latitude\":42.221503}},{\"type\":\"stop\",\"relationships\":{\"parent_station\":{\"data\":null}},\"links\":{\"self\":\"/stops/place-qnctr\"},\"id\":\"place-qnctr\",\"attributes\":{\"wheelchair_boarding\":1,\"name\":\"Quincy Center\",\"longitude\":-71.005409,\"latitude\":42.251809}},{\"type\":\"stop\",\"relationships\":{\"parent_station\":{\"data\":null}},\"links\":{\"self\":\"/stops/place-jfk\"},\"id\":\"place-jfk\",\"attributes\":{\"wheelchair_boarding\":1,\"name\":\"JFK/Umass\",\"longitude\":-71.052391,\"latitude\":42.320685}},{\"type\":\"stop\",\"relationships\":{\"parent_station\":{\"data\":null}},\"links\":{\"self\":\"/stops/place-sstat\"},\"id\":\"place-sstat\",\"attributes\":{\"wheelchair_boarding\":1,\"name\":\"South Station\",\"longitude\":-71.055242,\"latitude\":42.352271}}]}",
+      "headers": {
+        "cache-control": "max-age=0, private, must-revalidate",
+        "Content-Type": "application/vnd.api+json; charset=utf-8",
+        "Date": "Fri, 16 Jun 2017 15:39:02 GMT",
+        "Server": "nginx/1.10.2",
+        "x-request-id": "dp7oqdnpif53to2teinp2stk52nej47i",
+        "Content-Length": "2393",
+        "Connection": "keep-alive"
+      },
+      "status_code": 200,
+      "type": "ok"
+    }
+  },
+  {
+    "request": {
+      "body": "",
+      "headers": [],
+      "method": "get",
+      "options": [],
+      "request_body": "",
+      "url": "https://dev.api.mbtace.com/stops/?route=CR-Haverhill&direction_id=1"
+    },
+    "response": {
+      "body": "{\"jsonapi\":{\"version\":\"1.0\"},\"data\":[{\"type\":\"stop\",\"relationships\":{\"parent_station\":{\"data\":null}},\"links\":{\"self\":\"/stops/Haverhill\"},\"id\":\"Haverhill\",\"attributes\":{\"wheelchair_boarding\":1,\"name\":\"Haverhill\",\"longitude\":-71.086237,\"latitude\":42.773474}},{\"type\":\"stop\",\"relationships\":{\"parent_station\":{\"data\":null}},\"links\":{\"self\":\"/stops/Bradford\"},\"id\":\"Bradford\",\"attributes\":{\"wheelchair_boarding\":1,\"name\":\"Bradford\",\"longitude\":-71.088411,\"latitude\":42.766912}},{\"type\":\"stop\",\"relationships\":{\"parent_station\":{\"data\":null}},\"links\":{\"self\":\"/stops/Lawrence\"},\"id\":\"Lawrence\",\"attributes\":{\"wheelchair_boarding\":1,\"name\":\"Lawrence\",\"longitude\":-71.15198,\"latitude\":42.701806}},{\"type\":\"stop\",\"relationships\":{\"parent_station\":{\"data\":null}},\"links\":{\"self\":\"/stops/Andover\"},\"id\":\"Andover\",\"attributes\":{\"wheelchair_boarding\":1,\"name\":\"Andover\",\"longitude\":-71.144502,\"latitude\":42.658336}},{\"type\":\"stop\",\"relationships\":{\"parent_station\":{\"data\":null}},\"links\":{\"self\":\"/stops/Ballardvale\"},\"id\":\"Ballardvale\",\"attributes\":{\"wheelchair_boarding\":1,\"name\":\"Ballardvale\",\"longitude\":-71.159962,\"latitude\":42.627356}},{\"type\":\"stop\",\"relationships\":{\"parent_station\":{\"data\":null}},\"links\":{\"self\":\"/stops/North%20Wilmington\"},\"id\":\"North Wilmington\",\"attributes\":{\"wheelchair_boarding\":2,\"name\":\"North Wilmington\",\"longitude\":-71.159696,\"latitude\":42.569661}},{\"type\":\"stop\",\"relationships\":{\"parent_station\":{\"data\":null}},\"links\":{\"self\":\"/stops/Reading\"},\"id\":\"Reading\",\"attributes\":{\"wheelchair_boarding\":1,\"name\":\"Reading\",\"longitude\":-71.10744,\"latitude\":42.52148}},{\"type\":\"stop\",\"relationships\":{\"parent_station\":{\"data\":null}},\"links\":{\"self\":\"/stops/Wakefield\"},\"id\":\"Wakefield\",\"attributes\":{\"wheelchair_boarding\":2,\"name\":\"Wakefield\",\"longitude\":-71.075566,\"latitude\":42.502126}},{\"type\":\"stop\",\"relationships\":{\"parent_station\":{\"data\":null}},\"links\":{\"self\":\"/stops/Greenwood\"},\"id\":\"Greenwood\",\"attributes\":{\"wheelchair_boarding\":2,\"name\":\"Greenwood\",\"longitude\":-71.067247,\"latitude\":42.483005}},{\"type\":\"stop\",\"relationships\":{\"parent_station\":{\"data\":null}},\"links\":{\"self\":\"/stops/Melrose%20Highlands\"},\"id\":\"Melrose Highlands\",\"attributes\":{\"wheelchair_boarding\":1,\"name\":\"Melrose Highlands\",\"longitude\":-71.068297,\"latitude\":42.469464}},{\"type\":\"stop\",\"relationships\":{\"parent_station\":{\"data\":null}},\"links\":{\"self\":\"/stops/Melrose%20Cedar%20Park\"},\"id\":\"Melrose Cedar Park\",\"attributes\":{\"wheelchair_boarding\":2,\"name\":\"Melrose Cedar Park\",\"longitude\":-71.069789,\"latitude\":42.458768}},{\"type\":\"stop\",\"relationships\":{\"parent_station\":{\"data\":null}},\"links\":{\"self\":\"/stops/Wyoming%20Hill\"},\"id\":\"Wyoming Hill\",\"attributes\":{\"wheelchair_boarding\":2,\"name\":\"Wyoming Hill\",\"longitude\":-71.069379,\"latitude\":42.451731}},{\"type\":\"stop\",\"relationships\":{\"parent_station\":{\"data\":null}},\"links\":{\"self\":\"/stops/place-mlmnl\"},\"id\":\"place-mlmnl\",\"attributes\":{\"wheelchair_boarding\":1,\"name\":\"Malden Center\",\"longitude\":-71.07411,\"latitude\":42.426632}},{\"type\":\"stop\",\"relationships\":{\"parent_station\":{\"data\":null}},\"links\":{\"self\":\"/stops/place-north\"},\"id\":\"place-north\",\"attributes\":{\"wheelchair_boarding\":1,\"name\":\"North Station\",\"longitude\":-71.06129,\"latitude\":42.365577}}]}",
+      "headers": {
+        "cache-control": "max-age=0, private, must-revalidate",
+        "Content-Type": "application/vnd.api+json; charset=utf-8",
+        "Date": "Fri, 16 Jun 2017 15:39:02 GMT",
+        "Server": "nginx/1.10.2",
+        "x-request-id": "g9dft234shgmg7iqfqrpmfs00h8aifd6",
+        "Content-Length": "3208",
+        "Connection": "keep-alive"
+      },
+      "status_code": 200,
+      "type": "ok"
+    }
+  },
+  {
+    "request": {
+      "body": "",
+      "headers": [],
+      "method": "get",
+      "options": [],
+      "request_body": "",
+      "url": "https://dev.api.mbtace.com/stops/?route=CR-Kingston&direction_id=1"
+    },
+    "response": {
+      "body": "{\"jsonapi\":{\"version\":\"1.0\"},\"data\":[{\"type\":\"stop\",\"relationships\":{\"parent_station\":{\"data\":null}},\"links\":{\"self\":\"/stops/Plymouth\"},\"id\":\"Plymouth\",\"attributes\":{\"wheelchair_boarding\":1,\"name\":\"Plymouth\",\"longitude\":-70.690421,\"latitude\":41.981278}},{\"type\":\"stop\",\"relationships\":{\"parent_station\":{\"data\":null}},\"links\":{\"self\":\"/stops/Kingston\"},\"id\":\"Kingston\",\"attributes\":{\"wheelchair_boarding\":1,\"name\":\"Kingston\",\"longitude\":-70.721709,\"latitude\":41.97762}},{\"type\":\"stop\",\"relationships\":{\"parent_station\":{\"data\":null}},\"links\":{\"self\":\"/stops/Halifax\"},\"id\":\"Halifax\",\"attributes\":{\"wheelchair_boarding\":1,\"name\":\"Halifax\",\"longitude\":-70.824263,\"latitude\":42.014739}},{\"type\":\"stop\",\"relationships\":{\"parent_station\":{\"data\":null}},\"links\":{\"self\":\"/stops/Hanson\"},\"id\":\"Hanson\",\"attributes\":{\"wheelchair_boarding\":1,\"name\":\"Hanson\",\"longitude\":-70.882438,\"latitude\":42.043967}},{\"type\":\"stop\",\"relationships\":{\"parent_station\":{\"data\":null}},\"links\":{\"self\":\"/stops/Whitman\"},\"id\":\"Whitman\",\"attributes\":{\"wheelchair_boarding\":1,\"name\":\"Whitman\",\"longitude\":-70.923411,\"latitude\":42.082749}},{\"type\":\"stop\",\"relationships\":{\"parent_station\":{\"data\":null}},\"links\":{\"self\":\"/stops/Abington\"},\"id\":\"Abington\",\"attributes\":{\"wheelchair_boarding\":1,\"name\":\"Abington\",\"longitude\":-70.934405,\"latitude\":42.107156}},{\"type\":\"stop\",\"relationships\":{\"parent_station\":{\"data\":null}},\"links\":{\"self\":\"/stops/South%20Weymouth\"},\"id\":\"South Weymouth\",\"attributes\":{\"wheelchair_boarding\":1,\"name\":\"South Weymouth\",\"longitude\":-70.953302,\"latitude\":42.155025}},{\"type\":\"stop\",\"relationships\":{\"parent_station\":{\"data\":null}},\"links\":{\"self\":\"/stops/place-brntn\"},\"id\":\"place-brntn\",\"attributes\":{\"wheelchair_boarding\":1,\"name\":\"Braintree\",\"longitude\":-71.0011385,\"latitude\":42.2078543}},{\"type\":\"stop\",\"relationships\":{\"parent_station\":{\"data\":null}},\"links\":{\"self\":\"/stops/place-qnctr\"},\"id\":\"place-qnctr\",\"attributes\":{\"wheelchair_boarding\":1,\"name\":\"Quincy Center\",\"longitude\":-71.005409,\"latitude\":42.251809}},{\"type\":\"stop\",\"relationships\":{\"parent_station\":{\"data\":null}},\"links\":{\"self\":\"/stops/place-jfk\"},\"id\":\"place-jfk\",\"attributes\":{\"wheelchair_boarding\":1,\"name\":\"JFK/Umass\",\"longitude\":-71.052391,\"latitude\":42.320685}},{\"type\":\"stop\",\"relationships\":{\"parent_station\":{\"data\":null}},\"links\":{\"self\":\"/stops/place-sstat\"},\"id\":\"place-sstat\",\"attributes\":{\"wheelchair_boarding\":1,\"name\":\"South Station\",\"longitude\":-71.055242,\"latitude\":42.352271}}]}",
+      "headers": {
+        "cache-control": "max-age=0, private, must-revalidate",
+        "Content-Type": "application/vnd.api+json; charset=utf-8",
+        "Date": "Fri, 16 Jun 2017 15:39:02 GMT",
+        "Server": "nginx/1.10.2",
+        "x-request-id": "r4hf6fpum8jm8jresjelp9nu6c7tr99e",
+        "Content-Length": "2466",
+        "Connection": "keep-alive"
+      },
+      "status_code": 200,
+      "type": "ok"
+    }
+  },
+  {
+    "request": {
+      "body": "",
+      "headers": [],
+      "method": "get",
+      "options": [],
+      "request_body": "",
+      "url": "https://dev.api.mbtace.com/stops/?route=CR-Lowell&direction_id=1"
+    },
+    "response": {
+      "body": "{\"jsonapi\":{\"version\":\"1.0\"},\"data\":[{\"type\":\"stop\",\"relationships\":{\"parent_station\":{\"data\":null}},\"links\":{\"self\":\"/stops/Lowell\"},\"id\":\"Lowell\",\"attributes\":{\"wheelchair_boarding\":1,\"name\":\"Lowell\",\"longitude\":-71.314543,\"latitude\":42.63535}},{\"type\":\"stop\",\"relationships\":{\"parent_station\":{\"data\":null}},\"links\":{\"self\":\"/stops/North%20Billerica\"},\"id\":\"North Billerica\",\"attributes\":{\"wheelchair_boarding\":1,\"name\":\"North Billerica\",\"longitude\":-71.280995,\"latitude\":42.593248}},{\"type\":\"stop\",\"relationships\":{\"parent_station\":{\"data\":null}},\"links\":{\"self\":\"/stops/Wilmington\"},\"id\":\"Wilmington\",\"attributes\":{\"wheelchair_boarding\":1,\"name\":\"Wilmington\",\"longitude\":-71.174334,\"latitude\":42.546624}},{\"type\":\"stop\",\"relationships\":{\"parent_station\":{\"data\":null}},\"links\":{\"self\":\"/stops/Anderson%2F%20Woburn\"},\"id\":\"Anderson/ Woburn\",\"attributes\":{\"wheelchair_boarding\":1,\"name\":\"Anderson/Woburn\",\"longitude\":-71.144475,\"latitude\":42.516987}},{\"type\":\"stop\",\"relationships\":{\"parent_station\":{\"data\":null}},\"links\":{\"self\":\"/stops/Mishawum\"},\"id\":\"Mishawum\",\"attributes\":{\"wheelchair_boarding\":2,\"name\":\"Mishawum\",\"longitude\":-71.137618,\"latitude\":42.504402}},{\"type\":\"stop\",\"relationships\":{\"parent_station\":{\"data\":null}},\"links\":{\"self\":\"/stops/Winchester%20Center\"},\"id\":\"Winchester Center\",\"attributes\":{\"wheelchair_boarding\":2,\"name\":\"Winchester Center\",\"longitude\":-71.13783,\"latitude\":42.451088}},{\"type\":\"stop\",\"relationships\":{\"parent_station\":{\"data\":null}},\"links\":{\"self\":\"/stops/Wedgemere\"},\"id\":\"Wedgemere\",\"attributes\":{\"wheelchair_boarding\":1,\"name\":\"Wedgemere\",\"longitude\":-71.140169,\"latitude\":42.444948}},{\"type\":\"stop\",\"relationships\":{\"parent_station\":{\"data\":null}},\"links\":{\"self\":\"/stops/West%20Medford\"},\"id\":\"West Medford\",\"attributes\":{\"wheelchair_boarding\":2,\"name\":\"West Medford\",\"longitude\":-71.132468,\"latitude\":42.421184}},{\"type\":\"stop\",\"relationships\":{\"parent_station\":{\"data\":null}},\"links\":{\"self\":\"/stops/place-north\"},\"id\":\"place-north\",\"attributes\":{\"wheelchair_boarding\":1,\"name\":\"North Station\",\"longitude\":-71.06129,\"latitude\":42.365577}}]}",
+      "headers": {
+        "cache-control": "max-age=0, private, must-revalidate",
+        "Content-Type": "application/vnd.api+json; charset=utf-8",
+        "Date": "Fri, 16 Jun 2017 15:39:02 GMT",
+        "Server": "nginx/1.10.2",
+        "x-request-id": "9nkjh0ofa2271koqm49r15gl6cltpmbu",
+        "Content-Length": "2095",
+        "Connection": "keep-alive"
+      },
+      "status_code": 200,
+      "type": "ok"
+    }
+  },
+  {
+    "request": {
+      "body": "",
+      "headers": [],
+      "method": "get",
+      "options": [],
+      "request_body": "",
+      "url": "https://dev.api.mbtace.com/stops/?route=CR-Middleborough&direction_id=1"
+    },
+    "response": {
+      "body": "{\"jsonapi\":{\"version\":\"1.0\"},\"data\":[{\"type\":\"stop\",\"relationships\":{\"parent_station\":{\"data\":null}},\"links\":{\"self\":\"/stops/Middleborough%2F%20Lakeville\"},\"id\":\"Middleborough/ Lakeville\",\"attributes\":{\"wheelchair_boarding\":1,\"name\":\"Middleborough/Lakeville\",\"longitude\":-70.918444,\"latitude\":41.87821}},{\"type\":\"stop\",\"relationships\":{\"parent_station\":{\"data\":null}},\"links\":{\"self\":\"/stops/Bridgewater\"},\"id\":\"Bridgewater\",\"attributes\":{\"wheelchair_boarding\":1,\"name\":\"Bridgewater\",\"longitude\":-70.96537,\"latitude\":41.984916}},{\"type\":\"stop\",\"relationships\":{\"parent_station\":{\"data\":null}},\"links\":{\"self\":\"/stops/Campello\"},\"id\":\"Campello\",\"attributes\":{\"wheelchair_boarding\":1,\"name\":\"Campello\",\"longitude\":-71.011004,\"latitude\":42.060951}},{\"type\":\"stop\",\"relationships\":{\"parent_station\":{\"data\":null}},\"links\":{\"self\":\"/stops/Brockton\"},\"id\":\"Brockton\",\"attributes\":{\"wheelchair_boarding\":1,\"name\":\"Brockton\",\"longitude\":-71.0166,\"latitude\":42.08572}},{\"type\":\"stop\",\"relationships\":{\"parent_station\":{\"data\":null}},\"links\":{\"self\":\"/stops/Montello\"},\"id\":\"Montello\",\"attributes\":{\"wheelchair_boarding\":1,\"name\":\"Montello\",\"longitude\":-71.022001,\"latitude\":42.106555}},{\"type\":\"stop\",\"relationships\":{\"parent_station\":{\"data\":null}},\"links\":{\"self\":\"/stops/Holbrook%2F%20Randolph\"},\"id\":\"Holbrook/ Randolph\",\"attributes\":{\"wheelchair_boarding\":1,\"name\":\"Holbrook/Randolph\",\"longitude\":-71.027371,\"latitude\":42.156343}},{\"type\":\"stop\",\"relationships\":{\"parent_station\":{\"data\":null}},\"links\":{\"self\":\"/stops/place-brntn\"},\"id\":\"place-brntn\",\"attributes\":{\"wheelchair_boarding\":1,\"name\":\"Braintree\",\"longitude\":-71.0011385,\"latitude\":42.2078543}},{\"type\":\"stop\",\"relationships\":{\"parent_station\":{\"data\":null}},\"links\":{\"self\":\"/stops/place-qnctr\"},\"id\":\"place-qnctr\",\"attributes\":{\"wheelchair_boarding\":1,\"name\":\"Quincy Center\",\"longitude\":-71.005409,\"latitude\":42.251809}},{\"type\":\"stop\",\"relationships\":{\"parent_station\":{\"data\":null}},\"links\":{\"self\":\"/stops/place-jfk\"},\"id\":\"place-jfk\",\"attributes\":{\"wheelchair_boarding\":1,\"name\":\"JFK/Umass\",\"longitude\":-71.052391,\"latitude\":42.320685}},{\"type\":\"stop\",\"relationships\":{\"parent_station\":{\"data\":null}},\"links\":{\"self\":\"/stops/place-sstat\"},\"id\":\"place-sstat\",\"attributes\":{\"wheelchair_boarding\":1,\"name\":\"South Station\",\"longitude\":-71.055242,\"latitude\":42.352271}}]}",
+      "headers": {
+        "cache-control": "max-age=0, private, must-revalidate",
+        "Content-Type": "application/vnd.api+json; charset=utf-8",
+        "Date": "Fri, 16 Jun 2017 15:39:02 GMT",
+        "Server": "nginx/1.10.2",
+        "x-request-id": "bht7od0lj56lbbkd0tjbjlt93uodd1ld",
+        "Content-Length": "2330",
+        "Connection": "keep-alive"
+      },
+      "status_code": 200,
+      "type": "ok"
+    }
+  },
+  {
+    "request": {
+      "body": "",
+      "headers": [],
+      "method": "get",
+      "options": [],
+      "request_body": "",
+      "url": "https://dev.api.mbtace.com/stops/?route=CR-Needham&direction_id=1"
+    },
+    "response": {
+      "body": "{\"jsonapi\":{\"version\":\"1.0\"},\"data\":[{\"type\":\"stop\",\"relationships\":{\"parent_station\":{\"data\":null}},\"links\":{\"self\":\"/stops/Needham%20Heights\"},\"id\":\"Needham Heights\",\"attributes\":{\"wheelchair_boarding\":1,\"name\":\"Needham Heights\",\"longitude\":-71.236027,\"latitude\":42.293444}},{\"type\":\"stop\",\"relationships\":{\"parent_station\":{\"data\":null}},\"links\":{\"self\":\"/stops/Needham%20Center\"},\"id\":\"Needham Center\",\"attributes\":{\"wheelchair_boarding\":1,\"name\":\"Needham Center\",\"longitude\":-71.237686,\"latitude\":42.280775}},{\"type\":\"stop\",\"relationships\":{\"parent_station\":{\"data\":null}},\"links\":{\"self\":\"/stops/Needham%20Junction\"},\"id\":\"Needham Junction\",\"attributes\":{\"wheelchair_boarding\":1,\"name\":\"Needham Junction\",\"longitude\":-71.235559,\"latitude\":42.273187}},{\"type\":\"stop\",\"relationships\":{\"parent_station\":{\"data\":null}},\"links\":{\"self\":\"/stops/Hersey\"},\"id\":\"Hersey\",\"attributes\":{\"wheelchair_boarding\":1,\"name\":\"Hersey\",\"longitude\":-71.215528,\"latitude\":42.275648}},{\"type\":\"stop\",\"relationships\":{\"parent_station\":{\"data\":null}},\"links\":{\"self\":\"/stops/West%20Roxbury\"},\"id\":\"West Roxbury\",\"attributes\":{\"wheelchair_boarding\":1,\"name\":\"West Roxbury\",\"longitude\":-71.160065,\"latitude\":42.281358}},{\"type\":\"stop\",\"relationships\":{\"parent_station\":{\"data\":null}},\"links\":{\"self\":\"/stops/Highland\"},\"id\":\"Highland\",\"attributes\":{\"wheelchair_boarding\":1,\"name\":\"Highland\",\"longitude\":-71.153937,\"latitude\":42.284969}},{\"type\":\"stop\",\"relationships\":{\"parent_station\":{\"data\":null}},\"links\":{\"self\":\"/stops/Bellevue\"},\"id\":\"Bellevue\",\"attributes\":{\"wheelchair_boarding\":1,\"name\":\"Bellevue\",\"longitude\":-71.145557,\"latitude\":42.286588}},{\"type\":\"stop\",\"relationships\":{\"parent_station\":{\"data\":null}},\"links\":{\"self\":\"/stops/Roslindale%20Village\"},\"id\":\"Roslindale Village\",\"attributes\":{\"wheelchair_boarding\":1,\"name\":\"Roslindale Village\",\"longitude\":-71.130283,\"latitude\":42.287442}},{\"type\":\"stop\",\"relationships\":{\"parent_station\":{\"data\":null}},\"links\":{\"self\":\"/stops/place-forhl\"},\"id\":\"place-forhl\",\"attributes\":{\"wheelchair_boarding\":1,\"name\":\"Forest Hills\",\"longitude\":-71.113686,\"latitude\":42.300523}},{\"type\":\"stop\",\"relationships\":{\"parent_station\":{\"data\":null}},\"links\":{\"self\":\"/stops/place-rugg\"},\"id\":\"place-rugg\",\"attributes\":{\"wheelchair_boarding\":1,\"name\":\"Ruggles\",\"longitude\":-71.088961,\"latitude\":42.336377}},{\"type\":\"stop\",\"relationships\":{\"parent_station\":{\"data\":null}},\"links\":{\"self\":\"/stops/place-bbsta\"},\"id\":\"place-bbsta\",\"attributes\":{\"wheelchair_boarding\":1,\"name\":\"Back Bay\",\"longitude\":-71.075727,\"latitude\":42.34735}},{\"type\":\"stop\",\"relationships\":{\"parent_station\":{\"data\":null}},\"links\":{\"self\":\"/stops/place-sstat\"},\"id\":\"place-sstat\",\"attributes\":{\"wheelchair_boarding\":1,\"name\":\"South Station\",\"longitude\":-71.055242,\"latitude\":42.352271}}]}",
+      "headers": {
+        "cache-control": "max-age=0, private, must-revalidate",
+        "Content-Type": "application/vnd.api+json; charset=utf-8",
+        "Date": "Fri, 16 Jun 2017 15:39:02 GMT",
+        "Server": "nginx/1.10.2",
+        "x-request-id": "pf0pmho9ral0h7cihj5kbsu0tnat16nn",
+        "Content-Length": "2780",
+        "Connection": "keep-alive"
+      },
+      "status_code": 200,
+      "type": "ok"
+    }
+  },
+  {
+    "request": {
+      "body": "",
+      "headers": [],
+      "method": "get",
+      "options": [],
+      "request_body": "",
+      "url": "https://dev.api.mbtace.com/stops/?route=CR-Newburyport&direction_id=1"
+    },
+    "response": {
+      "body": "{\"jsonapi\":{\"version\":\"1.0\"},\"data\":[{\"type\":\"stop\",\"relationships\":{\"parent_station\":{\"data\":null}},\"links\":{\"self\":\"/stops/Rockport\"},\"id\":\"Rockport\",\"attributes\":{\"wheelchair_boarding\":1,\"name\":\"Rockport\",\"longitude\":-70.627055,\"latitude\":42.655491}},{\"type\":\"stop\",\"relationships\":{\"parent_station\":{\"data\":null}},\"links\":{\"self\":\"/stops/Gloucester\"},\"id\":\"Gloucester\",\"attributes\":{\"wheelchair_boarding\":1,\"name\":\"Gloucester\",\"longitude\":-70.668345,\"latitude\":42.616799}},{\"type\":\"stop\",\"relationships\":{\"parent_station\":{\"data\":null}},\"links\":{\"self\":\"/stops/West%20Gloucester\"},\"id\":\"West Gloucester\",\"attributes\":{\"wheelchair_boarding\":1,\"name\":\"West Gloucester\",\"longitude\":-70.705417,\"latitude\":42.611933}},{\"type\":\"stop\",\"relationships\":{\"parent_station\":{\"data\":null}},\"links\":{\"self\":\"/stops/Manchester\"},\"id\":\"Manchester\",\"attributes\":{\"wheelchair_boarding\":1,\"name\":\"Manchester\",\"longitude\":-70.77009,\"latitude\":42.573687}},{\"type\":\"stop\",\"relationships\":{\"parent_station\":{\"data\":null}},\"links\":{\"self\":\"/stops/Beverly%20Farms\"},\"id\":\"Beverly Farms\",\"attributes\":{\"wheelchair_boarding\":1,\"name\":\"Beverly Farms\",\"longitude\":-70.811405,\"latitude\":42.561651}},{\"type\":\"stop\",\"relationships\":{\"parent_station\":{\"data\":null}},\"links\":{\"self\":\"/stops/Prides%20Crossing\"},\"id\":\"Prides Crossing\",\"attributes\":{\"wheelchair_boarding\":2,\"name\":\"Prides Crossing\",\"longitude\":-70.825541,\"latitude\":42.559446}},{\"type\":\"stop\",\"relationships\":{\"parent_station\":{\"data\":null}},\"links\":{\"self\":\"/stops/Montserrat\"},\"id\":\"Montserrat\",\"attributes\":{\"wheelchair_boarding\":1,\"name\":\"Montserrat\",\"longitude\":-70.869254,\"latitude\":42.562171}},{\"type\":\"stop\",\"relationships\":{\"parent_station\":{\"data\":null}},\"links\":{\"self\":\"/stops/Newburyport\"},\"id\":\"Newburyport\",\"attributes\":{\"wheelchair_boarding\":1,\"name\":\"Newburyport\",\"longitude\":-70.87797,\"latitude\":42.797837}},{\"type\":\"stop\",\"relationships\":{\"parent_station\":{\"data\":null}},\"links\":{\"self\":\"/stops/Rowley\"},\"id\":\"Rowley\",\"attributes\":{\"wheelchair_boarding\":1,\"name\":\"Rowley\",\"longitude\":-70.859034,\"latitude\":42.726845}},{\"type\":\"stop\",\"relationships\":{\"parent_station\":{\"data\":null}},\"links\":{\"self\":\"/stops/Ipswich\"},\"id\":\"Ipswich\",\"attributes\":{\"wheelchair_boarding\":1,\"name\":\"Ipswich\",\"longitude\":-70.840589,\"latitude\":42.676921}},{\"type\":\"stop\",\"relationships\":{\"parent_station\":{\"data\":null}},\"links\":{\"self\":\"/stops/Hamilton%2F%20Wenham\"},\"id\":\"Hamilton/ Wenham\",\"attributes\":{\"wheelchair_boarding\":1,\"name\":\"Hamilton/Wenham\",\"longitude\":-70.874801,\"latitude\":42.609212}},{\"type\":\"stop\",\"relationships\":{\"parent_station\":{\"data\":null}},\"links\":{\"self\":\"/stops/North%20Beverly\"},\"id\":\"North Beverly\",\"attributes\":{\"wheelchair_boarding\":1,\"name\":\"North Beverly\",\"longitude\":-70.883851,\"latitude\":42.583779}},{\"type\":\"stop\",\"relationships\":{\"parent_station\":{\"data\":null}},\"links\":{\"self\":\"/stops/Beverly\"},\"id\":\"Beverly\",\"attributes\":{\"wheelchair_boarding\":1,\"name\":\"Beverly\",\"longitude\":-70.885432,\"latitude\":42.547276}},{\"type\":\"stop\",\"relationships\":{\"parent_station\":{\"data\":null}},\"links\":{\"self\":\"/stops/Salem\"},\"id\":\"Salem\",\"attributes\":{\"wheelchair_boarding\":1,\"name\":\"Salem\",\"longitude\":-70.895876,\"latitude\":42.524792}},{\"type\":\"stop\",\"relationships\":{\"parent_station\":{\"data\":null}},\"links\":{\"self\":\"/stops/Swampscott\"},\"id\":\"Swampscott\",\"attributes\":{\"wheelchair_boarding\":1,\"name\":\"Swampscott\",\"longitude\":-70.922537,\"latitude\":42.473743}},{\"type\":\"stop\",\"relationships\":{\"parent_station\":{\"data\":null}},\"links\":{\"self\":\"/stops/Lynn\"},\"id\":\"Lynn\",\"attributes\":{\"wheelchair_boarding\":1,\"name\":\"Lynn\",\"longitude\":-70.945421,\"latitude\":42.462953}},{\"type\":\"stop\",\"relationships\":{\"parent_station\":{\"data\":null}},\"links\":{\"self\":\"/stops/River%20Works%20%2F%20GE%20Employees%20Only\"},\"id\":\"River Works / GE Employees Only\",\"attributes\":{\"wheelchair_boarding\":2,\"name\":\"River Works\",\"longitude\":-70.969848,\"latitude\":42.449927}},{\"type\":\"stop\",\"relationships\":{\"parent_station\":{\"data\":null}},\"links\":{\"self\":\"/stops/Chelsea\"},\"id\":\"Chelsea\",\"attributes\":{\"wheelchair_boarding\":2,\"name\":\"Chelsea\",\"longitude\":-71.034281,\"latitude\":42.395689}},{\"type\":\"stop\",\"relationships\":{\"parent_station\":{\"data\":null}},\"links\":{\"self\":\"/stops/place-north\"},\"id\":\"place-north\",\"attributes\":{\"wheelchair_boarding\":1,\"name\":\"North Station\",\"longitude\":-71.06129,\"latitude\":42.365577}}]}",
+      "headers": {
+        "cache-control": "max-age=0, private, must-revalidate",
+        "Content-Type": "application/vnd.api+json; charset=utf-8",
+        "Date": "Fri, 16 Jun 2017 15:39:02 GMT",
+        "Server": "nginx/1.10.2",
+        "x-request-id": "lmo9t3lt5il271evhkh8orvpibit2678",
+        "Content-Length": "4334",
+        "Connection": "keep-alive"
+      },
+      "status_code": 200,
+      "type": "ok"
+    }
+  },
+  {
+    "request": {
+      "body": "",
+      "headers": [],
+      "method": "get",
+      "options": [],
+      "request_body": "",
+      "url": "https://dev.api.mbtace.com/stops/?route=CR-Providence&direction_id=1"
+    },
+    "response": {
+      "body": "{\"jsonapi\":{\"version\":\"1.0\"},\"data\":[{\"type\":\"stop\",\"relationships\":{\"parent_station\":{\"data\":null}},\"links\":{\"self\":\"/stops/Wickford%20Junction\"},\"id\":\"Wickford Junction\",\"attributes\":{\"wheelchair_boarding\":1,\"name\":\"Wickford Junction\",\"longitude\":-71.491147,\"latitude\":41.581289}},{\"type\":\"stop\",\"relationships\":{\"parent_station\":{\"data\":null}},\"links\":{\"self\":\"/stops/TF%20Green%20Airport\"},\"id\":\"TF Green Airport\",\"attributes\":{\"wheelchair_boarding\":1,\"name\":\"TF Green Airport\",\"longitude\":-71.442453,\"latitude\":41.726599}},{\"type\":\"stop\",\"relationships\":{\"parent_station\":{\"data\":null}},\"links\":{\"self\":\"/stops/Providence\"},\"id\":\"Providence\",\"attributes\":{\"wheelchair_boarding\":1,\"name\":\"Providence\",\"longitude\":-71.413301,\"latitude\":41.829293}},{\"type\":\"stop\",\"relationships\":{\"parent_station\":{\"data\":null}},\"links\":{\"self\":\"/stops/South%20Attleboro\"},\"id\":\"South Attleboro\",\"attributes\":{\"wheelchair_boarding\":1,\"name\":\"South Attleboro\",\"longitude\":-71.354621,\"latitude\":41.897943}},{\"type\":\"stop\",\"relationships\":{\"parent_station\":{\"data\":null}},\"links\":{\"self\":\"/stops/Attleboro\"},\"id\":\"Attleboro\",\"attributes\":{\"wheelchair_boarding\":1,\"name\":\"Attleboro\",\"longitude\":-71.285094,\"latitude\":41.940739}},{\"type\":\"stop\",\"relationships\":{\"parent_station\":{\"data\":null}},\"links\":{\"self\":\"/stops/Mansfield\"},\"id\":\"Mansfield\",\"attributes\":{\"wheelchair_boarding\":1,\"name\":\"Mansfield\",\"longitude\":-71.219917,\"latitude\":42.032787}},{\"type\":\"stop\",\"relationships\":{\"parent_station\":{\"data\":null}},\"links\":{\"self\":\"/stops/Sharon\"},\"id\":\"Sharon\",\"attributes\":{\"wheelchair_boarding\":1,\"name\":\"Sharon\",\"longitude\":-71.184468,\"latitude\":42.124553}},{\"type\":\"stop\",\"relationships\":{\"parent_station\":{\"data\":null}},\"links\":{\"self\":\"/stops/Stoughton\"},\"id\":\"Stoughton\",\"attributes\":{\"wheelchair_boarding\":1,\"name\":\"Stoughton\",\"longitude\":-71.103627,\"latitude\":42.124084}},{\"type\":\"stop\",\"relationships\":{\"parent_station\":{\"data\":null}},\"links\":{\"self\":\"/stops/Canton%20Center\"},\"id\":\"Canton Center\",\"attributes\":{\"wheelchair_boarding\":1,\"name\":\"Canton Center\",\"longitude\":-71.145601,\"latitude\":42.15677}},{\"type\":\"stop\",\"relationships\":{\"parent_station\":{\"data\":null}},\"links\":{\"self\":\"/stops/Canton%20Junction\"},\"id\":\"Canton Junction\",\"attributes\":{\"wheelchair_boarding\":1,\"name\":\"Canton Junction\",\"longitude\":-71.15376,\"latitude\":42.163204}},{\"type\":\"stop\",\"relationships\":{\"parent_station\":{\"data\":null}},\"links\":{\"self\":\"/stops/Route%20128\"},\"id\":\"Route 128\",\"attributes\":{\"wheelchair_boarding\":1,\"name\":\"Route 128\",\"longitude\":-71.1471,\"latitude\":42.209884}},{\"type\":\"stop\",\"relationships\":{\"parent_station\":{\"data\":null}},\"links\":{\"self\":\"/stops/Hyde%20Park\"},\"id\":\"Hyde Park\",\"attributes\":{\"wheelchair_boarding\":1,\"name\":\"Hyde Park\",\"longitude\":-71.125526,\"latitude\":42.25503}},{\"type\":\"stop\",\"relationships\":{\"parent_station\":{\"data\":null}},\"links\":{\"self\":\"/stops/place-rugg\"},\"id\":\"place-rugg\",\"attributes\":{\"wheelchair_boarding\":1,\"name\":\"Ruggles\",\"longitude\":-71.088961,\"latitude\":42.336377}},{\"type\":\"stop\",\"relationships\":{\"parent_station\":{\"data\":null}},\"links\":{\"self\":\"/stops/place-bbsta\"},\"id\":\"place-bbsta\",\"attributes\":{\"wheelchair_boarding\":1,\"name\":\"Back Bay\",\"longitude\":-71.075727,\"latitude\":42.34735}},{\"type\":\"stop\",\"relationships\":{\"parent_station\":{\"data\":null}},\"links\":{\"self\":\"/stops/place-sstat\"},\"id\":\"place-sstat\",\"attributes\":{\"wheelchair_boarding\":1,\"name\":\"South Station\",\"longitude\":-71.055242,\"latitude\":42.352271}}]}",
+      "headers": {
+        "cache-control": "max-age=0, private, must-revalidate",
+        "Content-Type": "application/vnd.api+json; charset=utf-8",
+        "Date": "Fri, 16 Jun 2017 15:39:02 GMT",
+        "Server": "nginx/1.10.2",
+        "x-request-id": "b5t778oemo04o6gogsaa56ofdlefjm8r",
+        "Content-Length": "3446",
+        "Connection": "keep-alive"
+      },
+      "status_code": 200,
+      "type": "ok"
+    }
+  },
+  {
+    "request": {
+      "body": "",
+      "headers": [],
+      "method": "get",
+      "options": [],
+      "request_body": "",
+      "url": "https://dev.api.mbtace.com/stops/?route=Boat-F4&direction_id=1"
+    },
+    "response": {
+      "body": "{\"jsonapi\":{\"version\":\"1.0\"},\"data\":[{\"type\":\"stop\",\"relationships\":{\"parent_station\":{\"data\":null}},\"links\":{\"self\":\"/stops/Boat-Charlestown\"},\"id\":\"Boat-Charlestown\",\"attributes\":{\"wheelchair_boarding\":1,\"name\":\"Charlestown Navy Yard\",\"longitude\":-71.05416,\"latitude\":42.373334}},{\"type\":\"stop\",\"relationships\":{\"parent_station\":{\"data\":null}},\"links\":{\"self\":\"/stops/Boat-Long\"},\"id\":\"Boat-Long\",\"attributes\":{\"wheelchair_boarding\":1,\"name\":\"Long Wharf, Boston\",\"longitude\":-71.050247,\"latitude\":42.360018}}]}",
+      "headers": {
+        "cache-control": "max-age=0, private, must-revalidate",
+        "Content-Type": "application/vnd.api+json; charset=utf-8",
+        "Date": "Fri, 16 Jun 2017 15:39:02 GMT",
+        "Server": "nginx/1.10.2",
+        "x-request-id": "f4s0em86bfftu1i58qofmlhjfs9qvkf8",
+        "Content-Length": "512",
+        "Connection": "keep-alive"
+      },
+      "status_code": 200,
+      "type": "ok"
+    }
+  },
+  {
+    "request": {
+      "body": "",
+      "headers": [],
+      "method": "get",
+      "options": [],
+      "request_body": "",
+      "url": "https://dev.api.mbtace.com/stops/?route=Boat-F1&direction_id=1"
+    },
+    "response": {
+      "body": "{\"jsonapi\":{\"version\":\"1.0\"},\"data\":[{\"type\":\"stop\",\"relationships\":{\"parent_station\":{\"data\":null}},\"links\":{\"self\":\"/stops/Boat-Hingham\"},\"id\":\"Boat-Hingham\",\"attributes\":{\"wheelchair_boarding\":1,\"name\":\"Hewitt's Cove, Hingham\",\"longitude\":-70.919875,\"latitude\":42.252643}},{\"type\":\"stop\",\"relationships\":{\"parent_station\":{\"data\":null}},\"links\":{\"self\":\"/stops/Boat-Rowes\"},\"id\":\"Boat-Rowes\",\"attributes\":{\"wheelchair_boarding\":1,\"name\":\"Rowes Wharf, Boston\",\"longitude\":-71.049897,\"latitude\":42.355721}},{\"type\":\"stop\",\"relationships\":{\"parent_station\":{\"data\":null}},\"links\":{\"self\":\"/stops/Boat-George\"},\"id\":\"Boat-George\",\"attributes\":{\"wheelchair_boarding\":1,\"name\":\"George's Island\",\"longitude\":-70.930427,\"latitude\":42.319742}},{\"type\":\"stop\",\"relationships\":{\"parent_station\":{\"data\":null}},\"links\":{\"self\":\"/stops/Boat-Hull\"},\"id\":\"Boat-Hull\",\"attributes\":{\"wheelchair_boarding\":1,\"name\":\"Pemberton Point, Hull\",\"longitude\":-70.920215,\"latitude\":42.303251}},{\"type\":\"stop\",\"relationships\":{\"parent_station\":{\"data\":null}},\"links\":{\"self\":\"/stops/Boat-Logan\"},\"id\":\"Boat-Logan\",\"attributes\":{\"wheelchair_boarding\":1,\"name\":\"Logan Airport Ferry Terminal\",\"longitude\":-71.02734,\"latitude\":42.359789}},{\"type\":\"stop\",\"relationships\":{\"parent_station\":{\"data\":null}},\"links\":{\"self\":\"/stops/Boat-Long\"},\"id\":\"Boat-Long\",\"attributes\":{\"wheelchair_boarding\":1,\"name\":\"Long Wharf, Boston\",\"longitude\":-71.050247,\"latitude\":42.360018}}]}",
+      "headers": {
+        "cache-control": "max-age=0, private, must-revalidate",
+        "Content-Type": "application/vnd.api+json; charset=utf-8",
+        "Date": "Fri, 16 Jun 2017 15:39:02 GMT",
+        "Server": "nginx/1.10.2",
+        "x-request-id": "a7t564g2c1ba62fll5nhrng64vnlpbme",
+        "Content-Length": "1440",
+        "Connection": "keep-alive"
+      },
+      "status_code": 200,
+      "type": "ok"
+    }
+  },
+  {
+    "request": {
+      "body": "",
+      "headers": [],
+      "method": "get",
+      "options": [],
+      "request_body": "",
+      "url": "https://dev.api.mbtace.com/stops/?route=Boat-F3&direction_id=1"
+    },
+    "response": {
+      "body": "{\"jsonapi\":{\"version\":\"1.0\"},\"data\":[{\"type\":\"stop\",\"relationships\":{\"parent_station\":{\"data\":null}},\"links\":{\"self\":\"/stops/Boat-Hull\"},\"id\":\"Boat-Hull\",\"attributes\":{\"wheelchair_boarding\":1,\"name\":\"Pemberton Point, Hull\",\"longitude\":-70.920215,\"latitude\":42.303251}},{\"type\":\"stop\",\"relationships\":{\"parent_station\":{\"data\":null}},\"links\":{\"self\":\"/stops/Boat-Long\"},\"id\":\"Boat-Long\",\"attributes\":{\"wheelchair_boarding\":1,\"name\":\"Long Wharf, Boston\",\"longitude\":-71.050247,\"latitude\":42.360018}}]}",
+      "headers": {
+        "cache-control": "max-age=0, private, must-revalidate",
+        "Content-Type": "application/vnd.api+json; charset=utf-8",
+        "Date": "Fri, 16 Jun 2017 15:39:02 GMT",
+        "Server": "nginx/1.10.2",
+        "x-request-id": "cgb79ecofrgub2gettujnm2cuo7ovt31",
+        "Content-Length": "499",
+        "Connection": "keep-alive"
+      },
+      "status_code": 200,
+      "type": "ok"
+    }
   }
 ]
