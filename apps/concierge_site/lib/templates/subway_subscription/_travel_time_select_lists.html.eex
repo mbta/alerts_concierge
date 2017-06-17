@@ -1,25 +1,4 @@
 <%= case @trip_type do %>
-  <%= "round_trip" -> %>
-    <div class="travel-time-select-section">
-      <label for="subscription_departure_start" class="travel-time-label">
-        Departure Trip:
-      </label>
-      <%= select :subscription, :departure_start, travel_time_options(), class: "travel-time-select", selected: "08:45 AM" %>
-      <label for="subscription_departure_end" class="travel-time-connector">
-        to
-      </label>
-      <%= select :subscription, :departure_end, travel_time_options(), class: "travel-time-select", selected: "09:15 AM" %>
-    </div>
-    <div class="travel-time-select-section">
-      <label for="subscription_return_start" class="travel-time-label">
-        Return Trip:
-      </label>
-      <%= select :subscription, :return_start, travel_time_options(), class: "travel-time-select", selected: "04:45 PM" %>
-      <label for="subscription_return_end" class="travel-time-connector">
-        to
-      </label>
-      <%= select :subscription, :return_end, travel_time_options(), class: "travel-time-select", selected: "05:15 PM" %>
-    </div>
   <%= "roaming" -> %>
     <div class="travel-time-select-section">
       <label for="subscription_roaming_start" class="travel-time-label">
@@ -31,7 +10,7 @@
       </label>
       <%= select :subscription, :roaming_end, travel_time_options(), class: "travel-time-select", selected: "02:30 PM" %>
     </div>
-  <%= _one_way -> %>
+  <%= _ -> %>
     <div class="travel-time-select-section">
       <label for="subscription_departure_start" class="travel-time-label">
         Departure Trip:
@@ -42,4 +21,19 @@
       </label>
       <%= select :subscription, :departure_end, travel_time_options(), class: "travel-time-select", selected: "09:15 AM" %>
     </div>
-  <%= end %>
+<%= end %>
+
+<%= case @trip_type do %>
+  <%= "round_trip" -> %>
+    <div class="travel-time-select-section">
+      <label for="subscription_return_start" class="travel-time-label">
+        Return Trip:
+      </label>
+      <%= select :subscription, :return_start, travel_time_options(), class: "travel-time-select", selected: "04:45 PM" %>
+      <label for="subscription_return_end" class="travel-time-connector">
+        to
+      </label>
+      <%= select :subscription, :return_end, travel_time_options(), class: "travel-time-select", selected: "05:15 PM" %>
+    </div>
+  <%= _ -> %>
+<%= end %>
