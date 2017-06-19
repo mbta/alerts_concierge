@@ -51,6 +51,12 @@ defmodule AlertProcessor.AlertParser do
     "severity_name" => severity,
     "short_description_text" => header_text_translations
   } = alert_data, facilities_map) do
+    severity =
+      if !Enum.member?(["Minor", "Moderate", "Severe"], severity) do
+        "Minor"
+      else
+        severity
+      end
     %Alert{
       active_period: parse_active_periods(active_periods),
       description: parse_translation(description_text_translations),
