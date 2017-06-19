@@ -43,8 +43,8 @@ defmodule AlertProcessor.ServiceInfoCache do
     GenServer.call(name, :get_ferry_info)
   end
 
-  def get_stop(name \\ __MODULE__, mode, stop_id) do
-    GenServer.call(name, {:get_stop, mode, stop_id})
+  def get_stop(name \\ __MODULE__, stop_id) do
+    GenServer.call(name, {:get_stop, stop_id})
   end
 
   def get_direction_name(name \\ __MODULE__, route, direction_id) do
@@ -95,7 +95,7 @@ defmodule AlertProcessor.ServiceInfoCache do
     {:reply, {:ok, ferry_state}, state}
   end
 
-  def handle_call({:get_stop, :subway, stop_id}, _from, %{routes: route_state} = state) do
+  def handle_call({:get_stop, stop_id}, _from, %{routes: route_state} = state) do
     stop = get_stop_from_state(stop_id, route_state)
     {:reply, {:ok, stop}, state}
   end
