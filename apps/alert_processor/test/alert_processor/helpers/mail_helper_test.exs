@@ -61,6 +61,13 @@ defmodule AlertProcessor.MailHelperTest do
 
       assert MailHelper.logo_for_alert(alert) == ferry
     end
+
+    test "logo_for_alert/1 return facility" do
+      alert = Map.merge(@alert, %{informed_entities: [%InformedEntity{facility_type: :elevator}]})
+      facility = "https://example.com/assets/icons/icn_facility.png"
+
+      assert MailHelper.logo_for_alert(alert) == facility
+    end
   end
 
   describe "Alt text functions" do
@@ -108,6 +115,13 @@ defmodule AlertProcessor.MailHelperTest do
       ferry = "logo-ferry"
 
       assert MailHelper.alt_text_for_alert(alert) == ferry
+    end
+
+     test "alt_text_for_alert/1 return facility" do
+      alert = Map.merge(@alert, %{informed_entities: [%InformedEntity{facility_type: :escalator}]})
+      facility = "logo-facility"
+
+      assert MailHelper.alt_text_for_alert(alert) == facility
     end
   end
 end
