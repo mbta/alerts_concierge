@@ -52,6 +52,11 @@
       </div>
       <%= render "_travel_time_select_lists.html", trip_type: @subscription_params["trip_type"] %>
     </div>
+
+    <%= text_input :subscription,
+                   :trip_type,
+                   value: @subscription_params["trip_type"],
+                   hidden: true %>
   </form>
 </div>
 
