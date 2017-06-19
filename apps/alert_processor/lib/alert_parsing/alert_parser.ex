@@ -52,10 +52,10 @@ defmodule AlertProcessor.AlertParser do
     "short_description_text" => header_text_translations
   } = alert_data, facilities_map) do
     severity =
-      if !Enum.member?(["Minor", "Moderate", "Severe"], severity) do
-        "Minor"
-      else
+      if Enum.member?(["Minor", "Moderate", "Severe"], severity) do
         severity
+      else
+        "Minor"
       end
     %Alert{
       active_period: parse_active_periods(active_periods),
@@ -64,7 +64,7 @@ defmodule AlertProcessor.AlertParser do
       header: parse_translation(header_text_translations),
       id: to_string(alert_id),
       informed_entities: parse_informed_entities(informed_entities, facilities_map),
-      last_push_notification: alert_data|>  Map.get_lazy("last_push_notification_timestamp", fn -> Map.get(alert_data, "created_timestamp") end) |> parse_datetime(),
+      last_push_notification: alert_data |> Map.get_lazy("last_push_notification_timestamp", fn -> Map.get(alert_data, "created_timestamp") end) |> parse_datetime(),
       service_effect: parse_translation(service_effect_text_translations),
       severity: severity |> String.downcase |> String.to_existing_atom,
     }

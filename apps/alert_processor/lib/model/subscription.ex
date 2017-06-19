@@ -126,4 +126,12 @@ defmodule AlertProcessor.Model.Subscription do
       {relevant_day, %{start: DateTimeHelper.seconds_of_day(subscription.start_time), end: DateTimeHelper.seconds_of_day(subscription.end_time)}}
     end)
   end
+
+  @doc """
+  function used to make sure subscription type atoms are available in runtime
+  for String.to_existing_atom calls.
+  """
+  def subscription_types do
+    [:bus, :subway, :commuter_rail, :boat, :amenity]
+  end
 end

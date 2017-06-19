@@ -34,6 +34,10 @@ defmodule AlertProcessor.Model.InformedEntity do
     timestamps()
   end
 
+  @doc """
+  function used to make sure subscription type atoms are available in runtime
+  for String.to_existing_atom calls.
+  """
   def facility_types do
     [:elevator, :escalator]
   end
