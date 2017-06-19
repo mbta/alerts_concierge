@@ -82,6 +82,17 @@ defmodule AlertProcessor.ApiClient do
     |> parse_response()
   end
 
+  @doc """
+  endpoint to fetch schedules for two stops to be able to find common schedules
+  """
+  @spec schedules(String.t, String.t, integer, [String.t], Date.t) :: [map] | {:error, String.t}
+  def schedules(origin, destination, direction_id, route_ids, date) do
+    "/schedules?filter[stop]=#{origin},#{destination}&direction_id=#{direction_id}&fields[schedule]=departure_time,arrival_time&filter[route]=#{Enum.join(route_ids, ",")}&date=#{date}"
+    |> URI.encode()
+    |> get()
+    |> parse_response()
+  end
+
   defp parse_response(response) do
     case response do
       {:ok, %{body: %{"errors" => errors}}} ->

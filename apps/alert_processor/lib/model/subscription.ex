@@ -8,10 +8,11 @@ defmodule AlertProcessor.Model.Subscription do
 
   @type id :: String.t
   @type subscription_type :: :bus | :subway | :commuter_rail | :boat | :amenity
+  @type relevant_day :: :weekday | :saturday | :sunday
   @type t :: %__MODULE__{
     alert_priority_type: atom,
     user_id: String.t,
-    relevant_days: [:weekday | :saturday | :sunday],
+    relevant_days: [relevant_day],
     start_time: Time.t,
     end_time: Time.t,
     origin: String.t,
