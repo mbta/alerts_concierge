@@ -164,8 +164,8 @@ defmodule AlertProcessor.Subscription.SubwayMapper do
         end)
       end)
 
-    {:ok, {origin_name, ^origin}} = ServiceInfoCache.get_stop(:subway, origin)
-    {:ok, {destination_name, ^destination}} = ServiceInfoCache.get_stop(:subway, destination)
+    {:ok, {origin_name, ^origin}} = ServiceInfoCache.get_stop(origin)
+    {:ok, {destination_name, ^destination}} = ServiceInfoCache.get_stop(destination)
 
     Enum.map(subscription_infos, fn({subscription, informed_entities}) ->
       {Map.merge(subscription, %{origin: origin_name, destination: destination_name}), informed_entities ++ stop_entities}
@@ -181,8 +181,8 @@ defmodule AlertProcessor.Subscription.SubwayMapper do
         ]
       end)
 
-    {:ok, {origin_name, ^origin}} = ServiceInfoCache.get_stop(:subway, origin)
-    {:ok, {destination_name, ^destination}} = ServiceInfoCache.get_stop(:subway, destination)
+    {:ok, {origin_name, ^origin}} = ServiceInfoCache.get_stop(origin)
+    {:ok, {destination_name, ^destination}} = ServiceInfoCache.get_stop(destination)
 
     [
       {
@@ -204,8 +204,8 @@ defmodule AlertProcessor.Subscription.SubwayMapper do
         ]
       end)
 
-    {:ok, {origin_name, ^origin}} = ServiceInfoCache.get_stop(:subway, origin)
-    {:ok, {destination_name, ^destination}} = ServiceInfoCache.get_stop(:subway, destination)
+    {:ok, {origin_name, ^origin}} = ServiceInfoCache.get_stop(origin)
+    {:ok, {destination_name, ^destination}} = ServiceInfoCache.get_stop(destination)
 
     Enum.map(subscription_infos, fn({subscription, informed_entities}) ->
       {Map.merge(subscription, %{origin: origin_name, destination: destination_name}), informed_entities ++ stop_entities}

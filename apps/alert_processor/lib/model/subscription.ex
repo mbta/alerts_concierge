@@ -8,10 +8,11 @@ defmodule AlertProcessor.Model.Subscription do
 
   @type id :: String.t
   @type subscription_type :: :bus | :subway | :commuter_rail | :boat | :amenity
+  @type relevant_day :: :weekday | :saturday | :sunday
   @type t :: %__MODULE__{
     alert_priority_type: atom,
     user_id: String.t,
-    relevant_days: [:weekday | :saturday | :sunday],
+    relevant_days: [relevant_day],
     start_time: Time.t,
     end_time: Time.t,
     origin: String.t,
@@ -125,5 +126,13 @@ defmodule AlertProcessor.Model.Subscription do
     Map.new(subscription.relevant_days, fn(relevant_day) ->
       {relevant_day, %{start: DateTimeHelper.seconds_of_day(subscription.start_time), end: DateTimeHelper.seconds_of_day(subscription.end_time)}}
     end)
+  end
+
+  @doc """
+  function used to make sure subscription type atoms are available in runtime
+  for String.to_existing_atom calls.
+  """
+  def subscription_types do
+    [:bus, :subway, :commuter_rail, :boat, :amenity]
   end
 end
