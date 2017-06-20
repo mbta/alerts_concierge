@@ -124,7 +124,6 @@ defmodule AlertProcessor.AlertParser do
 
   defp parse_trip(trip) do
     case trip do
-      %{"trip_id" => trip, "direction_id" => direction_id} -> %{trip: trip, direction_id: direction_id}
       %{"trip_id" => trip} -> %{trip: trip}
       _ -> %{}
     end
