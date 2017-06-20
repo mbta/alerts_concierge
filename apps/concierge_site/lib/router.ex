@@ -35,6 +35,7 @@ defmodule ConciergeSite.Router do
     pipe_through [:browser, :browser_auth]
     resources "/subway", SubwaySubscriptionController, only: [:new]
     get "/subway/new/info", SubwaySubscriptionController, :info
+    post "/subway/new/preferences", SubwaySubscriptionController, :preferences
     resources "/bus", BusSubscriptionController, only: [:new]
     get "/bus/new/info", BusSubscriptionController, :info
   end

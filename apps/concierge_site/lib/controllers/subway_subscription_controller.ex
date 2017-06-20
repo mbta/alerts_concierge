@@ -28,4 +28,15 @@ defmodule ConciergeSite.SubwaySubscriptionController do
         |> render("new.html", token: token, subscription_params: subscription_params)
     end
   end
+
+  def preferences(conn, params, user, _claims) do
+    subscription_params = Map.merge(
+      params["subscription"], %{user_id: user.id, route_type: 1}
+    )
+    token = TemporaryState.encode(subscription_params)
+
+    render conn, "preferences.html",
+      token: token,
+      subscription_params: subscription_params
+  end
 end
