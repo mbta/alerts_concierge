@@ -17,12 +17,9 @@ defmodule AlertProcessor.Subscription.SubwayMapper do
   def map_subscriptions(subscription_params) do
     with subscriptions <- map_timeframe(subscription_params),
          subscriptions <- map_priority(subscriptions, subscription_params),
-         subscriptions <- map_type(subscriptions, :subway),
-         {:ok, subscription_infos} <- map_entities(subscriptions, subscription_params)
-          do
-      {:ok, subscription_infos}
-    else
-      _ -> :error
+         subscriptions <- map_type(subscriptions, :subway)
+         do
+      map_entities(subscriptions, subscription_params)
     end
   end
 

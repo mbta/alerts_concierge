@@ -177,15 +177,16 @@ defmodule AlertProcessor.ServiceInfoCache do
   defp fetch_service_info(:ferry), do: do_fetch_service_info([4])
   defp fetch_service_info(:bus), do: do_fetch_service_info([3])
   defp fetch_service_info(:parent_stop_info) do
-    for subway_stop <- ApiClient.subway_parent_stops(), into: %{} do
+    {:ok, subway_parent_stops} = ApiClient.subway_parent_stops()
+    for subway_stop <- subway_parent_stops, into: %{} do
       %{"id" => id, "relationships" => %{"parent_station" => %{"data" => %{"id" => parent_station_id}}}} = subway_stop
       {id, parent_station_id}
     end
   end
 
   defp do_fetch_service_info(route_types) do
-    route_types
-    |> ApiClient.routes()
+    {:ok, routes} = ApiClient.routes(route_types)
+    routes
     |> Enum.map(
         fn(%{"attributes" => %{"type" => route_type, "long_name" => long_name, "direction_names" => direction_names}, "id" => id}) ->
           case long_name do
@@ -211,8 +212,9 @@ defmodule AlertProcessor.ServiceInfoCache do
 
   defp fetch_stops(3, _), do: []
   defp fetch_stops(_route_type, route_id) do
-    route_id
-    |> ApiClient.route_stops
+    {:ok, route_stops} = ApiClient.route_stops(route_id)
+
+    route_stops
     |> Enum.map(fn(%{"attributes" => %{"name" => name}, "id" => id}) ->
       {name, id}
     end)
@@ -245,11 +247,11 @@ defmodule AlertProcessor.ServiceInfoCache do
   end
 
   defp fetch_route_branches("Red") do
-    "Red"
-    |> ApiClient.route_shapes()
-    |> Enum.map(fn(%{"relationships" => %{"stops" => %{"data" => stops}}}) ->
-         Enum.map(stops, & &1["id"])
-       end)
+    {:ok, route_shapes} = ApiClient.route_shapes("Red")
+
+    Enum.map(route_shapes, fn(%{"relationships" => %{"stops" => %{"data" => stops}}}) ->
+      Enum.map(stops, & &1["id"])
+    end)
   end
   defp fetch_route_branches(_), do: []
 
@@ -261,8 +263,9 @@ defmodule AlertProcessor.ServiceInfoCache do
   end
 
   def do_headsigns(route_id, direction_id) do
-    route_id
-    |> ApiClient.trips(direction_id)
+    {:ok, trips} = ApiClient.trips(route_id, direction_id)
+
+    trips
     |> Enum.filter_map(
         fn %{"attributes" => attributes} -> attributes["headsign"] != "" end,
         fn %{"attributes" => attributes} -> attributes["headsign"] end

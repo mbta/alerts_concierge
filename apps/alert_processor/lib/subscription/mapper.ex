@@ -6,24 +6,19 @@ defmodule AlertProcessor.Subscription.Mapper do
   alias AlertProcessor.{Helpers.DateTimeHelper, Model.InformedEntity, Model.Route, Model.Subscription, ServiceInfoCache}
 
   def map_timeframe(%{"departure_start" => ds, "departure_end" => de, "return_start" => nil, "return_end" => nil, "relevant_days" => rd}) do
-    [%Subscription{start_time: DateTimeHelper.timestamp_to_utc(ds), end_time: DateTimeHelper.timestamp_to_utc(de), relevant_days: Enum.map(rd, &String.to_existing_atom/1)}]
+    [do_map_timeframe(ds, de, rd)]
   end
 
   def map_timeframe(%{"departure_start" => ds, "departure_end" => de, "return_start" => rs, "return_end" => re, "relevant_days" => rd}) do
-    sub1 =
-      %Subscription{
-        start_time: DateTimeHelper.timestamp_to_utc(ds),
-        end_time: DateTimeHelper.timestamp_to_utc(de),
-        relevant_days: Enum.map(rd, &String.to_existing_atom/1)
-      }
-    sub2 =
-      %Subscription{
-        start_time: DateTimeHelper.timestamp_to_utc(rs),
-        end_time: DateTimeHelper.timestamp_to_utc(re),
-        relevant_days: Enum.map(rd, &String.to_existing_atom/1)
-      }
+    [do_map_timeframe(ds, de, rd), do_map_timeframe(rs, re, rd)]
+  end
 
-    [sub1, sub2]
+  defp do_map_timeframe(start_time, end_time, relevant_days) do
+    %Subscription{
+      start_time: DateTimeHelper.timestamp_to_utc(start_time),
+      end_time: DateTimeHelper.timestamp_to_utc(end_time),
+      relevant_days: Enum.map(relevant_days, &String.to_existing_atom/1)
+    }
   end
 
   def map_priority(subscriptions, %{"alert_priority_type" => alert_priority_type}) when is_list(subscriptions) do
@@ -155,7 +150,7 @@ defmodule AlertProcessor.Subscription.Mapper do
     ]
   end
 
-  def map_stops(subscription_infos, %{"origin" => origin, "destination" => destination}, routes) do
+  def map_stops([{subscription, informed_entities}], %{"origin" => origin, "destination" => destination}, routes) do
     stop_entities =
       Enum.flat_map(routes, fn(%Route{route_id: route, route_type: type}) ->
         [
@@ -167,9 +162,7 @@ defmodule AlertProcessor.Subscription.Mapper do
     {:ok, {origin_name, ^origin}} = ServiceInfoCache.get_stop(origin)
     {:ok, {destination_name, ^destination}} = ServiceInfoCache.get_stop(destination)
 
-    Enum.map(subscription_infos, fn({subscription, informed_entities}) ->
-      {Map.merge(subscription, %{origin: origin_name, destination: destination_name}), informed_entities ++ stop_entities}
-    end)
+    [{Map.merge(subscription, %{origin: origin_name, destination: destination_name}), informed_entities ++ stop_entities}]
   end
 
   def map_trips([{sub1, ie1}, {sub2, ie2}], %{"trips" => trips, "return_trips" => return_trips}) do

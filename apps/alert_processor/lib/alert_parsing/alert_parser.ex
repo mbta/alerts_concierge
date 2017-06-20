@@ -15,7 +15,7 @@ defmodule AlertProcessor.AlertParser do
   @spec process_alerts() :: [{:ok, [Notification.t]}]
   def process_alerts() do
     with {:ok, alerts} <- AlertsClient.get_alerts(),
-         facilities <- ApiClient.facilities() do
+         {:ok, facilities} <- ApiClient.facilities() do
       {alerts_needing_notifications, alert_ids_to_clear_notifications} =
         {alerts, facilities}
         |> map_facilities()
@@ -125,6 +125,7 @@ defmodule AlertProcessor.AlertParser do
   defp parse_trip(trip) do
     case trip do
       %{"trip_id" => trip} -> %{trip: trip}
+      %{"trip_id" => trip, "direction_id" => direction_id} -> %{trip: trip, direction_id: direction_id}
       _ -> %{}
     end
   end

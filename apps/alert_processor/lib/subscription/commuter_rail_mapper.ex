@@ -11,12 +11,9 @@ defmodule AlertProcessor.Subscription.CommuterRailMapper do
   def map_subscriptions(subscription_params) do
     with subscriptions <- map_timeframe(subscription_params),
          subscriptions <- map_priority(subscriptions, subscription_params),
-         subscriptions <- map_type(subscriptions, :commuter_rail),
-         {:ok, subscription_infos} <- map_entities(subscriptions, subscription_params)
-          do
-      {:ok, subscription_infos}
-    else
-      _ -> :error
+         subscriptions <- map_type(subscriptions, :commuter_rail)
+         do
+      map_entities(subscriptions, subscription_params)
     end
   end
 
@@ -57,7 +54,7 @@ defmodule AlertProcessor.Subscription.CommuterRailMapper do
         relevant_date = determine_date(relevant_days, today_date)
 
         case ApiClient.schedules(origin, destination, direction_id, route_ids, relevant_date) do
-          {schedules, trips} when is_list(schedules) and is_list(trips) ->
+          {:ok, schedules, trips} ->
             trip_name_map = map_trip_names(trips)
             trip = %Trip{origin: origin, destination: destination, direction_id: direction_id, route: route}
             map_common_trips(schedules, trip_name_map, trip)

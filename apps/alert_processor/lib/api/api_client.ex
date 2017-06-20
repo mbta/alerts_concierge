@@ -10,15 +10,15 @@ defmodule AlertProcessor.ApiClient do
   Helper function that fetches all alerts from
   MBTA Alerts API
   """
-  @spec get_alerts() :: {[map], [map]} | {:error, String.t}
+  @spec get_alerts() :: {:ok, [map], [map]} | {:error, String.t}
   def get_alerts do
    case get("/alerts/?include=facilities") do
       {:ok, %{body: %{"errors" => errors}}} ->
         {:error, errors |> Enum.map_join(", ", &(&1["code"]))}
       {:ok, %{body: %{"included" => facilities, "data" => alerts}}} ->
-        {alerts, facilities}
+        {:ok, alerts, facilities}
       {:ok, %{body: %{"data" => alerts}}} ->
-        {alerts, []}
+        {:ok, alerts, []}
       {:error, message} ->
         {:error, message}
     end
@@ -27,7 +27,7 @@ defmodule AlertProcessor.ApiClient do
   @doc """
   endpoint to fetch facility information to match facility id with facility_type
   """
-  @spec facilities() :: [map] | {:error, String.t}
+  @spec facilities() :: {:ok, [map]} | {:error, String.t}
   def facilities do
     "/facilities?fields[facility]=type"
     |> get()
@@ -37,7 +37,7 @@ defmodule AlertProcessor.ApiClient do
   @doc """
   enpoint to fetch route info including name, id and route_type
   """
-  @spec routes([integer], [String.t]) :: [map] | {:error, String.t}
+  @spec routes([integer], [String.t]) :: {:ok, [map]} | {:error, String.t}
   def routes(types \\ [], fields \\ ["long_name", "type", "direction_names"]) do
     "/routes?filter[type]=#{Enum.join(types, ",")}&fields[route]=#{Enum.join(fields, ",")}"
     |> get()
@@ -47,7 +47,7 @@ defmodule AlertProcessor.ApiClient do
   @doc """
   endpoint to fetch trips for a specific route
   """
-  @spec trips(String.t, integer, [String.t]) :: [map] | {:error, String.t}
+  @spec trips(String.t, integer, [String.t]) :: {:ok, [map]} | {:error, String.t}
   def trips(route, direction_id, fields \\ ["headsign"]) do
     "/trips?route=#{route}&direction_id=#{direction_id}&fields[trip]=#{Enum.join(fields, ",")}"
     |> get()
@@ -57,7 +57,7 @@ defmodule AlertProcessor.ApiClient do
   @doc """
   endpoint to fetch stop info per route including name and id
   """
-  @spec route_stops(String.t) :: [map] | {:error, String.t}
+  @spec route_stops(String.t) :: {:ok, [map]} | {:error, String.t}
   def route_stops(route) do
     "/stops/?route=#{route}&direction_id=1"
     |> get()
@@ -67,7 +67,7 @@ defmodule AlertProcessor.ApiClient do
   @doc """
   endpoint to fetch subway stops which includes parent station id
   """
-  @spec subway_parent_stops() :: [map] | {:error, String.t}
+  @spec subway_parent_stops() :: {:ok, [map]} | {:error, String.t}
   def subway_parent_stops do
     "/stops?filter[route_type]=0,1"
     |> get()
@@ -77,7 +77,7 @@ defmodule AlertProcessor.ApiClient do
   @doc """
   endpoint to fetch shapes for a specific route
   """
-  @spec route_shapes(String.t) :: [map] | {:error, String.t}
+  @spec route_shapes(String.t) :: {:ok, [map]} | {:error, String.t}
   def route_shapes(route) do
     "/shapes/?route=#{route}&direction_id=1&fields[shape]=priority"
     |> get()
@@ -87,7 +87,7 @@ defmodule AlertProcessor.ApiClient do
   @doc """
   endpoint to fetch schedules for two stops to be able to find common schedules
   """
-  @spec schedules(Route.stop_id, Route.stop_id, Route.direction_id, [Route.route_id], Date.t) :: {[map], [map]} | {:error, String.t}
+  @spec schedules(Route.stop_id, Route.stop_id, Route.direction_id, [Route.route_id], Date.t) :: {:ok, [map], [map]} | {:ok, [map]} | {:error, String.t}
   def schedules(origin, destination, direction_id, route_ids, date) do
     "/schedules?filter[stop]=#{origin},#{destination}&direction_id=#{direction_id}&fields[schedule]=departure_time,arrival_time&filter[route]=#{Enum.join(route_ids, ",")}&date=#{date}&include=trip&fields[trip]=name"
     |> URI.encode()
@@ -100,9 +100,9 @@ defmodule AlertProcessor.ApiClient do
       {:ok, %{body: %{"errors" => errors}}} ->
         {:error, errors |> Enum.map_join(", ", &(&1["code"]))}
       {:ok, %{body: %{"data" => data, "included" => includes}}} ->
-        {data, includes}
+        {:ok, data, includes}
       {:ok, %{body: %{"data" => data}}} ->
-        data
+        {:ok, data}
       {:error, message} ->
         {:error, message}
     end
