@@ -26,9 +26,10 @@ defmodule AlertProcessor.Subscription.CommuterRailMapper do
       [route | _] ->
         direction_id = determine_direction_id(route, origin, destination)
         relevant_date = determine_date(relevant_days, today_date)
-        schedules = ApiClient.schedules(origin, destination, direction_id, route_ids, relevant_date)
+        {schedules, trips} = ApiClient.schedules(origin, destination, direction_id, route_ids, relevant_date)
+        trip_name_map = map_trip_names(trips)
         trip = %Trip{origin: origin, destination: destination, direction_id: direction_id, route: route}
-        map_common_trips(schedules, trip)
+        map_common_trips(schedules, trip_name_map, trip)
     end
   end
 
@@ -59,8 +60,12 @@ defmodule AlertProcessor.Subscription.CommuterRailMapper do
     Calendar.Date.advance!(today_date, 7 - day_of_week)
   end
 
-  defp map_common_trips([], _), do: :error
-  defp map_common_trips(schedules, trip) do
+  defp map_trip_names(trips) do
+    Map.new(trips, fn(%{"id" => id, "attributes" => %{"name" => name}}) -> {id, name} end)
+  end
+
+  defp map_common_trips([], _, _), do: :error
+  defp map_common_trips(schedules, trip_names_map, trip) do
     schedules
     |> Enum.group_by(fn(%{"relationships" => %{"trip" => %{"data" => %{"id" => id}}}}) -> id end)
     |> Enum.filter_map(fn({_id, schedules}) -> Enum.count(schedules) > 1 end,
@@ -80,14 +85,9 @@ defmodule AlertProcessor.Subscription.CommuterRailMapper do
 
         %{"attributes" => %{"arrival_time" => arrival_timestamp}} = arrival_schedule
 
-        %{trip | arrival_time: map_schedule_time(arrival_timestamp), departure_time: map_schedule_time(departure_timestamp), trip_number: map_trip_id(trip_id)}
+        %{trip | arrival_time: map_schedule_time(arrival_timestamp), departure_time: map_schedule_time(departure_timestamp), trip_number: Map.get(trip_names_map, trip_id)}
       end)
     |> Enum.sort_by(fn(%Trip{departure_time: departure_time}) -> {~T[05:00:00] > departure_time, departure_time} end)
-  end
-
-  defp map_trip_id(trip_id) do
-    [trip_number | _] = trip_id |> String.split("-") |> Enum.reverse()
-    trip_number
   end
 
   defp map_schedule_time(schedule_datetime) do

@@ -89,7 +89,7 @@ defmodule AlertProcessor.ApiClient do
   """
   @spec schedules(Route.stop_id, Route.stop_id, Route.direction_id, [Route.route_id], Date.t) :: [map] | {:error, String.t}
   def schedules(origin, destination, direction_id, route_ids, date) do
-    "/schedules?filter[stop]=#{origin},#{destination}&direction_id=#{direction_id}&fields[schedule]=departure_time,arrival_time&filter[route]=#{Enum.join(route_ids, ",")}&date=#{date}"
+    "/schedules?filter[stop]=#{origin},#{destination}&direction_id=#{direction_id}&fields[schedule]=departure_time,arrival_time&filter[route]=#{Enum.join(route_ids, ",")}&date=#{date}&include=trip&fields[trip]=name"
     |> URI.encode()
     |> get()
     |> parse_response()
@@ -99,6 +99,8 @@ defmodule AlertProcessor.ApiClient do
     case response do
       {:ok, %{body: %{"errors" => errors}}} ->
         {:error, errors |> Enum.map_join(", ", &(&1["code"]))}
+      {:ok, %{body: %{"data" => data, "included" => includes}}} ->
+        {data, includes}
       {:ok, %{body: %{"data" => data}}} ->
         data
       {:error, message} ->
