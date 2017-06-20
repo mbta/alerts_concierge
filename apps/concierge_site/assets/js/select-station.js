@@ -144,7 +144,7 @@ export default function($) {
         } else {
           const station = {
             name: option.text,
-            code: option.value,
+            id: option.value,
             allLineNames: [group.label]
           };
 
@@ -192,7 +192,7 @@ export default function($) {
     const circleIcons = lineNames.map(renderCircleIcon).join("");
 
     return `
-      <div class="${stationSuggestionClass(originDestination)}" data-lines="${station.allLineNames.join(",")}" data-station-id="${station.code}">
+      <div class="${stationSuggestionClass(originDestination)}" data-lines="${station.allLineNames.join(",")}" data-station-id="${station.id}">
         <div class="station-name">${station.name}</div>
         <div class="station-lines">
           ${circleIcons}
@@ -273,7 +273,7 @@ export default function($) {
 
   function stationIdFromStationName(stationName) {
     const station = props.allStations.find(station => station.name == stationName);
-    return station.code;
+    return station.id;
   }
 
   function oppositeStation(originDestination) {
