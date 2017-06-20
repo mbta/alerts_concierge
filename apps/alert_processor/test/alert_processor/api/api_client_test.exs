@@ -6,7 +6,7 @@ defmodule AlertProcessor.ApiClientTest do
 
   test "get_alerts/0 returns list of alerts if successful" do
     use_cassette "get_alerts", custom: true, clear_mock: true, match_requests_on: [:query] do
-      assert {[_ | _], [_ | _]} = ApiClient.get_alerts
+      assert {:ok, [_ | _], [_ | _]} = ApiClient.get_alerts
     end
   end
 end

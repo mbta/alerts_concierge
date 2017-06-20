@@ -8,6 +8,7 @@ defmodule AlertProcessor.Model.Subscription do
 
   @type id :: String.t
   @type subscription_type :: :bus | :subway | :commuter_rail | :boat | :amenity
+  @type subscription_info :: {__MODULE__.t, [InformedEntity.t]}
   @type relevant_day :: :weekday | :saturday | :sunday
   @type t :: %__MODULE__{
     alert_priority_type: atom,

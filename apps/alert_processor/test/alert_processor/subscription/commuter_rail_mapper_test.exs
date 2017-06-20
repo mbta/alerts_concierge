@@ -1,11 +1,301 @@
 defmodule AlertProcessor.Subscription.CommuterRailMapperTest do
   use ExUnit.Case
   use ExVCR.Mock, adapter: ExVCR.Adapter.Hackney
-  alias AlertProcessor.{Model.Trip, Subscription.CommuterRailMapper}
+  alias AlertProcessor.{Model.InformedEntity, Model.Trip, Subscription.CommuterRailMapper}
 
-  @test_date Calendar.Date.from_ordinal!(2017, 168)
+  describe "map_subscriptions one way" do
+    @one_way_params %{
+      "origin" => "Anderson/ Woburn",
+      "destination" => "place-north",
+      "trips" => ["123", "125"],
+      "relevant_days" => ["weekday", "saturday"],
+      "departure_start" => "12:00:00",
+      "departure_end" => "14:00:00",
+      "return_start" => nil,
+      "return_end" => nil,
+      "alert_priority_type" => "low",
+      "amenities" => ["elevator"]
+    }
+
+    test "constructs subscription with severity" do
+      {:ok, [{subscription, _ie}]} = CommuterRailMapper.map_subscriptions(@one_way_params)
+      assert subscription.alert_priority_type == :low
+    end
+
+    test "constructs subscription with type" do
+      {:ok, [{subscription, _ie}]} = CommuterRailMapper.map_subscriptions(@one_way_params)
+      assert subscription.type == :commuter_rail
+    end
+
+    test "constructs subscription with origin and destination" do
+      {:ok, [{subscription, _ie}]} = CommuterRailMapper.map_subscriptions(@one_way_params)
+      assert subscription.origin == "Anderson/Woburn"
+      assert subscription.destination == "North Station"
+    end
+
+    test "constructs subscription with timeframe" do
+      {:ok, [{subscription, _ie}]} = CommuterRailMapper.map_subscriptions(@one_way_params)
+      assert subscription.start_time == ~T[16:00:00]
+      assert subscription.end_time == ~T[18:00:00]
+      assert subscription.relevant_days == [:weekday, :saturday]
+    end
+
+    test "constructs subscription with amenities" do
+      {:ok, [{_sub, informed_entities}]} = CommuterRailMapper.map_subscriptions(@one_way_params)
+      amenity_informed_entities_count =
+        Enum.count(informed_entities, fn(informed_entity) ->
+          match?(%InformedEntity{facility_type: :elevator, stop: "Anderson/ Woburn"}, informed_entity)
+        end)
+      assert amenity_informed_entities_count == 1
+    end
+
+    test "constructs subscription with route" do
+      {:ok, [{_sub, informed_entities}]} = CommuterRailMapper.map_subscriptions(@one_way_params)
+      route_entity_count =
+        Enum.count(informed_entities, fn(informed_entity) ->
+          match?(%InformedEntity{route: "CR-Lowell", route_type: 2, stop: nil, direction_id: nil}, informed_entity)
+        end)
+      assert route_entity_count == 1
+      route_entity_count =
+        Enum.count(informed_entities, fn(informed_entity) ->
+          match?(%InformedEntity{route: "CR-Lowell", route_type: 2, stop: nil, direction_id: 1}, informed_entity)
+        end)
+      assert route_entity_count == 1
+    end
+
+    test "constructs subscription with route in other direction" do
+      reverse_trip_params = Map.merge(@one_way_params, %{"destination" => "Anderson/ Woburn", "origin" => "place-north"})
+      {:ok, [{_sub, informed_entities}]} = CommuterRailMapper.map_subscriptions(reverse_trip_params)
+      route_entity_count =
+        Enum.count(informed_entities, fn(informed_entity) ->
+          match?(%InformedEntity{route: "CR-Lowell", route_type: 2, stop: nil, direction_id: nil}, informed_entity)
+        end)
+      assert route_entity_count == 1
+      route_entity_count =
+        Enum.count(informed_entities, fn(informed_entity) ->
+          match?(%InformedEntity{route: "CR-Lowell", route_type: 2, stop: nil, direction_id: 0}, informed_entity)
+        end)
+      assert route_entity_count == 1
+    end
+
+    test "constructs subscription with route type" do
+      {:ok, [{_sub, informed_entities}]} = CommuterRailMapper.map_subscriptions(@one_way_params)
+      route_type_entity_count =
+        Enum.count(informed_entities, fn(informed_entity) ->
+          match?(%InformedEntity{route: nil, route_type: 2}, informed_entity)
+        end)
+      assert route_type_entity_count == 1
+    end
+
+    test "constructs subscription with stops" do
+      {:ok, [{_sub, informed_entities}]} = CommuterRailMapper.map_subscriptions(@one_way_params)
+      north_station_count =
+        Enum.count(informed_entities, fn(informed_entity) ->
+          match?(%InformedEntity{route: "CR-Lowell", route_type: 2, stop: "place-north"}, informed_entity)
+        end)
+      assert north_station_count == 1
+      anderson_station_count =
+        Enum.count(informed_entities, fn(informed_entity) ->
+          match?(%InformedEntity{route: "CR-Lowell", route_type: 2, stop: "Anderson/ Woburn"}, informed_entity)
+        end)
+      assert anderson_station_count == 1
+      total_station_count =
+        Enum.count(informed_entities, fn(informed_entity) ->
+          InformedEntity.entity_type(informed_entity) == :stop
+        end)
+      assert total_station_count == 2
+    end
+
+    test "constructs subscription with trips" do
+      {:ok, [{_sub, informed_entities}]} = CommuterRailMapper.map_subscriptions(@one_way_params)
+      trip_123_count =
+        Enum.count(informed_entities, fn(informed_entity) ->
+          match?(%InformedEntity{trip: "123"}, informed_entity)
+        end)
+      assert trip_123_count == 1
+      trip_125_count =
+        Enum.count(informed_entities, fn(informed_entity) ->
+          match?(%InformedEntity{trip: "125"}, informed_entity)
+        end)
+      assert trip_125_count == 1
+      trip_count =
+        Enum.count(informed_entities, fn(informed_entity) ->
+          InformedEntity.entity_type(informed_entity) == :trip
+        end)
+      assert trip_count == 2
+    end
+  end
+
+  describe "map_subscriptions round trip" do
+    @round_trip_params %{
+      "origin" => "place-north",
+      "destination" => "Anderson/ Woburn",
+      "trips" => ["123", "125"],
+      "return_trips" => ["588", "590"],
+      "relevant_days" => ["weekday", "saturday"],
+      "departure_start" => "12:00:00",
+      "departure_end" => "14:00:00",
+      "return_start" => "18:00:00",
+      "return_end" => "20:00:00",
+      "alert_priority_type" => "low",
+      "amenities" => ["elevator"]
+    }
+
+    test "constructs subscription with severity" do
+      {:ok, [{sub1, _ie1}, {sub2, _ie2}]} = CommuterRailMapper.map_subscriptions(@round_trip_params)
+      assert sub1.alert_priority_type == :low
+      assert sub2.alert_priority_type == :low
+    end
+
+    test "constructs subscription with type" do
+      {:ok, [{sub1, _ie1}, {sub2, _ie2}]} = CommuterRailMapper.map_subscriptions(@round_trip_params)
+      assert sub1.type == :commuter_rail
+      assert sub2.type == :commuter_rail
+    end
+
+    test "constructs subscription with origin and destination" do
+      {:ok, [{sub1, _ie1}, {sub2, _ie2}]} = CommuterRailMapper.map_subscriptions(@round_trip_params)
+      assert sub1.origin == "North Station"
+      assert sub1.destination == "Anderson/Woburn"
+      assert sub2.origin == "Anderson/Woburn"
+      assert sub2.destination == "North Station"
+    end
+
+    test "constructs subscription with timeframe" do
+      {:ok, [{sub1, _ie1}, {sub2, _ie2}]} = CommuterRailMapper.map_subscriptions(@round_trip_params)
+      assert sub1.start_time == ~T[16:00:00]
+      assert sub1.end_time == ~T[18:00:00]
+      assert sub1.relevant_days == [:weekday, :saturday]
+      assert sub2.start_time == ~T[22:00:00]
+      assert sub2.end_time == ~T[00:00:00]
+      assert sub2.relevant_days == [:weekday, :saturday]
+    end
+
+    test "constructs subscription with amenities" do
+      {:ok, [{_sub1, ie1}, {_sub2, ie2}]} = CommuterRailMapper.map_subscriptions(@round_trip_params)
+      amenity_informed_entities_count =
+        Enum.count(ie1, fn(informed_entity) ->
+          match?(%InformedEntity{facility_type: :elevator, stop: "place-north"}, informed_entity)
+        end)
+      assert amenity_informed_entities_count == 1
+      amenity_informed_entities_count =
+        Enum.count(ie2, fn(informed_entity) ->
+          match?(%InformedEntity{facility_type: :elevator, stop: "place-north"}, informed_entity)
+        end)
+      assert amenity_informed_entities_count == 1
+    end
+
+    test "constructs subscription with route" do
+      {:ok, [{_sub1, ie1}, {_sub2, ie2}]} = CommuterRailMapper.map_subscriptions(@round_trip_params)
+      route_entity_count =
+        Enum.count(ie1, fn(informed_entity) ->
+          match?(%InformedEntity{route: "CR-Lowell", route_type: 2, stop: nil, direction_id: nil}, informed_entity)
+        end)
+      assert route_entity_count == 1
+      route_entity_count =
+        Enum.count(ie1, fn(informed_entity) ->
+          match?(%InformedEntity{route: "CR-Lowell", route_type: 2, stop: nil, direction_id: 0}, informed_entity)
+        end)
+      assert route_entity_count == 1
+      route_entity_count =
+        Enum.count(ie2, fn(informed_entity) ->
+          match?(%InformedEntity{route: "CR-Lowell", route_type: 2, stop: nil, direction_id: nil}, informed_entity)
+        end)
+      assert route_entity_count == 1
+      route_entity_count =
+        Enum.count(ie2, fn(informed_entity) ->
+          match?(%InformedEntity{route: "CR-Lowell", route_type: 2, stop: nil, direction_id: 1}, informed_entity)
+        end)
+      assert route_entity_count == 1
+    end
+
+    test "constructs subscription with route type" do
+      {:ok, [{_sub1, ie1}, {_sub2, ie2}]} = CommuterRailMapper.map_subscriptions(@round_trip_params)
+      route_type_entity_count =
+        Enum.count(ie1, fn(informed_entity) ->
+          match?(%InformedEntity{route: nil, route_type: 2}, informed_entity)
+        end)
+      assert route_type_entity_count == 1
+      route_type_entity_count =
+        Enum.count(ie2, fn(informed_entity) ->
+          match?(%InformedEntity{route: nil, route_type: 2}, informed_entity)
+        end)
+      assert route_type_entity_count == 1
+    end
+
+    test "constructs subscription with stops" do
+      {:ok, [{_sub1, ie1}, {_sub2, ie2}]} = CommuterRailMapper.map_subscriptions(@round_trip_params)
+      anderson_station_count =
+        Enum.count(ie1, fn(informed_entity) ->
+          match?(%InformedEntity{route: "CR-Lowell", route_type: 2, stop: "Anderson/ Woburn"}, informed_entity)
+        end)
+      assert anderson_station_count == 1
+      north_station_count =
+        Enum.count(ie1, fn(informed_entity) ->
+          match?(%InformedEntity{route: "CR-Lowell", route_type: 2, stop: "place-north"}, informed_entity)
+        end)
+      assert north_station_count == 1
+      total_station_count =
+        Enum.count(ie1, fn(informed_entity) ->
+          InformedEntity.entity_type(informed_entity) == :stop
+        end)
+      assert total_station_count == 2
+      anderson_station_count =
+        Enum.count(ie2, fn(informed_entity) ->
+          match?(%InformedEntity{route: "CR-Lowell", route_type: 2, stop: "Anderson/ Woburn"}, informed_entity)
+        end)
+      assert anderson_station_count == 1
+      north_station_count =
+        Enum.count(ie2, fn(informed_entity) ->
+          match?(%InformedEntity{route: "CR-Lowell", route_type: 2, stop: "place-north"}, informed_entity)
+        end)
+      assert north_station_count == 1
+      total_station_count =
+        Enum.count(ie2, fn(informed_entity) ->
+          InformedEntity.entity_type(informed_entity) == :stop
+        end)
+      assert total_station_count == 2
+    end
+
+    test "constructs subscription with trips" do
+      {:ok, [{_sub1, ie1}, {_sub2, ie2}]} = CommuterRailMapper.map_subscriptions(@round_trip_params)
+      trip_123_count =
+        Enum.count(ie1, fn(informed_entity) ->
+          match?(%InformedEntity{trip: "123"}, informed_entity)
+        end)
+      assert trip_123_count == 1
+      trip_125_count =
+        Enum.count(ie1, fn(informed_entity) ->
+          match?(%InformedEntity{trip: "125"}, informed_entity)
+        end)
+      assert trip_125_count == 1
+      trip_count =
+        Enum.count(ie1, fn(informed_entity) ->
+          InformedEntity.entity_type(informed_entity) == :trip
+        end)
+      assert trip_count == 2
+
+      trip_588_count =
+        Enum.count(ie2, fn(informed_entity) ->
+          match?(%InformedEntity{trip: "588"}, informed_entity)
+        end)
+      assert trip_588_count == 1
+      trip_590_count =
+        Enum.count(ie2, fn(informed_entity) ->
+          match?(%InformedEntity{trip: "590"}, informed_entity)
+        end)
+      assert trip_590_count == 1
+      trip_count =
+        Enum.count(ie2, fn(informed_entity) ->
+          InformedEntity.entity_type(informed_entity) == :trip
+        end)
+      assert trip_count == 2
+    end
+  end
 
   describe "map_trip_options" do
+    @test_date Calendar.Date.from_ordinal!(2017, 168)
+
     test "returns inbound results for origin destination" do
       use_cassette "north_to_anderson_woburn_schedules", custom: true, clear_mock: true, match_requests_on: [:query] do
         trips = CommuterRailMapper.map_trip_options("place-north", "Anderson/ Woburn", :weekday, @test_date)
