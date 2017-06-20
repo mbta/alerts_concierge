@@ -156,18 +156,16 @@ export default function($) {
   }
 
   function handleSubmit() {
-    addHiddenStationIds();
+    updateHiddenStationInputs();
     return true;
   }
 
-  function addHiddenStationIds() {
-    const $form = $(".subway-trip-info-form");
+  function updateHiddenStationInputs() {
     const origin = $(".subscription-select-origin").attr("data-station-id");
     const destination = $(".subscription-select-destination").attr("data-station-id");
-    $form.append(`
-      <input type="hidden" name="subscription[origin]" value="${origin}" />
-      <input type="hidden" name="subscription[destination]" value="${destination}" />
-    `);
+
+    $("input[name='subscription[origin]']").val(origin);
+    $("input[name='subscription[destination]']").val(destination);
   }
 
   function unmountStationSuggestions(classPrefix) {
@@ -177,6 +175,7 @@ export default function($) {
   function attachSuggestionInputs() {
     $("label[for='origin']").after(renderStationInput("origin"));
     $("label[for='destination']").after(renderStationInput("destination"));
+    $(".subway-trip-info-form").after(renderHiddenStationInputs());
   }
 
   function renderStationInput(originDestination) {
@@ -184,6 +183,13 @@ export default function($) {
       <input type="text" name="${originDestination}" placeholder="Enter a station" class="${stationInputClass(originDestination)}"/>
       <div class="suggestion-container"></div>
       <i class="fa fa-check-circle valid-checkmark-icon"></i>
+    `
+  }
+
+  function renderHiddenStationInputs() {
+    return `
+      <input type="hidden" name="subscription[origin]" />
+      <input type="hidden" name="subscription[destination]" />
     `
   }
 
