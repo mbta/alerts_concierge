@@ -4,7 +4,7 @@ defmodule AlertProcessor.Subscription.CommuterRailMapper do
   subway into the relevant subscription and informed entity structs.
   """
 
-  alias AlertProcessor.{ApiClient, Helpers.DateTimeHelper, Model.Route, Model.Subscription, Model.Trip, ServiceInfoCache}
+  alias AlertProcessor.{ApiClient, Model.Route, Model.Subscription, Model.Trip, ServiceInfoCache}
 
   @type trip_number :: String.t
   @type trip_description :: iodata
