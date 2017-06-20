@@ -11,7 +11,7 @@
                name: "Subway" %>
 
     <%= render "_service_option.html",
-               link_to: "#",
+               link_to: commuter_rail_subscription_path(@conn, :new),
                icon_class: "commuter-rail-icon",
                icon_src: static_url(@conn, "/images/commuter-rail.svg"),
                name: "Commuter Rail" %>
