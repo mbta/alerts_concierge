@@ -4,6 +4,8 @@ defmodule AlertProcessor.ApiClient do
   """
   use HTTPoison.Base
 
+  alias AlertProcessor.Model.Route
+
   @doc """
   Helper function that fetches all alerts from
   MBTA Alerts API
@@ -85,7 +87,7 @@ defmodule AlertProcessor.ApiClient do
   @doc """
   endpoint to fetch schedules for two stops to be able to find common schedules
   """
-  @spec schedules(String.t, String.t, integer, [String.t], Date.t) :: [map] | {:error, String.t}
+  @spec schedules(Route.stop_id, Route.stop_id, Route.direction_id, [Route.route_id], Date.t) :: [map] | {:error, String.t}
   def schedules(origin, destination, direction_id, route_ids, date) do
     "/schedules?filter[stop]=#{origin},#{destination}&direction_id=#{direction_id}&fields[schedule]=departure_time,arrival_time&filter[route]=#{Enum.join(route_ids, ",")}&date=#{date}"
     |> URI.encode()

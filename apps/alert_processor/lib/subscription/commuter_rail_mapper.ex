@@ -4,7 +4,7 @@ defmodule AlertProcessor.Subscription.CommuterRailMapper do
   subway into the relevant subscription and informed entity structs.
   """
 
-  alias AlertProcessor.{ApiClient, Model.Route, Model.Subscription, ServiceInfoCache}
+  alias AlertProcessor.{ApiClient, Helpers.DateTimeHelper, Model.Route, Model.Subscription, Model.Trip, ServiceInfoCache}
 
   @type trip_number :: String.t
   @type trip_description :: iodata
@@ -25,10 +25,10 @@ defmodule AlertProcessor.Subscription.CommuterRailMapper do
         :error
       [route | _] ->
         direction_id = determine_direction_id(route, origin, destination)
-        direction_name = Enum.at(route.direction_names, direction_id)
         relevant_date = determine_date(relevant_days, today_date)
         schedules = ApiClient.schedules(origin, destination, direction_id, route_ids, relevant_date)
-        map_common_trips(schedules, origin, destination, direction_name)
+        trip = %Trip{origin: origin, destination: destination, direction_id: direction_id, route: route}
+        map_common_trips(schedules, trip)
     end
   end
 
@@ -52,23 +52,15 @@ defmodule AlertProcessor.Subscription.CommuterRailMapper do
   end
   defp determine_date(:saturday, today_date) do
     day_of_week = Calendar.Date.day_of_week(today_date)
-    if day_of_week == 6 do
-      today_date
-    else
-      Calendar.Date.advance!(today_date, 6 - day_of_week)
-    end
+    Calendar.Date.advance!(today_date, 6 - day_of_week)
   end
   defp determine_date(:sunday, today_date) do
     day_of_week = Calendar.Date.day_of_week(today_date)
-    if day_of_week == 7 do
-      today_date
-    else
-      Calendar.Date.advance!(today_date, 7 - day_of_week)
-    end
+    Calendar.Date.advance!(today_date, 7 - day_of_week)
   end
 
-  defp map_common_trips([], _, _, _), do: :error
-  defp map_common_trips(schedules, origin, destination, direction_name) do
+  defp map_common_trips([], _), do: :error
+  defp map_common_trips(schedules, trip) do
     schedules
     |> Enum.group_by(fn(%{"relationships" => %{"trip" => %{"data" => %{"id" => id}}}}) -> id end)
     |> Enum.filter_map(fn({_id, schedules}) -> Enum.count(schedules) > 1 end,
@@ -87,13 +79,10 @@ defmodule AlertProcessor.Subscription.CommuterRailMapper do
         } = departure_schedule
 
         %{"attributes" => %{"arrival_time" => arrival_timestamp}} = arrival_schedule
-        trip_number = map_trip_id(trip_id)
-        {:ok, {origin_name, ^origin}} = ServiceInfoCache.get_stop(origin)
-        {:ok, {destination_name, ^destination}} = ServiceInfoCache.get_stop(destination)
-        departure_time = departure_timestamp |> NaiveDateTime.from_iso8601! |> NaiveDateTime.to_time()
-        {trip_number, departure_time, [trip_number, " ", direction_name, " | Departs ", origin_name, " at ", map_schedule_time(departure_timestamp), ", arrives at ", destination_name, " at ", map_schedule_time(arrival_timestamp)]}
+
+        %{trip | arrival_time: map_schedule_time(arrival_timestamp), departure_time: map_schedule_time(departure_timestamp), trip_number: map_trip_id(trip_id)}
       end)
-    |> Enum.sort_by(fn({_trip_number, departure_time, _trip_description}) -> {~T[05:00:00] > departure_time, departure_time} end)
+    |> Enum.sort_by(fn(%Trip{departure_time: departure_time}) -> {~T[05:00:00] > departure_time, departure_time} end)
   end
 
   defp map_trip_id(trip_id) do
@@ -102,8 +91,6 @@ defmodule AlertProcessor.Subscription.CommuterRailMapper do
   end
 
   defp map_schedule_time(schedule_datetime) do
-    {:ok, datetime} = NaiveDateTime.from_iso8601(schedule_datetime)
-    {:ok, time_string} = Calendar.Strftime.strftime(datetime, "%l:%M%P")
-    String.trim(time_string)
+    schedule_datetime |> NaiveDateTime.from_iso8601! |> NaiveDateTime.to_time()
   end
 end
