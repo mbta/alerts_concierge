@@ -30,6 +30,7 @@
 .progress-link {
   display: inline-block;
   text-align: center;
+  min-width: 30%;
 }
 
 .disabled-progress-link {
@@ -39,11 +40,13 @@
 .progress-step-trip-type {
   position: absolute;
   left: -1.75rem;
+  min-width: 0%;
 }
 
 .progress-step-preferences {
   position: absolute;
   right: -1.75rem;
+  min-width: 0%;
 }
 
 .progress-circle {
