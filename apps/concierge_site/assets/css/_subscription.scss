@@ -235,3 +235,19 @@
   display: inline-block;
   margin: 0 1rem;
 }
+
+.trip-info-footer {
+  border-top: 1px solid $pale-grey;
+  padding: 2rem 0 3.5rem;
+  position: relative;
+}
+
+.btn-subscription-next {
+  width: 15rem;
+}
+
+.subscription-info-back-link {
+  left: 0;
+  position: absolute;
+  top: 2.5rem;
+}

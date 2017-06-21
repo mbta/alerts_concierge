@@ -11,10 +11,10 @@
         |> trip_info_description %>
   </p>
 
-  <form>
+  <%= form_for @conn, subway_subscription_path(@conn, :preferences), [class: "subway-trip-info-form", as: :subscription], fn f -> %>
     <div class="form-group select-station">
       <label for="origin" class="station-input-label form-label">Origin</label>
-      <%= select :subscription,
+      <%= select f,
                  :origin,
                  @station_list_select_options,
                  class: "subscription-select-origin no-js",
@@ -22,7 +22,7 @@
     </div>
     <div class="form-group select-station">
       <label for="destination" class="station-input-label form-label">Destination</label>
-      <%= select :subscription,
+      <%= select f,
                  :destination,
                  @station_list_select_options,
                  class: "subscription-select-destination no-js",
@@ -31,15 +31,15 @@
     <div class="form-group select-days">
       <div class="form-label">Travel Days</div>
       <label>
-        <%= checkbox(:subscription, :weekdays, class: "subscription-day-checkbox") %>
+        <%= checkbox(f, :weekdays, class: "subscription-day-checkbox") %>
         Weekdays
       </label>
       <label>
-        <%= checkbox(:subscription, :saturday, class: "subscription-day-checkbox") %>
+        <%= checkbox(f, :saturday, class: "subscription-day-checkbox") %>
         Saturday
       </label>
       <label>
-        <%= checkbox(:subscription, :sunday, class: "subscription-day-checkbox") %>
+        <%= checkbox(f, :sunday, class: "subscription-day-checkbox") %>
         Sunday
       </label>
     </div>
@@ -53,13 +53,16 @@
       <%= render "_travel_time_select_lists.html", trip_type: @subscription_params["trip_type"] %>
     </div>
 
-    <%= text_input :subscription,
+    <%= text_input f,
                    :trip_type,
                    value: @subscription_params["trip_type"],
                    hidden: true %>
-  </form>
-</div>
 
-<%= link to: subway_subscription_path(@conn, :new), class: "subscription-back-link" do %>
-  <i class="fa fa-arrow-left" aria-hidden="true"></i> Go Back
-<% end %>
+  <div class="trip-info-footer">
+    <%= link to: subway_subscription_path(@conn, :new), class: "subscription-info-back-link" do %>
+      <i class="fa fa-arrow-left" aria-hidden="true"></i> Go Back
+    <% end %>
+    <%= submit "Next", class: "btn btn-primary btn-subscription-next" %>
+  </div>
+  <%= end %>
+</div>

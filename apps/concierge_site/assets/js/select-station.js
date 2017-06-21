@@ -37,11 +37,13 @@ export default function($) {
     const originDestination = event.data.originDestination;
     const $stationInput = $(`.${subscriptionSelectClass(originDestination)}`);
 
-    if (props.validStationNames.includes(event.target.value)) {
+    if (props.validStationNames.includes(inputText)) {
       $stationInput.attr("data-valid", true);
-      setSelectedStation(originDestination, inputText, associatedLines(inputText))
+      $stationInput.attr("data-station-id", stationIdFromStationName(inputText));
+      setSelectedStation(originDestination, inputText, associatedLines(inputText));
     } else {
       $stationInput.attr("data-valid", false);
+      $stationInput.attr("data-station-id", null);
       clearSelectedStation(originDestination);
     }
   }
@@ -53,6 +55,7 @@ export default function($) {
 
     $stationInput.val(stationName);
     $stationInput.attr("data-valid", true);
+    $stationInput.attr("data-station-id", $(this).attr("data-station-id"));
     setSelectedStation(originDestination, stationName, $(this).attr("data-lines"));
     unmountStationSuggestions(originDestination);
   }
@@ -67,6 +70,7 @@ export default function($) {
       const stationName = $(".station-name", $firstSuggestion).text();
       $stationInput.val(stationName);
       $stationInput.attr("data-valid", true);
+      $stationInput.attr("data-station-id",  $firstSuggestion.attr("data-station-id"));
       setSelectedStation(originDestination, stationName, $firstSuggestion.attr("data-lines"));
     }
 
@@ -97,7 +101,7 @@ export default function($) {
     const otherStation = oppositeStation(originDestination);
     const selectedLines = state[otherStation]["selectedLines"].split(",");
     let stations = [];
-    
+
     selectedLines.forEach(function(line) {
       stations = stations.concat(props.allRoutes[line])
     });
@@ -140,7 +144,7 @@ export default function($) {
         } else {
           const station = {
             name: option.text,
-            code: option.value,
+            id: option.value,
             allLineNames: [group.label]
           };
 
@@ -151,6 +155,19 @@ export default function($) {
     return stations;
   }
 
+  function handleSubmit() {
+    updateHiddenStationInputs();
+    return true;
+  }
+
+  function updateHiddenStationInputs() {
+    const origin = $(".subscription-select-origin").attr("data-station-id");
+    const destination = $(".subscription-select-destination").attr("data-station-id");
+
+    $("input[name='subscription[origin]']").val(origin);
+    $("input[name='subscription[destination]']").val(destination);
+  }
+
   function unmountStationSuggestions(classPrefix) {
     $(`.${classPrefix}-station-suggestion`).remove();
   }
@@ -158,6 +175,7 @@ export default function($) {
   function attachSuggestionInputs() {
     $("label[for='origin']").after(renderStationInput("origin"));
     $("label[for='destination']").after(renderStationInput("destination"));
+    $(".subway-trip-info-form").after(renderHiddenStationInputs());
   }
 
   function renderStationInput(originDestination) {
@@ -168,12 +186,19 @@ export default function($) {
     `
   }
 
+  function renderHiddenStationInputs() {
+    return `
+      <input type="hidden" name="subscription[origin]" />
+      <input type="hidden" name="subscription[destination]" />
+    `
+  }
+
   function renderStationSuggestion(originDestination, station) {
     const lineNames = compactLineNames(station.allLineNames);
     const circleIcons = lineNames.map(renderCircleIcon).join("");
 
     return `
-      <div class="${stationSuggestionClass(originDestination)}" data-lines="${station.allLineNames.join(",")}">
+      <div class="${stationSuggestionClass(originDestination)}" data-lines="${station.allLineNames.join(",")}" data-station-id="${station.id}">
         <div class="station-name">${station.name}</div>
         <div class="station-lines">
           ${circleIcons}
@@ -252,6 +277,11 @@ export default function($) {
     return station.allLineNames.join(",");
   }
 
+  function stationIdFromStationName(stationName) {
+    const station = props.allStations.find(station => station.name == stationName);
+    return station.id;
+  }
+
   function oppositeStation(originDestination) {
     return originDestination == "origin" ? "destination" : "origin"
   }
@@ -272,4 +302,5 @@ export default function($) {
     "mousedown", ".origin-station-suggestion", { originDestination: "origin" }, assignSuggestion);
   $(document).on(
     "mousedown", ".destination-station-suggestion", { originDestination: "destination" }, assignSuggestion);
+  $(document).on("submit", ".subway-trip-info-form", handleSubmit);
 }

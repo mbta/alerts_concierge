@@ -152,6 +152,16 @@ describe("selectStation", function() {
       assert.equal($originInput.val(), "Park Street");
     });
 
+    it("updates the data-station-id attribute of the origin input", () => {
+      const $originInput = $("input.subscription-select-origin");
+
+      $originInput.val("Park");
+      simulateKeyUp($originInput[0]);
+      $(".origin-station-suggestion").first().mousedown();
+
+      assert.equal($originInput.attr("data-station-id"), "place-pktrm");
+    });
+
     it("populates the destination input field with the station full name", () => {
       const $destinationInput = $("input.subscription-select-destination");
       $destinationInput.val("Brain");
@@ -161,6 +171,16 @@ describe("selectStation", function() {
       $(".destination-station-suggestion").first().mousedown();
 
       assert.equal($destinationInput.val(), "Braintree");
+    });
+
+    it("updates the data-station-id attribute of the destination input", () => {
+      const $destinationInput = $("input.subscription-select-destination");
+
+      $destinationInput.val("Brain");
+      simulateKeyUp($destinationInput[0]);
+      $(".destination-station-suggestion").first().mousedown();
+
+      assert.equal($destinationInput.attr("data-station-id"), "place-brntn");
     });
   })
 
@@ -177,6 +197,17 @@ describe("selectStation", function() {
       assert.equal($originInput.val(), "Park Street");
     });
 
+    it("updates the data-station-id attribute of the origin input", () => {
+      const $originInput = $("input.subscription-select-origin");
+
+      $originInput.val("Park");
+      $originInput.focus();
+      simulateKeyUp($originInput[0]);
+      $("input.subscription-select-destination").focus();
+
+      assert.equal($originInput.attr("data-station-id"), "place-pktrm");
+    });
+
     it("populates the destination field with the first suggestion", () => {
       const $destinationInput = $("input.subscription-select-destination");
       $destinationInput.val("brain");
@@ -189,6 +220,17 @@ describe("selectStation", function() {
       assert.equal($destinationInput.val(), "Braintree");
     });
 
+    it("updates the data-station-id attribute of the destination input", () => {
+      const $destinationInput = $("input.subscription-select-destination");
+
+      $destinationInput.val("brain");
+      $destinationInput.focus();
+      simulateKeyUp($destinationInput[0]);
+      $("input.subscription-select-origin").focus();
+
+      assert.equal($destinationInput.attr("data-station-id"), "place-brntn");
+    });
+
     it("does nothing when there are no suggestions in the origin field", () => {
       const $originInput = $("input.subscription-select-origin");
       $originInput.val("abc123");
@@ -199,6 +241,7 @@ describe("selectStation", function() {
       $("input.subscription-select-destination").focus()
 
       assert.equal($originInput.val(), "abc123");
+      assert.equal($originInput.attr("data-station-id"), null);
     });
 
     it("does nothing when there are no suggestions in the destination", () => {
@@ -211,6 +254,7 @@ describe("selectStation", function() {
       $("input.subscription-select-origin").focus()
 
       assert.equal($destinationInput.val(), "abc123");
+      assert.equal($destinationInput.attr("data-station-id"), null);
     });
   });
 
@@ -232,6 +276,26 @@ describe("selectStation", function() {
         assert.equal("false", $originInput.attr("data-valid"));
       });
 
+      it("updates the data-station-id attribute of the origin input when the value exactly matches a station name", () => {
+        const $originInput = $("input.subscription-select-origin");
+
+        $originInput.val("Park Street");
+        simulateKeyUp($originInput[0]);
+
+        assert.equal("place-pktrm", $originInput.attr("data-station-id"));
+      });
+
+      it("nullifies the data-station-id attribute of the origin input when the value does not match a station name", () => {
+        const $originInput = $("input.subscription-select-origin");
+
+        $originInput.val("Park Street");
+        simulateKeyUp($originInput[0]);
+        $originInput.val("abc123");
+        simulateKeyUp($originInput[0]);
+
+        assert.equal(null, $originInput.attr("data-station-id"));
+      });
+
       it("changes the data-valid attribute of the destination input to true when the value exactly matches a station name", () => {
         const $destinationInput = $("input.subscription-select-destination");
         $destinationInput.val("Braintree");
@@ -246,6 +310,26 @@ describe("selectStation", function() {
         simulateKeyUp($destinationInput[0])
 
         assert.equal("false", $destinationInput.attr("data-valid"));
+      });
+
+      it("updates the data-station-id attribute of the destination input when the value exactly matches a station name", () => {
+        const $destinationInput = $("input.subscription-select-destination");
+
+        $destinationInput.val("Braintree");
+        simulateKeyUp($destinationInput[0]);
+
+        assert.equal("place-brntn", $destinationInput.attr("data-station-id"));
+      });
+
+      it("nullifies the data-station-id attribute of the destination input when the value does not match a station name", () => {
+        const $destinationInput = $("input.subscription-select-destination");
+
+        $destinationInput.val("Braintree");
+        simulateKeyUp($destinationInput[0]);
+        $destinationInput.val("abc123");
+        simulateKeyUp($destinationInput[0]);
+
+        assert.equal(null, $destinationInput.attr("data-station-id"));
       });
     });
 
