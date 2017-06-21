@@ -30,7 +30,7 @@ defmodule ConciergeSite.SubwaySubscriptionControllerTest do
       assert html_response(conn, 200) =~ "Enter your trip info"
     end
 
-    test "POST /subscriptions/subway/new/preferences", %{conn: conn}  do
+    test "POST /subscriptions/subway/new/preferences with a valid submission", %{conn: conn}  do
       user = Repo.insert!(%User{email: "test@email.com",
                                 role: "user",
                                 encrypted_password: @encrypted_password})
@@ -51,6 +51,29 @@ defmodule ConciergeSite.SubwaySubscriptionControllerTest do
       |> post("/subscriptions/subway/new/preferences", params)
 
       assert html_response(conn, 200) =~ "Set your preferences for your trip:"
+    end
+
+    test "POST /subscriptions/subway/new/preferences with an invalid submission", %{conn: conn}  do
+      user = Repo.insert!(%User{email: "test@email.com",
+                                role: "user",
+                                encrypted_password: @encrypted_password})
+
+      params = %{"subscription" => %{
+        "departure_start" => "08:45 AM",
+        "departure_end" => "09:15 AM",
+        "origin" => "",
+        "destination" => "",
+        "saturday" => "false",
+        "sunday" => "false",
+        "weekdays" => "false",
+        "trip_type" => "one_way",
+      }}
+
+      conn = user
+      |> guardian_login(conn)
+      |> post("/subscriptions/subway/new/preferences", params)
+
+      assert html_response(conn, 200) =~ "Please correct the following errors to proceed"
     end
   end
 
