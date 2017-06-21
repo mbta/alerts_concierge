@@ -1,6 +1,6 @@
-defmodule ConciergeSite.Subscriptions.SubwayLinesTest do
+defmodule ConciergeSite.Subscriptions.LinesTest do
   use ExUnit.Case
-  alias ConciergeSite.Subscriptions.SubwayLines
+  alias ConciergeSite.Subscriptions.Lines
 
   describe "station_select_list_options" do
     test "changes a map of routes into a keyword list" do
@@ -31,7 +31,7 @@ defmodule ConciergeSite.Subscriptions.SubwayLinesTest do
         }
       ]
 
-      select_options = SubwayLines.station_list_select_options(routes)
+      select_options = Lines.station_list_select_options(routes)
 
       assert select_options == [
         {"Red Line", [{"Braintree", "place-river"}]},

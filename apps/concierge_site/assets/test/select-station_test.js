@@ -383,12 +383,12 @@ describe("selectStation", function() {
 
         assert.equal("true", $destinationInput.attr("data-valid"));
       });
-    })
+    });
   });
 
   const tripInfoPageHtml = `
     <div class="enter-trip-info">
-      <form>
+      <form class="trip-info-form subway">
         <div class="form-group select-station">
           <label for="origin" class="station-input-label form-label">Origin</label>
           <select class="subscription-select-origin no-js" id="subscription_origin" name="subscription[origin]">

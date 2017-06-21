@@ -11,7 +11,7 @@
         |> trip_info_description %>
   </p>
 
-  <%= form_for @conn, subway_subscription_path(@conn, :preferences), [class: "subway-trip-info-form", as: :subscription], fn f -> %>
+  <%= form_for @conn, subway_subscription_path(@conn, :preferences), [class: "trip-info-form subway", as: :subscription], fn f -> %>
     <div class="form-group select-station">
       <label for="origin" class="station-input-label form-label">Origin</label>
       <%= select f,

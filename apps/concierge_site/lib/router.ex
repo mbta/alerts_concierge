@@ -40,6 +40,7 @@ defmodule ConciergeSite.Router do
     get "/bus/new/info", BusSubscriptionController, :info
     resources "/commuter_rail", CommuterRailSubscriptionController, only: [:new]
     get "/commuter_rail/new/info", CommuterRailSubscriptionController, :info
+    post "/commuter_rail/new/preferences", CommuterRailSubscriptionController, :preferences
   end
 
   if Mix.env == :dev do

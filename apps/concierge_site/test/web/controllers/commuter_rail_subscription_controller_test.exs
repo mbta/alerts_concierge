@@ -28,6 +28,24 @@ defmodule ConciergeSite.CommuterRailSubscriptionControllerTest do
 
       assert html_response(conn, 200) =~ "Info"
     end
+
+    test "POST /subscriptions/commuter_rail/new/preferences", %{conn: conn}  do
+      user = Repo.insert!(%User{email: "test@email.com",
+                                role: "user",
+                                encrypted_password: @encrypted_password})
+       params = %{"subscription" => %{
+        "departure_start" => "08:45 AM",
+        "origin" => "place-north",
+        "destination" => "Newburyport",
+        "relevant_days" => "weekday",
+        "trip_type" => "one_way",
+      }}
+       conn = user
+      |> guardian_login(conn)
+      |> post("/subscriptions/commuter_rail/new/preferences", params)
+
+       assert html_response(conn, 200) =~ "Set your preferences for your trip:"
+    end
   end
 
   describe "unauthorized" do

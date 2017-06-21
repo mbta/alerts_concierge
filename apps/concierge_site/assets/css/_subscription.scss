@@ -143,10 +143,10 @@
 }
 
 .station-input[data-valid='true'] {
-  border-color: $valid-station-color;
+  border-color: $brand-success;
 
   ~ .valid-checkmark-icon {
-    color: $valid-station-color;
+    color: $brand-success;
     display: block;
     position: absolute;
     right: 1rem;
@@ -222,13 +222,24 @@
   margin-bottom: 1rem;
 }
 
-.travel-time-select {
+.travel-time-select,
+.relevant-days-select {
   background-color: $white;
   font-family: $font-family-base;
   font-size: $base-font-size-xxl;
   height: 2.25rem;
   text-align-last: center;
   width: 6.5rem;
+}
+
+.relevant-days-select {
+  width: 100%;
+  text-align-last: left;
+}
+
+.relevant-days-select[data-valid='true'],
+.travel-time-select[data-valid='true'] {
+  border-color: $brand-success;
 }
 
 .travel-time-connector {

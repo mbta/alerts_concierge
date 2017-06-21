@@ -1,6 +1,6 @@
-defmodule ConciergeSite.Subscriptions.SubwayLines do
+defmodule ConciergeSite.Subscriptions.Lines do
   @moduledoc """
-  Module for transforming ServiceInfoCache subway info
+  Module for transforming ServiceInfoCache info
   """
 
   @doc """
