@@ -8,6 +8,7 @@ defmodule AlertProcessor.MailHelper do
   @commuter_rail "#{@asset_url}/icons/icn_commuter.png"
   @bus "#{@asset_url}/icons/icn_bus.png"
   @ferry "#{@asset_url}/icons/icn_ferry.png"
+  @facility "#{@asset_url}/icons/icn_facility.png"
   @logo "#{@asset_url}/icons/t-logo@2x.png"
   @red "#{@asset_url}/icons/icn_red-line.png"
   @blue "#{@asset_url}/icons/icn_blue-line.png"
@@ -61,6 +62,7 @@ defmodule AlertProcessor.MailHelper do
   defp logo_for_route_type(%InformedEntity{route_type: 2}), do: @commuter_rail
   defp logo_for_route_type(%InformedEntity{route_type: 3}), do: @bus
   defp logo_for_route_type(%InformedEntity{route_type: 4}), do: @ferry
+  defp logo_for_route_type(%InformedEntity{facility_type: ft}) when not is_nil(ft), do: @facility
 
   defp logo_for_subway(route) do
     case route do
@@ -81,6 +83,7 @@ defmodule AlertProcessor.MailHelper do
   defp alt_text_for_route_type(%InformedEntity{route_type: 2}), do: "logo-commuter-rail"
   defp alt_text_for_route_type(%InformedEntity{route_type: 3}), do: "logo-bus"
   defp alt_text_for_route_type(%InformedEntity{route_type: 4}), do: "logo-ferry"
+  defp alt_text_for_route_type(%InformedEntity{facility_type: ft}) when not is_nil(ft), do: "logo-facility"
 
   defp alt_text_for_subway(route) do
     case route do
