@@ -21,7 +21,9 @@ import "phoenix_html"
 // import socket from "./socket"
 
 import selectStation from './select-station';
+import selectBusRoute from './select-bus-route';
 
+selectBusRoute();
 selectStation();
 
 document.body.className = document.body.className.replace("no-js", "js");

@@ -2,4 +2,57 @@
 
 <%= render "_progress_bar.html", current_page: :trip_info, conn: @conn %>
 
-Trip Info
+<div class="enter-trip-info">
+  <h2 class="trip-info-header bus">Enter your trip info</h2>
+
+  <%= form_for @conn, bus_subscription_path(@conn, :preferences), [class: "trip-info-form bus", as: :subscription], fn f -> %>
+    <div class="form-group select-station">
+
+    <label for="route" class="station-input-label form-label">What bus do you take?</label>
+    <%= select f,
+               :route,
+               @route_list_select_options,
+               class: "subscription-select-route no-js",
+               prompt: "Enter your bus number" %>
+    </div>
+
+    <div class="form-group select-days">
+      <div class="form-label">Travel Days</div>
+      <label>
+        <%= checkbox(f, :weekdays, class: "subscription-day-checkbox") %>
+        Weekdays
+      </label>
+      <label>
+        <%= checkbox(f, :saturday, class: "subscription-day-checkbox") %>
+        Saturday
+      </label>
+      <label>
+        <%= checkbox(f, :sunday, class: "subscription-day-checkbox") %>
+        Sunday
+      </label>
+    </div>
+
+    <div class="form-group travel-times">
+      <div class="form-label">When do you travel?</div>
+      <div class="form-sub-label travel-times-sub-label">
+        We will send you notifications for any service alerts that occur during
+        your planned travel time.
+      </div>
+      <%= render "_travel_time_select_lists.html", trip_type: @subscription_params["trip_type"], f: f %>
+    </div>
+
+    <%= text_input f,
+                   :trip_type,
+                   value: @subscription_params["trip_type"],
+                   hidden: true %>
+
+    <div class="trip-info-footer">
+      <%= link to: bus_subscription_path(@conn, :new), class: "subscription-info-back-link" do %>
+        <i class="fa fa-arrow-left" aria-hidden="true"></i> Go Back
+      <% end %>
+      <%= submit "Next", class: "btn btn-primary btn-subscription-next" %>
+    </div>
+  <%= end %>
+</div>
+
+
