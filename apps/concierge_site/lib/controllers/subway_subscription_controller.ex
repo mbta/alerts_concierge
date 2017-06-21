@@ -2,7 +2,7 @@ defmodule ConciergeSite.SubwaySubscriptionController do
   use ConciergeSite.Web, :controller
   use Guardian.Phoenix.Controller
   alias ConciergeSite.Subscriptions.TemporaryState
-  alias ConciergeSite.Subscriptions.SubwayLines
+  alias ConciergeSite.Subscriptions.Lines
   alias AlertProcessor.ServiceInfoCache
 
   def new(conn, _params, _user, _claims) do
@@ -16,7 +16,7 @@ defmodule ConciergeSite.SubwaySubscriptionController do
     case ServiceInfoCache.get_subway_full_routes do
       {:ok, stations} ->
         station_list_select_options =
-            SubwayLines.station_list_select_options(stations)
+            Lines.station_list_select_options(stations)
 
         render conn, "info.html",
           token: token,
