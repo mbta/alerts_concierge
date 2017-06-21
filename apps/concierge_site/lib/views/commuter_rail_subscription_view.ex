@@ -1,6 +1,8 @@
 defmodule ConciergeSite.CommuterRailSubscriptionView do
   use ConciergeSite.Web, :view
 
+  @type trip_type :: :one_way | :round_trip
+
   @disabled_progress_bar_links %{trip_info: [:trip_info, :train, :preferences],
   train: [:train, :preferences],
   preferences: [:preferences]}
@@ -26,5 +28,37 @@ defmodule ConciergeSite.CommuterRailSubscriptionView do
 
   def progress_step_classes(_page, _step) do
     %{}
+  end
+
+  @doc """
+  Provide description text for Trip Info page based on which trip type selected
+  """
+
+  @spec trip_info_description(trip_type) :: String.t
+  def trip_info_description(:one_way) do
+    "Please note: We will only send you alerts about service updates that affect your origin and destination stations."
+  end
+
+  def trip_info_description(:round_trip) do
+    [
+      :one_way |> trip_info_description |> String.trim_trailing("."),
+      ", in both directions."
+    ]
+  end
+
+  def trip_info_description(_trip_type) do
+    ""
+  end
+
+  @doc """
+  Returns stringified times to populate a dropdown list of a full day of times at
+  fifteen-minute intervals
+  """
+  def travel_time_options() do
+    0
+    |> Stream.iterate(&(&1 + 900))
+    |> Stream.map(&Calendar.Time.from_second_in_day/1)
+    |> Stream.map(&Calendar.Strftime.strftime!(&1, "%I:%M %p"))
+    |> Enum.take(96)
   end
 end

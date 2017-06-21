@@ -175,7 +175,7 @@ export default function($) {
   function attachSuggestionInputs() {
     $("label[for='origin']").after(renderStationInput("origin"));
     $("label[for='destination']").after(renderStationInput("destination"));
-    $(".subway-trip-info-form").after(renderHiddenStationInputs());
+    $(".trip-info-form").append(renderHiddenStationInputs());
   }
 
   function renderStationInput(originDestination) {
@@ -194,17 +194,37 @@ export default function($) {
   }
 
   function renderStationSuggestion(originDestination, station) {
+    const form = $(".trip-info-form");
     const lineNames = compactLineNames(station.allLineNames);
-    const circleIcons = lineNames.map(renderCircleIcon).join("");
 
-    return `
-      <div class="${stationSuggestionClass(originDestination)}" data-lines="${station.allLineNames.join(",")}" data-station-id="${station.id}">
-        <div class="station-name">${station.name}</div>
-        <div class="station-lines">
-          ${circleIcons}
+    if (form.hasClass("subway")) {
+      const circleIcons = lineNames.map(renderCircleIcon).join("");
+
+      return `
+        <div class="${stationSuggestionClass(originDestination)}" data-lines="${station.allLineNames.join(",")}" data-station-id="${station.id}">
+          <div class="station-name">${station.name}</div>
+          <div class="station-lines">
+            ${circleIcons}
+          </div>
         </div>
-      </div>
-    `
+      `
+    } else if (form.hasClass("commuter-rail")) {
+      return `
+        <div class="${stationSuggestionClass(originDestination)}" data-lines="${station.allLineNames.join(",")}" data-station-id="${station.id}">
+          <div class="station-name">${station.name}</div>
+          <div class="station-lines">
+            <div class="commuter-rail-icon circle-icon">
+              <svg width="24" height="24" viewBox="-2 -2 26 26" xmlns="http://www.w3.org/2000/svg">
+                <title>rail-icon</title>
+                <g fill="#FFF" class="icon-image" fill-rule="evenodd">
+                  <path d="M7.077 22l.578-1h8.69l.578 1H7.077zM6.5 23l-.567.982-.866-.5L6.5 21H3.993C3.445 21 3 20.556 3 20v-1h18v1c0 .552-.445 1-.993 1H17.5l1.433 2.482-.866.5L17.5 23h-11zM21 6.6V3.817c0-.565-.424-1.144-.946-1.318L12.946.13c-.512-.17-1.37-.175-1.892 0L3.946 2.5C3.434 2.67 3 3.262 3 3.816V6.6L2 7v10.004c0 .55.444.996.992.996h18.016c.537 0 .992-.446.992-.996V7l-1-.4zM20 5c0-.553-.438-1.125-.96-1.274L13 2v3l7 2V5zM4 5c0-.553.438-1.125.96-1.274L11 2v3L4 7V5zm15.5 11c.828 0 1.5-.672 1.5-1.5s-.672-1.5-1.5-1.5-1.5.672-1.5 1.5.672 1.5 1.5 1.5zm-15 0c.828 0 1.5-.672 1.5-1.5S5.328 13 4.5 13 3 13.672 3 14.5 3.672 16 4.5 16zm7.5-3c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zm0-.264c-1.51 0-2.736-1.225-2.736-2.736 0-1.51 1.225-2.736 2.736-2.736 1.51 0 2.736 1.225 2.736 2.736 0 1.51-1.225 2.736-2.736 2.736zM10.02 8.53h3.96v.915h-1.47v2.448h-1.014V9.445h-1.47l-.006-.915z"/>
+                </g>
+              </svg>
+            </div>
+          <div class="line-name">Commuter Rail</div>
+        </div>
+      `
+    }
   }
 
   function renderCircleIcon(lineName) {
@@ -286,6 +306,10 @@ export default function($) {
     return originDestination == "origin" ? "destination" : "origin"
   }
 
+  function validateDropdown(event) {
+    event.target.dataset.valid = true;
+  }
+
   $(document).on(
     "keyup", ".subscription-select-origin", { originDestination: "origin" }, typeahead);
   $(document).on(
@@ -302,5 +326,7 @@ export default function($) {
     "mousedown", ".origin-station-suggestion", { originDestination: "origin" }, assignSuggestion);
   $(document).on(
     "mousedown", ".destination-station-suggestion", { originDestination: "destination" }, assignSuggestion);
-  $(document).on("submit", ".subway-trip-info-form", handleSubmit);
+  $(document).on("focus", ".relevant-days-select", validateDropdown);
+  $(document).on("focus", ".travel-time-select", validateDropdown);
+  $(document).on("submit", ".trip-info-form", handleSubmit);
 }
