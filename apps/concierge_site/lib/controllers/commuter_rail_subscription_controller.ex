@@ -3,7 +3,7 @@ defmodule ConciergeSite.CommuterRailSubscriptionController do
   use Guardian.Phoenix.Controller
   alias ConciergeSite.Subscriptions.TemporaryState
   alias ConciergeSite.Subscriptions.Lines
-  alias AlertProcessor.{ServiceInfoCache, Subscription.CommuterRailMapper}
+  alias AlertProcessor.{Helpers.DateTimeHelper, ServiceInfoCache, Subscription.CommuterRailMapper}
 
   def new(conn, _params, _user, _claims) do
     render conn, "new.html"
@@ -35,9 +35,7 @@ defmodule ConciergeSite.CommuterRailSubscriptionController do
     )
     token = TemporaryState.encode(subscription_params)
 
-    %{"subscription" => %{"relevant_days" => relevant_days, "origin" => origin, "destination" => destination, "trip_type" => trip_type}} = params
-
-    trips = populate_trip_options(origin, destination, relevant_days, trip_type)
+    trips = populate_trip_options(subscription_params)
 
     render conn, "train.html",
       token: token,
@@ -56,15 +54,46 @@ defmodule ConciergeSite.CommuterRailSubscriptionController do
       subscription_params: subscription_params
   end
 
-  defp populate_trip_options(origin, destination, relevant_days, "one_way") do
+  defp populate_trip_options(%{"trip_type" => "one_way"} = subscription_params) do
+    %{"origin" => origin, "destination" => destination, "relevant_days" => relevant_days, "departure_start" => ds} = subscription_params
+    {departure_trips, closest_departure_trip} = get_trip_info(origin, destination, ds, relevant_days)
+
     %{
-      departure_trips: CommuterRailMapper.map_trip_options(origin, destination, String.to_existing_atom(relevant_days))
+      departure_trips: departure_trips,
+      closest_departure_trip: closest_departure_trip
     }
   end
-  defp populate_trip_options(origin, destination, relevant_days, "round_trip") do
+  defp populate_trip_options(%{"trip_type" => "round_trip"} = subscription_params) do
+    %{"origin" => origin, "destination" => destination, "relevant_days" => relevant_days, "departure_start" => ds, "return_start" => rs} = subscription_params
+    {departure_trips, closest_departure_trip} = get_trip_info(origin, destination, ds, relevant_days)
+    {return_trips, closest_return_trip} = get_trip_info(destination, origin, rs, relevant_days)
+
     %{
-      departure_trips: CommuterRailMapper.map_trip_options(origin, destination, String.to_existing_atom(relevant_days)),
-      return_trips: CommuterRailMapper.map_trip_options(destination, origin, String.to_existing_atom(relevant_days))
+      departure_trips: departure_trips,
+      closest_departure_trip: closest_departure_trip,
+      return_trips: return_trips,
+      closest_return_trip: closest_return_trip
     }
+  end
+
+  defp get_trip_info(origin, destination, timestamp, relevant_days) do
+    departure_start = timestamp |> Time.from_iso8601!() |> DateTimeHelper.seconds_of_day()
+    trips = CommuterRailMapper.map_trip_options(origin, destination, String.to_existing_atom(relevant_days))
+    {_, _, closest_trip} = Enum.reduce(trips, {departure_start, nil, nil}, &calculate_difference/2)
+    {trips, closest_trip}
+  end
+
+  defp calculate_difference(trip, {start_time, _, nil}) do
+    departure_time = DateTimeHelper.seconds_of_day(trip.departure_time)
+    {start_time, abs(start_time - departure_time), trip}
+  end
+  defp calculate_difference(trip, {start_time, previous_difference, current_closest_trip}) do
+    departure_time = DateTimeHelper.seconds_of_day(trip.departure_time)
+    new_difference = abs(departure_time - start_time)
+    if new_difference < previous_difference do
+      {start_time, new_difference, trip}
+    else
+      {start_time, previous_difference, current_closest_trip}
+    end
   end
 end

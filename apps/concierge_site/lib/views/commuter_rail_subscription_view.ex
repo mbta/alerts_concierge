@@ -60,7 +60,7 @@ defmodule ConciergeSite.CommuterRailSubscriptionView do
     0
     |> Stream.iterate(&(&1 + 900))
     |> Stream.map(&Calendar.Time.from_second_in_day/1)
-    |> Stream.map(&Calendar.Strftime.strftime!(&1, "%I:%M %p"))
+    |> Stream.map(& {Calendar.Strftime.strftime!(&1, "%I:%M %p"), Calendar.Strftime.strftime!(&1, "%H:%M:%S")})
     |> Enum.take(96)
   end
 

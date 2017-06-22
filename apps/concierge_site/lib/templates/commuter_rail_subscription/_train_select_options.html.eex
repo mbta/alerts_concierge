@@ -1,7 +1,7 @@
 <div class="form-group">
   <div class="form-label">Depart</div>
   <%= Enum.map(@trips.departure_trips, fn(trip) -> %>
-    <%= render "_train_option.html", f: @f, trip: trip %>
+    <%= render "_train_option.html", f: @f, trip: trip, closest_trip: @trips.closest_departure_trip %>
   <% end) %>
 </div>
 
@@ -9,7 +9,7 @@
   <div class="form-group">
     <div class="form-label">Return</div>
     <%= Enum.map(@trips.return_trips, fn(trip) -> %>
-      <%= render "_train_option.html", f: @f, trip: trip %>
+      <%= render "_train_option.html", f: @f, trip: trip, closest_trip: @trips.closest_return_trip %>
     <% end) %>
   </div>
 <%= end %>
