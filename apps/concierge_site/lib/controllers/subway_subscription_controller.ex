@@ -3,6 +3,7 @@ defmodule ConciergeSite.SubwaySubscriptionController do
   use Guardian.Phoenix.Controller
   alias ConciergeSite.Subscriptions.TemporaryState
   alias ConciergeSite.Subscriptions.Lines
+  alias ConciergeSite.Subscriptions.SubwayParams
   alias AlertProcessor.ServiceInfoCache
 
   def new(conn, _params, _user, _claims) do
@@ -35,8 +36,34 @@ defmodule ConciergeSite.SubwaySubscriptionController do
     )
     token = TemporaryState.encode(subscription_params)
 
-    render conn, "preferences.html",
-      token: token,
-      subscription_params: subscription_params
+    case SubwayParams.validate_info_params(subscription_params) do
+      :ok ->
+        render conn, "preferences.html",
+          token: token,
+          subscription_params: subscription_params
+      {:error, message} ->
+        handle_invalid_info_submission(conn, subscription_params, token, message)
+    end
+  end
+
+  defp handle_invalid_info_submission(conn, subscription_params, token, error_message) do
+    case ServiceInfoCache.get_subway_full_routes do
+      {:ok, stations} ->
+        station_list_select_options =
+          Lines.station_list_select_options(stations)
+
+        conn
+        |> put_flash(:error, error_message)
+        |> render(
+          "info.html",
+          token: token,
+          subscription_params: subscription_params,
+          station_list_select_options: station_list_select_options
+        )
+      _error ->
+        conn
+        |> put_flash(:error, "There was an error fetching station data. Please try again.")
+        |> render("new.html", token: token, subscription_params: subscription_params)
+    end
   end
 end

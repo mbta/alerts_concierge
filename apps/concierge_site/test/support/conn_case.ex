@@ -24,6 +24,9 @@ defmodule ConciergeSite.ConnCase do
       # The default endpoint for testing
       @endpoint ConciergeSite.Endpoint
 
+      # Import ExMachina Factories
+      import AlertProcessor.Factory
+
       def guardian_login(user, conn, token \\ :token, opts \\ []) do
         conn
           |> bypass_through(ConciergeSite.Router, [:browser])

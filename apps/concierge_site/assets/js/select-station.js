@@ -175,7 +175,7 @@ export default function($) {
   function attachSuggestionInputs() {
     $("label[for='origin']").after(renderStationInput("origin"));
     $("label[for='destination']").after(renderStationInput("destination"));
-    $(".trip-info-form").append(renderHiddenStationInputs());
+    $(".trip-info-footer").before(renderHiddenStationInputs());
   }
 
   function renderStationInput(originDestination) {
