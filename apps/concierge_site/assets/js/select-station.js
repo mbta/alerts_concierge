@@ -136,7 +136,7 @@ export default function($) {
 
       $options.each(function(_i, option) {
         const alreadyAddedStation = stations.find(function(station) {
-          return station.name === option.innerText;
+          return station.name === option.text;
         });
 
         if (alreadyAddedStation) {
