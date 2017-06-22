@@ -1,6 +1,7 @@
 .select-service,
 .select-trip-type,
-.enter-trip-info {
+.enter-trip-info,
+.select-trip-number {
   @include media-breakpoint-up(sm) {
     @include make-col(8);
     @include make-col-offset(2);
