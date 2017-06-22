@@ -56,7 +56,7 @@ defmodule AlertProcessor.Subscription.CommuterRailMapper do
         case ApiClient.schedules(origin, destination, direction_id, route_ids, relevant_date) do
           {:ok, schedules, trips} ->
             trip_name_map = map_trip_names(trips)
-            trip = %Trip{origin: origin, destination: destination, direction_id: direction_id, route: route}
+            trip = %Trip{origin: origin, destination: destination, direction_id: direction_id}
             map_common_trips(schedules, trip_name_map, trip)
           _ -> :error
         end
@@ -109,13 +109,19 @@ defmodule AlertProcessor.Subscription.CommuterRailMapper do
               "data" => %{
                "id" => trip_id
               }
+            },
+            "route" => %{
+              "data" => %{
+                "id" => route_id
+              }
             }
           }
         } = departure_schedule
 
         %{"attributes" => %{"arrival_time" => arrival_timestamp}} = arrival_schedule
+        {:ok, route} = ServiceInfoCache.get_route(route_id)
 
-        %{trip | arrival_time: map_schedule_time(arrival_timestamp), departure_time: map_schedule_time(departure_timestamp), trip_number: Map.get(trip_names_map, trip_id)}
+        %{trip | arrival_time: map_schedule_time(arrival_timestamp), departure_time: map_schedule_time(departure_timestamp), trip_number: Map.get(trip_names_map, trip_id), route: route}
       end)
     |> Enum.sort_by(fn(%Trip{departure_time: departure_time}) -> {~T[05:00:00] > departure_time, departure_time} end)
   end

@@ -1,0 +1,26 @@
+<h1>Create New Subscription</h1>
+
+<%= render "_progress_bar.html", current_page: :train, conn: @conn %>
+
+<div class="select-trip-number">
+  <h2>Choose your trains</h2>
+
+  <p>Based on your departure time, we think you might be interested in the following train schedules. Select which trains you’d like to recieve notifications about.</p>
+
+  <%= form_for @conn, commuter_rail_subscription_path(@conn, :preferences), [class: "trip-info-form commuter-rail", as: :subscription], fn f -> %>
+
+  <%= render "_train_select_options.html", f: f, trips: @trips %>
+
+  <%= text_input f,
+                   :trip_type,
+                   value: @subscription_params["trip_type"],
+                   hidden: true %>
+
+  <div class="trip-info-footer">
+    <%= link to: commuter_rail_subscription_path(@conn, :new), class: "subscription-info-back-link" do %>
+      <i class="fa fa-arrow-left" aria-hidden="true"></i> Go Back
+    <% end %>
+    <%= submit "Next", class: "btn btn-primary btn-subscription-next" %>
+  </div>
+  <% end %>
+</div>

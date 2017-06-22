@@ -1,6 +1,8 @@
 defmodule ConciergeSite.CommuterRailSubscriptionView do
   use ConciergeSite.Web, :view
 
+  alias AlertProcessor.{Model.Trip, ServiceInfoCache}
+
   @type trip_type :: :one_way | :round_trip
 
   @disabled_progress_bar_links %{trip_info: [:trip_info, :train, :preferences],
@@ -60,5 +62,30 @@ defmodule ConciergeSite.CommuterRailSubscriptionView do
     |> Stream.map(&Calendar.Time.from_second_in_day/1)
     |> Stream.map(&Calendar.Strftime.strftime!(&1, "%I:%M %p"))
     |> Enum.take(96)
+  end
+
+  @spec trip_option_description(Trip.t) :: iodata
+  def trip_option_description(trip) do
+    {:ok, {origin_name, _}} = ServiceInfoCache.get_stop(trip.origin)
+    {:ok, {destination_name, _}} = ServiceInfoCache.get_stop(trip.destination)
+
+    [
+      trip.route.long_name,
+      " ",
+      trip.trip_number,
+      " | Departs ",
+      origin_name,
+      " at ",
+      format_schedule_time(trip.departure_time),
+      ", arrives at ",
+      destination_name,
+      " at ",
+      format_schedule_time(trip.arrival_time)
+    ]
+  end
+
+  defp format_schedule_time(time) do
+    {:ok, time_string} = Calendar.Strftime.strftime(time, "%l:%M%P")
+    time_string
   end
 end

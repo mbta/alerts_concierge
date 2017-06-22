@@ -11,7 +11,7 @@
         |> trip_info_description %>
   </p>
 
-  <%= form_for @conn, commuter_rail_subscription_path(@conn, :preferences), [class: "trip-info-form commuter-rail", as: :subscription], fn f -> %>
+  <%= form_for @conn, commuter_rail_subscription_path(@conn, :train), [class: "trip-info-form commuter-rail", as: :subscription], fn f -> %>
     <div class="form-group select-station">
       <label for="origin" class="station-input-label form-label">Origin</label>
       <%= select f,
@@ -30,7 +30,7 @@
     </div>
     <div class="form-group select-days">
       <div class="form-label">Travel Days</div>
-      <%= select f, :relevant_days, [{"Weekdays", "weekdays"}, {"Saturday", "saturday"}, {"Sunday", "sunday"}], required: true, class: "relevant-days-select" %>
+      <%= select f, :relevant_days, [{"Weekdays", "weekday"}, {"Saturday", "saturday"}, {"Sunday", "sunday"}], required: true, class: "relevant-days-select" %>
     </div>
 
     <div class="form-group travel-times">
@@ -53,5 +53,5 @@
     <% end %>
     <%= submit "Next", class: "btn btn-primary btn-subscription-next" %>
   </div>
-  <%= end %>
+  <% end %>
 </div>
