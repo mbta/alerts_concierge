@@ -95,6 +95,23 @@ defmodule AlertProcessor.ApiClient do
     |> parse_response()
   end
 
+  @doc """
+  endpoint to fetch schedules for two subway stops to be able to determine if stops have trips in common
+  """
+  @spec subway_schedules_union(String.t, String.t) :: {:ok, map, map} | {:error, String.t}
+  def subway_schedules_union(origin, destination) do
+    routes = "Red,Blue,Orange,Green-B,Green-C,Green-D,Green-E"
+    response = get(
+      "/schedules/?filter[route]=#{routes}&filter[stop]=#{origin},#{destination}&fields[stop]=parent_station&fields[schedule]=relationships&include=stop"
+    )
+    case response do
+      {:ok, %{body: %{"data" => schedules, "included" => included}}} ->
+        {:ok, schedules, included}
+      {:error, message} ->
+        {:error, message}
+    end
+  end
+
   defp parse_response(response) do
     case response do
       {:ok, %{body: %{"errors" => errors}}} ->
