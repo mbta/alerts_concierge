@@ -1,7 +1,7 @@
 defmodule ConciergeSite.CommuterRailSubscriptionView do
   use ConciergeSite.Web, :view
 
-  alias AlertProcessor.{Model.Trip, ServiceInfoCache}
+  alias AlertProcessor.Model.Trip
 
   @type trip_type :: :one_way | :round_trip
 
@@ -66,8 +66,8 @@ defmodule ConciergeSite.CommuterRailSubscriptionView do
 
   @spec trip_option_description(Trip.t) :: iodata
   def trip_option_description(trip) do
-    {:ok, {origin_name, _}} = ServiceInfoCache.get_stop(trip.origin)
-    {:ok, {destination_name, _}} = ServiceInfoCache.get_stop(trip.destination)
+    {origin_name, _} = trip.origin
+    {destination_name, _} = trip.destination
 
     [
       trip.route.long_name,

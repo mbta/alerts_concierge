@@ -7,10 +7,10 @@ defmodule AlertProcessor.Model.Trip do
   @type t :: %__MODULE__{
     arrival_time: Time.t,
     departure_time: Time.t,
-    destination: Route.stop_id,
+    destination: Route.stop,
     direction_id: Route.direction_id,
     route: Route.t,
-    origin: Route.stop_id,
+    origin: Route.stop,
     trip_number: id
   }
 end

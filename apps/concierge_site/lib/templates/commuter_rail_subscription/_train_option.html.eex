@@ -1,0 +1,6 @@
+<div class="trip-option form-group">
+  <input type="checkbox" name="subscription[trips][]" id="subscription_trip_<%= @trip.trip_number %>" value="<%= @trip.trip_number %>"/>
+  <%= label(@f, "trip_#{@trip.trip_number}") do %>
+    <%= trip_option_description(@trip) %>
+  <% end %>
+</div>

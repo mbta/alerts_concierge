@@ -1,12 +1,7 @@
 <div class="form-group">
   <div class="form-label">Depart</div>
   <%= Enum.map(@trips.departure_trips, fn(trip) -> %>
-    <div class="trip-option form-group">
-      <input type="checkbox" name="departure_trips[]" id="trip_<%= trip.trip_number %>" value="<%= trip.trip_number %>"/>
-      <label for="trip_<%= trip.trip_number %>">
-        <%= trip_option_description(trip) %>
-      </label>
-    </div>
+    <%= render "_train_option.html", f: @f, trip: trip %>
   <% end) %>
 </div>
 
@@ -14,12 +9,7 @@
   <div class="form-group">
     <div class="form-label">Return</div>
     <%= Enum.map(@trips.return_trips, fn(trip) -> %>
-      <div class="trip-option form-group">
-        <input type="checkbox" name="return_trips[]" id="trip_<%= trip.trip_number %>" value="<%= trip.trip_number %>"/>
-        <label for="trip_<%= trip.trip_number %>">
-          <%= trip_option_description(trip) %>
-        </label>
-      </div>
+      <%= render "_train_option.html", f: @f, trip: trip %>
     <% end) %>
   </div>
 <%= end %>

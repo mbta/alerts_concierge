@@ -53,10 +53,13 @@ defmodule AlertProcessor.Subscription.CommuterRailMapper do
         direction_id = determine_direction_id(route, origin, destination)
         relevant_date = determine_date(relevant_days, today_date)
 
+
         case ApiClient.schedules(origin, destination, direction_id, route_ids, relevant_date) do
           {:ok, schedules, trips} ->
             trip_name_map = map_trip_names(trips)
-            trip = %Trip{origin: origin, destination: destination, direction_id: direction_id}
+            {:ok, origin_stop} = ServiceInfoCache.get_stop(origin)
+            {:ok, destination_stop} = ServiceInfoCache.get_stop(destination)
+            trip = %Trip{origin: origin_stop, destination: destination_stop, direction_id: direction_id}
             map_common_trips(schedules, trip_name_map, trip)
           _ -> :error
         end

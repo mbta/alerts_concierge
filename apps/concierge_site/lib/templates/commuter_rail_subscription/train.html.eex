@@ -12,9 +12,9 @@
   <%= render "_train_select_options.html", f: f, trips: @trips %>
 
   <%= text_input f,
-                   :trip_type,
-                   value: @subscription_params["trip_type"],
-                   hidden: true %>
+                 :trip_type,
+                 value: @subscription_params["trip_type"],
+                 hidden: true %>
 
   <div class="trip-info-footer">
     <%= link to: commuter_rail_subscription_path(@conn, :new), class: "subscription-info-back-link" do %>
