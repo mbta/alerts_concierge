@@ -2,16 +2,10 @@ defmodule ConciergeSite.SubwaySubscriptionControllerTest do
   use ConciergeSite.ConnCase
   use ExVCR.Mock, adapter: ExVCR.Adapter.Hackney
 
-  @password "password1"
-  @encrypted_password Comeonin.Bcrypt.hashpwsalt(@password)
-
-  alias AlertProcessor.{Model.User, Repo}
-
   describe "authorized" do
-    test "GET /subscriptions/subway/new", %{conn: conn}  do
-      user = Repo.insert!(%User{email: "test@email.com",
-                                role: "user",
-                                encrypted_password: @encrypted_password})
+    setup :insert_user
+
+    test "GET /subscriptions/subway/new", %{conn: conn, user: user} do
       conn = user
       |> guardian_login(conn)
       |> get("/subscriptions/subway/new")
@@ -19,10 +13,7 @@ defmodule ConciergeSite.SubwaySubscriptionControllerTest do
       assert html_response(conn, 200) =~ "What type of trip do you take?"
     end
 
-    test "GET /subscriptions/subway/new/info", %{conn: conn}  do
-      user = Repo.insert!(%User{email: "test@email.com",
-                                role: "user",
-                                encrypted_password: @encrypted_password})
+    test "GET /subscriptions/subway/new/info", %{conn: conn, user: user} do
       conn = user
       |> guardian_login(conn)
       |> get("/subscriptions/subway/new/info")
@@ -30,11 +21,7 @@ defmodule ConciergeSite.SubwaySubscriptionControllerTest do
       assert html_response(conn, 200) =~ "Enter your trip info"
     end
 
-    test "POST /subscriptions/subway/new/preferences with a valid submission", %{conn: conn}  do
-      user = Repo.insert!(%User{email: "test@email.com",
-                                role: "user",
-                                encrypted_password: @encrypted_password})
-
+    test "POST /subscriptions/subway/new/preferences with a valid submission", %{conn: conn, user: user} do
       params = %{"subscription" => %{
         "departure_start" => "08:45 AM",
         "departure_end" => "09:15 AM",
@@ -53,11 +40,7 @@ defmodule ConciergeSite.SubwaySubscriptionControllerTest do
       assert html_response(conn, 200) =~ "Set your preferences for your trip:"
     end
 
-    test "POST /subscriptions/subway/new/preferences with an invalid submission", %{conn: conn}  do
-      user = Repo.insert!(%User{email: "test@email.com",
-                                role: "user",
-                                encrypted_password: @encrypted_password})
-
+    test "POST /subscriptions/subway/new/preferences with an invalid submission", %{conn: conn, user: user} do
       params = %{"subscription" => %{
         "departure_start" => "08:45 AM",
         "departure_end" => "09:15 AM",
@@ -89,5 +72,9 @@ defmodule ConciergeSite.SubwaySubscriptionControllerTest do
         assert html_response(conn, 302) =~ "/login"
       end
     end
+  end
+
+  defp insert_user(_context) do
+    {:ok, [user: insert(:user)]}
   end
 end
