@@ -3,45 +3,43 @@ defmodule ConciergeSite.Subscriptions.SubwayParams do
   Functions for processing user input during the create subway subscription flow
   """
 
-  @spec validate_info_params(map) :: {:ok} | {:error, String.t}
+  @spec validate_info_params(map) :: :ok | {:error, String.t}
   def validate_info_params(params) do
     {_, errors} =
-    validate_presence_of_origin({params, []})
-    |> validate_presence_of_destination()
-    |> validate_at_least_one_travel_day()
+      {params, []}
+      |> validate_presence_of_origin()
+      |> validate_presence_of_destination()
+      |> validate_at_least_one_travel_day()
 
     case errors do
       [] ->
-        {:ok}
+        :ok
       errors ->
         {:error, full_error_message(errors)}
     end
   end
 
   defp validate_presence_of_origin({params, errors}) do
-    case String.length(params["origin"]) do
-      0 ->
-        {params, ["Origin is invalid" | errors]}
-      _ ->
-        {params, errors}
+    if params["origin"] == "" do
+      {params, ["origin is invalid" | errors]}
+    else
+      {params, errors}
     end
   end
 
   defp validate_presence_of_destination({params, errors}) do
-    case String.length(params["destination"]) do
-      0 ->
-        {params, ["Destination is invalid" | errors]}
-      _ ->
-        {params, errors}
+    if params["destination"] == "" do
+      {params, ["destination is invalid" | errors]}
+    else
+      {params, errors}
     end
   end
 
   defp validate_at_least_one_travel_day({params, errors}) do
-    case {params["weekdays"], params["saturday"], params["sunday"]} do
-      {"false", "false", "false"} ->
-        {params, ["At least one travel day option must be selected" | errors]}
-      _ ->
-        {params, errors}
+    if {params["weekdays"], params["saturday"], params["sunday"]} == {"false", "false", "false"} do
+      {params, ["At least one travel day option must be selected" | errors]}
+    else
+      {params, errors}
     end
   end
 

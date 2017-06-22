@@ -37,7 +37,7 @@ defmodule ConciergeSite.SubwaySubscriptionController do
     token = TemporaryState.encode(subscription_params)
 
     case SubwayParams.validate_info_params(subscription_params) do
-      {:ok} ->
+      :ok ->
         render conn, "preferences.html",
           token: token,
           subscription_params: subscription_params
