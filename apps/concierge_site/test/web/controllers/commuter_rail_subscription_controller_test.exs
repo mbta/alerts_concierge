@@ -16,7 +16,7 @@ defmodule ConciergeSite.CommuterRailSubscriptionControllerTest do
       assert html_response(conn, 200) =~ "Info"
     end
 
-    test "POST /subscriptions/commuter_rail/new/train", %{conn: conn}  do
+    test "POST /subscriptions/commuter_rail/new/train one_way", %{conn: conn}  do
       params = %{"subscription" => %{
         "departure_start" => "08:45 AM",
         "origin" => "place-north",
@@ -28,6 +28,24 @@ defmodule ConciergeSite.CommuterRailSubscriptionControllerTest do
       conn = post(conn, "/subscriptions/commuter_rail/new/train", params)
 
       assert html_response(conn, 200) =~ "Choose your trains"
+      assert html_response(conn, 200) =~ "Departs North Station"
+      refute html_response(conn, 200) =~ "Departs Newburyport"
+    end
+
+    test "POST /subscriptions/commuter_rail/new/train round_trip", %{conn: conn}  do
+      params = %{"subscription" => %{
+        "departure_start" => "08:45 AM",
+        "origin" => "place-north",
+        "destination" => "Newburyport",
+        "relevant_days" => "weekday",
+        "trip_type" => "round_trip",
+      }}
+
+      conn = post(conn, "/subscriptions/commuter_rail/new/train", params)
+
+      assert html_response(conn, 200) =~ "Choose your trains"
+      assert html_response(conn, 200) =~ "Departs North Station"
+      assert html_response(conn, 200) =~ "Departs Newburyport"
     end
 
     test "POST /subscriptions/commuter_rail/new/preferences", %{conn: conn}  do
