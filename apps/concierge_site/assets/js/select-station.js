@@ -136,7 +136,7 @@ export default function($) {
 
       $options.each(function(_i, option) {
         const alreadyAddedStation = stations.find(function(station) {
-          return station.name === option.innerText;
+          return station.name === option.text;
         });
 
         if (alreadyAddedStation) {
@@ -201,7 +201,7 @@ export default function($) {
       const lineNames = compactLineNames(station.allLineNames);
       svg = lineNames.map(renderSubwayIcon).join("");
     } else if (form.hasClass("commuter-rail")) {
-      svg = renderCommuterRailIcon();
+      svg = renderCommuterRailIcon(station.allLineNames);
     }
 
     return renderSuggestionIcons(svg, originDestination, station)
@@ -230,7 +230,13 @@ export default function($) {
     `
   }
 
-  function renderCommuterRailIcon() {
+  function renderCommuterRailIcon(lineNames) {
+    let lineHelperText = ""
+    if (lineNames.length > 1) {
+      lineHelperText = "Multiple Lines";
+    } else {
+      lineHelperText = lineNames[0];
+    }
     return `
       <div class="commuter-rail-icon circle-icon">
         <svg width="24" height="24" viewBox="-2 -2 26 26" xmlns="http://www.w3.org/2000/svg">
@@ -240,7 +246,7 @@ export default function($) {
           </g>
         </svg>
       </div>
-      <div class="line-name">Commuter Rail</div>
+      <div class="line-name">${lineHelperText}</div>
     `
   }
 
