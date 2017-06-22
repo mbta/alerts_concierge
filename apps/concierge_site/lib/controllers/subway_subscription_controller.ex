@@ -50,7 +50,7 @@ defmodule ConciergeSite.SubwaySubscriptionController do
     case ServiceInfoCache.get_subway_full_routes do
       {:ok, stations} ->
         station_list_select_options =
-            SubwayLines.station_list_select_options(stations)
+          Lines.station_list_select_options(stations)
 
         conn
         |> put_flash(:error, error_message)
