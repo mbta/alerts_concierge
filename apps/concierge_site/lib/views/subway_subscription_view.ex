@@ -1,6 +1,8 @@
 defmodule ConciergeSite.SubwaySubscriptionView do
   use ConciergeSite.Web, :view
   import ConciergeSite.SubscriptionViewHelper, only: [travel_time_options: 0]
+  alias AlertProcessor.Helpers.StringHelper
+  alias ConciergeSite.Subscriptions.Lines
 
   @typedoc """
   Possible values for trip types in Create Subscription flow
@@ -55,5 +57,68 @@ defmodule ConciergeSite.SubwaySubscriptionView do
 
   def trip_info_description(_trip_type) do
     ""
+  end
+
+  @doc """
+  Returns a summary of a subscription's associated trip days, times, and stops
+  """
+  @spec trip_summary_title(map) :: String.t
+  def trip_summary_title(params = %{"trip_type" => "one_way"}) do
+    # stations need to be translated
+    "One way #{joined_day_list(params)} travel between #{Lines.subway_station_name_from_id(params["origin"])} and #{Lines.subway_station_name_from_id(params["destination"])}"
+  end
+
+  def trip_summary_title(params = %{"trip_type" => "round_trip"}) do
+    "Round trip #{joined_day_list(params)} travel between #{Lines.subway_station_name_from_id(params["origin"])} and #{Lines.subway_station_name_from_id(params["destination"])}"
+  end
+
+  def trip_summary_title(params = %{"trip_type" => "roaming"}) do
+    String.capitalize(
+      "#{joined_day_list(params)} roaming travel between #{Lines.subway_station_name_from_id(params["origin"])} and #{Lines.subway_station_name_from_id(params["destination"])}"
+    )
+  end
+
+  @doc """
+  Returns a list of a subscription's associated times and stops
+  """
+  @spec trip_summary_logistics(map) :: list
+  def trip_summary_logistics(params = %{"trip_type" => "one_way"}) do
+    ["#{params["departure_start"]} - #{params["departure_end"]} from #{Lines.subway_station_name_from_id(params["origin"])} to #{Lines.subway_station_name_from_id(params["destination"])}"]
+  end
+
+  def trip_summary_logistics(params = %{"trip_type" => "round_trip"}) do
+    ["#{params["departure_start"]} - #{params["departure_end"]} from #{Lines.subway_station_name_from_id(params["origin"])} to #{Lines.subway_station_name_from_id(params["destination"])}",
+    "#{params["return_start"]} - #{params["return_end"]} from #{Lines.subway_station_name_from_id(params["destination"])} to #{Lines.subway_station_name_from_id(params["origin"])}"]
+  end
+
+  def trip_summary_logistics(params = %{"trip_type" => "roaming"}) do
+    ["#{params["roaming_start"]} - #{params["roaming_end"]}"]
+  end
+
+  defp joined_day_list(params) do
+    params
+    |> Map.take(~w(saturday sunday weekdays))
+    |> Enum.filter_map(
+      fn {_day, value} -> value == "true" end,
+      fn {day, _value} ->
+        if day == "weekdays" do
+          String.trim_trailing(day, "s")
+        else
+          String.capitalize(day)
+        end
+      end)
+    |> StringHelper.or_join()
+  end
+
+  @doc """
+  Returns stringified times to populate a dropdown list of a full day of times at
+  fifteen-minute intervals
+  """
+  def travel_time_options() do
+    0
+    |> Stream.iterate(&(&1 + 900))
+    |> Stream.map(&Calendar.Time.from_second_in_day/1)
+    |> Stream.map(&Calendar.Strftime.strftime!(&1, "%I:%M %p"))
+    |> Enum.take(96)
   end
 end

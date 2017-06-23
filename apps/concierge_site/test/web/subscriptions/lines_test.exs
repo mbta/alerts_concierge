@@ -1,5 +1,6 @@
 defmodule ConciergeSite.Subscriptions.LinesTest do
   use ExUnit.Case
+  use ExVCR.Mock, adapter: ExVCR.Adapter.Hackney
   alias ConciergeSite.Subscriptions.Lines
 
   describe "station_select_list_options" do
@@ -39,6 +40,14 @@ defmodule ConciergeSite.Subscriptions.LinesTest do
         {"Orange Line", [{"Forest Hills", "place-forhl"}]},
         {"Blue Line", [{"Bowdoin", "place-bomnl"}]}
       ]
+    end
+  end
+
+  describe "subway_station_name_from_id" do
+    test "it returns the station name associated with a given id" do
+      use_cassette "service_info", custom: true, clear_mock: true, match_requests_on: [:query] do
+        assert "Airport" = Lines.subway_station_name_from_id("place-aport")
+      end
     end
   end
 end
