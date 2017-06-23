@@ -134,6 +134,18 @@ describe("selectBusRoute", function() {
     });
   });
 
+  describe("logo", () => {
+    it("renders the bus logo", () => {
+      const $routeInput = $(".subscription-select-route")
+      $routeInput.val("57");
+
+      simulateKeyUp($routeInput[0])
+      const logo = $('.bus-route').first().children()[1].innerHTML
+
+      assert.include(logo, 'icon-bus')
+    });
+  });
+
   const tripInfoPageHtml = `
     <div class="enter-trip-info">
       <form>
