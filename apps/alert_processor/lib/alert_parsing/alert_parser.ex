@@ -3,6 +3,7 @@ defmodule AlertProcessor.AlertParser do
   Module used to parse alerts from api and transform into Alert structs and pass along
   relevant information to subscription filter engine.
   """
+  require Logger
   alias AlertProcessor.{AlertCache, AlertsClient, ApiClient, Helpers.StringHelper, HoldingQueue, Parser, ServiceInfoCache, SubscriptionFilterEngine}
   alias AlertProcessor.Model.{Alert, InformedEntity, Notification}
 
@@ -48,7 +49,7 @@ defmodule AlertProcessor.AlertParser do
     "id" => alert_id,
     "informed_entity" => informed_entities,
     "service_effect_text" => service_effect_text_translations,
-    "severity_name" => severity,
+    "severity" => severity,
     "short_description_text" => header_text_translations
   } = alert_data, facilities_map) do
     %Alert{
@@ -64,7 +65,8 @@ defmodule AlertProcessor.AlertParser do
     }
   end
 
-  defp parse_alert(_, _) do
+  defp parse_alert(alert, _) do
+    Logger.warn("Failed to parse alert: #{Poison.encode!(alert)}")
     nil
   end
 
@@ -147,14 +149,10 @@ defmodule AlertProcessor.AlertParser do
     end
   end
 
-  defp parse_severity(severity) do
-    severity |> String.upcase() |> do_severity()
-  end
-
-  defp do_severity("SEVERE"), do: :severe
-  defp do_severity("MODERATE"), do: :moderate
-  defp do_severity("MINOR"), do: :minor
-  defp do_severity(_), do: :minor
+  defp parse_severity(7), do: :severe
+  defp parse_severity(5), do: :moderate
+  defp parse_severity(3), do: :minor
+  defp parse_severity(_), do: :minor
 
   defp parse_translation(translations) do
     case Enum.find(translations, &(&1["translation"]["language"] == "en")) do
