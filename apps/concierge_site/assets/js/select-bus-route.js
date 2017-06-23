@@ -1,3 +1,5 @@
+import filterSuggestions from './filter-suggestions';
+
 export default function($) {
   $ = $ || window.jQuery;
 
@@ -17,7 +19,7 @@ export default function($) {
 
   function renderRouteInput() {
     return `
-      <input type="text" name="route" placeholder="Enter your bus number" class="subscription-select-route station-input" data-valid="false" autocomplete="off"/>
+      <input type="text" name="route" placeholder="Enter your bus number" class="subscription-select subscription-select-route station-input" data-valid="false" autocomplete="off"/>
       <div class="suggestion-container"></div>
       <i class="fa fa-check-circle valid-checkmark-icon"></i>
     `
@@ -44,9 +46,8 @@ export default function($) {
 
   function typeahead(event) {
     const query = event.target.value;
-
     if (query.length > 0) {
-      const matchingRoutes = filterSuggestions(query);
+      const matchingRoutes = filterSuggestions(query, props.allRoutes);
       const suggestionElements = matchingRoutes.map(function(route) {
         return renderRouteSuggestion(route);
       });
@@ -62,23 +63,9 @@ export default function($) {
     $(`.bus-route`).remove();
   }
 
-  function filterSuggestions(query) {
-    const queryRegExp = new RegExp(query, "i");
-
-    let matchingRoutes = props.allRoutes.filter(function(route) {
-      return route.match(queryRegExp);
-    });
-
-    return matchingRoutes;
-  }
-
   function validateRouteInput(routeName) {
     const $routeInput = $('.subscription-select-route');
-    if (props.allRoutes.includes(routeName)) {
-      $routeInput.attr("data-valid", true);
-    } else {
-      $routeInput.attr("data-valid", false);
-    }
+    $routeInput.attr("data-valid", props.allRoutes.includes(routeName));
   }
 
   function pickFirstSuggestion(event) {
@@ -90,6 +77,7 @@ export default function($) {
       $routeInput.val(routeName);
       validateRouteInput(routeName)
     }
+
     unmountRouteSuggestions();
   }
 

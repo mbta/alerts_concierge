@@ -1,3 +1,5 @@
+import filterSuggestions from './filter-suggestions';
+
 export default function($) {
   $ = $ || window.jQuery;
 
@@ -19,7 +21,7 @@ export default function($) {
     const originDestination = event.data.originDestination;
 
     if (query.length > 0) {
-      const matchingStations = filterSuggestions(originDestination, query);
+      const matchingStations = filter(originDestination, query, props.allStations, state);
       const suggestionElements = matchingStations.map(function(station) {
         return renderStationSuggestion(originDestination, station);
       });
@@ -77,12 +79,8 @@ export default function($) {
     unmountStationSuggestions(originDestination);
   }
 
-  function filterSuggestions(originDestination, query) {
-    const queryRegExp = new RegExp(query, "i");
-
-    let matchingStations = props.allStations.filter(function(station) {
-      return station.name.match(queryRegExp);
-    });
+  function filter(originDestination, query) {
+    let matchingStations = filterSuggestions(query, props.allStations, 'name');
 
     if (otherStationHasValidSelection(originDestination)) {
       const otherStation = oppositeStation(originDestination);
@@ -180,7 +178,7 @@ export default function($) {
 
   function renderStationInput(originDestination) {
     return `
-      <input type="text" name="${originDestination}" placeholder="Enter a station" class="${stationInputClass(originDestination)}"/>
+      <input type="text" name="${originDestination}" placeholder="Enter a station" class="subscription-select ${stationInputClass(originDestination)}"/>
       <div class="suggestion-container"></div>
       <i class="fa fa-check-circle valid-checkmark-icon"></i>
     `

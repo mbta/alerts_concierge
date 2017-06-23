@@ -122,9 +122,7 @@
   position: relative;
 }
 
-.subscription-select-route,
-.subscription-select-origin,
-.subscription-select-destination {
+.subscription-select {
   width: 100%;
 }
 
@@ -186,9 +184,7 @@
   margin: 0 1rem 0 .25rem;
 }
 
-.subscription-select-route.no-js,
-.subscription-select-origin.no-js,
-.subscription-select-destination.no-js {
+.subscription-select.no-js {
   background-color: $white;
   font-family: $font-family-base;
   height: 3rem;

@@ -7,6 +7,8 @@ defmodule ConciergeSite.BusSubscriptionControllerTest do
   alias AlertProcessor.{Model.User, Repo}
 
   describe "authorized" do
+    setup :insert_user
+
     test "GET /subscriptions/bus/new", %{conn: conn}  do
       user = Repo.insert!(%User{email: "test@email.com",
                                 role: "user",
@@ -28,6 +30,24 @@ defmodule ConciergeSite.BusSubscriptionControllerTest do
 
       assert html_response(conn, 200) =~ "Info"
     end
+
+    test "POST /subscriptions/bus/new/preferences with a valid submission", %{conn: conn, user: user} do
+      params = %{"subscription" => %{
+        "departure_start" => "08:45 AM",
+        "departure_end" => "09:15 AM",
+        "route" => "Silver Line SL1 - Inbound",
+        "saturday" => "true",
+        "sunday" => "false",
+        "weekdays" => "false",
+        "trip_type" => "one_way",
+      }}
+
+      conn = user
+      |> guardian_login(conn)
+      |> post("/subscriptions/bus/new/preferences", params)
+
+      assert html_response(conn, 200) =~ "Trip Preferences"
+    end
   end
 
   describe "unauthorized" do
@@ -40,5 +60,9 @@ defmodule ConciergeSite.BusSubscriptionControllerTest do
       conn = get(conn, "/subscriptions/bus/new/info")
       assert html_response(conn, 302) =~ "/login"
     end
+  end
+
+  defp insert_user(_context) do
+    {:ok, [user: insert(:user)]}
   end
 end

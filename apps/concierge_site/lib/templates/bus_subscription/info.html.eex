@@ -12,7 +12,7 @@
     <%= select f,
                :route,
                @route_list_select_options,
-               class: "subscription-select-route no-js",
+               class: "subscription-select subscription-select-route no-js",
                prompt: "Enter your bus number" %>
     </div>
 
