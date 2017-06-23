@@ -1,7 +1,8 @@
 .select-service,
 .select-trip-type,
 .enter-trip-info,
-.select-trip-number {
+.select-trip-number,
+.trip-preferences {
   @include media-breakpoint-up(sm) {
     @include make-col(8);
     @include make-col-offset(2);
@@ -264,4 +265,15 @@
   left: 0;
   position: absolute;
   top: 2.5rem;
+}
+
+.preferences-subtitle {
+  margin-bottom: 2rem;
+}
+
+.trip-summary {
+  border-bottom: 1px solid $pale-grey;
+  border-top: 1px solid $pale-grey;
+  padding: 2rem 0;
+  text-align: center;
 }

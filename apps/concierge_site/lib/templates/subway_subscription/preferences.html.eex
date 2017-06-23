@@ -1,5 +1,14 @@
 <h1>Create New Subscription</h1>
 
+<%= render "_progress_bar.html", current_page: :preferences, conn: @conn %>
+
 <div class="trip-preferences">
-  <h2>Set your preferences for your trip:</h2>
+  <h2 class="preferences-subtitle">Set your preferences for your trip:</h2>
+
+  <div class="trip-summary">
+    <div class="form-label"><%= trip_summary_title(@subscription_params) %></div>
+    <%= for trip <- trip_summary_logistics(@subscription_params) do %>
+      <div><%= trip %></div>
+    <%= end %>
+  </div>
 </div>
