@@ -66,12 +66,13 @@ defmodule ConciergeSite.Subscriptions.SubwayParams do
         grouped_schedules = group_trips_by_stop(schedule_data)
 
         trips =
-          group_stop_ids_by_parent_station(included_data)
+          included_data
+          |> group_stop_ids_by_parent_station()
           |> map_trips_to_stops(grouped_schedules)
 
         {:ok, trips}
       {:error, _} ->
-        {:error, "there was an error fetching station data. Please try again."}
+        {:error, "there was an error fetching station data. Please try again"}
     end
   end
 
@@ -95,11 +96,10 @@ defmodule ConciergeSite.Subscriptions.SubwayParams do
   end
 
   defp map_trips_to_stops(stop_data, grouped_schedules) do
-    Enum.map(stop_data, fn stop ->
-      {stop_name, stop_ids} = stop
+    for {stop_name, stop_ids} <- stop_data do
       all_trips = Enum.flat_map(stop_ids, fn stop_id -> grouped_schedules[stop_id] end)
       {stop_name, MapSet.new(all_trips)}
-    end)
+    end
   end
 
   defp full_error_message(errors) do

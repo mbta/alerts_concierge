@@ -102,7 +102,7 @@ defmodule AlertProcessor.ApiClient do
   def subway_schedules_union(origin, destination) do
     routes = "Red,Blue,Orange,Green-B,Green-C,Green-D,Green-E"
     response = get(
-      "/schedules/?filter[route]=#{routes}&filter[stop]=#{origin},#{destination}&fields[stop]=parent_station&fields[schedule]=relationships&include=stop"
+      "/schedules/?filter[route]=#{routes}&filter[stop]=#{origin},#{destination}&fields[stop]=parent_station&fields[schedule]=&include=stop"
     )
     case response do
       {:ok, %{body: %{"data" => schedules, "included" => included}}} ->
