@@ -44,17 +44,16 @@ defmodule AlertProcessor.AlertParser do
 
   defp parse_alert(%{
     "active_period" => active_periods,
-    "description_text" => description_text_translations,
-    "effect_name" => effect_name,
+    "effect_detail" => effect_name,
     "id" => alert_id,
     "informed_entity" => informed_entities,
     "service_effect_text" => service_effect_text_translations,
     "severity" => severity,
-    "short_description_text" => header_text_translations
+    "header_text" => header_text_translations
   } = alert_data, facilities_map) do
     %Alert{
       active_period: parse_active_periods(active_periods),
-      description: parse_translation(description_text_translations),
+      description: alert_data |> Map.get("description_text") |> parse_translation(),
       effect_name: StringHelper.split_capitalize(effect_name, "_"),
       header: parse_translation(header_text_translations),
       id: to_string(alert_id),
@@ -113,7 +112,9 @@ defmodule AlertProcessor.AlertParser do
         "stop_id" ->
           Map.merge(acc, parse_stop(v))
         "route_id" ->
-          Map.merge(acc, parse_route(v))
+          Map.put(acc, :route, v)
+        "route_type" ->
+          Map.put(acc, :route_type, v)
         "facility_id" ->
           Map.put(acc, :facility_id, v)
         "direction_id" ->
@@ -141,19 +142,12 @@ defmodule AlertProcessor.AlertParser do
      %{stop: stop}
   end
 
-  defp parse_route(route_id) do
-    {:ok, route} = ServiceInfoCache.get_route(route_id)
-    case route do
-      %{route_type: route_type} -> %{route: route_id, route_type: route_type}
-      _ -> %{route: route_id}
-    end
-  end
-
   defp parse_severity(7), do: :severe
   defp parse_severity(5), do: :moderate
   defp parse_severity(3), do: :minor
   defp parse_severity(_), do: :minor
 
+  defp parse_translation(nil), do: nil
   defp parse_translation(translations) do
     case Enum.find(translations, &(&1["translation"]["language"] == "en")) do
       %{"translation" => %{"language" => "en", "text" => text}} -> text
