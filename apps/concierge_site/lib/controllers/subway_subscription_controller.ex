@@ -38,9 +38,14 @@ defmodule ConciergeSite.SubwaySubscriptionController do
 
     case SubwayParams.validate_info_params(subscription_params) do
       :ok ->
+        station_names =
+          subscription_params
+          |> Map.take(~w(origin destination))
+          |> Lines.subway_station_names_from_ids()
         render conn, "preferences.html",
           token: token,
-          subscription_params: subscription_params
+          subscription_params: subscription_params,
+          station_names: station_names
       {:error, message} ->
         handle_invalid_info_submission(conn, subscription_params, token, message)
     end

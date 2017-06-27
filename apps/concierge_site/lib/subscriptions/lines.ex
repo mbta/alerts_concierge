@@ -18,18 +18,27 @@ defmodule ConciergeSite.Subscriptions.Lines do
   end
 
   @doc """
-  Fetch the station name for a given stop id
+  Fetch the associated station names for a given origin and destination station ids
   """
-  @spec subway_station_name_from_id(String.t) :: String.t
-  def subway_station_name_from_id(id) do
+
+  @spec subway_station_names_from_ids(map) :: map
+  def subway_station_names_from_ids(selected_station_ids) do
     case ServiceInfoCache.get_subway_full_routes() do
       {:ok, stations} ->
-        stations
-        |> Enum.flat_map(fn station -> station.stop_list end)
-        |> Enum.find(id, fn {_name, station_id} -> id == station_id end)
-        |> elem(0)
+        station_list = Enum.flat_map(stations, fn station -> station.stop_list end)
+
+        for {key, station_id} <- selected_station_ids do
+          {name, _id} = Enum.find(
+            station_list,
+            {station_id, station_id},
+            fn {_name, station_list_id} -> station_id == station_list_id end
+          )
+          {key, name}
+        end
+        |> Enum.into(%{})
+
       _error ->
-        id
+        selected_station_ids
     end
   end
 end
