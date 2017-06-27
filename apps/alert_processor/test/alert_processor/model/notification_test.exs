@@ -56,11 +56,11 @@ defmodule AlertProcessor.Model.NotificationTest do
     refute changeset.valid?
   end
 
-  test "create_changeset/2 requires a description", %{valid_attrs: valid_attrs} do
+  test "create_changeset/2 does not require a description", %{valid_attrs: valid_attrs} do
     attrs = Map.delete(valid_attrs, :description)
     changeset = Notification.create_changeset(%Notification{}, attrs)
 
-    refute changeset.valid?
+    assert changeset.valid?
   end
 
   test "create_changeset/2 requires an email OR phone number", %{valid_attrs: valid_attrs} do
