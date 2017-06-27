@@ -251,6 +251,7 @@
   border-top: 1px solid $pale-grey;
   padding: 2rem 0 3.5rem;
   position: relative;
+  text-align: center;
 }
 
 .btn-subscription-next {
@@ -272,4 +273,39 @@
   border-top: 1px solid $pale-grey;
   padding: 2rem 0;
   text-align: center;
+}
+
+.trip-prefs-form {
+  text-align: left;
+}
+
+.trip-alert-priority {
+  padding: 2rem 0;
+}
+
+.priority-sub-label {
+  margin-bottom: 1rem;
+}
+
+.priority-options {
+  background-color: $pale-grey-30;
+}
+
+.priority-radio-option {
+  align-items: center;
+  display: flex;
+  justify-content: left;
+  margin: 0;
+  padding: 1.25rem 0;
+
+  input {
+    margin: 0 1.25rem;
+  }
+}
+
+.priority-option-divider {
+  background-color: #e9eaed;
+  height: 1px;
+  margin: 0 auto;
+  width: 80%;
 }

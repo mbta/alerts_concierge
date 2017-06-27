@@ -11,4 +11,56 @@
       <div><%= trip %></div>
     <%= end %>
   </div>
+
+  <%= form_for @conn, subway_subscription_path(@conn, :create), [class: "trip-prefs-form subway", as: :subscription], fn f -> %>
+    <div class="trip-alert-priority">
+      <div class="form-label">Alert Type</div>
+      <div class="form-sub-label priority-sub-label">
+        What kind of alerts you would like to recieve? You can edit this
+        information at any time.
+      </div>
+      <div class="priority-options">
+        <label class="priority-radio-option">
+          <%= radio_button f, :alert_priority_type, "high" %>
+          <div>
+            <div>High Priority Alerts only: </div>
+            <div class="form-sub-label">
+              Includes severe delays, shuttle buses, and suspension of service
+            </div>
+          </div>
+        </label>
+        <div class="priority-option-divider"></div>
+        <label class="priority-radio-option">
+          <%= radio_button f, :alert_priority_type, "medium", checked: true %>
+          <div>
+            <div>High and Medium Priority Alerts:</div>
+            <div class="form-sub-label">
+              Includes all high priority alerts plus moderate train delays
+            </div>
+          </div>
+        </label>
+        <div class="priority-option-divider"></div>
+        <label class="priority-radio-option">
+          <%= radio_button f, :alert_priority_type, "low" %>
+          <div>
+            <div>High, Medium, and Low Priority Alerts:</div>
+            <div class="form-sub-label">
+              All high and medium priority alerts plus minor train delays
+            </div>
+          </div>
+        </label>
+      </div>
+    </div>
+
+    <%= for {param_name, value} <- @subscription_params do %>
+      <%= text_input f, :"#{param_name}", value: value, hidden: true %>
+    <%= end %>
+
+    <div class="trip-info-footer">
+      <%= link to: subway_subscription_path(@conn, :info, trip_type: @subscription_params["trip_type"]), class: "subscription-info-back-link" do %>
+        <i class="fa fa-arrow-left" aria-hidden="true"></i> Go Back
+      <% end %>
+      <%= submit "Create Subscription", class: "btn btn-primary btn-subscription-next" %>
+    </div>
+  <%= end %>
 </div>
