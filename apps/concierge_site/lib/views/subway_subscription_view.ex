@@ -62,37 +62,68 @@ defmodule ConciergeSite.SubwaySubscriptionView do
   @doc """
   Returns a summary of a subscription's associated trip days, times, and stops
   """
-  @spec trip_summary_title(map) :: String.t
-  def trip_summary_title(params = %{"trip_type" => "one_way"}) do
-    # stations need to be translated
-    "One way #{joined_day_list(params)} travel between #{Lines.subway_station_name_from_id(params["origin"])} and #{Lines.subway_station_name_from_id(params["destination"])}"
+  @spec trip_summary_title(map, map) :: iodata
+  def trip_summary_title(params = %{"trip_type" => "one_way"}, station_names) do
+    ["One way ",
+     joined_day_list(params),
+     " travel between ",
+     station_names["origin"],
+     " and ",
+     station_names["destination"]]
   end
 
-  def trip_summary_title(params = %{"trip_type" => "round_trip"}) do
-    "Round trip #{joined_day_list(params)} travel between #{Lines.subway_station_name_from_id(params["origin"])} and #{Lines.subway_station_name_from_id(params["destination"])}"
+  def trip_summary_title(params = %{"trip_type" => "round_trip"}, station_names) do
+    ["Round trip ",
+     joined_day_list(params),
+     " travel between ",
+     station_names["origin"],
+     " and ",
+     station_names["destination"]]
   end
 
-  def trip_summary_title(params = %{"trip_type" => "roaming"}) do
-    String.capitalize(
-      "#{joined_day_list(params)} roaming travel between #{Lines.subway_station_name_from_id(params["origin"])} and #{Lines.subway_station_name_from_id(params["destination"])}"
-    )
+  def trip_summary_title(params = %{"trip_type" => "roaming"}, station_names) do
+    [params
+     |> joined_day_list()
+     |> String.capitalize(),
+     " roaming travel between ",
+     station_names["origin"],
+     " and ",
+     station_names["destination"]]
   end
 
   @doc """
   Returns a list of a subscription's associated times and stops
   """
-  @spec trip_summary_logistics(map) :: list
-  def trip_summary_logistics(params = %{"trip_type" => "one_way"}) do
-    ["#{params["departure_start"]} - #{params["departure_end"]} from #{Lines.subway_station_name_from_id(params["origin"])} to #{Lines.subway_station_name_from_id(params["destination"])}"]
+  @spec trip_summary_logistics(map, map) :: [iodata]
+  def trip_summary_logistics(params = %{"trip_type" => "one_way"}, station_names) do
+     [[params["departure_start"],
+      " - ",
+      params["departure_end"],
+      " from ",
+      station_names["origin"],
+      " to ",
+      station_names["destination"]]]
   end
 
-  def trip_summary_logistics(params = %{"trip_type" => "round_trip"}) do
-    ["#{params["departure_start"]} - #{params["departure_end"]} from #{Lines.subway_station_name_from_id(params["origin"])} to #{Lines.subway_station_name_from_id(params["destination"])}",
-    "#{params["return_start"]} - #{params["return_end"]} from #{Lines.subway_station_name_from_id(params["destination"])} to #{Lines.subway_station_name_from_id(params["origin"])}"]
+  def trip_summary_logistics(params = %{"trip_type" => "round_trip"}, station_names) do
+    [[params["departure_start"],
+      " - ",
+      params["departure_end"],
+      " from ",
+      station_names["origin"],
+      " to ",
+      station_names["destination"]],
+     [params["return_start"],
+      " - ",
+      params["return_end"],
+      " from ",
+      station_names["destination"],
+      " to ",
+      station_names["origin"]]]
   end
 
-  def trip_summary_logistics(params = %{"trip_type" => "roaming"}) do
-    ["#{params["roaming_start"]} - #{params["roaming_end"]}"]
+  def trip_summary_logistics(params = %{"trip_type" => "roaming"}, station_names) do
+    [[params["roaming_start"], " - ", params["roaming_end"]]]
   end
 
   defp joined_day_list(params) do
