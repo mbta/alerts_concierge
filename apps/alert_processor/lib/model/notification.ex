@@ -49,7 +49,7 @@ defmodule AlertProcessor.Model.Notification do
   end
 
   @permitted_fields ~w(alert_id user_id send_after description service_effect header phone_number email status last_push_notification)a
-  @required_fields ~w(alert_id user_id header service_effect description)a
+  @required_fields ~w(alert_id user_id header service_effect)a
 
   @doc """
   Changeset for persisting a sent Notification
