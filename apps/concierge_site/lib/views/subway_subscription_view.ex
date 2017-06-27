@@ -2,7 +2,6 @@ defmodule ConciergeSite.SubwaySubscriptionView do
   use ConciergeSite.Web, :view
   import ConciergeSite.SubscriptionViewHelper, only: [travel_time_options: 0]
   alias AlertProcessor.Helpers.StringHelper
-  alias ConciergeSite.Subscriptions.Lines
 
   @typedoc """
   Possible values for trip types in Create Subscription flow
@@ -122,7 +121,7 @@ defmodule ConciergeSite.SubwaySubscriptionView do
       station_names["origin"]]]
   end
 
-  def trip_summary_logistics(params = %{"trip_type" => "roaming"}, station_names) do
+  def trip_summary_logistics(params = %{"trip_type" => "roaming"}, _station_names) do
     [[params["roaming_start"], " - ", params["roaming_end"]]]
   end
 
