@@ -49,8 +49,11 @@ defmodule ConciergeSite.SubwaySubscriptionViewTest do
           "trip_type" => "one_way",
         }
 
-        assert SubwaySubscriptionView.trip_summary_title(params) ==
-          "One way Saturday, Sunday, or weekday travel between Boston Univ. East and Boston Univ. West"
+        station_names = %{"origin" => "Boston Univ. East", "destination" => "Boston Univ. West"}
+
+        assert SubwaySubscriptionView.trip_summary_title(params, station_names) ==
+          ["One way ", "Saturday, Sunday, or weekday", " travel between ",
+           "Boston Univ. East", " and ", "Boston Univ. West"]
       end
     end
   end
@@ -71,9 +74,11 @@ defmodule ConciergeSite.SubwaySubscriptionViewTest do
           "trip_type" => "round_trip",
         }
 
-        assert SubwaySubscriptionView.trip_summary_logistics(params) ==
-          ["09:45 AM - 10:15 AM from Braintree to Quincy Adams",
-          "05:45 PM - 06:15 PM from Quincy Adams to Braintree"]
+        station_names = %{"origin" => "Braintree", "destination" => "Quincy Adams"}
+
+        assert SubwaySubscriptionView.trip_summary_logistics(params, station_names) ==
+          [["09:45 AM", " - ", "10:15 AM", " from ", "Braintree", " to ", "Quincy Adams"],
+           ["05:45 PM", " - ", "06:15 PM", " from ", "Quincy Adams", " to ", "Braintree"]]
       end
     end
   end
