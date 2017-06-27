@@ -10,10 +10,13 @@ defmodule ConciergeSite.Subscriptions.BusRoutes do
   become the label of an <optgroup> containing <option>s for each route.
   """
 
-  @spec route_list_select_options([%AlertProcessor.Model.Route{}]) :: [String.t]
+  @spec route_list_select_options([%AlertProcessor.Model.Route{}]) :: [{String.t, String.t}]
   def route_list_select_options(routes) do
     Enum.flat_map(routes, fn(route) ->
-      [route.long_name <> " - Inbound", route.long_name <> " - Outbound"]
+      [
+        "#{route.route_id} - Inbound": "Route #{route.long_name} - Inbound",
+        "#{route.route_id} - Outbound": "Route #{route.long_name} - Outbound"
+      ]
     end)
   end
 end

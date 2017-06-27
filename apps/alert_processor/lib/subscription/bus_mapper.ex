@@ -26,9 +26,8 @@ defmodule AlertProcessor.Subscription.BusMapper do
   end
 
   defp map_timeframe(%{"departure_start" => ds, "departure_end" => de, "return_start" => nil, "return_end" => nil, "relevant_days" => rd}) do
-    [%Subscription{start_time: DateTimeHelper.timestamp_to_utc(ds), end_time: DateTimeHelper.timestamp_to_utc(de), relevant_days: Enum.map(rd, &String.to_existing_atom/1)}]
+    departure_timeframe(ds, de, rd)
   end
-
   defp map_timeframe(%{"departure_start" => ds, "departure_end" => de, "return_start" => rs, "return_end" => re, "relevant_days" => rd}) do
     sub1 =
       %Subscription{
@@ -45,6 +44,13 @@ defmodule AlertProcessor.Subscription.BusMapper do
 
     [sub1, sub2]
   end
+  defp map_timeframe(%{"departure_start" => ds, "departure_end" => de, "relevant_days" => rd}) do
+    departure_timeframe(ds, de, rd)
+  end
+
+  defp departure_timeframe(ds, de, rd) do
+    [%Subscription{start_time: DateTimeHelper.timestamp_to_utc(ds), end_time: DateTimeHelper.timestamp_to_utc(de), relevant_days: Enum.map(rd, &String.to_existing_atom/1)}]
+  end
 
   defp map_priority(subscriptions, %{"alert_priority_type" => alert_priority_type}) when is_list(subscriptions) do
     Enum.map(subscriptions, fn(subscription) ->
@@ -59,9 +65,9 @@ defmodule AlertProcessor.Subscription.BusMapper do
   end
 
   defp map_entities(params) do
-    with %{"route" => route} <- params,
+    with %{"route" => route, "trip_type" => trip_type} <- params,
          informed_entities <- map_route_type(),
-         informed_entities <- map_routes(informed_entities, route) do
+         informed_entities <- map_routes(informed_entities, route, trip_type) do
       {:ok, informed_entities}
     else
       _ -> :error
@@ -72,14 +78,30 @@ defmodule AlertProcessor.Subscription.BusMapper do
     [%InformedEntity{route_type: 3}]
   end
 
-  defp map_routes(informed_entities, route) do
-    route_entities =
-      [
-        %InformedEntity{route: route, route_type: 3},
-        %InformedEntity{route: route, route_type: 3, direction_id: 0},
-        %InformedEntity{route: route, route_type: 3, direction_id: 1}
-      ]
+  defp map_routes(informed_entities, route, trip_type) do
+    {route_name, direction_id} = extract_route_and_direction(route)
 
+    route_entities = if trip_type == "round_trip" do
+      [
+        %InformedEntity{route: route_name, route_type: 3},
+        %InformedEntity{route: route_name, route_type: 3, direction_id: 1},
+        %InformedEntity{route: route_name, route_type: 3, direction_id: 0}
+      ]
+    else
+      [
+        %InformedEntity{route: route_name, route_type: 3},
+        %InformedEntity{route: route_name, route_type: 3, direction_id: direction_id}
+      ]
+    end
     informed_entities ++ route_entities
   end
+
+  defp extract_route_and_direction(route) do
+    [name, direction] = String.split(route, " - ")
+    route_id = String.replace_leading(name, "Route ", "")
+    {route_id, direction_to_id(direction)}
+  end
+
+  defp direction_to_id("Inbound"), do: 1
+  defp direction_to_id("Outbound"), do: 0
 end

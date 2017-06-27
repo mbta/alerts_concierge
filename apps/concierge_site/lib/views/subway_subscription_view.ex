@@ -1,7 +1,7 @@
 defmodule ConciergeSite.SubwaySubscriptionView do
   use ConciergeSite.Web, :view
-  import ConciergeSite.SubscriptionViewHelper, only: [travel_time_options: 0, format_time: 1]
-  alias AlertProcessor.Helpers.StringHelper
+  import ConciergeSite.SubscriptionViewHelper,
+    only: [joined_day_list: 1, travel_time_options: 0, format_time: 1]
 
   @typedoc """
   Possible values for trip types in Create Subscription flow
@@ -125,19 +125,5 @@ defmodule ConciergeSite.SubwaySubscriptionView do
     [[format_time(params["departure_start"]),
      " - ",
      format_time(params["departure_end"])]]
-  end
-
-  defp joined_day_list(params) do
-    params
-    |> Map.take(~w(saturday sunday weekday))
-    |> Enum.filter(fn {_day, value} -> value == "true" end)
-    |> Enum.map(fn {day, _value} ->
-        if day == "saturday" || day == "sunday" do
-          String.capitalize(day)
-        else
-          day
-        end
-    end)
-    |> StringHelper.or_join()
   end
 end

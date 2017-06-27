@@ -19,7 +19,7 @@
     <div class="form-group select-days">
       <div class="form-label">Travel Days</div>
       <label>
-        <%= checkbox(f, :weekdays, class: "subscription-day-checkbox") %>
+        <%= checkbox(f, :weekday, class: "subscription-day-checkbox") %>
         Weekdays
       </label>
       <label>

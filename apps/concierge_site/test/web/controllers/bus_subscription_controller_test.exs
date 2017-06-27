@@ -33,12 +33,12 @@ defmodule ConciergeSite.BusSubscriptionControllerTest do
 
     test "POST /subscriptions/bus/new/preferences with a valid submission", %{conn: conn, user: user} do
       params = %{"subscription" => %{
-        "departure_start" => "08:45 AM",
-        "departure_end" => "09:15 AM",
+        "departure_start" => "08:45:00",
+        "departure_end" => "09:15:00",
         "route" => "Silver Line SL1 - Inbound",
         "saturday" => "true",
         "sunday" => "false",
-        "weekdays" => "false",
+        "weekday" => "false",
         "trip_type" => "one_way",
       }}
 
@@ -46,7 +46,71 @@ defmodule ConciergeSite.BusSubscriptionControllerTest do
       |> guardian_login(conn)
       |> post("/subscriptions/bus/new/preferences", params)
 
-      assert html_response(conn, 200) =~ "Trip Preferences"
+      assert html_response(conn, 200) =~ "Create New Subscription"
+    end
+
+    test "POST /subscriptions/bus/new/preferences displays summary of a one-way trip", %{conn: conn, user: user} do
+      params = %{"subscription" => %{
+        "departure_start" => "08:45:00",
+        "departure_end" => "09:15:00",
+        "route" => "Silver Line SL1 - Inbound",
+        "saturday" => "true",
+        "sunday" => "false",
+        "weekday" => "false",
+        "trip_type" => "one_way",
+      }}
+
+      conn = user
+      |> guardian_login(conn)
+      |> post("/subscriptions/bus/new/preferences", params)
+
+      response = html_response(conn, 200)
+      assert response =~ "One way Saturday travel on the Silver Line SL1 bus:"
+      assert response =~ "08:45 AM - 09:15 AM | Inbound"
+    end
+
+    test "POST /subscriptions/bus/new/preferences displays summary of a round trip", %{conn: conn, user: user} do
+      params = %{"subscription" => %{
+        "departure_start" => "08:45:00",
+        "departure_end" => "09:15:00",
+        "return_start" => "16:45:00",
+        "return_end" => "17:15:00",
+        "route" => "Silver Line SL1 - Inbound",
+        "saturday" => "true",
+        "sunday" => "false",
+        "weekday" => "false",
+        "trip_type" => "round_trip",
+      }}
+
+      conn = user
+      |> guardian_login(conn)
+      |> post("/subscriptions/bus/new/preferences", params)
+
+      response = html_response(conn, 200)
+      assert response =~ "Round trip Saturday travel on the Silver Line SL1 bus:"
+      assert response =~ "08:45 AM - 09:15 AM | Inbound"
+      assert response =~ "04:45 PM - 05:15 PM | Outbound"
+    end
+
+    test "POST /subscriptions/bus", %{conn: conn, user: user} do
+      params = %{"subscription" => %{
+        "departure_start" => "08:45:00",
+        "departure_end" => "09:15:00",
+        "return_start" => "16:45:00",
+        "return_end" => "17:15:00",
+        "route" => "Silver Line SL1 - Inbound",
+        "saturday" => "true",
+        "sunday" => "false",
+        "weekday" => "false",
+        "trip_type" => "round_trip",
+        "alert_priority_type" => "low"
+      }}
+
+      conn = user
+      |> guardian_login(conn)
+      |> post("/subscriptions/bus", params)
+
+      assert html_response(conn, 302) =~ "my-subscriptions"
     end
   end
 

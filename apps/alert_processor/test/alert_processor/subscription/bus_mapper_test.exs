@@ -4,23 +4,25 @@ defmodule AlertProcessor.Subscription.BusMapperTest do
   alias AlertProcessor.Model.InformedEntity
 
   @one_way_params %{
-    "route" => "16",
+    "route" => "16 - Inbound",
     "relevant_days" => ["weekday", "saturday"],
     "departure_start" => "12:00:00",
     "departure_end" => "14:00:00",
     "return_start" => nil,
     "return_end" => nil,
-    "alert_priority_type" => "low"
+    "alert_priority_type" => "low",
+    "trip_type" => "one_way"
   }
 
   @round_trip_params %{
-    "route" => "16",
+    "route" => "16 - Outbound",
     "relevant_days" => ["weekday", "saturday"],
     "departure_start" => "12:00:00",
     "departure_end" => "14:00:00",
     "return_start" => "18:00:00",
     "return_end" => "20:00:00",
-    "alert_priority_type" => "low"
+    "alert_priority_type" => "low",
+    "trip_type" => "round_trip"
   }
 
   describe "one way" do
@@ -52,7 +54,7 @@ defmodule AlertProcessor.Subscription.BusMapperTest do
         Enum.count(informed_entities, fn(informed_entity) ->
           match?(%InformedEntity{route: "16", route_type: 3, stop: nil, direction_id: 0}, informed_entity)
         end)
-      assert route_entity_count == 1
+      assert route_entity_count == 0
       route_entity_count =
         Enum.count(informed_entities, fn(informed_entity) ->
           match?(%InformedEntity{route: "16", route_type: 3, stop: nil, direction_id: 1}, informed_entity)
