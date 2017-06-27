@@ -46,7 +46,9 @@ defmodule ConciergeSite.Subscriptions.LinesTest do
   describe "subway_station_name_from_id" do
     test "it returns the station name associated with a given id" do
       use_cassette "service_info", custom: true, clear_mock: true, match_requests_on: [:query] do
-        assert "Airport" = Lines.subway_station_name_from_id("place-aport")
+        params = %{"origin" => "place-brntn", "destination" => "place-qamnl"}
+        station_names = Lines.subway_station_names_from_ids(params)
+        assert %{"origin" => "Braintree", "destination" => "Quincy Adams"} == station_names
       end
     end
   end
