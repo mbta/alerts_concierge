@@ -1,15 +1,25 @@
-<div class="form-group">
-  <div class="form-label">Depart</div>
+<div class="trip-select-list-header">Depart</div>
+<div class="trip-select-list">
   <%= Enum.map(@trips.departure_trips, fn(trip) -> %>
     <%= render "_train_option.html", f: @f, trip: trip, closest_trip: @trips.closest_departure_trip %>
   <% end) %>
+  <div class="trip-toggle-links js">
+    <span class="view-more-trips js">View More +</span>
+    <span class="view-less-trips js">View Less -</span>
+    <span class="view-all-trips js">View All +</span>
+  </div>
 </div>
 
 <%= if Map.has_key?(@trips, :return_trips) do %>
-  <div class="form-group">
-    <div class="form-label">Return</div>
+  <div class="trip-select-list-header">Return</div>
+  <div class="trip-select-list">
     <%= Enum.map(@trips.return_trips, fn(trip) -> %>
       <%= render "_train_option.html", f: @f, trip: trip, closest_trip: @trips.closest_return_trip %>
     <% end) %>
+    <div class="trip-toggle-links js">
+      <span class="view-more-trips js">View More +</span>
+      <span class="view-less-trips js">View Less -</span>
+      <span class="view-all-trips js">View All +</span>
+    </div>
   </div>
 <%= end %>

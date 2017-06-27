@@ -1,5 +1,7 @@
-<div class="trip-option form-group">
-  <input type="checkbox" name="subscription[trips][]" id="subscription_trip_<%= @trip.trip_number %>" value="<%= @trip.trip_number %>" <%= @closest_trip.trip_number == @trip.trip_number && "checked" %>/>
+<% closest_trip = @closest_trip.trip_number == @trip.trip_number %>
+<div class="trip-option <%= closest_trip && "closest-trip" %>">
+
+  <input type="checkbox" name="subscription[trips][]" id="subscription_trip_<%= @trip.trip_number %>" value="<%= @trip.trip_number %>" <%= closest_trip && "checked" %>/>
   <%= label(@f, "trip_#{@trip.trip_number}") do %>
     <%= trip_option_description(@trip) %>
   <% end %>
