@@ -7,11 +7,11 @@
 
   <div class="trip-type-options-container">
     <%= render "_trip_type_option.html",
-               link_to: bus_subscription_path(@conn, :info, trip_type: "one-way"),
+               link_to: bus_subscription_path(@conn, :info, trip_type: "one_way"),
                name: "One Way" %>
 
     <%= render "_trip_type_option.html",
-               link_to: bus_subscription_path(@conn, :info, trip_type: "round-trip"),
+               link_to: bus_subscription_path(@conn, :info, trip_type: "round_trip"),
                name: "Round Trip" %>
   </div>
 

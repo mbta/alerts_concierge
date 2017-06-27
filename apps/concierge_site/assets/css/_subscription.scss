@@ -122,8 +122,7 @@
   position: relative;
 }
 
-.subscription-select-origin,
-.subscription-select-destination {
+.subscription-select {
   width: 100%;
 }
 
@@ -185,8 +184,7 @@
   margin: 0 1rem 0 .25rem;
 }
 
-.subscription-select-origin.no-js,
-.subscription-select-destination.no-js {
+.subscription-select.no-js {
   background-color: $white;
   font-family: $font-family-base;
   height: 3rem;
@@ -246,6 +244,10 @@
 .travel-time-connector {
   display: inline-block;
   margin: 0 1rem;
+}
+
+.trip-info-header.bus {
+  padding-bottom: 36px;
 }
 
 .trip-info-footer {

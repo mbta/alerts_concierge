@@ -1,8 +1,9 @@
 defmodule ConciergeSite.BusSubscriptionView do
   use ConciergeSite.Web, :view
+  import ConciergeSite.SubscriptionViewHelper, only: [travel_time_options: 0]
 
   @disabled_progress_bar_links %{trip_info: [:trip_info, :preferences],
-  preferences: [:preferences]}
+    preferences: [:preferences]}
 
   @doc """
   Provide css class to disable links within the subscription flow progress
