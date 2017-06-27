@@ -388,7 +388,7 @@ describe("selectStation", function() {
     });
 
     const subwayTripInfoPageHtml = `
-      <div class="enter-trip-info">
+      <div class="subscription-step enter-trip-info">
         <form class="trip-info-form subway">
           <div class="form-group select-station">
             <label for="origin" class="station-input-label form-label">Origin</label>
@@ -456,7 +456,7 @@ describe("selectStation", function() {
     });
 
     const commuterRailTripInfoPageHtml = `
-      <div class="enter-trip-info">
+      <div class="subscription-step enter-trip-info">
         <form class="trip-info-form commuter-rail">
           <div class="form-group select-station">
             <label for="origin" class="station-input-label form-label">Origin</label>

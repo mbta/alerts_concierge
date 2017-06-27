@@ -2,7 +2,7 @@
 
 <%= render "_progress_bar.html", current_page: :trip_type, conn: @conn %>
 
-<div class="select-trip-type">
+<div class="subscription-step select-trip-type">
   <h2 class="select-trip-type-header">What type of trip do you take?</h2>
 
   <div class="trip-type-options-container">
