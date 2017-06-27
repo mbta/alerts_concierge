@@ -18,7 +18,7 @@ defmodule ConciergeSite.CommuterRailSubscriptionControllerTest do
 
     test "POST /subscriptions/commuter_rail/new/train one_way", %{conn: conn}  do
       params = %{"subscription" => %{
-        "departure_start" => "08:45 AM",
+        "departure_start" => "08:45:00",
         "origin" => "place-north",
         "destination" => "Newburyport",
         "relevant_days" => "weekday",
@@ -34,7 +34,8 @@ defmodule ConciergeSite.CommuterRailSubscriptionControllerTest do
 
     test "POST /subscriptions/commuter_rail/new/train round_trip", %{conn: conn}  do
       params = %{"subscription" => %{
-        "departure_start" => "08:45 AM",
+        "departure_start" => "08:45:00",
+        "return_start" => "16:00:00",
         "origin" => "place-north",
         "destination" => "Newburyport",
         "relevant_days" => "weekday",
@@ -50,7 +51,7 @@ defmodule ConciergeSite.CommuterRailSubscriptionControllerTest do
 
     test "POST /subscriptions/commuter_rail/new/preferences", %{conn: conn}  do
       params = %{"subscription" => %{
-        "departure_start" => "08:45 AM",
+        "departure_start" => "08:45:00",
         "origin" => "place-north",
         "destination" => "Newburyport",
         "relevant_days" => "weekday",
