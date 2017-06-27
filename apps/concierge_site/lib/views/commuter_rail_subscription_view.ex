@@ -35,7 +35,6 @@ defmodule ConciergeSite.CommuterRailSubscriptionView do
   @doc """
   Provide description text for Trip Info page based on which trip type selected
   """
-
   @spec trip_info_description(trip_type) :: String.t
   def trip_info_description(:one_way) do
     "Please note: We will only send you alerts about service updates that affect your origin and destination stations."
@@ -64,8 +63,37 @@ defmodule ConciergeSite.CommuterRailSubscriptionView do
     |> Enum.take(96)
   end
 
-  @spec trip_option_description(Trip.t) :: iodata
-  def trip_option_description(trip) do
+  @spec trip_option(Trip.t, Trip.t) :: {:safe, iodata}
+  def trip_option(trip, closest_trip) do
+    content_tag :div, class: trip_option_classes(trip, closest_trip) do
+      [
+        trip_option_checkbox(trip, closest_trip),
+        content_tag :label, class: "trip-option-description", for: "trip_#{trip.trip_number}" do
+          trip_option_description(trip)
+        end
+      ]
+    end
+  end
+
+  defp trip_option_classes(trip, closest_trip) do
+    if closest_trip.trip_number == trip.trip_number do
+      "trip-option closest-trip"
+    else
+      "trip-option"
+    end
+  end
+
+  defp trip_option_checkbox(trip, closest_trip) do
+    tag(:input,
+        type: "checkbox",
+        class: "trip-option-input",
+        name: "subscription[trips][]",
+        id: "trip_#{trip.trip_number}",
+        value: trip.trip_number,
+        checked: closest_trip.trip_number == trip.trip_number)
+  end
+
+  defp trip_option_description(trip) do
     {origin_name, _} = trip.origin
     {destination_name, _} = trip.destination
 
