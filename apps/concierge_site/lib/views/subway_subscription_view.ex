@@ -1,6 +1,7 @@
 defmodule ConciergeSite.SubwaySubscriptionView do
   use ConciergeSite.Web, :view
   import ConciergeSite.SubscriptionViewHelper, only: [travel_time_options: 0]
+  alias AlertProcessor.Helpers.StringHelper
 
   @typedoc """
   Possible values for trip types in Create Subscription flow
@@ -55,5 +56,87 @@ defmodule ConciergeSite.SubwaySubscriptionView do
 
   def trip_info_description(_trip_type) do
     ""
+  end
+
+  @doc """
+  Returns a summary of a subscription's associated trip days, times, and stops
+  """
+  @spec trip_summary_title(map, map) :: iodata
+  def trip_summary_title(params = %{"trip_type" => "one_way"}, station_names) do
+    ["One way ",
+     joined_day_list(params),
+     " travel between ",
+     station_names["origin"],
+     " and ",
+     station_names["destination"]]
+  end
+
+  def trip_summary_title(params = %{"trip_type" => "round_trip"}, station_names) do
+    ["Round trip ",
+     joined_day_list(params),
+     " travel between ",
+     station_names["origin"],
+     " and ",
+     station_names["destination"]]
+  end
+
+  def trip_summary_title(params = %{"trip_type" => "roaming"}, station_names) do
+    [params
+     |> joined_day_list()
+     |> String.capitalize(),
+     " roaming travel between ",
+     station_names["origin"],
+     " and ",
+     station_names["destination"]]
+  end
+
+  @doc """
+  Returns a list of a subscription's associated times and stops
+  """
+  @spec trip_summary_logistics(map, map) :: [iodata]
+  def trip_summary_logistics(params = %{"trip_type" => "one_way"}, station_names) do
+     [[params["departure_start"],
+      " - ",
+      params["departure_end"],
+      " from ",
+      station_names["origin"],
+      " to ",
+      station_names["destination"]]]
+  end
+
+  def trip_summary_logistics(params = %{"trip_type" => "round_trip"}, station_names) do
+    [[params["departure_start"],
+      " - ",
+      params["departure_end"],
+      " from ",
+      station_names["origin"],
+      " to ",
+      station_names["destination"]],
+     [params["return_start"],
+      " - ",
+      params["return_end"],
+      " from ",
+      station_names["destination"],
+      " to ",
+      station_names["origin"]]]
+  end
+
+  def trip_summary_logistics(params = %{"trip_type" => "roaming"}, _station_names) do
+    [[params["roaming_start"], " - ", params["roaming_end"]]]
+  end
+
+  defp joined_day_list(params) do
+    params
+    |> Map.take(~w(saturday sunday weekdays))
+    |> Enum.filter_map(
+      fn {_day, value} -> value == "true" end,
+      fn {day, _value} ->
+        if day == "weekdays" do
+          String.trim_trailing(day, "s")
+        else
+          String.capitalize(day)
+        end
+      end)
+    |> StringHelper.or_join()
   end
 end
