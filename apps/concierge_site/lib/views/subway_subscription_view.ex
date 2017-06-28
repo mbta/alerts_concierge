@@ -1,6 +1,6 @@
 defmodule ConciergeSite.SubwaySubscriptionView do
   use ConciergeSite.Web, :view
-  import ConciergeSite.SubscriptionViewHelper, only: [travel_time_options: 0]
+  import ConciergeSite.SubscriptionViewHelper, only: [travel_time_options: 0, format_time: 1]
   alias AlertProcessor.Helpers.StringHelper
 
   @typedoc """
@@ -95,9 +95,9 @@ defmodule ConciergeSite.SubwaySubscriptionView do
   """
   @spec trip_summary_logistics(map, map) :: [iodata]
   def trip_summary_logistics(params = %{"trip_type" => "one_way"}, station_names) do
-     [[params["departure_start"],
+     [[format_time(params["departure_start"]),
       " - ",
-      params["departure_end"],
+      format_time(params["departure_end"]),
       " from ",
       station_names["origin"],
       " to ",
@@ -105,16 +105,16 @@ defmodule ConciergeSite.SubwaySubscriptionView do
   end
 
   def trip_summary_logistics(params = %{"trip_type" => "round_trip"}, station_names) do
-    [[params["departure_start"],
+    [[format_time(params["departure_start"]),
       " - ",
-      params["departure_end"],
+      format_time(params["departure_end"]),
       " from ",
       station_names["origin"],
       " to ",
       station_names["destination"]],
-     [params["return_start"],
+     [format_time(params["return_start"]),
       " - ",
-      params["return_end"],
+      format_time(params["return_end"]),
       " from ",
       station_names["destination"],
       " to ",
@@ -122,7 +122,9 @@ defmodule ConciergeSite.SubwaySubscriptionView do
   end
 
   def trip_summary_logistics(params = %{"trip_type" => "roaming"}, _station_names) do
-    [[params["roaming_start"], " - ", params["roaming_end"]]]
+    [[format_time(params["roaming_start"]),
+     " - ",
+     format_time(params["roaming_end"])]]
   end
 
   defp joined_day_list(params) do

@@ -39,8 +39,8 @@ defmodule ConciergeSite.SubwaySubscriptionViewTest do
     test "it returns a summary of the selected params" do
       use_cassette "service_info", custom: true, clear_mock: true, match_requests_on: [:query] do
         params = %{
-          "departure_start" => "08:45 AM",
-          "departure_end" => "09:15 AM",
+          "departure_start" => "08:45:00",
+          "departure_end" => "09:15:00",
           "origin" => "place-buest",
           "destination" => "place-buwst",
           "saturday" => "true",
@@ -64,10 +64,10 @@ defmodule ConciergeSite.SubwaySubscriptionViewTest do
     test "it returns a summary of the selected trips" do
       use_cassette "service_info", custom: true, clear_mock: true, match_requests_on: [:query] do
         params = %{
-          "departure_start" => "09:45 AM",
-          "departure_end" => "10:15 AM",
-          "return_start" => "05:45 PM",
-          "return_end" => "06:15 PM",
+          "departure_start" => "09:45:00",
+          "departure_end" => "10:15:00",
+          "return_start" => "17:45:00",
+          "return_end" => "18:15:00",
           "origin" => "place-brntn",
           "destination" => "place-qamnl",
           "saturday" => "true",

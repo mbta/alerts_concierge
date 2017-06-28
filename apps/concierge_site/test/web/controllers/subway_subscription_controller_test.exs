@@ -23,8 +23,8 @@ defmodule ConciergeSite.SubwaySubscriptionControllerTest do
 
     test "POST /subscriptions/subway/new/preferences with a valid submission", %{conn: conn, user: user} do
       params = %{"subscription" => %{
-        "departure_start" => "08:45 AM",
-        "departure_end" => "09:15 AM",
+        "departure_start" => "08:45:00",
+        "departure_end" => "09:15:00",
         "origin" => "place-buest",
         "destination" => "place-buwst",
         "saturday" => "true",
@@ -42,8 +42,8 @@ defmodule ConciergeSite.SubwaySubscriptionControllerTest do
 
     test "POST /subscriptions/subway/new/preferences with an invalid submission", %{conn: conn, user: user} do
       params = %{"subscription" => %{
-        "departure_start" => "08:45 AM",
-        "departure_end" => "09:15 AM",
+        "departure_start" => "08:45:00",
+        "departure_end" => "09:15:00",
         "origin" => "",
         "destination" => "",
         "saturday" => "false",
