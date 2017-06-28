@@ -58,6 +58,26 @@ defmodule ConciergeSite.SubwaySubscriptionControllerTest do
 
       assert html_response(conn, 200) =~ "Please correct the following errors to proceed"
     end
+
+    test "POST /subscriptions/subway", %{conn: conn, user: user} do
+      params = %{"subscription" => %{
+        "alert_priority_type" => "high",
+        "departure_end" => "09:15:00",
+        "departure_start" => "08:45:00",
+        "destination" => "place-qamnl",
+        "origin" => "place-brntn",
+        "saturday" => "true",
+        "sunday" => "true",
+        "weekday" => "true",
+        "trip_type" => "one_way"
+      }}
+
+      conn = user
+      |> guardian_login(conn)
+      |> post("/subscriptions/subway", params)
+
+      assert html_response(conn, 302) =~ "my-subscriptions"
+    end
   end
 
   describe "unauthorized" do

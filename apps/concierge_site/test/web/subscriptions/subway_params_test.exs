@@ -40,4 +40,66 @@ defmodule ConciergeSite.Subscriptions.SubwayParamsTest do
       end
     end
   end
+
+  describe "prepare_for_mapper" do
+    test "it changes selected travel days into a list of relevant days" do
+      subscription_params = %{
+        "weekday" => "true",
+        "saturday" => "true",
+        "sunday" => "true",
+        "alert_priority_type" => "low",
+        "departure_end" => "09:15:00",
+        "departure_start" => "08:45:00",
+        "destination" => "place-dwnxg",
+        "origin" => "place-chmnl",
+        "return_end" => "17:15:00",
+        "return_start" => "16:45:00",
+        "trip_type" => "round_trip"
+      }
+
+      mapped_params = SubwayParams.prepare_for_mapper(subscription_params)
+
+      assert mapped_params["relevant_days"] == ["saturday", "sunday", "weekday"]
+    end
+
+    test "it adds a roaming key with the value true when the trip_type is roaming" do
+      subscription_params = %{
+        "weekday" => "true",
+        "saturday" => "true",
+        "sunday" => "true",
+        "alert_priority_type" => "low",
+        "departure_end" => "09:15:00",
+        "departure_start" => "08:45:00",
+        "destination" => "place-dwnxg",
+        "origin" => "place-chmnl",
+        "return_end" => "17:15:00",
+        "return_start" => "16:45:00",
+        "trip_type" => "roaming"
+      }
+
+      mapped_params = SubwayParams.prepare_for_mapper(subscription_params)
+
+      assert mapped_params["roaming"] == "true"
+    end
+
+    test "it adds a roaming key with the value true when the trip_type is not roaming" do
+      subscription_params = %{
+        "weekday" => "true",
+        "saturday" => "true",
+        "sunday" => "true",
+        "alert_priority_type" => "low",
+        "departure_end" => "09:15:00",
+        "departure_start" => "08:45:00",
+        "destination" => "place-dwnxg",
+        "origin" => "place-chmnl",
+        "return_end" => "17:15:00",
+        "return_start" => "16:45:00",
+        "trip_type" => "round_trip"
+      }
+
+      mapped_params = SubwayParams.prepare_for_mapper(subscription_params)
+
+      assert mapped_params["roaming"] == "false"
+    end
+  end
 end
