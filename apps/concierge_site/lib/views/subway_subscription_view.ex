@@ -122,9 +122,9 @@ defmodule ConciergeSite.SubwaySubscriptionView do
   end
 
   def trip_summary_logistics(params = %{"trip_type" => "roaming"}, _station_names) do
-    [[format_time(params["roaming_start"]),
+    [[format_time(params["departure_start"]),
      " - ",
-     format_time(params["roaming_end"])]]
+     format_time(params["departure_end"])]]
   end
 
   defp joined_day_list(params) do

@@ -1,14 +1,14 @@
 <%= case @trip_type do %>
   <%= "roaming" -> %>
     <div class="travel-time-select-section">
-      <label for="subscription_roaming_start" class="travel-time-label">
+      <label for="subscription_departure_start" class="travel-time-label">
         Traveling Between:
       </label>
-      <%= select :subscription, :roaming_start, travel_time_options(), class: "travel-time-select", selected: "10:30:00" %>
+      <%= select :subscription, :departure_start, travel_time_options(), class: "travel-time-select", selected: "10:30:00" %>
       <label for="subscription_roaming_end" class="travel-time-connector">
         and
       </label>
-      <%= select :subscription, :roaming_end, travel_time_options(), class: "travel-time-select", selected: "14:30:00" %>
+      <%= select :subscription, :departure_end, travel_time_options(), class: "travel-time-select", selected: "14:30:00" %>
     </div>
   <%= _ -> %>
     <div class="travel-time-select-section">
