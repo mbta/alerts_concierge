@@ -45,7 +45,7 @@ defmodule ConciergeSite.SubwaySubscriptionViewTest do
           "destination" => "place-buwst",
           "saturday" => "true",
           "sunday" => "true",
-          "weekdays" => "true",
+          "weekday" => "true",
           "trip_type" => "one_way",
         }
 
@@ -72,7 +72,7 @@ defmodule ConciergeSite.SubwaySubscriptionViewTest do
           "destination" => "place-qamnl",
           "saturday" => "true",
           "sunday" => "false",
-          "weekdays" => "false",
+          "weekday" => "false",
           "trip_type" => "round_trip",
         }
 

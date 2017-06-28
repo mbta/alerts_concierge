@@ -127,14 +127,14 @@ defmodule ConciergeSite.SubwaySubscriptionView do
 
   defp joined_day_list(params) do
     params
-    |> Map.take(~w(saturday sunday weekdays))
+    |> Map.take(~w(saturday sunday weekday))
     |> Enum.filter_map(
       fn {_day, value} -> value == "true" end,
       fn {day, _value} ->
-        if day == "weekdays" do
-          String.trim_trailing(day, "s")
-        else
+        if day == "saturday" || day == "sunday" do
           String.capitalize(day)
+        else
+          day
         end
       end)
     |> StringHelper.or_join()

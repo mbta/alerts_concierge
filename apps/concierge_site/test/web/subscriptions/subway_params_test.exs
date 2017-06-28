@@ -13,7 +13,7 @@ defmodule ConciergeSite.Subscriptions.SubwayParamsTest do
           "destination" => "place-asmnl",
           "saturday" => "false",
           "sunday" => "false",
-          "weekdays" => "true",
+          "weekday" => "true",
           "trip_type" => "one_way",
         }
 
@@ -32,7 +32,7 @@ defmodule ConciergeSite.Subscriptions.SubwayParamsTest do
           "destination" => "place-qamnl",
           "saturday" => "false",
           "sunday" => "false",
-          "weekdays" => "true",
+          "weekday" => "true",
           "trip_type" => "one_way",
         }
 

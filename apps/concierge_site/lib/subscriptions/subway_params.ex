@@ -39,7 +39,7 @@ defmodule ConciergeSite.Subscriptions.SubwayParams do
   end
 
   defp validate_at_least_one_travel_day({params, errors}) do
-    if {params["weekdays"], params["saturday"], params["sunday"]} == {"false", "false", "false"} do
+    if {params["weekday"], params["saturday"], params["sunday"]} == {"false", "false", "false"} do
       {params, ["At least one travel day option must be selected" | errors]}
     else
       {params, errors}
