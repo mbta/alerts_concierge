@@ -74,6 +74,8 @@ export default function($) {
       $stationInput.attr("data-valid", true);
       $stationInput.attr("data-station-id",  $firstSuggestion.attr("data-station-id"));
       setSelectedStation(originDestination, stationName, $firstSuggestion.attr("data-lines"));
+    } else if (!props.validStationNames.includes($stationInput.val())) {
+      $stationInput.val(null);
     }
 
     unmountStationSuggestions(originDestination);
