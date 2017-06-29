@@ -33,7 +33,7 @@ defmodule ConciergeSite.Router do
 
   scope "/subscriptions", ConciergeSite do
     pipe_through [:browser, :browser_auth]
-    resources "/subway", SubwaySubscriptionController, only: [:new]
+    resources "/subway", SubwaySubscriptionController, only: [:new, :create]
     get "/subway/new/info", SubwaySubscriptionController, :info
     post "/subway/new/preferences", SubwaySubscriptionController, :preferences
     resources "/bus", BusSubscriptionController, only: [:new]

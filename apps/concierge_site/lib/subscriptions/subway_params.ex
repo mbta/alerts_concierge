@@ -39,7 +39,7 @@ defmodule ConciergeSite.Subscriptions.SubwayParams do
   end
 
   defp validate_at_least_one_travel_day({params, errors}) do
-    if {params["weekdays"], params["saturday"], params["sunday"]} == {"false", "false", "false"} do
+    if {params["weekday"], params["saturday"], params["sunday"]} == {"false", "false", "false"} do
       {params, ["At least one travel day option must be selected" | errors]}
     else
       {params, errors}
@@ -104,5 +104,33 @@ defmodule ConciergeSite.Subscriptions.SubwayParams do
 
   defp full_error_message(errors) do
     "Please correct the following errors to proceed: #{Enum.join(errors, ", ") |> String.capitalize()}."
+  end
+
+  @doc """
+  Transform submitted subscription params for SubwayMapper
+  """
+  @spec prepare_for_mapper(map) :: map
+  def prepare_for_mapper(params) do
+    translated_params = %{
+      "relevant_days" =>
+        relevant_days_from_booleans(Map.take(params, ~w(weekday saturday sunday))),
+      "roaming" => Atom.to_string(params["trip_type"] == "roaming"),
+      "return_start" => params["return_start"],
+      "return_end" => params["return_end"],
+      "amenities" => []
+    }
+
+    params
+    |> Map.take(["alert_priority_type", "departure_end", "departure_start",
+      "destination", "origin"])
+    |> Map.merge(translated_params)
+  end
+
+  defp relevant_days_from_booleans(day_map) do
+    day_map
+    |> Enum.filter_map(
+      fn {_day, bool} -> bool == "true" end,
+      fn {day, _bool} -> day end
+    )
   end
 end

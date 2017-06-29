@@ -4,7 +4,9 @@ defmodule ConciergeSite.SubwaySubscriptionController do
   alias ConciergeSite.Subscriptions.TemporaryState
   alias ConciergeSite.Subscriptions.Lines
   alias ConciergeSite.Subscriptions.SubwayParams
+  alias AlertProcessor.Repo
   alias AlertProcessor.ServiceInfoCache
+  alias AlertProcessor.Subscription.SubwayMapper
 
   def new(conn, _params, _user, _claims) do
     render conn, "new.html"
@@ -48,6 +50,29 @@ defmodule ConciergeSite.SubwaySubscriptionController do
           station_names: station_names
       {:error, message} ->
         handle_invalid_info_submission(conn, subscription_params, token, message)
+    end
+  end
+
+  def create(conn, params, user, _claims) do
+    subway_params = SubwayParams.prepare_for_mapper(params["subscription"])
+    {:ok, subscription_infos} = SubwayMapper.map_subscriptions(subway_params)
+
+    transaction = Repo.transaction(fn ->
+      for {sub, ies} <- subscription_infos do
+        Repo.insert!(%{sub | user_id: user.id})
+        for ie <- ies do
+          Repo.insert!(%{ie | subscription_id: sub.id})
+        end
+      end
+    end)
+
+    case transaction do
+      {:ok, _} ->
+        redirect(conn, to: subscription_path(conn, :index))
+      {:error, _} ->
+        conn
+        |> put_flash(:error, "There was an error saving the subscription. Please try again.")
+        |> render("new.html")
     end
   end
 
