@@ -1,0 +1,101 @@
+<h1><%= @subscription.origin %> - <%= @subscription.destination %></h1>
+
+<div class="edit-subscription subscription-step">
+  <h2>Edit Subscription</h2>
+  <%= flash_error(@conn) %>
+
+  <%= form_for @changeset, subway_subscription_path(@conn, :update, @subscription), fn f -> %>
+    <div class="form-label edit-alert-type">Alert Type</div>
+    <div class="priority-options edit-form-section">
+      <%= error_tag f, :alert_priority_type %>
+      <label class="priority-radio-option">
+        <%= radio_button f, :alert_priority_type, "high", checked: (@changeset.data.alert_priority_type == :high) %>
+        <div>
+          <div>High Priority Alerts only: </div>
+          <div class="form-sub-label">
+            Includes severe delays, shuttle buses, and suspension of service
+          </div>
+        </div>
+      </label>
+      <div class="priority-option-divider"></div>
+      <label class="priority-radio-option">
+        <%= radio_button f, :alert_priority_type, "medium", checked: (@changeset.data.alert_priority_type == :medium) %>
+        <div>
+          <div>High and Medium Priority Alerts:</div>
+          <div class="form-sub-label">
+            Includes all high priority alerts plus moderate train delays
+          </div>
+        </div>
+      </label>
+      <div class="priority-option-divider"></div>
+      <label class="priority-radio-option">
+        <%= radio_button f, :alert_priority_type, "low", checked: (@changeset.data.alert_priority_type == :low) %>
+        <div>
+          <div>High, Medium, and Low Priority Alerts:</div>
+          <div class="form-sub-label">
+            All high and medium priority alerts plus minor train delays
+          </div>
+        </div>
+      </label>
+    </div>
+
+    <div class="form-group select-days">
+      <div class="form-label edit-form-label">Travel Days</div>
+      <%= error_tag f, :relevant_days %>
+      <div class="edit-subscription-section-container">
+        <label>
+          <%= checkbox f,
+                       :weekday,
+                       class: "subscription-day-checkbox",
+                       checked: Enum.member?(@changeset.data.relevant_days, :weekday) %>
+          Weekdays
+        </label>
+        <label>
+          <%= checkbox f,
+                       :saturday,
+                       class: "subscription-day-checkbox",
+                       checked: Enum.member?(@changeset.data.relevant_days, :saturday) %>
+          Saturday
+        </label>
+        <label>
+          <%= checkbox f,
+                       :sunday,
+                       class: "subscription-day-checkbox",
+                       checked: Enum.member?(@changeset.data.relevant_days, :sunday) %>
+          Sunday
+        </label>
+      </div>
+    </div>
+
+    <div class="form-group travel-times">
+      <div class="form-label">When do you travel?</div>
+      <div class="form-sub-label travel-times-sub-label">
+        We will send you notifications for any service alerts that occur during
+        your planned travel time.
+      </div>
+      <%= error_tag f, :start_time %>
+      <%= error_tag f, :end_time %>
+      <div class="travel-time-select-section edit-subscription-section-container">
+        <label for="subscription_departure_start" class="travel-time-label">
+          Traveling between:
+        </label>
+        <%= select f,
+                   :departure_start,
+                   travel_time_options(),
+                   class: "travel-time-select",
+                   selected: Calendar.Strftime.strftime!(@changeset.data.start_time, "%H:%M:%S") %>
+        <label for="subscription_departure_end" class="travel-time-connector">
+          to
+        </label>
+        <%= select f,
+                   :departure_end,
+                   travel_time_options(),
+                   class: "travel-time-select",
+                   selected: Calendar.Strftime.strftime!(@changeset.data.end_time, "%H:%M:%S") %>
+      </div>
+    </div>
+    <div class="update-button-container">
+      <%= submit "Update this Subscription", class: "btn btn-primary update-subscription" %>
+    </div>
+  <% end %>
+</div>
