@@ -10,9 +10,9 @@ defmodule AlertProcessor.Model.Notification do
     user_id: String.t,
     send_after: DateTime.t,
     service_effect: String.t,
-    description: String.t,
+    description: String.t | nil,
     header: String.t,
-    phone_number: String.t,
+    phone_number: String.t | nil,
     email: String.t,
     status: atom,
     last_push_notification: DateTime.t,
@@ -49,7 +49,7 @@ defmodule AlertProcessor.Model.Notification do
   end
 
   @permitted_fields ~w(alert_id user_id send_after description service_effect header phone_number email status last_push_notification)a
-  @required_fields ~w(alert_id user_id header service_effect description)a
+  @required_fields ~w(alert_id user_id header service_effect)a
 
   @doc """
   Changeset for persisting a sent Notification
