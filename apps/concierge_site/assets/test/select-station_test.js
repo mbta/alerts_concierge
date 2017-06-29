@@ -232,7 +232,7 @@ describe("selectStation", function() {
         assert.equal($destinationInput.attr("data-station-id"), "place-brntn");
       });
 
-      it("does nothing when there are no suggestions in the origin field", () => {
+      it("clears input when there are no suggestions in the origin field", () => {
         const $originInput = $("input.subscription-select-origin");
         $originInput.val("abc123");
         const $suggestionContainer = $("input.subscription-select-origin + .suggestion-container");
@@ -241,11 +241,11 @@ describe("selectStation", function() {
         simulateKeyUp($originInput[0])
         $("input.subscription-select-destination").focus()
 
-        assert.equal($originInput.val(), "abc123");
+        assert.equal($originInput.val(), "");
         assert.equal($originInput.attr("data-station-id"), null);
       });
 
-      it("does nothing when there are no suggestions in the destination", () => {
+      it("clears input when there are no suggestions in the destination", () => {
         const $destinationInput = $("input.subscription-select-destination");
         $destinationInput.val("abc123");
         const $suggestionContainer = $("input.subscription-select-destination + .suggestion-container");
@@ -254,7 +254,7 @@ describe("selectStation", function() {
         simulateKeyUp($destinationInput[0])
         $("input.subscription-select-origin").focus()
 
-        assert.equal($destinationInput.val(), "abc123");
+        assert.equal($destinationInput.val(), "");
         assert.equal($destinationInput.attr("data-station-id"), null);
       });
     });
