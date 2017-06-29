@@ -152,7 +152,7 @@
 }
 
 .station-suggestion {
-  background-color: $pale-grey-50;
+  background-color: $pale-grey-30;
   border-bottom: $border-width solid $white;
   color: $dark-blue;
   display: flex;
@@ -304,7 +304,7 @@
 }
 
 .priority-option-divider {
-  background-color: #e9eaed;
+  background-color: $pale-grey;
   height: 1px;
   margin: 0 auto;
   width: 80%;
