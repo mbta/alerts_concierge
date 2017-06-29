@@ -63,34 +63,33 @@ defmodule ConciergeSite.CommuterRailSubscriptionView do
     |> Enum.take(96)
   end
 
-  @spec trip_option(Trip.t, Trip.t) :: {:safe, iodata}
+  @spec trip_option(Trip.t, Trip.t) :: Phoenix.HTML.safe
   def trip_option(trip, closest_trip) do
     content_tag :div, class: trip_option_classes(trip, closest_trip) do
       [
         trip_option_checkbox(trip, closest_trip),
-        content_tag :label, class: "trip-option-description", for: "trip_#{trip.trip_number}" do
+        content_tag :label, class: "trip-option-description", for: trip_id_string(trip) do
           trip_option_description(trip)
         end
       ]
     end
   end
 
-  defp trip_option_classes(trip, closest_trip) do
-    if closest_trip.trip_number == trip.trip_number do
-      "trip-option closest-trip"
-    else
-      "trip-option"
-    end
-  end
+  defp trip_option_classes(%{trip_number: tn}, %{trip_number: tn}), do: "trip-option closest-trip"
+  defp trip_option_classes(_, _), do: "trip-option"
 
   defp trip_option_checkbox(trip, closest_trip) do
     tag(:input,
         type: "checkbox",
         class: "trip-option-input",
         name: "subscription[trips][]",
-        id: "trip_#{trip.trip_number}",
+        id: trip_id_string(trip),
         value: trip.trip_number,
         checked: closest_trip.trip_number == trip.trip_number)
+  end
+
+  defp trip_id_string(trip) do
+    ["trip_", trip.trip_number]
   end
 
   defp trip_option_description(trip) do

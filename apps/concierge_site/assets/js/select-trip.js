@@ -6,9 +6,9 @@ export default function($) {
     return;
   }
 
-  const $viewAllLinks = $(".view-all-trips");
-  const $viewLessLinks = $(".view-less-trips");
-  const $viewMoreLinks = $(".view-more-trips");
+  const $viewAllLinks = $(".view-all-link");
+  const $viewLessLinks = $(".view-less-link");
+  const $viewMoreLinks = $(".view-more-link");
 
   function initialize(){
     const $closestTrips = $(".closest-trip");
@@ -25,8 +25,8 @@ export default function($) {
     const $viewAllLink = $(event.target);
 
     $viewAllLink.parent().siblings(".trip-option").removeClass("hidden");
-    $viewAllLink.siblings(".view-more-trips").addClass("hidden");
-    $viewAllLink.siblings(".view-less-trips").removeClass("hidden");
+    $viewAllLink.siblings(".view-more-link").addClass("hidden");
+    $viewAllLink.siblings(".view-less-link").removeClass("hidden");
     $viewAllLink.addClass("hidden");
   }
 
@@ -43,8 +43,8 @@ export default function($) {
       showStartingTrips($viewLessLink.parent().siblings(".closest-trip").first());
     }
     $viewLessLink.addClass("hidden");
-    $viewLessLink.siblings(".view-more-trips").removeClass("hidden")
-    $viewLessLink.siblings(".view-all-trips").removeClass("hidden")
+    $viewLessLink.siblings(".view-more-link").removeClass("hidden")
+    $viewLessLink.siblings(".view-all-link").removeClass("hidden")
   }
 
   function showMoreTrips(event){
@@ -54,10 +54,10 @@ export default function($) {
     $viewMoreLink.parent().siblings(".trip-option").not(".hidden").last().nextAll(".trip-option").slice(0, 3).removeClass("hidden");
     $viewMoreLink.parent().siblings(".trip-option").not(".hidden").first().prevAll(".trip-option").slice(0, 3).removeClass("hidden");
     if (hiddenTrips.length === 0){
-      $viewMoreLink.parent().siblings(".view-all-trips").addClass("hidden");
+      $viewMoreLink.parent().siblings(".view-all-link").addClass("hidden");
       $viewMoreLink.addClass("hidden");
     } else {
-      $viewMoreLink.siblings(".view-less-trips").removeClass("hidden");
+      $viewMoreLink.siblings(".view-less-link").removeClass("hidden");
     }
   }
 

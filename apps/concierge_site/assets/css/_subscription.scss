@@ -338,24 +338,24 @@
   align-content: center;
   margin-bottom: 1rem;
 
-  .trip-option-input {
-    cursor: pointer;
-    display: flex;
-    flex-basis: 7%;
-    align-self: center;
-  }
-
-  .trip-option-description {
-    cursor: pointer;
-    font-size: $base-font-size;
-    display: flex;
-    flex-basis: 100%;
-    margin-bottom: 0;
-  }
-
   &.hidden {
     display: none;
   }
+}
+
+.trip-option-input {
+  cursor: pointer;
+  display: flex;
+  flex-basis: 7%;
+  align-self: center;
+}
+
+.trip-option-description {
+  cursor: pointer;
+  font-size: $base-font-size;
+  display: flex;
+  flex-basis: 100%;
+  margin-bottom: 0;
 }
 
 .trip-toggle-links {
@@ -366,9 +366,9 @@
   }
 }
 
-.view-all-trips,
-.view-less-trips,
-.view-more-trips {
+.view-all-link,
+.view-less-link,
+.view-more-link {
   cursor: pointer;
   color: $link-color;
   margin-left: 1.5rem;

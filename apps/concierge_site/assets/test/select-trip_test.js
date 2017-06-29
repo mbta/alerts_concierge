@@ -24,7 +24,7 @@ describe("selectStation", function() {
   });
 
   it ("view more displays 3 more trips on both sides if available", () => {
-    const $viewMore = $(".view-more-trips");
+    const $viewMore = $(".view-more-link");
     $viewMore[0].click();
 
     assert.sameMembers(getVisisbleTripNumbers(), ["4", "6", "8", "10", "12", "14", "16", "18", "20", "1", "3", "5"]);
@@ -35,7 +35,7 @@ describe("selectStation", function() {
   });
 
   it ("view all displays all trips", () => {
-    const $viewAll = $(".view-all-trips");
+    const $viewAll = $(".view-all-link");
     $viewAll[0].click();
 
     assert.sameMembers(getVisisbleTripNumbers(), ["2", "4", "6", "8", "10", "12", "14", "16", "18", "20", "1", "3", "5"]);
@@ -46,8 +46,8 @@ describe("selectStation", function() {
   });
 
   it ("view less collapses list to contain all selected trips if selected count > 1", () => {
-    const $viewAll = $(".view-all-trips");
-    const $viewLess = $(".view-less-trips");
+    const $viewAll = $(".view-all-link");
+    const $viewLess = $(".view-less-link");
     $viewAll[0].click();
 
     $("input[value=18]").click()
@@ -57,8 +57,8 @@ describe("selectStation", function() {
   });
 
   it ("view less collapses list to checked trip and 2 surrounding if selected count == 1", () => {
-    const $viewAll = $(".view-all-trips");
-    const $viewLess = $(".view-less-trips");
+    const $viewAll = $(".view-all-link");
+    const $viewLess = $(".view-less-link");
     $viewAll[0].click();
 
     $("input[value=12]").click()
@@ -69,8 +69,8 @@ describe("selectStation", function() {
   });
 
   it ("view less collapses to starting 3 trips if selected count is 0", () => {
-    const $viewAll = $(".view-all-trips");
-    const $viewLess = $(".view-less-trips");
+    const $viewAll = $(".view-all-link");
+    const $viewLess = $(".view-less-link");
     $viewAll[0].click();
 
     $("input[value=12]").click()
@@ -125,9 +125,9 @@ describe("selectStation", function() {
             <label for="subscription_trip_20">Franklin Line 20 | Departs Morton Street at 5:47am, arrives at South Station at 6:09am
           </div>
           <div class="trip-toggle-links js">
-            <span class="view-more-trips js">View More +</span>
-            <span class="view-less-trips js">View Less -</span>
-            <span class="view-all-trips js">View All +</span>
+            <span class="view-more-link js">View More +</span>
+            <span class="view-less-link js">View Less -</span>
+            <span class="view-all-link js">View All +</span>
           </div>
         </div>
         <div class="trip-select-list-header">Return</div>
@@ -173,9 +173,9 @@ describe("selectStation", function() {
             <label for="subscription_trip_19">Franklin Line 19 | Departs Morton Street at 5:47am, arrives at South Station at 6:09am
           </div>
           <div class="trip-toggle-links js">
-            <span class="view-more-trips js">View More +</span>
-            <span class="view-less-trips js">View Less -</span>
-            <span class="view-all-trips js">View All +</span>
+            <span class="view-more-link js">View More +</span>
+            <span class="view-less-link js">View Less -</span>
+            <span class="view-all-link js">View All +</span>
           </div>
         </div>
       </form>

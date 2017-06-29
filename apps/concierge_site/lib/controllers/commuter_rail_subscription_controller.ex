@@ -79,21 +79,12 @@ defmodule ConciergeSite.CommuterRailSubscriptionController do
   defp get_trip_info(origin, destination, timestamp, relevant_days) do
     departure_start = timestamp |> Time.from_iso8601!() |> DateTimeHelper.seconds_of_day()
     trips = CommuterRailMapper.map_trip_options(origin, destination, String.to_existing_atom(relevant_days))
-    {_, _, closest_trip} = Enum.reduce(trips, {departure_start, nil, nil}, &calculate_difference/2)
+    closest_trip = Enum.min_by(trips, &calculate_difference(&1, departure_start))
     {trips, closest_trip}
   end
 
-  defp calculate_difference(trip, {start_time, _, nil}) do
+  defp calculate_difference(trip, departure_start) do
     departure_time = DateTimeHelper.seconds_of_day(trip.departure_time)
-    {start_time, abs(start_time - departure_time), trip}
-  end
-  defp calculate_difference(trip, {start_time, previous_difference, current_closest_trip}) do
-    departure_time = DateTimeHelper.seconds_of_day(trip.departure_time)
-    new_difference = abs(departure_time - start_time)
-    if new_difference < previous_difference do
-      {start_time, new_difference, trip}
-    else
-      {start_time, previous_difference, current_closest_trip}
-    end
+    abs(departure_start - departure_time)
   end
 end
