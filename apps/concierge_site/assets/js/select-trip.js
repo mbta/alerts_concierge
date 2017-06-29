@@ -25,14 +25,14 @@ export default function($) {
   function showAllTrips(event){
     const $viewAllLink = $(event.target);
 
-    $viewAllLink.parent().siblings(".trip-option").removeClass("hidden");
+    relatedTrips($viewAllLink).removeClass("hidden");
 
     showHideLinks($viewAllLink);
   }
 
   function showLessTrips(event){
     const $viewLessLink = $(event.target);
-    const $checkedTrips = $viewLessLink.parent().siblings(".trip-option").children("input:checked").parent();
+    const $checkedTrips = relatedTrips($viewLessLink).children("input:checked").parent();
 
     if ($checkedTrips.length > 1) {
       $checkedTrips.first().prevAll(".trip-option").addClass("hidden");
@@ -48,10 +48,11 @@ export default function($) {
 
   function showMoreTrips(event){
     const $viewMoreLink = $(event.target);
-    const hiddenTrips = $viewMoreLink.parent().siblings(".trip-option.hidden");
+    const hiddenTrips = relatedHiddenTrips($viewMoreLink);
+    const $visibleTrips = relatedVisibleTrips($viewMoreLink);
 
-    $viewMoreLink.parent().siblings(".trip-option").not(".hidden").last().nextAll(".trip-option").slice(0, 3).removeClass("hidden");
-    $viewMoreLink.parent().siblings(".trip-option").not(".hidden").first().prevAll(".trip-option").slice(0, 3).removeClass("hidden");
+    $visibleTrips.last().nextAll(".trip-option").slice(0, 3).removeClass("hidden");
+    $visibleTrips.first().prevAll(".trip-option").slice(0, 3).removeClass("hidden");
 
     showHideLinks($viewMoreLink);
   }
@@ -80,14 +81,24 @@ export default function($) {
     $viewMoreLink.toggleClass("hidden", !haveHiddenTrips($link));
   }
 
-  function haveHiddenTrips(link){
-    const hiddenTrips = link.parent().siblings(".trip-option.hidden");
-    return hiddenTrips.length > 0;
+  function relatedTrips($link){
+    return $link.parent().siblings(".trip-option");
   }
 
-  function haveCollapsableTrips(link){
-    const visibleTrips = link.parent().siblings(".trip-option").not(".hidden");
-    return visibleTrips.length > 3;
+  function relatedVisibleTrips($link){
+    return relatedTrips($link).not(".hidden");
+  }
+
+  function relatedHiddenTrips($link){
+    return $link.parent().siblings(".trip-option.hidden");
+  }
+
+  function haveHiddenTrips($link){
+    return relatedHiddenTrips($link).length > 0;
+  }
+
+  function haveCollapsableTrips($link){
+    return relatedVisibleTrips($link).length > 3;
   }
 
   $viewAllLinks.click(showAllTrips);
