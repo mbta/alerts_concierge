@@ -309,3 +309,75 @@
   margin: 0 auto;
   width: 80%;
 }
+
+.trip-select-subheader {
+  @include make-col(10);
+  @include make-col-offset(1);
+  margin-bottom: 2.2rem;
+}
+
+.trip-select-list-header {
+  text-align: left;
+  font-size: 1.2rem;
+  margin-bottom: 0.6rem;
+  font-weight: $headings-font-weight;
+}
+
+.trip-select-list {
+  display: flex;
+  flex-direction: column;
+  padding: 1rem 1.5rem;
+  background-color: $pale-grey-30;
+  text-align: left;
+  margin-bottom: 2rem;
+}
+
+.trip-option {
+  display: flex;
+  justify-content: space-between;
+  align-content: center;
+  margin-bottom: 1rem;
+
+  &.hidden {
+    display: none;
+  }
+}
+
+.trip-option-input {
+  cursor: pointer;
+  display: flex;
+  flex-basis: 7%;
+  align-self: center;
+}
+
+.trip-option-description {
+  cursor: pointer;
+  font-size: $base-font-size;
+  display: flex;
+  flex-basis: 100%;
+  margin-bottom: 0;
+}
+
+.trip-toggle-links {
+  text-align: right;
+
+  .hidden {
+    display: none;
+  }
+}
+
+.view-all-link,
+.view-less-link,
+.view-more-link {
+  cursor: pointer;
+  color: $link-color;
+  margin-left: 1.5rem;
+
+  &:hover,
+  &:active,
+  &:focus {
+    text-decoration: none;
+    color: $link-hover-color;
+    transition: all 0.2s ease-in-out;
+  }
+}

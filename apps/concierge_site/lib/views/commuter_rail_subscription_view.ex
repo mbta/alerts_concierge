@@ -35,7 +35,6 @@ defmodule ConciergeSite.CommuterRailSubscriptionView do
   @doc """
   Provide description text for Trip Info page based on which trip type selected
   """
-
   @spec trip_info_description(trip_type) :: String.t
   def trip_info_description(:one_way) do
     "Please note: We will only send you alerts about service updates that affect your origin and destination stations."
@@ -60,12 +59,40 @@ defmodule ConciergeSite.CommuterRailSubscriptionView do
     0
     |> Stream.iterate(&(&1 + 900))
     |> Stream.map(&Calendar.Time.from_second_in_day/1)
-    |> Stream.map(&Calendar.Strftime.strftime!(&1, "%I:%M %p"))
+    |> Stream.map(& {Calendar.Strftime.strftime!(&1, "%I:%M %p"), Calendar.Strftime.strftime!(&1, "%H:%M:%S")})
     |> Enum.take(96)
   end
 
-  @spec trip_option_description(Trip.t) :: iodata
-  def trip_option_description(trip) do
+  @spec trip_option(Trip.t, Trip.t) :: Phoenix.HTML.safe
+  def trip_option(trip, closest_trip) do
+    content_tag :div, class: trip_option_classes(trip, closest_trip) do
+      [
+        trip_option_checkbox(trip, closest_trip),
+        content_tag :label, class: "trip-option-description", for: trip_id_string(trip) do
+          trip_option_description(trip)
+        end
+      ]
+    end
+  end
+
+  defp trip_option_classes(%{trip_number: tn}, %{trip_number: tn}), do: "trip-option closest-trip"
+  defp trip_option_classes(_, _), do: "trip-option"
+
+  defp trip_option_checkbox(trip, closest_trip) do
+    tag(:input,
+        type: "checkbox",
+        class: "trip-option-input",
+        name: "subscription[trips][]",
+        id: trip_id_string(trip),
+        value: trip.trip_number,
+        checked: closest_trip.trip_number == trip.trip_number)
+  end
+
+  defp trip_id_string(trip) do
+    ["trip_", trip.trip_number]
+  end
+
+  defp trip_option_description(trip) do
     {origin_name, _} = trip.origin
     {destination_name, _} = trip.destination
 

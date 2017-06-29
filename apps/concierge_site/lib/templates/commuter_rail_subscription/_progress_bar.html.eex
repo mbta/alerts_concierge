@@ -7,7 +7,7 @@
              name: "Trip Type" %>
 
   <%= render "_progress_bar_item.html",
-             link_to: commuter_rail_subscription_path(@conn, :info),
+             link_to: commuter_rail_subscription_path(@conn, :info, trip_type: @trip_type),
              link_class: progress_link_class(@current_page, :trip_info),
              step_classes:  progress_step_classes(@current_page, :trip_info),
              name: "Trip Info" %>
