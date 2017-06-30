@@ -2,7 +2,7 @@ defmodule ConciergeSite.BusSubscriptionController do
   use ConciergeSite.Web, :controller
   use Guardian.Phoenix.Controller
   alias ConciergeSite.Subscriptions.{BusParams, BusRoutes, TemporaryState}
-  alias AlertProcessor.{Repo, ServiceInfoCache, Subscription.BusMapper}
+  alias AlertProcessor.{Model.Subscription, Repo, ServiceInfoCache, Subscription.BusMapper}
   alias Ecto.Multi
 
   def new(conn, _params, _user, _claims) do
@@ -10,20 +10,14 @@ defmodule ConciergeSite.BusSubscriptionController do
   end
 
   def create(conn, params, user, _claims) do
-    mapper_params = put_in(params["subscription"]["relevant_days"], relevant_days(params["subscription"]))
-
-    case BusMapper.map_subscription(mapper_params["subscription"]) do
-      {:ok, subscriptions, informed_entities} ->
-        multi = build_subscription_transaction(subscriptions, informed_entities, user)
-
-        case Repo.transaction(multi) do
-          {:ok, _} ->
-            redirect(conn, to: subscription_path(conn, :index))
-          {:error, _, _, _} ->
-            handle_error_info_submission(conn, params["subscription"], user)
-        end
-      :error ->
-        handle_error_info_submission(conn, params, user)
+    with subscription_params <- params["subscription"],
+      mapper_params <- put_in(subscription_params["relevant_days"], relevant_days(subscription_params)),
+      {:ok, subscriptions, informed_entities} <- BusMapper.map_subscription(mapper_params),
+      multi <- build_subscription_transaction(subscriptions, informed_entities, user),
+      {:ok, _} <- Repo.transaction(multi) do
+        redirect(conn, to: subscription_path(conn, :index))
+    else
+      _ -> handle_error_info_submission(conn, params["subscription"], user)
     end
   end
 
@@ -31,8 +25,12 @@ defmodule ConciergeSite.BusSubscriptionController do
     subscriptions
     |> Enum.with_index
     |> Enum.reduce(Multi.new, fn({sub, index}, acc) ->
-      sub_to_insert = Map.merge(sub,
-        %{user_id: user.id, informed_entities: informed_entities})
+      sub_to_insert = sub
+      |> Map.merge(%{
+        user_id: user.id,
+        informed_entities: informed_entities
+      })
+      |> Subscription.create_changeset()
 
       acc
       |> Multi.insert({:subscription, index}, sub_to_insert)
@@ -74,9 +72,9 @@ defmodule ConciergeSite.BusSubscriptionController do
   end
 
   def preferences(conn, params, user, _claims) do
-    subscription_params = Map.merge(
-      params["subscription"], %{user_id: user.id, route_type: 3}
-    )
+    subscription_params = params["subscription"]
+    |> Map.merge(%{"user_id" => user.id, "route_type" => 3})
+
     token = TemporaryState.encode(subscription_params)
 
     case BusParams.validate_info_params(subscription_params) do

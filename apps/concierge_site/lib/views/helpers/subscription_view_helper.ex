@@ -45,4 +45,8 @@ defmodule ConciergeSite.SubscriptionViewHelper do
     end)
     |> StringHelper.or_join()
   end
+
+  def atomize_keys(map) do
+    for {k, v} <- map, do: {String.to_existing_atom(k), v}
+  end
 end

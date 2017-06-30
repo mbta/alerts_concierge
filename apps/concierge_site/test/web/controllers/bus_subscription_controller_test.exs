@@ -1,5 +1,8 @@
 defmodule ConciergeSite.BusSubscriptionControllerTest do
   use ConciergeSite.ConnCase
+  use ExVCR.Mock, adapter: ExVCR.Adapter.Hackney
+  alias AlertProcessor.{Model, Repo}
+  alias Model.{InformedEntity, Subscription}
 
   @password "password1"
   @encrypted_password Comeonin.Bcrypt.hashpwsalt(@password)
@@ -35,7 +38,7 @@ defmodule ConciergeSite.BusSubscriptionControllerTest do
       params = %{"subscription" => %{
         "departure_start" => "08:45:00",
         "departure_end" => "09:15:00",
-        "route" => "Silver Line SL1 - Inbound",
+        "route" => "Silver Line SL1 - 1",
         "saturday" => "true",
         "sunday" => "false",
         "weekday" => "false",
@@ -53,7 +56,7 @@ defmodule ConciergeSite.BusSubscriptionControllerTest do
       params = %{"subscription" => %{
         "departure_start" => "08:45:00",
         "departure_end" => "09:15:00",
-        "route" => "Silver Line SL1 - Inbound",
+        "route" => "Silver Line SL1 - 1",
         "saturday" => "true",
         "sunday" => "false",
         "weekday" => "false",
@@ -75,7 +78,7 @@ defmodule ConciergeSite.BusSubscriptionControllerTest do
         "departure_end" => "09:15:00",
         "return_start" => "16:45:00",
         "return_end" => "17:15:00",
-        "route" => "Silver Line SL1 - Inbound",
+        "route" => "Silver Line SL1 - 1",
         "saturday" => "true",
         "sunday" => "false",
         "weekday" => "false",
@@ -92,13 +95,13 @@ defmodule ConciergeSite.BusSubscriptionControllerTest do
       assert response =~ "04:45 PM - 05:15 PM | Outbound"
     end
 
-    test "POST /subscriptions/bus", %{conn: conn, user: user} do
+    test "POST /subscriptions/bus creates subscriptions", %{conn: conn, user: user} do
       params = %{"subscription" => %{
         "departure_start" => "08:45:00",
         "departure_end" => "09:15:00",
         "return_start" => "16:45:00",
         "return_end" => "17:15:00",
-        "route" => "Silver Line SL1 - Inbound",
+        "route" => "Silver Line SL1 - 1",
         "saturday" => "true",
         "sunday" => "false",
         "weekday" => "false",
@@ -110,7 +113,33 @@ defmodule ConciergeSite.BusSubscriptionControllerTest do
       |> guardian_login(conn)
       |> post("/subscriptions/bus", params)
 
+      subscriptions = Repo.all(Subscription)
+      [ie | _] = InformedEntity |> Repo.all() |> Repo.preload(:subscription)
+
       assert html_response(conn, 302) =~ "my-subscriptions"
+      assert length(subscriptions) == 2
+      assert ie.subscription == List.first(subscriptions)
+    end
+
+    test "POST /subscriptions/bus with invalid params", %{conn: conn, user: user} do
+      params = %{"subscription" => %{
+        "departure_start" => "08:45:00",
+        "departure_end" => "09:15:00",
+        "return_start" => nil,
+        "return_end" => nil,
+        "route" => "Silver Line SL1 - 1",
+        "saturday" => "false",
+        "sunday" => "false",
+        "weekday" => "false",
+        "trip_type" => "",
+        "alert_priority_type" => ""
+      }}
+
+      conn = user
+      |> guardian_login(conn)
+      |> post("/subscriptions/bus", params)
+
+      assert html_response(conn, 302)
     end
   end
 

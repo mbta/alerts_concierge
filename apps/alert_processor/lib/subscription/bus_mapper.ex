@@ -99,9 +99,6 @@ defmodule AlertProcessor.Subscription.BusMapper do
   defp extract_route_and_direction(route) do
     [name, direction] = String.split(route, " - ")
     route_id = String.replace_leading(name, "Route ", "")
-    {route_id, direction_to_id(direction)}
+    {route_id, String.to_integer(direction)}
   end
-
-  defp direction_to_id("Inbound"), do: 1
-  defp direction_to_id("Outbound"), do: 0
 end

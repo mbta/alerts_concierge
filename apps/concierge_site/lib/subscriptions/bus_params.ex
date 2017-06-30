@@ -34,6 +34,9 @@ defmodule ConciergeSite.Subscriptions.BusParams do
   end
 
   defp full_error_message(errors) do
-    "Please correct the following errors to proceed: #{Enum.join(errors, ", ") |> String.capitalize()}."
+    [
+      "Please correct the following errors to proceed: ",
+      errors |> Enum.intersperse(", ")
+    ]
   end
 end

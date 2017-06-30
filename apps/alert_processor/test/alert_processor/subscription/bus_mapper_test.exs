@@ -4,7 +4,7 @@ defmodule AlertProcessor.Subscription.BusMapperTest do
   alias AlertProcessor.Model.InformedEntity
 
   @one_way_params %{
-    "route" => "16 - Inbound",
+    "route" => "16 - 1",
     "relevant_days" => ["weekday", "saturday"],
     "departure_start" => "12:00:00",
     "departure_end" => "14:00:00",
@@ -15,7 +15,7 @@ defmodule AlertProcessor.Subscription.BusMapperTest do
   }
 
   @round_trip_params %{
-    "route" => "16 - Outbound",
+    "route" => "16 - 0",
     "relevant_days" => ["weekday", "saturday"],
     "departure_start" => "12:00:00",
     "departure_end" => "14:00:00",
@@ -38,6 +38,15 @@ defmodule AlertProcessor.Subscription.BusMapperTest do
 
     test "constructs subscription with timeframe" do
       {:ok, [subscription], _informed_entities} = BusMapper.map_subscription(@one_way_params)
+      assert subscription.start_time == ~T[16:00:00]
+      assert subscription.end_time == ~T[18:00:00]
+      assert subscription.relevant_days == [:weekday, :saturday]
+    end
+
+    test "constructs subscription with timeframe, no return values" do
+      params = Map.drop(@one_way_params, ["return_start", "return_end"])
+
+      {:ok, [subscription], _informed_entities} = BusMapper.map_subscription(params)
       assert subscription.start_time == ~T[16:00:00]
       assert subscription.end_time == ~T[18:00:00]
       assert subscription.relevant_days == [:weekday, :saturday]

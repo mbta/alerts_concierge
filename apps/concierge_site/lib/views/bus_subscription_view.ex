@@ -1,7 +1,7 @@
 defmodule ConciergeSite.BusSubscriptionView do
   use ConciergeSite.Web, :view
   import ConciergeSite.SubscriptionViewHelper,
-    only: [joined_day_list: 1, travel_time_options: 0, format_time: 1]
+    only: [atomize_keys: 1, joined_day_list: 1, travel_time_options: 0, format_time: 1]
 
   @disabled_progress_bar_links %{trip_info: [:trip_info, :preferences],
     preferences: [:preferences]}
@@ -59,6 +59,7 @@ defmodule ConciergeSite.BusSubscriptionView do
     route
     |> String.split(" - ")
     |> List.last
+    |> named_direction()
   end
 
   def trip_summary_routes(params = %{"trip_type" => "round_trip"}) do
@@ -83,5 +84,7 @@ defmodule ConciergeSite.BusSubscriptionView do
 
   defp reverse_direction("Inbound"), do: "Outbound"
   defp reverse_direction("Outbound"), do: "Inbound"
-end
 
+  defp named_direction("0"), do: "Outbound"
+  defp named_direction("1"), do: "Inbound"
+end
