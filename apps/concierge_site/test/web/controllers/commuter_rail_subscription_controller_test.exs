@@ -54,6 +54,7 @@ defmodule ConciergeSite.CommuterRailSubscriptionControllerTest do
         "departure_start" => "08:45:00",
         "origin" => "place-north",
         "destination" => "Newburyport",
+        "trips" => ["123"],
         "relevant_days" => "weekday",
         "trip_type" => "one_way",
       }}

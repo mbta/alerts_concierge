@@ -23,6 +23,20 @@ defmodule ConciergeSite.Subscriptions.CommuterRailParams do
     end
   end
 
+  def validate_trip_params(params) do
+    {_, errors} =
+      {params, []}
+      |> validate_presence_of_departure_trip()
+      |> validate_presence_of_return_trip()
+
+    case errors do
+      [] ->
+        :ok
+      errors ->
+        {:error, full_error_message_iodata(errors)}
+    end
+  end
+
   defp validate_presence_of_origin({params, errors}) do
     if params["origin"] == "" do
       {params, ["origin is invalid" | errors]}
@@ -54,6 +68,25 @@ defmodule ConciergeSite.Subscriptions.CommuterRailParams do
       {params, errors}
     else
       {params, ["a travel day option must be selected" | errors]}
+    end
+  end
+
+  defp validate_presence_of_departure_trip({params, errors}) do
+    case params do
+      %{"trips" => [_h | _t]} ->
+        {params, errors}
+      _ ->
+        {params, ["please select at least one trip" | errors]}
+    end
+  end
+
+  defp validate_presence_of_return_trip({%{"trip_type" => "one_way"}, _} = payload), do: payload
+  defp validate_presence_of_return_trip({params, errors}) do
+    case params["return_trips"] do
+      [_h | _t] ->
+        {params, errors}
+      _ ->
+        {params, ["please select at least one return trip" | errors]}
     end
   end
 end

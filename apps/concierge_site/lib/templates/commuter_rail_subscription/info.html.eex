@@ -44,16 +44,15 @@
       <%= render "_travel_time_select_lists.html", trip_type: @subscription_params["trip_type"] %>
     </div>
 
-    <%= text_input f,
-                   :trip_type,
-                   value: @subscription_params["trip_type"],
-                   hidden: true %>
-
-  <div class="trip-info-footer">
-    <%= link to: commuter_rail_subscription_path(@conn, :new), class: "subscription-info-back-link" do %>
-      <i class="fa fa-arrow-left" aria-hidden="true"></i> Go Back
+    <%= for {param_name, value} <- @subscription_params do %>
+      <%= hidden_input f, :"#{param_name}", value: value %>
     <% end %>
-    <%= submit "Next", class: "btn btn-primary btn-subscription-next" %>
-  </div>
+
+    <div class="trip-info-footer">
+      <%= link to: commuter_rail_subscription_path(@conn, :new), class: "subscription-info-back-link" do %>
+        <i class="fa fa-arrow-left" aria-hidden="true"></i> Go Back
+      <% end %>
+      <%= submit "Next", class: "btn btn-primary btn-subscription-next" %>
+    </div>
   <% end %>
 </div>

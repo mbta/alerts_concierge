@@ -52,9 +52,14 @@ defmodule ConciergeSite.CommuterRailSubscriptionController do
     )
     token = TemporaryState.encode(subscription_params)
 
-    render conn, "preferences.html",
-      token: token,
-      subscription_params: subscription_params
+    case CommuterRailParams.validate_trip_params(subscription_params) do
+      :ok ->
+        render conn, "preferences.html",
+          token: token,
+          subscription_params: subscription_params
+      {:error, message} ->
+        handle_invalid_trip_submission(conn, subscription_params, token, message)
+    end
   end
 
   defp populate_trip_options(%{"trip_type" => "one_way"} = subscription_params) do
@@ -111,5 +116,18 @@ defmodule ConciergeSite.CommuterRailSubscriptionController do
         |> put_flash(:error, "There was an error fetching station data. Please try again.")
         |> render("new.html", token: token, subscription_params: subscription_params)
     end
+  end
+
+  def handle_invalid_trip_submission(conn, subscription_params, token, error_message) do
+    {:ok, trips} = populate_trip_options(subscription_params)
+
+    conn
+    |> put_flash(:error, error_message)
+    |> render(
+      "train.html",
+      token: token,
+      subscription_params: subscription_params,
+      trips: trips
+    )
   end
 end
