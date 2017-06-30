@@ -58,6 +58,7 @@ defmodule AlertProcessor.Model.Subscription do
 
   @permitted_fields ~w(alert_priority_type user_id relevant_days start_time end_time)a
   @required_fields ~w(alert_priority_type user_id start_time end_time)a
+  @valid_days [array: :weekday, array: :saturday, array: :sunday]
 
   @doc """
   Changeset for persisting a Subscription
@@ -67,16 +68,8 @@ defmodule AlertProcessor.Model.Subscription do
     |> cast(params, @permitted_fields)
     |> validate_required(@required_fields)
     |> validate_inclusion(:alert_priority_type, [:low, :medium, :high])
-    |> validate_relevant_days
-  end
-
-  defp validate_relevant_days(changeset) do
-    relevant_days = get_field(changeset, :relevant_days)
-    if MapSet.subset?(MapSet.new(relevant_days), MapSet.new([{:array, :weekday}, {:array, :sunday}, {:array, :saturday}])) do
-      changeset
-    else
-      add_error(changeset, :dispatch, "invalid relevant day type")
-    end
+    |> validate_subset(:relevant_days, @valid_days)
+    |> validate_length(:relevant_days, min: 1)
   end
 
   @doc """

@@ -7,6 +7,8 @@ defmodule ConciergeSite.SubwaySubscriptionController do
   alias AlertProcessor.Repo
   alias AlertProcessor.ServiceInfoCache
   alias AlertProcessor.Subscription.SubwayMapper
+  alias AlertProcessor.Model.Subscription
+  alias Ecto.Multi
 
   def new(conn, _params, _user, _claims) do
     render conn, "new.html"
@@ -57,16 +59,9 @@ defmodule ConciergeSite.SubwaySubscriptionController do
     subway_params = SubwayParams.prepare_for_mapper(params["subscription"])
     {:ok, subscription_infos} = SubwayMapper.map_subscriptions(subway_params)
 
-    transaction = Repo.transaction(fn ->
-      for {sub, ies} <- subscription_infos do
-        Repo.insert!(%{sub | user_id: user.id})
-        for ie <- ies do
-          Repo.insert!(%{ie | subscription_id: sub.id})
-        end
-      end
-    end)
+    multi = build_subscription_transaction(subscription_infos, user)
 
-    case transaction do
+    case Repo.transaction(multi) do
       {:ok, _} ->
         redirect(conn, to: subscription_path(conn, :index))
       {:error, _} ->
@@ -74,6 +69,22 @@ defmodule ConciergeSite.SubwaySubscriptionController do
         |> put_flash(:error, "There was an error saving the subscription. Please try again.")
         |> render("new.html")
     end
+  end
+
+  defp build_subscription_transaction(subscriptions, user) do
+    subscriptions
+    |> Enum.with_index
+    |> Enum.reduce(Multi.new, fn({{sub, ies}, index}, acc) ->
+      sub_to_insert = sub
+      |> Map.merge(%{
+        user_id: user.id,
+        informed_entities: ies
+      })
+      |> Subscription.create_changeset()
+
+      acc
+      |> Multi.insert({:subscription, index}, sub_to_insert)
+    end)
   end
 
   defp handle_invalid_info_submission(conn, subscription_params, token, error_message) do
