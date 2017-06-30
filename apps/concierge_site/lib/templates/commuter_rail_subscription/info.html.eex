@@ -5,6 +5,8 @@
 <div class="subscription-step enter-trip-info">
   <h2>Enter your trip info</h2>
 
+  <%= flash_error(@conn) %>
+
   <p>
     <%= Map.get(@subscription_params, "trip_type", "")
         |> String.to_existing_atom
