@@ -3,6 +3,7 @@ defmodule ConciergeSite.Subscriptions.CommuterRailParams do
   Functions for processing user input during the create commuter rail subscription flow
   """
 
+  import ConciergeSite.Subscriptions.ParamsValidator
   alias AlertProcessor.Subscription.CommuterRailMapper
 
   @spec validate_info_params(map) :: :ok | {:error, String.t}
@@ -14,12 +15,11 @@ defmodule ConciergeSite.Subscriptions.CommuterRailParams do
       |> validate_origin_destination_pair()
       |> validate_travel_day()
 
-
     case errors do
       [] ->
         :ok
       errors ->
-        {:error, full_error_message(errors)}
+        {:error, full_error_message_iodata(errors)}
     end
   end
 
@@ -45,7 +45,7 @@ defmodule ConciergeSite.Subscriptions.CommuterRailParams do
       {:ok, _} ->
         {params, errors}
       _ ->
-        {params, ["Please select a valid origin and destination combination" | errors]}
+        {params, ["please select a valid origin and destination combination" | errors]}
     end
   end
 
@@ -53,11 +53,7 @@ defmodule ConciergeSite.Subscriptions.CommuterRailParams do
     if Enum.member?(["weekday", "saturday", "sunday"], String.downcase(params["relevant_days"])) do
       {params, errors}
     else
-      {params, ["A travel day option must be selected" | errors]}
+      {params, ["a travel day option must be selected" | errors]}
     end
-  end
-
-  defp full_error_message(errors) do
-    "Please correct the following errors to proceed: #{Enum.join(errors, ", ") |> String.capitalize()}."
   end
 end

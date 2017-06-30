@@ -34,17 +34,13 @@ defmodule ConciergeSite.CommuterRailSubscriptionController do
     )
     token = TemporaryState.encode(subscription_params)
 
-    case CommuterRailParams.validate_info_params(subscription_params) do
-      :ok ->
-        case populate_trip_options(subscription_params) do
-          {:error, message} ->
-            handle_invalid_info_submission(conn, subscription_params, token, message)
-          trips ->
-            render conn, "train.html",
-              token: token,
-              subscription_params: subscription_params,
-              trips: trips
-        end
+    with :ok <- CommuterRailParams.validate_info_params(subscription_params),
+      {:ok, trips} <- populate_trip_options(subscription_params) do
+      render conn, "train.html",
+        token: token,
+        subscription_params: subscription_params,
+        trips: trips
+    else
       {:error, message} ->
         handle_invalid_info_submission(conn, subscription_params, token, message)
     end
@@ -65,7 +61,7 @@ defmodule ConciergeSite.CommuterRailSubscriptionController do
     %{"origin" => origin, "destination" => destination, "relevant_days" => relevant_days, "departure_start" => ds} = subscription_params
     case get_trip_info(origin, destination, ds, relevant_days) do
       {:ok, trips, closest_trip} ->
-        %{departure_trips: trips, closest_departure_trip: closest_trip}
+        {:ok, %{departure_trips: trips, closest_departure_trip: closest_trip}}
       :error ->
         {:error, "Please correct the following errors to proceed: Please select a valid origin and destination combination."}
     end
@@ -74,7 +70,7 @@ defmodule ConciergeSite.CommuterRailSubscriptionController do
     %{"origin" => origin, "destination" => destination, "relevant_days" => relevant_days, "departure_start" => ds, "return_start" => rs} = subscription_params
     with {:ok, departure_trips, closest_departure_trip} <- get_trip_info(origin, destination, ds, relevant_days),
          {:ok, return_trips, closest_return_trip} <- get_trip_info(destination, origin, rs, relevant_days) do
-      %{departure_trips: departure_trips, closest_departure_trip: closest_departure_trip, return_trips: return_trips, closest_return_trip: closest_return_trip}
+      {:ok, %{departure_trips: departure_trips, closest_departure_trip: closest_departure_trip, return_trips: return_trips, closest_return_trip: closest_return_trip}}
     else
       _ -> {:error, "Please correct the following errors to proceed: Please select a valid origin and destination combination."}
     end

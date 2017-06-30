@@ -15,8 +15,7 @@ defmodule ConciergeSite.Subscriptions.CommuterRailParamsTest do
       }
 
       {:error, message} = CommuterRailParams.validate_info_params(params)
-
-      assert message == "Please correct the following errors to proceed: Please select a valid origin and destination combination."
+      assert IO.iodata_to_binary(message) == "Please correct the following errors to proceed: please select a valid origin and destination combination."
     end
 
     test "it returns ok when origin and destination are on the same line" do
