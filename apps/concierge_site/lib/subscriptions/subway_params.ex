@@ -3,6 +3,7 @@ defmodule ConciergeSite.Subscriptions.SubwayParams do
   Functions for processing user input during the create subway subscription flow
   """
 
+  import ConciergeSite.Subscriptions.ParamsValidator
   alias AlertProcessor.ApiClient
 
   @spec validate_info_params(map) :: :ok | {:error, String.t}
@@ -18,7 +19,7 @@ defmodule ConciergeSite.Subscriptions.SubwayParams do
       [] ->
         :ok
       errors ->
-        {:error, full_error_message(errors)}
+        {:error, full_error_message_iodata(errors)}
     end
   end
 
@@ -40,7 +41,7 @@ defmodule ConciergeSite.Subscriptions.SubwayParams do
 
   defp validate_at_least_one_travel_day({params, errors}) do
     if {params["weekday"], params["saturday"], params["sunday"]} == {"false", "false", "false"} do
-      {params, ["At least one travel day option must be selected" | errors]}
+      {params, ["at least one travel day option must be selected" | errors]}
     else
       {params, errors}
     end
@@ -100,10 +101,6 @@ defmodule ConciergeSite.Subscriptions.SubwayParams do
       all_trips = Enum.flat_map(stop_ids, fn stop_id -> grouped_schedules[stop_id] end)
       {stop_name, MapSet.new(all_trips)}
     end
-  end
-
-  defp full_error_message(errors) do
-    "Please correct the following errors to proceed: #{Enum.join(errors, ", ") |> String.capitalize()}."
   end
 
   @doc """

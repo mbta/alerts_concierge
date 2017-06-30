@@ -41,7 +41,7 @@ defmodule AlertProcessor.Subscription.CommuterRailMapper do
   which consists of a trip number and the description text to be displayed to the user for selecting
   specific trips for their subscription.
   """
-  @spec map_trip_options(String.t, String.t, Subscription.relevant_day) :: :error | [Trip.t]
+  @spec map_trip_options(String.t, String.t, Subscription.relevant_day) :: :error | {:ok, [Trip.t]}
   def map_trip_options(origin, destination, relevant_days, today_date \\ Calendar.Date.today!("America/New_York")) do
     {:ok, commuter_rail_info} = ServiceInfoCache.get_commuter_rail_info()
     routes = Enum.filter(commuter_rail_info, fn(%Route{stop_list: stop_list}) -> List.keymember?(stop_list, origin, 1) && List.keymember?(stop_list, destination, 1) end)
@@ -53,14 +53,13 @@ defmodule AlertProcessor.Subscription.CommuterRailMapper do
         direction_id = determine_direction_id(route, origin, destination)
         relevant_date = determine_date(relevant_days, today_date)
 
-
         case ApiClient.schedules(origin, destination, direction_id, route_ids, relevant_date) do
           {:ok, schedules, trips} ->
             trip_name_map = map_trip_names(trips)
             {:ok, origin_stop} = ServiceInfoCache.get_stop(origin)
             {:ok, destination_stop} = ServiceInfoCache.get_stop(destination)
             trip = %Trip{origin: origin_stop, destination: destination_stop, direction_id: direction_id}
-            map_common_trips(schedules, trip_name_map, trip)
+            {:ok, map_common_trips(schedules, trip_name_map, trip)}
           _ -> :error
         end
     end
