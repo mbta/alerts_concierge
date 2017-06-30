@@ -1,2 +1,7 @@
 codecov:
   bot: mbtace
+coverage:
+  status:
+    changes: false
+    patch: true
+    project: true
