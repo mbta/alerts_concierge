@@ -298,7 +298,7 @@ defmodule AlertProcessor.Subscription.CommuterRailMapperTest do
 
     test "returns inbound results for origin destination" do
       use_cassette "north_to_anderson_woburn_schedules", custom: true, clear_mock: true, match_requests_on: [:query] do
-        trips = CommuterRailMapper.map_trip_options("place-north", "Anderson/ Woburn", :weekday, @test_date)
+        {:ok, trips} = CommuterRailMapper.map_trip_options("place-north", "Anderson/ Woburn", :weekday, @test_date)
         assert [%Trip{trip_number: "301", departure_time: ~T[05:35:00], direction_id: 0, origin: {"North Station", "place-north"}, destination: {"Anderson/Woburn", "Anderson/ Woburn"}, arrival_time: ~T[05:59:00]},
                 %Trip{trip_number: "303", departure_time: ~T[06:15:00], direction_id: 0, origin: {"North Station", "place-north"}, destination: {"Anderson/Woburn", "Anderson/ Woburn"}, arrival_time: ~T[06:34:00]},
                 %Trip{trip_number: "305", departure_time: ~T[06:37:00], direction_id: 0, origin: {"North Station", "place-north"}, destination: {"Anderson/Woburn", "Anderson/ Woburn"}, arrival_time: ~T[07:01:00]},
@@ -332,7 +332,7 @@ defmodule AlertProcessor.Subscription.CommuterRailMapperTest do
 
     test "returns outbound results for origin destination" do
       use_cassette "anderson_woburn_to_north_schedules", custom: true, clear_mock: true, match_requests_on: [:query] do
-        trips = CommuterRailMapper.map_trip_options("Anderson/ Woburn", "place-north", :weekday, @test_date)
+        {:ok, trips} = CommuterRailMapper.map_trip_options("Anderson/ Woburn", "place-north", :weekday, @test_date)
         assert [%Trip{trip_number: "300", departure_time: ~T[05:56:00], direction_id: 1, origin: {"Anderson/Woburn", "Anderson/ Woburn"}, destination: {"North Station", "place-north"}, arrival_time: ~T[06:22:00]},
                 %Trip{trip_number: "302", departure_time: ~T[06:36:00], direction_id: 1, origin: {"Anderson/Woburn", "Anderson/ Woburn"}, destination: {"North Station", "place-north"}, arrival_time: ~T[07:01:00]},
                 %Trip{trip_number: "304", departure_time: ~T[07:01:00], direction_id: 1, origin: {"Anderson/Woburn", "Anderson/ Woburn"}, destination: {"North Station", "place-north"}, arrival_time: ~T[07:27:00]},
@@ -351,7 +351,7 @@ defmodule AlertProcessor.Subscription.CommuterRailMapperTest do
 
     test "returns saturday results" do
       use_cassette "waltham_to_porter_schedules", custom: true, clear_mock: true, match_requests_on: [:query] do
-        trips = CommuterRailMapper.map_trip_options("Waltham", "place-portr", :saturday, @test_date)
+        {:ok, trips} = CommuterRailMapper.map_trip_options("Waltham", "place-portr", :saturday, @test_date)
         assert [%Trip{trip_number: "1400", departure_time: ~T[07:38:00], direction_id: 1, origin: {"Waltham", "Waltham"}, destination: {"Porter", "place-portr"}, arrival_time: ~T[07:50:00]},
                 %Trip{trip_number: "1402", departure_time: ~T[09:53:00], direction_id: 1, origin: {"Waltham", "Waltham"}, destination: {"Porter", "place-portr"}, arrival_time: ~T[10:05:00]},
                 %Trip{trip_number: "1404", departure_time: ~T[11:58:00], direction_id: 1, origin: {"Waltham", "Waltham"}, destination: {"Porter", "place-portr"}, arrival_time: ~T[12:10:00]},
@@ -364,7 +364,7 @@ defmodule AlertProcessor.Subscription.CommuterRailMapperTest do
 
     test "returns sunday results" do
       use_cassette "porter_to_waltham_schedules", custom: true, clear_mock: true, match_requests_on: [:query] do
-        trips = CommuterRailMapper.map_trip_options("place-portr", "Waltham", :sunday, @test_date)
+        {:ok, trips} = CommuterRailMapper.map_trip_options("place-portr", "Waltham", :sunday, @test_date)
         assert [%Trip{trip_number: "2401", departure_time: ~T[08:45:00], direction_id: 0, origin: {"Porter", "place-portr"}, destination: {"Waltham", "Waltham"}, arrival_time: ~T[08:57:00]},
                 %Trip{trip_number: "2403", departure_time: ~T[10:55:00], direction_id: 0, origin: {"Porter", "place-portr"}, destination: {"Waltham", "Waltham"}, arrival_time: ~T[11:07:00]},
                 %Trip{trip_number: "2405", departure_time: ~T[13:20:00], direction_id: 0, origin: {"Porter", "place-portr"}, destination: {"Waltham", "Waltham"}, arrival_time: ~T[13:32:00]},
