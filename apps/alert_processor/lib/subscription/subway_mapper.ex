@@ -4,7 +4,7 @@ defmodule AlertProcessor.Subscription.SubwayMapper do
   subway into the relevant subscription and informed entity structs.
   """
 
-  import AlertProcessor.Subscription.Mapper
+  use AlertProcessor.Subscription.Mapper
   alias AlertProcessor.ServiceInfoCache
   alias AlertProcessor.Model.{Route, Subscription}
 
