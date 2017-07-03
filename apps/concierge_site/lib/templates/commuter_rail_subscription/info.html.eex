@@ -48,6 +48,11 @@
       <%= hidden_input f, :"#{param_name}", value: value %>
     <% end %>
 
+  <div class="trip-info-footer">
+    <%= link to: commuter_rail_subscription_path(@conn, :new), class: "subscription-info-back-link" do %>
+      <i class="fa fa-arrow-left" aria-hidden="true"></i> Go Back
+    <% end %>
+
     <div class="trip-info-footer">
       <%= link to: commuter_rail_subscription_path(@conn, :new), class: "subscription-info-back-link" do %>
         <i class="fa fa-arrow-left" aria-hidden="true"></i> Go Back
