@@ -1,6 +1,8 @@
 defmodule ConciergeSite.SubwaySubscriptionControllerTest do
   use ConciergeSite.ConnCase
   use ExVCR.Mock, adapter: ExVCR.Adapter.Hackney
+  alias AlertProcessor.{Model, Repo}
+  alias Model.{InformedEntity, Subscription}
 
   describe "authorized" do
     setup :insert_user
@@ -76,7 +78,12 @@ defmodule ConciergeSite.SubwaySubscriptionControllerTest do
       |> guardian_login(conn)
       |> post("/subscriptions/subway", params)
 
+      subscriptions = Repo.all(Subscription)
+      [ie | _] = InformedEntity |> Repo.all() |> Repo.preload(:subscription)
+
       assert html_response(conn, 302) =~ "my-subscriptions"
+      assert length(subscriptions) == 1
+      assert ie.subscription == List.first(subscriptions)
     end
   end
 
