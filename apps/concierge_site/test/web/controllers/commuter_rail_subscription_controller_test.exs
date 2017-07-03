@@ -1,5 +1,7 @@
 defmodule ConciergeSite.CommuterRailSubscriptionControllerTest do
   use ConciergeSite.ConnCase
+  alias AlertProcessor.Repo
+  alias AlertProcessor.Model.{InformedEntity, Subscription}
 
   describe "authorized" do
     setup :create_and_login_user
@@ -98,6 +100,29 @@ defmodule ConciergeSite.CommuterRailSubscriptionControllerTest do
       assert html_response(conn, 200) =~ "Please select at least one trip."
       assert html_response(conn, 200) =~ "Please select at least one return trip."
     end
+
+    test "POST /subscriptions/commuter_rail", %{conn: conn, user: user} do
+      params = %{"subscription" => %{
+        "origin" => "Anderson/ Woburn",
+        "destination" => "place-north",
+        "trips" => ["320", "324"],
+        "relevant_days" => "saturday",
+        "departure_start" => "12:00:00",
+        "alert_priority_type" => "low",
+        "trip_type" => "one_way"
+      }}
+
+      conn = user
+      |> guardian_login(conn)
+      |> post("/subscriptions/commuter_rail", params)
+
+      subscriptions = Repo.all(Subscription)
+      [ie | _] = InformedEntity |> Repo.all() |> Repo.preload(:subscription)
+
+      assert html_response(conn, 302) =~ "my-subscriptions"
+      assert length(subscriptions) == 1
+      assert ie.subscription == List.first(subscriptions)
+    end
   end
 
   describe "unauthorized" do
@@ -115,6 +140,6 @@ defmodule ConciergeSite.CommuterRailSubscriptionControllerTest do
   defp create_and_login_user(%{conn: conn}) do
     user = insert(:user)
     conn = guardian_login(user, conn)
-    {:ok, [conn: conn]}
+    {:ok, [conn: conn, user: user]}
   end
 end
