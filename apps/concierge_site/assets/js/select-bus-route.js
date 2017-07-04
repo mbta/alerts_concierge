@@ -52,7 +52,7 @@ export default function($) {
     const $options = $("select.subscription-select-route").children();
     $options.each(function(i, option) {
       if (i !== 0) {
-        routes[option.label] = option.value;
+        routes[option.text] = option.value;
       }
     });
     return routes;
@@ -63,7 +63,7 @@ export default function($) {
     const $options = $("select.subscription-select-route").children();
     $options.each(function(i, option) {
       if (i !== 0) {
-        let routeName = option.label
+        let routeName = option.text;
         routes.push(routeName);
       }
     });
@@ -99,16 +99,18 @@ export default function($) {
     const $firstSuggestion = $(`.bus-route > .route-name`).first();
 
     if ($firstSuggestion.length) {
-      const routeName = $firstSuggestion.text();
+      const routeName = $firstSuggestion.text().trim();
       $routeInput.val(routeName);
       validateRouteInput(routeName)
-    }
+    } else if (!props.allRouteNames.includes($routeInput.val())) {
+      $routeInput.val(null);
+	  }
 
     unmountRouteSuggestions();
   }
 
   function assignSuggestion(event) {
-    const routeName = event.target.children[0].textContent;
+    const routeName = $(event.target).text().trim();
     const $routeInput = $('.subscription-select-route');
 
     $routeInput.val(routeName);
