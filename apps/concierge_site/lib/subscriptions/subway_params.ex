@@ -25,7 +25,7 @@ defmodule ConciergeSite.Subscriptions.SubwayParams do
 
   defp validate_presence_of_origin({params, errors}) do
     if params["origin"] == "" do
-      {params, ["origin is invalid" | errors]}
+      {params, ["Origin is invalid." | errors]}
     else
       {params, errors}
     end
@@ -33,7 +33,7 @@ defmodule ConciergeSite.Subscriptions.SubwayParams do
 
   defp validate_presence_of_destination({params, errors}) do
     if params["destination"] == "" do
-      {params, ["destination is invalid" | errors]}
+      {params, ["Destination is invalid." | errors]}
     else
       {params, errors}
     end
@@ -41,7 +41,7 @@ defmodule ConciergeSite.Subscriptions.SubwayParams do
 
   defp validate_at_least_one_travel_day({params, errors}) do
     if {params["weekday"], params["saturday"], params["sunday"]} == {"false", "false", "false"} do
-      {params, ["at least one travel day option must be selected" | errors]}
+      {params, ["At least one travel day option must be selected." | errors]}
     else
       {params, errors}
     end
@@ -52,7 +52,7 @@ defmodule ConciergeSite.Subscriptions.SubwayParams do
       {:ok, trips} ->
         [{_, origin_trip_ids}, {_, destination_trip_ids}] = trips
         if MapSet.disjoint?(origin_trip_ids, destination_trip_ids) do
-          {params, ["origin and destination must be on the same line" | errors]}
+          {params, ["Origin and destination must be on the same line." | errors]}
         else
           {params, errors}
         end

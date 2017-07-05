@@ -19,7 +19,7 @@ defmodule ConciergeSite.Subscriptions.SubwayParamsTest do
 
         {:error, message} = SubwayParams.validate_info_params(params)
 
-        assert IO.iodata_to_binary(message) == "Please correct the following errors to proceed: origin and destination must be on the same line."
+        assert IO.iodata_to_binary(message) == "Please correct the following errors to proceed: Origin and destination must be on the same line."
       end
     end
 

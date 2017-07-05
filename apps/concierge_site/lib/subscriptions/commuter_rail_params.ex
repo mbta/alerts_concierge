@@ -39,7 +39,7 @@ defmodule ConciergeSite.Subscriptions.CommuterRailParams do
 
   defp validate_presence_of_origin({params, errors}) do
     if params["origin"] == "" do
-      {params, ["origin is invalid" | errors]}
+      {params, ["Origin is invalid." | errors]}
     else
       {params, errors}
     end
@@ -47,7 +47,7 @@ defmodule ConciergeSite.Subscriptions.CommuterRailParams do
 
   defp validate_presence_of_destination({params, errors}) do
     if params["destination"] == "" do
-      {params, ["destination is invalid" | errors]}
+      {params, ["Destination is invalid." | errors]}
     else
       {params, errors}
     end
@@ -59,7 +59,7 @@ defmodule ConciergeSite.Subscriptions.CommuterRailParams do
       {:ok, _} ->
         {params, errors}
       _ ->
-        {params, ["please select a valid origin and destination combination" | errors]}
+        {params, ["Please select a valid origin and destination combination." | errors]}
     end
   end
 
@@ -67,7 +67,7 @@ defmodule ConciergeSite.Subscriptions.CommuterRailParams do
     if Enum.member?(["weekday", "saturday", "sunday"], String.downcase(params["relevant_days"])) do
       {params, errors}
     else
-      {params, ["a travel day option must be selected" | errors]}
+      {params, ["A travel day option must be selected." | errors]}
     end
   end
 
@@ -76,7 +76,7 @@ defmodule ConciergeSite.Subscriptions.CommuterRailParams do
       %{"trips" => [_h | _t]} ->
         {params, errors}
       _ ->
-        {params, ["please select at least one trip" | errors]}
+        {params, ["Please select at least one trip." | errors]}
     end
   end
 
@@ -86,7 +86,7 @@ defmodule ConciergeSite.Subscriptions.CommuterRailParams do
       [_h | _t] ->
         {params, errors}
       _ ->
-        {params, ["please select at least one return trip" | errors]}
+        {params, ["Please select at least one return trip." | errors]}
     end
   end
 end
