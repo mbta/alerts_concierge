@@ -8,24 +8,29 @@ defmodule ConciergeSite.Subscriptions.DisplayInfo do
 
   @spec departure_times_for_subscriptions([Subscription.t]) :: {:ok, map} | :error
   def departure_times_for_subscriptions(subscriptions) do
-    with stops <- parse_station_list(subscriptions),
+    with {:ok, stops} <- parse_station_list(subscriptions),
         {:ok, schedules, trips} <- ApiClient.schedules(stops),
         {schedules, trip_names_map} <- map_trip_names(schedules, trips) do
       {:ok, map_trip_departure_times(schedules, trip_names_map)}
     else
-      _ -> :error
+      _ -> {:ok, %{}}
     end
   end
 
   defp parse_station_list(subscriptions) do
     stops =
-      Enum.flat_map(subscriptions, fn(subscription) ->
+      subscriptions
+      |> Enum.flat_map(fn(subscription) ->
         for informed_entity <- subscription.informed_entities, InformedEntity.entity_type(informed_entity) == :stop do
           informed_entity.stop
         end
       end)
+      |> Enum.uniq()
 
-    Enum.uniq(stops)
+    case stops do
+      [] -> :error
+      _ -> {:ok, stops}
+    end
   end
 
   defp map_trip_names(schedules, trips) do
@@ -36,7 +41,7 @@ defmodule ConciergeSite.Subscriptions.DisplayInfo do
     schedules_map = Enum.group_by(schedules, fn(%{"relationships" => %{"trip" => %{"data" => %{"id" => id}}}}) -> id end)
 
     for {_id, schedules} <- schedules_map, Enum.count(schedules) > 1, into: %{} do
-      [departure_schedule, _arrival_schedule] = Enum.sort_by(schedules, fn(%{"attributes" => %{"departure_time" => departure_timestamp}}) -> departure_timestamp end)
+      [departure_schedule | _] = Enum.sort_by(schedules, fn(%{"attributes" => %{"departure_time" => departure_timestamp}}) -> departure_timestamp end)
       %{
         "attributes" => %{
           "departure_time" => departure_timestamp

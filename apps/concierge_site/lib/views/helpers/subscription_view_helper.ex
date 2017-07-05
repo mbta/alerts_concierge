@@ -49,4 +49,11 @@ defmodule ConciergeSite.SubscriptionViewHelper do
   def atomize_keys(map) do
     for {k, v} <- map, do: {String.to_existing_atom(k), v}
   end
+
+  def direction_id(subscription) do
+    subscription
+    |> Map.get(:informed_entities)
+    |> Enum.filter_map(&(!is_nil(&1.direction_id)), &(&1.direction_id))
+    |> List.first
+  end
 end

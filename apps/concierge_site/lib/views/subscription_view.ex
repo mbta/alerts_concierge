@@ -4,8 +4,11 @@ defmodule ConciergeSite.SubscriptionView do
   """
   use ConciergeSite.Web, :view
 
-  alias AlertProcessor.Helpers.DateTimeHelper
-  alias AlertProcessor.Model.{InformedEntity, Subscription}
+  alias AlertProcessor.{Helpers, Model, ServiceInfoCache}
+  alias Helpers.DateTimeHelper
+  alias Model.{InformedEntity, Subscription}
+  alias Calendar.Strftime
+  alias ConciergeSite.SubscriptionViewHelper
 
   @type subscription_info :: %{
     amenity: [Subscription.t],
@@ -51,6 +54,13 @@ defmodule ConciergeSite.SubscriptionView do
     end
   end
 
+  defp route_header(%{type: :bus} = subscription) do
+    [
+      content_tag(:span, parse_route(subscription).long_name),
+      content_tag(:i, "", class: "fa fa-long-arrow-right"),
+      content_tag(:span, direction_name(subscription))
+    ]
+  end
   defp route_header(subscription) do
     case direction_name(subscription) do
       :roaming -> content_tag(:span, "#{subscription.origin} - #{subscription.destination}")
@@ -61,6 +71,7 @@ defmodule ConciergeSite.SubscriptionView do
           ]
     end
   end
+
 
   defp route_body(%{type: :subway} = subscription, _) do
     case direction_name(subscription) do
@@ -89,6 +100,9 @@ defmodule ConciergeSite.SubscriptionView do
       ])
     end
   end
+  defp route_body(%{type: :bus} = subscription, _) do
+    [timeframe(subscription), " | ", parse_headsign(subscription)]
+  end
 
   defp timeframe(subscription) do
     [
@@ -102,7 +116,7 @@ defmodule ConciergeSite.SubscriptionView do
 
   defp pretty_time(timestamp) do
     local_time = DateTimeHelper.utc_time_to_local(timestamp)
-    {:ok, output} = Calendar.Strftime.strftime(local_time, "%l:%M%P")
+    {:ok, output} = Strftime.strftime(local_time, "%l:%M%P")
     output
   end
 
@@ -112,7 +126,7 @@ defmodule ConciergeSite.SubscriptionView do
   end
 
   defp parse_route(subscription) do
-    {:ok, route} = subscription |> parse_route_id() |> AlertProcessor.ServiceInfoCache.get_route()
+    {:ok, route} = subscription |> parse_route_id() |> ServiceInfoCache.get_route()
     route
   end
 
@@ -121,7 +135,7 @@ defmodule ConciergeSite.SubscriptionView do
       :roaming ->
         :roaming
       direction ->
-        {:ok, direction_name} = AlertProcessor.ServiceInfoCache.get_direction_name(parse_route_id(subscription), direction)
+        {:ok, direction_name} = ServiceInfoCache.get_direction_name(parse_route_id(subscription), direction)
         direction_name
     end
   end
@@ -136,13 +150,22 @@ defmodule ConciergeSite.SubscriptionView do
     end
   end
 
-  defp parse_headsign(subscription) do
+  defp parse_headsign(%{type: :subway} = subscription) do
     case parse_direction(subscription) do
       nil ->
         ""
       direction ->
-        {:ok, headsign} = AlertProcessor.ServiceInfoCache.get_headsign(subscription.origin, subscription.destination, direction)
+        {:ok, headsign} = ServiceInfoCache.get_headsign(subscription.origin, subscription.destination, direction)
         [" to ", headsign]
+    end
+  end
+  defp parse_headsign(%{type: :bus} = subscription) do
+    headsigns = parse_route(subscription).headsigns
+    headsign = Map.get(headsigns, SubscriptionViewHelper.direction_id(subscription))
+    if length(headsign) > 1 do
+      Enum.join(headsign, " via ")
+    else
+      headsign
     end
   end
 end
