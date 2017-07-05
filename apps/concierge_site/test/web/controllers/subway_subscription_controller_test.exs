@@ -87,7 +87,11 @@ defmodule ConciergeSite.SubwaySubscriptionControllerTest do
     end
 
     test "GET /subscriptions/subway/:id/edit", %{conn: conn, user: user} do
-      subscription = insert(subscription_factory() |> subway_subscription())
+      factory =
+        subscription_factory()
+        |> subway_subscription()
+        |> Map.merge(%{user: user})
+      subscription = insert(factory)
 
       conn = user
       |> guardian_login(conn)
