@@ -1,13 +1,15 @@
 <%= if @subscription_info != [] do %>
-  <div class="subway-subscriptions">
-    <h6>Subway</h6>
+  <div class="commuter-rail-subscriptions">
+    <h6>Commuter Rail</h6>
     <%= for subscription <- @subscription_info do %>
       <%= link(to: subscription_path(@conn, :edit, subscription), class: "subscription-link") do %>
         <div class="subscription">
           <div class="subscription-icon-container">
-            <%= render ConciergeSite.IconsView, "_circle_icon.html", route: parse_route(subscription), large: true %>
+            <div class="commuter-rail-icon subscription-icon">
+              <img src="<%= static_url(@conn, "/images/commuter-rail.svg") %>" />
+            </div>
           </div>
-          <%= subscription_info(subscription) %>
+          <%= subscription_info(subscription, @commuter_rail_departure_time_map) %>
           <div class="subscription-edit-link">
             <i class="fa fa-chevron-right" aria-hidden="true"></i>
           </div>

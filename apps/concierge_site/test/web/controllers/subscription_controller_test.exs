@@ -22,13 +22,29 @@ defmodule ConciergeSite.SubscriptionControllerTest do
       |> Ecto.Changeset.put_assoc(:informed_entities, subway_subscription_entities())
       |> Repo.insert()
 
+      :subscription
+      |> build(user: user)
+      |> weekday_subscription()
+      |> commuter_rail_subscription()
+      |> Repo.preload(:informed_entities)
+      |> Ecto.Changeset.change()
+      |> Ecto.Changeset.put_assoc(:informed_entities, commuter_rail_subscription_entities())
+      |> Repo.insert()
+
       conn = user
       |> guardian_login(conn)
       |> get("/my-subscriptions")
 
       assert html_response(conn, 200) =~ "My Subscriptions"
+      assert html_response(conn, 200) =~ "Subway"
       assert html_response(conn, 200) =~ "Davis"
       assert html_response(conn, 200) =~ "Harvard"
+
+      assert html_response(conn, 200) =~ "Commuter Rail"
+      assert html_response(conn, 200) =~ "Anderson/Woburn"
+      assert html_response(conn, 200) =~ "North Station"
+      assert html_response(conn, 200) =~ "Train 331, Weekdays | Departs North Station at 5:10pm"
+      assert html_response(conn, 200) =~ "Train 221, Weekdays | Departs North Station at 6:55pm"
     end
 
     test "GET /my-subscriptions redirects if no subscriptions", %{conn: conn}  do

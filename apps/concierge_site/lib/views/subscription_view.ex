@@ -38,14 +38,14 @@ defmodule ConciergeSite.SubscriptionView do
     Map.merge(%{amenity: [], boat: [], bus: [], commuter_rail: [], subway: []}, subscription_map)
   end
 
-  def subway_subscription_info(subscription) do
+  def subscription_info(subscription, additional_info \\ nil) do
     content_tag :div, class: "subscription-info" do
       [
         content_tag :div, class: "subscription-route" do
           route_header(subscription)
         end,
         content_tag :div, class: "subscription-details" do
-          route_body(subscription)
+          route_body(subscription, additional_info)
         end
       ]
     end
@@ -62,12 +62,31 @@ defmodule ConciergeSite.SubscriptionView do
     end
   end
 
-  defp route_body(subscription) do
+  defp route_body(%{type: :subway} = subscription, _) do
     case direction_name(subscription) do
       :roaming ->
         timeframe(subscription)
       _ ->
         [timeframe(subscription), " | ", direction_name(subscription), " ", parse_headsign(subscription)]
+    end
+  end
+  defp route_body(%{type: :commuter_rail, relevant_days: [relevant_days]} = subscription, commuter_rail_departure_time_map) do
+    trip_entities =
+      subscription.informed_entities
+      |> Enum.filter(& InformedEntity.entity_type(&1) == :trip)
+      |> Enum.sort_by(& commuter_rail_departure_time_map[&1.trip])
+
+    for trip_entity <- trip_entities do
+      content_tag(:p, [
+        "Train ",
+        trip_entity.trip,
+        ", ",
+        relevant_days |> to_string() |> String.capitalize(),
+        "s | Departs ",
+        subscription.origin,
+        " at ",
+        commuter_rail_departure_time_map[trip_entity.trip]
+      ])
     end
   end
 

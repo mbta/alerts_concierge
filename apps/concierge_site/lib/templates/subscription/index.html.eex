@@ -2,6 +2,7 @@
 <div class="my-subscriptions-container">
   <% subscription_info = sorted_subscriptions(@subscriptions) %>
   <%= render "_subway_subscription_info.html", conn: @conn, subscription_info: subscription_info[:subway] %>
+  <%= render "_commuter_rail_subscription_info.html", conn: @conn, subscription_info: subscription_info[:commuter_rail], commuter_rail_departure_time_map: @commuter_rail_departure_time_map %>
 
   <%= link("Create a new subscription", to: subscription_path(@conn, :new), class: "btn btn-primary btn-create-new-sub") %>
 </div>
