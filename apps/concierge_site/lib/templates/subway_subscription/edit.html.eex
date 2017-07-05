@@ -5,39 +5,14 @@
   <%= flash_error(@conn) %>
 
   <%= form_for @changeset, subway_subscription_path(@conn, :update, @subscription), fn f -> %>
-
     <%= render "_alert_type_radio_buttons.html",
                form: f,
                checked: @changeset.data.alert_priority_type,
                action: "edit" %>
-
-    <div class="form-group select-days">
-      <div class="form-label edit-form-label">Travel Days</div>
-      <%= error_tag f, :relevant_days %>
-      <div class="edit-subscription-section-container">
-        <label>
-          <%= checkbox f,
-                       :weekday,
-                       class: "subscription-day-checkbox",
-                       checked: Enum.member?(@changeset.data.relevant_days, :weekday) %>
-          Weekdays
-        </label>
-        <label>
-          <%= checkbox f,
-                       :saturday,
-                       class: "subscription-day-checkbox",
-                       checked: Enum.member?(@changeset.data.relevant_days, :saturday) %>
-          Saturday
-        </label>
-        <label>
-          <%= checkbox f,
-                       :sunday,
-                       class: "subscription-day-checkbox",
-                       checked: Enum.member?(@changeset.data.relevant_days, :sunday) %>
-          Sunday
-        </label>
-      </div>
-    </div>
+    <%= render "_travel_days_checkboxes.html",
+               form: f,
+               checked: @changeset.data.relevant_days,
+               action: "edit" %>
 
     <div class="form-group travel-times">
       <div class="form-label">When do you travel?</div>

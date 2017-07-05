@@ -31,21 +31,10 @@
                  prompt: "Select a station",
                  selected: @subscription_params["destination"] %>
     </div>
-    <div class="form-group select-days">
-      <div class="form-label">Travel Days</div>
-      <label>
-        <%= checkbox(f, :weekday, class: "subscription-day-checkbox") %>
-        Weekdays
-      </label>
-      <label>
-        <%= checkbox(f, :saturday, class: "subscription-day-checkbox") %>
-        Saturday
-      </label>
-      <label>
-        <%= checkbox(f, :sunday, class: "subscription-day-checkbox") %>
-        Sunday
-      </label>
-    </div>
+    <%= render "_travel_days_checkboxes.html",
+               form: f,
+               checked: [],
+               action: "new" %>
 
     <div class="form-group travel-times">
       <div class="form-label">When do you travel?</div>
@@ -53,7 +42,9 @@
         We will send you notifications for any service alerts that occur during
         your planned travel time.
       </div>
-      <%= render "_travel_time_select_lists.html", trip_type: @subscription_params["trip_type"] %>
+      <%= render "_travel_time_select_lists.html",
+                 trip_type: @subscription_params["trip_type"],
+                 form: f %>
     </div>
 
     <%= text_input f,
