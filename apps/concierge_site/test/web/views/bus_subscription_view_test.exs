@@ -33,4 +33,54 @@ defmodule ConciergeSite.BusSubscriptionViewTest do
       assert classes == %{}
     end
   end
+
+  describe "trip_summary_title/1" do
+    @params %{
+      "departure_start" => "08:45:00",
+      "departure_end" => "09:15:00",
+      "return_start" => "16:45:00",
+      "return_end" => "17:15:00",
+      "route" => "Silver Line SL1 - 1",
+      "saturday" => "true",
+      "sunday" => "false",
+      "weekday" => "false"
+    }
+
+    test "returns title from subscription params for one_way trip_type" do
+      params = Map.merge(@params, %{"trip_type" => "one_way"})
+      title = Enum.join BusSubscriptionView.trip_summary_title(params), ""
+
+      assert title == "One way Saturday travel on the Silver Line SL1 bus:"
+    end
+
+    test "returns title from subscription params for round_trip trip_type" do
+      params = Map.merge(@params, %{"trip_type" => "round_trip"})
+      title = Enum.join BusSubscriptionView.trip_summary_title(params), ""
+
+      assert title == "Round trip Saturday travel on the Silver Line SL1 bus:"
+    end
+
+    test "handles multiple travel times" do
+      params = Map.merge(@params, %{"trip_type" => "one_way", "weekday": "true"})
+      title = Enum.join BusSubscriptionView.trip_summary_title(params), ""
+
+      assert title == "One way Saturday travel on the Silver Line SL1 bus:"
+    end
+  end
+
+  describe "trip_summary_routes/1" do
+    test "returns summary of routes for one way" do
+      params = Map.merge(@params, %{"trip_type" => "one_way"})
+      routes = BusSubscriptionView.trip_summary_routes(params)
+
+      assert routes == [["08:45 AM", " - ", "09:15 AM", " | ", "Inbound"]]
+    end
+
+    test "returns summary of routes for round trip" do
+      params = Map.merge(@params, %{"trip_type" => "round_trip"})
+      routes = BusSubscriptionView.trip_summary_routes(params)
+
+      assert routes == [["08:45 AM", " - ", "09:15 AM", " | ", "Inbound"], ["04:45 PM", " - ", "05:15 PM", " | ", "Outbound"]]
+    end
+  end
 end

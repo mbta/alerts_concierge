@@ -101,7 +101,7 @@ describe("selectBusRoute", function() {
       assert.equal($routeInput.val(), "Silver Line SL1 - Inbound");
     });
 
-    it("does nothing when there are no suggestions in the origin field", () => {
+    it("clears input when there are no suggestions in the origin field", () => {
       const $routeInput = $("input.subscription-select-route");
       $routeInput.val("abc123");
       const $suggestionContainer = $(".suggestion-container");
@@ -110,7 +110,8 @@ describe("selectBusRoute", function() {
       simulateKeyUp($routeInput[0])
       $("input.subscription-select-route").focus()
 
-      assert.equal($routeInput.val(), "abc123");
+      assert.equal($routeInput.val(), "");
+      assert.equal($routeInput.attr("data-station-id"), null);
     });
   });
 
@@ -140,7 +141,7 @@ describe("selectBusRoute", function() {
       $routeInput.val("57");
 
       simulateKeyUp($routeInput[0])
-      const logo = $('.bus-route').first().children()[1].innerHTML
+      const logo = $('.bus-route').first().children().last().html();
 
       assert.include(logo, 'icon-bus')
     });
@@ -151,10 +152,10 @@ describe("selectBusRoute", function() {
       <form>
         <div class="form-group select-route">
           <label for="route" class="station-input-label form-label">Origin</label>
-          <select class="subscription-select-route no-js">
+          <select class="subscription-select subscription-select-route no-js">
             <option value="">Enter your bus number</option>
-            <option value="Silver Line SL1 - Inbound">Silver Line SL1 - Inbound</option>
-            <option value="Route 57 - Outbound">Route 57 - Outbound</option>
+            <option value="741 - 1">Silver Line SL1 - Inbound</option>
+            <option value="57 - 0">Route 57 - Outbound</option>
           </select>
         </div>
       </form>

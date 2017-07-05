@@ -21,7 +21,6 @@ defmodule AlertProcessor.Model.SubscriptionTest do
 
   test "create_changeset/2 with valid parameters", %{valid_attrs: valid_attrs} do
     changeset = Subscription.create_changeset(%Subscription{}, valid_attrs)
-
     assert changeset.valid?
   end
 

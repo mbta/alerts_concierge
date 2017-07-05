@@ -9,7 +9,8 @@ export default function($) {
   };
 
   if ($(".enter-trip-info").length) {
-    props.allRoutes = generateRouteList();
+    props.allRoutes = generateRoutes();
+    props.allRouteNames = generateRouteNames();
     attachSuggestionInput();
   }
 
@@ -45,12 +46,24 @@ export default function($) {
     `
   }
 
-  function generateRouteList() {
+  function generateRoutes() {
+    let routes = {};
+
+    const $options = $("select.subscription-select-route").children();
+    $options.each(function(i, option) {
+      if (i !== 0) {
+        routes[option.text] = option.value;
+      }
+    });
+    return routes;
+  }
+
+  function generateRouteNames() {
     let routes = [];
     const $options = $("select.subscription-select-route").children();
     $options.each(function(i, option) {
       if (i !== 0) {
-        let routeName = option.value
+        let routeName = option.text;
         routes.push(routeName);
       }
     });
@@ -60,7 +73,7 @@ export default function($) {
   function typeahead(event) {
     const query = event.target.value;
     if (query.length > 0) {
-      const matchingRoutes = filterSuggestions(query, props.allRoutes);
+      const matchingRoutes = filterSuggestions(query, props.allRouteNames);
       const suggestionElements = matchingRoutes.map(function(route) {
         return renderRouteSuggestion(route);
       });
@@ -78,7 +91,7 @@ export default function($) {
 
   function validateRouteInput(routeName) {
     const $routeInput = $('.subscription-select-route');
-    $routeInput.attr("data-valid", props.allRoutes.includes(routeName));
+    $routeInput.attr("data-valid", props.allRouteNames.includes(routeName));
   }
 
   function pickFirstSuggestion(event) {
@@ -86,16 +99,18 @@ export default function($) {
     const $firstSuggestion = $(`.bus-route > .route-name`).first();
 
     if ($firstSuggestion.length) {
-      const routeName = $firstSuggestion.text();
+      const routeName = $firstSuggestion.text().trim();
       $routeInput.val(routeName);
       validateRouteInput(routeName)
+    } else if (!props.allRouteNames.includes($routeInput.val())) {
+      $routeInput.val(null);
     }
 
     unmountRouteSuggestions();
   }
 
   function assignSuggestion(event) {
-    const routeName = event.target.children[0].textContent;
+    const routeName = $(event.target).text().trim();
     const $routeInput = $('.subscription-select-route');
 
     $routeInput.val(routeName);
@@ -103,6 +118,17 @@ export default function($) {
     unmountRouteSuggestions();
   }
 
+  function setRouteValue() {
+    const $routeInput = $('.subscription-select-route');
+    if ($routeInput.attr("data-valid") == "true") {
+      const routeName = $routeInput.val();
+      const routeVal = props.allRoutes[routeName];
+      $routeInput.val(routeVal);
+    }
+    return true;
+  }
+
+  $(".trip-info-form.bus").submit(setRouteValue);
   $(document).on(
     "keyup", ".subscription-select-route", {}, typeahead);
   $(document).on(
