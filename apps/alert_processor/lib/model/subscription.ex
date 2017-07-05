@@ -102,6 +102,11 @@ defmodule AlertProcessor.Model.Subscription do
     Repo.all(query)
   end
 
+  def one_for_user!(subscription_id, user_id) do
+    Repo.one!(from s in __MODULE__,
+      where: s.id == ^subscription_id and s.user_id == ^user_id)
+  end
+
   @doc """
   return relevant day of week subscription atom value based on day of week number
   """

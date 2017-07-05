@@ -85,6 +85,43 @@ defmodule ConciergeSite.SubwaySubscriptionControllerTest do
       assert length(subscriptions) == 1
       assert ie.subscription == List.first(subscriptions)
     end
+
+    test "GET /subscriptions/subway/:id/edit", %{conn: conn, user: user} do
+      factory =
+        subscription_factory()
+        |> subway_subscription()
+        |> Map.merge(%{user: user})
+      subscription = insert(factory)
+
+      conn = user
+      |> guardian_login(conn)
+      |> get("/subscriptions/subway/#{subscription.id}/edit")
+
+      assert html_response(conn, 200) =~ "Edit Subscription"
+    end
+
+    test "PATCH /subscriptions/subway/:id", %{conn: conn, user: user} do
+      subscription =
+        subscription_factory()
+        |> subway_subscription()
+        |> Map.merge(%{user_id: user.id})
+        |> insert()
+
+      params = %{"subscription" => %{
+        "alert_priority_type" => "high",
+        "departure_end" => "23:15:00",
+        "departure_start" => "23:00:00",
+        "saturday" => "true",
+        "sunday" => "true",
+        "weekday" => "true"
+      }}
+
+      conn = user
+      |> guardian_login(conn)
+      |> patch("/subscriptions/subway/#{subscription.id}", params)
+
+      assert html_response(conn, 302) =~ "my-subscriptions"
+    end
   end
 
   describe "unauthorized" do

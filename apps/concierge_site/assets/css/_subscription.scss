@@ -381,3 +381,35 @@
     transition: all 0.2s ease-in-out;
   }
 }
+
+.edit-subscription {
+  margin-bottom: 3rem;
+  text-align: left;
+}
+
+.edit-subscription-title {
+  margin-bottom: 1.25rem;
+}
+
+.edit-form-label {
+  margin-bottom: .5rem;
+}
+
+.edit-form-section {
+  margin-bottom: 2rem;
+}
+
+.edit-priority-options {
+  margin-bottom: 1.75rem;
+}
+
+.edit-subscription-section-container {
+  background-color: $pale-grey-30;
+  padding: 1.25rem 0 .75rem 1.25rem
+}
+
+.update-button-container {
+  border-top: 1px solid $pale-grey;
+  padding-top: 2rem;
+  text-align: center;
+}

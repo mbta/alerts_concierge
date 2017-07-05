@@ -14,6 +14,29 @@ defmodule ConciergeSite.SubwaySubscriptionController do
     render conn, "new.html"
   end
 
+  def edit(conn, %{"id" => id}, user, _claims) do
+    subscription = Subscription.one_for_user!(id, user.id)
+    changeset = Subscription.create_changeset(subscription)
+    render conn, "edit.html", subscription: subscription, changeset: changeset
+  end
+
+  def update(conn, %{"id" => id, "subscription" => subscription_params}, user, _claims) do
+    subscription = Subscription.one_for_user!(id, user.id)
+    params = SubwayParams.prepare_for_update_changeset(subscription_params)
+    changeset = Subscription.create_changeset(subscription, params)
+
+    case Repo.update(changeset) do
+      {:ok, _subscription} ->
+        conn
+        |> put_flash(:info, "Subscription updated.")
+        |> redirect(to: subscription_path(conn, :index))
+      {:error, changeset} ->
+        conn
+        |> put_flash(:error, "Subscription could not be updated")
+        |> render("edit.html", subscription: subscription, changeset: changeset)
+    end
+  end
+
   def info(conn, params, user, _claims) do
     subscription_params = Map.merge(params, %{user_id: user.id, route_type: 1})
     token = TemporaryState.encode(subscription_params)
