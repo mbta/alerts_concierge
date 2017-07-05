@@ -5,6 +5,7 @@ defmodule ConciergeSite.Subscriptions.SubwayParams do
 
   import ConciergeSite.Subscriptions.ParamsValidator
   alias AlertProcessor.ApiClient
+  alias AlertProcessor.Helpers.DateTimeHelper
 
   @spec validate_info_params(map) :: :ok | {:error, String.t}
   def validate_info_params(params) do
@@ -135,8 +136,8 @@ defmodule ConciergeSite.Subscriptions.SubwayParams do
 
     %{"alert_priority_type" => String.to_existing_atom(params["alert_priority_type"]),
       "relevant_days" => relevant_days,
-      "end_time" => params["departure_end"],
-      "start_time" => params["departure_start"]}
+      "end_time" => DateTimeHelper.timestamp_to_utc(params["departure_end"]),
+      "start_time" => DateTimeHelper.timestamp_to_utc(params["departure_start"])}
   end
 
   defp relevant_days_from_booleans(day_map) do

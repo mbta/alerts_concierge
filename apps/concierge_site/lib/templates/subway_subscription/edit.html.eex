@@ -30,7 +30,7 @@
                    :departure_start,
                    travel_time_options(),
                    class: "travel-time-select",
-                   selected: Calendar.Strftime.strftime!(@changeset.data.start_time, "%H:%M:%S") %>
+                   selected: time_option_local_strftime(@changeset.data.start_time) %>
         <label for="subscription_departure_end" class="travel-time-connector">
           to
         </label>
@@ -38,7 +38,7 @@
                    :departure_end,
                    travel_time_options(),
                    class: "travel-time-select",
-                   selected: Calendar.Strftime.strftime!(@changeset.data.end_time, "%H:%M:%S") %>
+                   selected: time_option_local_strftime(@changeset.data.end_time) %>
       </div>
     </div>
     <div class="update-button-container">

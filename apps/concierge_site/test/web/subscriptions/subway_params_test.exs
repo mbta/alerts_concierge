@@ -131,8 +131,8 @@ defmodule ConciergeSite.Subscriptions.SubwayParamsTest do
 
       update_params = SubwayParams.prepare_for_update_changeset(params)
 
-      assert update_params["start_time"] == "23:00:00"
-      assert update_params["end_time"] == "23:15:00"
+      assert Map.has_key?(update_params, "start_time")
+      assert Map.has_key?(update_params, "end_time")
     end
 
     test "it converts alert_priority_type to an atom" do
