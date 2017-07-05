@@ -8,14 +8,14 @@ defmodule ConciergeSite.Subscriptions.BusRoutesTest do
       routes = [
         %AlertProcessor.Model.Route{
           route_id: "57A",
-          long_name: "57A",
+          long_name: "57A Long Name",
           route_type: 3,
         }
       ]
 
       select_options = BusRoutes.route_list_select_options(routes)
 
-      assert select_options == ["Route 57A - Inbound": "57A - 1", "Route 57A - Outbound": "57A - 0"]
+      assert select_options == ["Route 57A Long Name - Inbound": "57A - 1", "Route 57A Long Name - Outbound": "57A - 0"]
     end
   end
 end

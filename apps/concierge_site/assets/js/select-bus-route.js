@@ -104,7 +104,7 @@ export default function($) {
       validateRouteInput(routeName)
     } else if (!props.allRouteNames.includes($routeInput.val())) {
       $routeInput.val(null);
-	  }
+    }
 
     unmountRouteSuggestions();
   }
@@ -120,7 +120,7 @@ export default function($) {
 
   function setRouteValue() {
     const $routeInput = $('.subscription-select-route');
-    if ($routeInput.attr("data-valid")) {
+    if ($routeInput.attr("data-valid") == "true") {
       const routeName = $routeInput.val();
       const routeVal = props.allRoutes[routeName];
       $routeInput.val(routeVal);

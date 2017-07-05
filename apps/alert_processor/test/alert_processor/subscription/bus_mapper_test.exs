@@ -120,7 +120,7 @@ defmodule AlertProcessor.Subscription.BusMapperTest do
         Enum.count(informed_entities, fn(informed_entity) ->
           match?(%InformedEntity{route: "16", route_type: 3, stop: nil, direction_id: 1}, informed_entity)
         end)
-      assert route_entity_count == 1
+      assert route_entity_count == 0
     end
 
     test "constructs subscription with route type" do

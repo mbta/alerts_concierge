@@ -65,9 +65,9 @@ defmodule AlertProcessor.Subscription.BusMapper do
   end
 
   defp map_entities(params) do
-    with %{"route" => route, "trip_type" => trip_type} <- params,
+    with %{"route" => route} <- params,
          informed_entities <- map_route_type(),
-         informed_entities <- map_routes(informed_entities, route, trip_type) do
+         informed_entities <- map_routes(informed_entities, route) do
       {:ok, informed_entities}
     else
       _ -> :error
@@ -78,21 +78,13 @@ defmodule AlertProcessor.Subscription.BusMapper do
     [%InformedEntity{route_type: 3}]
   end
 
-  defp map_routes(informed_entities, route, trip_type) do
-    {route_name, direction_id} = extract_route_and_direction(route)
+  defp map_routes(informed_entities, route) do
+    {route_id, direction_id} = extract_route_and_direction(route)
 
-    route_entities = if trip_type == "round_trip" do
-      [
-        %InformedEntity{route: route_name, route_type: 3},
-        %InformedEntity{route: route_name, route_type: 3, direction_id: 1},
-        %InformedEntity{route: route_name, route_type: 3, direction_id: 0}
-      ]
-    else
-      [
-        %InformedEntity{route: route_name, route_type: 3},
-        %InformedEntity{route: route_name, route_type: 3, direction_id: direction_id}
-      ]
-    end
+    route_entities = [
+      %InformedEntity{route: route_id, route_type: 3},
+      %InformedEntity{route: route_id, route_type: 3, direction_id: direction_id}
+    ]
     informed_entities ++ route_entities
   end
 
