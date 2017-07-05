@@ -12,8 +12,7 @@ defmodule ConciergeSite.Subscriptions.ParamsValidator do
   def full_error_message_iodata(errors) do
     [
       "Please correct the following errors to proceed: ",
-      Enum.intersperse(errors, ", "),
-      "."
+      Enum.intersperse(errors, " ")
     ]
   end
 end

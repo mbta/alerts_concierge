@@ -1,7 +1,7 @@
 <div class="trip-select-list-header">Depart</div>
 <div class="trip-select-list">
   <%= Enum.map(@trips.departure_trips, fn(trip) -> %>
-    <%= trip_option(trip, @trips.closest_departure_trip) %>
+    <%= trip_option(trip, @trips.closest_departure_trip, :depart) %>
   <% end) %>
   <div class="trip-toggle-links js">
     <span class="view-more-link js">View More +</span>
@@ -14,7 +14,7 @@
   <div class="trip-select-list-header">Return</div>
   <div class="trip-select-list">
     <%= Enum.map(@trips.return_trips, fn(trip) -> %>
-      <%= trip_option(trip, @trips.closest_return_trip) %>
+      <%= trip_option(trip, @trips.closest_return_trip, :return) %>
     <% end) %>
     <div class="trip-toggle-links js">
       <span class="view-more-link js">View More +</span>
