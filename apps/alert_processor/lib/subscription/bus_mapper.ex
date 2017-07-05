@@ -4,8 +4,7 @@ defmodule AlertProcessor.Subscription.BusMapper do
   bus into the relevant subscription and informed entity structs.
   """
 
-
-  alias AlertProcessor.Helpers.DateTimeHelper
+  import AlertProcessor.Subscription.Mapper
   alias AlertProcessor.Model.{InformedEntity, Subscription}
 
   @doc """
@@ -17,75 +16,52 @@ defmodule AlertProcessor.Subscription.BusMapper do
   def map_subscription(subscription_params) do
     with subscriptions <- map_timeframe(subscription_params),
          subscriptions <- map_priority(subscriptions, subscription_params),
-         subscriptions <- map_type(subscriptions),
-         {:ok, informed_entities} <- map_entities(subscription_params) do
-      {:ok, subscriptions, informed_entities}
-    else
-      _ -> :error
+         subscriptions <- map_type(subscriptions, :bus)
+         do
+      map_entities(subscriptions, subscription_params)
     end
   end
 
-  defp map_timeframe(%{"departure_start" => ds, "departure_end" => de, "return_start" => nil, "return_end" => nil, "relevant_days" => rd}) do
-    departure_timeframe(ds, de, rd)
-  end
-  defp map_timeframe(%{"departure_start" => ds, "departure_end" => de, "return_start" => rs, "return_end" => re, "relevant_days" => rd}) do
-    sub1 =
-      %Subscription{
-        start_time: DateTimeHelper.timestamp_to_utc(ds),
-        end_time: DateTimeHelper.timestamp_to_utc(de),
-        relevant_days: Enum.map(rd, &String.to_existing_atom/1)
-      }
-    sub2 =
-      %Subscription{
-        start_time: DateTimeHelper.timestamp_to_utc(rs),
-        end_time: DateTimeHelper.timestamp_to_utc(re),
-        relevant_days: Enum.map(rd, &String.to_existing_atom/1)
-      }
-
-    [sub1, sub2]
-  end
-  defp map_timeframe(%{"departure_start" => ds, "departure_end" => de, "relevant_days" => rd}) do
-    departure_timeframe(ds, de, rd)
-  end
-
-  defp departure_timeframe(ds, de, rd) do
-    [%Subscription{start_time: DateTimeHelper.timestamp_to_utc(ds), end_time: DateTimeHelper.timestamp_to_utc(de), relevant_days: Enum.map(rd, &String.to_existing_atom/1)}]
-  end
-
-  defp map_priority(subscriptions, %{"alert_priority_type" => alert_priority_type}) when is_list(subscriptions) do
-    Enum.map(subscriptions, fn(subscription) ->
-      %{subscription | alert_priority_type: String.to_existing_atom(alert_priority_type)}
-    end)
-  end
-
-  defp map_type(subscriptions) do
-    Enum.map(subscriptions, fn(subscription) ->
-      Map.put(subscription, :type, :bus)
-    end)
-  end
-
-  defp map_entities(params) do
+  defp map_entities(subscriptions, params) do
     with %{"route" => route} <- params,
-         informed_entities <- map_route_type(),
-         informed_entities <- map_routes(informed_entities, route) do
-      {:ok, informed_entities}
+         {route_id, direction_id} = extract_route_and_direction(route),
+         subscription_infos <- map_route_type(subscriptions),
+         subscription_infos <- map_routes(subscription_infos, params, route_id, direction_id),
+         subscription_infos <- filter_duplicate_entities(subscription_infos) do
+      {:ok, subscription_infos}
     else
       _ -> :error
     end
   end
 
-  defp map_route_type do
-    [%InformedEntity{route_type: 3}]
+  defp map_route_type(subscriptions) do
+    Enum.map(subscriptions, fn(subscription) ->
+      {subscription, [%InformedEntity{route_type: 3}]}
+    end)
   end
 
-  defp map_routes(informed_entities, route) do
-    {route_id, direction_id} = extract_route_and_direction(route)
+  defp map_routes([{sub, ie}], _params, route_id, direction_id) do
+    route_entities = do_map_route(route_id, 3, direction_id)
+    [{sub, ie ++ route_entities}]
+  end
+  defp map_routes([{sub1, ie1}, {sub2, ie2}], _params, route_id, 1) do
+    route_entities_1 = do_map_route(route_id, 3, 1)
+    route_entities_2 = do_map_route(route_id, 3, 0)
 
-    route_entities = [
-      %InformedEntity{route: route_id, route_type: 3},
-      %InformedEntity{route: route_id, route_type: 3, direction_id: direction_id}
+    [{sub1, ie1 ++ route_entities_1}, {sub2, ie2 ++ route_entities_2}]
+  end
+  defp map_routes([{sub1, ie1}, {sub2, ie2}], _params, route_id, 0) do
+    route_entities_1 = do_map_route(route_id, 3, 0)
+    route_entities_2 = do_map_route(route_id, 3, 1)
+
+    [{sub1, ie1 ++ route_entities_1}, {sub2, ie2 ++ route_entities_2}]
+  end
+
+  defp do_map_route(route, type, direction_id) do
+    [
+      %InformedEntity{route: route, route_type: type},
+      %InformedEntity{route: route, route_type: type, direction_id: direction_id}
     ]
-    informed_entities ++ route_entities
   end
 
   defp extract_route_and_direction(route) do

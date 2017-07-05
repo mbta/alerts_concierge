@@ -34,9 +34,9 @@ defmodule ConciergeSite.BusSubscriptionController do
 
   def create(conn, params, user, _claims) do
     with subscription_params <- params["subscription"],
-      mapper_params <- put_in(subscription_params["relevant_days"], relevant_days(subscription_params)),
-      {:ok, subscriptions, informed_entities} <- BusMapper.map_subscription(mapper_params),
-      multi <- build_subscription_transaction(subscriptions, informed_entities, user),
+      mapper_params <- BusParams.prepare_for_mapper(subscription_params),
+      {:ok, subscriptions} <- BusMapper.map_subscription(mapper_params),
+      multi <- build_subscription_transaction(subscriptions, user),
       {:ok, _} <- Repo.transaction(multi) do
         redirect(conn, to: subscription_path(conn, :index))
     else
@@ -44,14 +44,14 @@ defmodule ConciergeSite.BusSubscriptionController do
     end
   end
 
-  defp build_subscription_transaction(subscriptions, informed_entities, user) do
+  defp build_subscription_transaction(subscriptions, user) do
     subscriptions
     |> Enum.with_index
-    |> Enum.reduce(Multi.new, fn({sub, index}, acc) ->
+    |> Enum.reduce(Multi.new, fn({{sub, ies}, index}, acc) ->
       sub_to_insert = sub
       |> Map.merge(%{
         user_id: user.id,
-        informed_entities: informed_entities
+        informed_entities: ies
       })
       |> Subscription.create_changeset()
 
@@ -66,13 +66,6 @@ defmodule ConciergeSite.BusSubscriptionController do
     conn
     |> put_flash(:error, "There was an error creating your subscription. Please try again.")
     |> render("new.html", token: token, subscription_params: subscription_params)
-  end
-
-  defp relevant_days(params) do
-    for {day, value} <- Map.take(params, ~w(saturday sunday weekday)),
-      value == "true" do
-      day
-    end
   end
 
   def info(conn, params, user, _claims) do

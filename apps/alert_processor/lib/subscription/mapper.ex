@@ -81,7 +81,6 @@ defmodule AlertProcessor.Subscription.Mapper do
       {subscription, informed_entities ++ route_entities}
     end)
   end
-
   def map_routes([{subscription, informed_entities}], %{"origin" => origin, "destination" => destination}, routes) do
     route_entities =
       Enum.flat_map(routes, fn(%Route{route_id: route, route_type: type, stop_list: stop_list}) ->

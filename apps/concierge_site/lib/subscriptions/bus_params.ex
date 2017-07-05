@@ -2,6 +2,7 @@ defmodule ConciergeSite.Subscriptions.BusParams do
   @moduledoc """
   Functions for processing user input during the bus subscription flow
   """
+  import ConciergeSite.Subscriptions.ParamsValidator
 
   @spec validate_info_params(map) :: :ok | {:error, String.t}
   def validate_info_params(params) do
@@ -13,7 +14,7 @@ defmodule ConciergeSite.Subscriptions.BusParams do
     if errors == [] do
       :ok
     else
-      {:error, full_error_message(errors)}
+      {:error, full_error_message_iodata(errors)}
     end
   end
 
@@ -34,10 +35,38 @@ defmodule ConciergeSite.Subscriptions.BusParams do
     end
   end
 
-  defp full_error_message(errors) do
-    [
-      "Please correct the following errors to proceed: ",
-      errors |> Enum.intersperse(". ")
-    ]
+  @doc """
+  Transform submitted subscription params for BusMapper
+  """
+  @spec prepare_for_mapper(map) :: map
+  def prepare_for_mapper(%{"trip_type" => "one_way"} = params) do
+    translated_params = %{
+      "relevant_days" => relevant_days_from_booleans(Map.take(params, ~w(weekday saturday sunday))),
+      "return_start" => nil,
+      "return_end" => nil,
+      "amenities" => []
+    }
+
+    params
+    |> Map.take(["alert_priority_type", "departure_end", "departure_start", "route"])
+    |> Map.merge(translated_params)
+  end
+  def prepare_for_mapper(%{"trip_type" => "round_trip"} = params) do
+    translated_params = %{
+      "relevant_days" => relevant_days_from_booleans(Map.take(params, ~w(weekday saturday sunday))),
+      "amenities" => []
+    }
+
+    params
+    |> Map.take(["alert_priority_type", "departure_end", "departure_start", "return_start", "return_end", "route"])
+    |> Map.merge(translated_params)
+  end
+
+  defp relevant_days_from_booleans(day_map) do
+    day_map
+    |> Enum.filter_map(
+      fn {_day, bool} -> bool == "true" end,
+      fn {day, _bool} -> day end
+    )
   end
 end
