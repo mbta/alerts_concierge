@@ -5,39 +5,11 @@
   <%= flash_error(@conn) %>
 
   <%= form_for @changeset, subway_subscription_path(@conn, :update, @subscription), fn f -> %>
-    <div class="form-label edit-alert-type">Alert Type</div>
-    <div class="priority-options edit-form-section">
-      <%= error_tag f, :alert_priority_type %>
-      <label class="priority-radio-option">
-        <%= radio_button f, :alert_priority_type, "high", checked: (@changeset.data.alert_priority_type == :high) %>
-        <div>
-          <div>High Priority Alerts only: </div>
-          <div class="form-sub-label">
-            Includes severe delays, shuttle buses, and suspension of service
-          </div>
-        </div>
-      </label>
-      <div class="priority-option-divider"></div>
-      <label class="priority-radio-option">
-        <%= radio_button f, :alert_priority_type, "medium", checked: (@changeset.data.alert_priority_type == :medium) %>
-        <div>
-          <div>High and Medium Priority Alerts:</div>
-          <div class="form-sub-label">
-            Includes all high priority alerts plus moderate train delays
-          </div>
-        </div>
-      </label>
-      <div class="priority-option-divider"></div>
-      <label class="priority-radio-option">
-        <%= radio_button f, :alert_priority_type, "low", checked: (@changeset.data.alert_priority_type == :low) %>
-        <div>
-          <div>High, Medium, and Low Priority Alerts:</div>
-          <div class="form-sub-label">
-            All high and medium priority alerts plus minor train delays
-          </div>
-        </div>
-      </label>
-    </div>
+
+    <%= render "_alert_type_radio_buttons.html",
+               form: f,
+               checked: @changeset.data.alert_priority_type,
+               action: "edit" %>
 
     <div class="form-group select-days">
       <div class="form-label edit-form-label">Travel Days</div>

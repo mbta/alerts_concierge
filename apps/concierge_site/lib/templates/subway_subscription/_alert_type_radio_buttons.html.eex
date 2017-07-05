@@ -1,0 +1,39 @@
+<div class="form-label <%= @action %>-alert-type">Alert Type</div>
+<%= if @action == "new" do %>
+  <div class="form-sub-label priority-sub-label">
+    What kind of alerts you would like to recieve? You can edit this
+    information at any time.
+  </div>
+<% end %>
+<div class="priority-options <%= @action %>-form-section">
+  <%= error_tag @form, :alert_priority_type %>
+  <label class="priority-radio-option">
+    <%= radio_button @form, :alert_priority_type, "high", checked: (@checked == :high) %>
+    <div>
+      <div>High Priority Alerts only: </div>
+      <div class="form-sub-label">
+        Includes severe delays, shuttle buses, and suspension of service
+      </div>
+    </div>
+  </label>
+  <div class="priority-option-divider"></div>
+  <label class="priority-radio-option">
+    <%= radio_button @form, :alert_priority_type, "medium", checked: (@checked == :medium) %>
+    <div>
+      <div>High and Medium Priority Alerts:</div>
+      <div class="form-sub-label">
+        Includes all high priority alerts plus moderate train delays
+      </div>
+    </div>
+  </label>
+  <div class="priority-option-divider"></div>
+  <label class="priority-radio-option">
+    <%= radio_button @form, :alert_priority_type, "low", checked: (@checked == :low) %>
+    <div>
+      <div>High, Medium, and Low Priority Alerts:</div>
+      <div class="form-sub-label">
+        All high and medium priority alerts plus minor train delays
+      </div>
+    </div>
+  </label>
+</div>
