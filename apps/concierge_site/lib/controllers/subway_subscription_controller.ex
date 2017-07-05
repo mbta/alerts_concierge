@@ -7,6 +7,7 @@ defmodule ConciergeSite.SubwaySubscriptionController do
   alias AlertProcessor.Repo
   alias AlertProcessor.ServiceInfoCache
   alias AlertProcessor.Subscription.SubwayMapper
+  alias AlertProcessor.Model.Subscription
 
   def new(conn, _params, _user, _claims) do
     render conn, "new.html"
