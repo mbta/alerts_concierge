@@ -63,7 +63,7 @@ defmodule ConciergeSite.CommuterRailSubscriptionView do
     |> Enum.take(96)
   end
 
-  @spec trip_option(Trip.t, Trip.t, atom) :: Phoenix.HTML.safe
+  @spec trip_option(Trip.t, Trip.t, :depart | :return) :: Phoenix.HTML.safe
   def trip_option(trip, closest_trip, trip_type) do
     content_tag :div, class: trip_option_classes(trip, closest_trip) do
       [
