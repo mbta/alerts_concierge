@@ -19,8 +19,8 @@ defmodule ConciergeSite.Subscriptions.BusParams do
   end
 
   defp validate_presence_of_route({params, errors}) do
-    if params["route_id"] == "" do
-      {params, ["Route is invalid" | errors]}
+    if params["route"] == "" || params["route"] == nil do
+      {params, ["Route is invalid." | errors]}
     else
       {params, errors}
     end
@@ -29,7 +29,7 @@ defmodule ConciergeSite.Subscriptions.BusParams do
   defp validate_at_least_one_travel_day({params, errors}) do
     day_params = [params["weekday"], params["saturday"], params["sunday"]]
     if !Enum.any?(day_params, &(&1 == "true")) do
-      {params, ["At least one travel day option must be selected" | errors]}
+      {params, ["At least one travel day option must be selected." | errors]}
     else
       {params, errors}
     end
