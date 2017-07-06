@@ -121,27 +121,6 @@ defmodule ConciergeSite.BusSubscriptionControllerTest do
       assert ie.subscription == List.first(subscriptions)
     end
 
-    test "POST /subscriptions/bus with invalid params", %{conn: conn, user: user} do
-      params = %{"subscription" => %{
-        "departure_start" => "08:45:00",
-        "departure_end" => "09:15:00",
-        "return_start" => nil,
-        "return_end" => nil,
-        "route" => "Silver Line SL1 - 1",
-        "saturday" => "false",
-        "sunday" => "false",
-        "weekday" => "false",
-        "trip_type" => "",
-        "alert_priority_type" => ""
-      }}
-
-      conn = user
-      |> guardian_login(conn)
-      |> post("/subscriptions/bus", params)
-
-      assert html_response(conn, 302)
-    end
-
     test "GET /subscriptions/bus/:id/edit", %{conn: conn, user: user} do
       factory =
         subscription_factory()
