@@ -4,9 +4,11 @@ defmodule AlertProcessor.Subscription.SubwayMapper do
   subway into the relevant subscription and informed entity structs.
   """
 
-  use AlertProcessor.Subscription.Mapper
+  import AlertProcessor.Subscription.Mapper
   alias AlertProcessor.ServiceInfoCache
   alias AlertProcessor.Model.{Route, Subscription}
+
+  defdelegate build_subscription_transaction(subscriptions, user), to: AlertProcessor.Subscription.Mapper
 
   @doc """
   map_subscription/1 receives a map of subway subscription params and returns

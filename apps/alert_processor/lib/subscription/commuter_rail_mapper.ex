@@ -4,8 +4,10 @@ defmodule AlertProcessor.Subscription.CommuterRailMapper do
   subway into the relevant subscription and informed entity structs.
   """
 
-  use AlertProcessor.Subscription.Mapper
+  import AlertProcessor.Subscription.Mapper
   alias AlertProcessor.{ApiClient, Model.Route, Model.Subscription, Model.Trip, ServiceInfoCache}
+
+  defdelegate build_subscription_transaction(subscriptions, user), to: AlertProcessor.Subscription.Mapper
 
   @spec map_subscriptions(map) :: {:ok, [Subscription.subscription_info]} | :error
   def map_subscriptions(subscription_params) do
