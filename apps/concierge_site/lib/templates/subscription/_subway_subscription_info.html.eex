@@ -2,7 +2,7 @@
   <div class="subway-subscriptions">
     <h6>Subway</h6>
     <%= for subscription <- @subscriptions do %>
-      <%= link(to: subscription_path(@conn, :edit, subscription), class: "subscription-link") do %>
+      <%= link(to: subway_subscription_path(@conn, :edit, subscription), class: "subscription-link") do %>
         <div class="subscription">
           <div class="subscription-icon-container">
             <%= render ConciergeSite.IconsView, "_circle_icon.html", route: parse_route(subscription), large: true %>

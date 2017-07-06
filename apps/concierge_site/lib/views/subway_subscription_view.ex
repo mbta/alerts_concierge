@@ -1,8 +1,8 @@
 defmodule ConciergeSite.SubwaySubscriptionView do
   use ConciergeSite.Web, :view
   import ConciergeSite.SubscriptionViewHelper,
-    only: [atomize_keys: 1, joined_day_list: 1, travel_time_options: 0, format_time: 1]
-  alias AlertProcessor.Helpers.DateTimeHelper
+    only: [joined_day_list: 1, travel_time_options: 0, format_time: 1,
+           time_option_local_strftime: 1, atomize_keys: 1]
 
   @typedoc """
   Possible values for trip types in Create Subscription flow
@@ -126,15 +126,5 @@ defmodule ConciergeSite.SubwaySubscriptionView do
     [[format_time(params["departure_start"]),
      " - ",
      format_time(params["departure_end"])]]
-  end
-
-  @doc """
-  Converts a utc timestamp to local time stringifiied in the H:M:S format
-  """
-  @spec time_option_local_strftime(Time.t) :: String.t
-  def time_option_local_strftime(timestamp) do
-    timestamp
-    |> DateTimeHelper.utc_time_to_local()
-    |> Calendar.Strftime.strftime!("%H:%M:%S")
   end
 end

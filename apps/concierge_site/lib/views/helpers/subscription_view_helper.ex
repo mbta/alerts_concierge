@@ -3,7 +3,7 @@ defmodule ConciergeSite.SubscriptionViewHelper do
   Functions used across subscription views
   """
   alias Calendar.{Time, Strftime}
-  alias AlertProcessor.Helpers.StringHelper
+  alias AlertProcessor.Helpers.{DateTimeHelper, StringHelper}
 
   @doc """
   Returns stringified times to populate a dropdown list of a full day of times at
@@ -54,5 +54,15 @@ defmodule ConciergeSite.SubscriptionViewHelper do
     subscription
     |> Map.get(:informed_entities)
     |> Enum.find_value(&(&1.direction_id))
+  end
+
+  @doc """
+  Converts a utc timestamp to local time stringifiied in the H:M:S format
+  """
+  @spec time_option_local_strftime(Time.t) :: String.t
+  def time_option_local_strftime(timestamp) do
+    timestamp
+    |> DateTimeHelper.utc_time_to_local()
+    |> Strftime.strftime!("%H:%M:%S")
   end
 end

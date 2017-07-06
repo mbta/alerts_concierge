@@ -51,4 +51,14 @@ defmodule AlertProcessor.Model.SubscriptionTest do
 
     refute changeset.valid?
   end
+
+  test "update_changeset/2 with valid parameters", %{valid_attrs: valid_attrs} do
+    changeset = Subscription.update_changeset(%Subscription{}, valid_attrs)
+    assert changeset.valid?
+  end
+
+  test "update_changeset/2 does not allow user_id", %{valid_attrs: valid_attrs} do
+    changeset = Subscription.update_changeset(%Subscription{}, valid_attrs)
+    refute Map.has_key?(changeset.changes, :user_id)
+  end
 end

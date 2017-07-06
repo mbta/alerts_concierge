@@ -1,0 +1,48 @@
+<h1>Route Name</h1>
+
+<div class="edit-subscription subscription-step">
+  <h2>Edit Subscription</h2>
+  <%= flash_error(@conn) %>
+
+  <%= form_for @changeset, bus_subscription_path(@conn, :update, @subscription), fn f -> %>
+    <%= render "_alert_type_radio_buttons.html",
+               form: f,
+               checked: @changeset.data.alert_priority_type,
+               action: "edit" %>
+    <%= render "_travel_days_checkboxes.html",
+               form: f,
+               checked: @changeset.data.relevant_days,
+               action: "edit" %>
+
+    <div class="form-group travel-times">
+      <div class="form-label">When do you travel?</div>
+      <div class="form-sub-label travel-times-sub-label">
+        We will send you notifications for any service alerts that occur during
+        your planned travel time.
+      </div>
+      <%= error_tag f, :start_time %>
+      <%= error_tag f, :end_time %>
+      <div class="travel-time-select-section edit-subscription-section-container">
+        <label for="subscription_departure_start" class="travel-time-label">
+          Traveling between:
+        </label>
+        <%= select f,
+                   :departure_start,
+                   travel_time_options(),
+                   class: "travel-time-select",
+                   selected: time_option_local_strftime(@changeset.data.start_time) %>
+        <label for="subscription_departure_end" class="travel-time-connector">
+          to
+        </label>
+        <%= select f,
+                   :departure_end,
+                   travel_time_options(),
+                   class: "travel-time-select",
+                   selected: time_option_local_strftime(@changeset.data.end_time) %>
+      </div>
+    </div>
+    <div class="update-button-container">
+      <%= submit "Update this Subscription", class: "btn btn-primary update-subscription" %>
+    </div>
+  <% end %>
+</div>

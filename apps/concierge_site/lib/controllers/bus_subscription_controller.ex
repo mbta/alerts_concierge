@@ -1,12 +1,35 @@
 defmodule ConciergeSite.BusSubscriptionController do
   use ConciergeSite.Web, :controller
   use Guardian.Phoenix.Controller
-  alias ConciergeSite.Subscriptions.{BusParams, BusRoutes, TemporaryState}
+  alias ConciergeSite.Subscriptions.{BusParams, BusRoutes, TemporaryState, SubscriptionParams}
   alias AlertProcessor.{Model.Subscription, Repo, ServiceInfoCache, Subscription.BusMapper}
   alias Ecto.Multi
 
   def new(conn, _params, _user, _claims) do
     render conn, "new.html"
+  end
+
+  def edit(conn, %{"id" => id}, user, _claims) do
+    subscription = Subscription.one_for_user!(id, user.id)
+    changeset = Subscription.create_changeset(subscription)
+    render conn, "edit.html", subscription: subscription, changeset: changeset
+  end
+
+  def update(conn, %{"id" => id, "subscription" => subscription_params}, user, _claims) do
+    subscription = Subscription.one_for_user!(id, user.id)
+    params = SubscriptionParams.prepare_for_update_changeset(subscription_params)
+    changeset = Subscription.update_changeset(subscription, params)
+
+    case Repo.update(changeset) do
+      {:ok, _subscription} ->
+        conn
+        |> put_flash(:info, "Subscription updated.")
+        |> redirect(to: subscription_path(conn, :index))
+      {:error, changeset} ->
+        conn
+        |> put_flash(:error, "Subscription could not be updated")
+        |> render("edit.html", subscription: subscription, changeset: changeset)
+    end
   end
 
   def create(conn, params, user, _claims) do

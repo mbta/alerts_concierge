@@ -4,6 +4,7 @@ defmodule ConciergeSite.SubwaySubscriptionController do
   alias ConciergeSite.Subscriptions.TemporaryState
   alias ConciergeSite.Subscriptions.Lines
   alias ConciergeSite.Subscriptions.SubwayParams
+  alias ConciergeSite.Subscriptions.SubscriptionParams
   alias AlertProcessor.Repo
   alias AlertProcessor.ServiceInfoCache
   alias AlertProcessor.Subscription.SubwayMapper
@@ -21,8 +22,8 @@ defmodule ConciergeSite.SubwaySubscriptionController do
 
   def update(conn, %{"id" => id, "subscription" => subscription_params}, user, _claims) do
     subscription = Subscription.one_for_user!(id, user.id)
-    params = SubwayParams.prepare_for_update_changeset(subscription_params)
-    changeset = Subscription.create_changeset(subscription, params)
+    params = SubscriptionParams.prepare_for_update_changeset(subscription_params)
+    changeset = Subscription.update_changeset(subscription, params)
 
     case Repo.update(changeset) do
       {:ok, _subscription} ->

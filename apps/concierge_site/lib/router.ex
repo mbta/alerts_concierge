@@ -36,7 +36,7 @@ defmodule ConciergeSite.Router do
     resources "/subway", SubwaySubscriptionController, only: [:new, :edit, :update, :create]
     get "/subway/new/info", SubwaySubscriptionController, :info
     post "/subway/new/preferences", SubwaySubscriptionController, :preferences
-    resources "/bus", BusSubscriptionController, only: [:new, :create]
+    resources "/bus", BusSubscriptionController, only: [:new, :edit, :update, :create]
     get "/bus/new/info", BusSubscriptionController, :info
     post "/bus/new/preferences", BusSubscriptionController, :preferences
     resources "/commuter_rail", CommuterRailSubscriptionController, only: [:new, :create]
