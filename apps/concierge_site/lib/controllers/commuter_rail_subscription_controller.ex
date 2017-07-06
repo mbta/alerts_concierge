@@ -52,13 +52,19 @@ defmodule ConciergeSite.CommuterRailSubscriptionController do
     )
     token = TemporaryState.encode(subscription_params)
 
-    case CommuterRailParams.validate_trip_params(subscription_params) do
-      :ok ->
-        render conn, "preferences.html",
-          token: token,
-          subscription_params: subscription_params
+    with :ok <- CommuterRailParams.validate_trip_params(subscription_params),
+         {:ok, origin} <- ServiceInfoCache.get_stop(subscription_params["origin"]),
+         {:ok, destination} <- ServiceInfoCache.get_stop(subscription_params["destination"]) do
+      render conn, "preferences.html",
+        token: token,
+        subscription_params: subscription_params,
+        origin: origin,
+        destination: destination
+    else
       {:error, message} ->
         handle_invalid_trip_submission(conn, subscription_params, token, message)
+      _ ->
+        handle_invalid_trip_submission(conn, subscription_params, token, "Something went wrong, please try again.")
     end
   end
 

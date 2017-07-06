@@ -4,10 +4,11 @@
 
 <div class="subscription-step trip-preferences">
   <h2 class="preferences-subtitle">Set your preferences for your trip:</h2>
-
   <div class="trip-summary">
-    <div class="form-label"></div>
-      <div>trip info here</div>
+    <p>
+      <strong><%= trip_summary_header(@subscription_params, @origin, @destination) %></strong>
+    </p>
+    <%= trip_summary_details(@subscription_params, @origin, @destination) %>
   </div>
 
   <%= form_for @conn, commuter_rail_subscription_path(@conn, :create), [class: "trip-prefs-form commuter-rail", as: :subscription], fn f -> %>
