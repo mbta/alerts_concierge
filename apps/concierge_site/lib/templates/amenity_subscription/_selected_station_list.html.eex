@@ -1,0 +1,5 @@
+<%= for station <- @stations do %>
+  <%= submit formaction: amenity_subscription_path(@conn, :remove_station, station) do %>
+     <%= station %>
+  <%= end %>
+<% end %>

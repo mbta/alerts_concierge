@@ -1,0 +1,28 @@
+<div class="form-group select-days">
+  <div class="form-label edit-form-label">What station amenities are you interested in?</div>
+  <div class="form-subtitle">Choose all that apply</div>
+  <%= error_tag @form, :amenities %>
+  <div class="<%= @action %>-subscription-section-container">
+    <label>
+      <%= checkbox @form,
+                   :elevator,
+                   name: "subscription[amenities][]",
+                   checked_value: "elevator",
+                   unchecked_value: nil,
+                   class: "subscription-day-checkbox",
+                   checked: Enum.member?(@checked, "elevator") %>
+      Elevators
+    </label>
+    <label>
+      <%= checkbox @form,
+                   :escalator,
+                   name: "subscription[amenities][]",
+                   checked_value: "escalator",
+                   unchecked_value: nil,
+                   class: "subscription-day-checkbox",
+                   checked: Enum.member?(@checked, "escalator") %>
+      Escalators
+    </label>
+  </div>
+</div>
+
