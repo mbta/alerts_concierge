@@ -22,12 +22,14 @@ import "phoenix_html"
 
 import selectStation from './select-station';
 import selectBusRoute from './select-bus-route';
+import selectAmenityStation from './select-amenity-station';
 import selectTrip from './select-trip';
 import myAccountToggleSections from './my-account-toggle-sections';
 import formHelpers from './form-helpers';
 
 selectBusRoute();
 selectStation();
+selectAmenityStation();
 selectTrip();
 myAccountToggleSections();
 formHelpers();
