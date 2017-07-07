@@ -20,6 +20,7 @@ defmodule ConciergeSite.Subscriptions.DisplayInfo do
   defp parse_station_list(subscriptions) do
     stops =
       subscriptions
+      |> Enum.filter(& Enum.member?([:commuter_rail, :ferry], &1.type))
       |> Enum.flat_map(fn(subscription) ->
         for informed_entity <- subscription.informed_entities, InformedEntity.entity_type(informed_entity) == :stop do
           informed_entity.stop
