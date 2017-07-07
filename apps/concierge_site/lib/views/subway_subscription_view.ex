@@ -1,7 +1,7 @@
 defmodule ConciergeSite.SubwaySubscriptionView do
   use ConciergeSite.Web, :view
   import ConciergeSite.SubscriptionViewHelper,
-    only: [joined_day_list: 1, travel_time_options: 0, format_time: 1]
+    only: [atomize_keys: 1, joined_day_list: 1, travel_time_options: 0, format_time: 1]
   alias AlertProcessor.Helpers.DateTimeHelper
 
   @typedoc """

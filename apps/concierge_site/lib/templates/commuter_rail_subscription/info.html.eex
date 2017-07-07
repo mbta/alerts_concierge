@@ -44,13 +44,8 @@
       <%= render "_travel_time_select_lists.html", trip_type: @subscription_params["trip_type"] %>
     </div>
 
-    <%= for {param_name, value} <- @subscription_params do %>
-      <%= hidden_input f, :"#{param_name}", value: value %>
-    <% end %>
-
-  <div class="trip-info-footer">
-    <%= link to: commuter_rail_subscription_path(@conn, :new), class: "subscription-info-back-link" do %>
-      <i class="fa fa-arrow-left" aria-hidden="true"></i> Go Back
+    <%= for {param_name, value} <- atomize_keys(@subscription_params) do %>
+      <%= hidden_input f, param_name, value: value %>
     <% end %>
 
     <div class="trip-info-footer">

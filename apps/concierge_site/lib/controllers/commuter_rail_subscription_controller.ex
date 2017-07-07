@@ -9,7 +9,7 @@ defmodule ConciergeSite.CommuterRailSubscriptionController do
   end
 
   def info(conn, params, user, _claims) do
-    subscription_params = Map.merge(params, %{user_id: user.id, route_type: 2})
+    subscription_params = Map.merge(params, %{"user_id" => user.id, "route_type" => 2})
     token = TemporaryState.encode(subscription_params)
 
     case ServiceInfoCache.get_commuter_rail_info do
@@ -30,7 +30,7 @@ defmodule ConciergeSite.CommuterRailSubscriptionController do
 
   def train(conn, params, user, _claims) do
     subscription_params = Map.merge(
-      params["subscription"], %{user_id: user.id, route_type: 2}
+      params["subscription"], %{"user_id" => user.id, "route_type" => 2}
     )
     token = TemporaryState.encode(subscription_params)
 
@@ -48,7 +48,7 @@ defmodule ConciergeSite.CommuterRailSubscriptionController do
 
   def preferences(conn, params, user, _claims) do
     subscription_params = Map.merge(
-      params["subscription"], %{user_id: user.id, route_type: 2}
+      params["subscription"], %{"user_id" => user.id, "route_type" => 2}
     )
     token = TemporaryState.encode(subscription_params)
 

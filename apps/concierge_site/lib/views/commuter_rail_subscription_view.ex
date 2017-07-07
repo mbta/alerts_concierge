@@ -1,6 +1,6 @@
 defmodule ConciergeSite.CommuterRailSubscriptionView do
   use ConciergeSite.Web, :view
-  import ConciergeSite.SubscriptionViewHelper, only: [travel_time_options: 0]
+  import ConciergeSite.SubscriptionViewHelper, only: [atomize_keys: 1, travel_time_options: 0]
   alias AlertProcessor.Model.Trip
 
   @type trip_type :: :one_way | :round_trip

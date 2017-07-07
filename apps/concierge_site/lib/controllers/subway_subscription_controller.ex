@@ -37,7 +37,7 @@ defmodule ConciergeSite.SubwaySubscriptionController do
   end
 
   def info(conn, params, user, _claims) do
-    subscription_params = Map.merge(params, %{user_id: user.id, route_type: 1})
+    subscription_params = Map.merge(params, %{"user_id" => user.id, "route_type" => 1})
     token = TemporaryState.encode(subscription_params)
 
     case ServiceInfoCache.get_subway_full_routes do
@@ -58,7 +58,7 @@ defmodule ConciergeSite.SubwaySubscriptionController do
 
   def preferences(conn, params, user, _claims) do
     subscription_params = Map.merge(
-      params["subscription"], %{user_id: user.id, route_type: 1}
+      params["subscription"], %{"user_id" => user.id, "route_type" => 1}
     )
     token = TemporaryState.encode(subscription_params)
 

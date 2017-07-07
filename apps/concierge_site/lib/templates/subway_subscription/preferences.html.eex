@@ -20,9 +20,9 @@
                  action: "new" %>
     </div>
 
-    <%= for {param_name, value} <- @subscription_params do %>
-      <%= text_input f, :"#{param_name}", value: value, hidden: true %>
-    <%= end %>
+    <%= for {param_name, value} <- atomize_keys(@subscription_params) do %>
+      <%= hidden_input f, param_name, value: value %>
+    <% end %>
 
     <div class="trip-info-footer">
       <%= link to: subway_subscription_path(@conn, :info, trip_type: @subscription_params["trip_type"]), class: "subscription-info-back-link" do %>
