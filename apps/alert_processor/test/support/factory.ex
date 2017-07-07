@@ -54,6 +54,25 @@ defmodule AlertProcessor.Factory do
     ]
   end
 
+  def commuter_rail_subscription(%Subscription{} = subscription) do
+    %{subscription |
+      type: :commuter_rail,
+      origin: "North Station",
+      destination: "Anderson/Woburn"
+    }
+  end
+
+  def commuter_rail_subscription_entities() do
+    [
+      %InformedEntity{route_type: 2},
+      %InformedEntity{trip: "221"},
+      %InformedEntity{trip: "331"},
+      %InformedEntity{route_type: 2, route: "CR-Lowell", direction_id: 1},
+      %InformedEntity{route_type: 2, route: "CR-Lowell", stop: "Anderson/ Woburn"},
+      %InformedEntity{route_type: 2, route: "CR-Lowell", stop: "place-north"}
+    ]
+  end
+
   def user_factory do
     %User{
       email: sequence(:email, &"email-#{&1}@example.com"),
