@@ -12,7 +12,7 @@ defmodule ConciergeSite.UserParams do
   def prepare_for_update_changeset(params) do
     phone_number =
       case params["sms_toggle"] do
-        "true" -> %{"phone_number" => params["phone_number"]}
+        "true" -> %{"phone_number" => String.replace(params["phone_number"], ~r/\D/, "")}
         "false" -> %{"phone_number" => nil}
         _ -> %{}
       end
@@ -20,8 +20,8 @@ defmodule ConciergeSite.UserParams do
     do_not_disturb =
       case params["dnd_toggle"] do
         "true" ->
-          %{"do_not_disturb_start" => DateTimeHelper.timestamp_to_utc(params["do_not_disturb_start"]), # have to convert time
-            "do_not_disturb_end" => DateTimeHelper.timestamp_to_utc(params["do_not_disturb_end"])} # have to convert time
+          %{"do_not_disturb_start" => DateTimeHelper.timestamp_to_utc(params["do_not_disturb_start"]),
+            "do_not_disturb_end" => DateTimeHelper.timestamp_to_utc(params["do_not_disturb_end"])}
         "false" ->
           %{"do_not_disturb_start" => nil, "do_not_disturb_end" => nil}
         _ -> %{}
