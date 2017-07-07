@@ -21,7 +21,7 @@ defmodule ConciergeSite.MyAccountController do
         |> redirect(to: my_account_path(conn, :edit))
       {:error, changeset} ->
         conn
-        |> put_flash(:error, "Account Preferences could not be updated.")
+        |> put_flash(:error, "Account Preferences could not be updated. Please see errors below.")
         |> render("edit.html", user: user, changeset: changeset)
     end
   end

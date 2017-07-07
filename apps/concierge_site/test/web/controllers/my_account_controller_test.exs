@@ -48,7 +48,7 @@ defmodule ConciergeSite.AccountControllerTest do
       |> guardian_login(conn)
       |> patch("/my-account", params)
 
-      assert html_response(conn, 200) =~ "Account Preferences could not be updated."
+      assert html_response(conn, 200) =~ "Account Preferences could not be updated. Please see errors below."
     end
   end
 
