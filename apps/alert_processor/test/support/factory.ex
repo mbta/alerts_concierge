@@ -44,6 +44,12 @@ defmodule AlertProcessor.Factory do
       destination: "Harvard"}
   end
 
+  def bus_subscription(%Subscription{} = subscription) do
+    %{subscription |
+      type: :bus
+    }
+  end
+
   def subway_subscription_entities() do
     [
       %InformedEntity{route_type: 1},
@@ -70,6 +76,14 @@ defmodule AlertProcessor.Factory do
       %InformedEntity{route_type: 2, route: "CR-Lowell", direction_id: 1},
       %InformedEntity{route_type: 2, route: "CR-Lowell", stop: "Anderson/ Woburn"},
       %InformedEntity{route_type: 2, route: "CR-Lowell", stop: "place-north"}
+    ]
+  end
+
+  def bus_subscription_entities() do
+    [
+      %InformedEntity{route_type: 3},
+      %InformedEntity{route_type: 3, route: "57A"},
+      %InformedEntity{route_type: 3, route: "57A", direction_id: 0}
     ]
   end
 
