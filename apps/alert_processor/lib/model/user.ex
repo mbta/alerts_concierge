@@ -36,7 +36,7 @@ defmodule AlertProcessor.Model.User do
     field :password, :string, virtual: true
     field :password_confirmation, :string, virtual: true
     field :sms_toggle, :boolean, virtual: true
-    field :amber_alert_opt_in, :boolean
+    field :amber_alert_opt_in, :boolean, default: true
 
     timestamps()
   end
