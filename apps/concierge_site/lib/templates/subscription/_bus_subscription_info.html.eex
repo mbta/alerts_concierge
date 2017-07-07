@@ -1,7 +1,7 @@
-<%= if @subscription_info != [] do %>
+<%= if @subscriptions != [] do %>
   <div class="bus-subscriptions">
     <h6>Bus</h6>
-    <%= for subscription <- @subscription_info do %>
+    <%= for subscription <- @subscriptions do %>
       <%= link(to: subscription_path(@conn, :edit, subscription), class: "subscription-link") do %>
         <div class="subscription">
           <div class="subscription-icon-container bus">
