@@ -31,21 +31,22 @@
       <div class="my-account-section-prompt">
         Would you like to receive alerts via SMS?
       </div>
-      <label for="user_sms_toggle_true" class="my-account-radio-label">
-        <%= radio_button f, :sms_toggle, "true", checked: sms_messaging_checked?(@user), class: "my-account-radio-button" %>
-        Yes
-      </label>
-      <label for="user_sms_toggle_false" class="my-account-radio-label">
-        <%= radio_button f, :sms_toggle, "false", checked: !sms_messaging_checked?(@user), class: "my-account-radio-button" %>
-        No - I'd prefer emails.
-      </label>
-
+      <div class="my-account-radio-group">
+        <label for="user_sms_toggle_true" class="my-account-radio-label">
+          <%= radio_button f, :sms_toggle, "true", checked: sms_messaging_checked?(@user), class: "my-account-radio-button" %>
+          Yes
+        </label>
+        <label for="user_sms_toggle_false" class="my-account-radio-label">
+          <%= radio_button f, :sms_toggle, "false", checked: !sms_messaging_checked?(@user), class: "my-account-radio-button" %>
+          No - I'd prefer emails.
+        </label>
+      </div>
       <label for="user_phone_number" class="form-label">Wireless Number</label>
       <div class="form-sub-label">
         Please enter your wireless number to receive T-Alerts via SMS:
       </div>
       <%= error_tag f, :phone_number %>
-      <%= telephone_input f, :phone_number, placeholder: "###-###-####", value: @user.phone_number %>
+      <%= telephone_input f, :phone_number, placeholder: "###-###-####", class: "large-input", value: @user.phone_number %>
     </div>
 
     <h2>Do Not Disturb</h2>
@@ -53,15 +54,16 @@
       <div class="my-account-section-prompt">
       Would you like to set a Do Not Disturb period?
       </div>
-      <label for="user_dnd_toggle_true" class="my-account-radio-label">
-        <%= radio_button f, :dnd_toggle, "true", checked: do_not_disturb_checked?(@user), class: "my-account-radio-button" %>
-        Yes
-      </label>
-      <label for="user_dnd_toggle_false" class="my-account-radio-label">
-        <%= radio_button f, :dnd_toggle, "false", checked: !do_not_disturb_checked?(@user), class: "my-account-radio-button" %>
-        No
-      </label>
-
+      <div class="my-account-radio-group">
+        <label for="user_dnd_toggle_true" class="my-account-radio-label">
+          <%= radio_button f, :dnd_toggle, "true", checked: do_not_disturb_checked?(@user), class: "my-account-radio-button" %>
+          Yes
+        </label>
+        <label for="user_dnd_toggle_false" class="my-account-radio-label">
+          <%= radio_button f, :dnd_toggle, "false", checked: !do_not_disturb_checked?(@user), class: "my-account-radio-button" %>
+          No
+        </label>
+      </div>
       <div class="form-label">Set Time</div>
       <div class="form-sub-label">
         Designate time periods during which you would rather not receive T-Alerts:

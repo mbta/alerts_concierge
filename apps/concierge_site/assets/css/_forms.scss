@@ -93,3 +93,12 @@ button {
 .toggle_hide:checked ~ .toggleable {
   display: none;
 }
+
+.large-input {
+  border: 1px solid $steel;
+  border-radius: 4px;
+  line-height: 1.55rem;
+  display: block;
+  width: 100%;
+  padding: 0.5rem 0.75rem;
+}
