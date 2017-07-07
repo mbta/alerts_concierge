@@ -1,0 +1,72 @@
+.my-account-container {
+  @include media-breakpoint-up(sm) {
+    @include make-col(8);
+    @include make-col-offset(2);
+  }
+}
+
+.my-account-header-container {
+  align-items: baseline;
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 1.75rem;
+  padding-bottom: 0;
+}
+
+.delete-account-link {
+  font-size: $base-font-size-xxl;
+  font-weight: normal;
+}
+
+.my-account-section {
+  background-color: $pale-grey-30;
+  margin-bottom: 2rem;
+  padding: 1.25rem;
+}
+
+.email-sub-label {
+  margin-bottom: .5rem;
+}
+
+.user-email {
+  margin-bottom: 2.5rem;
+}
+
+.user-password-container {
+  display: flex;
+  justify-content: space-between;
+}
+
+.my-account-radio-label {
+  display: block;
+
+}
+
+.my-account-radio-button {
+  margin-right: .5rem;
+}
+
+.my-account-radio-group {
+  margin-bottom: 1rem;
+}
+
+.my-account-section-prompt {
+  margin-bottom: .75rem;
+}
+
+.update-account {
+  margin-bottom: 1.75rem;
+}
+
+.log-out-link {
+  font-weight: bold;
+  margin-bottom: 3rem;
+  text-align: center;
+}
+
+.my-account-footer {
+  border-top: 1px solid $pale-grey;
+  padding: 2rem 0 .5rem;
+  position: relative;
+  text-align: center;
+}

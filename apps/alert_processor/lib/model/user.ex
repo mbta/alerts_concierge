@@ -72,6 +72,15 @@ defmodule AlertProcessor.Model.User do
     |> hash_password()
   end
 
+  @doc """
+  Builds changeset for updating an existing user account
+  """
+  def update_account_changeset(struct, params \\ %{}) do
+    struct
+    |> cast(params, ~w(phone_number do_not_disturb_start do_not_disturb_end))
+    |> validate_format(:phone_number, ~r/^[0-9]{10}$/, message: "Phone number is not in a valid format.")
+  end
+
   defp hash_password(changeset) do
     case changeset do
       %Ecto.Changeset{valid?: true, changes: %{password: password}} ->

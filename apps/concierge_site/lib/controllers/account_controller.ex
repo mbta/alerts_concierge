@@ -5,10 +5,6 @@ defmodule ConciergeSite.AccountController do
 
   plug :scrub_params, "user" when action in [:create]
 
-  def index(conn, _params) do
-    render conn, "index.html"
-  end
-
   def new(conn, _params) do
     account_changeset = User.create_account_changeset(%User{}, %{"sms_toggle" => false})
     render conn, "new.html", account_changeset: account_changeset, errors: []
