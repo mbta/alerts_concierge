@@ -53,7 +53,6 @@ defmodule ConciergeSite.SubscriptionViewHelper do
   def direction_id(subscription) do
     subscription
     |> Map.get(:informed_entities)
-    |> Enum.filter_map(&(!is_nil(&1.direction_id)), &(&1.direction_id))
-    |> List.first
+    |> Enum.find_value(&(&1.direction_id))
   end
 end
