@@ -8,6 +8,8 @@ defmodule AlertProcessor.Subscription.SubwayMapper do
   alias AlertProcessor.ServiceInfoCache
   alias AlertProcessor.Model.{Route, Subscription}
 
+  defdelegate build_subscription_transaction(subscriptions, user), to: AlertProcessor.Subscription.Mapper
+
   @doc """
   map_subscription/1 receives a map of subway subscription params and returns
   arrays of subscription_info to create in the database

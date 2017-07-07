@@ -1,6 +1,6 @@
 defmodule ConciergeSite.CommuterRailSubscriptionView do
   use ConciergeSite.Web, :view
-
+  import ConciergeSite.SubscriptionViewHelper, only: [atomize_keys: 1, travel_time_options: 0]
   alias AlertProcessor.Model.Trip
 
   @type trip_type :: :one_way | :round_trip
@@ -49,18 +49,6 @@ defmodule ConciergeSite.CommuterRailSubscriptionView do
 
   def trip_info_description(_trip_type) do
     ""
-  end
-
-  @doc """
-  Returns stringified times to populate a dropdown list of a full day of times at
-  fifteen-minute intervals
-  """
-  def travel_time_options() do
-    0
-    |> Stream.iterate(&(&1 + 900))
-    |> Stream.map(&Calendar.Time.from_second_in_day/1)
-    |> Stream.map(& {Calendar.Strftime.strftime!(&1, "%I:%M %p"), Calendar.Strftime.strftime!(&1, "%H:%M:%S")})
-    |> Enum.take(96)
   end
 
   @spec trip_option(Trip.t, Trip.t, :depart | :return) :: Phoenix.HTML.safe

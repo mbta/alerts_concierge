@@ -81,4 +81,54 @@ defmodule ConciergeSite.Subscriptions.CommuterRailParamsTest do
       assert :ok = CommuterRailParams.validate_trip_params(params)
     end
   end
+
+  describe "prepare_for_mapper" do
+    test "it preps params for one way parameters" do
+      params = %{
+        "alert_priority_type" => "low",
+        "departure_start" => "09:00:00",
+        "destination" => "Morton Street",
+        "origin" => "Fairmount",
+        "relevant_days" => "weekday",
+        "route_type" => "2",
+        "trip_type" => "one_way",
+        "trips" => ["755", "757", "759"],
+        "user_id" => "123-456-7890"
+      }
+
+      assert CommuterRailParams.prepare_for_mapper(params) == Map.merge(params, %{
+        "amenities" => [],
+        "departure_start" => "08:25:00",
+        "departure_end" => "10:06:00",
+        "relevant_days" => ["weekday"],
+        "return_start" => nil,
+        "return_end" => nil
+      })
+    end
+
+    test "it preps params for round trip parameters" do
+      params = %{
+        "alert_priority_type" => "low",
+        "departure_start" => "09:00:00",
+        "destination" => "Morton Street",
+        "origin" => "Fairmount",
+        "relevant_days" => "weekday",
+        "return_start" => "14:00:00",
+        "return_trips" => ["768"],
+        "route_type" => "2",
+        "trip_type" => "round_trip",
+        "trips" => ["755", "757", "759"],
+        "user_id" => "123-456-7890"
+      }
+
+      assert CommuterRailParams.prepare_for_mapper(params) == Map.merge(params, %{
+        "amenities" => [],
+        "departure_start" => "08:25:00",
+        "departure_end" => "10:06:00",
+        "relevant_days" => ["weekday"],
+        "return_start" => "14:48:00",
+        "return_end" => "14:43:00"
+      })
+    end
+  end
 end

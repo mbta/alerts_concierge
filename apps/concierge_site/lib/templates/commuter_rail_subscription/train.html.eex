@@ -13,8 +13,8 @@
 
   <%= render "_train_select_options.html", f: f, trips: @trips %>
 
-  <%= for {param_name, value} <- @subscription_params do %>
-    <%= hidden_input f, :"#{param_name}", value: value %>
+  <%= for {param_name, value} <- atomize_keys(@subscription_params) do %>
+    <%= hidden_input f, param_name, value: value %>
   <% end %>
 
   <div class="trip-info-footer">

@@ -8,7 +8,6 @@ defmodule ConciergeSite.SubwaySubscriptionController do
   alias AlertProcessor.ServiceInfoCache
   alias AlertProcessor.Subscription.SubwayMapper
   alias AlertProcessor.Model.Subscription
-  alias Ecto.Multi
 
   def new(conn, _params, _user, _claims) do
     render conn, "new.html"
@@ -38,7 +37,7 @@ defmodule ConciergeSite.SubwaySubscriptionController do
   end
 
   def info(conn, params, user, _claims) do
-    subscription_params = Map.merge(params, %{user_id: user.id, route_type: 1})
+    subscription_params = Map.merge(params, %{"user_id" => user.id, "route_type" => 1})
     token = TemporaryState.encode(subscription_params)
 
     case ServiceInfoCache.get_subway_full_routes do
@@ -59,7 +58,7 @@ defmodule ConciergeSite.SubwaySubscriptionController do
 
   def preferences(conn, params, user, _claims) do
     subscription_params = Map.merge(
-      params["subscription"], %{user_id: user.id, route_type: 1}
+      params["subscription"], %{"user_id" => user.id, "route_type" => 1}
     )
     token = TemporaryState.encode(subscription_params)
 
@@ -82,7 +81,7 @@ defmodule ConciergeSite.SubwaySubscriptionController do
     subway_params = SubwayParams.prepare_for_mapper(params["subscription"])
     {:ok, subscription_infos} = SubwayMapper.map_subscriptions(subway_params)
 
-    multi = build_subscription_transaction(subscription_infos, user)
+    multi = SubwayMapper.build_subscription_transaction(subscription_infos, user)
 
     case Repo.transaction(multi) do
       {:ok, _} ->
@@ -92,22 +91,6 @@ defmodule ConciergeSite.SubwaySubscriptionController do
         |> put_flash(:error, "There was an error saving the subscription. Please try again.")
         |> render("new.html")
     end
-  end
-
-  defp build_subscription_transaction(subscriptions, user) do
-    subscriptions
-    |> Enum.with_index
-    |> Enum.reduce(Multi.new, fn({{sub, ies}, index}, acc) ->
-      sub_to_insert = sub
-      |> Map.merge(%{
-        user_id: user.id,
-        informed_entities: ies
-      })
-      |> Subscription.create_changeset()
-
-      acc
-      |> Multi.insert({:subscription, index}, sub_to_insert)
-    end)
   end
 
   defp handle_invalid_info_submission(conn, subscription_params, token, error_message) do

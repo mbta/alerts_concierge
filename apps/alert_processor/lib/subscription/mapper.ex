@@ -4,16 +4,16 @@ defmodule AlertProcessor.Subscription.Mapper do
   mode-specific mapper modules.
   """
   alias AlertProcessor.{Helpers.DateTimeHelper, Model.InformedEntity, Model.Route, Model.Subscription, ServiceInfoCache}
+  alias Ecto.Multi
 
   def map_timeframe(%{"departure_start" => ds, "departure_end" => de, "return_start" => nil, "return_end" => nil, "relevant_days" => rd}) do
     [do_map_timeframe(ds, de, rd)]
   end
-
   def map_timeframe(%{"departure_start" => ds, "departure_end" => de, "return_start" => rs, "return_end" => re, "relevant_days" => rd}) do
     [do_map_timeframe(ds, de, rd), do_map_timeframe(rs, re, rd)]
   end
 
-  defp do_map_timeframe(start_time, end_time, relevant_days) do
+  def do_map_timeframe(start_time, end_time, relevant_days) do
     %Subscription{
       start_time: DateTimeHelper.timestamp_to_utc(start_time),
       end_time: DateTimeHelper.timestamp_to_utc(end_time),
@@ -87,7 +87,6 @@ defmodule AlertProcessor.Subscription.Mapper do
 
     [{subscription, informed_entities ++ route_entities}]
   end
-
   def map_routes([{sub1, ie1}, {sub2, ie2}], _params, routes) do
     route_entities_1 =
       Enum.flat_map(routes, fn(%Route{route_id: route, route_type: type}) ->
@@ -126,7 +125,6 @@ defmodule AlertProcessor.Subscription.Mapper do
       {Map.merge(subscription, %{origin: origin_name, destination: destination_name}), informed_entities ++ stop_entities}
     end)
   end
-
   def map_stops([{sub1, ie1}, {sub2, ie2}], %{"origin" => origin, "destination" => destination}, routes) do
     stop_entities =
       Enum.flat_map(routes, fn(%Route{route_id: route, route_type: type}) ->
@@ -149,7 +147,6 @@ defmodule AlertProcessor.Subscription.Mapper do
       }
     ]
   end
-
   def map_stops([{subscription, informed_entities}], %{"origin" => origin, "destination" => destination}, routes) do
     stop_entities =
       Enum.flat_map(routes, fn(%Route{route_id: route, route_type: type}) ->
@@ -176,7 +173,6 @@ defmodule AlertProcessor.Subscription.Mapper do
       end)
     [{sub1, ie1 ++ trip_entities}, {sub2, ie2 ++ return_trip_entities}]
   end
-
   def map_trips([{subscription, informed_entities}], %{"trips" => trips}) do
     trip_entities =
       Enum.map(trips, fn(trip) ->
@@ -188,6 +184,22 @@ defmodule AlertProcessor.Subscription.Mapper do
   def filter_duplicate_entities(subscription_infos) do
     Enum.map(subscription_infos, fn({subscription, informed_entities}) ->
       {subscription, Enum.uniq(informed_entities)}
+    end)
+  end
+
+  def build_subscription_transaction(subscriptions, user) do
+    subscriptions
+    |> Enum.with_index
+    |> Enum.reduce(Multi.new, fn({{sub, ies}, index}, acc) ->
+      sub_to_insert = sub
+      |> Map.merge(%{
+        user_id: user.id,
+        informed_entities: ies
+      })
+      |> Subscription.create_changeset()
+
+      acc
+      |> Multi.insert({:subscription, index}, sub_to_insert)
     end)
   end
 end

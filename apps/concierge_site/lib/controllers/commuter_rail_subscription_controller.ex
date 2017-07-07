@@ -2,14 +2,14 @@ defmodule ConciergeSite.CommuterRailSubscriptionController do
   use ConciergeSite.Web, :controller
   use Guardian.Phoenix.Controller
   alias ConciergeSite.Subscriptions.{CommuterRailParams, Lines, TemporaryState}
-  alias AlertProcessor.{Helpers.DateTimeHelper, ServiceInfoCache, Subscription.CommuterRailMapper}
+  alias AlertProcessor.{Helpers.DateTimeHelper, Repo, ServiceInfoCache, Subscription.CommuterRailMapper}
 
   def new(conn, _params, _user, _claims) do
     render conn, "new.html"
   end
 
   def info(conn, params, user, _claims) do
-    subscription_params = Map.merge(params, %{user_id: user.id, route_type: 2})
+    subscription_params = Map.merge(params, %{"user_id" => user.id, "route_type" => 2})
     token = TemporaryState.encode(subscription_params)
 
     case ServiceInfoCache.get_commuter_rail_info do
@@ -30,7 +30,7 @@ defmodule ConciergeSite.CommuterRailSubscriptionController do
 
   def train(conn, params, user, _claims) do
     subscription_params = Map.merge(
-      params["subscription"], %{user_id: user.id, route_type: 2}
+      params["subscription"], %{"user_id" => user.id, "route_type" => 2}
     )
     token = TemporaryState.encode(subscription_params)
 
@@ -48,7 +48,7 @@ defmodule ConciergeSite.CommuterRailSubscriptionController do
 
   def preferences(conn, params, user, _claims) do
     subscription_params = Map.merge(
-      params["subscription"], %{user_id: user.id, route_type: 2}
+      params["subscription"], %{"user_id" => user.id, "route_type" => 2}
     )
     token = TemporaryState.encode(subscription_params)
 
@@ -59,6 +59,22 @@ defmodule ConciergeSite.CommuterRailSubscriptionController do
           subscription_params: subscription_params
       {:error, message} ->
         handle_invalid_trip_submission(conn, subscription_params, token, message)
+    end
+  end
+
+  def create(conn, params, user, _claims) do
+    subway_params = CommuterRailParams.prepare_for_mapper(params["subscription"])
+    {:ok, subscription_infos} = CommuterRailMapper.map_subscriptions(subway_params)
+
+    multi = CommuterRailMapper.build_subscription_transaction(subscription_infos, user)
+
+    case Repo.transaction(multi) do
+      {:ok, _} ->
+        redirect(conn, to: subscription_path(conn, :index))
+      {:error, _} ->
+        conn
+        |> put_flash(:error, "There was an error saving the subscription. Please try again.")
+        |> render("new.html")
     end
   end
 

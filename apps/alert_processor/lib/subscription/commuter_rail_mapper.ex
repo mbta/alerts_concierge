@@ -7,6 +7,8 @@ defmodule AlertProcessor.Subscription.CommuterRailMapper do
   import AlertProcessor.Subscription.Mapper
   alias AlertProcessor.{ApiClient, Model.Route, Model.Subscription, Model.Trip, ServiceInfoCache}
 
+  defdelegate build_subscription_transaction(subscriptions, user), to: AlertProcessor.Subscription.Mapper
+
   @spec map_subscriptions(map) :: {:ok, [Subscription.subscription_info]} | :error
   def map_subscriptions(subscription_params) do
     with subscriptions <- map_timeframe(subscription_params),
@@ -18,10 +20,10 @@ defmodule AlertProcessor.Subscription.CommuterRailMapper do
   end
 
   defp map_entities(subscriptions, params) do
-    with {:ok, subway_info} = ServiceInfoCache.get_commuter_rail_info(),
+    with {:ok, commuter_rail_info} = ServiceInfoCache.get_commuter_rail_info(),
          %{"origin" => origin, "destination" => destination} <- params,
          routes <- Enum.filter(
-           subway_info,
+           commuter_rail_info,
            fn(%Route{stop_list: stop_list}) -> List.keymember?(stop_list, origin, 1) && List.keymember?(stop_list, destination, 1)
          end),
          subscription_infos <- map_amenities(subscriptions, params),
@@ -93,8 +95,11 @@ defmodule AlertProcessor.Subscription.CommuterRailMapper do
   end
 
   defp map_trip_names(trips) do
-    Map.new(trips, fn(%{"id" => id, "attributes" => %{"name" => name}}) -> {id, name} end)
+    Map.new(trips, &do_map_trip_name/1)
   end
+
+  defp do_map_trip_name(%{"type" => "trip", "id" => id, "attributes" => %{"name" => name}}), do: {id, name}
+  defp do_map_trip_name(_), do: {nil, nil}
 
   defp map_common_trips([], _, _), do: :error
   defp map_common_trips(schedules, trip_names_map, trip) do

@@ -8,7 +8,7 @@ defmodule AlertProcessor.Subscription.CommuterRailMapperTest do
       "origin" => "Anderson/ Woburn",
       "destination" => "place-north",
       "trips" => ["123", "125"],
-      "relevant_days" => ["weekday", "saturday"],
+      "relevant_days" => ["saturday"],
       "departure_start" => "12:00:00",
       "departure_end" => "14:00:00",
       "return_start" => nil,
@@ -37,7 +37,7 @@ defmodule AlertProcessor.Subscription.CommuterRailMapperTest do
       {:ok, [{subscription, _ie}]} = CommuterRailMapper.map_subscriptions(@one_way_params)
       assert subscription.start_time == ~T[16:00:00]
       assert subscription.end_time == ~T[18:00:00]
-      assert subscription.relevant_days == [:weekday, :saturday]
+      assert subscription.relevant_days == [:saturday]
     end
 
     test "constructs subscription with amenities" do
@@ -132,7 +132,7 @@ defmodule AlertProcessor.Subscription.CommuterRailMapperTest do
       "destination" => "Anderson/ Woburn",
       "trips" => ["123", "125"],
       "return_trips" => ["588", "590"],
-      "relevant_days" => ["weekday", "saturday"],
+      "relevant_days" => ["weekday"],
       "departure_start" => "12:00:00",
       "departure_end" => "14:00:00",
       "return_start" => "18:00:00",
@@ -165,10 +165,10 @@ defmodule AlertProcessor.Subscription.CommuterRailMapperTest do
       {:ok, [{sub1, _ie1}, {sub2, _ie2}]} = CommuterRailMapper.map_subscriptions(@round_trip_params)
       assert sub1.start_time == ~T[16:00:00]
       assert sub1.end_time == ~T[18:00:00]
-      assert sub1.relevant_days == [:weekday, :saturday]
+      assert sub1.relevant_days == [:weekday]
       assert sub2.start_time == ~T[22:00:00]
       assert sub2.end_time == ~T[00:00:00]
-      assert sub2.relevant_days == [:weekday, :saturday]
+      assert sub2.relevant_days == [:weekday]
     end
 
     test "constructs subscription with amenities" do
@@ -294,7 +294,7 @@ defmodule AlertProcessor.Subscription.CommuterRailMapperTest do
   end
 
   describe "map_trip_options" do
-    @test_date Calendar.Date.from_ordinal!(2017, 168)
+    @test_date Calendar.Date.from_ordinal!(2017, 182)
 
     test "returns inbound results for origin destination" do
       use_cassette "north_to_anderson_woburn_schedules", custom: true, clear_mock: true, match_requests_on: [:query] do
