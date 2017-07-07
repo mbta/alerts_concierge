@@ -61,6 +61,44 @@ defmodule ConciergeSite.SubwaySubscriptionControllerTest do
       assert html_response(conn, 200) =~ "Please correct the following errors to proceed"
     end
 
+    test "POST /subscriptions/subway/new/preferences with missing origin", %{conn: conn, user: user} do
+      params = %{"subscription" => %{
+        "departure_start" => "08:45:00",
+        "departure_end" => "09:15:00",
+        "origin" => "",
+        "destination" => "place-buest",
+        "saturday" => "false",
+        "sunday" => "false",
+        "weekday" => "true",
+        "trip_type" => "one_way",
+      }}
+
+      conn = user
+      |> guardian_login(conn)
+      |> post("/subscriptions/subway/new/preferences", params)
+
+      assert html_response(conn, 200) =~ "Origin is invalid"
+    end
+
+    test "POST /subscriptions/subway/new/preferences with missing destination", %{conn: conn, user: user} do
+      params = %{"subscription" => %{
+        "departure_start" => "08:45:00",
+        "departure_end" => "09:15:00",
+        "origin" => "place-buest",
+        "destination" => "",
+        "saturday" => "false",
+        "sunday" => "false",
+        "weekday" => "true",
+        "trip_type" => "one_way",
+      }}
+
+      conn = user
+      |> guardian_login(conn)
+      |> post("/subscriptions/subway/new/preferences", params)
+
+      assert html_response(conn, 200) =~ "Destination is invalid"
+    end
+
     test "POST /subscriptions/subway", %{conn: conn, user: user} do
       params = %{"subscription" => %{
         "alert_priority_type" => "high",
