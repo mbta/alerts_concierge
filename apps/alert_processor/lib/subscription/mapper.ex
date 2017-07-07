@@ -40,6 +40,21 @@ defmodule AlertProcessor.Subscription.Mapper do
       end)}
     end)
   end
+  def map_amenities([subscription], %{"amenities" => amenities, "routes" => routes, "stops" => stops}) do
+    [{subscription,
+      Enum.flat_map(amenities, fn(amenity) ->
+        route_amenities =
+          Enum.map(routes, fn(route) ->
+            %InformedEntity{route: String.capitalize(route), facility_type: String.to_existing_atom(amenity)}
+          end)
+        stop_amenities =
+          Enum.map(stops, fn(stop) ->
+            %InformedEntity{stop: stop, facility_type: String.to_existing_atom(amenity)}
+          end)
+        route_amenities ++ stop_amenities
+      end)
+    }]
+  end
 
   def map_route_type(subscription_infos, routes) do
     route_type_entities =
