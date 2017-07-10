@@ -2,7 +2,7 @@
   <div class="form-label">Alert Type</div>
   <%= if @action == "new" do %>
     <div class="form-sub-label priority-sub-label">
-      What kind of alerts you would like to recieve? You can edit this
+      What kind of alerts would you like to receive? You can edit this
       information at any time.
     </div>
   <% end %>
