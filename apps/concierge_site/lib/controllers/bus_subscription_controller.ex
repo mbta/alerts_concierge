@@ -27,7 +27,7 @@ defmodule ConciergeSite.BusSubscriptionController do
         |> redirect(to: subscription_path(conn, :index))
       {:error, changeset} ->
         conn
-        |> put_flash(:error, "Subscription could not be updated")
+        |> put_flash(:error, "Subscription could not be updated. Please see errors below.")
         |> render("edit.html", subscription: subscription, changeset: changeset)
     end
   end
