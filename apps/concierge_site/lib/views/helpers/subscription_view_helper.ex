@@ -59,7 +59,8 @@ defmodule ConciergeSite.SubscriptionViewHelper do
   @doc """
   Converts a utc timestamp to local time stringifiied in the H:M:S format
   """
-  @spec time_option_local_strftime(Time.t) :: String.t
+  @spec time_option_local_strftime(Time.t | nil) :: String.t | nil
+  def time_option_local_strftime(nil), do: nil
   def time_option_local_strftime(timestamp) do
     timestamp
     |> DateTimeHelper.utc_time_to_local()
