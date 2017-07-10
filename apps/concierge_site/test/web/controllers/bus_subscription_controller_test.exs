@@ -141,6 +141,47 @@ defmodule ConciergeSite.BusSubscriptionControllerTest do
 
       assert html_response(conn, 302)
     end
+
+    test "GET /subscriptions/bus/:id/edit", %{conn: conn, user: user} do
+      factory =
+        subscription_factory()
+        |> bus_subscription()
+        |> Map.merge(%{user: user})
+      subscription = insert(factory)
+
+      conn = user
+      |> guardian_login(conn)
+      |> get("/subscriptions/bus/#{subscription.id}/edit")
+
+      assert html_response(conn, 200) =~ "Edit Subscription"
+    end
+
+    test "PATCH /subscriptions/bus/:id", %{conn: conn, user: user} do
+      subscription =
+        subscription_factory()
+        |> bus_subscription()
+        |> Map.merge(%{user_id: user.id})
+        |> insert()
+
+      params = %{"subscription" => %{
+        "departure_start" => "08:45:00",
+        "departure_end" => "09:15:00",
+        "return_start" => "16:45:00",
+        "return_end" => "17:15:00",
+        "route" => "Silver Line SL1 - 1",
+        "saturday" => "true",
+        "sunday" => "false",
+        "weekday" => "false",
+        "trip_type" => "round_trip",
+        "alert_priority_type" => "low"
+      }}
+
+      conn = user
+      |> guardian_login(conn)
+      |> patch("/subscriptions/bus/#{subscription.id}", params)
+
+      assert html_response(conn, 302) =~ "my-subscriptions"
+    end
   end
 
   describe "unauthorized" do

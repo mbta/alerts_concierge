@@ -3,9 +3,8 @@ defmodule ConciergeSite.Subscriptions.SubwayParams do
   Functions for processing user input during the create subway subscription flow
   """
 
-  import ConciergeSite.Subscriptions.ParamsValidator
+  import ConciergeSite.Subscriptions.{ParamsValidator, SubscriptionParams}
   alias AlertProcessor.ApiClient
-  alias AlertProcessor.Helpers.DateTimeHelper
 
   @spec validate_info_params(map) :: :ok | {:error, String.t}
   def validate_info_params(params) do
@@ -122,27 +121,5 @@ defmodule ConciergeSite.Subscriptions.SubwayParams do
     |> Map.take(["alert_priority_type", "departure_end", "departure_start",
       "destination", "origin"])
     |> Map.merge(translated_params)
-  end
-
-  @doc """
-  """
-  @spec prepare_for_update_changeset(map) :: map
-  def prepare_for_update_changeset(params) do
-    relevant_days =
-      params
-      |> Map.take(~w(saturday sunday weekday))
-      |> relevant_days_from_booleans()
-      |> Enum.map(&String.to_existing_atom/1)
-
-    %{"alert_priority_type" => String.to_existing_atom(params["alert_priority_type"]),
-      "relevant_days" => relevant_days,
-      "end_time" => DateTimeHelper.timestamp_to_utc(params["departure_end"]),
-      "start_time" => DateTimeHelper.timestamp_to_utc(params["departure_start"])}
-  end
-
-  defp relevant_days_from_booleans(day_map) do
-    day_map
-    |> Enum.filter(fn {_day, bool} -> bool == "true" end)
-    |> Enum.map(fn {day, _bool} -> day end)
   end
 end

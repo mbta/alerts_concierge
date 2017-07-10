@@ -72,7 +72,6 @@ defmodule ConciergeSite.SubscriptionView do
     end
   end
 
-
   defp route_body(%{type: :subway} = subscription, _) do
     case direction_name(subscription) do
       :roaming ->

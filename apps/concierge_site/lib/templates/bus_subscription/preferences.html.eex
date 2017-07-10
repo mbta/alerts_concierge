@@ -15,44 +15,10 @@
   </div>
 
   <%= form_for @conn, bus_subscription_path(@conn, :create), [class: "trip-prefs-form bus", as: :subscription], fn f -> %>
-    <div class="trip-alert-priority">
-      <div class="form-label">Alert Type</div>
-      <div class="form-sub-label priority-sub-label">
-        What kind of alerts would you like to receive? You can edit this
-        information at any time.
-      </div>
-      <div class="priority-options">
-        <label class="priority-radio-option">
-          <%= radio_button f, :alert_priority_type, "high" %>
-          <div>
-            <div>High Priority Alerts only:</div>
-            <div class="form-sub-label">
-              Severe delays, detours, suspension of service
-            </div>
-          </div>
-        </label>
-        <div class="priority-option-divider"></div>
-        <label class="priority-radio-option">
-          <%= radio_button f, :alert_priority_type, "medium", checked: true %>
-          <div>
-            <div>High and Medium Priority Alerts:</div>
-            <div class="form-sub-label">
-              All of the above plus moderate delays, bus stop closures
-            </div>
-          </div>
-        </label>
-        <div class="priority-option-divider"></div>
-        <label class="priority-radio-option">
-          <%= radio_button f, :alert_priority_type, "low" %>
-          <div>
-            <div>High, Medium, and Low Priority Alerts:</div>
-            <div class="form-sub-label">
-              All of the above plus minor delays
-            </div>
-          </div>
-        </label>
-      </div>
-    </div>
+    <%= render "_alert_type_radio_buttons.html",
+               form: f,
+               checked: :medium,
+               action: "new" %>
 
     <%= for {param_name, value} <- atomize_keys(@subscription_params) do %>
       <%= hidden_input f, param_name, value: value %>

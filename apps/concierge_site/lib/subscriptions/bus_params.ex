@@ -1,6 +1,6 @@
 defmodule ConciergeSite.Subscriptions.BusParams do
   @moduledoc """
-  Functions for processing user input during the create subway subscription flow
+  Functions for processing user input during the bus subscription flow
   """
 
   @spec validate_info_params(map) :: :ok | {:error, String.t}
