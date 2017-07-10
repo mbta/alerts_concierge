@@ -14,28 +14,32 @@ defmodule AlertProcessor.Subscription.AmenitiesMapper do
   """
   @spec map_subscriptions(map) :: {:ok, [Subscription.subscription_info]} | :error
   def map_subscriptions(subscription_params) do
-    subscriptions =
-      subscription_params
-      |> map_timeframe()
-      |> map_priority(subscription_params)
-      |> map_type(:amenity)
-
-    {:ok, map_entities(subscriptions, subscription_params)}
+    with {:ok, subscriptions} <- map_timeframe(subscription_params),
+         {:ok, subscriptions} <- map_priority(subscriptions, subscription_params),
+         subscriptions <- map_type(subscriptions, :amenity)
+         do
+      map_entities(subscriptions, subscription_params)
+    else
+      _ -> :error
+    end
   end
 
   defp map_entities(subscriptions, params) do
-    subscriptions
-    |> map_amenities(params)
-    |> filter_duplicate_entities()
+    with subscriptions <- map_amenities(subscriptions, params),
+         [_sub | _t] <- subscriptions do
+      {:ok, filter_duplicate_entities(subscriptions)}
+    else
+      _ -> :error
+    end
   end
 
   defp map_timeframe(%{"relevant_days" => relevant_days}) do
-    [
+    {:ok, [
       %Subscription{
         start_time: ~T[00:00:00],
         end_time: ~T[23:59:59],
         relevant_days: Enum.map(relevant_days, &String.to_existing_atom/1)
       }
-    ]
+    ]}
   end
 end

@@ -3,7 +3,6 @@ defmodule ConciergeSite.BusSubscriptionController do
   use Guardian.Phoenix.Controller
   alias ConciergeSite.Subscriptions.{BusParams, BusRoutes, TemporaryState, SubscriptionParams}
   alias AlertProcessor.{Model.Subscription, Repo, ServiceInfoCache, Subscription.BusMapper}
-  alias Ecto.Multi
 
   def new(conn, _params, _user, _claims) do
     render conn, "new.html"
@@ -36,28 +35,12 @@ defmodule ConciergeSite.BusSubscriptionController do
     with subscription_params <- params["subscription"],
       mapper_params <- BusParams.prepare_for_mapper(subscription_params),
       {:ok, subscriptions} <- BusMapper.map_subscription(mapper_params),
-      multi <- build_subscription_transaction(subscriptions, user),
+      multi <- BusMapper.build_subscription_transaction(subscriptions, user),
       {:ok, _} <- Repo.transaction(multi) do
         redirect(conn, to: subscription_path(conn, :index))
     else
       _ -> handle_error_info_submission(conn, params["subscription"], user)
     end
-  end
-
-  defp build_subscription_transaction(subscriptions, user) do
-    subscriptions
-    |> Enum.with_index
-    |> Enum.reduce(Multi.new, fn({{sub, ies}, index}, acc) ->
-      sub_to_insert = sub
-      |> Map.merge(%{
-        user_id: user.id,
-        informed_entities: ies
-      })
-      |> Subscription.create_changeset()
-
-      acc
-      |> Multi.insert({:subscription, index}, sub_to_insert)
-    end)
   end
 
   defp handle_error_info_submission(conn, params, user) do

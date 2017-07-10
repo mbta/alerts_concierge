@@ -7,6 +7,8 @@ defmodule AlertProcessor.Subscription.BusMapper do
   import AlertProcessor.Subscription.Mapper
   alias AlertProcessor.Model.{InformedEntity, Subscription}
 
+  defdelegate build_subscription_transaction(subscriptions, user), to: AlertProcessor.Subscription.Mapper
+
   @doc """
   map_subscription/1 receives a map of bus subscription params and returns
   arrays of subscription(s) and informed entities to creat in the database
@@ -14,11 +16,13 @@ defmodule AlertProcessor.Subscription.BusMapper do
   """
   @spec map_subscription(map) :: {:ok, [Subscription.t], [InformedEntity.t]} | :error
   def map_subscription(subscription_params) do
-    with subscriptions <- map_timeframe(subscription_params),
-         subscriptions <- map_priority(subscriptions, subscription_params),
+    with {:ok, subscriptions} <- map_timeframe(subscription_params),
+         {:ok, subscriptions} <- map_priority(subscriptions, subscription_params),
          subscriptions <- map_type(subscriptions, :bus)
          do
       map_entities(subscriptions, subscription_params)
+    else
+      _ -> :error
     end
   end
 
@@ -35,9 +39,7 @@ defmodule AlertProcessor.Subscription.BusMapper do
   end
 
   defp map_route_type(subscriptions) do
-    Enum.map(subscriptions, fn(subscription) ->
-      {subscription, [%InformedEntity{route_type: 3}]}
-    end)
+    Enum.map(subscriptions, & {&1, [%InformedEntity{route_type: 3}]})
   end
 
   defp map_routes([{sub, ie}], _params, route_id, direction_id) do
