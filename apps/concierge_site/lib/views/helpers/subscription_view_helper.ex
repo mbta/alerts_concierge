@@ -66,4 +66,27 @@ defmodule ConciergeSite.SubscriptionViewHelper do
     |> DateTimeHelper.utc_time_to_local()
     |> Strftime.strftime!("%H:%M:%S")
   end
+
+   @doc """
+  Provide css class to disable links within the subscription flow progress
+  bar
+  """
+  def progress_link_class(:trip_type, _step, _disabled_links), do: "disabled-progress-link"
+
+  def progress_link_class(page, step, disabled_links) do
+    if disabled_links |> Map.get(page) |> Enum.member?(step) do
+      "disabled-progress-link"
+    end
+  end
+
+  @doc """
+  Provide css classes for the text and circle in progress bar steps
+  """
+  def progress_step_classes(page, step) when (page == step) do
+    %{circle: "active-circle", name: "active-page"}
+  end
+
+  def progress_step_classes(_page, _step) do
+    %{}
+  end
 end
