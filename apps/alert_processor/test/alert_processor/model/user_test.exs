@@ -82,4 +82,26 @@ defmodule AlertProcessor.Model.UserTest do
       assert changeset.valid?
     end
   end
+
+  describe "update_password_changeset" do
+    test "will create a valid changeset with password containing special characters and at least 6 characters" do
+      changeset = User.update_password_changeset(%User{}, %{"password" => "P@ssword", "password_confirmation" => "P@ssword"})
+      assert changeset.valid?
+    end
+
+    test "will create an invalid changeset with non-matching password_confirmation" do
+      changeset = User.update_password_changeset(%User{}, %{"password" => "P@ssword", "password_confirmation" => "DifferentPassword"})
+      refute changeset.valid?
+    end
+
+    test "will create an invalid changeset with invalid password that is too short" do
+      changeset = User.update_password_changeset(%User{}, %{"password" => "Pass1", "password_confirmation" => "Pass1"})
+      refute changeset.valid?
+    end
+
+    test "will create an invalid changeset with invalid password that does not contain a digit or special character" do
+      changeset = User.update_password_changeset(%User{}, %{"password" => "Password", "password_confirmation" => "Password"})
+      refute changeset.valid?
+    end
+  end
 end

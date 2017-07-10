@@ -103,6 +103,19 @@ defmodule AlertProcessor.Model.User do
   end
 
   @doc """
+  Builds a changeset to update password
+  """
+  def update_password_changeset(struct, params \\ %{}) do
+    struct
+    |> cast(params, @permitted_fields)
+    |> validate_required(:password)
+    |> validate_confirmation(:password, required: true, message: "Password and password confirmation did not match.")
+    |> validate_length(:password, min: 6, message: "Password must be at least six characters long.")
+    |> validate_format(:password, ~r/[^a-zA-Z\s:]{1}/, message: "Password must contain one number or special character (? & % $ # !, etc).")
+    |> hash_password()
+  end
+
+  @doc """
   Checks if user's login credentials are valid
   """
   def authenticate(%{"email" => email, "password" => password} = params) do
@@ -114,7 +127,7 @@ defmodule AlertProcessor.Model.User do
     end
   end
 
-  defp check_password(user, password) do
+  def check_password(user, password) do
     case user do
       nil -> Bcrypt.dummy_checkpw()
       _ -> Bcrypt.checkpw(password, user.encrypted_password)
