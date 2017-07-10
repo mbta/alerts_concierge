@@ -7,7 +7,7 @@
 
   <%= flash_error(@conn) %>
 
-  <p class="trip-select-subheader">Based on your departure time, we think you might be interested in the following train schedules. Select which trains you’d like to recieve notifications about.</p>
+  <p class="trip-select-subheader">Based on your departure time, we think you might be interested in the following train schedules. Select which trains you’d like to receive notifications about.</p>
 
   <%= form_for @conn, commuter_rail_subscription_path(@conn, :preferences), [class: "trip-form commuter-rail", as: :subscription], fn f -> %>
 
