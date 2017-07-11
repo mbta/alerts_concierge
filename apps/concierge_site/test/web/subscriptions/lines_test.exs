@@ -52,16 +52,4 @@ defmodule ConciergeSite.Subscriptions.LinesTest do
       end
     end
   end
-
-  describe "station_ids_from_names/1" do
-    test "given a list of commuter rail and subway names, returns a list of station ids" do
-      use_cassette "service_info", custom: true, clear_mock: true, match_requests_on: [:query] do
-        subway_stations = ["Quincy Center", "JFK/Umass"]
-        commuter_stations = ["Ruggles", "Sharon"]
-        station_names = subway_stations ++ commuter_stations
-        station_ids = ["place-qnctr", "place-jfk", "place-rugg", "Sharon"]
-        assert  Lines.station_ids_from_names(station_names) == station_ids
-      end
-    end
-  end
 end

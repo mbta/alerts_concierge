@@ -5,8 +5,8 @@ defmodule AlertProcessor.Subscription.AmenitiesMapper do
   """
 
   import AlertProcessor.Subscription.Mapper, except: [map_timeframe: 1]
+  alias AlertProcessor.ServiceInfoCache
   alias AlertProcessor.Model.Subscription
-  alias ConciergeSite.Subscriptions.Lines
 
   @doc """
   map_subscription/1 receives a map of amenity subscription params and returns
@@ -48,8 +48,28 @@ defmodule AlertProcessor.Subscription.AmenitiesMapper do
   defp map_stop_names(params) do
     stop_ids = params["stops"]
     |> String.split(",", trim: true)
-    |> Lines.station_ids_from_names()
+    |> station_ids_from_names()
     Map.put(params, "stops", stop_ids)
+  end
+
+  # TODO: this will be refactored to use ServiceInfoCache.get_stop_by_name/1 once #148 is merged
+  defp station_ids_from_names(names) do
+    with {:ok, subway_stations} <- ServiceInfoCache.get_subway_full_routes,
+      {:ok, cr_stations} <- ServiceInfoCache.get_commuter_rail_info do
+      subway_stations
+      |> Kernel.++(cr_stations)
+      |> Enum.map(& &1.stop_list)
+      |> List.flatten
+      |> Enum.reduce([], fn({name, id}, acc) ->
+        if Enum.member?(names, name) && !Enum.member?(acc, id) do
+          acc ++ [id]
+        else
+          acc
+        end
+      end)
+    else
+      _error -> :error
+    end
   end
 
   defp map_entities(subscriptions, params) do

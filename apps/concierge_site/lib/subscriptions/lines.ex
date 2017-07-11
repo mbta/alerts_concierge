@@ -39,28 +39,4 @@ defmodule ConciergeSite.Subscriptions.Lines do
         selected_station_ids
     end
   end
-
-
-  @doc """
-  Fetch associated stop ids for a list of stop names
-  """
-  @spec station_ids_from_names(iolist) :: map | :error
-  def station_ids_from_names(names) do
-    with {:ok, subway_stations} <- ServiceInfoCache.get_subway_full_routes,
-      {:ok, cr_stations} <- ServiceInfoCache.get_commuter_rail_info do
-      subway_stations
-      |> Kernel.++(cr_stations)
-      |> Enum.map(& &1.stop_list)
-      |> List.flatten
-      |> Enum.reduce([], fn({name, id}, acc) ->
-        if Enum.member?(names, name) && !Enum.member?(acc, id) do
-          acc ++ [id]
-        else
-          acc
-        end
-      end)
-    else
-      _error -> :error
-    end
-  end
 end
