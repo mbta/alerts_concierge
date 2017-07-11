@@ -9,8 +9,10 @@ defmodule TouchTemplates do
   end
 
   defp template_files do
-    File.ls!(@template_dir)
-    |> Enum.filter_map(&(String.ends_with?(&1, ".html.eex")), &(String.replace_suffix(&1, ".html.eex", "")))
+    @template_dir
+    |> File.ls!()
+    |> Enum.filter(&(String.ends_with?(&1, ".html.eex")))
+    |> Enum.map(&(String.replace_suffix(&1, ".html.eex", "")))
   end
 
   defp touch_if_not_present(template_name) do

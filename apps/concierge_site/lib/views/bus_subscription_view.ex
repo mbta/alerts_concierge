@@ -15,7 +15,7 @@ defmodule ConciergeSite.BusSubscriptionView do
   Returns a summary of a subscription's associated trip days, times, and stops
   """
   @spec trip_summary_title(map) :: iodata
-  def trip_summary_title(params = %{"trip_type" => "one_way"}) do
+  def trip_summary_title(%{"trip_type" => "one_way"} = params) do
     ["One way ",
      joined_day_list(params),
      " travel on the ",
@@ -23,7 +23,7 @@ defmodule ConciergeSite.BusSubscriptionView do
     " bus:"]
   end
 
-  def trip_summary_title(params = %{"trip_type" => "round_trip"}) do
+  def trip_summary_title(%{"trip_type" => "round_trip"} = params) do
     ["Round trip ",
      joined_day_list(params),
      " travel on the ",
@@ -44,14 +44,14 @@ defmodule ConciergeSite.BusSubscriptionView do
     |> named_direction()
   end
 
-  def trip_summary_routes(params = %{"trip_type" => "round_trip"}) do
+  def trip_summary_routes(%{"trip_type" => "round_trip"} = params) do
     [
       departure_format(params),
       return_format(params)
     ]
   end
 
-  def trip_summary_routes(params = %{"trip_type" => "one_way"}) do
+  def trip_summary_routes(%{"trip_type" => "one_way"} = params) do
     [departure_format(params)]
   end
 

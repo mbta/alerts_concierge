@@ -39,6 +39,7 @@ defmodule AlertProcessor.ApiClient do
   """
   @spec routes([integer], [String.t]) :: {:ok, [map]} | {:error, String.t}
   def routes(types \\ [], fields \\ ["long_name", "type", "direction_names"]) do
+    # credo:disable-for-next-line Credo.Check.Readability.SpaceAfterCommas
     "/routes?filter[type]=#{Enum.join(types, ",")}&fields[route]=#{Enum.join(fields, ",")}"
     |> get()
     |> parse_response()
@@ -49,6 +50,7 @@ defmodule AlertProcessor.ApiClient do
   """
   @spec trips(String.t, integer, [String.t]) :: {:ok, [map]} | {:error, String.t}
   def trips(route, direction_id, fields \\ ["headsign"]) do
+    # credo:disable-for-next-line Credo.Check.Readability.SpaceAfterCommas
     "/trips?route=#{route}&direction_id=#{direction_id}&fields[trip]=#{Enum.join(fields, ",")}"
     |> get()
     |> parse_response()
@@ -69,6 +71,7 @@ defmodule AlertProcessor.ApiClient do
   """
   @spec subway_parent_stops() :: {:ok, [map]} | {:error, String.t}
   def subway_parent_stops do
+    # credo:disable-for-next-line Credo.Check.Readability.SpaceAfterCommas
     "/stops?filter[route_type]=0,1"
     |> get()
     |> parse_response()
@@ -79,6 +82,7 @@ defmodule AlertProcessor.ApiClient do
   """
   @spec route_shapes(String.t) :: {:ok, [map]} | {:error, String.t}
   def route_shapes(route) do
+    # credo:disable-for-next-line Credo.Check.Readability.SpaceAfterCommas
     "/shapes/?route=#{route}&direction_id=1&fields[shape]=priority"
     |> get()
     |> parse_response()
@@ -89,12 +93,14 @@ defmodule AlertProcessor.ApiClient do
   """
   @spec schedules(Route.stop_id, Route.stop_id, Route.direction_id | nil, [Route.route_id], Date.t | nil) :: {:ok, [map], [map]} | {:ok, [map]} | {:error, String.t}
   def schedules(origin, destination, direction_id, route_ids, date) do
+    # credo:disable-for-next-line Credo.Check.Readability.SpaceAfterCommas
     "/schedules?filter[stop]=#{origin},#{destination}&direction_id=#{direction_id}&fields[schedule]=departure_time,arrival_time&filter[route]=#{Enum.join(route_ids, ",")}&date=#{date}&include=trip,stop&fields[trip]=name"
     |> URI.encode()
     |> get()
     |> parse_response()
   end
   def schedules(stations) when is_list(stations) do
+    # credo:disable-for-next-line Credo.Check.Readability.SpaceAfterCommas
     "/schedules?filter[stop]=#{Enum.join(stations, ",")}&fields[schedule]=departure_time,arrival_time&include=trip&fields[trip]=name"
     |> URI.encode()
     |> get()
@@ -106,6 +112,7 @@ defmodule AlertProcessor.ApiClient do
   """
   @spec subway_schedules_union(String.t, String.t) :: {:ok, map, map} | {:error, String.t}
   def subway_schedules_union(origin, destination) do
+    # credo:disable-for-lines:3 Credo.Check.Readability.SpaceAfterCommas
     routes = "Red,Blue,Orange,Green-B,Green-C,Green-D,Green-E"
     response = get(
       "/schedules/?filter[route]=#{routes}&filter[stop]=#{origin},#{destination}&fields[stop]=parent_station&fields[schedule]=&include=stop"

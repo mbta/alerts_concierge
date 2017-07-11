@@ -67,11 +67,11 @@ defmodule AlertProcessor.Subscription.FerryMapper do
   end
 
   defp determine_direction_id(route, origin, destination) do
-    case Enum.filter_map(
-      route.stop_list,
-      fn({_name, id}) -> Enum.member?([origin, destination], id) end,
-      fn({_name, id}) -> id
-    end) do
+    filtered_stops =
+      route.stop_list
+      |> Enum.filter(fn({_name, id}) -> Enum.member?([origin, destination], id) end)
+      |> Enum.map(fn({_name, id}) -> id end)
+    case filtered_stops do
       [^origin, ^destination] -> 1
       [^destination, ^origin] -> 0
     end
@@ -97,8 +97,8 @@ defmodule AlertProcessor.Subscription.FerryMapper do
   defp map_common_trips(schedules, trip) do
     schedules
     |> Enum.group_by(fn(%{"relationships" => %{"trip" => %{"data" => %{"id" => id}}}}) -> id end)
-    |> Enum.filter_map(fn({_id, schedules}) -> Enum.count(schedules) > 1 end,
-      fn({_id, schedules}) ->
+    |> Enum.filter(fn({_id, schedules}) -> Enum.count(schedules) > 1 end)
+    |> Enum.map(fn({_id, schedules}) ->
         [departure_schedule, arrival_schedule] = Enum.sort_by(schedules, fn(%{"attributes" => %{"departure_time" => departure_timestamp}}) -> departure_timestamp end)
         %{"attributes" => %{
           "departure_time" => departure_timestamp

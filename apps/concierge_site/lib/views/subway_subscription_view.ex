@@ -44,7 +44,7 @@ defmodule ConciergeSite.SubwaySubscriptionView do
   Returns a summary of a subscription's associated trip days, times, and stops
   """
   @spec trip_summary_title(map, map) :: iodata
-  def trip_summary_title(params = %{"trip_type" => "one_way"}, station_names) do
+  def trip_summary_title(%{"trip_type" => "one_way"} = params, station_names) do
     ["One way ",
      joined_day_list(params),
      " travel between ",
@@ -53,7 +53,7 @@ defmodule ConciergeSite.SubwaySubscriptionView do
      station_names["destination"]]
   end
 
-  def trip_summary_title(params = %{"trip_type" => "round_trip"}, station_names) do
+  def trip_summary_title(%{"trip_type" => "round_trip"} = params, station_names) do
     ["Round trip ",
      joined_day_list(params),
      " travel between ",
@@ -62,7 +62,7 @@ defmodule ConciergeSite.SubwaySubscriptionView do
      station_names["destination"]]
   end
 
-  def trip_summary_title(params = %{"trip_type" => "roaming"}, station_names) do
+  def trip_summary_title(%{"trip_type" => "roaming"} = params, station_names) do
     [params
      |> joined_day_list()
      |> String.capitalize(),
@@ -76,7 +76,7 @@ defmodule ConciergeSite.SubwaySubscriptionView do
   Returns a list of a subscription's associated times and stops
   """
   @spec trip_summary_logistics(map, map) :: [iodata]
-  def trip_summary_logistics(params = %{"trip_type" => "one_way"}, station_names) do
+  def trip_summary_logistics(%{"trip_type" => "one_way"} = params, station_names) do
      [[format_time(params["departure_start"]),
       " - ",
       format_time(params["departure_end"]),
@@ -86,7 +86,7 @@ defmodule ConciergeSite.SubwaySubscriptionView do
       station_names["destination"]]]
   end
 
-  def trip_summary_logistics(params = %{"trip_type" => "round_trip"}, station_names) do
+  def trip_summary_logistics(%{"trip_type" => "round_trip"} = params, station_names) do
     [[format_time(params["departure_start"]),
       " - ",
       format_time(params["departure_end"]),
@@ -103,7 +103,7 @@ defmodule ConciergeSite.SubwaySubscriptionView do
       station_names["origin"]]]
   end
 
-  def trip_summary_logistics(params = %{"trip_type" => "roaming"}, _station_names) do
+  def trip_summary_logistics(%{"trip_type" => "roaming"} = params, _station_names) do
     [[format_time(params["departure_start"]),
      " - ",
      format_time(params["departure_end"])]]

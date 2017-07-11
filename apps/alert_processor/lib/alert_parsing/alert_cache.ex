@@ -50,9 +50,8 @@ defmodule AlertProcessor.AlertCache do
   defp get_updated_ids(new_alerts, old_alerts) do
     old_alerts
     |> Map.take(Map.keys(new_alerts))
-    |> Enum.filter_map(fn ({id, old_alert}) ->
-      updated?(old_alert, new_alerts[id])
-    end, &elem(&1, 0))
+    |> Enum.filter(fn ({id, old_alert}) -> updated?(old_alert, new_alerts[id]) end)
+    |> Enum.map(&elem(&1, 0))
   end
 
   defp updated?(new_alert, old_alert) do
