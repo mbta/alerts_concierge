@@ -2,7 +2,8 @@ defmodule AlertProcessor.Factory do
   @moduledoc false
   use ExMachina.Ecto, repo: AlertProcessor.Repo
 
-  alias AlertProcessor.Model.{InformedEntity, Notification, Subscription, User}
+  alias AlertProcessor.Model.{InformedEntity, Notification, Subscription, User, PasswordReset}
+  alias Calendar.DateTime
 
   def informed_entity_factory do
     %InformedEntity{}
@@ -93,6 +94,13 @@ defmodule AlertProcessor.Factory do
       phone_number: sequence(:phone_number, &(String.pad_leading("#{&1}", 10, "5555551234"))),
       role: "user",
       encrypted_password: sequence(:encrypted_password, &"encrypted_password_#{&1}")
+    }
+  end
+
+  def password_reset_factory do
+    %PasswordReset{
+      expired_at: DateTime.add!(DateTime.now_utc, 3600),
+      redeemed_at: nil
     }
   end
 end
