@@ -2,4 +2,57 @@
 
 <%= render "_progress_bar.html", current_page: :trip_info, trip_type: @subscription_params["trip_type"], conn: @conn %>
 
-Trip Info
+<div class="subscription-step enter-trip-info">
+  <h2>Enter your trip info</h2>
+
+  <%= flash_error(@conn) %>
+
+  <p>
+    <%= Map.get(@subscription_params, "trip_type", "")
+        |> String.to_existing_atom()
+        |> trip_info_description() %>
+  </p>
+
+  <%= form_for @conn, ferry_subscription_path(@conn, :ferry), [class: "trip-info-form ferry", as: :subscription], fn f -> %>
+    <div class="form-group select-station">
+      <label for="origin" class="station-input-label form-label">Origin</label>
+      <%= select f,
+                 :origin,
+                 @station_list_select_options,
+                 class: "subscription-select-origin no-js",
+                 prompt: "Select a station" %>
+    </div>
+    <div class="form-group select-station">
+      <label for="destination" class="station-input-label form-label">Destination</label>
+      <%= select f,
+                 :destination,
+                 @station_list_select_options,
+                 class: "subscription-select-destination no-js",
+                 prompt: "Select a station" %>
+    </div>
+    <div class="form-group select-days">
+      <div class="form-label">Travel Days</div>
+      <%= select f, :relevant_days, [{"Weekdays", "weekday"}, {"Saturday", "saturday"}, {"Sunday", "sunday"}], required: true, class: "relevant-days-select" %>
+    </div>
+
+    <div class="form-group travel-times">
+      <div class="form-label">When do you travel?</div>
+      <div class="form-sub-label travel-times-sub-label">
+        We will send you notifications for any service alerts that occur during
+        your planned travel time.
+      </div>
+      <%= render "_travel_time_select_lists.html", trip_type: @subscription_params["trip_type"] %>
+    </div>
+
+    <%= for {param_name, value} <- atomize_keys(@subscription_params) do %>
+      <%= hidden_input f, param_name, value: value %>
+    <% end %>
+
+    <div class="trip-info-footer">
+      <%= link to: ferry_subscription_path(@conn, :new), class: "subscription-info-back-link" do %>
+        <i class="fa fa-arrow-left" aria-hidden="true"></i> Go Back
+      <% end %>
+      <%= submit "Next", class: "btn btn-primary btn-subscription-next" %>
+    </div>
+  <% end %>
+</div>

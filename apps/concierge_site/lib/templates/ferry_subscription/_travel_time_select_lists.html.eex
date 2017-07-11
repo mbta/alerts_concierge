@@ -1,0 +1,15 @@
+<div class="travel-time-select-section">
+  <label for="subscription_departure_start" class="travel-time-label">
+    Approximate Departure Time:
+  </label>
+  <%= select :subscription, :departure_start, travel_time_options(), class: "travel-time-select", selected: "09:00:00" %>
+</div>
+
+<%= if @trip_type == "round_trip" do %>
+  <div class="travel-time-select-section">
+    <label for="subscription_return_start" class="travel-time-label">
+      Approximate Return Time:
+    </label>
+    <%= select :subscription, :return_start, travel_time_options(), class: "travel-time-select", selected: "17:00:00" %>
+  </div>
+<%= end %>
