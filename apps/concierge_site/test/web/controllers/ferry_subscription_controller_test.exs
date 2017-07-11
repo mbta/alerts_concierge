@@ -1,32 +1,48 @@
 defmodule ConciergeSite.FerrySubscriptionControllerTest do
   use ConciergeSite.ConnCase
 
-  @password "password1"
-  @encrypted_password Comeonin.Bcrypt.hashpwsalt(@password)
-
-  alias AlertProcessor.{Model.User, Repo}
-
   describe "authorized" do
+    setup :create_and_login_user
+
     test "GET /subscriptions/ferry/new", %{conn: conn}  do
-      user = Repo.insert!(%User{email: "test@email.com",
-                                role: "user",
-                                encrypted_password: @encrypted_password})
-      conn = user
-      |> guardian_login(conn)
-      |> get("/subscriptions/ferry/new")
+      conn = get(conn, "/subscriptions/ferry/new")
 
       assert html_response(conn, 200) =~ "What type of trip do you take?"
     end
 
     test "GET /subscriptions/ferry/new/info", %{conn: conn}  do
-      user = Repo.insert!(%User{email: "test@email.com",
-                                role: "user",
-                                encrypted_password: @encrypted_password})
-      conn = user
-      |> guardian_login(conn)
-      |> get("/subscriptions/ferry/new/info")
+      conn = get(conn, "/subscriptions/ferry/new/info")
 
       assert html_response(conn, 200) =~ "Info"
+    end
+
+    test "POST /subscriptions/ferry/new/ferry one_way", %{conn: conn} do
+      params = %{"subscription" => %{
+        "departure_start" => "08:45:00",
+        "origin" => "Boat-Charlestown",
+        "destination" => "Boat-Long",
+        "relevant_days" => "weekday",
+        "trip_type" => "one_way",
+      }}
+
+      conn = post(conn, "/subscriptions/ferry/new/ferry", params)
+
+      assert html_response(conn, 200) =~ "Choose your ferries"
+    end
+
+    test "POST /subscriptions/ferry/new/ferry round_trip", %{conn: conn} do
+      params = %{"subscription" => %{
+        "departure_start" => "08:45:00",
+        "return_start" => "16:00:00",
+        "origin" => "Boat-Long",
+        "destination" => "Boat-Charlestown",
+        "relevant_days" => "weekday",
+        "trip_type" => "round_trip",
+      }}
+
+      conn = post(conn, "/subscriptions/ferry/new/ferry", params)
+
+      assert html_response(conn, 200) =~ "Choose your ferries"
     end
   end
 
@@ -40,5 +56,11 @@ defmodule ConciergeSite.FerrySubscriptionControllerTest do
       conn = get(conn, "/subscriptions/ferry/new/info")
       assert html_response(conn, 302) =~ "/login"
     end
+  end
+
+  defp create_and_login_user(%{conn: conn}) do
+    user = insert(:user)
+    conn = guardian_login(user, conn)
+    {:ok, [conn: conn, user: user]}
   end
 end
