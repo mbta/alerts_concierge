@@ -67,5 +67,16 @@ defmodule ConciergeSite.PasswordControllerTest do
       conn = get(conn, "/my-account/password/edit")
       assert html_response(conn, 302) =~ "/login"
     end
+
+    test "PATCH /my-account/password", %{conn: conn} do
+      params = %{"user" => %{
+        "current_password" => "password1",
+        "password" => "P@ssword2",
+        "password_confirmation" => "P@ssword2"
+      }}
+
+      conn = patch(conn, "my-account/password", params)
+      assert html_response(conn, 302) =~ "/login"
+    end
   end
 end
