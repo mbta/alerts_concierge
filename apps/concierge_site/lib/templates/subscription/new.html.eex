@@ -23,7 +23,7 @@
                name: "Bus" %>
 
     <%= render "_service_option.html",
-               link_to: "#",
+               link_to: ferry_subscription_path(@conn, :new),
                icon_class: "ferry-icon",
                icon_src: static_url(@conn, "/images/ferry.svg"),
                name: "Ferry" %>
