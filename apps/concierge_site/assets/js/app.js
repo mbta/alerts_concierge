@@ -24,10 +24,12 @@ import selectStation from './select-station';
 import selectBusRoute from './select-bus-route';
 import selectTrip from './select-trip';
 import myAccountToggleSections from './my-account-toggle-sections';
+import formHelpers from './form-helpers';
 
 selectBusRoute();
 selectStation();
 selectTrip();
 myAccountToggleSections();
+formHelpers();
 
 document.body.className = document.body.className.replace("no-js", "js");
