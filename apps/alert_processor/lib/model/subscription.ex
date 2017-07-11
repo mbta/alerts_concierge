@@ -115,7 +115,12 @@ defmodule AlertProcessor.Model.Subscription do
     Repo.all(query)
   end
 
-  def one_for_user!(subscription_id, user_id) do
+  @doc """
+  Fetches a subscription based on subscription and user ids. optionally preloads
+  the informed entities.
+  """
+  def one_for_user!(subscription_id, user_id, preload_entities \\ false)
+  def one_for_user!(subscription_id, user_id, false) do
     Repo.one!(from s in __MODULE__,
       where: s.id == ^subscription_id and s.user_id == ^user_id)
   end
