@@ -30,15 +30,15 @@ defmodule ConciergeSite.PasswordController do
     user = conn.private.guardian_default_resource
     password = conn.params["user"]["current_password"]
 
-    if !User.check_password(user, password) do
+    if User.check_password(user, password) do
+      conn
+    else
       changeset = User.update_password_changeset(user)
 
       conn
       |> put_flash(:error, "Current password is incorrect.")
       |> render("edit.html", changeset: changeset, user: user)
       |> halt()
-    else
-      conn
     end
   end
 end
