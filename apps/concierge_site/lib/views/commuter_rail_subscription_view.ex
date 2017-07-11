@@ -138,4 +138,12 @@ defmodule ConciergeSite.CommuterRailSubscriptionView do
 
   defp trip_summary_details_train_count([_trip]), do: "1 train"
   defp trip_summary_details_train_count(trips), do: [trips |> Enum.count() |> to_string(), " trains"]
+
+  defp trip_list_header(subscription) do
+    case subscription.relevant_days do
+      [:weekday] -> "Select Weekday Trains"
+      [:sunday] -> "Select Sunday Trains"
+      [:saturday] -> "Select Saturday Trains"
+    end
+  end
 end

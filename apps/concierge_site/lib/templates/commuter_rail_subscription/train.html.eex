@@ -11,7 +11,7 @@
 
   <%= form_for @conn, commuter_rail_subscription_path(@conn, :preferences), [class: "trip-form commuter-rail", as: :subscription], fn f -> %>
 
-  <%= render "_train_select_options.html", f: f, trips: @trips %>
+  <%= render "_train_select_options.html", f: f, list_header: nil, trips: @trips %>
 
   <%= for {param_name, value} <- atomize_keys(@subscription_params) do %>
     <%= hidden_input f, param_name, value: value %>
