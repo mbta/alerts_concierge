@@ -47,8 +47,10 @@ defmodule ConciergeSite.Subscriptions.SubwayParams do
     end
   end
 
-  defp validate_station_pair({params, errors}) do
-    case map_station_schedules(params["origin"], params["destination"]) do
+  defp validate_station_pair({params = %{"origin" => ""}, errors}), do: {params, errors}
+  defp validate_station_pair({params = %{"destination" => ""}, errors}), do: {params, errors}
+  defp validate_station_pair({params = %{"origin" => origin, "destination" => destination}, errors}) do
+    case map_station_schedules(origin, destination) do
       {:ok, trips} ->
         [{_, origin_trip_ids}, {_, destination_trip_ids}] = trips
         if MapSet.disjoint?(origin_trip_ids, destination_trip_ids) do
