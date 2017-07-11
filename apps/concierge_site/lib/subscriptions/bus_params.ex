@@ -28,10 +28,10 @@ defmodule ConciergeSite.Subscriptions.BusParams do
 
   defp validate_at_least_one_travel_day({params, errors}) do
     day_params = [params["weekday"], params["saturday"], params["sunday"]]
-    if !Enum.any?(day_params, &(&1 == "true")) do
-      {params, ["At least one travel day option must be selected." | errors]}
-    else
+    if Enum.any?(day_params, &(&1 == "true")) do
       {params, errors}
+    else
+      {params, ["At least one travel day option must be selected." | errors]}
     end
   end
 

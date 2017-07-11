@@ -266,10 +266,8 @@ defmodule AlertProcessor.ServiceInfoCache do
     {:ok, trips} = ApiClient.trips(route_id, direction_id)
 
     trips
-    |> Enum.filter_map(
-        fn %{"attributes" => attributes} -> attributes["headsign"] != "" end,
-        fn %{"attributes" => attributes} -> attributes["headsign"] end
-      )
+    |> Enum.filter(fn %{"attributes" => attributes} -> attributes["headsign"] != "" end)
+    |> Enum.map(fn %{"attributes" => attributes} -> attributes["headsign"] end)
     |> order_headsigns_by_frequency()
   end
 

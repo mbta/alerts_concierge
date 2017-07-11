@@ -141,7 +141,8 @@ defmodule ConciergeSite.SubscriptionView do
 
   defp parse_direction(subscription) do
     subscription.informed_entities
-    |> Enum.filter_map(&(!is_nil(&1.direction_id)), &(&1.direction_id))
+    |> Enum.filter(&(!is_nil(&1.direction_id)))
+    |> Enum.map(&(&1.direction_id))
     |> Enum.uniq()
     |> case do
       [id] -> id

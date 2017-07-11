@@ -88,11 +88,9 @@ defmodule AlertProcessor.Subscription.Mapper do
     route_entities =
       Enum.flat_map(routes, fn(%Route{route_id: route, route_type: type, stop_list: stop_list}) ->
         direction_id =
-          case Enum.filter_map(
-            stop_list,
-            fn({_name, id}) -> Enum.member?([origin, destination], id) end,
-            fn({_name, id}) -> id
-          end) do
+          case stop_list
+            |> Enum.filter(fn({_name, id}) -> Enum.member?([origin, destination], id) end)
+            |> Enum.map(fn({_name, id}) -> id end) do
             [^origin, ^destination] -> 1
             [^destination, ^origin] -> 0
           end

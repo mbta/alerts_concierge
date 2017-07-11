@@ -1,4 +1,5 @@
 defmodule Mix.Tasks.Compile.AlertMail do
+  @moduledoc false
   use Mix.Task
 
   @template_dir Path.join(~w(#{System.cwd!} lib mail_templates))
@@ -12,8 +13,10 @@ defmodule Mix.Tasks.Compile.AlertMail do
   end
 
   defp template_files do
-    File.ls!(@template_dir)
-    |> Enum.filter_map(&(String.ends_with?(&1, ".html.eex")), &(String.replace_suffix(&1, ".html.eex", "")))
+    @template_dir
+    |> File.ls!()
+    |> Enum.filter(&(String.ends_with?(&1, ".html.eex")))
+    |> Enum.map(&(String.replace_suffix(&1, ".html.eex", "")))
   end
 
   defp build_templates_with_inline_css(template_names) do
