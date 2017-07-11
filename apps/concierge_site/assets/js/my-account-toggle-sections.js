@@ -3,9 +3,6 @@ export default function($) {
 
   function setToggleableSectionDisplay() {
     const $section = $(this).parents(".my-account-section");
-
-    console.log($section.text());
-
     const $toggleableSection = $(".supporting-info-section", $section);
     const $inputTrue = $("input[value='true']", $section);
     const $inputFalse = $("input[value='false']", $section);
