@@ -23,9 +23,11 @@ import "phoenix_html"
 import selectStation from './select-station';
 import selectBusRoute from './select-bus-route';
 import selectTrip from './select-trip';
+import myAccountToggleSections from './my-account-toggle-sections';
 
 selectBusRoute();
 selectStation();
 selectTrip();
+myAccountToggleSections();
 
 document.body.className = document.body.className.replace("no-js", "js");
