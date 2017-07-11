@@ -11,6 +11,7 @@ defmodule AlertProcessor.Model.User do
     vacation_end: DateTime.t,
     do_not_disturb_start: Time.t,
     do_not_disturb_end: Time.t,
+    amber_alert_opt_in: boolean()
   }
 
   @type id :: String.t
@@ -35,12 +36,14 @@ defmodule AlertProcessor.Model.User do
     field :password, :string, virtual: true
     field :password_confirmation, :string, virtual: true
     field :sms_toggle, :boolean, virtual: true
+    field :amber_alert_opt_in, :boolean, default: true
 
     timestamps()
   end
 
   @permitted_fields ~w(email phone_number role vacation_start
-    vacation_end do_not_disturb_start do_not_disturb_end password password_confirmation)a
+    vacation_end do_not_disturb_start do_not_disturb_end password
+    password_confirmation amber_alert_opt_in)a
   @required_fields ~w(email password)a
 
   @doc """
@@ -77,7 +80,7 @@ defmodule AlertProcessor.Model.User do
   """
   def update_account_changeset(struct, params \\ %{}) do
     struct
-    |> cast(params, ~w(phone_number do_not_disturb_start do_not_disturb_end))
+    |> cast(params, ~w(phone_number do_not_disturb_start do_not_disturb_end amber_alert_opt_in))
     |> validate_format(:phone_number, ~r/^[0-9]{10}$/, message: "Phone number is not in a valid format.")
   end
 

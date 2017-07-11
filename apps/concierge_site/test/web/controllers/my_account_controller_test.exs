@@ -20,7 +20,8 @@ defmodule ConciergeSite.AccountControllerTest do
         "do_not_disturb_start" => "16:30:00",
         "do_not_disturb_end" => "18:30:00",
         "phone_number" => "5551234567",
-        "sms_toggle" => "true"
+        "sms_toggle" => "true",
+        "amber_alert_opt_in" => "false"
       }}
 
       conn = user
@@ -33,6 +34,7 @@ defmodule ConciergeSite.AccountControllerTest do
       assert updated_user.phone_number == "5551234567"
       assert updated_user.do_not_disturb_end == ~T[22:30:00.000000]
       assert updated_user.do_not_disturb_start == ~T[20:30:00.000000]
+      assert updated_user.amber_alert_opt_in == false
     end
 
     test "PATCH /my-account/ with invalid params", %{conn: conn, user: user} do
@@ -41,7 +43,8 @@ defmodule ConciergeSite.AccountControllerTest do
         "do_not_disturb_end" => "23:45:00",
         "do_not_disturb_start" => "19:30:00",
         "phone_number" => "abc123",
-        "sms_toggle" => "true"
+        "sms_toggle" => "true",
+        "amber_alert_opt_in" => "true"
       }}
 
       conn = user

@@ -80,6 +80,20 @@
       </div>
     </div>
 
+    <h2>Amber Alerts</h2>
+    <div class="my-account-section">
+      <div class="my-account-section-prompt">
+      Would you like to receive Amber Alerts?
+      </div>
+      <label for="user_amber_alert_opt_in_true" class="my-account-radio-label">
+        <%= radio_button f, :amber_alert_opt_in, "true", checked: @user.amber_alert_opt_in, class: "my-account-radio-button" %>
+        Yes
+      </label>
+      <label for="user_amber_alert_opt_in_false" class="my-account-radio-label">
+        <%= radio_button f, :amber_alert_opt_in, "false", checked: !@user.amber_alert_opt_in, class: "my-account-radio-button" %>
+        No
+      </label>
+    </div>
     <div class="my-account-footer">
       <%= submit "Update Account Preferences", class: "btn btn-primary update-account" %>
     </div>

@@ -27,6 +27,9 @@ defmodule ConciergeSite.UserParams do
         _ -> %{}
       end
 
-    Map.merge(phone_number, do_not_disturb)
+    params
+    |> Map.take(["amber_alert_opt_in"])
+    |> Map.merge(phone_number)
+    |> Map.merge(do_not_disturb)
   end
 end
