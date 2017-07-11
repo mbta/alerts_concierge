@@ -17,11 +17,13 @@ defmodule AlertProcessor.Subscription.SubwayMapper do
   """
   @spec map_subscriptions(map) :: {:ok, [Subscription.subscription_info]} | :error
   def map_subscriptions(subscription_params) do
-    with subscriptions <- map_timeframe(subscription_params),
-         subscriptions <- map_priority(subscriptions, subscription_params),
+    with {:ok, subscriptions} <- map_timeframe(subscription_params),
+         {:ok, subscriptions} <- map_priority(subscriptions, subscription_params),
          subscriptions <- map_type(subscriptions, :subway)
          do
       map_entities(subscriptions, subscription_params)
+    else
+      _ -> :error
     end
   end
 

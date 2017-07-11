@@ -7,11 +7,12 @@ defmodule AlertProcessor.Subscription.Mapper do
   alias Ecto.Multi
 
   def map_timeframe(%{"departure_start" => ds, "departure_end" => de, "return_start" => nil, "return_end" => nil, "relevant_days" => rd}) do
-    [do_map_timeframe(ds, de, rd)]
+    {:ok, [do_map_timeframe(ds, de, rd)]}
   end
   def map_timeframe(%{"departure_start" => ds, "departure_end" => de, "return_start" => rs, "return_end" => re, "relevant_days" => rd}) do
-    [do_map_timeframe(ds, de, rd), do_map_timeframe(rs, re, rd)]
+    {:ok, [do_map_timeframe(ds, de, rd), do_map_timeframe(rs, re, rd)]}
   end
+  def map_timeframe(_), do: :error
 
   def do_map_timeframe(start_time, end_time, relevant_days) do
     %Subscription{
@@ -22,10 +23,11 @@ defmodule AlertProcessor.Subscription.Mapper do
   end
 
   def map_priority(subscriptions, %{"alert_priority_type" => alert_priority_type}) when is_list(subscriptions) do
-    Enum.map(subscriptions, fn(subscription) ->
+    {:ok, Enum.map(subscriptions, fn(subscription) ->
       %{subscription | alert_priority_type: String.to_existing_atom(alert_priority_type)}
-    end)
+    end)}
   end
+  def map_priority(_, _), do: :error
 
   def map_type(subscriptions, type) do
     Enum.map(subscriptions, fn(subscription) ->
@@ -55,6 +57,7 @@ defmodule AlertProcessor.Subscription.Mapper do
       end)
     }]
   end
+  def map_amenities(_, _), do: :error
 
   def map_route_type(subscription_infos, routes) do
     route_type_entities =
@@ -81,7 +84,6 @@ defmodule AlertProcessor.Subscription.Mapper do
       {subscription, informed_entities ++ route_entities}
     end)
   end
-
   def map_routes([{subscription, informed_entities}], %{"origin" => origin, "destination" => destination}, routes) do
     route_entities =
       Enum.flat_map(routes, fn(%Route{route_id: route, route_type: type, stop_list: stop_list}) ->
