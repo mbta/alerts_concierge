@@ -5,6 +5,7 @@ defmodule AlertProcessor.Subscription.Mapper do
   """
   alias AlertProcessor.{Helpers.DateTimeHelper, Model.InformedEntity, Model.Route, Model.Subscription, ServiceInfoCache}
   alias Ecto.Multi
+  import Ecto.Query
 
   def map_timeframe(%{"departure_start" => ds, "departure_end" => de, "return_start" => nil, "return_end" => nil, "relevant_days" => rd}) do
     {:ok, [do_map_timeframe(ds, de, rd)]}
@@ -216,5 +217,18 @@ defmodule AlertProcessor.Subscription.Mapper do
       acc
       |> Multi.insert({:subscription, index}, sub_to_insert)
     end)
+  end
+
+  def build_update_subscription_transaction(subscription, %{"trips" => trips} = params) do
+    subscription_changeset = Subscription.create_changeset(subscription, params)
+    current_trip_entities = Enum.filter(subscription.informed_entities, fn(ie) -> InformedEntity.entity_type(ie) == :trip end)
+
+    trips
+    |> Enum.with_index()
+    |> Enum.reduce(Multi.new(), fn({trip, index}, acc) ->
+         Multi.insert(acc, {:informed_entity, index}, %InformedEntity{subscription_id: subscription.id, trip: trip})
+       end)
+    |> Multi.delete_all(:remove_old, from(ie in InformedEntity, where: ie.id in ^Enum.map(current_trip_entities, & &1.id)))
+    |> Multi.update(:subscription, subscription_changeset)
   end
 end

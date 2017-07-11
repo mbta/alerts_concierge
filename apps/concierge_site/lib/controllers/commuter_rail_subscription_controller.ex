@@ -2,10 +2,44 @@ defmodule ConciergeSite.CommuterRailSubscriptionController do
   use ConciergeSite.Web, :controller
   use Guardian.Phoenix.Controller
   alias ConciergeSite.Subscriptions.{CommuterRailParams, Lines, TemporaryState}
+  alias AlertProcessor.Model.{InformedEntity, Subscription}
   alias AlertProcessor.{Helpers.DateTimeHelper, Repo, ServiceInfoCache, Subscription.CommuterRailMapper}
 
   def new(conn, _params, _user, _claims) do
     render conn, "new.html"
+  end
+
+  def edit(conn, %{"id" => id}, user, _claims) do
+    subscription = Subscription.one_for_user!(id, user.id, true)
+    changeset = Subscription.create_changeset(subscription)
+    {:ok, {_name, origin_id}} = ServiceInfoCache.get_stop_by_name(subscription.origin)
+    {:ok, {_name, destination_id}} = ServiceInfoCache.get_stop_by_name(subscription.destination)
+    [relevant_days] = subscription.relevant_days
+    selected_trips =
+      subscription.informed_entities
+      |> Enum.filter(fn(informed_entity) ->
+           InformedEntity.entity_type(informed_entity) == :trip
+         end)
+      |> Enum.map(& &1.trip)
+    {:ok, trips} = get_trip_info(origin_id, destination_id, relevant_days, selected_trips)
+    render conn, "edit.html", subscription: subscription, changeset: changeset, trips: %{departure_trips: trips}
+  end
+
+  def update(conn, %{"id" => id, "subscription" => subscription_params}, user, _claims) do
+    subscription = Subscription.one_for_user!(id, user.id, true)
+    with {:ok, params} <- CommuterRailParams.prepare_for_update_changeset(subscription, subscription_params),
+         multi <- CommuterRailMapper.build_update_subscription_transaction(subscription, params),
+         {:ok, _subscription} <- Repo.transaction(multi) do
+      conn
+      |> put_flash(:info, "Subscription updated.")
+      |> redirect(to: subscription_path(conn, :index))
+    else
+      {:error, changeset} ->
+        handle_invalid_update_submission(conn, subscription, changeset)
+      _ ->
+        changeset = Subscription.create_changeset(subscription)
+        handle_invalid_update_submission(conn, subscription, changeset)
+    end
   end
 
   def info(conn, params, user, _claims) do
@@ -86,29 +120,53 @@ defmodule ConciergeSite.CommuterRailSubscriptionController do
 
   defp populate_trip_options(%{"trip_type" => "one_way"} = subscription_params) do
     %{"origin" => origin, "destination" => destination, "relevant_days" => relevant_days, "departure_start" => ds} = subscription_params
-    case get_trip_info(origin, destination, ds, relevant_days) do
-      {:ok, trips, closest_trip} ->
-        {:ok, %{departure_trips: trips, closest_departure_trip: closest_trip}}
+    case get_trip_info(origin, destination, relevant_days, ds) do
+      {:ok, trips} ->
+        {:ok, %{departure_trips: trips}}
       :error ->
         {:error, "Please correct the following errors to proceed: Please select a valid origin and destination combination."}
     end
   end
   defp populate_trip_options(%{"trip_type" => "round_trip"} = subscription_params) do
     %{"origin" => origin, "destination" => destination, "relevant_days" => relevant_days, "departure_start" => ds, "return_start" => rs} = subscription_params
-    with {:ok, departure_trips, closest_departure_trip} <- get_trip_info(origin, destination, ds, relevant_days),
-         {:ok, return_trips, closest_return_trip} <- get_trip_info(destination, origin, rs, relevant_days) do
-      {:ok, %{departure_trips: departure_trips, closest_departure_trip: closest_departure_trip, return_trips: return_trips, closest_return_trip: closest_return_trip}}
+    with {:ok, departure_trips} <- get_trip_info(origin, destination, relevant_days, ds),
+         {:ok, return_trips} <- get_trip_info(destination, origin, relevant_days, rs) do
+      {:ok, %{departure_trips: departure_trips, return_trips: return_trips}}
     else
       _ -> {:error, "Please correct the following errors to proceed: Please select a valid origin and destination combination."}
     end
   end
 
-  defp get_trip_info(origin, destination, timestamp, relevant_days) do
+  defp get_trip_info(origin, destination, relevant_days, slected_trip_numbers) when is_list(slected_trip_numbers) do
+    case CommuterRailMapper.map_trip_options(origin, destination, relevant_days) do
+      {:ok, trips} ->
+        updated_trips =
+          for trip <- trips do
+            if Enum.member?(slected_trip_numbers, trip.trip_number) do
+              %{trip | selected: true}
+            else
+              %{trip | selected: false}
+            end
+          end
+        {:ok, updated_trips}
+      _ ->
+        :error
+    end
+  end
+  defp get_trip_info(origin, destination, relevant_days, timestamp) do
     case CommuterRailMapper.map_trip_options(origin, destination, String.to_existing_atom(relevant_days)) do
       {:ok, trips} ->
         departure_start = timestamp |> Time.from_iso8601!() |> DateTimeHelper.seconds_of_day()
         closest_trip = Enum.min_by(trips, &calculate_difference(&1, departure_start))
-        {:ok, trips, closest_trip}
+        updated_trips =
+          for trip <- trips do
+            if trip.trip_number == closest_trip.trip_number do
+              %{trip | selected: true}
+            else
+              %{trip | selected: false}
+            end
+          end
+        {:ok, updated_trips}
       _ ->
         :error
     end
@@ -148,8 +206,24 @@ defmodule ConciergeSite.CommuterRailSubscriptionController do
     |> render(
       "train.html",
       token: token,
-      subscription_params: subscription_params,
+      subscription_params: Map.drop(subscription_params, ["trips", "return_trips"]),
       trips: trips
     )
+  end
+
+  def handle_invalid_update_submission(conn, subscription, changeset) do
+    {:ok, {_name, origin_id}} = ServiceInfoCache.get_stop_by_name(subscription.origin)
+    {:ok, {_name, destination_id}} = ServiceInfoCache.get_stop_by_name(subscription.destination)
+    [relevant_days] = subscription.relevant_days
+    selected_trips =
+      subscription.informed_entities
+      |> Enum.filter(fn(informed_entity) ->
+        InformedEntity.entity_type(informed_entity) == :trip
+      end)
+      |> Enum.map(& &1.trip)
+    {:ok, trips} = get_trip_info(origin_id, destination_id, relevant_days, selected_trips)
+    conn
+    |> put_flash(:error, "Please select at least one trip")
+    |> render("edit.html", subscription: subscription, changeset: changeset, trips: %{departure_trips: trips})
   end
 end

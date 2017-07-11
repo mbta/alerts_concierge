@@ -33,11 +33,11 @@ defmodule ConciergeSite.CommuterRailSubscriptionView do
     ""
   end
 
-  @spec trip_option(Trip.t, Trip.t, :depart | :return) :: Phoenix.HTML.safe
-  def trip_option(trip, closest_trip, trip_type) do
-    content_tag :div, class: trip_option_classes(trip, closest_trip) do
+  @spec trip_option(Trip.t, :depart | :return) :: Phoenix.HTML.safe
+  def trip_option(trip, trip_type) do
+    content_tag :div, class: trip_option_classes(trip) do
       [
-        trip_option_checkbox(trip, closest_trip, trip_type),
+        trip_option_checkbox(trip, trip_type),
         content_tag :label, class: "trip-option-description", for: trip_id_string(trip) do
           trip_option_description(trip)
         end
@@ -45,17 +45,17 @@ defmodule ConciergeSite.CommuterRailSubscriptionView do
     end
   end
 
-  defp trip_option_classes(%{trip_number: tn}, %{trip_number: tn}), do: "trip-option closest-trip"
-  defp trip_option_classes(_, _), do: "trip-option"
+  defp trip_option_classes(%{selected: true}), do: "trip-option closest-trip"
+  defp trip_option_classes(_), do: "trip-option"
 
-  defp trip_option_checkbox(trip, closest_trip, trip_type) do
+  defp trip_option_checkbox(trip, trip_type) do
     tag(:input,
         type: "checkbox",
         class: "trip-option-input",
         name: trip_option_name(trip_type),
         id: trip_id_string(trip),
         value: trip.trip_number,
-        checked: closest_trip.trip_number == trip.trip_number)
+        checked: trip.selected)
   end
 
   defp trip_option_name(:depart), do: "subscription[trips][]"

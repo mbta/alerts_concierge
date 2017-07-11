@@ -8,6 +8,7 @@ defmodule AlertProcessor.Subscription.CommuterRailMapper do
   alias AlertProcessor.{ApiClient, Model.Route, Model.Subscription, Model.Trip, ServiceInfoCache}
 
   defdelegate build_subscription_transaction(subscriptions, user), to: AlertProcessor.Subscription.Mapper
+  defdelegate build_update_subscription_transaction(subscriptions, user), to: AlertProcessor.Subscription.Mapper
 
   @spec map_subscriptions(map) :: {:ok, [Subscription.subscription_info]} | :error
   def map_subscriptions(subscription_params) do

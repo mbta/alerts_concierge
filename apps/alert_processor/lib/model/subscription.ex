@@ -64,6 +64,7 @@ defmodule AlertProcessor.Model.Subscription do
   @doc """
   Changeset for persisting a Subscription
   """
+  @spec create_changeset(__MODULE__.t, map) :: Ecto.Changeset.t
   def create_changeset(struct, params \\ %{}) do
     struct
     |> cast(params, @permitted_fields)
@@ -117,6 +118,11 @@ defmodule AlertProcessor.Model.Subscription do
   def one_for_user!(subscription_id, user_id) do
     Repo.one!(from s in __MODULE__,
       where: s.id == ^subscription_id and s.user_id == ^user_id)
+  end
+  def one_for_user!(subscription_id, user_id, true) do
+    Repo.one!(from s in __MODULE__,
+      where: s.id == ^subscription_id and s.user_id == ^user_id,
+      preload: [:informed_entities])
   end
 
   @doc """

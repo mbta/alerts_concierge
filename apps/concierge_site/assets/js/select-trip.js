@@ -11,14 +11,8 @@ export default function($) {
   const $viewMoreLinks = $(".view-more-link");
 
   function initialize(){
-    const $closestTrips = $(".closest-trip");
-
-    $closestTrips.each(function(_, trip){
-      showSurroundingTrips(trip);
-    });
-
     $viewAllLinks.each(function(_, link){
-      showHideLinks($(link));
+      showFewestTripsPossible($(link));
     });
   }
 
@@ -32,7 +26,11 @@ export default function($) {
 
   function showLessTrips(event){
     const $viewLessLink = $(event.target);
-    const $checkedTrips = relatedTrips($viewLessLink).children("input:checked").parent();
+    showFewestTripsPossible($viewLessLink);
+  }
+
+  function showFewestTripsPossible($link){
+    const $checkedTrips = relatedTrips($link).children("input:checked").parent();
 
     if ($checkedTrips.length > 1) {
       $checkedTrips.first().prevAll(".trip-option").addClass("hidden");
@@ -40,10 +38,10 @@ export default function($) {
     } else if ($checkedTrips.length === 1) {
       showSurroundingTrips($checkedTrips[0]);
     } else {
-      showSurroundingTrips($viewLessLink.parent().siblings(".closest-trip").first());
+      showSurroundingTrips($link.parent().siblings(".closest-trip").first());
     }
 
-    showHideLinks($viewLessLink);
+    showHideLinks($link);
   }
 
   function showMoreTrips(event){

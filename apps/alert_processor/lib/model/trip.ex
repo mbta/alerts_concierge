@@ -3,8 +3,7 @@ defmodule AlertProcessor.Model.Trip do
   Module used for storing information
   about trips for displaying
   """
-
-  defstruct [:arrival_time, :departure_time, :destination, :direction_id, :route, :origin, :trip_number]
+  defstruct [:arrival_time, :departure_time, :destination, :direction_id, :route, :origin, :trip_number, selected: false]
 
   alias AlertProcessor.Model.Route
 
@@ -16,6 +15,7 @@ defmodule AlertProcessor.Model.Trip do
     direction_id: Route.direction_id,
     route: Route.t,
     origin: Route.stop,
+    selected: boolean,
     trip_number: id
   }
 end

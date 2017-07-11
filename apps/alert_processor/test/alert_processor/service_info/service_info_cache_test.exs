@@ -119,6 +119,14 @@ defmodule AlertProcessor.ServiceInfoCacheTest do
     end
   end
 
+  test "get_stop_by_name returns the correct stop" do
+    use_cassette "service_info", custom: true, clear_mock: true, match_requests_on: [:query] do
+      {:ok, pid} = ServiceInfoCache.start_link([name: :service_info_cache_test_stop])
+      assert {:ok, {"Davis", "place-davis"}} == ServiceInfoCache.get_stop_by_name(pid, "Davis")
+      assert {:ok, nil} == ServiceInfoCache.get_stop(pid, "Place doesn't exist")
+    end
+  end
+
   test "get_direction_name :subway returns the correct direction name" do
     use_cassette "service_info", custom: true, clear_mock: true, match_requests_on: [:query] do
       {:ok, pid} = ServiceInfoCache.start_link([name: :service_info_cache_test_direction_name])
