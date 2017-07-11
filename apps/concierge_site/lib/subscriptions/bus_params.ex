@@ -2,7 +2,7 @@ defmodule ConciergeSite.Subscriptions.BusParams do
   @moduledoc """
   Functions for processing user input during the bus subscription flow
   """
-  import ConciergeSite.Subscriptions.ParamsValidator
+  import ConciergeSite.Subscriptions.{ParamsValidator, SubscriptionParams}
 
   @spec validate_info_params(map) :: :ok | {:error, String.t}
   def validate_info_params(params) do
@@ -60,13 +60,5 @@ defmodule ConciergeSite.Subscriptions.BusParams do
     params
     |> Map.take(["alert_priority_type", "departure_end", "departure_start", "return_start", "return_end", "route"])
     |> Map.merge(translated_params)
-  end
-
-  defp relevant_days_from_booleans(day_map) do
-    day_map
-    |> Enum.filter_map(
-      fn {_day, bool} -> bool == "true" end,
-      fn {day, _bool} -> day end
-    )
   end
 end
