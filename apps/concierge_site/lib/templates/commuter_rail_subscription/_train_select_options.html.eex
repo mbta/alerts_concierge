@@ -1,21 +1,8 @@
 <div class="select-trip-number">
-<div class="trip-select-list-header"><%= @list_header || "Depart" %></div>
-<div class="trip-select-list">
-  <%= Enum.map(@trips.departure_trips, fn(trip) -> %>
-    <%= trip_option(trip, :depart) %>
-  <% end) %>
-  <div class="trip-toggle-links js">
-    <span class="view-more-link js">View More +</span>
-    <span class="view-less-link js">View Less -</span>
-    <span class="view-all-link js">View All +</span>
-  </div>
-</div>
-
-<%= if Map.has_key?(@trips, :return_trips) do %>
-  <div class="trip-select-list-header">Return</div>
+  <div class="trip-select-list-header"><%= @list_header || "Depart" %></div>
   <div class="trip-select-list">
-    <%= Enum.map(@trips.return_trips, fn(trip) -> %>
-      <%= trip_option(trip, :return) %>
+    <%= Enum.map(@trips.departure_trips, fn(trip) -> %>
+      <%= trip_option(trip, :depart) %>
     <% end) %>
     <div class="trip-toggle-links js">
       <span class="view-more-link js">View More +</span>
@@ -23,5 +10,18 @@
       <span class="view-all-link js">View All +</span>
     </div>
   </div>
-<% end %>
-</end>
+
+  <%= if Map.has_key?(@trips, :return_trips) do %>
+    <div class="trip-select-list-header">Return</div>
+    <div class="trip-select-list">
+      <%= Enum.map(@trips.return_trips, fn(trip) -> %>
+        <%= trip_option(trip, :return) %>
+      <% end) %>
+      <div class="trip-toggle-links js">
+        <span class="view-more-link js">View More +</span>
+        <span class="view-less-link js">View Less -</span>
+        <span class="view-all-link js">View All +</span>
+      </div>
+    </div>
+  <% end %>
+</div>

@@ -221,14 +221,17 @@ defmodule AlertProcessor.Subscription.Mapper do
 
   def build_update_subscription_transaction(subscription, %{"trips" => trips} = params) do
     subscription_changeset = Subscription.create_changeset(subscription, params)
-    current_trip_entities = Enum.filter(subscription.informed_entities, fn(ie) -> InformedEntity.entity_type(ie) == :trip end)
+    current_trip_entity_ids =
+      subscription.informed_entities
+      |> Enum.filter(& InformedEntity.entity_type(&1) == :trip)
+      |> Enum.map(& &1.id)
 
     trips
     |> Enum.with_index()
     |> Enum.reduce(Multi.new(), fn({trip, index}, acc) ->
          Multi.insert(acc, {:informed_entity, index}, %InformedEntity{subscription_id: subscription.id, trip: trip})
        end)
-    |> Multi.delete_all(:remove_old, from(ie in InformedEntity, where: ie.id in ^Enum.map(current_trip_entities, & &1.id)))
+    |> Multi.delete_all(:remove_old, from(ie in InformedEntity, where: ie.id in ^current_trip_entity_ids))
     |> Multi.update(:subscription, subscription_changeset)
   end
 end

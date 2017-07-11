@@ -34,7 +34,7 @@ defmodule ConciergeSite.CommuterRailSubscriptionController do
       |> put_flash(:info, "Subscription updated.")
       |> redirect(to: subscription_path(conn, :index))
     else
-      {:error, changeset} ->
+      {:error, %Ecto.Changeset{} = changeset} ->
         handle_invalid_update_submission(conn, subscription, changeset)
       _ ->
         changeset = Subscription.create_changeset(subscription)
@@ -137,12 +137,12 @@ defmodule ConciergeSite.CommuterRailSubscriptionController do
     end
   end
 
-  defp get_trip_info(origin, destination, relevant_days, slected_trip_numbers) when is_list(slected_trip_numbers) do
+  defp get_trip_info(origin, destination, relevant_days, selected_trip_numbers) when is_list(selected_trip_numbers) do
     case CommuterRailMapper.map_trip_options(origin, destination, relevant_days) do
       {:ok, trips} ->
         updated_trips =
           for trip <- trips do
-            if Enum.member?(slected_trip_numbers, trip.trip_number) do
+            if Enum.member?(selected_trip_numbers, trip.trip_number) do
               %{trip | selected: true}
             else
               %{trip | selected: false}
