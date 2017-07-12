@@ -99,9 +99,9 @@ defmodule AlertProcessor.ApiClient do
     |> get()
     |> parse_response()
   end
-  def schedules(stations) when is_list(stations) do
+  def schedules(stations, date) when is_list(stations) do
     # credo:disable-for-next-line Credo.Check.Readability.SpaceAfterCommas
-    "/schedules?filter[stop]=#{Enum.join(stations, ",")}&fields[schedule]=departure_time,arrival_time&include=trip&fields[trip]=name"
+    "/schedules?filter[stop]=#{Enum.join(stations, ",")}&fields[schedule]=departure_time,arrival_time&date=#{date}&include=trip&fields[trip]=name"
     |> URI.encode()
     |> get()
     |> parse_response()
