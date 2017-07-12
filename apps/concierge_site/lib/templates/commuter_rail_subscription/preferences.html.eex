@@ -11,7 +11,7 @@
     <%= trip_summary_details(@subscription_params, @origin, @destination) %>
   </div>
 
-  <%= form_for @conn, commuter_rail_subscription_path(@conn, :create), [class: "trip-prefs-form commuter-rail", as: :subscription], fn f -> %>
+  <%= form_for @conn, commuter_rail_subscription_path(@conn, :create), [class: "sub-creation-form trip-prefs-form commuter-rail", as: :subscription], fn f -> %>
     <div class="trip-alert-priority">
     <%= render "_alert_type_radio_buttons.html",
                form: f,

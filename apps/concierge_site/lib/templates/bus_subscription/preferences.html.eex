@@ -14,7 +14,7 @@
     <% end %>
   </div>
 
-  <%= form_for @conn, bus_subscription_path(@conn, :create), [class: "trip-prefs-form bus", as: :subscription], fn f -> %>
+  <%= form_for @conn, bus_subscription_path(@conn, :create), [class: "sub-creation-form trip-prefs-form bus", as: :subscription], fn f -> %>
     <%= render "_alert_type_radio_buttons.html",
                form: f,
                checked: :medium,

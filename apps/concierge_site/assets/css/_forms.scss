@@ -43,18 +43,22 @@ button {
 }
 
 .form-control:invalid {
-  border-color: $brand-danger;
+  &.dirty {
+    border-color: $brand-danger;
+  }
 }
 
 .form-control:valid {
-  border-color: $brand-success;
+  &.dirty{
+    border-color: $brand-success;
+  }
 }
 
 .form-control:invalid:focus {
   border-color: $input-border-color;
 }
 
-.form-control:valid + span:before {
+.form-control.dirty:valid + span:before {
   @include fa-icon();
   color: $brand-success;
   content: $fa-var-check-circle;

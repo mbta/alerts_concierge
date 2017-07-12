@@ -22,7 +22,7 @@ defmodule ConciergeSite.PasswordController do
         |> put_flash(:info, "Your password has been updated.")
         |> redirect(to: my_account_path(conn, :edit))
       {:error, changeset} ->
-        render conn,"edit.html", user: user, changeset: changeset
+        render conn, "edit.html", user: user, changeset: changeset
     end
   end
 
