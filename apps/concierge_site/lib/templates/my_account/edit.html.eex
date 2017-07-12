@@ -1,6 +1,8 @@
-<h1 class="my-account-header-container">
-  <div class="my-account-header">My Account</div>
-  <a href="#" class="delete-account-link">Delete Account <i class="fa fa-trash-o"></i></a>
+<h1 class="header-container">
+  <div>My Account</div>
+  <%= link to: "#", class: "header-link" do %>
+    Delete Account <i class="fa fa-trash-o"></i>
+  <% end %>
 </h1>
 
 <div class="my-account-container">
