@@ -54,24 +54,11 @@ defmodule AlertProcessor.Subscription.AmenitiesMapper do
     Map.put(params, "stops", stop_ids)
   end
 
-  # TODO: this will be refactored to use ServiceInfoCache.get_stop_by_name/1 once #148 is merged
   defp station_ids_from_names(names) do
-    with {:ok, subway_stations} <- ServiceInfoCache.get_subway_full_routes,
-      {:ok, cr_stations} <- ServiceInfoCache.get_commuter_rail_info do
-      subway_stations
-      |> Kernel.++(cr_stations)
-      |> Enum.map(& &1.stop_list)
-      |> List.flatten
-      |> Enum.reduce([], fn({name, id}, acc) ->
-        if Enum.member?(names, name) && !Enum.member?(acc, id) do
-          acc ++ [id]
-        else
-          acc
-        end
-      end)
-    else
-      _error -> :error
-    end
+    Enum.map(names, fn(name) ->
+      {:ok, {_, id}} = ServiceInfoCache.get_stop_by_name(name)
+      id
+    end)
   end
 
   defp map_entities(subscriptions, params) do
