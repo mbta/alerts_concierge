@@ -2,11 +2,11 @@
 <div class="my-account-container">
   <h2>Change Password</h2>
   <%= flash_error(@conn) %>
-  <div class="update-password-description">
+  <p>
     Use the form below to change the password for your T-Alerts account. Your
     password must be at least 6 characters long and contain one number or
     special character (? & % $ # !, etc).
-  </div>
+  </p>
 
   <%= form_for @changeset, my_account_password_path(@conn, :update), fn f -> %>
     <div class="update-password-section">
@@ -33,7 +33,7 @@
     </div>
 
     <div class="update-password-footer">
-      <%= submit "Save Changes", class: "btn btn-primary btn-update-password" %>
+      <%= submit "Save Changes", class: "btn btn-primary btn-wide" %>
       <div class="password-cancel-link">
         <%= link("Cancel", to: my_account_path(@conn, :edit)) %>
       </div>
