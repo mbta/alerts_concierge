@@ -11,7 +11,6 @@ defmodule ConciergeSite.Subscriptions.Lines do
   For use in the Phoenix.HTML.Form.select helper, so that the line name can
   become the label of an <optgroup> containing <option>s for each station.
   """
-
   @spec station_list_select_options([%AlertProcessor.Model.Route{}]) :: [{String.t, list}]
   def station_list_select_options(routes) do
     Enum.map(routes, fn(route) -> {route.long_name, route.stop_list} end)
@@ -20,7 +19,6 @@ defmodule ConciergeSite.Subscriptions.Lines do
   @doc """
   Fetch the associated station names for a given origin and destination station ids
   """
-
   @spec subway_station_names_from_ids(map) :: map
   def subway_station_names_from_ids(selected_station_ids) do
     case ServiceInfoCache.get_subway_full_routes() do

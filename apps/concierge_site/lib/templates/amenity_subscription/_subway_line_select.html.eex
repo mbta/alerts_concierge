@@ -1,0 +1,48 @@
+<div class="form-group select-days">
+  <div class="form-label edit-form-label">Subscribe to Entire Line</div>
+  <div class="form-subtitle">We will send alerts for all stops on a chosen line</div>
+  <%= error_tag @form, :relevant_lines %>
+  <div class="<%= @action %>-subscription-section-container">
+    <label>
+      <%= checkbox @form,
+                  :red,
+                  name: "subscription[routes][]",
+                  checked_value: "red",
+                  unchecked_value: nil,
+                  class: "subscription-day-checkbox",
+                  checked: Enum.member?(@checked, "red") %>
+      Red
+    </label>
+    <label>
+      <%= checkbox @form,
+                  :orange,
+                  name: "subscription[routes][]",
+                  checked_value: "orange",
+                  unchecked_value: nil,
+                  class: "subscription-day-checkbox",
+                  checked: Enum.member?(@checked, "orange") %>
+      Orange
+    </label>
+    <label>
+      <%= checkbox @form,
+                  :green,
+                  name: "subscription[routes][]",
+                  checked_value: "green",
+                  unchecked_value: nil,
+                  class: "subscription-day-checkbox",
+                  checked: Enum.member?(@checked, "green") %>
+      Green
+    </label>
+    <label>
+      <%= checkbox @form,
+                  :blue,
+                  name: "subscription[routes][]",
+                  checked_value: "blue",
+                  unchecked_value: nil,
+                  class: "subscription-day-checkbox",
+                  checked: Enum.member?(@checked, "blue") %>
+      Blue
+    </label>
+  </div>
+</div>
+

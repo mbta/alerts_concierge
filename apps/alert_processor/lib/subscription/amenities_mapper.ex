@@ -5,7 +5,10 @@ defmodule AlertProcessor.Subscription.AmenitiesMapper do
   """
 
   import AlertProcessor.Subscription.Mapper, except: [map_timeframe: 1]
+  alias AlertProcessor.ServiceInfoCache
   alias AlertProcessor.Model.Subscription
+
+  defdelegate build_subscription_transaction(subscriptions, user), to: AlertProcessor.Subscription.Mapper
 
   @doc """
   map_subscription/1 receives a map of amenity subscription params and returns
@@ -14,23 +17,63 @@ defmodule AlertProcessor.Subscription.AmenitiesMapper do
   """
   @spec map_subscriptions(map) :: {:ok, [Subscription.subscription_info]} | :error
   def map_subscriptions(subscription_params) do
-    with {:ok, subscriptions} <- map_timeframe(subscription_params),
-         {:ok, subscriptions} <- map_priority(subscriptions, subscription_params),
+    params =
+      subscription_params
+      |> remove_empty_strings()
+      |> map_stop_names()
+      |> set_alert_priority()
+
+    with {:ok, subscriptions} <- map_timeframe(params),
+         {:ok, subscriptions} <- map_priority(subscriptions, params),
          subscriptions <- map_type(subscriptions, :amenity)
          do
-      map_entities(subscriptions, subscription_params)
+      map_entities(subscriptions, params)
     else
       _ -> :error
     end
   end
 
+  defp set_alert_priority(params) do
+    Map.put(params, "alert_priority_type", "high")
+  end
+
+  defp remove_empty_strings(params) do
+    Enum.reduce(params, %{}, fn({k, v}, acc) ->
+      if is_list(v) do
+        Map.put(acc, k, Enum.reject(v, & &1 == ""))
+      else
+        Map.put(acc, k, v)
+      end
+    end)
+  end
+
+  defp map_stop_names(params) do
+    stop_ids = params["stops"]
+    |> String.split(",", trim: true)
+    |> station_ids_from_names()
+    Map.put(params, "stops", stop_ids)
+  end
+
+  defp station_ids_from_names(names) do
+    Enum.map(names, fn(name) ->
+      {:ok, {_, id}} = ServiceInfoCache.get_stop_by_name(name)
+      id
+    end)
+  end
+
   defp map_entities(subscriptions, params) do
     with subscriptions <- map_amenities(subscriptions, params),
-         [_sub | _t] <- subscriptions do
+         [_sub | _t] <- with_entities(subscriptions) do
       {:ok, filter_duplicate_entities(subscriptions)}
     else
       _ -> :error
     end
+  end
+
+  defp with_entities(subscriptions) do
+    Enum.filter(subscriptions, fn({_, ie}) ->
+      length(ie) > 0
+    end)
   end
 
   defp map_timeframe(%{"relevant_days" => relevant_days}) do

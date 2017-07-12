@@ -5,10 +5,9 @@ defmodule AlertProcessor.Subscription.AmenitiesMapperTest do
 
   @params %{
     "amenities" => ["elevator"],
-    "stops" => ["place-north", "place-south"],
+    "stops" => "North Station,South Station",
     "routes" => ["red"],
-    "relevant_days" => ["weekday"],
-    "alert_priority_type" => "high"
+    "relevant_days" => ["weekday"]
   }
 
   describe "elevator only" do
@@ -53,7 +52,7 @@ defmodule AlertProcessor.Subscription.AmenitiesMapperTest do
 
       south_station_entities_count =
         Enum.count(informed_entities, fn(informed_entity) ->
-          match?(%InformedEntity{facility_type: :elevator, stop: "place-south"}, informed_entity)
+          match?(%InformedEntity{facility_type: :elevator, stop: "place-sstat"}, informed_entity)
         end)
       assert south_station_entities_count == 1
     end
@@ -101,7 +100,7 @@ defmodule AlertProcessor.Subscription.AmenitiesMapperTest do
 
       south_station_entities_count =
         Enum.count(informed_entities, fn(informed_entity) ->
-          match?(%InformedEntity{facility_type: :elevator, stop: "place-south"}, informed_entity)
+          match?(%InformedEntity{facility_type: :elevator, stop: "place-sstat"}, informed_entity)
         end)
       assert south_station_entities_count == 1
     end

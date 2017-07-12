@@ -1,0 +1,13 @@
+<div class="form-group select-station">
+
+<label for="route" class="station-input-label form-label">Select Individual Stations</label>
+  <%= select @form,
+             :station,
+             @select_options,
+             class: "subscription-select subscription-select-route no-js",
+             prompt: "Select station to add amenity for" %>
+</div>
+
+<%= submit "Add Station",
+    formaction: @formaction,
+    class: "btn btn-primary btn-subscription-next" %>

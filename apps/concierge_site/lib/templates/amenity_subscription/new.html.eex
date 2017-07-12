@@ -1,0 +1,36 @@
+<h1>Create New Subscription</h1>
+
+<div class="subscription-step amenities">
+  <%= form_for @conn, amenity_subscription_path(@conn, :create), [class: "trip-info-form subway", as: :subscription], fn f -> %>
+    <%= render "_amenity_options.html",
+              form: f,
+              checked: @subscription_params["amenities"] || [],
+              action: "new" %>
+
+    <%= render "_station_select.html",
+            form: f,
+            select_options: @station_list_select_options,
+            formaction: amenity_subscription_path(@conn, :add_station),
+            action: "new" %>
+
+    <%= render "_selected_station_list.html",
+               stations: @selected_stations,
+               conn: @conn,
+               action: "new" %>
+
+    <%= render "_subway_line_select.html",
+               form: f,
+               checked: @subscription_params["routes"] || [],
+               action: "new" %>
+
+    <%= render "_travel_days_checkboxes.html",
+                form: f,
+                checked: @subscription_params["relevant_days"] || [],
+                action: "new" %>
+
+    <%= hidden_input f, :stops, value: stringify(@selected_stations) %>
+
+    <%= submit "Create Subscription",
+        class: "btn btn-primary btn-subscription-next" %>
+  <% end %>
+</div>

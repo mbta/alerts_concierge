@@ -48,6 +48,9 @@ defmodule ConciergeSite.Router do
     resources "/ferry", FerrySubscriptionController, only: [:new]
     get "/ferry/new/info", FerrySubscriptionController, :info
     post "/ferry/new/ferry", FerrySubscriptionController, :ferry
+    resources "/amenities", AmenitySubscriptionController, only: [:new, :create]
+    post "/amenities/add_station", AmenitySubscriptionController, :add_station
+    post "/amenities/remove_station/:station", AmenitySubscriptionController, :remove_station
   end
 
   if Mix.env == :dev do
