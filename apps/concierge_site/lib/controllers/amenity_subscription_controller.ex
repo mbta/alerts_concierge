@@ -1,22 +1,19 @@
 defmodule ConciergeSite.AmenitySubscriptionController do
   use ConciergeSite.Web, :controller
   use Guardian.Phoenix.Controller
-  alias AlertProcessor.{Model.Subscription, Repo, ServiceInfoCache}
-  alias AlertProcessor.Subscription.AmenitiesMapper
+  alias AlertProcessor.{Repo, ServiceInfoCache, Subscription}
+  alias Subscription.AmenitiesMapper
   alias ConciergeSite.Subscriptions.{Lines, TemporaryState}
-  alias Ecto.Multi
 
   def new(conn, _params, _user, _claims) do
-    with {:ok, subway_stations} <- ServiceInfoCache.get_subway_full_routes,
-      {:ok, cr_stations} <- ServiceInfoCache.get_commuter_rail_info do
+    with {:ok, subway_stations} <- ServiceInfoCache.get_subway_full_routes(),
+      {:ok, cr_stations} <- ServiceInfoCache.get_commuter_rail_info() do
 
-      stations = subway_stations ++ cr_stations
-      station_list_select_options =
-        Lines.station_list_select_options(stations)
+      station_select_options = station_options(cr_stations, subway_stations)
 
       render conn, "new.html",
         subscription_params: %{"stops" => []},
-        station_list_select_options: station_list_select_options,
+        station_list_select_options: station_select_options,
         selected_stations: []
     else
       _error ->
@@ -27,12 +24,10 @@ defmodule ConciergeSite.AmenitySubscriptionController do
   end
 
   def add_station(conn, %{"subscription" => sub_params}, user, _claims) do
-    with {:ok, subway_stations} <- ServiceInfoCache.get_subway_full_routes,
-      {:ok, cr_stations} <- ServiceInfoCache.get_commuter_rail_info do
+    with {:ok, subway_stations} <- ServiceInfoCache.get_subway_full_routes(),
+      {:ok, cr_stations} <- ServiceInfoCache.get_commuter_rail_info() do
 
-      station_select_options = subway_stations
-      |> Kernel.++(cr_stations)
-      |> Lines.station_list_select_options()
+      station_select_options = station_options(cr_stations, subway_stations)
 
       new_stations = add_station_to_list(sub_params, station_select_options)
       subscription_params = sub_params
@@ -66,7 +61,7 @@ defmodule ConciergeSite.AmenitySubscriptionController do
 
     stations
     |> Kernel.++([station_name])
-    |> Enum.dedup()
+    |> Enum.uniq()
   end
 
   defp id_to_name(station, options) do
@@ -84,19 +79,18 @@ defmodule ConciergeSite.AmenitySubscriptionController do
       |> Map.drop(["station"])
 
     token = TemporaryState.encode(subscription_params)
-    case ServiceInfoCache.get_subway_full_routes do
-      {:ok, stations} ->
-        station_list_select_options =
-          Lines.station_list_select_options(stations)
-
+    with {:ok, subway_stations} <- ServiceInfoCache.get_subway_full_routes(),
+      {:ok, cr_stations} <- ServiceInfoCache.get_commuter_rail_info() do
+        station_select_options = station_options(cr_stations, subway_stations)
         render conn, "new.html",
           subscription_params: subscription_params,
-          station_list_select_options: station_list_select_options,
+          station_list_select_options: station_select_options,
           selected_stations: new_stations,
           token: token
+    else
       _error ->
         conn
-        |> put_flash(:error, "There was an error . Please try again.")
+        |> put_flash(:error, "There was an error. Please try again.")
         |> redirect(to: "/subscriptions/new")
     end
   end
@@ -104,6 +98,12 @@ defmodule ConciergeSite.AmenitySubscriptionController do
   defp remove_station_from_list(sub_params, station) do
     stations = String.split(sub_params["stops"], ",", trim: true)
     stations -- [station]
+  end
+
+  defp station_options(cr_stations, subway_stations) do
+    subway_stations
+      |> Kernel.++(cr_stations)
+      |> Lines.station_list_select_options()
   end
 
   def create(conn, %{"subscription" => sub_params}, user, _claims) do
