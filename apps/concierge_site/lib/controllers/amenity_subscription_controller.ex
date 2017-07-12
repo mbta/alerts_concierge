@@ -108,7 +108,7 @@ defmodule ConciergeSite.AmenitySubscriptionController do
 
   def create(conn, %{"subscription" => sub_params}, user, _claims) do
     with {:ok, subscription_infos} <- AmenitiesMapper.map_subscriptions(sub_params),
-      multi <- build_subscription_transaction(subscription_infos, user),
+      multi <- AmenitiesMapper.build_subscription_transaction(subscription_infos, user),
       {:ok, _} <- Repo.transaction(multi) do
         redirect(conn, to: subscription_path(conn, :index))
     else
@@ -117,21 +117,5 @@ defmodule ConciergeSite.AmenitySubscriptionController do
         |> put_flash(:error, "There was an error saving the subscription. Please try again.")
         |> redirect(to: amenity_subscription_path(conn, :new))
     end
-  end
-
-  defp build_subscription_transaction(subscription_infos, user) do
-    subscription_infos
-    |> Enum.with_index
-    |> Enum.reduce(Multi.new, fn({{sub, ie}, index}, acc) ->
-      sub_param = sub
-      |> Map.merge(%{
-        user_id: user.id,
-        informed_entities: ie
-      })
-      |> Map.from_struct()
-
-      sub_to_insert = Subscription.create_changeset(%Subscription{}, sub_param)
-      Multi.insert(acc, {:subscription, index}, sub_to_insert)
-    end)
   end
 end

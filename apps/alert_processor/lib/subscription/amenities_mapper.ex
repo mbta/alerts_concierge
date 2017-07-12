@@ -8,6 +8,8 @@ defmodule AlertProcessor.Subscription.AmenitiesMapper do
   alias AlertProcessor.ServiceInfoCache
   alias AlertProcessor.Model.Subscription
 
+  defdelegate build_subscription_transaction(subscriptions, user), to: AlertProcessor.Subscription.Mapper
+
   @doc """
   map_subscription/1 receives a map of amenity subscription params and returns
   arrays of subscription_info to create in the database
