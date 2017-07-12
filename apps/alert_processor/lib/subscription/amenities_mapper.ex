@@ -71,7 +71,7 @@ defmodule AlertProcessor.Subscription.AmenitiesMapper do
   end
 
   defp with_entities(subscriptions) do
-    Enum.filter(subscriptions, fn({_, ie} = sub) ->
+    Enum.filter(subscriptions, fn({_, ie}) ->
       length(ie) > 0
     end)
   end

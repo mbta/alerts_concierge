@@ -5,23 +5,13 @@
   <div class="<%= @action %>-subscription-section-container">
     <label>
       <%= checkbox @form,
-                  :blue,
+                  :red,
                   name: "subscription[routes][]",
-                  checked_value: "blue",
+                  checked_value: "red",
                   unchecked_value: nil,
                   class: "subscription-day-checkbox",
-                  checked: Enum.member?(@checked, "blue") %>
-      Blue
-    </label>
-    <label>
-      <%= checkbox @form,
-                  :green,
-                  name: "subscription[routes][]",
-                  checked_value: "green",
-                  unchecked_value: nil,
-                  class: "subscription-day-checkbox",
-                  checked: Enum.member?(@checked, "green") %>
-      Green
+                  checked: Enum.member?(@checked, "red") %>
+      Red
     </label>
     <label>
       <%= checkbox @form,
@@ -35,13 +25,23 @@
     </label>
     <label>
       <%= checkbox @form,
-                  :red,
+                  :green,
                   name: "subscription[routes][]",
-                  checked_value: "red",
+                  checked_value: "green",
                   unchecked_value: nil,
                   class: "subscription-day-checkbox",
-                  checked: Enum.member?(@checked, "red") %>
-      Red
+                  checked: Enum.member?(@checked, "green") %>
+      Green
+    </label>
+    <label>
+      <%= checkbox @form,
+                  :blue,
+                  name: "subscription[routes][]",
+                  checked_value: "blue",
+                  unchecked_value: nil,
+                  class: "subscription-day-checkbox",
+                  checked: Enum.member?(@checked, "blue") %>
+      Blue
     </label>
   </div>
 </div>
