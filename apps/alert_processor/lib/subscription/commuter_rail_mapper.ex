@@ -5,7 +5,7 @@ defmodule AlertProcessor.Subscription.CommuterRailMapper do
   """
 
   import AlertProcessor.Subscription.Mapper
-  alias AlertProcessor.{ApiClient, Model.Route, Model.Subscription, Model.Trip, ServiceInfoCache}
+  alias AlertProcessor.{ApiClient, Helpers.DateTimeHelper, Model.Route, Model.Subscription, Model.Trip, ServiceInfoCache}
 
   defdelegate build_subscription_transaction(subscriptions, user), to: AlertProcessor.Subscription.Mapper
   defdelegate build_update_subscription_transaction(subscriptions, user), to: AlertProcessor.Subscription.Mapper
@@ -56,7 +56,7 @@ defmodule AlertProcessor.Subscription.CommuterRailMapper do
         :error
       [route | _] ->
         direction_id = determine_direction_id(route, origin, destination)
-        relevant_date = determine_date(relevant_days, today_date)
+        relevant_date = DateTimeHelper.determine_date(relevant_days, today_date)
 
         case ApiClient.schedules(origin, destination, direction_id, route_ids, relevant_date) do
           {:ok, schedules, trips} ->
@@ -79,22 +79,6 @@ defmodule AlertProcessor.Subscription.CommuterRailMapper do
       [^origin, ^destination] -> 1
       [^destination, ^origin] -> 0
     end
-  end
-
-  defp determine_date(:weekday, today_date) do
-    if Calendar.Date.day_of_week(today_date) < 6 do
-      today_date
-    else
-      Calendar.Date.advance!(today_date, 2)
-    end
-  end
-  defp determine_date(:saturday, today_date) do
-    day_of_week = Calendar.Date.day_of_week(today_date)
-    Calendar.Date.advance!(today_date, 6 - day_of_week)
-  end
-  defp determine_date(:sunday, today_date) do
-    day_of_week = Calendar.Date.day_of_week(today_date)
-    Calendar.Date.advance!(today_date, 7 - day_of_week)
   end
 
   defp map_trip_names(trips) do

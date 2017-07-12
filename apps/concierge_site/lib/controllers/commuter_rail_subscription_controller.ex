@@ -118,6 +118,24 @@ defmodule ConciergeSite.CommuterRailSubscriptionController do
     end
   end
 
+  defp populate_trip_options(%{"trip_type" => "one_way", "trips" => trips} = subscription_params) do
+    %{"origin" => origin, "destination" => destination, "relevant_days" => relevant_days} = subscription_params
+    case get_trip_info(origin, destination, relevant_days, trips) do
+      {:ok, trips} ->
+        {:ok, %{departure_trips: trips}}
+      :error ->
+        {:error, "Please correct the following errors to proceed: Please select a valid origin and destination combination."}
+    end
+  end
+  defp populate_trip_options(%{"trip_type" => "round_trip", "trips" => trips, "return_trips" => return_trips} = subscription_params) do
+    %{"origin" => origin, "destination" => destination, "relevant_days" => relevant_days} = subscription_params
+    with {:ok, departure_trips} <- get_trip_info(origin, destination, relevant_days, trips),
+         {:ok, return_trips} <- get_trip_info(destination, origin, relevant_days, return_trips) do
+      {:ok, %{departure_trips: departure_trips, return_trips: return_trips}}
+    else
+      _ -> {:error, "Please correct the following errors to proceed: Please select a valid origin and destination combination."}
+    end
+  end
   defp populate_trip_options(%{"trip_type" => "one_way"} = subscription_params) do
     %{"origin" => origin, "destination" => destination, "relevant_days" => relevant_days, "departure_start" => ds} = subscription_params
     case get_trip_info(origin, destination, relevant_days, ds) do
@@ -154,7 +172,7 @@ defmodule ConciergeSite.CommuterRailSubscriptionController do
     end
   end
   defp get_trip_info(origin, destination, relevant_days, timestamp) do
-    case CommuterRailMapper.map_trip_options(origin, destination, String.to_existing_atom(relevant_days)) do
+    case CommuterRailMapper.map_trip_options(origin, destination, relevant_days) do
       {:ok, trips} ->
         departure_start = timestamp |> Time.from_iso8601!() |> DateTimeHelper.seconds_of_day()
         closest_trip = Enum.min_by(trips, &calculate_difference(&1, departure_start))

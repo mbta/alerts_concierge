@@ -4,7 +4,7 @@ defmodule ConciergeSite.Subscriptions.CommuterRailParams do
   """
 
   import ConciergeSite.Subscriptions.ParamsValidator
-  alias AlertProcessor.{ApiClient, Model.Subscription, ServiceInfoCache, Subscription.CommuterRailMapper}
+  alias AlertProcessor.{ApiClient, Helpers.DateTimeHelper, Model.Subscription, ServiceInfoCache, Subscription.CommuterRailMapper}
 
   @spec validate_info_params(map) :: :ok | {:error, String.t}
   def validate_info_params(params) do
@@ -95,7 +95,7 @@ defmodule ConciergeSite.Subscriptions.CommuterRailParams do
   """
   @spec prepare_for_mapper(map) :: map
   def prepare_for_mapper(%{"relevant_days" => relevant_days, "origin" => origin, "destination" => destination, "trips" => trips, "return_trips" => return_trips, "trip_type" => "round_trip"} = params) do
-    trip_schedule_map = trip_schedule_info_map(origin, destination)
+    trip_schedule_map = trip_schedule_info_map(origin, destination, relevant_days)
     {departure_start, departure_end} = subscription_timestamps(trip_schedule_map, origin, destination, trips)
     {return_start, return_end} = subscription_timestamps(trip_schedule_map, destination, origin, return_trips)
 
@@ -109,7 +109,7 @@ defmodule ConciergeSite.Subscriptions.CommuterRailParams do
     })
   end
   def prepare_for_mapper(%{"relevant_days" => relevant_days, "origin" => origin, "destination" => destination, "trips" => trips, "trip_type" => "one_way"} = params) do
-    trip_schedule_map = trip_schedule_info_map(origin, destination)
+    trip_schedule_map = trip_schedule_info_map(origin, destination, relevant_days)
     {departure_start, departure_end} = subscription_timestamps(trip_schedule_map, origin, destination, trips)
 
     Map.merge(params, %{
@@ -122,8 +122,9 @@ defmodule ConciergeSite.Subscriptions.CommuterRailParams do
     })
   end
 
-  defp trip_schedule_info_map(origin, destination) do
-    {:ok, data, includes} = ApiClient.schedules(origin, destination, nil, [], Date.utc_today())
+  defp trip_schedule_info_map(origin, destination, relevant_days) do
+    relevant_date = DateTimeHelper.determine_date(relevant_days, Date.utc_today())
+    {:ok, data, includes} = ApiClient.schedules(origin, destination, nil, [], relevant_date)
     includes_info =
       for include <- includes, into: %{} do
         case include do
@@ -186,7 +187,8 @@ defmodule ConciergeSite.Subscriptions.CommuterRailParams do
          [_trip | _t] <- trips,
          {:ok, {_name, origin_id}} <- ServiceInfoCache.get_stop_by_name(subscription.origin),
          {:ok, {_name, destination_id}} <- ServiceInfoCache.get_stop_by_name(subscription.destination),
-         trip_schedule_map <- trip_schedule_info_map(origin_id, destination_id),
+         [relevant_days] <- subscription.relevant_days,
+         trip_schedule_map <- trip_schedule_info_map(origin_id, destination_id, relevant_days),
          {start_time, end_time} <- subscription_timestamps(trip_schedule_map, origin_id, destination_id, trips) do
       {:ok, %{
         "alert_priority_type" => String.to_existing_atom(alert_priority_type),
