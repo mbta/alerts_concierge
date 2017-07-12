@@ -63,11 +63,17 @@ defmodule AlertProcessor.Subscription.AmenitiesMapper do
 
   defp map_entities(subscriptions, params) do
     with subscriptions <- map_amenities(subscriptions, params),
-         [_sub | _t] <- subscriptions do
+         [_sub | _t] <- with_entities(subscriptions) do
       {:ok, filter_duplicate_entities(subscriptions)}
     else
       _ -> :error
     end
+  end
+
+  defp with_entities(subscriptions) do
+    Enum.filter(subscriptions, fn({_, ie} = sub) ->
+      length(ie) > 0
+    end)
   end
 
   defp map_timeframe(%{"relevant_days" => relevant_days}) do
