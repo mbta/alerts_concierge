@@ -1,0 +1,7 @@
+<h1>Create New Subscription</h1>
+
+<%= render "_progress_bar.html", current_page: :ferry, trip_type: @subscription_params["trip_type"], conn: @conn %>
+
+<div class="subscription-step select-trip-number">
+  <h2>Choose your ferries</h2>
+</div>

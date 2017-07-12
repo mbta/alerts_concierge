@@ -493,6 +493,88 @@ describe("selectStation", function() {
       `
   });
 
+  describe("ferry", () => {
+    beforeEach(function() {
+      $("body").append(ferryTripInfoPageHtml);
+      selectStation($);
+    });
+
+    it("displays line along with icon", () => {
+      const $originInput = $("input.subscription-select-origin");
+      $originInput.val("Bos");
+      const $suggestionContainer = $("input.subscription-select-origin + .suggestion-container");
+
+      simulateKeyUp($originInput[0])
+
+      const $suggestions = $(".origin-station-suggestion")
+      const chelseaSuggestion = $(".line-name", $suggestions).text();
+
+      assert.include(chelseaSuggestion, "Hingham Ferry");
+    });
+
+    it("displays Multiple Lines along with icon when stop is a part of multiple lines", () => {
+      const $originInput = $("input.subscription-select-origin");
+      $originInput.val("Long");
+      const $suggestionContainer = $("input.subscription-select-origin + .suggestion-container");
+
+      simulateKeyUp($originInput[0])
+
+      const $suggestions = $(".origin-station-suggestion")
+      const northStationSuggestion = $(".line-name", $suggestions).text();
+
+      assert.include(northStationSuggestion, "Multiple Routes");
+    });
+
+    const ferryTripInfoPageHtml = `
+      <div class="subscription-step enter-trip-info">
+        <form class="trip-info-form ferry">
+          <div class="form-group select-station">
+            <label for="origin" class="station-input-label form-label">Origin</label>
+            <select class="subscription-select-origin no-js" id="subscription_origin" name="subscription[origin]">
+              <optgroup label="Charlestown Ferry">
+                <option value="Boat-Charlestown">Charlestown Navy Yard</option>
+                <option value="Boat-Long">Long Wharf, Boston</option>
+              </optgroup>
+              <optgroup label="Hingham Ferry">
+                <option value="Boat-Hingham">Hewitt's Cove, Hingham</option>
+                <option value="Boat-Rowes">Rowes Wharf, Boston</option>
+                <option value="Boat-George">George's Island</option>
+                <option value="Boat-Hull">Pemberton Point, Hull</option>
+                <option value="Boat-Logan">Logan Airport Ferry Terminal</option>
+                <option value="Boat-Long">Long Wharf, Boston</option>
+              </optgroup>
+              <optgroup label="Hull Ferry">
+                <option value="Boat-Hull">Pemberton Point, Hull</option>
+                <option value="Boat-Long">Long Wharf, Boston</option>
+              </optgroup>
+            </select>
+          </div>
+          <div class="form-group select-station">
+            <label for="destination" class="station-input-label form-label">Destination</label>
+            <select class="subscription-select-destination no-js" id="subscription_destination" name="subscription[destination]">
+              <optgroup label="Charlestown Ferry">
+                <option value="Boat-Charlestown">Charlestown Navy Yard</option>
+                <option value="Boat-Long">Long Wharf, Boston</option>
+              </optgroup>
+              <optgroup label="Hingham Ferry">
+                <option value="Boat-Hingham">Hewitt's Cove, Hingham</option>
+                <option value="Boat-Rowes">Rowes Wharf, Boston</option>
+                <option value="Boat-George">George's Island</option>
+                <option value="Boat-Hull">Pemberton Point, Hull</option>
+                <option value="Boat-Logan">Logan Airport Ferry Terminal</option>
+                <option value="Boat-Long">Long Wharf, Boston</option>
+              </optgroup>
+              <optgroup label="Hull Ferry">
+                <option value="Boat-Hull">Pemberton Point, Hull</option>
+                <option value="Boat-Long">Long Wharf, Boston</option>
+              </optgroup>
+            </select>
+          </div>
+        </form>
+      </div>
+      `
+  });
+
   function simulateKeyUp(target) {
     const event = document.createEvent("HTMLEvents");
     event.initEvent("keyup", true, true);

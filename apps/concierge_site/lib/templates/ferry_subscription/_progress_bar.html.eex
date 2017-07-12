@@ -16,7 +16,7 @@
              link_to: "#",
              link_class: progress_link_class(@current_page, :ferry),
              step_classes:  progress_step_classes(@current_page, :ferry),
-             name: "Train" %>
+             name: "Ferry" %>
 
   <%= render "_progress_bar_item.html",
              link_to: "#",
