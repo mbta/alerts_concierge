@@ -8,7 +8,7 @@
   <%= flash_error(@conn) %>
 
   <p>
-    <%= Map.get(@subscription_params, "trip_type", "")
+    <%= Map.fetch!(@subscription_params, "trip_type")
         |> String.to_existing_atom()
         |> trip_info_description() %>
   </p>

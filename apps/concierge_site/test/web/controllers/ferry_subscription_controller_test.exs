@@ -11,7 +11,7 @@ defmodule ConciergeSite.FerrySubscriptionControllerTest do
     end
 
     test "GET /subscriptions/ferry/new/info", %{conn: conn}  do
-      conn = get(conn, "/subscriptions/ferry/new/info")
+      conn = get(conn, "/subscriptions/ferry/new/info?trip_type=one_way")
 
       assert html_response(conn, 200) =~ "Info"
     end

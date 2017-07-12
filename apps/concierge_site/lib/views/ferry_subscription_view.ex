@@ -3,8 +3,6 @@ defmodule ConciergeSite.FerrySubscriptionView do
   import ConciergeSite.SubscriptionViewHelper,
     only: [atomize_keys: 1, progress_link_class: 3, travel_time_options: 0]
 
-  @type trip_type :: :one_way | :round_trip
-
   @disabled_progress_bar_links %{trip_info: [:trip_info, :ferry, :preferences],
   ferry: [:ferry, :preferences],
   preferences: [:preferences]}
@@ -16,7 +14,7 @@ defmodule ConciergeSite.FerrySubscriptionView do
   @doc """
   Provide description text for Trip Info page based on which trip type selected
   """
-  @spec trip_info_description(trip_type) :: String.t
+  @spec trip_info_description(any) :: String.t
   def trip_info_description(:one_way) do
     "Please note: We will only send you alerts about service updates that affect your origin and destination stations."
   end
