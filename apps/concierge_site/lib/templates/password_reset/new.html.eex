@@ -1,0 +1,22 @@
+<h1>T-Alerts</h1>
+<div class="password-reset-container">
+  <div class="form-header">
+    <h2>Forget your password?</h2>
+    <p>
+      Enter the email address you use to sign into your T-Alerts account. We’ll
+      send you instructions on how to reset your password.
+    </p>
+  </div>
+
+  <%= form_for @changeset, password_reset_path(@conn, :create), fn f -> %>
+    <div class="form-group">
+      <%= label f, :email, "Email Address", class: "form-label" %>
+      <%= error_tag f, :email %>
+      <%= email_input f, :email, placeholder: "your@email.com", class: "form-control", required: true %>
+      <span></span>
+    </div>
+    <div class="form-footer">
+      <%= submit "Send reset link", class: "btn btn-primary btn-wide" %>
+    </div>
+  <% end %>
+</div>

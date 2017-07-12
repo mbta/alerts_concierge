@@ -1,0 +1,1 @@
+We’ve sent password reset instructions to <%= @email %>.

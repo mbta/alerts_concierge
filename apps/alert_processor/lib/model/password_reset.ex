@@ -21,11 +21,12 @@ defmodule AlertProcessor.Model.PasswordReset do
     belongs_to :user, AlertProcessor.Model.User, type: :binary_id
     field :expired_at, :utc_datetime
     field :redeemed_at, :utc_datetime
+    field :email, :string, virtual: true
 
     timestamps()
   end
 
-  @permitted_fields ~w(user_id expired_at redeemed_at)a
+  @permitted_fields ~w(user_id expired_at redeemed_at email)a
   @required_fields ~w(user_id expired_at)a
 
   @doc """
