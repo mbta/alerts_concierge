@@ -66,4 +66,14 @@ defmodule ConciergeSite.SubscriptionHelper do
     |> Enum.intersperse("s, ")
     |> Kernel.++(["s"])
   end
+
+  @doc """
+  conver params into keylist to be able to pass back to previous forms
+  """
+  def query_string_params(nil), do: []
+  def query_string_params(relevant_params) do
+    for param <- atomize_keys(relevant_params) do
+      param
+    end
+  end
 end

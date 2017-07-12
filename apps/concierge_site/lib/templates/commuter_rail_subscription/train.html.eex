@@ -1,6 +1,6 @@
 <h1>Create New Subscription</h1>
 
-<%= render "_progress_bar.html", current_page: :train, trip_type: @subscription_params["trip_type"], conn: @conn %>
+<%= render "_progress_bar.html", current_page: :train, subscription_params: @subscription_params, conn: @conn %>
 
 <div class="subscription-step select-trip-number">
   <h2>Choose your trains</h2>
@@ -11,17 +11,17 @@
 
   <%= form_for @conn, commuter_rail_subscription_path(@conn, :preferences), [class: "trip-form commuter-rail", as: :subscription], fn f -> %>
 
-  <%= render "_train_select_options.html", f: f, list_header: nil, trips: @trips %>
+    <%= render "_train_select_options.html", f: f, list_header: nil, trips: @trips %>
 
-  <%= for {param_name, value} <- atomize_keys(@subscription_params) do %>
-    <%= hidden_input f, param_name, value: value %>
+    <%= hidden_params(:trip_info, @subscription_params) %>
+
+    <div class="trip-info-footer">
+      <%= submit "Next", class: "btn btn-primary btn-subscription-next" %>
+    </div>
   <% end %>
-
-  <div class="trip-info-footer">
+  <div class="back-link-container">
     <%= link to: commuter_rail_subscription_path(@conn, :info, trip_type: @subscription_params["trip_type"]), class: "subscription-info-back-link" do %>
       <i class="fa fa-arrow-left" aria-hidden="true"></i> Go Back
     <% end %>
-    <%= submit "Next", class: "btn btn-primary btn-subscription-next" %>
   </div>
-  <% end %>
 </div>

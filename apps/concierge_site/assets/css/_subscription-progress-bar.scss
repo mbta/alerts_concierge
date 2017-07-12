@@ -20,6 +20,7 @@
 
 .progress-step-name {
   font-size: $base-font-size-xs;
+  padding: 0;
 }
 
 .progress-step-name.active-page {
@@ -31,6 +32,14 @@
   display: inline-block;
   text-align: center;
   min-width: 30%;
+
+  * {
+    line-height: 1rem;
+  }
+
+  button {
+    cursor: pointer;
+  }
 }
 
 .disabled-progress-link {

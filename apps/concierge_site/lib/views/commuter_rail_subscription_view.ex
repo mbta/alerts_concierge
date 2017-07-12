@@ -1,20 +1,62 @@
 defmodule ConciergeSite.CommuterRailSubscriptionView do
   use ConciergeSite.Web, :view
   import ConciergeSite.SubscriptionHelper,
-    only: [atomize_keys: 1, progress_link_class: 3]
+    only: [atomize_keys: 1, progress_link_class: 3, query_string_params: 1]
   import ConciergeSite.TimeHelper,
     only: [travel_time_options: 0]
   alias AlertProcessor.Model.Trip
 
   @type trip_type :: :one_way | :round_trip
+  @type steps :: :trip_type | :trip_info | :train | :preferences
 
   @disabled_progress_bar_links %{trip_info: [:trip_info, :train, :preferences],
-  train: [:train, :preferences],
-  preferences: [:preferences]}
+    train: [:train, :preferences],
+    preferences: [:preferences]}
 
   defdelegate progress_step_classes(page, step), to: ConciergeSite.SubscriptionHelper
 
   def progress_link_class(page, step), do: progress_link_class(page, step, @disabled_progress_bar_links)
+
+  @doc """
+  constructs keyword list of parameters to pass along relevant parameters to next or previous step
+  via get request
+  """
+  @spec query_string_params(steps, map | nil) :: keyword(String.t)
+  def query_string_params(_step, nil), do: []
+  def query_string_params(step, params), do: query_string_params(Map.take(params, params_for_step(step)))
+
+  @doc """
+  returns list of parameters that should be present and passed along
+  from the step given.
+  """
+  @spec params_for_step(steps) :: [String.t]
+  def params_for_step(:trip_type), do: ~w(trip_type)
+  def params_for_step(:trip_info), do: params_for_step(:trip_type) ++ ~w(origin destination relevant_days departure_start return_start)
+  def params_for_step(:train), do:  params_for_step(:trip_info) ++ ~w(trips return_trips)
+  def params_for_step(:preferences), do: params_for_step(:train) ++ ~w(alert_priority_type)
+  def params_for_step(_), do: []
+
+  @doc """
+  constructs list of hidden pinputs to pass along relevant parameters to next or previous step
+  via post request
+  """
+  @spec hidden_params(steps, map) :: [any]
+  def hidden_params(step, params) do
+    relevant_params = Map.take(params, params_for_step(step))
+
+    for param <- atomize_keys(relevant_params) do
+      hidden_param(param)
+    end
+  end
+
+  defp hidden_param({param_name, param_value}) when param_name == :trips or param_name == :return_trips do
+    for trip_number <- param_value do
+      tag(:input, type: "hidden", name: "subscription[#{param_name}][]", value: trip_number)
+    end
+  end
+  defp hidden_param({param_name, param_value}) do
+    tag(:input, type: "hidden", name: "subscription[#{param_name}]", value: param_value)
+  end
 
   @doc """
   Provide description text for Trip Info page based on which trip type selected

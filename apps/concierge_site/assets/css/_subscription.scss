@@ -260,10 +260,21 @@
   width: 15rem;
 }
 
-.subscription-info-back-link {
-  left: 0;
+.back-link-container {
   position: absolute;
-  top: 2.5rem;
+  bottom: 4rem;
+  padding: 0;
+}
+
+.subscription-info-back-link {
+  color: $link-color;
+  padding: 0;
+
+  &:hover,
+  &:active,
+  &:focus {
+    color: $link-hover-color;
+  }
 }
 
 .preferences-subtitle {
