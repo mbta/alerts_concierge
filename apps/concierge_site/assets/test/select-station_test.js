@@ -505,15 +505,15 @@ describe("selectStation", function() {
 
     it("displays line along with icon", () => {
       const $originInput = $("input.subscription-select-origin");
-      $originInput.val("Bos");
+      $originInput.val("Char");
       const $suggestionContainer = $("input.subscription-select-origin + .suggestion-container");
 
       simulateKeyUp($originInput[0])
 
       const $suggestions = $(".origin-station-suggestion")
-      const rowesSuggestion = $(".line-name", $suggestions).text();
+      const charlestownSuggestion = $(".line-name", $suggestions).text();
 
-      assert.include(rowesSuggestion, "Hingham Ferry");
+      assert.include(charlestownSuggestion, "Charlestown Ferry");
     });
 
     it("displays Multiple Lines along with icon when stop is a part of multiple lines", () => {
@@ -524,9 +524,9 @@ describe("selectStation", function() {
       simulateKeyUp($originInput[0])
 
       const $suggestions = $(".origin-station-suggestion")
-      const northStationSuggestion = $(".line-name", $suggestions).text();
+      const longWharfSuggestion = $(".line-name", $suggestions).text();
 
-      assert.include(northStationSuggestion, "Multiple Routes");
+      assert.include(longWharfSuggestion, "Multiple Routes");
     });
 
     const ferryTripInfoPageHtml = `
@@ -535,6 +535,7 @@ describe("selectStation", function() {
           <div class="form-group select-station">
             <label for="origin" class="station-input-label form-label">Origin</label>
             <select class="subscription-select-origin no-js" id="subscription_origin" name="subscription[origin]">
+              <option value="">Select a station</option>
               <optgroup label="Charlestown Ferry">
                 <option value="Boat-Charlestown">Charlestown Navy Yard</option>
                 <option value="Boat-Long">Long Wharf, Boston</option>
@@ -556,6 +557,7 @@ describe("selectStation", function() {
           <div class="form-group select-station">
             <label for="destination" class="station-input-label form-label">Destination</label>
             <select class="subscription-select-destination no-js" id="subscription_destination" name="subscription[destination]">
+              <option value="">Select a station</option>
               <optgroup label="Charlestown Ferry">
                 <option value="Boat-Charlestown">Charlestown Navy Yard</option>
                 <option value="Boat-Long">Long Wharf, Boston</option>
