@@ -25,6 +25,8 @@ describe("formHelpers", function() {
       assert.isFalse($input.hasClass("dirty"));
       $input.focus();
       assert.isTrue($input.hasClass("dirty"));
+      $input.blur();
+      assert.isTrue($input.hasClass("dirty"));
     });
 
     const textInputHtml = `
