@@ -1,0 +1,18 @@
+<h1><%= @subscription.origin %> <i class="fa fa-long-arrow-right" aria-hidden="true"></i> <%= @subscription.destination %></h1>
+
+<div class="edit-subscription subscription-step">
+  <h2>Edit Subscription</h2>
+  <%= flash_error(@conn) %>
+
+  <%= form_for @changeset, commuter_rail_subscription_path(@conn, :update, @subscription), fn f -> %>
+    <%= render "_train_select_options.html", f: f, list_header: trip_list_header(@subscription), trips: @trips %>
+    <%= render "_alert_type_radio_buttons.html",
+                form: f,
+                checked: @changeset.data.alert_priority_type,
+                action: "edit" %>
+
+    <div class="update-button-container">
+      <%= submit "Update this Subscription", class: "btn btn-primary update-subscription" %>
+    </div>
+  <% end %>
+</div>

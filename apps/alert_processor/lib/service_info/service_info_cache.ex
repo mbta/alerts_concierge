@@ -47,6 +47,10 @@ defmodule AlertProcessor.ServiceInfoCache do
     GenServer.call(name, {:get_stop, stop_id})
   end
 
+  def get_stop_by_name(name \\ __MODULE__, stop_name) do
+    GenServer.call(name, {:get_stop_by_name, stop_name})
+  end
+
   def get_direction_name(name \\ __MODULE__, route, direction_id) do
     GenServer.call(name, {:get_direction_name, route, direction_id})
   end
@@ -97,6 +101,11 @@ defmodule AlertProcessor.ServiceInfoCache do
 
   def handle_call({:get_stop, stop_id}, _from, %{routes: route_state} = state) do
     stop = get_stop_from_state(stop_id, route_state)
+    {:reply, {:ok, stop}, state}
+  end
+
+  def handle_call({:get_stop_by_name, stop_name}, _from, %{routes: route_state} = state) do
+    stop = get_stop_from_state_by_name(stop_name, route_state)
     {:reply, {:ok, stop}, state}
   end
 
@@ -157,6 +166,14 @@ defmodule AlertProcessor.ServiceInfoCache do
     Enum.find_value(state, fn(%Route{stop_list: stop_list}) ->
       Enum.find(stop_list, fn({_name, id}) ->
         id == stop_id
+      end)
+    end)
+  end
+
+  defp get_stop_from_state_by_name(stop_name, state) do
+    Enum.find_value(state, fn(%Route{stop_list: stop_list}) ->
+      Enum.find(stop_list, fn({name, _id}) ->
+        name == stop_name
       end)
     end)
   end

@@ -13,42 +13,10 @@
 
   <%= form_for @conn, commuter_rail_subscription_path(@conn, :create), [class: "trip-prefs-form commuter-rail", as: :subscription], fn f -> %>
     <div class="trip-alert-priority">
-      <div class="form-label">Alert Type</div>
-      <div class="form-sub-label priority-sub-label">
-        What kind of alerts would you like to receive? You can edit this
-        information at any time.
-      </div>
-      <div class="priority-options">
-        <label class="priority-radio-option">
-          <%= radio_button f, :alert_priority_type, "high" %>
-          <div>
-            <div>High Priority Alerts only:</div>
-            <div class="form-sub-label">
-              Cancellations, station closures, shuttle buses
-            </div>
-          </div>
-        </label>
-        <div class="priority-option-divider"></div>
-        <label class="priority-radio-option">
-          <%= radio_button f, :alert_priority_type, "medium", checked: true %>
-          <div>
-            <div>High and Medium Priority Alerts:</div>
-            <div class="form-sub-label">
-              All of the above plus delays
-            </div>
-          </div>
-        </label>
-        <div class="priority-option-divider"></div>
-        <label class="priority-radio-option">
-          <%= radio_button f, :alert_priority_type, "low" %>
-          <div>
-            <div>High, Medium, and Low Priority Alerts:</div>
-            <div class="form-sub-label">
-              All of the above plus track changes
-            </div>
-          </div>
-        </label>
-      </div>
+    <%= render "_alert_type_radio_buttons.html",
+               form: f,
+               checked: :medium,
+               action: "new" %>
     </div>
 
     <%= for {param_name, value} <- atomize_keys(@subscription_params) do %>
@@ -62,7 +30,7 @@
     <%= end %>
 
     <div class="trip-info-footer">
-      <%= link to: commuter_rail_subscription_path(@conn, :info, trip_type: @subscription_params["trip_type"]), class: "subscription-info-back-link" do %>
+      <%= link to: commuter_rail_subscription_path(@conn, :train, trip_type: @subscription_params["trip_type"]), class: "subscription-info-back-link" do %>
         <i class="fa fa-arrow-left" aria-hidden="true"></i> Go Back
       <% end %>
       <%= submit "Create Subscription", class: "btn btn-primary btn-subscription-next" %>

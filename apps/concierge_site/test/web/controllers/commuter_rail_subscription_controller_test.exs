@@ -101,7 +101,7 @@ defmodule ConciergeSite.CommuterRailSubscriptionControllerTest do
       assert html_response(conn, 200) =~ "Please select at least one return trip."
     end
 
-    test "POST /subscriptions/commuter_rail", %{conn: conn, user: user} do
+    test "POST /subscriptions/commuter_rail", %{conn: conn} do
       params = %{"subscription" => %{
         "origin" => "Anderson/ Woburn",
         "destination" => "place-north",
@@ -112,9 +112,7 @@ defmodule ConciergeSite.CommuterRailSubscriptionControllerTest do
         "trip_type" => "one_way"
       }}
 
-      conn = user
-      |> guardian_login(conn)
-      |> post("/subscriptions/commuter_rail", params)
+      conn = post(conn, "/subscriptions/commuter_rail", params)
 
       subscriptions = Repo.all(Subscription)
       [ie | _] = InformedEntity |> Repo.all() |> Repo.preload(:subscription)
@@ -122,6 +120,56 @@ defmodule ConciergeSite.CommuterRailSubscriptionControllerTest do
       assert html_response(conn, 302) =~ "my-subscriptions"
       assert length(subscriptions) == 1
       assert ie.subscription == List.first(subscriptions)
+    end
+
+    test "GET /subscriptions/commuter_rail/:id/edit", %{conn: conn, user: user} do
+      subscription =
+        subscription_factory()
+        |> Map.put(:informed_entities, commuter_rail_subscription_entities())
+        |> commuter_rail_subscription()
+        |> Map.merge(%{user: user, relevant_days: [:weekday]})
+        |> insert()
+
+      conn = get(conn, "/subscriptions/commuter_rail/#{subscription.id}/edit")
+
+      assert html_response(conn, 200) =~ "Edit Subscription"
+    end
+
+    test "PATCH /subscriptions/commuter_rail/:id", %{conn: conn, user: user} do
+      subscription =
+        subscription_factory()
+        |> Map.put(:informed_entities, commuter_rail_subscription_entities())
+        |> commuter_rail_subscription()
+        |> Map.merge(%{user: user, relevant_days: [:weekday]})
+        |> insert()
+
+      params = %{"subscription" => %{
+        "alert_priority_type" => "high",
+        "trips" => ["341"]
+      }}
+
+      conn = patch(conn, "/subscriptions/commuter_rail/#{subscription.id}", params)
+
+      assert html_response(conn, 302) =~ "my-subscriptions"
+    end
+
+    test "PATCH /subscriptions/commuter_rail/:id displays error if trip not selected", %{conn: conn, user: user} do
+      subscription =
+        subscription_factory()
+        |> Map.put(:informed_entities, commuter_rail_subscription_entities())
+        |> commuter_rail_subscription()
+        |> Map.merge(%{user: user, relevant_days: [:weekday]})
+        |> insert()
+
+      params = %{"subscription" => %{
+        "alert_priority_type" => "high",
+        "trips" => []
+      }}
+
+      conn = patch(conn, "/subscriptions/commuter_rail/#{subscription.id}", params)
+
+      assert html_response(conn, 200) =~ "Edit Subscription"
+      assert html_response(conn, 200) =~ "Please select at least one trip"
     end
   end
 
