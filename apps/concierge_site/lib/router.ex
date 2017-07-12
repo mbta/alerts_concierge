@@ -27,7 +27,9 @@ defmodule ConciergeSite.Router do
   scope "/", ConciergeSite do
     pipe_through [:browser, :browser_auth]
     get "/my-subscriptions", SubscriptionController, :index
-    resources "/my-account", MyAccountController, only: [:edit, :update], singleton: true
+    resources "/my-account", MyAccountController, only: [:edit, :update], singleton: true do
+      resources "/password", PasswordController, only: [:edit, :update], singleton: true
+    end
     resources "/subscriptions", SubscriptionController, only: [:new, :edit]
   end
 

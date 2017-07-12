@@ -21,7 +21,7 @@
     <div class="form-label">Password</div>
     <div class="user-password-container">
       <div class="user-password">••••••••••</div>
-      <a href="#">Change Password</a>
+      <%= link("Change Password", to: my_account_password_path(@conn, :edit))%>
     </div>
   </div>
 

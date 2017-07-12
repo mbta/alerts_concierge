@@ -1,0 +1,42 @@
+<h1>My Account</h1>
+<div class="my-account-container">
+  <h2>Change Password</h2>
+  <%= flash_error(@conn) %>
+  <p>
+    Use the form below to change the password for your T-Alerts account. Your
+    password must be at least 6 characters long and contain one number or
+    special character (? & % $ # !, etc).
+  </p>
+
+  <%= form_for @changeset, my_account_password_path(@conn, :update), fn f -> %>
+    <div class="update-password-section">
+      <div class="form-group">
+        <%= label f, :current_password, "Current password", class: "form-label" %>
+        <%= error_tag f, :current_password %>
+        <%= password_input f, :current_password, placeholder: "Enter your current password", class: "form-control", pattern: "(?=^.{6,}$)((?=.*\\d)|(?=.*\\W+))(?![.\\n])(?=.*[a-zA-Z]).*$", required: true %>
+        <span></span>
+      </div>
+
+      <div class="form-group <%= if :password in @changeset.errors, do: "has-danger" %>">
+        <%= label f, :password, "New password", class: "form-label" %>
+        <%= error_tag f, :password %>
+        <%= password_input f, :password, placeholder: "Please enter your password", class: "form-control form-control-success form-control-danger", pattern: "(?=^.{6,}$)((?=.*\\d)|(?=.*\\W+))(?![.\\n])(?=.*[a-zA-Z]).*$", required: true %>
+        <span></span>
+      </div>
+
+      <div class="form-group <%= if :password_confirmation in @changeset.errors, do: "has-danger" %>">
+        <%= label f, :password_confirmation, "Re-enter new password", class: "form-label" %>
+        <%= error_tag f, :password_confirmation %>
+        <%= password_input f, :password_confirmation, placeholder: "Please re-enter your password", class: "form-control form-control-success form-control-danger", pattern: "(?=^.{6,}$)((?=.*\\d)|(?=.*\\W+))(?![.\\n])(?=.*[a-zA-Z]).*$", required: true %>
+        <span></span>
+      </div>
+    </div>
+
+    <div class="update-password-footer">
+      <%= submit "Save Changes", class: "btn btn-primary btn-wide" %>
+      <div class="password-cancel-link">
+        <%= link("Cancel", to: my_account_path(@conn, :edit)) %>
+      </div>
+    </div>
+  <% end %>
+<div>
