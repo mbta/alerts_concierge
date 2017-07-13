@@ -1,6 +1,7 @@
 <h1>T-Alerts</h1>
 <div class="password-reset-container">
   <div class="form-header">
+    <%= flash_error(@conn) %>
     <h2>Forget your password?</h2>
     <p>
       Enter the email address you use to sign into your T-Alerts account. We’ll
