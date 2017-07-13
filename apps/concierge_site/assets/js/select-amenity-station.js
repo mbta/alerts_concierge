@@ -1,10 +1,9 @@
 import filterSuggestions from './filter-suggestions';
-import {generateRouteList, generateStationList, renderStationInput, unmountStationSuggestions} from './station-select-helpers';
+import {generateStationList, renderStationInput, unmountStationSuggestions} from './station-select-helpers';
 
 export default function($) {
   $ = $ || window.jQuery;
 
-  let props = {};
   let state = {
     selectableStations: [],
     selectedStations: []
@@ -12,10 +11,7 @@ export default function($) {
 
   if ($(".enter-trip-info").length) {
     const className = "select.subscription-select-amenity-station";
-    props.allRoutes = generateRouteList(className, $);
-    props.allStations = generateStationList(className, $);
-    props.validStationNames = props.allStations.map(station => station.name);
-    state.selectableStations = props.validStationNames;
+    state.selectableStations = generateStationList(className, $).map(station => station.name);
     attachSuggestionInput();
   }
 
