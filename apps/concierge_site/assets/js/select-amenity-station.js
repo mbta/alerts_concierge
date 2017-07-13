@@ -1,4 +1,5 @@
 import filterSuggestions from './filter-suggestions';
+import {generateRouteList, generateStationList} from './station-select-helpers';
 
 export default function($) {
   $ = $ || window.jQuery;
@@ -10,8 +11,9 @@ export default function($) {
   };
 
   if ($(".enter-trip-info").length) {
-    props.allRoutes = generateRouteList();
-    props.allStations = generateStationList();
+    const className = "select.subscription-select-amenity-station";
+    props.allRoutes = generateRouteList(className, $);
+    props.allStations = generateStationList(className, $);
     props.validStationNames = props.allStations.map(station => station.name);
     state.selectableStations = props.validStationNames;
     attachSuggestionInput();
@@ -54,45 +56,6 @@ export default function($) {
 
   function unmountStationSuggestions() {
     $(`.amenity-station`).remove();
-  }
-
-  function generateRouteList() {
-    let routes = {};
-    const $optgroups = $("select.subscription-select-amenity-station optgroup");
-
-    $optgroups.each(function(_i, group) {
-      const options = $("option", group).map(function(i, option) {
-        return option.text;
-      }).get();
-      const routeName = group.label;
-      routes[routeName] = options;
-    });
-    return routes;
-  }
-
-  function generateStationList() {
-    let stations = [];
-    const $optgroups = $("select.subscription-select-amenity-station optgroup");
-
-    $optgroups.each(function(_i, group) {
-      const $options = $("option", group);
-      $options.each(function(_i, option) {
-        const alreadyAddedStation = stations.find(function(station) {
-          return station.name === option.text;
-        });
-        if (alreadyAddedStation) {
-          alreadyAddedStation.allLineNames.push(group.label)
-        } else {
-          const station = {
-            name: option.text,
-            id: option.value,
-            allLineNames: [group.label]
-          };
-          stations.push(station);
-        }
-      });
-    });
-    return stations;
   }
 
   function assignSuggestion(event) {
