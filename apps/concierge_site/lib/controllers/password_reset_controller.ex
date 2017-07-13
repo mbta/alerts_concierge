@@ -6,6 +6,8 @@ defmodule ConciergeSite.PasswordResetController do
   alias Calendar.DateTime
   alias ConciergeSite.{Email, PasswordResetMailer}
 
+  @email_regex ~r/^([a-zA-Z0-9_\-\.]+)@([a-zA-Z0-9_\-\.]+)\.([a-zA-Z]{2,5})$/
+
   def new(conn, _params) do
     changeset = PasswordReset.create_changeset(%PasswordReset{})
     render conn, "new.html", changeset: changeset
@@ -38,7 +40,12 @@ defmodule ConciergeSite.PasswordResetController do
     render conn, "show.html"
   end
 
-  defp handle_unknown_email(conn, changeset, _email) do
-    render conn, "new.html", changeset: changeset
+  defp handle_unknown_email(conn, changeset, email) do
+    if String.match?(email, @email_regex) do
+      Email.unknown_password_reset_html_email(email)
+      |> PasswordResetMailer.deliver_later
+
+      redirect(conn, to: password_reset_path(conn, :sent, %{email: email}))
+    end
   end
 end
