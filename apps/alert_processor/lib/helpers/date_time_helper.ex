@@ -179,4 +179,26 @@ defmodule AlertProcessor.Helpers.DateTimeHelper do
   def month_name(date) do
     Strftime.strftime!(date, "%B")
   end
+
+  @doc """
+  Function to determine next date of relevant day type
+  """
+  def determine_date("weekday", today_date), do: determine_date(:weekday, today_date)
+  def determine_date("saturday", today_date), do: determine_date(:saturday, today_date)
+  def determine_date("sunday", today_date), do: determine_date(:sunday, today_date)
+  def determine_date(:weekday, today_date) do
+    if Calendar.Date.day_of_week(today_date) < 6 do
+      today_date
+    else
+      Calendar.Date.advance!(today_date, 2)
+    end
+  end
+  def determine_date(:saturday, today_date) do
+    day_of_week = Calendar.Date.day_of_week(today_date)
+    Calendar.Date.advance!(today_date, 6 - day_of_week)
+  end
+  def determine_date(:sunday, today_date) do
+    day_of_week = Calendar.Date.day_of_week(today_date)
+    Calendar.Date.advance!(today_date, 7 - day_of_week)
+  end
 end

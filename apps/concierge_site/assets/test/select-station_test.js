@@ -393,6 +393,7 @@ describe("selectStation", function() {
           <div class="form-group select-station">
             <label for="origin" class="station-input-label form-label">Origin</label>
             <select class="subscription-select-origin no-js" id="subscription_origin" name="subscription[origin]">
+              <option value="">Select a station</option>
               <optgroup label="Red Line">
                 <option value="place-brntn">Braintree</option>
                 <option value="place-pktrm">Park Street</option>
@@ -407,6 +408,7 @@ describe("selectStation", function() {
           <div class="form-group select-station">
             <label for="destination" class="station-input-label form-label">Destination</label>
             <select class="subscription-select-destination no-js" id="subscription_destination" name="subscription[destination]">
+              <option value="">Select a station</option>
               <optgroup label="Red Line">
                 <option value="place-brntn">Braintree</option>
                 <option value="place-pktrm">Park Street</option>
@@ -461,6 +463,7 @@ describe("selectStation", function() {
           <div class="form-group select-station">
             <label for="origin" class="station-input-label form-label">Origin</label>
             <select class="subscription-select-origin no-js" id="subscription_origin" name="subscription[origin]">
+              <option value="">Select a station</option>
               <optgroup label="Newburyport/Rockport Line">
                 <option value="Lynn">Lynn</option>
                 <option value="Chelsea">Chelsea</option>
@@ -476,6 +479,7 @@ describe("selectStation", function() {
           <div class="form-group select-station">
             <label for="destination" class="station-input-label form-label">Destination</label>
             <select class="subscription-select-destination no-js" id="subscription_destination" name="subscription[destination]">
+              <option value="">Select a station</option>
               <optgroup label="Newburyport/Rockport Line">
                 <option value="Lynn">Lynn</option>
                 <option value="Chelsea">Chelsea</option>
@@ -501,15 +505,15 @@ describe("selectStation", function() {
 
     it("displays line along with icon", () => {
       const $originInput = $("input.subscription-select-origin");
-      $originInput.val("Bos");
+      $originInput.val("Char");
       const $suggestionContainer = $("input.subscription-select-origin + .suggestion-container");
 
       simulateKeyUp($originInput[0])
 
       const $suggestions = $(".origin-station-suggestion")
-      const chelseaSuggestion = $(".line-name", $suggestions).text();
+      const charlestownSuggestion = $(".line-name", $suggestions).text();
 
-      assert.include(chelseaSuggestion, "Hingham Ferry");
+      assert.include(charlestownSuggestion, "Charlestown Ferry");
     });
 
     it("displays Multiple Lines along with icon when stop is a part of multiple lines", () => {
@@ -520,9 +524,9 @@ describe("selectStation", function() {
       simulateKeyUp($originInput[0])
 
       const $suggestions = $(".origin-station-suggestion")
-      const northStationSuggestion = $(".line-name", $suggestions).text();
+      const longWharfSuggestion = $(".line-name", $suggestions).text();
 
-      assert.include(northStationSuggestion, "Multiple Routes");
+      assert.include(longWharfSuggestion, "Multiple Routes");
     });
 
     const ferryTripInfoPageHtml = `
@@ -531,6 +535,7 @@ describe("selectStation", function() {
           <div class="form-group select-station">
             <label for="origin" class="station-input-label form-label">Origin</label>
             <select class="subscription-select-origin no-js" id="subscription_origin" name="subscription[origin]">
+              <option value="">Select a station</option>
               <optgroup label="Charlestown Ferry">
                 <option value="Boat-Charlestown">Charlestown Navy Yard</option>
                 <option value="Boat-Long">Long Wharf, Boston</option>
@@ -552,6 +557,7 @@ describe("selectStation", function() {
           <div class="form-group select-station">
             <label for="destination" class="station-input-label form-label">Destination</label>
             <select class="subscription-select-destination no-js" id="subscription_destination" name="subscription[destination]">
+              <option value="">Select a station</option>
               <optgroup label="Charlestown Ferry">
                 <option value="Boat-Charlestown">Charlestown Navy Yard</option>
                 <option value="Boat-Long">Long Wharf, Boston</option>
@@ -567,6 +573,62 @@ describe("selectStation", function() {
               <optgroup label="Hull Ferry">
                 <option value="Boat-Hull">Pemberton Point, Hull</option>
                 <option value="Boat-Long">Long Wharf, Boston</option>
+              </optgroup>
+            </select>
+          </div>
+        </form>
+      </div>
+      `
+  });
+
+  describe("commuter rail prefilled", () => {
+    beforeEach(function() {
+      $("body").append(commuterRailTripInfoPageHtml);
+      selectStation($);
+    });
+
+    it("has preselected stations if origin and destination are passed to page when loading", () => {
+      const $originInput = $("input.subscription-select-origin");
+      const $destinationInput = $("input.subscription-select-destination");
+
+      assert.equal($originInput.val(), "Lynn");
+      assert.equal("true", $originInput.attr("data-valid"));
+      assert.equal($destinationInput.val(), "North Station");
+      assert.equal("true", $destinationInput.attr("data-valid"));
+    });
+
+    const commuterRailTripInfoPageHtml = `
+      <div class="subscription-step enter-trip-info">
+        <form class="trip-info-form commuter-rail">
+          <div class="form-group select-station">
+            <label for="origin" class="station-input-label form-label">Origin</label>
+            <select class="subscription-select-origin no-js" id="subscription_origin" name="subscription[origin]">
+              <option value="">Select a station</option>
+              <optgroup label="Newburyport/Rockport Line">
+                <option selected="selected" value="Lynn">Lynn</option>
+                <option value="Chelsea">Chelsea</option>
+                <option value="place-north">North Station</option>
+              </optgroup>
+              <optgroup label="Haverhill Line">
+                <option value="Wyoming Hill">Wyoming Hill</option
+                <option value="place-mlmnl">Malden Center</option>
+                <option value="place-north">North Station</option>
+              </optgroup>
+            </select>
+          </div>
+          <div class="form-group select-station">
+            <label for="destination" class="station-input-label form-label">Destination</label>
+            <select class="subscription-select-destination no-js" id="subscription_destination" name="subscription[destination]">
+              <option value="">Select a station</option>
+              <optgroup label="Newburyport/Rockport Line">
+                <option value="Lynn">Lynn</option>
+                <option value="Chelsea">Chelsea</option>
+                <option selected="selected" value="place-north">North Station</option>
+              </optgroup>
+              <optgroup label="Haverhill Line">
+                <option value="Wyoming Hill">Wyoming Hill</option
+                <option value="place-mlmnl">Malden Center</option>
+                <option value="place-north">North Station</option>
               </optgroup>
             </select>
           </div>

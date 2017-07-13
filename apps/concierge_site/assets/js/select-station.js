@@ -14,6 +14,7 @@ export default function($) {
     props.allStations = generateStationList();
     props.validStationNames = props.allStations.map(station => station.name);
     attachSuggestionInputs();
+    validateInputs();
   }
 
   function typeahead(event) {
@@ -37,8 +38,12 @@ export default function($) {
   function validateStationInput(event) {
     const inputText = event.target.value;
     const originDestination = event.data.originDestination;
-    const $stationInput = $(`.${subscriptionSelectClass(originDestination)}`);
 
+    validateInputText(inputText, originDestination);
+  }
+
+  function validateInputText(inputText, originDestination){
+    const $stationInput = $(`.${subscriptionSelectClass(originDestination)}`);
     if (props.validStationNames.includes(inputText)) {
       $stationInput.attr("data-valid", true);
       $stationInput.attr("data-station-id", stationIdFromStationName(inputText));
@@ -48,6 +53,11 @@ export default function($) {
       $stationInput.attr("data-station-id", null);
       clearSelectedStation(originDestination);
     }
+  }
+
+  function validateInputs(){
+    validateInputText(fetchPreselectedValue("origin"), "origin");
+    validateInputText(fetchPreselectedValue("destination"), "destination");
   }
 
   function assignSuggestion(event) {
@@ -179,11 +189,16 @@ export default function($) {
   }
 
   function renderStationInput(originDestination) {
+    const preselectedValue = fetchPreselectedValue(originDestination);
     return `
-      <input type="text" name="${originDestination}" placeholder="Enter a station" class="subscription-select ${stationInputClass(originDestination)}"/>
+      <input type="text" name="${originDestination}" placeholder="Enter a station" class="subscription-select ${stationInputClass(originDestination)}" value="${preselectedValue}"/>
       <div class="suggestion-container"></div>
       <i class="fa fa-check-circle valid-checkmark-icon"></i>
     `
+  }
+
+  function fetchPreselectedValue(originDestination) {
+    return $(`select[name="subscription[${originDestination}]"]`).find("option:selected").first().text();
   }
 
   function renderHiddenStationInputs() {

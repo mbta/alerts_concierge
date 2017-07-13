@@ -35,11 +35,13 @@ defmodule ConciergeSite.SubwaySubscriptionControllerTest do
         "trip_type" => "one_way",
       }}
 
-      conn = user
-      |> guardian_login(conn)
-      |> post("/subscriptions/subway/new/preferences", params)
+      use_cassette "subway_preferences", custom: true, clear_mock: true, match_requests_on: [:query] do
+        conn = user
+        |> guardian_login(conn)
+        |> post("/subscriptions/subway/new/preferences", params)
 
-      assert html_response(conn, 200) =~ "Set your preferences for your trip:"
+        assert html_response(conn, 200) =~ "Set your preferences for your trip:"
+      end
     end
 
     test "POST /subscriptions/subway/new/preferences with an invalid submission", %{conn: conn, user: user} do
@@ -169,10 +171,8 @@ defmodule ConciergeSite.SubwaySubscriptionControllerTest do
     end
 
     test "GET /subscriptions/subway/new/info", %{conn: conn} do
-      use_cassette "service_info", custom: true, clear_mock: true do
-        conn = get(conn, "/subscriptions/subway/new/info")
-        assert html_response(conn, 302) =~ "/login"
-      end
+      conn = get(conn, "/subscriptions/subway/new/info")
+      assert html_response(conn, 302) =~ "/login"
     end
   end
 

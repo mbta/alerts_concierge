@@ -4,12 +4,12 @@ defmodule ConciergeSite.Subscriptions.DisplayInfo do
   in a meaningful way to a user.
   """
 
-  alias AlertProcessor.{ApiClient, Model.InformedEntity, Model.Subscription}
+  alias AlertProcessor.{ApiClient, Helpers.DateTimeHelper, Model.InformedEntity, Model.Subscription}
 
-  @spec departure_times_for_subscriptions([Subscription.t]) :: {:ok, map} | :error
-  def departure_times_for_subscriptions(subscriptions) do
-    with {:ok, stops} <- parse_station_list(subscriptions),
-        {:ok, schedules, trips} <- ApiClient.schedules(stops),
+  @spec departure_times_for_subscriptions([Subscription.t], Date.t | nil) :: {:ok, map} | :error
+  def departure_times_for_subscriptions(subscriptions, selected_date \\ nil) do
+    with {:ok, stops, relevant_days} <- parse_subscription_stops_and_relevant_days(subscriptions),
+        {schedules, trips} <- fetch_schedule_info(stops, relevant_days, selected_date),
         {schedules, trip_names_map} <- map_trip_names(schedules, trips) do
       {:ok, map_trip_departure_times(schedules, trip_names_map)}
     else
@@ -17,7 +17,7 @@ defmodule ConciergeSite.Subscriptions.DisplayInfo do
     end
   end
 
-  defp parse_station_list(subscriptions) do
+  defp parse_subscription_stops_and_relevant_days(subscriptions) do
     stops =
       subscriptions
       |> Enum.filter(& Enum.member?([:commuter_rail, :ferry], &1.type))
@@ -28,10 +28,23 @@ defmodule ConciergeSite.Subscriptions.DisplayInfo do
       end)
       |> Enum.uniq()
 
+    relevant_days =
+      subscriptions
+      |> Enum.flat_map(& &1.relevant_days)
+      |> Enum.uniq()
+
     case stops do
       [] -> :error
-      _ -> {:ok, stops}
+      _ -> {:ok, stops, relevant_days}
     end
+  end
+
+  defp fetch_schedule_info(stops, relevant_days, selected_date) do
+    Enum.reduce(relevant_days, {[], []}, fn(relevant_day, {previous_schedules, previous_trips}) ->
+      relevant_date = selected_date || DateTimeHelper.determine_date(relevant_day, Date.utc_today())
+      {:ok, schedules, trips} = ApiClient.schedules_for_stops(stops, relevant_date)
+      {previous_schedules ++ schedules, previous_trips ++ trips}
+    end)
   end
 
   defp map_trip_names(schedules, trips) do
