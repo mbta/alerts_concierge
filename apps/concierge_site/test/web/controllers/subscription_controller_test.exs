@@ -70,6 +70,29 @@ defmodule ConciergeSite.SubscriptionControllerTest do
       assert html_response(conn, 200) =~ "Outbound"
     end
 
+    test "GET /my-subscriptions with amenity subscriptions", %{conn: conn} do
+      user = Repo.insert!(%User{email: "test@email.com",
+                                role: "user",
+                                encrypted_password: @encrypted_password})
+
+      :subscription
+      |> build(user: user)
+      |> weekday_subscription()
+      |> amenity_subscription()
+      |> Repo.preload(:informed_entities)
+      |> Ecto.Changeset.change()
+      |> Ecto.Changeset.put_assoc(:informed_entities, amenity_subscription_entities())
+      |> Repo.insert()
+
+      conn = user
+      |> guardian_login(conn)
+      |> get("/my-subscriptions")
+
+      assert html_response(conn, 200) =~ "My Subscriptions"
+      assert html_response(conn, 200) =~ "1 station + Green Line on Weekday"
+      assert html_response(conn, 200) =~ "Escalator &amp; Elevator"
+    end
+
     test "GET /my-subscriptions redirects if no subscriptions", %{conn: conn}  do
       user = Repo.insert!(%User{email: "test@email.com",
                                 role: "user",

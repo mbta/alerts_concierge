@@ -51,6 +51,12 @@ defmodule AlertProcessor.Factory do
     }
   end
 
+  def amenity_subscription(%Subscription{} = subscription) do
+    %{subscription |
+      type: :amenity
+     }
+  end
+
   def subway_subscription_entities() do
     [
       %InformedEntity{route_type: 1},
@@ -85,6 +91,13 @@ defmodule AlertProcessor.Factory do
       %InformedEntity{route_type: 3},
       %InformedEntity{route_type: 3, route: "57A"},
       %InformedEntity{route_type: 3, route: "57A", direction_id: 0}
+    ]
+  end
+
+  def amenity_subscription_entities() do
+    [
+      %InformedEntity{route_type: 4, facility_type: :elevator, route: "Green"},
+      %InformedEntity{route_type: 4, facility_type: :escalator, stop: "place-nquincy"}
     ]
   end
 

@@ -41,6 +41,19 @@ defmodule ConciergeSite.SubscriptionView do
     Map.merge(%{amenity: [], boat: [], bus: [], commuter_rail: [], subway: []}, subscription_map)
   end
 
+  def subscription_info(%{type: :amenity} = subscription) do
+    content_tag :div, class: "subscription-info" do
+      [
+        content_tag :div, class: "subscription-route" do
+          "Station Amenities"
+        end,
+        content_tag :div, class: "subscription-details" do
+          route_body(subscription, nil)
+        end
+      ]
+    end
+  end
+
   def subscription_info(subscription, additional_info \\ nil) do
     content_tag :div, class: "subscription-info" do
       [
@@ -72,6 +85,16 @@ defmodule ConciergeSite.SubscriptionView do
     end
   end
 
+  defp route_body(%{type: :amenity} = subscription, _) do
+    [
+      content_tag :div, class: "subscription-facility-types" do
+        amenity_facility_type(subscription)
+      end,
+      content_tag :div, class: "subscription-amenity-schedule" do
+        amenity_schedule(subscription)
+      end
+    ]
+  end
   defp route_body(%{type: :subway} = subscription, _) do
     case direction_name(subscription) do
       :roaming ->
@@ -109,8 +132,12 @@ defmodule ConciergeSite.SubscriptionView do
       " - ",
       pretty_time(subscription.end_time),
       ", ",
-      subscription.relevant_days |> Enum.map(&String.capitalize(Atom.to_string(&1))) |> Enum.intersperse(", ")
+      relevant_days(subscription)
     ]
+  end
+
+  defp relevant_days(subscription) do
+    subscription.relevant_days |> Enum.map(&String.capitalize(Atom.to_string(&1))) |> Enum.intersperse(", ")
   end
 
   defp pretty_time(timestamp) do
@@ -167,5 +194,52 @@ defmodule ConciergeSite.SubscriptionView do
     else
       headsign
     end
+  end
+
+  defp amenity_facility_type(subscription) do
+    subscription.informed_entities
+    |> Enum.map(&(&1.facility_type))
+    |> Enum.uniq
+    |> Enum.map(fn(amenity) ->
+      amenity
+      |> Atom.to_string()
+      |> String.capitalize()
+    end)
+    |> Enum.join(" & ")
+  end
+
+  defp amenity_schedule(subscription) do
+    [
+      pretty_station_count(subscription),
+      lines(subscription),
+      " on ",
+      relevant_days(subscription)
+    ]
+  end
+
+  def pretty_station_count(subscription) do
+    case count = number_of_stations(subscription) do
+      1 -> "#{count} station + "
+      _ -> "#{count} stations + "
+    end
+  end
+
+  defp number_of_stations(subscription) do
+    subscription.informed_entities
+    |> Enum.filter_map(
+      &(!is_nil(&1.stop)),
+      &(&1.stop)
+    )
+    |> length
+  end
+
+  defp lines(subscription) do
+    subscription.informed_entities
+    |> Enum.filter_map(
+      &(!is_nil(&1.route)),
+      &("#{&1.route} Line")
+    )
+    |> Enum.uniq
+    |> Enum.join(", ")
   end
 end

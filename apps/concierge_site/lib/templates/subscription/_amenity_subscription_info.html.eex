@@ -1,0 +1,18 @@
+<%= if @subscriptions != [] do %>
+  <div class="amenity-subscriptions">
+    <h6>Station Amenities</h6>
+    <%= for subscription <- @subscriptions do %>
+      <%= link(to: amenity_subscription_path(@conn, :edit, subscription), class: "subscription-link") do %>
+        <div class="subscription">
+          <div class="subscription-icon-container amenity">
+            <img class="subscription-icon amenity" src="<%= static_url(@conn, "/images/m-b-t-a.svg") %>" />
+          </div>
+          <%= subscription_info(subscription) %>
+          <div class="subscription-edit-link">
+            <i class="fa fa-chevron-right" aria-hidden="true"></i>
+          </div>
+        </div>
+      <% end %>
+    <% end %>
+  </div>
+<% end %>

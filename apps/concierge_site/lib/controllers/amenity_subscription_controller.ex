@@ -118,4 +118,9 @@ defmodule ConciergeSite.AmenitySubscriptionController do
         |> redirect(to: amenity_subscription_path(conn, :new))
     end
   end
+
+  def edit(conn, %{"id" => _id}, _, _) do
+    conn
+    |> render "edit.html"
+  end
 end
