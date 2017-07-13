@@ -6,7 +6,7 @@
       "method": "get",
       "options": [],
       "request_body": "",
-      "url": "https://dev.api.mbtace.com/schedules/?filter[route]=Red,Blue,Orange,Green-B,Green-C,Green-D,Green-E&filter[stop]=place-brntn,place-asmnl&fields[stop]=parent_station&fields[schedule]=&include=stop"
+      "url": "https://dev.api.mbtace.com/schedules/?filter[route]=Blue,Green-B,Green-C,Green-D,Green-E,Orange,Red&filter[stop]=place-brntn,place-asmnl&fields[stop]=parent_station&fields[schedule]=&include=stop"
     },
     "response": {
       "body":"{\"jsonapi\":{\"version\":\"1.0\"},\"included\":[{\"type\":\"stop\",\"relationships\":{\"parent_station\":{\"data\":{\"type\":\"stop\",\"id\":\"place-asmnl\"}}},\"links\":{\"self\":\"/stops/70103\"},\"id\":\"70103\",\"attributes\":{}},{\"type\":\"stop\",\"relationships\":{\"parent_station\":{\"data\":{\"type\":\"stop\",\"id\":\"place-brntn\"}}},\"links\":{\"self\":\"/stops/70105\"},\"id\":\"70105\",\"attributes\":{}}],\"data\":[{\"type\":\"schedule\",\"relationships\":{\"trip\":{\"data\":{\"type\":\"trip\",\"id\":\"33225736\"}},\"stop\":{\"data\":{\"type\":\"stop\",\"id\":\"70103\"}},\"route\":{\"data\":{\"type\":\"route\",\"id\":\"Red\"}}},\"id\":\"schedule-33225736-70103-210\",\"attributes\":{}},{\"type\":\"schedule\",\"relationships\":{\"trip\":{\"data\":{\"type\":\"trip\",\"id\":\"33225731\"}},\"stop\":{\"data\":{\"type\":\"stop\",\"id\":\"70105\"}},\"route\":{\"data\":{\"type\":\"route\",\"id\":\"Red\"}}},\"id\":\"schedule-33225720-70103-210\",\"attributes\":{}}]}",
