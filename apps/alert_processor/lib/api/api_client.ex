@@ -93,15 +93,19 @@ defmodule AlertProcessor.ApiClient do
   """
   @spec schedules(Route.stop_id, Route.stop_id, Route.direction_id | nil, [Route.route_id], Date.t | nil) :: {:ok, [map], [map]} | {:ok, [map]} | {:error, String.t}
   def schedules(origin, destination, direction_id, route_ids, date) do
+    sorted_stations = Enum.sort_by([origin, destination], &String.downcase/1)
     # credo:disable-for-next-line Credo.Check.Readability.SpaceAfterCommas
-    "/schedules?filter[stop]=#{origin},#{destination}&direction_id=#{direction_id}&fields[schedule]=departure_time,arrival_time&filter[route]=#{Enum.join(route_ids, ",")}&date=#{date}&include=trip,stop&fields[trip]=name"
+    "/schedules?filter[stop]=#{Enum.join(sorted_stations, ",")}&direction_id=#{direction_id}&fields[schedule]=departure_time,arrival_time&filter[route]=#{Enum.join(route_ids, ",")}&date=#{date}&include=trip,stop&fields[trip]=name"
     |> URI.encode()
     |> get()
     |> parse_response()
   end
-  def schedules(stations, date) when is_list(stations) do
+
+  @spec schedules_for_stops([Route.stop_id], Date.t) :: {:ok, [map], [map]} | {:ok, [map]} | {:error, String.t}
+  def schedules_for_stops(stations, date) when is_list(stations) do
+    sorted_stations = Enum.sort_by(stations, &String.downcase/1)
     # credo:disable-for-next-line Credo.Check.Readability.SpaceAfterCommas
-    "/schedules?filter[stop]=#{Enum.join(stations, ",")}&fields[schedule]=departure_time,arrival_time&date=#{date}&include=trip&fields[trip]=name"
+    "/schedules?filter[stop]=#{Enum.join(sorted_stations, ",")}&fields[schedule]=departure_time,arrival_time&date=#{date}&include=trip&fields[trip]=name"
     |> URI.encode()
     |> get()
     |> parse_response()

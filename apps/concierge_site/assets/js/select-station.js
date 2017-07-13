@@ -198,7 +198,7 @@ export default function($) {
   }
 
   function fetchPreselectedValue(originDestination) {
-    return $(`select[name="subscription[${originDestination}]"]`).children().children("option:selected").first().text();
+    return $(`select[name="subscription[${originDestination}]"]`).find("option:selected").first().text();
   }
 
   function renderHiddenStationInputs() {
