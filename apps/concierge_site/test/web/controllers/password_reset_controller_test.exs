@@ -5,6 +5,7 @@ defmodule ConciergeSite.PasswordResetControllerTest do
   alias AlertProcessor.{Model, Repo}
   alias Model.PasswordReset
   alias ConciergeSite.Email
+  alias Calendar.DateTime
 
   test "GET /reset-password/new", %{conn: conn}  do
     conn = get(conn, "/reset-password/new")
@@ -44,5 +45,26 @@ defmodule ConciergeSite.PasswordResetControllerTest do
 
     assert password_reset_count == 0
     assert html_response(conn, 200) =~ "Please enter your email address."
+  end
+
+  test "GET /reset-password/:id", %{conn: conn}  do
+    password_reset = insert(:password_reset)
+    conn = get(conn, "/reset-password/#{password_reset.id}")
+
+    assert html_response(conn, 200) =~ "Enter and confirm your new password below."
+  end
+
+  test "GET /reset-password/:id with an expired password reset", %{conn: conn}  do
+    password_reset = insert(:password_reset, expired_at: DateTime.subtract!(DateTime.now_utc, 1))
+    conn = get(conn, "/reset-password/#{password_reset.id}")
+
+    assert html_response(conn, 302) =~ "/login"
+  end
+
+  test "GET /reset-password/:id with a redeemed password reset", %{conn: conn}  do
+    password_reset = insert(:password_reset, redeemed_at: DateTime.subtract!(DateTime.now_utc, 1))
+    conn = get(conn, "/reset-password/#{password_reset.id}")
+
+    assert html_response(conn, 302) =~ "/login"
   end
 end

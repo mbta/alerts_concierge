@@ -36,4 +36,24 @@ defmodule AlertProcessor.Model.PasswordResetTest do
 
     refute changeset.valid?
   end
+
+  test "redeemable?/1 with a password reset that has not expired or been redeemed yet", %{user: user} do
+    password_reset = insert(:password_reset, user_id: user.id)
+
+    assert PasswordReset.redeemable?(password_reset)
+  end
+
+  test "redeemable?/1 with a password reset has expired", %{user: user} do
+    expired_at = DateTime.subtract!(DateTime.now_utc, 3600)
+    password_reset = insert(:password_reset, user_id: user.id, expired_at: expired_at)
+
+    refute PasswordReset.redeemable?(password_reset)
+  end
+
+  test "redeemable?/1 with a password reset that has been redeemed", %{user: user} do
+    redeemed_at = DateTime.subtract!(DateTime.now_utc, 3600)
+    password_reset = insert(:password_reset, redeemed_at: redeemed_at, user_id: user.id)
+
+    refute PasswordReset.redeemable?(password_reset)
+  end
 end

@@ -36,8 +36,15 @@ defmodule ConciergeSite.PasswordResetController do
     render conn, "sent.html", email: email
   end
 
-  def show(conn, _params) do
-    render conn, "show.html"
+  def show(conn, %{"id" => id}) do
+    password_reset = Repo.get!(PasswordReset, id)
+    if PasswordReset.redeemable?(password_reset) do
+      render conn, "show.html", password_reset: password_reset
+    else
+      conn
+      |> put_flash(:error, "The page you were looking for was not found.")
+      |> redirect(to: session_path(conn, :new))
+    end
   end
 
   defp handle_unknown_email(conn, changeset, email) do

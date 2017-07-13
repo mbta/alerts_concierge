@@ -51,7 +51,7 @@ defmodule AlertProcessor.Model.PasswordReset do
   end
 
   defp validate_not_already_expired(changeset) do
-    if DateTime.before?(changeset.data.expired_at, DateTime.now_utc()) do
+    if expired?(changeset.data) do
       add_error(changeset, :expired_at, "Password Reset has expired.")
     else
       changeset
@@ -59,10 +59,26 @@ defmodule AlertProcessor.Model.PasswordReset do
   end
 
   defp validate_not_already_redeemed(changeset) do
-    if get_field(changeset, :redeemed_at, nil) do
+    if redeemed?(changeset.data) do
       add_error(changeset, :redeemed_at, "Password Reset has already been redeemed.")
     else
       changeset
     end
+  end
+
+  @doc """
+  Returns whether a PasswordReset may be redeemed
+  """
+  @spec redeemable?(__MODULE__.t) :: boolean
+  def redeemable?(password_reset) do
+    !expired?(password_reset) and !redeemed?(password_reset)
+  end
+
+  defp expired?(password_reset) do
+    DateTime.before?(password_reset.expired_at, DateTime.now_utc())
+  end
+
+  defp redeemed?(password_reset) do
+    !is_nil(password_reset.redeemed_at)
   end
 end
