@@ -1,5 +1,5 @@
 import filterSuggestions from './filter-suggestions';
-import {generateRouteList, generateStationList} from './station-select-helpers';
+import {generateRouteList, generateStationList, renderStationInput, unmountStationSuggestions} from './station-select-helpers';
 
 export default function($) {
   $ = $ || window.jQuery;
@@ -20,15 +20,7 @@ export default function($) {
   }
 
   function attachSuggestionInput() {
-    $("label[for='station']").after(renderRouteInput());
-  }
-
-  function renderRouteInput() {
-    return `
-      <input type="text" name="station" placeholder="Enter a station" class="subscription-select subscription-select-amenity-station station-input" autocomplete="off"/>
-      <div class="suggestion-container"></div>
-      <i class="fa fa-check-circle valid-checkmark-icon"></i>
-    `
+    $("label[for='station']").after(renderStationInput("station", "subscription-select-amenity-station station-input"));
   }
 
   function renderRouteSuggestion(route) {
@@ -50,12 +42,8 @@ export default function($) {
       const $suggestionContainer = $('.suggestion-container');
       $suggestionContainer.html(suggestionElements);
     } else {
-      unmountStationSuggestions();
+      unmountStationSuggestions(".amenity-station", $);
     }
-  }
-
-  function unmountStationSuggestions() {
-    $(`.amenity-station`).remove();
   }
 
   function assignSuggestion(event) {
@@ -67,8 +55,8 @@ export default function($) {
 
     removeStationFromOptions(stationName);
     $stationSelect.val("");
-    unmountStationSuggestions();
-  }
+      unmountStationSuggestions(".amenity-station", $);
+    }
 
   function removeStationFromOptions(stationName) {
     state.selectableStations
@@ -101,6 +89,10 @@ export default function($) {
     return true;
   }
 
+  function unmountSuggestions() {
+    unmountStationSuggestions(".amenity-station", $);
+  }
+
   $(".trip-info-form.amenities").submit(setStopsValue);
   $(document).on(
     "keyup", ".subscription-select-amenity-station", {}, typeahead);
@@ -109,5 +101,5 @@ export default function($) {
   $(document).on(
     "mousedown", ".btn-selected-station", {}, removeStation);
   $(document).on(
-    "focusout", ".subscription-select-amenity-station", {}, unmountStationSuggestions);
+    "focusout", ".subscription-select-amenity-station", {ha: "ha"}, unmountSuggestions);
 }

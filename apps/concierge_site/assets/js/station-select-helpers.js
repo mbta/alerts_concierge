@@ -1,3 +1,15 @@
+function renderStationInput(name, className) {
+    return `
+      <input type="text" name="${name}" placeholder="Enter a station" autocomplete="off" class="subscription-select ${className}"/>
+      <div class="suggestion-container"></div>
+      <i class="fa fa-check-circle valid-checkmark-icon"></i>
+    `
+}
+
+function unmountStationSuggestions(className, $) {
+  $(className).remove();
+}
+
 function generateRouteList(className, $) {
   let routes = {};
   const optGroupClass = className + " optgroup";
@@ -45,4 +57,4 @@ function generateStationList(className, $) {
   return stations;
 }
 
-export { generateRouteList, generateStationList };
+export { generateRouteList, generateStationList, renderStationInput, unmountStationSuggestions};

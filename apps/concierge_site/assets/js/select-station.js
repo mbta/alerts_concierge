@@ -147,11 +147,7 @@ export default function($) {
   function renderStationInput(originDestination) {
     const preselectedValue = fetchPreselectedValue(originDestination);
     return `
-<<<<<<< HEAD
       <input type="text" name="${originDestination}" placeholder="Enter a station" class="subscription-select ${stationInputClass(originDestination)}" value="${preselectedValue}"/>
-=======
-      <input type="text" name="${originDestination}" placeholder="Enter a station" autocomplete="off" class="subscription-select ${stationInputClass(originDestination)}"/>
->>>>>>> extract route generation methods
       <div class="suggestion-container"></div>
       <i class="fa fa-check-circle valid-checkmark-icon"></i>
     `
