@@ -1,0 +1,218 @@
+[
+  {
+    "request": {
+      "body": "",
+      "headers": [],
+      "method": "get",
+      "options": [],
+      "request_body": "",
+      "url": "https://dev.api.mbtace.com/trips/Boat-F1-OB-2150-Weekend?include=service"
+    },
+    "response": {
+      "body": "{\"jsonapi\":{\"version\":\"1.0\"},\"included\":[{\"type\":\"service\",\"id\":\"Boat-F1-Weekend\",\"attributes\":{\"valid_days\":[6,7],\"start_date\":\"2017-07-08\",\"removed_dates\":[],\"end_date\":\"2017-08-27\",\"added_dates\":[]}}],\"data\":{\"type\":\"trip\",\"relationships\":{\"shape\":{\"data\":null},\"service\":{\"data\":{\"type\":\"service\",\"id\":\"Boat-F1-Weekend\"}},\"route\":{\"data\":{\"type\":\"route\",\"id\":\"Boat-F1\"}}},\"links\":{\"self\":\"/trips/Boat-F1-OB-2150-Weekend\"},\"id\":\"Boat-F1-OB-2150-Weekend\",\"attributes\":{\"wheelchair_accessible\":1,\"name\":\"\",\"headsign\":\"Hingham\",\"direction_id\":0}}}",
+      "headers": {
+        "cache-control": "max-age=0, private, must-revalidate",
+        "Content-Type": "application/vnd.api+json; charset=utf-8",
+        "Date": "Thu, 13 Jul 2017 20:00:56 GMT",
+        "Server": "nginx/1.10.2",
+        "x-request-id": "mkj41csfcmehp8ck871a9mo0ih5mqps7",
+        "Content-Length": "547",
+        "Connection": "keep-alive"
+      },
+      "status_code": 200,
+      "type": "ok"
+    }
+  },
+  {
+    "request": {
+      "body": "",
+      "headers": [],
+      "method": "get",
+      "options": [],
+      "request_body": "",
+      "url": "https://dev.api.mbtace.com/schedules?trip=Boat-F1-OB-2150-Weekend"
+    },
+    "response": {
+      "body": "{\"jsonapi\":{\"version\":\"1.0\"},\"data\":[{\"type\":\"schedule\",\"relationships\":{\"trip\":{\"data\":{\"type\":\"trip\",\"id\":\"Boat-F1-OB-2150-Weekend\"}},\"stop\":{\"data\":{\"type\":\"stop\",\"id\":\"Boat-Long\"}},\"route\":{\"data\":{\"type\":\"route\",\"id\":\"Boat-F1\"}}},\"id\":\"schedule-Boat-F1-OB-2150-Weekend-Boat-Long-10\",\"attributes\":{\"timepoint\":true,\"stop_sequence\":10,\"pickup_type\":0,\"drop_off_type\":1,\"departure_time\":\"2017-07-13T21:50:00-04:00\",\"arrival_time\":\"2017-07-13T21:50:00-04:00\"}},{\"type\":\"schedule\",\"relationships\":{\"trip\":{\"data\":{\"type\":\"trip\",\"id\":\"Boat-F1-OB-2150-Weekend\"}},\"stop\":{\"data\":{\"type\":\"stop\",\"id\":\"Boat-Hingham\"}},\"route\":{\"data\":{\"type\":\"route\",\"id\":\"Boat-F1\"}}},\"id\":\"schedule-Boat-F1-OB-2150-Weekend-Boat-Hingham-50\",\"attributes\":{\"timepoint\":true,\"stop_sequence\":50,\"pickup_type\":1,\"drop_off_type\":0,\"departure_time\":\"2017-07-13T22:25:00-04:00\",\"arrival_time\":\"2017-07-13T22:25:00-04:00\"}}]}",
+      "headers": {
+        "cache-control": "max-age=0, private, must-revalidate",
+        "Content-Type": "application/vnd.api+json; charset=utf-8",
+        "Date": "Thu, 13 Jul 2017 20:00:56 GMT",
+        "Server": "nginx/1.10.2",
+        "x-request-id": "59j96e6u6b1pt0nh8hpt480c2bn14i37",
+        "Content-Length": "894",
+        "Connection": "keep-alive"
+      },
+      "status_code": 200,
+      "type": "ok"
+    }
+  },
+  {
+    "request": {
+      "body": "",
+      "headers": [],
+      "method": "get",
+      "options": [],
+      "request_body": "",
+      "url": "https://dev.api.mbtace.com/trips/Boat-F4-IB-945AM-Weekday?include=service"
+    },
+    "response": {
+      "body": "{\"jsonapi\":{\"version\":\"1.0\"},\"included\":[{\"type\":\"service\",\"id\":\"Boat-F4-Weekday\",\"attributes\":{\"valid_days\":[1,2,3,4,5],\"start_date\":\"2017-07-06\",\"removed_dates\":[],\"end_date\":\"2017-09-01\",\"added_dates\":[]}}],\"data\":{\"type\":\"trip\",\"relationships\":{\"shape\":{\"data\":null},\"service\":{\"data\":{\"type\":\"service\",\"id\":\"Boat-F4-Weekday\"}},\"route\":{\"data\":{\"type\":\"route\",\"id\":\"Boat-F4\"}}},\"links\":{\"self\":\"/trips/Boat-F4-IB-945AM-Weekday\"},\"id\":\"Boat-F4-IB-945AM-Weekday\",\"attributes\":{\"wheelchair_accessible\":1,\"name\":\"\",\"headsign\":\"Long Wharf, Boston\",\"direction_id\":1}}}",
+      "headers": {
+        "cache-control": "max-age=0, private, must-revalidate",
+        "Content-Type": "application/vnd.api+json; charset=utf-8",
+        "Date": "Thu, 13 Jul 2017 20:02:35 GMT",
+        "Server": "nginx/1.10.2",
+        "x-request-id": "c039kgfapfc09i886rp57pp5tl0mqkhk",
+        "Content-Length": "566",
+        "Connection": "keep-alive"
+      },
+      "status_code": 200,
+      "type": "ok"
+    }
+  },
+  {
+    "request": {
+      "body": "",
+      "headers": [],
+      "method": "get",
+      "options": [],
+      "request_body": "",
+      "url": "https://dev.api.mbtace.com/schedules?trip=Boat-F4-IB-945AM-Weekday"
+    },
+    "response": {
+      "body": "{\"jsonapi\":{\"version\":\"1.0\"},\"data\":[{\"type\":\"schedule\",\"relationships\":{\"trip\":{\"data\":{\"type\":\"trip\",\"id\":\"Boat-F4-IB-945AM-Weekday\"}},\"stop\":{\"data\":{\"type\":\"stop\",\"id\":\"Boat-Charlestown\"}},\"route\":{\"data\":{\"type\":\"route\",\"id\":\"Boat-F4\"}}},\"id\":\"schedule-Boat-F4-IB-945AM-Weekday-Boat-Charlestown-1\",\"attributes\":{\"timepoint\":true,\"stop_sequence\":1,\"pickup_type\":0,\"drop_off_type\":1,\"departure_time\":\"2017-07-13T09:45:00-04:00\",\"arrival_time\":\"2017-07-13T09:45:00-04:00\"}},{\"type\":\"schedule\",\"relationships\":{\"trip\":{\"data\":{\"type\":\"trip\",\"id\":\"Boat-F4-IB-945AM-Weekday\"}},\"stop\":{\"data\":{\"type\":\"stop\",\"id\":\"Boat-Long\"}},\"route\":{\"data\":{\"type\":\"route\",\"id\":\"Boat-F4\"}}},\"id\":\"schedule-Boat-F4-IB-945AM-Weekday-Boat-Long-2\",\"attributes\":{\"timepoint\":true,\"stop_sequence\":2,\"pickup_type\":1,\"drop_off_type\":0,\"departure_time\":\"2017-07-13T09:55:00-04:00\",\"arrival_time\":\"2017-07-13T09:55:00-04:00\"}}]}",
+      "headers": {
+        "cache-control": "max-age=0, private, must-revalidate",
+        "Content-Type": "application/vnd.api+json; charset=utf-8",
+        "Date": "Thu, 13 Jul 2017 20:02:35 GMT",
+        "Server": "nginx/1.10.2",
+        "x-request-id": "83vvf2lu57n3aatheq9kv0ka1796t52a",
+        "Content-Length": "902",
+        "Connection": "keep-alive"
+      },
+      "status_code": 200,
+      "type": "ok"
+    }
+  },
+  {
+    "request": {
+      "body": "",
+      "headers": [],
+      "method": "get",
+      "options": [],
+      "request_body": "",
+      "url": "https://dev.api.mbtace.com/trips/Boat-F4-OB-600PM-Sunday?include=service"
+    },
+    "response": {
+      "body": "{\"jsonapi\":{\"version\":\"1.0\"},\"included\":[{\"type\":\"service\",\"id\":\"Boat-F4-Sunday\",\"attributes\":{\"valid_days\":[7],\"start_date\":\"2017-07-09\",\"removed_dates\":[],\"end_date\":\"2017-08-27\",\"added_dates\":[]}}],\"data\":{\"type\":\"trip\",\"relationships\":{\"shape\":{\"data\":null},\"service\":{\"data\":{\"type\":\"service\",\"id\":\"Boat-F4-Sunday\"}},\"route\":{\"data\":{\"type\":\"route\",\"id\":\"Boat-F4\"}}},\"links\":{\"self\":\"/trips/Boat-F4-OB-600PM-Sunday\"},\"id\":\"Boat-F4-OB-600PM-Sunday\",\"attributes\":{\"wheelchair_accessible\":1,\"name\":\"\",\"headsign\":\"Charlestown Navy Yard\",\"direction_id\":0}}}",
+      "headers": {
+        "cache-control": "max-age=0, private, must-revalidate",
+        "Content-Type": "application/vnd.api+json; charset=utf-8",
+        "Date": "Thu, 13 Jul 2017 20:07:32 GMT",
+        "Server": "nginx/1.10.2",
+        "x-request-id": "sm1d1lkligddrrh6e0ua4rof13u2hdpa",
+        "Content-Length": "557",
+        "Connection": "keep-alive"
+      },
+      "status_code": 200,
+      "type": "ok"
+    }
+  },
+  {
+    "request": {
+      "body": "",
+      "headers": [],
+      "method": "get",
+      "options": [],
+      "request_body": "",
+      "url": "https://dev.api.mbtace.com/schedules?trip=Boat-F4-OB-600PM-Sunday"
+    },
+    "response": {
+      "body": "{\"jsonapi\":{\"version\":\"1.0\"},\"data\":[{\"type\":\"schedule\",\"relationships\":{\"trip\":{\"data\":{\"type\":\"trip\",\"id\":\"Boat-F4-OB-600PM-Sunday\"}},\"stop\":{\"data\":{\"type\":\"stop\",\"id\":\"Boat-Long\"}},\"route\":{\"data\":{\"type\":\"route\",\"id\":\"Boat-F4\"}}},\"id\":\"schedule-Boat-F4-OB-600PM-Sunday-Boat-Long-1\",\"attributes\":{\"timepoint\":true,\"stop_sequence\":1,\"pickup_type\":0,\"drop_off_type\":1,\"departure_time\":\"2017-07-13T18:00:00-04:00\",\"arrival_time\":\"2017-07-13T18:00:00-04:00\"}},{\"type\":\"schedule\",\"relationships\":{\"trip\":{\"data\":{\"type\":\"trip\",\"id\":\"Boat-F4-OB-600PM-Sunday\"}},\"stop\":{\"data\":{\"type\":\"stop\",\"id\":\"Boat-Charlestown\"}},\"route\":{\"data\":{\"type\":\"route\",\"id\":\"Boat-F4\"}}},\"id\":\"schedule-Boat-F4-OB-600PM-Sunday-Boat-Charlestown-2\",\"attributes\":{\"timepoint\":true,\"stop_sequence\":2,\"pickup_type\":1,\"drop_off_type\":0,\"departure_time\":\"2017-07-13T18:10:00-04:00\",\"arrival_time\":\"2017-07-13T18:10:00-04:00\"}}]}",
+      "headers": {
+        "cache-control": "max-age=0, private, must-revalidate",
+        "Content-Type": "application/vnd.api+json; charset=utf-8",
+        "Date": "Thu, 13 Jul 2017 20:07:32 GMT",
+        "Server": "nginx/1.10.2",
+        "x-request-id": "uaaqvpg97q7h9caica9rhh37es1e60up",
+        "Content-Length": "898",
+        "Connection": "keep-alive"
+      },
+      "status_code": 200,
+      "type": "ok"
+    }
+  },
+  {
+    "request": {
+      "body": "",
+      "headers": [],
+      "method": "get",
+      "options": [],
+      "request_body": "",
+      "url": "https://dev.api.mbtace.com/trips/Boat-F4-OB-600PM-Saturday?include=service"
+    },
+    "response": {
+      "body": "{\"jsonapi\":{\"version\":\"1.0\"},\"included\":[{\"type\":\"service\",\"id\":\"Boat-F4-Saturday\",\"attributes\":{\"valid_days\":[6],\"start_date\":\"2017-07-08\",\"removed_dates\":[],\"end_date\":\"2017-08-26\",\"added_dates\":[]}}],\"data\":{\"type\":\"trip\",\"relationships\":{\"shape\":{\"data\":null},\"service\":{\"data\":{\"type\":\"service\",\"id\":\"Boat-F4-Saturday\"}},\"route\":{\"data\":{\"type\":\"route\",\"id\":\"Boat-F4\"}}},\"links\":{\"self\":\"/trips/Boat-F4-OB-600PM-Saturday\"},\"id\":\"Boat-F4-OB-600PM-Saturday\",\"attributes\":{\"wheelchair_accessible\":1,\"name\":\"\",\"headsign\":\"Charlestown Navy Yard\",\"direction_id\":0}}}",
+      "headers": {
+        "cache-control": "max-age=0, private, must-revalidate",
+        "Content-Type": "application/vnd.api+json; charset=utf-8",
+        "Date": "Thu, 13 Jul 2017 20:08:39 GMT",
+        "Server": "nginx/1.10.2",
+        "x-request-id": "47sct6tiii1gn5bvibqb8gb2pqd6fmq6",
+        "Content-Length": "565",
+        "Connection": "keep-alive"
+      },
+      "status_code": 200,
+      "type": "ok"
+    }
+  },
+  {
+    "request": {
+      "body": "",
+      "headers": [],
+      "method": "get",
+      "options": [],
+      "request_body": "",
+      "url": "https://dev.api.mbtace.com/schedules?trip=Boat-F4-OB-600PM-Saturday"
+    },
+    "response": {
+      "body": "{\"jsonapi\":{\"version\":\"1.0\"},\"data\":[{\"type\":\"schedule\",\"relationships\":{\"trip\":{\"data\":{\"type\":\"trip\",\"id\":\"Boat-F4-OB-600PM-Saturday\"}},\"stop\":{\"data\":{\"type\":\"stop\",\"id\":\"Boat-Long\"}},\"route\":{\"data\":{\"type\":\"route\",\"id\":\"Boat-F4\"}}},\"id\":\"schedule-Boat-F4-OB-600PM-Saturday-Boat-Long-1\",\"attributes\":{\"timepoint\":true,\"stop_sequence\":1,\"pickup_type\":0,\"drop_off_type\":1,\"departure_time\":\"2017-07-13T18:00:00-04:00\",\"arrival_time\":\"2017-07-13T18:00:00-04:00\"}},{\"type\":\"schedule\",\"relationships\":{\"trip\":{\"data\":{\"type\":\"trip\",\"id\":\"Boat-F4-OB-600PM-Saturday\"}},\"stop\":{\"data\":{\"type\":\"stop\",\"id\":\"Boat-Charlestown\"}},\"route\":{\"data\":{\"type\":\"route\",\"id\":\"Boat-F4\"}}},\"id\":\"schedule-Boat-F4-OB-600PM-Saturday-Boat-Charlestown-2\",\"attributes\":{\"timepoint\":true,\"stop_sequence\":2,\"pickup_type\":1,\"drop_off_type\":0,\"departure_time\":\"2017-07-13T18:10:00-04:00\",\"arrival_time\":\"2017-07-13T18:10:00-04:00\"}}]}",
+      "headers": {
+        "cache-control": "max-age=0, private, must-revalidate",
+        "Content-Type": "application/vnd.api+json; charset=utf-8",
+        "Date": "Thu, 13 Jul 2017 20:08:39 GMT",
+        "Server": "nginx/1.10.2",
+        "x-request-id": "6pcjmp00hg7huo57i3vmmp6s97gdrig4",
+        "Content-Length": "906",
+        "Connection": "keep-alive"
+      },
+      "status_code": 200,
+      "type": "ok"
+    }
+  },
+  {
+    "request": {
+      "body": "",
+      "headers": [],
+      "method": "get",
+      "options": [],
+      "request_body": "",
+      "url": "https://dev.api.mbtace.com/trips/This-boat-does-not-exist?include=service"
+    },
+    "response": {
+      "body": "{\"jsonapi\":{\"version\":\"1.0\"},\"errors\":[{\"code\":\"not_found\"}]}",
+      "headers": {
+        "cache-control": "max-age=0, private, must-revalidate",
+        "Content-Type": "application/json; charset=utf-8",
+        "Date": "Thu, 13 Jul 2017 20:09:59 GMT",
+        "Server": "nginx/1.10.2",
+        "x-request-id": "e0gu34ts3s82vpisp68q2pnk76lorgtp",
+        "Content-Length": "61",
+        "Connection": "keep-alive"
+      },
+      "status_code": 404,
+      "type": "ok"
+    }
+  }
+]

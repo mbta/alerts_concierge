@@ -4,7 +4,7 @@ defmodule AlertProcessor.ApiClient do
   """
   use HTTPoison.Base
 
-  alias AlertProcessor.Model.Route
+  alias AlertProcessor.Model.{Route, Trip}
 
   @doc """
   Helper function that fetches all alerts from
@@ -45,6 +45,14 @@ defmodule AlertProcessor.ApiClient do
     |> parse_response()
   end
 
+  @spec trip(Trip.id) :: {:ok, map, [map]} | {:error, String.t}
+  def trip(trip_id) do
+    "/trips/#{trip_id}?include=service"
+    |> URI.encode()
+    |> get()
+    |> parse_response()
+  end
+
   @doc """
   endpoint to fetch trips for a specific route
   """
@@ -52,6 +60,14 @@ defmodule AlertProcessor.ApiClient do
   def trips(route, direction_id, fields \\ ["headsign"]) do
     # credo:disable-for-next-line Credo.Check.Readability.SpaceAfterCommas
     "/trips?route=#{route}&direction_id=#{direction_id}&fields[trip]=#{Enum.join(fields, ",")}"
+    |> get()
+    |> parse_response()
+  end
+
+  def trips_with_service_info(routes) do
+    # credo:disable-for-next-line Credo.Check.Readability.SpaceAfterCommas
+    "/trips?route=#{Enum.join(routes, ",")}&include=service"
+    |> URI.encode()
     |> get()
     |> parse_response()
   end
@@ -106,6 +122,14 @@ defmodule AlertProcessor.ApiClient do
     sorted_stations = Enum.sort_by(stations, &String.downcase/1)
     # credo:disable-for-next-line Credo.Check.Readability.SpaceAfterCommas
     "/schedules?filter[stop]=#{Enum.join(sorted_stations, ",")}&fields[schedule]=departure_time,arrival_time&date=#{date}&include=trip&fields[trip]=name"
+    |> URI.encode()
+    |> get()
+    |> parse_response()
+  end
+
+  @spec schedule_for_trip(Trip.id) :: {:ok, [map]} | {:error, String.t}
+  def schedule_for_trip(trip_id) do
+    "/schedules?trip=#{trip_id}"
     |> URI.encode()
     |> get()
     |> parse_response()

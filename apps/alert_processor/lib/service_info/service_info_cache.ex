@@ -9,7 +9,7 @@ defmodule AlertProcessor.ServiceInfoCache do
   alias AlertProcessor.{ApiClient, Model.Route}
 
   @service_types [:bus, :commuter_rail, :ferry, :subway]
-  @info_types [:parent_stop_info, :subway_full_routes]
+  @info_types [:parent_stop_info, :subway_full_routes, :ferry_general_ids]
 
   @doc false
   def start_link(opts \\ [name: __MODULE__]) do
@@ -65,6 +65,10 @@ defmodule AlertProcessor.ServiceInfoCache do
 
   def get_parent_stop_id(name \\ __MODULE__, stop_id) do
     GenServer.call(name, {:get_parent_stop_id, stop_id})
+  end
+
+  def get_generalized_trip_id(name \\ __MODULE__, trip_id) do
+    GenServer.call(name, {:get_generalized_trip_id, trip_id})
   end
 
   @doc """
@@ -139,6 +143,11 @@ defmodule AlertProcessor.ServiceInfoCache do
     {:reply, {:ok, parent_stop_id}, state}
   end
 
+  def handle_call({:get_generalized_trip_id, trip_id}, _from, %{ferry_general_ids: ferry_general_ids} = state) do
+    generalized_trip_id = Map.get(ferry_general_ids, trip_id)
+    {:reply, {:ok, generalized_trip_id}, state}
+  end
+
   defp parse_headsign(relevant_routes, direction_id) do
     case relevant_routes do
       [%Route{route_id: "Green-" <> _} | _t] ->
@@ -200,6 +209,57 @@ defmodule AlertProcessor.ServiceInfoCache do
       {id, parent_station_id}
     end
   end
+  defp fetch_service_info(:ferry_general_ids) do
+    {:ok, routes} = ApiClient.routes([4])
+    route_ids = Enum.map(routes, fn(%{"id" => route_id}) -> route_id end)
+    {:ok, trips, service_info} = ApiClient.trips_with_service_info(route_ids)
+    trip_info_map = map_trip_information(trips, service_info)
+    trip_ids = Enum.map(trips, fn(%{"id" => trip_id}) -> trip_id end)
+
+    for trip_id <- trip_ids, into: %{} do
+      {:ok, schedules} = ApiClient.schedule_for_trip(trip_id)
+      [departure_schedule | _t] = Enum.sort_by(schedules, fn(%{"attributes" => %{"departure_time" => departure_timestamp}}) -> departure_timestamp end)
+      %{"relationships" => %{"stop" => %{"data" => %{"id" => origin_id}}}, "attributes" => %{"departure_time" => departure_timestamp}} = departure_schedule
+      departure_time = departure_timestamp |> NaiveDateTime.from_iso8601!() |> NaiveDateTime.to_time()
+      {trip_id, map_generalized_trip_id(trip_id, trip_info_map, %{origin_id: origin_id, departure_time: departure_time})}
+    end
+  end
+
+  defp map_trip_information(trips, service_info) do
+    service_valid_days_map =
+      Map.new(service_info, fn(%{"id" => service_id, "attributes" => %{"valid_days" => valid_days}}) ->
+        {service_id, valid_days}
+      end)
+
+    Map.new(trips, fn(%{
+        "id" => trip_id,
+        "relationships" => %{
+          "service" => %{"data" => %{"id" => trip_service_id}},
+          "route" => %{"data" => %{"id" => route_id}}
+        },
+        "attributes" => %{"direction_id" => direction_id}
+      }) ->
+      {trip_id, %{route_id: route_id, direction_id: direction_id, valid_days: Map.get(service_valid_days_map, trip_service_id)}}
+    end)
+  end
+
+  defp map_generalized_trip_id(trip_id, trip_info_map, departure_info_map) do
+    %{route_id: route_id, direction_id: direction_id, valid_days: valid_days} = Map.get(trip_info_map, trip_id)
+    %{origin_id: origin_id, departure_time: departure_time} = departure_info_map
+    Enum.join([
+      route_id,
+      origin_id,
+      departure_time,
+      parse_time_of_week(valid_days),
+      direction_id
+    ], "-")
+  end
+
+  defp parse_time_of_week([1, 2, 3, 4, 5]), do: "weekday"
+  defp parse_time_of_week([5]), do: "friday"
+  defp parse_time_of_week([6]), do: "saturday"
+  defp parse_time_of_week([7]), do: "sunday"
+  defp parse_time_of_week([6, 7]), do: "weekend"
 
   defp do_fetch_service_info(route_types) do
     {:ok, routes} = ApiClient.routes(route_types)
