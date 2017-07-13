@@ -5,7 +5,7 @@ defmodule ConciergeSite.Subscriptions.SubwayParamsTest do
 
   describe "validate_info_params" do
     test "it returns error messages when origin and destination are not on the same Subway line" do
-      use_cassette "subway_schedules", custom: true, clear_mock: true, match_requests_on: [:query] do
+      use_cassette "subway_schedules_invalid", custom: true, clear_mock: true, match_requests_on: [:query] do
         params = %{
           "departure_start" => "08:45 AM",
           "departure_end" => "09:15 AM",
