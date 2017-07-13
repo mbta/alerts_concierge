@@ -1,0 +1,12 @@
+.header-container {
+  align-items: baseline;
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 1.75rem;
+  padding-bottom: 0;
+}
+
+.header-link {
+  font-size: $base-font-size-xxl;
+  font-weight: normal;
+}

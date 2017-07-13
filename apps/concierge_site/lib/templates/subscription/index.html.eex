@@ -1,4 +1,10 @@
-<h1>My Subscriptions</h1>
+<h1 class="header-container">
+  <div>My Subscriptions</div>
+  <%= link to: my_account_path(@conn, :edit), class: "header-link" do %>
+    My Account <i class="fa fa-gear"></i>
+  <% end %>
+</h1>
+
 <div class="my-subscriptions-container">
   <% customer_subscription_map = sorted_subscriptions(@subscriptions) %>
   <%= render "_subway_subscription_info.html", conn: @conn, subscriptions: customer_subscription_map[:subway] %>
