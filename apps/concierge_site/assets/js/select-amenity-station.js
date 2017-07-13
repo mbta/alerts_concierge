@@ -20,7 +20,7 @@ export default function($) {
   }
 
   function attachSuggestionInput() {
-    $("label[for='station']").after(renderStationInput("station", "subscription-select-amenity-station station-input"));
+    $("label[for='station']").after(renderStationInput("station", "subscription-select-amenity-station station-input", ""));
   }
 
   function renderRouteSuggestion(route) {

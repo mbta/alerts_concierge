@@ -1,6 +1,6 @@
-function renderStationInput(name, className) {
+function renderStationInput(name, className, preselectedValue) {
     return `
-      <input type="text" name="${name}" placeholder="Enter a station" autocomplete="off" class="subscription-select ${className}"/>
+      <input type="text" name="${name}" placeholder="Enter a station" autocomplete="off" class="subscription-select ${className}"  value="${preselectedValue}"/>
       <div class="suggestion-container"></div>
       <i class="fa fa-check-circle valid-checkmark-icon"></i>
     `
@@ -12,8 +12,7 @@ function unmountStationSuggestions(className, $) {
 
 function generateRouteList(className, $) {
   let routes = {};
-  const optGroupClass = className + " optgroup";
-  const $optgroups = $(optGroupClass, $);
+  const $optgroups = $(className);
 
   $optgroups.each(function(_i, group) {
     const options = $("option", group).map(function(i, option) {
@@ -30,8 +29,7 @@ function generateRouteList(className, $) {
 
 function generateStationList(className, $) {
   let stations = [];
-  const optGroupClass = className + " optgroup";
-  const $optgroups = $(optGroupClass, $);
+  const $optgroups = $(className);
 
   $optgroups.each(function(_i, group) {
     const $options = $("option", group);

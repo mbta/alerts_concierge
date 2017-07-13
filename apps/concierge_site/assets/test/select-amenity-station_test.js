@@ -135,6 +135,7 @@ describe("selectAmenityStation", function() {
         <div class="form-group select-station">
           <label for="station" class="station-input-label form-label">Select Individual Stations</label>
           <select class="subscription-select subscription-select-amenity-station no-js">
+            <option value="">Select a station</option>
             <optgroup label="Red Line">
               <option value="place-nquincy">North Quincy</option>
               <option value="place-central">Central Square</option>

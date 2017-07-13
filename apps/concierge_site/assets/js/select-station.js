@@ -1,5 +1,5 @@
 import filterSuggestions from './filter-suggestions';
-import {generateRouteList, generateStationList} from './station-select-helpers';
+import {generateRouteList, generateStationList, renderStationInput, unmountStationSuggestions} from './station-select-helpers';
 
 export default function($) {
   $ = $ || window.jQuery;
@@ -11,7 +11,7 @@ export default function($) {
   };
 
   if ($(".enter-trip-info").length) {
-    const className = "select.subscription-select-origin";
+    const className = "select.subscription-select-origin optgroup";
     props.allRoutes = generateRouteList(className, $);
     props.allStations = generateStationList(className, $);
     props.validStationNames = props.allStations.map(station => station.name);
@@ -33,7 +33,7 @@ export default function($) {
         $(`.${subscriptionSelectClass(originDestination)} + .suggestion-container`);
       $suggestionContainer.html(suggestionElements);
     } else {
-      unmountStationSuggestions(originDestination);
+      unmountStationSuggestions(`.${originDestination}-station-suggestion`, $);
     }
   }
 
@@ -71,8 +71,8 @@ export default function($) {
     $stationInput.attr("data-valid", true);
     $stationInput.attr("data-station-id", $(this).attr("data-station-id"));
     setSelectedStation(originDestination, stationName, $(this).attr("data-lines"));
-    unmountStationSuggestions(originDestination);
-  }
+      unmountStationSuggestions(`.${originDestination}-station-suggestion`, $);
+    }
 
   function pickFirstSuggestion(event) {
     const originDestination = event.data.originDestination;
@@ -90,7 +90,7 @@ export default function($) {
       $stationInput.val(null);
     }
 
-    unmountStationSuggestions(originDestination);
+    unmountStationSuggestions(`.${originDestination}-station-suggestion`, $);
   }
 
   function filter(originDestination, query) {
@@ -134,23 +134,15 @@ export default function($) {
     $("input[name='subscription[destination]']").val(destination);
   }
 
-  function unmountStationSuggestions(classPrefix) {
-    $(`.${classPrefix}-station-suggestion`).remove();
-  }
-
   function attachSuggestionInputs() {
-    $("label[for='origin']").after(renderStationInput("origin"));
-    $("label[for='destination']").after(renderStationInput("destination"));
+    attachStationInput("origin");
+    attachStationInput("destination");
     $(".trip-info-footer").before(renderHiddenStationInputs());
   }
 
-  function renderStationInput(originDestination) {
+  function attachStationInput(originDestination) {
     const preselectedValue = fetchPreselectedValue(originDestination);
-    return `
-      <input type="text" name="${originDestination}" placeholder="Enter a station" class="subscription-select ${stationInputClass(originDestination)}" value="${preselectedValue}"/>
-      <div class="suggestion-container"></div>
-      <i class="fa fa-check-circle valid-checkmark-icon"></i>
-    `
+    $(`label[for='${originDestination}']`).after(renderStationInput(originDestination, stationInputClass(originDestination), preselectedValue));
   }
 
   function fetchPreselectedValue(originDestination) {
