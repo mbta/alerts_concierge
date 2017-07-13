@@ -18,7 +18,7 @@ defmodule AlertProcessor.Model.PasswordReset do
   @primary_key {:id, :binary_id, autogenerate: true}
 
   schema "password_resets" do
-    belongs_to :user, User, type: :binary_id
+    belongs_to :user, AlertProcessor.Model.User, type: :binary_id
     field :expired_at, :utc_datetime
     field :redeemed_at, :utc_datetime
 
@@ -58,10 +58,10 @@ defmodule AlertProcessor.Model.PasswordReset do
   end
 
   defp validate_not_already_redeemed(changeset) do
-    if is_nil(changeset.data.redeemed_at) do
-      changeset
-    else
+    if get_field(changeset, :redeemed_at, nil) do
       add_error(changeset, :redeemed_at, "Password Reset has already been redeemed.")
+    else
+      changeset
     end
   end
 end
