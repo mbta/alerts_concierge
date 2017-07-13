@@ -10,3 +10,6 @@ config :concierge_site, ConciergeSite.Endpoint,
 config :logger, level: :warn
 
 config :guardian, Guardian, secret_key: "top_secret_key"
+
+config :concierge_site, ConciergeSite.PasswordResetMailer,
+  adapter: Bamboo.TestAdapter
