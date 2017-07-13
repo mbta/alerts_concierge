@@ -16,7 +16,7 @@ export default function($) {
   }
 
   function attachSuggestionInput() {
-    $("label[for='station']").after(renderStationInput("station", "subscription-select-amenity-station station-input", ""));
+    $(".amenity-station-select-sub-label").after(renderStationInput("station", "subscription-select-amenity-station station-input", ""));
   }
 
   function renderRouteSuggestion(route) {
@@ -43,7 +43,7 @@ export default function($) {
   }
 
   function assignSuggestion(event) {
-    const stationName = $(event.target).text().trim();
+    const stationName = event.target.textContent.trim();
     const $stationSelect = $(".subscription-select-amenity-station");
     const $stationListContainer = $('.selected-station-list.amenity-station-list');
     const station = renderStation(stationName);
@@ -64,17 +64,15 @@ export default function($) {
   function removeStationFromSelected(stationName) {
     state.selectedStations
     .splice(state.selectableStations.indexOf(stationName), 1);
-
     state.selectableStations.push(stationName);
   };
 
   function renderStation(stationName) {
-    return `<button class="btn btn-primary btn-selected-station" type="button">${stationName}</button>`
+    return `<button class="btn btn-sm btn-selected-station" type="button"><span>${stationName}</span>&nbsp;<i class="fa fa-times" aria-hidden="true"></i></button>`
   }
 
   function removeStation(event) {
-    const stationName = event.target.textContent;
-    removeStationFromSelected(stationName);
+    removeStationFromSelected(event.target.textContent.trim());
     event.currentTarget.remove();
   }
 

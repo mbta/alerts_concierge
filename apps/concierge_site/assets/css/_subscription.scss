@@ -411,3 +411,53 @@
   padding-top: 2rem;
   text-align: center;
 }
+
+.amenity-station-list {
+  margin-bottom: 1.5rem;
+  width: 100%;
+  text-align: left;
+}
+
+.station-select-group {
+  display: inline-flex;
+  width: 100%;
+}
+
+.subscription-select-amenity-station.no-js {
+  margin-bottom: 1.5rem;
+}
+
+.btn-add-amenity-station {
+  margin-left: 1rem;
+}
+
+.btn-selected-station {
+  background-color: $pale-grey;
+  margin: 0.25rem 0.25rem;
+}
+
+.btn-amenity-submit {
+  margin: 36px 0px;
+  width: 270px;
+  height: 45px;
+}
+
+.select-amenity-station {
+  margin-bottom: 0;
+}
+
+.amenity-station-select-sub-label {
+  text-align: left;
+}
+
+.amenity-subscription-form-section {
+  border-bottom: 1px $pale-grey solid;
+}
+
+#subscription_elevator {
+  margin-left: 0px;
+}
+
+#subscription_red {
+  margin-left: 0px;
+}
