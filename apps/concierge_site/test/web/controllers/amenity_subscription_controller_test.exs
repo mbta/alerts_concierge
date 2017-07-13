@@ -22,7 +22,7 @@ defmodule ConciergeSite.AmenitySubscriptionControllerTest do
       conn = conn
       |> post("/subscriptions/amenities/add_station", params)
 
-      expected = "<button formaction=\"/subscriptions/amenities/remove_station/Forest%20Hills\" type=\"submit\">\nForest Hills  </button>"
+      expected = "formaction=\"/subscriptions/amenities/remove_station/Forest%20Hills\""
 
       assert html_response(conn, 200) =~ expected
     end
@@ -44,7 +44,7 @@ defmodule ConciergeSite.AmenitySubscriptionControllerTest do
       conn = conn
       |> post("/subscriptions/amenities/add_station", params)
 
-      expected = ~r/<button formaction=\"\/subscriptions\/amenities\/remove_station\/Forest%20Hills\" type=\"submit\">\nForest Hills  <\/button>/
+      expected = ~r/formaction=\"\/subscriptions\/amenities\/remove_station\/Forest%20Hills\"/
       result = html_response(conn, 200)
       number_of_matches = length(Regex.scan(expected, result))
 
@@ -60,7 +60,7 @@ defmodule ConciergeSite.AmenitySubscriptionControllerTest do
       conn = conn
       |> post("/subscriptions/amenities/remove_station/#{route_id}", params)
 
-      station_link = "<button formaction=\"/subscriptions/amenities/remove_station/Forest%20Hills\" type=\"submit\">\nForest Hills  </button>"
+      station_link = "formaction=\"/subscriptions/amenities/remove_station/Forest%20Hills\" type=\"submit\">\nForest Hills"
 
       refute html_response(conn, 200) =~ station_link
     end
