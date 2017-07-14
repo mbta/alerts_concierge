@@ -110,12 +110,12 @@ defmodule AlertProcessor.Subscription.FerryMapperTest do
       {:ok, [{_sub, informed_entities}]} = FerryMapper.map_subscriptions(@one_way_params)
       trip_1805_count =
         Enum.count(informed_entities, fn(informed_entity) ->
-          match?(%InformedEntity{trip: "Boat-F1-OB-1805-WeekdaySummer"}, informed_entity)
+          match?(%InformedEntity{trip: "Boat-F1-Boat-Long-18:05:00-weekday-0"}, informed_entity)
         end)
       assert trip_1805_count == 1
       trip_2110_count =
         Enum.count(informed_entities, fn(informed_entity) ->
-          match?(%InformedEntity{trip: "Boat-F1-OB-2110-WeekdaySummer"}, informed_entity)
+          match?(%InformedEntity{trip: "Boat-F1-Boat-Long-21:10:00-weekday-0"}, informed_entity)
         end)
       assert trip_2110_count == 1
       trip_count =
@@ -261,12 +261,12 @@ defmodule AlertProcessor.Subscription.FerryMapperTest do
       {:ok, [{_sub1, ie1}, {_sub2, ie2}]} = FerryMapper.map_subscriptions(@round_trip_params)
       trip_1805_count =
         Enum.count(ie1, fn(informed_entity) ->
-          match?(%InformedEntity{trip: "Boat-F1-OB-1805-WeekdaySummer"}, informed_entity)
+          match?(%InformedEntity{trip: "Boat-F1-Boat-Long-18:05:00-weekday-0"}, informed_entity)
         end)
       assert trip_1805_count == 1
       trip_2110_count =
         Enum.count(ie1, fn(informed_entity) ->
-          match?(%InformedEntity{trip: "Boat-F1-OB-2110-WeekdaySummer"}, informed_entity)
+          match?(%InformedEntity{trip: "Boat-F1-Boat-Long-21:10:00-weekday-0"}, informed_entity)
         end)
       assert trip_2110_count == 1
       trip_count =
@@ -277,7 +277,7 @@ defmodule AlertProcessor.Subscription.FerryMapperTest do
 
       trip_2100_count =
         Enum.count(ie2, fn(informed_entity) ->
-          match?(%InformedEntity{trip: "Boat-F1-IB-2100-WeekdaySummer"}, informed_entity)
+          match?(%InformedEntity{trip: "Boat-F1-Boat-Hingham-21:00:00-weekday-1"}, informed_entity)
         end)
       assert trip_2100_count == 1
       trip_count =
