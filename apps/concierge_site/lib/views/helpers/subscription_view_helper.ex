@@ -4,6 +4,7 @@ defmodule ConciergeSite.SubscriptionViewHelper do
   """
   alias Calendar.Time, as: T
   alias Calendar.Strftime
+  alias AlertProcessor.Model.Subscription
   alias AlertProcessor.Helpers.{DateTimeHelper, StringHelper}
 
   @doc """
@@ -89,5 +90,13 @@ defmodule ConciergeSite.SubscriptionViewHelper do
 
   def progress_step_classes(_page, _step) do
     %{}
+  end
+
+  @doc """
+  Return a readable list of relevant days for a subscription
+  """
+  @spec relevant_days(Subscription.t) :: iolist
+  def relevant_days(subscription) do
+    subscription.relevant_days |> Enum.map(&String.capitalize(Atom.to_string(&1))) |> Enum.intersperse(", ")
   end
 end

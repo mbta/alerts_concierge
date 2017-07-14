@@ -89,8 +89,9 @@ defmodule ConciergeSite.SubscriptionControllerTest do
       |> get("/my-subscriptions")
 
       assert html_response(conn, 200) =~ "My Subscriptions"
-      assert html_response(conn, 200) =~ "1 station + Green Line on Weekday"
-      assert html_response(conn, 200) =~ "Escalator &amp; Elevator"
+      assert html_response(conn, 200) =~ "1 station + Green Line on Weekdays"
+      assert html_response(conn, 200) =~ "Escalator"
+      assert html_response(conn, 200) =~ "Elevator"
     end
 
     test "GET /my-subscriptions redirects if no subscriptions", %{conn: conn}  do

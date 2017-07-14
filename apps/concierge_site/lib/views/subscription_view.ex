@@ -8,7 +8,10 @@ defmodule ConciergeSite.SubscriptionView do
   alias Helpers.DateTimeHelper
   alias Model.{InformedEntity, Subscription}
   alias Calendar.Strftime
-  alias ConciergeSite.SubscriptionViewHelper
+  alias ConciergeSite.{AmenitySubscriptionView, SubscriptionViewHelper}
+
+  defdelegate amenity_facility_type(subscription), to: AmenitySubscriptionView
+  defdelegate amenity_schedule(subscription), to: AmenitySubscriptionView
 
   @type subscription_info :: %{
     amenity: [Subscription.t],
@@ -132,12 +135,8 @@ defmodule ConciergeSite.SubscriptionView do
       " - ",
       pretty_time(subscription.end_time),
       ", ",
-      relevant_days(subscription)
+      SubscriptionViewHelper.relevant_days(subscription)
     ]
-  end
-
-  defp relevant_days(subscription) do
-    subscription.relevant_days |> Enum.map(&String.capitalize(Atom.to_string(&1))) |> Enum.intersperse(", ")
   end
 
   defp pretty_time(timestamp) do
@@ -194,52 +193,5 @@ defmodule ConciergeSite.SubscriptionView do
     else
       headsign
     end
-  end
-
-  defp amenity_facility_type(subscription) do
-    subscription.informed_entities
-    |> Enum.map(&(&1.facility_type))
-    |> Enum.uniq
-    |> Enum.map(fn(amenity) ->
-      amenity
-      |> Atom.to_string()
-      |> String.capitalize()
-    end)
-    |> Enum.join(" & ")
-  end
-
-  defp amenity_schedule(subscription) do
-    [
-      pretty_station_count(subscription),
-      lines(subscription),
-      " on ",
-      relevant_days(subscription)
-    ]
-  end
-
-  def pretty_station_count(subscription) do
-    case count = number_of_stations(subscription) do
-      1 -> "#{count} station + "
-      _ -> "#{count} stations + "
-    end
-  end
-
-  defp number_of_stations(subscription) do
-    subscription.informed_entities
-    |> Enum.filter_map(
-      &(!is_nil(&1.stop)),
-      &(&1.stop)
-    )
-    |> length
-  end
-
-  defp lines(subscription) do
-    subscription.informed_entities
-    |> Enum.filter_map(
-      &(!is_nil(&1.route)),
-      &("#{&1.route} Line")
-    )
-    |> Enum.uniq
-    |> Enum.join(", ")
   end
 end

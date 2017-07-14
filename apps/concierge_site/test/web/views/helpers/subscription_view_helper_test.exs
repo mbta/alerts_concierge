@@ -2,6 +2,7 @@ defmodule ConciergeSite.SubscriptionViewHelperTest do
   @moduledoc false
   use ExUnit.Case
   alias ConciergeSite.SubscriptionViewHelper
+  alias AlertProcessor.Model.Subscription
 
   test "travel_time_options/0 returns list of formatted 15 min increments" do
     expected = [{"12:00 AM", "00:00:00"}, {"12:15 AM", "00:15:00"},
@@ -39,5 +40,12 @@ defmodule ConciergeSite.SubscriptionViewHelperTest do
     {"11:45 PM", "23:45:00"}]
 
     assert SubscriptionViewHelper.travel_time_options() == expected
+  end
+
+  test "relevant_days/1 stringifies and capitalizes days and returns comma separated iolist" do
+    sub = %Subscription{
+      relevant_days: [:saturday, :sunday, :weekday]
+    }
+    assert SubscriptionViewHelper.relevant_days(sub) == ["Saturday", ", ", "Sunday", ", ", "Weekday"]
   end
 end
