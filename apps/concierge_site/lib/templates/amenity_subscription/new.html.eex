@@ -22,12 +22,12 @@
 
         <%= render "_subway_line_select.html",
                   form: f,
-                  checked: @subscription_params["routes"] || [],
+                  checked: Map.get(@subscription_params, "routes", []),
                   action: "new" %>
 
         <%= render "_travel_days_checkboxes.html",
                     form: f,
-                    checked: @subscription_params["relevant_days"] || [],
+                    checked: Map.get(@subscription_params, "relevant_days", []),
                     action: "new" %>
       </div>
 
