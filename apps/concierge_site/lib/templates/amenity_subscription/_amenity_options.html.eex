@@ -1,6 +1,6 @@
 <div class="form-group select-days">
   <div class="form-label edit-form-label">What station amenities are you interested in?</div>
-  <div class="form-subtitle">Choose all that apply</div>
+  <div class="form-sub-label amenity-option-sub-label">Choose all that apply</div>
   <%= error_tag @form, :amenities %>
   <div class="<%= @action %>-subscription-section-container">
     <label>
@@ -25,4 +25,3 @@
     </label>
   </div>
 </div>
-

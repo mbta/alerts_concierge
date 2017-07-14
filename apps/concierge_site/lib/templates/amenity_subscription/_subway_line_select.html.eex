@@ -1,6 +1,6 @@
 <div class="form-group select-days">
   <div class="form-label edit-form-label">Subscribe to Entire Line</div>
-  <div class="form-subtitle">We will send alerts for all stops on a chosen line</div>
+  <div class="form-sub-label amenity-sub-label">We will send alerts for all stops on a chosen line</div>
   <%= error_tag @form, :relevant_lines %>
   <div class="<%= @action %>-subscription-section-container">
     <label>

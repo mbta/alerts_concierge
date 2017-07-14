@@ -19,7 +19,6 @@ describe("selectAmenityStation", function() {
     $("body > div").remove()
   });
 
-
   describe("clicking on a chosen station", () => {
     it("removes the button from the list", () => {
       const $stationInput = $("input.subscription-select-amenity-station");
@@ -95,7 +94,7 @@ describe("selectAmenityStation", function() {
       $(".amenity-station").first().mousedown();
       const $selectedStations = $(".btn-selected-station")
 
-      assert.equal($selectedStations[0].textContent, "Central Square")
+      assert.equal($selectedStations[0].textContent.trim(), "Central Square")
     });
 
     it("removes the option from the possible suggestions", () => {
@@ -132,8 +131,9 @@ describe("selectAmenityStation", function() {
   const tripInfoPageHtml = `
     <div class="enter-trip-info">
       <form class="trip-info-form amenities">
-        <div class="form-group select-station">
+        <div class="form-group select-station select-amenity-station">
           <label for="station" class="station-input-label form-label">Select Individual Stations</label>
+          <div class="form-sub-label amenity-station-select-sub-label">You may enter as many as you'd like</div>
           <select class="subscription-select subscription-select-amenity-station no-js">
             <option value="">Select a station</option>
             <optgroup label="Red Line">
