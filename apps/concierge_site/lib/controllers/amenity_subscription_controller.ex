@@ -121,6 +121,6 @@ defmodule ConciergeSite.AmenitySubscriptionController do
 
   def edit(conn, %{"id" => _id}, _, _) do
     conn
-    |> render("edit.html")
+    |> render(:edit)
   end
 end

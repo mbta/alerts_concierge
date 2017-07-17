@@ -10,8 +10,8 @@ defmodule ConciergeSite.SubscriptionView do
   alias Calendar.Strftime
   alias ConciergeSite.{AmenitySubscriptionView, SubscriptionViewHelper}
 
-  defdelegate amenity_facility_type(subscription), to: AmenitySubscriptionView
-  defdelegate amenity_schedule(subscription), to: AmenitySubscriptionView
+  import ConciergeSite.AmenitySubscriptionView,
+    only: [amenity_facility_type: 1, amenity_schedule: 1]
 
   @type subscription_info :: %{
     amenity: [Subscription.t],

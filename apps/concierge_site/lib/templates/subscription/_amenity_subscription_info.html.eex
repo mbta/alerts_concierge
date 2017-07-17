@@ -1,11 +1,11 @@
-<%= if @subscriptions != [] do %>
+<%= if !Enum.empty?(@subscriptions) do %>
   <div class="amenity-subscriptions">
     <h6>Station Amenities</h6>
     <%= for subscription <- @subscriptions do %>
       <%= link(to: amenity_subscription_path(@conn, :edit, subscription), class: "subscription-link") do %>
         <div class="subscription">
           <div class="subscription-icon-container amenity">
-            <img class="subscription-icon amenity" src="<%= static_url(@conn, "/images/m-b-t-a.svg") %>" />
+            <%= img_tag(static_url(@conn, "/images/m-b-t-a.svg"), class: "subscription-icon amenity") %>
           </div>
           <%= subscription_info(subscription) %>
           <div class="subscription-edit-link">

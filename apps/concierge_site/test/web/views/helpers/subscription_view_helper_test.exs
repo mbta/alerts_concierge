@@ -46,6 +46,6 @@ defmodule ConciergeSite.SubscriptionViewHelperTest do
     sub = %Subscription{
       relevant_days: [:saturday, :sunday, :weekday]
     }
-    assert SubscriptionViewHelper.relevant_days(sub) == ["Saturday", ", ", "Sunday", ", ", "Weekday"]
+    assert SubscriptionViewHelper.relevant_days(sub) == ["Saturday", "s, ", "Sunday", "s, ", "Weekday"]
   end
 end

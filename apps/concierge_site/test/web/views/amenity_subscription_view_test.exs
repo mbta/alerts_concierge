@@ -21,20 +21,22 @@ defmodule ConciergeSite.AmenitySubscriptionViewTest do
 
   describe "amenity_facility_type/1" do
     test "it returns ampersand separated list of amenities" do
-      result = @subscription
-      |> AmenitySubscriptionView.amenity_facility_type()
-      |> IO.iodata_to_binary
+      result =
+        @subscription
+        |> AmenitySubscriptionView.amenity_facility_type()
+        |> IO.iodata_to_binary
       assert result == "Escalator & Elevator"
     end
   end
 
   describe "amenity_schedule/1" do
     test "it returns the schedule details" do
-      result = @subscription
-      |> AmenitySubscriptionView.amenity_schedule()
-      |> IO.iodata_to_binary
+      result =
+        @subscription
+        |> AmenitySubscriptionView.amenity_schedule()
+        |> IO.iodata_to_binary
 
-      assert result == "1 station + Green Line on Saturday, Weekdays"
+      assert result == "1 station + Green Line on Saturdays, Weekdays"
     end
 
     test "pluralizes stops" do
@@ -44,11 +46,12 @@ defmodule ConciergeSite.AmenitySubscriptionViewTest do
       }
       ies = @informed_entities ++ [informed_entity]
       sub = Map.put(@subscription, :informed_entities, ies)
-      result = sub
-      |> AmenitySubscriptionView.amenity_schedule()
-      |> IO.iodata_to_binary
+      result =
+        sub
+        |> AmenitySubscriptionView.amenity_schedule()
+        |> IO.iodata_to_binary
 
-      assert result == "2 stations + Green Line on Saturday, Weekdays"
+      assert result == "2 stations + Green Line on Saturdays, Weekdays"
     end
   end
 end

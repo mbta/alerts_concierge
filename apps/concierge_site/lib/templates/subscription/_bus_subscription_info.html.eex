@@ -1,4 +1,4 @@
-<%= if @subscriptions != [] do %>
+<%= if !Enum.empty?(@subscriptions) do %>
   <div class="bus-subscriptions">
     <h6>Bus</h6>
     <%= for subscription <- @subscriptions do %>
