@@ -35,8 +35,8 @@ defmodule ConciergeSite.PasswordResetController do
     render conn, "sent.html", email: email
   end
 
-  def show(conn, _params) do
-    render conn, "show.html"
+  def edit(conn, _params) do
+    render conn, "edit.html"
   end
 
   defp find_user_id_by_email(email) do
