@@ -10,6 +10,9 @@ defmodule AlertProcessor.Subscription.CommuterRailMapper do
   defdelegate build_subscription_transaction(subscriptions, user), to: AlertProcessor.Subscription.Mapper
   defdelegate build_update_subscription_transaction(subscriptions, user), to: AlertProcessor.Subscription.Mapper
 
+  def populate_trip_options(subscription_params), do: populate_trip_options(subscription_params, __MODULE__)
+  def get_trip_info(origin_id, destination_id, relevant_days, selected_trips), do: get_trip_info(origin_id, destination_id, relevant_days, selected_trips, __MODULE__)
+
   @spec map_subscriptions(map) :: {:ok, [Subscription.subscription_info]} | :error
   def map_subscriptions(subscription_params) do
     with {:ok, subscriptions} <- map_timeframe(subscription_params),

@@ -88,7 +88,7 @@ defmodule ConciergeSite.CommuterRailSubscriptionView do
 
   defp format_schedule_time(time) do
     {:ok, time_string} = Calendar.Strftime.strftime(time, "%l:%M%P")
-    time_string
+    String.trim(time_string)
   end
 
   def trip_summary_header(subscription_params, {origin_name, _}, {destination_name, _}) do

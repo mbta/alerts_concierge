@@ -3,7 +3,7 @@ defmodule AlertProcessor.Subscription.Mapper do
   Module for common subscription mapping functions to be imported into
   mode-specific mapper modules.
   """
-  alias AlertProcessor.{Helpers.DateTimeHelper, Model.InformedEntity, Model.Route, Model.Subscription, ServiceInfoCache}
+  alias AlertProcessor.{Helpers.DateTimeHelper, Model.InformedEntity, Model.Route, Model.Subscription, Model.Trip, ServiceInfoCache}
   alias Ecto.Multi
   import Ecto.Query
 
@@ -242,5 +242,84 @@ defmodule AlertProcessor.Subscription.Mapper do
        end)
     |> Multi.delete_all(:remove_old, from(ie in InformedEntity, where: ie.id in ^current_trip_entity_ids))
     |> Multi.update(:subscription, subscription_changeset)
+  end
+
+  @spec populate_trip_options(map, atom) :: {:ok, map} | {:error, String.t}
+  def populate_trip_options(%{"trip_type" => "one_way", "trips" => trips} = subscription_params, mode_module) do
+    %{"origin" => origin, "destination" => destination, "relevant_days" => relevant_days} = subscription_params
+    case get_trip_info(origin, destination, relevant_days, trips, mode_module) do
+      {:ok, trips} ->
+        {:ok, %{departure_trips: trips}}
+      :error ->
+        {:error, "Please correct the following errors to proceed: Please select a valid origin and destination combination."}
+    end
+  end
+  def populate_trip_options(%{"trip_type" => "round_trip", "trips" => trips, "return_trips" => return_trips} = subscription_params, mode_module) do
+    %{"origin" => origin, "destination" => destination, "relevant_days" => relevant_days} = subscription_params
+    with {:ok, departure_trips} <- get_trip_info(origin, destination, relevant_days, trips, mode_module),
+         {:ok, return_trips} <- get_trip_info(destination, origin, relevant_days, return_trips, mode_module) do
+      {:ok, %{departure_trips: departure_trips, return_trips: return_trips}}
+    else
+      _ -> {:error, "Please correct the following errors to proceed: Please select a valid origin and destination combination."}
+    end
+  end
+  def populate_trip_options(%{"trip_type" => "one_way"} = subscription_params, mode_module) do
+    %{"origin" => origin, "destination" => destination, "relevant_days" => relevant_days, "departure_start" => ds} = subscription_params
+    case get_trip_info(origin, destination, relevant_days, ds, mode_module) do
+      {:ok, trips} ->
+        {:ok, %{departure_trips: trips}}
+      :error ->
+        {:error, "Please correct the following errors to proceed: Please select a valid origin and destination combination."}
+    end
+  end
+  def populate_trip_options(%{"trip_type" => "round_trip"} = subscription_params, mode_module) do
+    %{"origin" => origin, "destination" => destination, "relevant_days" => relevant_days, "departure_start" => ds, "return_start" => rs} = subscription_params
+    with {:ok, departure_trips} <- get_trip_info(origin, destination, relevant_days, ds, mode_module),
+         {:ok, return_trips} <- get_trip_info(destination, origin, relevant_days, rs, mode_module) do
+      {:ok, %{departure_trips: departure_trips, return_trips: return_trips}}
+    else
+      _ -> {:error, "Please correct the following errors to proceed: Please select a valid origin and destination combination."}
+    end
+  end
+
+  @spec get_trip_info(Route.stop_id, Route.stop_id, Subscription.relevant_day, [Trip.id], atom) :: {:ok, [Trip.t]} | :error
+  def get_trip_info(origin, destination, relevant_days, selected_trip_numbers, mode_module) when is_list(selected_trip_numbers) do
+    case apply(mode_module, :map_trip_options, [origin, destination, relevant_days]) do
+      {:ok, trips} ->
+        updated_trips =
+          for trip <- trips do
+            if Enum.member?(selected_trip_numbers, trip.trip_number) do
+              %{trip | selected: true}
+            else
+              %{trip | selected: false}
+            end
+          end
+        {:ok, updated_trips}
+      _ ->
+        :error
+    end
+  end
+  def get_trip_info(origin, destination, relevant_days, timestamp, mode_module) do
+    case apply(mode_module, :map_trip_options, [origin, destination, relevant_days]) do
+      {:ok, trips} ->
+        departure_start = timestamp |> Time.from_iso8601!() |> DateTimeHelper.seconds_of_day()
+        closest_trip = Enum.min_by(trips, &calculate_difference(&1, departure_start))
+        updated_trips =
+          for trip <- trips do
+            if trip.trip_number == closest_trip.trip_number do
+              %{trip | selected: true}
+            else
+              %{trip | selected: false}
+            end
+          end
+        {:ok, updated_trips}
+      _ ->
+        :error
+    end
+  end
+
+  defp calculate_difference(trip, departure_start) do
+    departure_time = DateTimeHelper.seconds_of_day(trip.departure_time)
+    abs(departure_start - departure_time)
   end
 end

@@ -1,5 +1,6 @@
 defmodule ConciergeSite.FerrySubscriptionControllerTest do
   use ConciergeSite.ConnCase
+  use ExVCR.Mock, adapter: ExVCR.Adapter.Hackney
 
   describe "authorized" do
     setup :create_and_login_user
@@ -25,9 +26,13 @@ defmodule ConciergeSite.FerrySubscriptionControllerTest do
         "trip_type" => "one_way",
       }}
 
-      conn = post(conn, "/subscriptions/ferry/new/ferry", params)
+      use_cassette "ferry_one_way", clear_mock: true do
+        conn = post(conn, "/subscriptions/ferry/new/ferry", params)
 
-      assert html_response(conn, 200) =~ "Choose your ferries"
+        assert html_response(conn, 200) =~ "Choose your ferries"
+        assert html_response(conn, 200) =~ "10:15am from Charlestown Navy Yard, arrives at Long Wharf, Boston at 10:25am"
+        refute html_response(conn, 200) =~ "from Long Wharf"
+      end
     end
 
     test "POST /subscriptions/ferry/new/ferry round_trip", %{conn: conn} do
@@ -40,9 +45,13 @@ defmodule ConciergeSite.FerrySubscriptionControllerTest do
         "trip_type" => "round_trip",
       }}
 
-      conn = post(conn, "/subscriptions/ferry/new/ferry", params)
+      use_cassette "ferry_round_trip", clear_mock: true do
+        conn = post(conn, "/subscriptions/ferry/new/ferry", params)
 
-      assert html_response(conn, 200) =~ "Choose your ferries"
+        assert html_response(conn, 200) =~ "Choose your ferries"
+        assert html_response(conn, 200) =~ "8:45am from Charlestown Navy Yard, arrives at Long Wharf, Boston at 8:55am"
+        assert html_response(conn, 200) =~ "4:00pm from Long Wharf, Boston, arrives at Charlestown Navy Yard at 4:10pm"
+      end
     end
   end
 
