@@ -46,7 +46,16 @@ defmodule ConciergeSite.SubscriptionView do
     Map.merge(%{amenity: [], boat: [], bus: [], commuter_rail: [], subway: []}, subscription_map)
   end
 
-  def subscription_info(%{type: :amenity} = subscription) do
+  def subscription_info(subscription, additional_info \\ nil)
+  def subscription_info(%{type: type} = subscription, additional_info) do
+    if Enum.member?([:amenity, :bus, :commuter_rail, :ferry, :subway], type) do
+      do_subscription_info(subscription, additional_info)
+    else
+      ""
+    end
+  end
+
+  defp do_subscription_info(%{type: :amenity} = subscription, _) do
     content_tag :div, class: "subscription-info" do
       [
         content_tag :div, class: "subscription-route" do
@@ -58,8 +67,7 @@ defmodule ConciergeSite.SubscriptionView do
       ]
     end
   end
-
-  def subscription_info(subscription, additional_info \\ nil) do
+  defp do_subscription_info(subscription, additional_info \\ nil) do
     content_tag :div, class: "subscription-info" do
       [
         content_tag :div, class: "subscription-route" do

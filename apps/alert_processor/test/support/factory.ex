@@ -94,13 +94,6 @@ defmodule AlertProcessor.Factory do
     ]
   end
 
-  def amenity_subscription_entities() do
-    [
-      %InformedEntity{route_type: 4, facility_type: :elevator, route: "Green"},
-      %InformedEntity{route_type: 4, facility_type: :escalator, stop: "place-nquincy"}
-    ]
-  end
-
   def user_factory do
     %User{
       email: sequence(:email, &"email-#{&1}@example.com"),
