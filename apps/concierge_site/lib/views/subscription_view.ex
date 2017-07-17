@@ -8,9 +8,11 @@ defmodule ConciergeSite.SubscriptionView do
   alias Helpers.DateTimeHelper
   alias Model.{InformedEntity, Subscription}
   alias Calendar.Strftime
-  alias ConciergeSite.{AmenitySubscriptionView, SubscriptionViewHelper}
+  alias ConciergeSite.{AmenitySubscriptionView, SubscriptionHelper}
 
-  import ConciergeSite.AmenitySubscriptionView,
+  import SubscriptionHelper,
+    only: [direction_id: 1, relevant_days: 1]
+  import AmenitySubscriptionView,
     only: [amenity_facility_type: 1, amenity_schedule: 1]
 
   @type subscription_info :: %{
@@ -135,7 +137,7 @@ defmodule ConciergeSite.SubscriptionView do
       " - ",
       pretty_time(subscription.end_time),
       ", ",
-      SubscriptionViewHelper.relevant_days(subscription)
+      relevant_days(subscription)
     ]
   end
 
@@ -187,7 +189,7 @@ defmodule ConciergeSite.SubscriptionView do
   end
   defp parse_headsign(%{type: :bus} = subscription) do
     headsigns = parse_route(subscription).headsigns
-    headsign = Map.get(headsigns, SubscriptionViewHelper.direction_id(subscription))
+    headsign = Map.get(headsigns, direction_id(subscription))
     if length(headsign) > 1 do
       Enum.join(headsign, " via ")
     else

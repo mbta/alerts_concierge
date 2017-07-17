@@ -1,7 +1,9 @@
 defmodule ConciergeSite.CommuterRailSubscriptionView do
   use ConciergeSite.Web, :view
-  import ConciergeSite.SubscriptionViewHelper,
-    only: [atomize_keys: 1, travel_time_options: 0, progress_link_class: 3]
+  import ConciergeSite.SubscriptionHelper,
+    only: [atomize_keys: 1, progress_link_class: 3]
+  import ConciergeSite.TimeHelper,
+    only: [travel_time_options: 0]
   alias AlertProcessor.Model.Trip
 
   @type trip_type :: :one_way | :round_trip
@@ -10,7 +12,7 @@ defmodule ConciergeSite.CommuterRailSubscriptionView do
   train: [:train, :preferences],
   preferences: [:preferences]}
 
-  defdelegate progress_step_classes(page, step), to: ConciergeSite.SubscriptionViewHelper
+  defdelegate progress_step_classes(page, step), to: ConciergeSite.SubscriptionHelper
 
   def progress_link_class(page, step), do: progress_link_class(page, step, @disabled_progress_bar_links)
 

@@ -1,6 +1,7 @@
 defmodule ConciergeSite.AmenitySubscriptionView do
   use ConciergeSite.Web, :view
-  alias ConciergeSite.SubscriptionViewHelper
+  import ConciergeSite.SubscriptionHelper,
+    only: [relevant_days: 1]
 
   def stringify(params) when is_list(params) do
     Enum.join(params, ",")
@@ -34,7 +35,7 @@ defmodule ConciergeSite.AmenitySubscriptionView do
       pretty_station_count(subscription),
       lines(subscription),
       " on ",
-      SubscriptionViewHelper.relevant_days(subscription),
+      relevant_days(subscription),
       "s"
     ]
   end
