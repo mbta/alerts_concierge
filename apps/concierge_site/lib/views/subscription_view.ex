@@ -216,4 +216,35 @@ defmodule ConciergeSite.SubscriptionView do
       headsign
     end
   end
+
+  def vacation_color_class(vacation_start, vacation_end) do
+    if on_vacation?(vacation_start, vacation_end) do
+      "vacation-active"
+    else
+      "vacation-inactive"
+    end
+  end
+
+  def vacation_banner_content(vacation_start, vacation_end) do
+    if on_vacation?(vacation_start, vacation_end) do
+      [
+        "Your alerts have been paused until ",
+        Calendar.Strftime.strftime!(vacation_end, "%B %e, %Y.")
+      ]
+    else
+      "Don't need updates right now?"
+    end
+  end
+
+  def on_vacation?(nil, _), do: false
+  def on_vacation?(_, nil), do: false
+  def on_vacation?(vacation_start, vacation_end) do
+    with now <- NaiveDateTime.utc_now(),
+      :lt <- NaiveDateTime.compare(vacation_start, now),
+      :lt <- NaiveDateTime.compare(now, vacation_end) do
+      true
+    else
+     _ -> false
+    end
+  end
 end

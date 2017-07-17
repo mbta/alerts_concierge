@@ -6,11 +6,16 @@ defmodule ConciergeSite.SubscriptionController do
 
   def index(conn, _params, user, _claims) do
     case Subscription.for_user(user) do
-      [] -> redirect(conn, to: subscription_path(conn, :new))
+      [] ->
+        redirect(conn, to: subscription_path(conn, :new))
       subscriptions ->
         {:ok, departure_time_map} = DisplayInfo.departure_times_for_subscriptions(subscriptions)
 
-        render conn, "index.html", subscriptions: subscriptions, departure_time_map: departure_time_map
+        render conn, "index.html",
+          subscriptions: subscriptions,
+          departure_time_map: departure_time_map,
+          vacation_start: user.vacation_start,
+          vacation_end: user.vacation_end
     end
   end
 
