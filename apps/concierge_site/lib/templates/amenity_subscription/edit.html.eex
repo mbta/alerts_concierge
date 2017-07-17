@@ -1,1 +1,41 @@
-Edit Amenity Sub
+<h1>Edit Station Amenity</h1>
+<%= flash_error(@conn) %>
+
+<div class="subscription-step amenities">
+  <div class="enter-trip-info">
+    <%= form_for @changeset, amenity_subscription_path(@conn, :update, @subscription), [class: "trip-info-form amenities", as: :subscription, method: :patch], fn f -> %>
+      <div class="amenity-subscription-form-section">
+        <%= render "_amenity_options.html",
+            form: f,
+            checked: Map.get(@selected_trip_options, :amenities, []) |> Enum.map(&Atom.to_string/1),
+            action: "edit" %>
+
+        <%= render "_station_select.html",
+                form: f,
+                select_options: @station_select_options,
+                formaction: amenity_subscription_path(@conn, :add_station),
+                action: "edit" %>
+
+        <%= render "_selected_station_list.html",
+                  stations: Map.get(@selected_trip_options, :stations, []),
+                  conn: @conn,
+                  action: "edit" %>
+
+        <%= render "_subway_line_select.html",
+                  form: f,
+                  checked: Map.get(@selected_trip_options, :routes, []),
+                  action: "edit" %>
+
+        <%= render "_travel_days_checkboxes.html",
+                    form: f,
+                    checked: Map.get(@subscription, :relevant_days, []) |> Enum.map(&Atom.to_string/1),
+                    action: "edit" %>
+      </div>
+
+      <%= hidden_input f, :stops, value: stringify(Map.get(@selected_trip_options, :stations, [])), class: "subscription-amenities-stops" %>
+
+      <%= submit "Edit Subscription",
+          class: "btn btn-primary btn-amenity-submit" %>
+    <% end %>
+  </div>
+</div>

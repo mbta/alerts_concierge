@@ -54,6 +54,7 @@ defmodule ConciergeSite.Router do
     post "/ferry/new/ferry", FerrySubscriptionController, :ferry
     post "/ferry/new/preferences", FerrySubscriptionController, :preferences
     resources "/amenities", AmenitySubscriptionController, only: [:new, :create, :edit]
+    resources "/amenities", AmenitySubscriptionController, only: [:new, :create, :edit, :update]
     post "/amenities/add_station", AmenitySubscriptionController, :add_station
     post "/amenities/remove_station/:station", AmenitySubscriptionController, :remove_station
   end
