@@ -14,8 +14,7 @@ defmodule ConciergeSite.PasswordResetController do
   end
 
   def create(conn, %{"password_reset" => %{"email" => email}}) do
-    query = from u in User, select: u.id, where: ilike(u.email, ^email)
-    user_id = Repo.one(query)
+    user_id = find_user_id_by_email(email)
 
     changeset = PasswordReset.create_changeset(
       %PasswordReset{},
@@ -38,6 +37,14 @@ defmodule ConciergeSite.PasswordResetController do
 
   def show(conn, _params) do
     render conn, "show.html"
+  end
+
+  defp find_user_id_by_email(email) do
+    Repo.one(
+      from u in User,
+      select: u.id,
+      where: fragment("lower(?)", u.email) == ^String.downcase(email)
+    )
   end
 
   defp handle_unknown_email(conn, changeset, email) do
