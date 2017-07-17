@@ -55,7 +55,7 @@ defmodule ConciergeSite.PasswordResetController do
       redirect(conn, to: password_reset_path(conn, :sent, %{email: email}))
     else
       conn
-      |> put_flash(:error, "Please enter your email address.")
+      |> put_flash(:error, "Email is not in a valid format.")
       |> render("new.html", changeset: changeset)
     end
   end

@@ -43,6 +43,6 @@ defmodule ConciergeSite.PasswordResetControllerTest do
     password_reset_count = Repo.one(from p in PasswordReset, select: count("*"))
 
     assert password_reset_count == 0
-    assert html_response(conn, 200) =~ "Please enter your email address."
+    assert html_response(conn, 200) =~ "Email is not in a valid format."
   end
 end
