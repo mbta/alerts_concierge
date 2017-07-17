@@ -64,6 +64,7 @@ defmodule AlertProcessor.ApiClient do
     |> parse_response()
   end
 
+  @spec trips_with_service_info([String.t]) :: {:ok, [map], [map]} | {:error, String.t}
   def trips_with_service_info(routes) do
     # credo:disable-for-next-line Credo.Check.Readability.SpaceAfterCommas
     "/trips?route=#{Enum.join(routes, ",")}&include=service"
