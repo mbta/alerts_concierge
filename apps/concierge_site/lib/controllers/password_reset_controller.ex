@@ -4,7 +4,7 @@ defmodule ConciergeSite.PasswordResetController do
   alias AlertProcessor.Model.{PasswordReset, User}
   alias AlertProcessor.Repo
   alias Calendar.DateTime
-  alias ConciergeSite.{Email, PasswordResetMailer}
+  alias ConciergeSite.{Email, Mailer}
 
   @email_regex ~r/^([a-zA-Z0-9_\-\.]+)@([a-zA-Z0-9_\-\.]+)\.([a-zA-Z]{2,5})$/
 
@@ -23,7 +23,7 @@ defmodule ConciergeSite.PasswordResetController do
     case Repo.insert(changeset) do
       {:ok, password_reset} ->
         Email.password_reset_html_email(email, password_reset.id)
-        |> PasswordResetMailer.deliver_later
+        |> Mailer.deliver_later
 
         redirect(conn, to: password_reset_path(conn, :sent, %{email: email}))
       {:error, changeset} ->
@@ -50,7 +50,7 @@ defmodule ConciergeSite.PasswordResetController do
   defp handle_unknown_email(conn, changeset, email) do
     if String.match?(email, @email_regex) do
       Email.unknown_password_reset_html_email(email)
-      |> PasswordResetMailer.deliver_later
+      |> Mailer.deliver_later
 
       redirect(conn, to: password_reset_path(conn, :sent, %{email: email}))
     else

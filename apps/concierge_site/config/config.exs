@@ -21,7 +21,7 @@ config :concierge_site, ConciergeSite.Endpoint,
 config :concierge_site, temp_state_key: {:system, "TEMP_STATE_KEY", "top_secret_temp_state_key"}
 
 # Bamboo config for emails
-config :concierge_site, ConciergeSite.PasswordResetMailer,
+config :concierge_site, ConciergeSite.Mailer,
   adapter: Bamboo.LocalAdapter
 
 config :concierge_site, ConciergeSite.Email,
