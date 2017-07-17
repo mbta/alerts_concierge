@@ -3,9 +3,12 @@ defmodule ConciergeSite.PasswordResetControllerTest do
   use Bamboo.Test
   import Ecto.Query
   alias AlertProcessor.{Model, Repo}
-  alias Model.PasswordReset
+  alias Model.{PasswordReset, User}
   alias ConciergeSite.Email
   alias Calendar.DateTime
+
+  @password "password1"
+  @encrypted_password Comeonin.Bcrypt.hashpwsalt(@password)
 
   test "GET /reset-password/new", %{conn: conn}  do
     conn = get(conn, "/reset-password/new")
@@ -47,7 +50,7 @@ defmodule ConciergeSite.PasswordResetControllerTest do
     assert html_response(conn, 200) =~ "Please enter your email address."
   end
 
-  test "GET /reset-password/:id", %{conn: conn}  do
+  test "GET /reset-password/:id with a redeemable Password Reset", %{conn: conn}  do
     password_reset = insert(:password_reset)
     conn = get(conn, "/reset-password/#{password_reset.id}")
 
@@ -66,5 +69,77 @@ defmodule ConciergeSite.PasswordResetControllerTest do
     conn = get(conn, "/reset-password/#{password_reset.id}")
 
     assert html_response(conn, 302) =~ "/login"
+  end
+
+  test "PATCH /reset-password/:id/redeem with a redeemable Password Reset", %{conn: conn} do
+    user = insert(:user, encrypted_password: @encrypted_password)
+    password_reset = insert(:password_reset, user: user)
+
+    params = %{"user" => %{
+      "password" => "P@ssword1",
+      "password_confirmation" => "P@ssword1",
+    }}
+
+    conn = patch(conn, "/reset-password/#{password_reset.id}/redeem", params)
+
+    updated_user = Repo.get(User, user.id)
+    updated_password_reset = Repo.get(PasswordReset, password_reset.id)
+
+    assert html_response(conn, 302) =~ "/my-account/edit"
+    refute updated_user.encrypted_password == @encrypted_password
+    refute is_nil(updated_password_reset.redeemed_at)
+  end
+
+  test "PATCH /reset-password/:id/redeem with a redeemable Password Reset but an invalid password", %{conn: conn} do
+    user = insert(:user, encrypted_password: @encrypted_password)
+    password_reset = insert(:password_reset, user: user)
+
+    params = %{"user" => %{
+      "password" => "a",
+      "password_confirmation" => "a",
+    }}
+
+    conn = patch(conn, "/reset-password/#{password_reset.id}/redeem", params)
+
+    updated_user = Repo.get(User, user.id)
+    updated_password_reset = Repo.get(PasswordReset, password_reset.id)
+
+    assert html_response(conn, 200) =~ "Password must contain one number or special character"
+    assert updated_user.encrypted_password == @encrypted_password
+    assert is_nil(updated_password_reset.redeemed_at)
+  end
+
+  test "PATCH /reset-password/:id/redeem with an expired Password Reset", %{conn: conn} do
+    user = insert(:user, encrypted_password: @encrypted_password)
+    password_reset = insert(:password_reset, user: user, expired_at: DateTime.subtract!(DateTime.now_utc(), 1))
+
+    params = %{"user" => %{
+      "password" => "P@ssword1",
+      "password_confirmation" => "P@ssword1",
+    }}
+
+    conn = patch(conn, "/reset-password/#{password_reset.id}/redeem", params)
+
+    updated_user = Repo.get(User, user.id)
+
+    assert html_response(conn, 302) =~ "/login/new"
+    assert updated_user.encrypted_password == @encrypted_password
+  end
+
+  test "PATCH /reset-password/:id/redeem with a redeemed Password Reset", %{conn: conn} do
+    user = insert(:user, encrypted_password: @encrypted_password)
+    password_reset = insert(:password_reset, user: user, redeemed_at: DateTime.now_utc())
+
+    params = %{"user" => %{
+      "password" => "P@ssword1",
+      "password_confirmation" => "P@ssword1",
+    }}
+
+    conn = patch(conn, "/reset-password/#{password_reset.id}/redeem", params)
+
+    updated_user = Repo.get(User, user.id)
+
+    assert html_response(conn, 302) =~ "/login/new"
+    assert updated_user.encrypted_password == @encrypted_password
   end
 end

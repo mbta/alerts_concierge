@@ -23,6 +23,7 @@ defmodule ConciergeSite.Router do
     resources "/account", AccountController, only: [:new, :create]
     resources "/login", SessionController, only: [:new, :create, :delete], singleton: true
     get "/reset-password/sent", PasswordResetController, :sent
+    patch "/reset-password/:id/redeem", PasswordResetController, :redeem
     resources "/reset-password", PasswordResetController, only: [:new, :create, :show]
   end
 

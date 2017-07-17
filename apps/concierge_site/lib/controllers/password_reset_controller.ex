@@ -5,8 +5,11 @@ defmodule ConciergeSite.PasswordResetController do
   alias AlertProcessor.Repo
   alias Calendar.DateTime
   alias ConciergeSite.{Email, PasswordResetMailer}
+  alias Ecto.Multi
 
   @email_regex ~r/^([a-zA-Z0-9_\-\.]+)@([a-zA-Z0-9_\-\.]+)\.([a-zA-Z]{2,5})$/
+
+  plug :check_redeemable when action in [:show, :redeem]
 
   def new(conn, _params) do
     changeset = PasswordReset.create_changeset(%PasswordReset{})
@@ -36,14 +39,34 @@ defmodule ConciergeSite.PasswordResetController do
     render conn, "sent.html", email: email
   end
 
-  def show(conn, %{"id" => id}) do
-    password_reset = Repo.get!(PasswordReset, id)
-    if PasswordReset.redeemable?(password_reset) do
-      render conn, "show.html", password_reset: password_reset
-    else
-      conn
-      |> put_flash(:error, "The page you were looking for was not found.")
-      |> redirect(to: session_path(conn, :new))
+  def show(conn, _params) do
+    changeset = User.update_password_changeset(conn.assigns.user)
+    render conn, "show.html", changeset: changeset, password_reset: conn.assigns.password_reset
+  end
+
+  def redeem(conn, %{"user" => user_params}) do
+    user_changeset = User.update_password_changeset(conn.assigns.user, user_params)
+    password_reset_changeset = PasswordReset.redeem_changeset(conn.assigns.password_reset)
+
+    multi =
+      Multi.new
+      |> Multi.update(:user, user_changeset)
+      |> Multi.update(:password_reset, password_reset_changeset)
+
+    case Repo.transaction(multi) do
+      {:ok, %{user: user}} ->
+        conn
+        |> Guardian.Plug.sign_in(user)
+        |> put_flash(:info, "Your password has been updated.")
+        |> redirect(to: my_account_path(conn, :edit))
+      {:error, :user, changeset, _} ->
+        render conn, "show.html",
+          changeset: changeset,
+          password_reset: conn.assigns.password_reset
+      _ ->
+        conn
+        |> put_flash(:error, "The page you were looking for was not found.")
+        |> redirect(to: session_path(conn, :new))
     end
   end
 
@@ -57,6 +80,24 @@ defmodule ConciergeSite.PasswordResetController do
       conn
       |> put_flash(:error, "Please enter your email address.")
       |> render("new.html", changeset: changeset)
+    end
+  end
+
+  defp check_redeemable(conn, _params) do
+    password_reset =
+      PasswordReset
+      |> Repo.get!(conn.params["id"])
+      |> Repo.preload([:user])
+      
+    if PasswordReset.redeemable?(password_reset) do
+      conn
+      |> assign(:password_reset, password_reset)
+      |> assign(:user, password_reset.user)
+    else
+      conn
+      |> put_flash(:error, "The page you were looking for was not found.")
+      |> redirect(to: session_path(conn, :new))
+      |> halt()
     end
   end
 end
