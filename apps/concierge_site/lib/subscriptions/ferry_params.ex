@@ -72,8 +72,8 @@ defmodule ConciergeSite.Subscriptions.FerryParams do
   end
 
   defp validate_presence_of_departure_trip({params, errors}) do
-    case params do
-      %{"trips" => [_h | _t]} ->
+    case params["trips"] do
+      [_h | _t] ->
         {params, errors}
       _ ->
         {params, ["Please select at least one trip." | errors]}
