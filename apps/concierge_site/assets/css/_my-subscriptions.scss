@@ -67,7 +67,7 @@
 }
 
 .subscription-info {
-  display: block;
+  display: flex;
   flex: auto;
   flex-direction: column;
   justify-content: space-around;
@@ -79,9 +79,10 @@
   color: $brand-primary;
   font-size: 1.25rem;
   font-weight: bold;
-  flex-basis: 33%;
   align-self: flex-start;
   margin-bottom: 0.2rem;
+  flex-basis: auto;
+  align-items: center;
 
   i {
     margin: 0 0.4rem;
@@ -89,9 +90,9 @@
 }
 
 .subscription-details {
-  flex-basis: 66%;
   align-self: flex-start;
   font-size: 0.85rem;
+  flex-basis: auto;
 
   p {
     margin-bottom: 0.4rem;
