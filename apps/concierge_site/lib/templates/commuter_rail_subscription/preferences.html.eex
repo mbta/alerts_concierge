@@ -26,7 +26,7 @@
     </div>
   <% end %>
   <div class="back-link-container">
-    <%= form_tag commuter_rail_subscription_path(@conn, :train, trip_type: @subscription_params["trip_type"]) do %>
+    <%= form_tag commuter_rail_subscription_path(@conn, :train) do %>
       <%= hidden_params(:train, @subscription_params) %>
       <%= submit(class: "btn btn-link subscription-info-back-link") do %>
         <i class="fa fa-arrow-left" aria-hidden="true"></i> Go Back
