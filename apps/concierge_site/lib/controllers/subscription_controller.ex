@@ -3,6 +3,7 @@ defmodule ConciergeSite.SubscriptionController do
   use Guardian.Phoenix.Controller
 
   alias AlertProcessor.{Model.Subscription, Subscription.DisplayInfo}
+  alias AlertProcessor.Repo
 
   def index(conn, _params, user, _claims) do
     case Subscription.for_user(user) do
@@ -25,5 +26,11 @@ defmodule ConciergeSite.SubscriptionController do
 
   def edit(conn, _params, _user, _claims) do
     render conn, "edit.html"
+  end
+
+  def delete(conn, %{"id" => id}, user, _claims) do
+    subscription = Subscription.one_for_user!(id, user.id)
+    Repo.delete!(subscription)
+    redirect(conn, to: subscription_path(conn, :index))
   end
 end

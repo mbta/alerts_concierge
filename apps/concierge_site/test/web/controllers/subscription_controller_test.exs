@@ -2,8 +2,9 @@ defmodule ConciergeSite.SubscriptionControllerTest do
   use ConciergeSite.ConnCase
 
   import AlertProcessor.Factory
+  import Ecto.Query
   alias AlertProcessor.{Model, Repo}
-  alias Model.{InformedEntity}
+  alias Model.{InformedEntity, Subscription, User}
 
   describe "authorized" do
     test "GET /my-subscriptions", %{conn: conn}  do
@@ -61,14 +62,7 @@ defmodule ConciergeSite.SubscriptionControllerTest do
     test "GET /my-subscriptions with bus subscriptions", %{conn: conn} do
       user = insert(:user)
 
-      :subscription
-      |> build(user: user)
-      |> weekday_subscription()
-      |> bus_subscription()
-      |> Repo.preload(:informed_entities)
-      |> Ecto.Changeset.change()
-      |> Ecto.Changeset.put_assoc(:informed_entities, bus_subscription_entities())
-      |> Repo.insert()
+      insert_bus_subscription_for_user(user)
 
       conn =
         user
@@ -128,6 +122,40 @@ defmodule ConciergeSite.SubscriptionControllerTest do
 
       assert html_response(conn, 200) =~ "Create New Subscription"
     end
+
+    test "DELETE /subscriptions/:id with a user who owns the subscription", %{conn: conn} do
+      user = insert(:user)
+      {:ok, subscription} = insert_bus_subscription_for_user(user)
+
+      conn = user
+      |> guardian_login(conn)
+      |> delete(subscription_path(conn, :delete, subscription))
+
+      informed_entity_count = Repo.one(from i in InformedEntity, select: count("*"))
+      subscription_count = Repo.one(from s in Subscription, select: count("*"))
+
+      assert html_response(conn, 302) =~ "/my-subscriptions"
+      assert subscription_count == 0
+      assert informed_entity_count == 0
+    end
+
+    test "DELETE /subscriptions/:id with a user who does not own the subscription", %{conn: conn} do
+      user = insert(:user)
+      other_user = insert(:user)
+
+      {:ok, subscription} = insert_bus_subscription_for_user(other_user)
+      conn = guardian_login(user, conn)
+
+      assert_raise Ecto.NoResultsError, fn ->
+        delete(conn, subscription_path(conn, :delete, subscription))
+      end
+
+      informed_entity_count = Repo.one(from i in InformedEntity, select: count("*"))
+      subscription_count = Repo.one(from s in Subscription, select: count("*"))
+
+      assert subscription_count == 1
+      assert informed_entity_count == 3
+    end
   end
 
   describe "unauthorized" do
@@ -140,5 +168,30 @@ defmodule ConciergeSite.SubscriptionControllerTest do
       conn = get(conn, subscription_path(conn, :new))
       assert html_response(conn, 302) =~ "/login"
     end
+
+    test "DELETE /subscriptions/:id", %{conn: conn} do
+      user = insert(:user)
+      {:ok, subscription} = insert_bus_subscription_for_user(user)
+
+      conn = delete(conn, subscription_path(conn, :delete, subscription))
+
+      informed_entity_count = Repo.one(from i in InformedEntity, select: count("*"))
+      subscription_count = Repo.one(from s in Subscription, select: count("*"))
+
+      assert html_response(conn, 302) =~ "/login/new"
+      assert subscription_count == 1
+      assert informed_entity_count == 3
+    end
+  end
+
+  defp insert_bus_subscription_for_user(user) do
+    :subscription
+    |> build(user: user)
+    |> weekday_subscription()
+    |> bus_subscription()
+    |> Repo.preload(:informed_entities)
+    |> Ecto.Changeset.change()
+    |> Ecto.Changeset.put_assoc(:informed_entities, bus_subscription_entities())
+    |> Repo.insert()
   end
 end
