@@ -1,11 +1,11 @@
 <%= if !Enum.empty?(@subscriptions) do %>
-  <div class="subway-subscriptions">
-    <h6>Subway</h6>
+  <div class="amenity-subscriptions">
+    <h6>Station Amenities</h6>
     <%= for subscription <- @subscriptions do %>
-      <%= link(to: subway_subscription_path(@conn, :edit, subscription), class: "subscription-link") do %>
+      <%= link(to: amenity_subscription_path(@conn, :edit, subscription), class: "subscription-link") do %>
         <div class="subscription">
-          <div class="subscription-icon-container">
-            <%= render ConciergeSite.IconsView, "_circle_icon.html", route: parse_route(subscription), large: true %>
+          <div class="subscription-icon-container amenity">
+            <%= img_tag(static_url(@conn, "/images/m-b-t-a.svg"), class: "subscription-icon amenity") %>
           </div>
           <%= subscription_info(subscription) %>
           <div class="subscription-edit-link">

@@ -55,6 +55,10 @@
   img {
     position: relative;
   }
+
+  .amenity {
+    height: 36px;
+  }
 }
 
 .subway-icon {
@@ -461,4 +465,8 @@
 
 #subscription_red {
   margin-left: 0px;
+}
+
+.subscription-facility-types {
+  text-align: left;
 }

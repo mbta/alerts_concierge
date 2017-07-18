@@ -8,7 +8,12 @@ defmodule ConciergeSite.SubscriptionView do
   alias Helpers.DateTimeHelper
   alias Model.{InformedEntity, Subscription}
   alias Calendar.Strftime
-  alias ConciergeSite.SubscriptionViewHelper
+  alias ConciergeSite.{AmenitySubscriptionView, SubscriptionHelper}
+
+  import SubscriptionHelper,
+    only: [direction_id: 1, relevant_days: 1]
+  import AmenitySubscriptionView,
+    only: [amenity_facility_type: 1, amenity_schedule: 1]
 
   @type subscription_info :: %{
     amenity: [Subscription.t],
@@ -41,7 +46,28 @@ defmodule ConciergeSite.SubscriptionView do
     Map.merge(%{amenity: [], boat: [], bus: [], commuter_rail: [], subway: []}, subscription_map)
   end
 
-  def subscription_info(subscription, additional_info \\ nil) do
+  def subscription_info(subscription, additional_info \\ nil)
+  def subscription_info(%{type: type} = subscription, additional_info) do
+    if Enum.member?([:amenity, :bus, :commuter_rail, :ferry, :subway], type) do
+      do_subscription_info(subscription, additional_info)
+    else
+      ""
+    end
+  end
+
+  defp do_subscription_info(%{type: :amenity} = subscription, _) do
+    content_tag :div, class: "subscription-info" do
+      [
+        content_tag :div, class: "subscription-route" do
+          "Station Amenities"
+        end,
+        content_tag :div, class: "subscription-details" do
+          route_body(subscription, nil)
+        end
+      ]
+    end
+  end
+  defp do_subscription_info(subscription, additional_info) do
     content_tag :div, class: "subscription-info" do
       [
         content_tag :div, class: "subscription-route" do
@@ -72,6 +98,16 @@ defmodule ConciergeSite.SubscriptionView do
     end
   end
 
+  defp route_body(%{type: :amenity} = subscription, _) do
+    [
+      content_tag :div, class: "subscription-facility-types" do
+        amenity_facility_type(subscription)
+      end,
+      content_tag :div, class: "subscription-amenity-schedule" do
+        amenity_schedule(subscription)
+      end
+    ]
+  end
   defp route_body(%{type: :subway} = subscription, _) do
     case direction_name(subscription) do
       :roaming ->
@@ -109,7 +145,7 @@ defmodule ConciergeSite.SubscriptionView do
       " - ",
       pretty_time(subscription.end_time),
       ", ",
-      subscription.relevant_days |> Enum.map(&String.capitalize(Atom.to_string(&1))) |> Enum.intersperse(", ")
+      relevant_days(subscription)
     ]
   end
 
@@ -161,7 +197,7 @@ defmodule ConciergeSite.SubscriptionView do
   end
   defp parse_headsign(%{type: :bus} = subscription) do
     headsigns = parse_route(subscription).headsigns
-    headsign = Map.get(headsigns, SubscriptionViewHelper.direction_id(subscription))
+    headsign = Map.get(headsigns, direction_id(subscription))
     if length(headsign) > 1 do
       Enum.join(headsign, " via ")
     else

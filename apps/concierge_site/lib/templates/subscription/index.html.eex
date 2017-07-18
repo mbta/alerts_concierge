@@ -10,5 +10,6 @@
   <%= render "_subway_subscription_info.html", conn: @conn, subscriptions: customer_subscription_map[:subway] %>
   <%= render "_commuter_rail_subscription_info.html", conn: @conn, subscriptions: customer_subscription_map[:commuter_rail], commuter_rail_departure_time_map: @commuter_rail_departure_time_map %>
   <%= render "_bus_subscription_info.html", conn: @conn, subscriptions: customer_subscription_map[:bus] %>
+  <%= render "_amenity_subscription_info.html", conn: @conn, subscriptions: customer_subscription_map[:amenity] %>
   <%= link("Create a new subscription", to: subscription_path(@conn, :new), class: "btn btn-primary btn-create-new-sub") %>
 </div>

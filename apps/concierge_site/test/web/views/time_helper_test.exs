@@ -1,7 +1,7 @@
-defmodule ConciergeSite.SubscriptionViewHelperTest do
+defmodule ConciergeSite.TimeHelperTest do
   @moduledoc false
   use ExUnit.Case
-  alias ConciergeSite.SubscriptionViewHelper
+  alias ConciergeSite.TimeHelper
 
   test "travel_time_options/0 returns list of formatted 15 min increments" do
     expected = [{"12:00 AM", "00:00:00"}, {"12:15 AM", "00:15:00"},
@@ -38,6 +38,6 @@ defmodule ConciergeSite.SubscriptionViewHelperTest do
     {"11:00 PM", "23:00:00"}, {"11:15 PM", "23:15:00"}, {"11:30 PM", "23:30:00"},
     {"11:45 PM", "23:45:00"}]
 
-    assert SubscriptionViewHelper.travel_time_options() == expected
+    assert TimeHelper.travel_time_options() == expected
   end
 end

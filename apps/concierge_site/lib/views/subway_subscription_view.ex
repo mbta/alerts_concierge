@@ -1,8 +1,10 @@
 defmodule ConciergeSite.SubwaySubscriptionView do
   use ConciergeSite.Web, :view
-  import ConciergeSite.SubscriptionViewHelper,
-    only: [joined_day_list: 1, travel_time_options: 0, format_time: 1,
-           time_option_local_strftime: 1, atomize_keys: 1, progress_link_class: 3]
+  import ConciergeSite.TimeHelper,
+    only: [travel_time_options: 0, format_time: 1,
+           time_option_local_strftime: 1]
+  import ConciergeSite.SubscriptionHelper,
+    only: [joined_day_list: 1, atomize_keys: 1, progress_link_class: 3]
 
   @typedoc """
   Possible values for trip types in Create Subscription flow
@@ -12,7 +14,7 @@ defmodule ConciergeSite.SubwaySubscriptionView do
   @disabled_progress_bar_links %{trip_info: [:trip_info, :preferences],
     preferences: [:preferences]}
 
-  defdelegate progress_step_classes(page, step), to: ConciergeSite.SubscriptionViewHelper
+  defdelegate progress_step_classes(page, step), to: ConciergeSite.SubscriptionHelper
 
   def progress_link_class(page, step), do: progress_link_class(page, step, @disabled_progress_bar_links)
 

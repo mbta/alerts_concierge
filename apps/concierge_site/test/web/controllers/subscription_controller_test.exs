@@ -1,17 +1,13 @@
 defmodule ConciergeSite.SubscriptionControllerTest do
   use ConciergeSite.ConnCase
 
-  @password "password1"
-  @encrypted_password Comeonin.Bcrypt.hashpwsalt(@password)
-
   import AlertProcessor.Factory
-  alias AlertProcessor.{Model.User, Repo}
+  alias AlertProcessor.{Model, Repo}
+  alias Model.{InformedEntity}
 
   describe "authorized" do
     test "GET /my-subscriptions", %{conn: conn}  do
-      user = Repo.insert!(%User{email: "test@email.com",
-                                role: "user",
-                                encrypted_password: @encrypted_password})
+      user = insert(:user)
 
       :subscription
       |> build(user: user)
@@ -33,7 +29,7 @@ defmodule ConciergeSite.SubscriptionControllerTest do
 
       conn = user
       |> guardian_login(conn)
-      |> get("/my-subscriptions")
+      |> get(subscription_path(conn, :index))
 
       assert html_response(conn, 200) =~ "My Subscriptions"
       assert html_response(conn, 200) =~ "Subway"
@@ -48,9 +44,7 @@ defmodule ConciergeSite.SubscriptionControllerTest do
     end
 
     test "GET /my-subscriptions with bus subscriptions", %{conn: conn} do
-      user = Repo.insert!(%User{email: "test@email.com",
-                                role: "user",
-                                encrypted_password: @encrypted_password})
+      user = insert(:user)
 
       :subscription
       |> build(user: user)
@@ -61,33 +55,61 @@ defmodule ConciergeSite.SubscriptionControllerTest do
       |> Ecto.Changeset.put_assoc(:informed_entities, bus_subscription_entities())
       |> Repo.insert()
 
-      conn = user
-      |> guardian_login(conn)
-      |> get("/my-subscriptions")
+      conn =
+        user
+        |> guardian_login(conn)
+        |> get(subscription_path(conn, :index))
 
       assert html_response(conn, 200) =~ "My Subscriptions"
       assert html_response(conn, 200) =~ "57A"
       assert html_response(conn, 200) =~ "Outbound"
     end
 
+    test "GET /my-subscriptions with amenity subscriptions", %{conn: conn} do
+      user = insert(:user)
+      amenity_entities = [
+        %InformedEntity{route_type: 4, facility_type: :elevator, route: "Green"},
+        %InformedEntity{route_type: 4, facility_type: :escalator, stop: "place-nquincy"}
+      ]
+
+      :subscription
+      |> build(user: user)
+      |> weekday_subscription()
+      |> amenity_subscription()
+      |> Repo.preload(:informed_entities)
+      |> Ecto.Changeset.change()
+      |> Ecto.Changeset.put_assoc(:informed_entities, amenity_entities)
+      |> Repo.insert()
+
+      conn =
+        user
+        |> guardian_login(conn)
+        |> get(subscription_path(conn, :index))
+
+      assert html_response(conn, 200) =~ "My Subscriptions"
+      assert html_response(conn, 200) =~ "1 station + Green Line on Weekdays"
+      assert html_response(conn, 200) =~ "Escalator"
+      assert html_response(conn, 200) =~ "Elevator"
+    end
+
     test "GET /my-subscriptions redirects if no subscriptions", %{conn: conn}  do
-      user = Repo.insert!(%User{email: "test@email.com",
-                                role: "user",
-                                encrypted_password: @encrypted_password})
-      conn = user
-      |> guardian_login(conn)
-      |> get("/my-subscriptions")
+      user = insert(:user)
+
+      conn =
+        user
+        |> guardian_login(conn)
+        |> get(subscription_path(conn, :index))
 
       assert redirected_to(conn, 302) =~ subscription_path(conn, :new)
     end
 
     test "GET /subscriptions/new", %{conn: conn}  do
-      user = Repo.insert!(%User{email: "test@email.com",
-                                role: "user",
-                                encrypted_password: @encrypted_password})
-      conn = user
-      |> guardian_login(conn)
-      |> get("/subscriptions/new")
+      user = insert(:user)
+
+      conn =
+        user
+        |> guardian_login(conn)
+        |> get(subscription_path(conn, :new))
 
       assert html_response(conn, 200) =~ "Create New Subscription"
     end
@@ -95,12 +117,12 @@ defmodule ConciergeSite.SubscriptionControllerTest do
 
   describe "unauthorized" do
     test "GET /my-subscriptions", %{conn: conn} do
-      conn = get(conn, "/my-subscriptions")
+      conn = get(conn, subscription_path(conn, :index))
       assert html_response(conn, 302) =~ "/login"
     end
 
     test "GET /subscriptions/new", %{conn: conn} do
-      conn = get(conn, "/subscriptions/new")
+      conn = get(conn, subscription_path(conn, :new))
       assert html_response(conn, 302) =~ "/login"
     end
   end

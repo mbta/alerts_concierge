@@ -1,6 +1,6 @@
 defmodule ConciergeSite.MyAccountView do
   use ConciergeSite.Web, :view
-  import ConciergeSite.SubscriptionViewHelper, only: [travel_time_options: 0]
+  import ConciergeSite.TimeHelper, only: [travel_time_options: 0]
   alias AlertProcessor.{Helpers.DateTimeHelper, Model.User}
 
   @spec sms_messaging_checked?(User.t) :: boolean

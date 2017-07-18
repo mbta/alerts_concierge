@@ -51,6 +51,12 @@ defmodule AlertProcessor.Factory do
     }
   end
 
+  def amenity_subscription(%Subscription{} = subscription) do
+    %{subscription |
+      type: :amenity
+     }
+  end
+
   def subway_subscription_entities() do
     [
       %InformedEntity{route_type: 1},

@@ -1,13 +1,15 @@
 defmodule ConciergeSite.BusSubscriptionView do
   use ConciergeSite.Web, :view
-  import ConciergeSite.SubscriptionViewHelper,
-    only: [atomize_keys: 1, joined_day_list: 1, travel_time_options: 0,
-           time_option_local_strftime: 1, format_time: 1, progress_link_class: 3]
+  import ConciergeSite.SubscriptionHelper,
+    only: [atomize_keys: 1, joined_day_list: 1, progress_link_class: 3]
+  import ConciergeSite.TimeHelper,
+    only: [travel_time_options: 0, time_option_local_strftime: 1,
+           format_time: 1]
 
   @disabled_progress_bar_links %{trip_info: [:trip_info, :preferences],
     preferences: [:preferences]}
 
-  defdelegate progress_step_classes(page, step), to: ConciergeSite.SubscriptionViewHelper
+  defdelegate progress_step_classes(page, step), to: ConciergeSite.SubscriptionHelper
 
   def progress_link_class(page, step), do: progress_link_class(page, step, @disabled_progress_bar_links)
 
