@@ -1,6 +1,7 @@
 .header-container {
   align-items: baseline;
   display: flex;
+  flex-flow: row wrap;
   justify-content: space-between;
   margin-bottom: 1.75rem;
   padding-bottom: 0;
@@ -9,4 +10,45 @@
 .header-link {
   font-size: $base-font-size-xxl;
   font-weight: normal;
+  margin-left: auto;
+}
+
+@media only screen and (max-width: 452px) {
+  .header-link {
+    position: absolute;
+    left: 18.5rem;
+    top: 6rem;
+  }
+}
+
+@media only screen and (max-width: 414px) {
+  .header-link {
+    position: absolute;
+    left: 16rem;
+    top: 6rem;
+  }
+}
+
+@media only screen and (max-width: 375px) {
+  .header-link {
+    position: absolute;
+    left: 15rem;
+    top: 6rem;
+  }
+}
+
+@media only screen and (max-width: 360px) {
+  .header-link {
+    position: absolute;
+    left: 12rem;
+    top: 6rem;
+  }
+}
+
+@media only screen and (max-width: 335px) {
+  .header-link {
+    position: absolute;
+    left: 12rem;
+    top: 10rem;
+  }
 }
