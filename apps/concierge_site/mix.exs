@@ -24,7 +24,14 @@ defmodule ConciergeSite.Mixfile do
   # Type `mix help compile.app` for more information.
   def application do
     [mod: {ConciergeSite, []},
-     extra_applications: [:alert_processor, :logger, :logger_logentries_backend, :runtime_tools]]
+     extra_applications: [
+       :alert_processor,
+       :bamboo,
+       :logger,
+       :logger_logentries_backend,
+       :runtime_tools
+       ]
+     ]
   end
 
   # Specifies which paths to compile per environment.
@@ -37,6 +44,8 @@ defmodule ConciergeSite.Mixfile do
   defp deps do
     [
       {:alert_processor, in_umbrella: true},
+      {:bamboo, "~> 0.8"},
+      {:bamboo_smtp, "~> 1.3.0"},
       {:bodyguard, "~> 1.0.0"},
       {:comeonin, "~> 3.0"},
       {:dialyxir, "~> 0.5.0", only: [:dev]},

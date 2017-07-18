@@ -1,0 +1,8 @@
+<h1>T-Alerts</h1>
+<div class="password-reset-container">
+  <div class="form-header">
+    <h2>Reset link sent!</h2>
+    <p>We’ve sent password reset instructions to <strong><%= @email %></strong>.</p>
+    <%= link "Return to the login page", to: session_path(@conn, :new) %>
+  </div>
+</div>
