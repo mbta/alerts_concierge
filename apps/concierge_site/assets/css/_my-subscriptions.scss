@@ -79,7 +79,7 @@
   color: $brand-primary;
   font-size: 1.25rem;
   font-weight: bold;
-  align-self: flex-start;
+  text-align: left;
   margin-bottom: 0.2rem;
   flex-basis: auto;
   align-items: center;
@@ -90,7 +90,7 @@
 }
 
 .subscription-details {
-  align-self: flex-start;
+  text-align: left;
   font-size: 0.85rem;
   flex-basis: auto;
 
