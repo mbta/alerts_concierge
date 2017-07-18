@@ -5,7 +5,10 @@ defmodule AlertProcessor.Subscription.FerryMapper do
   """
 
   import AlertProcessor.Subscription.Mapper
-  alias AlertProcessor.{ApiClient, Model.Route, Model.Subscription, Model.Trip, ServiceInfoCache}
+  alias AlertProcessor.{ApiClient, Helpers.DateTimeHelper, Model.Route, Model.Subscription, Model.Trip, ServiceInfoCache}
+
+  def populate_trip_options(subscription_params), do: populate_trip_options(subscription_params, &map_trip_options/3)
+  def get_trip_info(origin_id, destination_id, relevant_days, selected_trips_or_timestamp), do: get_trip_info(origin_id, destination_id, relevant_days, selected_trips_or_timestamp, &map_trip_options/3)
 
   @spec map_subscriptions(map) :: {:ok, [Subscription.subscription_info]} | :error
   def map_subscriptions(subscription_params) do
@@ -53,7 +56,7 @@ defmodule AlertProcessor.Subscription.FerryMapper do
         :error
       [route | _] ->
         direction_id = determine_direction_id(route, origin, destination)
-        relevant_date = determine_date(relevant_days, today_date)
+        relevant_date = DateTimeHelper.determine_date(relevant_days, today_date)
 
         case ApiClient.schedules(origin, destination, direction_id, route_ids, relevant_date) do
           {:ok, schedules, _trips} ->
@@ -77,29 +80,13 @@ defmodule AlertProcessor.Subscription.FerryMapper do
     end
   end
 
-  defp determine_date(:weekday, today_date) do
-    if Calendar.Date.day_of_week(today_date) < 6 do
-      today_date
-    else
-      Calendar.Date.advance!(today_date, 2)
-    end
-  end
-  defp determine_date(:saturday, today_date) do
-    day_of_week = Calendar.Date.day_of_week(today_date)
-    Calendar.Date.advance!(today_date, 6 - day_of_week)
-  end
-  defp determine_date(:sunday, today_date) do
-    day_of_week = Calendar.Date.day_of_week(today_date)
-    Calendar.Date.advance!(today_date, 7 - day_of_week)
-  end
-
   defp map_common_trips([], _), do: :error
   defp map_common_trips(schedules, trip) do
     schedules
-    |> Enum.group_by(fn(%{"relationships" => %{"trip" => %{"data" => %{"id" => id}}}}) -> id end)
+    |> Enum.group_by(& &1["relationships"]["trip"]["data"]["id"])
     |> Enum.filter(fn({_id, schedules}) -> Enum.count(schedules) > 1 end)
     |> Enum.map(fn({_id, schedules}) ->
-        [departure_schedule, arrival_schedule] = Enum.sort_by(schedules, fn(%{"attributes" => %{"departure_time" => departure_timestamp}}) -> departure_timestamp end)
+        [departure_schedule, arrival_schedule] = Enum.sort_by(schedules, & &1["attributes"]["departure_time"])
         %{"attributes" => %{
           "departure_time" => departure_timestamp
           },
@@ -119,8 +106,9 @@ defmodule AlertProcessor.Subscription.FerryMapper do
 
         %{"attributes" => %{"arrival_time" => arrival_timestamp}} = arrival_schedule
         {:ok, route} = ServiceInfoCache.get_route(route_id)
+        {:ok, generalized_trip_id} = ServiceInfoCache.get_generalized_trip_id(trip_id)
 
-        %{trip | arrival_time: map_schedule_time(arrival_timestamp), departure_time: map_schedule_time(departure_timestamp), trip_number: trip_id, route: route}
+        %{trip | arrival_time: map_schedule_time(arrival_timestamp), departure_time: map_schedule_time(departure_timestamp), trip_number: generalized_trip_id, route: route}
       end)
     |> Enum.sort_by(fn(%Trip{departure_time: departure_time}) -> {~T[05:00:00] > departure_time, departure_time} end)
   end

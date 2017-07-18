@@ -58,8 +58,18 @@ export default function($) {
   }
 
   function validateInputs(){
-    validateInputText(fetchPreselectedValue("origin"), "origin");
-    validateInputText(fetchPreselectedValue("destination"), "destination");
+    const originOption = fetchPreselectedOption("origin");
+    const destinationOption = fetchPreselectedOption("destination");
+    if (originOption && originOption.val()) {
+      validateInputText(originOption.text(), "origin");
+    } else {
+      validateInputText("", "origin");
+    }
+    if (destinationOption && destinationOption.val()) {
+      validateInputText(destinationOption.text(), "destination");
+    } else {
+      validateInputText("", "destination");
+    }
   }
 
   function assignSuggestion(event) {
@@ -141,12 +151,16 @@ export default function($) {
   }
 
   function attachStationInput(originDestination) {
-    const preselectedValue = fetchPreselectedValue(originDestination);
-    $(`label[for='${originDestination}']`).after(renderStationInput(originDestination, stationInputClass(originDestination), preselectedValue));
+    const preselectedValue = fetchPreselectedOption(originDestination);
+    if (preselectedValue && preselectedValue.val()) {
+      $(`label[for='${originDestination}']`).after(renderStationInput(originDestination, stationInputClass(originDestination), preselectedValue.text()));
+    } else {
+      $(`label[for='${originDestination}']`).after(renderStationInput(originDestination, stationInputClass(originDestination), ""));
+    }
   }
 
-  function fetchPreselectedValue(originDestination) {
-    return $(`select[name="subscription[${originDestination}]"]`).find("option:selected").first().text();
+  function fetchPreselectedOption(originDestination) {
+    return $(`select[name="subscription[${originDestination}]"]`).find("option:selected").first();
   }
 
   function renderHiddenStationInputs() {

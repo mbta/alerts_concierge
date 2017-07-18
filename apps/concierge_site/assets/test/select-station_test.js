@@ -431,6 +431,16 @@ describe("selectStation", function() {
       selectStation($);
     });
 
+    it("starts with no value selected and data-valid false", () => {
+      const $originInput = $("input.subscription-select-origin");
+      const $destinationInput = $("input.subscription-select-destination");
+
+      assert.equal($originInput.val(), "");
+      assert.equal("false", $originInput.attr("data-valid"));
+      assert.equal($destinationInput.val(), "");
+      assert.equal("false", $destinationInput.attr("data-valid"));
+    });
+
     it("displays line along with icon", () => {
       const $originInput = $("input.subscription-select-origin");
       $originInput.val("Chels");

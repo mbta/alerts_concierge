@@ -1,5 +1,6 @@
 defmodule ConciergeSite.FerrySubscriptionControllerTest do
   use ConciergeSite.ConnCase
+  use ExVCR.Mock, adapter: ExVCR.Adapter.Hackney
 
   describe "authorized" do
     setup :create_and_login_user
@@ -25,9 +26,13 @@ defmodule ConciergeSite.FerrySubscriptionControllerTest do
         "trip_type" => "one_way",
       }}
 
-      conn = post(conn, "/subscriptions/ferry/new/ferry", params)
+      use_cassette "ferry_one_way", custom: true, clear_mock: true, match_requests_on: [:query] do
+        conn = post(conn, "/subscriptions/ferry/new/ferry", params)
 
-      assert html_response(conn, 200) =~ "Choose your ferries"
+        assert html_response(conn, 200) =~ "Choose your ferries"
+        assert html_response(conn, 200) =~ "10:15am from Charlestown Navy Yard, arrives at Long Wharf, Boston at 10:25am"
+        refute html_response(conn, 200) =~ "from Long Wharf"
+      end
     end
 
     test "POST /subscriptions/ferry/new/ferry round_trip", %{conn: conn} do
@@ -40,9 +45,52 @@ defmodule ConciergeSite.FerrySubscriptionControllerTest do
         "trip_type" => "round_trip",
       }}
 
-      conn = post(conn, "/subscriptions/ferry/new/ferry", params)
+      use_cassette "ferry_round_trip", custom: true, clear_mock: true, match_requests_on: [:query] do
+        conn = post(conn, "/subscriptions/ferry/new/ferry", params)
 
-      assert html_response(conn, 200) =~ "Choose your ferries"
+        assert html_response(conn, 200) =~ "Choose your ferries"
+        assert html_response(conn, 200) =~ "8:45am from Charlestown Navy Yard, arrives at Long Wharf, Boston at 8:55am"
+        assert html_response(conn, 200) =~ "4:00pm from Long Wharf, Boston, arrives at Charlestown Navy Yard at 4:10pm"
+      end
+    end
+
+    test "POST /subscriptions/ferry/new/preferences with invalid params for one way", %{conn: conn} do
+      params = %{"subscription" => %{
+        "departure_start" => "08:45:00",
+        "origin" => "Boat-Charlestown",
+        "destination" => "Boat-Long",
+        "trips" => [],
+        "relevant_days" => "weekday",
+        "trip_type" => "one_way",
+      }}
+
+      use_cassette "ferry_one_way", custom: true, clear_mock: true, match_requests_on: [:query] do
+        conn = post(conn, "/subscriptions/ferry/new/preferences", params)
+
+        assert html_response(conn, 200) =~ "Choose your ferries"
+        assert html_response(conn, 200) =~ "lease select at least one trip."
+      end
+    end
+
+    test "POST /subscriptions/ferry/new/preferences with invalid params for round trip", %{conn: conn} do
+      params = %{"subscription" => %{
+        "departure_start" => "08:45:00",
+        "return_start" => "17:45:00",
+        "origin" => "Boat-Long",
+        "destination" => "Boat-Charlestown",
+        "trips" => [],
+        "return_trips" => [],
+        "relevant_days" => "weekday",
+        "trip_type" => "round_trip",
+      }}
+
+      use_cassette "ferry_round_trip", custom: true, clear_mock: true, match_requests_on: [:query] do
+        conn = post(conn, "/subscriptions/ferry/new/preferences", params)
+
+        assert html_response(conn, 200) =~ "Choose your ferries"
+        assert html_response(conn, 200) =~ "Please select at least one trip."
+        assert html_response(conn, 200) =~ "Please select at least one return trip."
+      end
     end
   end
 

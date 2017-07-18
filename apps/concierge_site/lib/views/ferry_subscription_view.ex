@@ -1,5 +1,6 @@
 defmodule ConciergeSite.FerrySubscriptionView do
   use ConciergeSite.Web, :view
+  alias AlertProcessor.Model.Trip
   import ConciergeSite.SubscriptionHelper,
     only: [atomize_keys: 1, progress_link_class: 3]
   import ConciergeSite.TimeHelper,
@@ -28,5 +29,57 @@ defmodule ConciergeSite.FerrySubscriptionView do
   end
   def trip_info_description(_trip_type) do
     ""
+  end
+
+  @spec trip_option(Trip.t, :depart | :return) :: Phoenix.HTML.safe
+  def trip_option(trip, trip_type) do
+    content_tag :div, class: trip_option_classes(trip) do
+      [
+        trip_option_checkbox(trip, trip_type),
+        content_tag :label, class: "trip-option-description", for: trip_id_string(trip) do
+          trip_option_description(trip)
+        end
+      ]
+    end
+  end
+
+  defp trip_option_classes(%{selected: true}), do: "trip-option closest-trip"
+  defp trip_option_classes(_), do: "trip-option"
+
+  defp trip_option_checkbox(trip, trip_type) do
+    tag(:input,
+        type: "checkbox",
+        class: "trip-option-input",
+        name: trip_option_name(trip_type),
+        id: trip_id_string(trip),
+        value: trip.trip_number,
+        checked: trip.selected)
+  end
+
+  defp trip_option_name(:depart), do: "subscription[trips][]"
+  defp trip_option_name(:return), do: "subscription[return_trips][]"
+
+  defp trip_id_string(trip) do
+    ["trip_", trip.trip_number]
+  end
+
+  defp trip_option_description(trip) do
+    {origin_name, _} = trip.origin
+    {destination_name, _} = trip.destination
+
+    [
+      format_schedule_time(trip.departure_time),
+      " from ",
+      origin_name,
+      ", arrives at ",
+      destination_name,
+      " at ",
+      format_schedule_time(trip.arrival_time)
+    ]
+  end
+
+  defp format_schedule_time(time) do
+    {:ok, time_string} = Calendar.Strftime.strftime(time, "%l:%M%P")
+    String.trim(time_string)
   end
 end
