@@ -45,14 +45,6 @@ defmodule AlertProcessor.ApiClient do
     |> parse_response()
   end
 
-  @spec trip(Trip.id) :: {:ok, map, [map]} | {:error, String.t}
-  def trip(trip_id) do
-    "/trips/#{trip_id}?include=service"
-    |> URI.encode()
-    |> get()
-    |> parse_response()
-  end
-
   @doc """
   endpoint to fetch trips for a specific route
   """
@@ -64,6 +56,9 @@ defmodule AlertProcessor.ApiClient do
     |> parse_response()
   end
 
+  @doc """
+  endpoint to fetch trips for a set of routes and include service information
+  """
   @spec trips_with_service_info([String.t]) :: {:ok, [map], [map]} | {:error, String.t}
   def trips_with_service_info(routes) do
     # credo:disable-for-next-line Credo.Check.Readability.SpaceAfterCommas
