@@ -187,6 +187,7 @@ defmodule AlertProcessor.ServiceInfoCacheTest do
       assert {:ok, "Boat-F1-Boat-Hingham-05:40:00-weekday-1"} = ServiceInfoCache.get_generalized_trip_id(pid, "Boat-F1-IB-0540-WeekdaySummer")
       assert {:ok, "Boat-F4-Boat-Charlestown-14:45:00-sunday-1"} = ServiceInfoCache.get_generalized_trip_id(pid, "Boat-F4-IB-245PM-Sunday")
       assert {:ok, "Boat-F1-Boat-Hingham-22:10:00-friday-1"} = ServiceInfoCache.get_generalized_trip_id(pid, "Boat-F1-IB-2210-Friday")
+      assert {:ok, "Boat-F1-Boat-Long-11:00:00-weekday-0"} = ServiceInfoCache.get_generalized_trip_id(pid, "Boat-F1-OB-1100-WeekdaySummer")
       assert {:ok, nil} = ServiceInfoCache.get_generalized_trip_id(pid, "garbage")
 
     end

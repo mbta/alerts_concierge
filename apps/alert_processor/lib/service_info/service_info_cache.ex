@@ -211,14 +211,14 @@ defmodule AlertProcessor.ServiceInfoCache do
   end
   defp fetch_service_info(:ferry_general_ids) do
     {:ok, routes} = ApiClient.routes([4])
-    route_ids = Enum.map(routes, fn(%{"id" => route_id}) -> route_id end)
+    route_ids = Enum.map(routes, & &1["id"])
     {:ok, trips, service_info} = ApiClient.trips_with_service_info(route_ids)
     trip_info_map = map_trip_information(trips, service_info)
-    trip_ids = Enum.map(trips, fn(%{"id" => trip_id}) -> trip_id end)
+    trip_ids = Enum.map(trips, & &1["id"])
 
     for trip_id <- trip_ids, into: %{} do
       {:ok, schedules} = ApiClient.schedule_for_trip(trip_id)
-      [departure_schedule | _t] = Enum.sort_by(schedules, fn(%{"attributes" => %{"departure_time" => departure_timestamp}}) -> departure_timestamp end)
+      [departure_schedule | _t] = Enum.sort_by(schedules, & &1["attributes"]["departure_time"])
       %{"relationships" => %{"stop" => %{"data" => %{"id" => origin_id}}}, "attributes" => %{"departure_time" => departure_timestamp}} = departure_schedule
       departure_time = departure_timestamp |> NaiveDateTime.from_iso8601!() |> NaiveDateTime.to_time()
       {trip_id, map_generalized_trip_id(trip_id, trip_info_map, %{origin_id: origin_id, departure_time: departure_time})}
