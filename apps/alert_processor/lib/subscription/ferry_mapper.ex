@@ -83,10 +83,10 @@ defmodule AlertProcessor.Subscription.FerryMapper do
   defp map_common_trips([], _), do: :error
   defp map_common_trips(schedules, trip) do
     schedules
-    |> Enum.group_by(fn(%{"relationships" => %{"trip" => %{"data" => %{"id" => id}}}}) -> id end)
+    |> Enum.group_by(& &1["relationships"]["trip"]["data"]["id"])
     |> Enum.filter(fn({_id, schedules}) -> Enum.count(schedules) > 1 end)
     |> Enum.map(fn({_id, schedules}) ->
-        [departure_schedule, arrival_schedule] = Enum.sort_by(schedules, fn(%{"attributes" => %{"departure_time" => departure_timestamp}}) -> departure_timestamp end)
+        [departure_schedule, arrival_schedule] = Enum.sort_by(schedules, & &1["attributes"]["departure_time"])
         %{"attributes" => %{
           "departure_time" => departure_timestamp
           },
@@ -106,8 +106,9 @@ defmodule AlertProcessor.Subscription.FerryMapper do
 
         %{"attributes" => %{"arrival_time" => arrival_timestamp}} = arrival_schedule
         {:ok, route} = ServiceInfoCache.get_route(route_id)
+        {:ok, generalized_trip_id} = ServiceInfoCache.get_generalized_trip_id(trip_id)
 
-        %{trip | arrival_time: map_schedule_time(arrival_timestamp), departure_time: map_schedule_time(departure_timestamp), trip_number: trip_id, route: route}
+        %{trip | arrival_time: map_schedule_time(arrival_timestamp), departure_time: map_schedule_time(departure_timestamp), trip_number: generalized_trip_id, route: route}
       end)
     |> Enum.sort_by(fn(%Trip{departure_time: departure_time}) -> {~T[05:00:00] > departure_time, departure_time} end)
   end
