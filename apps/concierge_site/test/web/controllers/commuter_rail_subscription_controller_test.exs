@@ -28,7 +28,7 @@ defmodule ConciergeSite.CommuterRailSubscriptionControllerTest do
         "trip_type" => "one_way",
       }}
 
-      use_cassette "commuter_rail_train_one_way", clear_mock: true do
+      use_cassette "commuter_rail_train_one_way", custom: true, clear_mock: true, match_requests_on: [:query] do
         conn = post(conn, "/subscriptions/commuter_rail/new/train", params)
 
         assert html_response(conn, 200) =~ "Choose your trains"
@@ -47,7 +47,7 @@ defmodule ConciergeSite.CommuterRailSubscriptionControllerTest do
         "trip_type" => "round_trip",
       }}
 
-      use_cassette "commuter_rail_train_round_trip", clear_mock: true do
+      use_cassette "commuter_rail_train_round_trip", custom: true, clear_mock: true, match_requests_on: [:query] do
         conn = post(conn, "/subscriptions/commuter_rail/new/train", params)
 
         assert html_response(conn, 200) =~ "Choose your trains"
