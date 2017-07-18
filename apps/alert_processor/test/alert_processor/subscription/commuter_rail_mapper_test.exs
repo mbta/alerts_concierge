@@ -375,4 +375,164 @@ defmodule AlertProcessor.Subscription.CommuterRailMapperTest do
       end
     end
   end
+
+  describe "get_trip_info" do
+    test "returns trip options with closest trip preselected" do
+      {:ok, trips} = CommuterRailMapper.get_trip_info("Anderson/ Woburn", "place-north", :sunday, "10:00:00")
+      assert [%AlertProcessor.Model.Trip{trip_number: "2300", selected: false},
+              %AlertProcessor.Model.Trip{trip_number: "2302", selected: true},
+              %AlertProcessor.Model.Trip{trip_number: "2304", selected: false},
+              %AlertProcessor.Model.Trip{trip_number: "2306", selected: false},
+              %AlertProcessor.Model.Trip{trip_number: "2308", selected: false},
+              %AlertProcessor.Model.Trip{trip_number: "2310", selected: false},
+              %AlertProcessor.Model.Trip{trip_number: "2312", selected: false},
+              %AlertProcessor.Model.Trip{trip_number: "2314", selected: false}] = trips
+    end
+
+    test "returns trip options with preselected values" do
+      {:ok, trips} = CommuterRailMapper.get_trip_info("Anderson/ Woburn", "place-north", :sunday, ["2302", "2308"])
+      assert [%AlertProcessor.Model.Trip{trip_number: "2300", selected: false},
+             %AlertProcessor.Model.Trip{trip_number: "2302", selected: true},
+             %AlertProcessor.Model.Trip{trip_number: "2304", selected: false},
+             %AlertProcessor.Model.Trip{trip_number: "2306", selected: false},
+             %AlertProcessor.Model.Trip{trip_number: "2308", selected: true},
+             %AlertProcessor.Model.Trip{trip_number: "2310", selected: false},
+             %AlertProcessor.Model.Trip{trip_number: "2312", selected: false},
+             %AlertProcessor.Model.Trip{trip_number: "2314", selected: false}] = trips
+    end
+
+    test "returns error if origin/destination are not on the same route" do
+      :error = CommuterRailMapper.get_trip_info("Anderson/ Woburn", "place-rugg", :sunday, "10:00:00")
+      :error = CommuterRailMapper.get_trip_info("Anderson/ Woburn", "place-rugg", :sunday, ["2302", "2308"])
+    end
+  end
+
+  describe "populate_trip_options one_way" do
+    test "one_way with timestamp returns trip options with closest trip preselected" do
+      params = %{
+        "origin" => "Anderson/ Woburn",
+        "destination" => "place-north",
+        "relevant_days" => "weekday",
+        "departure_start" => "10:00:00",
+        "trip_type" => "one_way"
+      }
+      {:ok, %{departure_trips: departure_trips}} = CommuterRailMapper.populate_trip_options(params)
+      selected_trips = Enum.filter(departure_trips, & &1.selected)
+      assert [%Trip{trip_number: "316", departure_time: ~T[09:36:00], selected: true}] = selected_trips
+    end
+
+    test "one_way with trip_ids returns trip options with preselected trips" do
+      params = %{
+        "origin" => "Anderson/ Woburn",
+        "destination" => "place-north",
+        "relevant_days" => "weekday",
+        "trips" => ["316", "318"],
+        "trip_type" => "one_way"
+      }
+      {:ok, %{departure_trips: departure_trips}} = CommuterRailMapper.populate_trip_options(params)
+      selected_trips = Enum.filter(departure_trips, & &1.selected)
+      assert [
+        %Trip{trip_number: "316", selected: true},
+        %Trip{trip_number: "318", selected: true}
+      ] = selected_trips
+    end
+
+    test "one_way with_timestamp returns error and message with invalid origin/destination combo" do
+      params = %{
+        "origin" => "Anderson/ Woburn",
+        "destination" => "place-rugg",
+        "relevant_days" => "weekday",
+        "departure_start" => "10:00:00",
+        "trip_type" => "one_way"
+      }
+      {:error, _} = CommuterRailMapper.populate_trip_options(params)
+    end
+
+    test "one_way with trip_ids returns error and message with invalid origin/destination combo" do
+      params = %{
+        "origin" => "Anderson/ Woburn",
+        "destination" => "place-rugg",
+        "relevant_days" => "weekday",
+        "trips" => ["316", "318"],
+        "trip_type" => "one_way"
+      }
+      {:error, _} = CommuterRailMapper.populate_trip_options(params)
+    end
+  end
+
+  describe "populate_trip_options round_trip" do
+    test "round_trip with timestamp returns trip options with closest trip preselected" do
+      params = %{
+        "origin" => "Anderson/ Woburn",
+        "destination" => "place-north",
+        "relevant_days" => "weekday",
+        "departure_start" => "10:00:00",
+        "return_start" => "16:00:00",
+        "trip_type" => "round_trip"
+      }
+      {:ok, %{
+          departure_trips: departure_trips,
+          return_trips: return_trips
+        }
+      } = CommuterRailMapper.populate_trip_options(params)
+      selected_trips = Enum.filter(departure_trips, & &1.selected)
+      selected_return_trips = Enum.filter(return_trips, & &1.selected)
+      assert [
+        %Trip{trip_number: "316", departure_time: ~T[09:36:00], selected: true},
+      ] = selected_trips
+      assert [
+        %Trip{trip_number: "327", departure_time: ~T[16:15:00], selected: true}
+      ] = selected_return_trips
+    end
+
+    test "round_trip with trip_ids returns trip options with preselected trips" do
+      params = %{
+        "origin" => "Anderson/ Woburn",
+        "destination" => "place-north",
+        "relevant_days" => "weekday",
+        "trips" => ["316", "318"],
+        "return_trips" => ["331", "221"],
+        "trip_type" => "round_trip"
+      }
+      {:ok, %{
+          departure_trips: departure_trips,
+          return_trips: return_trips
+        }
+      } = CommuterRailMapper.populate_trip_options(params)
+      selected_trips = Enum.filter(departure_trips, & &1.selected)
+      selected_return_trips = Enum.filter(return_trips, & &1.selected)
+      assert [
+        %Trip{trip_number: "316", selected: true},
+        %Trip{trip_number: "318", selected: true}
+      ] = selected_trips
+      assert [
+        %Trip{trip_number: "331", selected: true},
+        %Trip{trip_number: "221", selected: true}
+      ] = selected_return_trips
+    end
+
+    test "round_trip with_timestamp returns error and message with invalid origin/destination combo" do
+      params = %{
+        "origin" => "Anderson/ Woburn",
+        "destination" => "place-rugg",
+        "relevant_days" => "weekday",
+        "departure_start" => "10:00:00",
+        "return_start" => "16:00:00",
+        "trip_type" => "round_trip"
+      }
+      {:error, _} = CommuterRailMapper.populate_trip_options(params)
+    end
+
+    test "round_trip with trip_ids returns error and message with invalid origin/destination combo" do
+      params = %{
+        "origin" => "Anderson/ Woburn",
+        "destination" => "place-rugg",
+        "relevant_days" => "weekday",
+        "trips" => ["316", "318"],
+        "return_trips" => ["331", "221"],
+        "trip_type" => "round_trip"
+      }
+      {:error, _} = CommuterRailMapper.populate_trip_options(params)
+    end
+  end
 end

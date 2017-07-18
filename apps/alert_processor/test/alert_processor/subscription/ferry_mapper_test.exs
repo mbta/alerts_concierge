@@ -377,4 +377,176 @@ defmodule AlertProcessor.Subscription.FerryMapperTest do
       end
     end
   end
+
+  describe "get_trip_info" do
+    test "returns trip options with closest trip preselected" do
+      {:ok, trips} = FerryMapper.get_trip_info("Boat-Hingham", "Boat-Long", :sunday, "10:00:00")
+      assert [%Trip{trip_number: "Boat-F1-Boat-Hingham-08:00:00-weekend-1", selected: false},
+              %Trip{trip_number: "Boat-F1-Boat-Hingham-09:00:00-weekend-1", selected: false},
+              %Trip{trip_number: "Boat-F1-Boat-Hingham-10:00:00-weekend-1", selected: true},
+              %Trip{trip_number: "Boat-F1-Boat-Hingham-11:00:00-weekend-1", selected: false},
+              %Trip{trip_number: "Boat-F1-Boat-Hingham-12:00:00-weekend-1", selected: false},
+              %Trip{trip_number: "Boat-F1-Boat-Hingham-13:00:00-weekend-1", selected: false},
+              %Trip{trip_number: "Boat-F1-Boat-Hingham-14:00:00-weekend-1", selected: false},
+              %Trip{trip_number: "Boat-F1-Boat-Hingham-15:00:00-weekend-1", selected: false},
+              %Trip{trip_number: "Boat-F1-Boat-Hingham-16:00:00-weekend-1", selected: false},
+              %Trip{trip_number: "Boat-F1-Boat-Hingham-17:00:00-weekend-1", selected: false},
+              %Trip{trip_number: "Boat-F1-Boat-Hingham-18:00:00-weekend-1", selected: false},
+              %Trip{trip_number: "Boat-F1-Boat-Hingham-19:00:00-weekend-1", selected: false},
+              %Trip{trip_number: "Boat-F1-Boat-Hingham-20:00:00-weekend-1", selected: false},
+              %Trip{trip_number: "Boat-F1-Boat-Hingham-21:00:00-weekend-1", selected: false}] = trips
+    end
+
+    test "returns trip options with preselected values" do
+      {:ok, trips} = FerryMapper.get_trip_info("Boat-Hingham", "Boat-Long", :sunday, ["Boat-F1-Boat-Hingham-11:00:00-weekend-1", "Boat-F1-Boat-Hingham-15:00:00-weekend-1"])
+      assert [%Trip{trip_number: "Boat-F1-Boat-Hingham-08:00:00-weekend-1", selected: false},
+              %Trip{trip_number: "Boat-F1-Boat-Hingham-09:00:00-weekend-1", selected: false},
+              %Trip{trip_number: "Boat-F1-Boat-Hingham-10:00:00-weekend-1", selected: false},
+              %Trip{trip_number: "Boat-F1-Boat-Hingham-11:00:00-weekend-1", selected: true},
+              %Trip{trip_number: "Boat-F1-Boat-Hingham-12:00:00-weekend-1", selected: false},
+              %Trip{trip_number: "Boat-F1-Boat-Hingham-13:00:00-weekend-1", selected: false},
+              %Trip{trip_number: "Boat-F1-Boat-Hingham-14:00:00-weekend-1", selected: false},
+              %Trip{trip_number: "Boat-F1-Boat-Hingham-15:00:00-weekend-1", selected: true},
+              %Trip{trip_number: "Boat-F1-Boat-Hingham-16:00:00-weekend-1", selected: false},
+              %Trip{trip_number: "Boat-F1-Boat-Hingham-17:00:00-weekend-1", selected: false},
+              %Trip{trip_number: "Boat-F1-Boat-Hingham-18:00:00-weekend-1", selected: false},
+              %Trip{trip_number: "Boat-F1-Boat-Hingham-19:00:00-weekend-1", selected: false},
+              %Trip{trip_number: "Boat-F1-Boat-Hingham-20:00:00-weekend-1", selected: false},
+              %Trip{trip_number: "Boat-F1-Boat-Hingham-21:00:00-weekend-1", selected: false}] = trips
+    end
+
+    test "returns error if origin/destination are not on the same route" do
+      :error = FerryMapper.get_trip_info("Boat-Hingham", "Boat-Charlestown", :sunday, "10:00:00")
+      :error = FerryMapper.get_trip_info("Boat-Hingham", "Boat-Charlestown", :sunday, ["Boat-F1-Boat-Hingham-11:00:00-weekend-1", "Boat-F1-Boat-Hingham-15:00:00-weekend-1"])
+    end
+  end
+
+  describe "populate_trip_options one_way" do
+    test "one_way with timestamp returns trip options with closest trip preselected" do
+      params = %{
+        "origin" => "Boat-Hingham",
+        "destination" => "Boat-Long",
+        "relevant_days" => "weekday",
+        "departure_start" => "10:00:00",
+        "trip_type" => "one_way"
+      }
+      {:ok, %{departure_trips: departure_trips}} = FerryMapper.populate_trip_options(params)
+      selected_trips = Enum.filter(departure_trips, & &1.selected)
+      assert [%Trip{departure_time: ~T[10:00:00], selected: true}] = selected_trips
+    end
+
+    test "one_way with trip_ids returns trip options with preselected trips" do
+      params = %{
+        "origin" => "Boat-Hingham",
+        "destination" => "Boat-Long",
+        "relevant_days" => "weekday",
+        "trips" => ["Boat-F1-Boat-Hingham-13:00:00-weekday-1", "Boat-F1-Boat-Hingham-15:00:00-weekday-1"],
+        "trip_type" => "one_way"
+      }
+      {:ok, %{departure_trips: departure_trips}} = FerryMapper.populate_trip_options(params)
+      selected_trips = Enum.filter(departure_trips, & &1.selected)
+      assert [
+        %Trip{trip_number: "Boat-F1-Boat-Hingham-13:00:00-weekday-1", selected: true},
+        %Trip{trip_number: "Boat-F1-Boat-Hingham-15:00:00-weekday-1", selected: true}
+      ] = selected_trips
+    end
+
+    test "one_way with_timestamp returns error and message with invalid origin/destination combo" do
+      params = %{
+        "origin" => "Boat-Hingham",
+        "destination" => "Boat-Charlestown",
+        "relevant_days" => "weekday",
+        "departure_start" => "10:00:00",
+        "trip_type" => "one_way"
+      }
+      {:error, _} = FerryMapper.populate_trip_options(params)
+    end
+
+    test "one_way with trip_ids returns error and message with invalid origin/destination combo" do
+      params = %{
+        "origin" => "Boat-Hingham",
+        "destination" => "Boat-Charlestown",
+        "relevant_days" => "weekday",
+        "trips" => ["Boat-F1-Boat-Hingham-13:00:00-weekday-1", "Boat-F1-Boat-Hingham-15:00:00-weekday-1"],
+        "trip_type" => "one_way"
+      }
+      {:error, _} = FerryMapper.populate_trip_options(params)
+    end
+  end
+
+  describe "populate_trip_options round_trip" do
+    test "round_trip with timestamp returns trip options with closest trip preselected" do
+      params = %{
+        "origin" => "Boat-Hingham",
+        "destination" => "Boat-Long",
+        "relevant_days" => "weekday",
+        "departure_start" => "10:00:00",
+        "return_start" => "16:00:00",
+        "trip_type" => "round_trip"
+      }
+      {:ok, %{
+          departure_trips: departure_trips,
+          return_trips: return_trips
+        }
+      } = FerryMapper.populate_trip_options(params)
+      selected_trips = Enum.filter(departure_trips, & &1.selected)
+      selected_return_trips = Enum.filter(return_trips, & &1.selected)
+      assert [
+        %Trip{trip_number: "Boat-F1-Boat-Hingham-10:00:00-weekday-1", selected: true},
+      ] = selected_trips
+      assert [
+        %Trip{trip_number: "Boat-F1-Boat-Long-15:40:00-weekday-0", selected: true}
+      ] = selected_return_trips
+    end
+
+    test "round_trip with trip_ids returns trip options with preselected trips" do
+      params = %{
+        "origin" => "Boat-Hingham",
+        "destination" => "Boat-Long",
+        "relevant_days" => "weekday",
+        "trips" => ["Boat-F1-Boat-Hingham-13:00:00-weekday-1", "Boat-F1-Boat-Hingham-15:00:00-weekday-1"],
+        "return_trips" => ["Boat-F1-Boat-Long-14:00:00-weekday-0", "Boat-F1-Boat-Long-16:30:00-weekday-0"],
+        "trip_type" => "round_trip"
+      }
+      {:ok, %{
+          departure_trips: departure_trips,
+          return_trips: return_trips
+        }
+      } = FerryMapper.populate_trip_options(params)
+      selected_trips = Enum.filter(departure_trips, & &1.selected)
+      selected_return_trips = Enum.filter(return_trips, & &1.selected)
+      assert [
+        %Trip{trip_number: "Boat-F1-Boat-Hingham-13:00:00-weekday-1", selected: true},
+        %Trip{trip_number: "Boat-F1-Boat-Hingham-15:00:00-weekday-1", selected: true}
+      ] = selected_trips
+      assert [
+        %Trip{trip_number: "Boat-F1-Boat-Long-14:00:00-weekday-0", selected: true},
+        %Trip{trip_number: "Boat-F1-Boat-Long-16:30:00-weekday-0", selected: true}
+      ] = selected_return_trips
+    end
+
+    test "round_trip with_timestamp returns error and message with invalid origin/destination combo" do
+      params = %{
+        "origin" => "Boat-Hingham",
+        "destination" => "Boat-Charlestown",
+        "relevant_days" => "weekday",
+        "departure_start" => "10:00:00",
+        "return_start" => "16:00:00",
+        "trip_type" => "round_trip"
+      }
+      {:error, _} = FerryMapper.populate_trip_options(params)
+    end
+
+    test "round_trip with trip_ids returns error and message with invalid origin/destination combo" do
+      params = %{
+        "origin" => "Boat-Hingham",
+        "destination" => "Boat-Charlestown",
+        "relevant_days" => "weekday",
+        "trips" => ["Boat-F1-Boat-Hingham-13:00:00-weekday-1", "Boat-F1-Boat-Hingham-15:00:00-weekday-1"],
+        "return_trips" => ["Boat-F1-Boat-Long-14:00:00-weekday-0", "Boat-F1-Boat-Long-16:30:00-weekday-0"],
+        "trip_type" => "round_trip"
+      }
+      {:error, _} = FerryMapper.populate_trip_options(params)
+    end
+  end
 end

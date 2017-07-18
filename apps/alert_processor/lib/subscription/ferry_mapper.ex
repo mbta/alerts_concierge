@@ -8,7 +8,7 @@ defmodule AlertProcessor.Subscription.FerryMapper do
   alias AlertProcessor.{ApiClient, Helpers.DateTimeHelper, Model.Route, Model.Subscription, Model.Trip, ServiceInfoCache}
 
   def populate_trip_options(subscription_params), do: populate_trip_options(subscription_params, __MODULE__)
-  def get_trip_info(subscription_params), do: populate_trip_options(subscription_params, __MODULE__)
+  def get_trip_info(origin_id, destination_id, relevant_days, selected_trips), do: get_trip_info(origin_id, destination_id, relevant_days, selected_trips, __MODULE__)
 
   @spec map_subscriptions(map) :: {:ok, [Subscription.subscription_info]} | :error
   def map_subscriptions(subscription_params) do
