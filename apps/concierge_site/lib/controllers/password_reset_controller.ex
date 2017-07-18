@@ -5,6 +5,7 @@ defmodule ConciergeSite.PasswordResetController do
   alias AlertProcessor.Repo
   alias Calendar.DateTime
   alias ConciergeSite.{Email, Mailer}
+  alias Ecto.Multi
 
   @email_regex ~r/^([a-zA-Z0-9_\-\.]+)@([a-zA-Z0-9_\-\.]+)\.([a-zA-Z]{2,5})$/
 
@@ -35,8 +36,12 @@ defmodule ConciergeSite.PasswordResetController do
     render conn, "sent.html", email: email
   end
 
-  def edit(conn, _params) do
-    render conn, "edit.html"
+  def edit(conn, %{"id" => id}) do
+    password_reset = find_redeemable_password_reset_by_id!(id)
+    changeset = User.update_password_changeset(password_reset.user)
+    render conn, "edit.html",
+      changeset: changeset, password_reset: password_reset
+  end
   end
 
   defp find_user_id_by_email(email) do
@@ -45,6 +50,12 @@ defmodule ConciergeSite.PasswordResetController do
       select: u.id,
       where: fragment("lower(?)", u.email) == ^String.downcase(email)
     )
+  end
+
+  defp find_redeemable_password_reset_by_id!(id) do
+    Repo.one!(from p in PasswordReset,
+      where: p.id == ^id and is_nil(p.redeemed_at) and p.expired_at > ^DateTime.now_utc())
+    |> Repo.preload([:user])
   end
 
   defp handle_unknown_email(conn, changeset, email) do

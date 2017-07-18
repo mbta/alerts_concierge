@@ -3,7 +3,7 @@ defmodule ConciergeSite.PasswordResetControllerTest do
   use Bamboo.Test
   import Ecto.Query
   alias AlertProcessor.{Model, Repo}
-  alias Model.PasswordReset
+  alias Model.{PasswordReset, User}
   alias ConciergeSite.Email
 
   test "GET /reset-password/new", %{conn: conn}  do
@@ -44,5 +44,28 @@ defmodule ConciergeSite.PasswordResetControllerTest do
 
     assert password_reset_count == 0
     assert html_response(conn, 200) =~ "Email is not in a valid format."
+  end
+
+  test "GET /reset-password/:id/edit with a redeemable Password Reset", %{conn: conn}  do
+    password_reset = insert(:password_reset)
+    conn = get(conn, password_reset_path(conn, :edit, password_reset))
+
+    assert html_response(conn, 200) =~ "Enter and confirm your new password below."
+  end
+
+  test "GET /reset-password/:id/edit with an expired password reset", %{conn: conn}  do
+    password_reset = insert(:password_reset, expired_at: DateTime.subtract!(DateTime.now_utc, 1))
+
+    assert_raise Ecto.NoResultsError, fn ->
+      get(conn, password_reset_path(conn, :edit, password_reset))
+    end
+  end
+
+  test "GET /reset-password/:id/edit with a redeemed password reset", %{conn: conn}  do
+    password_reset = insert(:password_reset, redeemed_at: DateTime.subtract!(DateTime.now_utc, 1))
+
+    assert_raise Ecto.NoResultsError, fn ->
+      get(conn, password_reset_path(conn, :edit, password_reset))
+    end
   end
 end
