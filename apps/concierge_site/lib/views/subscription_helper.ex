@@ -61,6 +61,9 @@ defmodule ConciergeSite.SubscriptionHelper do
   """
   @spec relevant_days(Subscription.t) :: iolist
   def relevant_days(subscription) do
-    subscription.relevant_days |> Enum.map(&String.capitalize(Atom.to_string(&1))) |> Enum.intersperse("s, ")
+    subscription.relevant_days
+    |> Enum.map(&String.capitalize(Atom.to_string(&1)))
+    |> Enum.intersperse("s, ")
+    |> Kernel.++(["s"])
   end
 end

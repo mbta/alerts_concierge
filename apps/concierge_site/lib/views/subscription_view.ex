@@ -67,7 +67,7 @@ defmodule ConciergeSite.SubscriptionView do
       ]
     end
   end
-  defp do_subscription_info(subscription, additional_info \\ nil) do
+  defp do_subscription_info(subscription, additional_info) do
     content_tag :div, class: "subscription-info" do
       [
         content_tag :div, class: "subscription-route" do

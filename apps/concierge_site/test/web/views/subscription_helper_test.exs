@@ -8,6 +8,6 @@ defmodule ConciergeSite.SubscriptionHelperTest do
     sub = %Subscription{
       relevant_days: [:saturday, :sunday, :weekday]
     }
-    assert SubscriptionHelper.relevant_days(sub) == ["Saturday", "s, ", "Sunday", "s, ", "Weekday"]
+    assert SubscriptionHelper.relevant_days(sub) == ["Saturday", "s, ", "Sunday", "s, ", "Weekday", "s"]
   end
 end

@@ -35,8 +35,7 @@ defmodule ConciergeSite.AmenitySubscriptionView do
       pretty_station_count(subscription),
       lines(subscription),
       " on ",
-      relevant_days(subscription),
-      "s"
+      relevant_days(subscription)
     ]
   end
 
