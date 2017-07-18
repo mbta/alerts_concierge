@@ -42,6 +42,31 @@ defmodule ConciergeSite.PasswordResetController do
     render conn, "edit.html",
       changeset: changeset, password_reset: password_reset
   end
+
+  def update(conn, %{"user" => user_params, "id" => id}) do
+    password_reset = find_redeemable_password_reset_by_id!(id)
+    password_reset_changeset = PasswordReset.redeem_changeset(password_reset)
+    user_changeset = User.update_password_changeset(password_reset.user, user_params)
+
+    multi =
+      Multi.new
+      |> Multi.update(:user, user_changeset)
+      |> Multi.update(:password_reset, password_reset_changeset)
+
+    case Repo.transaction(multi) do
+      {:ok, %{user: user}} ->
+        conn
+        |> Guardian.Plug.sign_in(user)
+        |> put_flash(:info, "Your password has been updated.")
+        |> redirect(to: my_account_path(conn, :edit))
+      {:error, :user, changeset, _} ->
+        render conn, "edit.html",
+          changeset: changeset, password_reset: password_reset
+      {:error, :password_reset, _, _} ->
+        conn
+        |> put_flash(:error, "Password could not be reset. Please try again.")
+        |> redirect(to: session_path(conn, :new))
+    end
   end
 
   defp find_user_id_by_email(email) do
