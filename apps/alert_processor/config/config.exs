@@ -17,11 +17,11 @@ config :logger, :console,
 # Bamboo
 config :alert_processor, AlertProcessor.NotificationMailer,
   adapter: Bamboo.LocalAdapter,
-  from: "faizaan@intrepid.io"
+  from: {:system, "SENDER_EMAIL_ADDRESS", "noreply@mbta.com"}
 
 config :alert_processor, AlertProcessor.DigestMailer,
   adapter: Bamboo.LocalAdapter,
-  from: "faizaan@intrepid.io"
+  from: {:system, "SENDER_EMAIL_ADDRESS", "noreply@mbta.com"}
 
 config :alert_processor, AlertProcessor,
   pool_size: 2,

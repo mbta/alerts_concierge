@@ -25,7 +25,7 @@ config :concierge_site, ConciergeSite.Mailer,
   adapter: Bamboo.LocalAdapter
 
 config :concierge_site, ConciergeSite.Email,
-  from: "faizaan@intrepid.io"  
+  from: {:system, "SENDER_EMAIL_ADDRESS", "noreply@mbta.com"}
 
 # Configures Elixir's Logger
 config :logger, :console,
