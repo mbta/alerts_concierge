@@ -1,5 +1,6 @@
 defmodule ConciergeSite.FerrySubscriptionView do
   use ConciergeSite.Web, :view
+  alias AlertProcessor.Model.Trip
   import ConciergeSite.SubscriptionHelper,
     only: [atomize_keys: 1, progress_link_class: 3]
   import ConciergeSite.TimeHelper,

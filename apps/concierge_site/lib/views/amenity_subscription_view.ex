@@ -1,5 +1,6 @@
 defmodule ConciergeSite.AmenitySubscriptionView do
   use ConciergeSite.Web, :view
+  alias AlertProcessor.Model.Subscription
   import ConciergeSite.SubscriptionHelper,
     only: [relevant_days: 1]
 
@@ -9,9 +10,9 @@ defmodule ConciergeSite.AmenitySubscriptionView do
   def stringify(p), do: p
 
   @doc """
-  Returns ampersand separated list of facilty types for an amenity subscription
+  Returns string with ampersand separated list of facilty types for an amenity subscription
   """
-  @spec amenity_facility_type(Subscription.t) :: iolist
+  @spec amenity_facility_type(Subscription.t) :: String.t
   def amenity_facility_type(subscription) do
     subscription.informed_entities
     |> Enum.map(&(&1.facility_type))
