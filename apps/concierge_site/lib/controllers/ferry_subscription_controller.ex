@@ -52,9 +52,20 @@ defmodule ConciergeSite.FerrySubscriptionController do
     )
     token = TemporaryState.encode(subscription_params)
 
-    render conn, "preferences.html",
-      token: token,
-      subscription_params: subscription_params
+    with :ok <- FerryParams.validate_trip_params(subscription_params),
+         {:ok, origin} <- ServiceInfoCache.get_stop(subscription_params["origin"]),
+         {:ok, destination} <- ServiceInfoCache.get_stop(subscription_params["destination"]) do
+      render conn, "preferences.html",
+        token: token,
+        subscription_params: subscription_params,
+        origin: origin,
+        destination: destination
+    else
+      {:error, message} ->
+        handle_invalid_trip_submission(conn, subscription_params, token, message)
+      _ ->
+        handle_invalid_trip_submission(conn, subscription_params, token, "Something went wrong, please try again.")
+    end
   end
 
   defp handle_invalid_info_submission(conn, subscription_params, token, error_message) do
@@ -76,5 +87,18 @@ defmodule ConciergeSite.FerrySubscriptionController do
         |> put_flash(:error, "There was an error fetching station data. Please try again.")
         |> render("new.html", token: token, subscription_params: subscription_params)
     end
+  end
+
+  def handle_invalid_trip_submission(conn, subscription_params, token, error_message) do
+    {:ok, trips} = FerryMapper.populate_trip_options(subscription_params)
+
+    conn
+    |> put_flash(:error, error_message)
+    |> render(
+      "ferry.html",
+      token: token,
+      subscription_params: Map.drop(subscription_params, ["trips", "return_trips"]),
+      trips: trips
+    )
   end
 end
