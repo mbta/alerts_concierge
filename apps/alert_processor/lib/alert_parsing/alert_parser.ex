@@ -108,7 +108,7 @@ defmodule AlertProcessor.AlertParser do
     Enum.reduce(informed_entity, %{}, fn({k, v}, acc) ->
       case k do
         "trip" ->
-          Map.merge(acc, parse_trip(v))
+          Map.merge(acc, parse_trip(v, informed_entity))
         "stop_id" ->
           Map.merge(acc, parse_stop(v))
         "route_id" ->
@@ -125,7 +125,13 @@ defmodule AlertProcessor.AlertParser do
     end)
   end
 
-  defp parse_trip(trip) do
+  defp parse_trip(%{"trip_id" => trip_id}, %{"route_type" => 4}) do
+     case ServiceInfoCache.get_generalized_trip_id(trip_id) do
+       {:ok, trip} -> %{trip: trip}
+       _ -> %{}
+     end
+  end
+  defp parse_trip(trip, _ie) do
     case trip do
       %{"trip_id" => trip} -> %{trip: trip}
       %{"trip_id" => trip, "direction_id" => direction_id} -> %{trip: trip, direction_id: direction_id}

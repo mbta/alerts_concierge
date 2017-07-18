@@ -181,18 +181,27 @@ defmodule AlertProcessor.Subscription.Mapper do
   def map_trips([{sub1, ie1}, {sub2, ie2}], %{"trips" => trips, "return_trips" => return_trips}) do
     trip_entities =
       Enum.map(trips, fn(trip) ->
-        %InformedEntity{trip: trip}
+        case ServiceInfoCache.get_generalized_trip_id(trip) do
+          {:ok, nil} -> %InformedEntity{trip: trip}
+          {:ok, generalized_trip_id} -> %InformedEntity{trip: generalized_trip_id}
+        end
       end)
     return_trip_entities =
       Enum.map(return_trips, fn(trip) ->
-        %InformedEntity{trip: trip}
+        case ServiceInfoCache.get_generalized_trip_id(trip) do
+          {:ok, nil} -> %InformedEntity{trip: trip}
+          {:ok, generalized_trip_id} -> %InformedEntity{trip: generalized_trip_id}
+        end
       end)
     [{sub1, ie1 ++ trip_entities}, {sub2, ie2 ++ return_trip_entities}]
   end
   def map_trips([{subscription, informed_entities}], %{"trips" => trips}) do
     trip_entities =
       Enum.map(trips, fn(trip) ->
-        %InformedEntity{trip: trip}
+        case ServiceInfoCache.get_generalized_trip_id(trip) do
+          {:ok, nil} -> %InformedEntity{trip: trip}
+          {:ok, generalized_trip_id} -> %InformedEntity{trip: generalized_trip_id}
+        end
       end)
     [{subscription, informed_entities ++ trip_entities}]
   end

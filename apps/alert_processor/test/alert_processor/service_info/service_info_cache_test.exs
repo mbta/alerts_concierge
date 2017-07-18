@@ -177,4 +177,19 @@ defmodule AlertProcessor.ServiceInfoCacheTest do
       assert {:ok, nil} = ServiceInfoCache.get_parent_stop_id(pid, "garbage")
     end
   end
+
+  test "get_generalized_trip_id" do
+    use_cassette "service_info", custom: true, clear_mock: true, match_requests_on: [:query] do
+      {:ok, pid} = ServiceInfoCache.start_link([name: :service_info_cache_test_get_generalized_trip_id])
+      assert {:ok, "Boat-F1-Boat-Hingham-05:40:00-weekday-1"} = ServiceInfoCache.get_generalized_trip_id(pid, "Boat-F1-IB-0540-WeekdaySummer")
+      assert {:ok, "Boat-F1-Boat-Hingham-19:00:00-weekend-1"} = ServiceInfoCache.get_generalized_trip_id(pid, "Boat-F1-IB-1900-Weekend")
+      assert {:ok, "Boat-F1-Boat-Hingham-22:30:00-saturday-1"} = ServiceInfoCache.get_generalized_trip_id(pid, "Boat-F1-IB-2230-Saturday")
+      assert {:ok, "Boat-F1-Boat-Hingham-05:40:00-weekday-1"} = ServiceInfoCache.get_generalized_trip_id(pid, "Boat-F1-IB-0540-WeekdaySummer")
+      assert {:ok, "Boat-F4-Boat-Charlestown-14:45:00-sunday-1"} = ServiceInfoCache.get_generalized_trip_id(pid, "Boat-F4-IB-245PM-Sunday")
+      assert {:ok, "Boat-F1-Boat-Hingham-22:10:00-friday-1"} = ServiceInfoCache.get_generalized_trip_id(pid, "Boat-F1-IB-2210-Friday")
+      assert {:ok, "Boat-F1-Boat-Long-11:00:00-weekday-0"} = ServiceInfoCache.get_generalized_trip_id(pid, "Boat-F1-OB-1100-WeekdaySummer")
+      assert {:ok, nil} = ServiceInfoCache.get_generalized_trip_id(pid, "garbage")
+
+    end
+  end
 end
