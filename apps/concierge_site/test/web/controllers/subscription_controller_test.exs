@@ -27,6 +27,15 @@ defmodule ConciergeSite.SubscriptionControllerTest do
       |> Ecto.Changeset.put_assoc(:informed_entities, commuter_rail_subscription_entities())
       |> Repo.insert()
 
+      :subscription
+      |> build(user: user)
+      |> weekday_subscription()
+      |> ferry_subscription()
+      |> Repo.preload(:informed_entities)
+      |> Ecto.Changeset.change()
+      |> Ecto.Changeset.put_assoc(:informed_entities, ferry_subscription_entities())
+      |> Repo.insert()
+
       conn = user
       |> guardian_login(conn)
       |> get(subscription_path(conn, :index))
@@ -41,6 +50,12 @@ defmodule ConciergeSite.SubscriptionControllerTest do
       assert html_response(conn, 200) =~ "North Station"
       assert html_response(conn, 200) =~ "Train 331, Weekdays | Departs North Station at 5:10pm"
       assert html_response(conn, 200) =~ "Train 221, Weekdays | Departs North Station at 6:55pm"
+
+      assert html_response(conn, 200) =~ "Ferry"
+      assert html_response(conn, 200) =~ "Long Wharf, Boston"
+      assert html_response(conn, 200) =~ "Charlestown Navy Yard"
+      assert html_response(conn, 200) =~ "5:00pm, Weekdays | Departs from Long Wharf, Boston"
+      assert html_response(conn, 200) =~ "5:15pm, Weekdays | Departs from Long Wharf, Boston"
     end
 
     test "GET /my-subscriptions with bus subscriptions", %{conn: conn} do

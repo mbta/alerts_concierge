@@ -1,12 +1,12 @@
 <%= if !Enum.empty?(@subscriptions) do %>
-  <div class="commuter-rail-subscriptions">
-    <h6>Commuter Rail</h6>
+  <div class="ferry-rail-subscriptions">
+    <h6>Ferry</h6>
     <%= for subscription <- @subscriptions do %>
-      <%= link(to: commuter_rail_subscription_path(@conn, :edit, subscription), class: "subscription-link") do %>
+      <%= link(to: ferry_subscription_path(@conn, :edit, subscription), class: "subscription-link") do %>
         <div class="subscription">
           <div class="subscription-icon-container">
-            <div class="commuter-rail-icon subscription-icon">
-              <img src="<%= static_url(@conn, "/images/commuter-rail.svg") %>" />
+            <div class="ferry-icon subscription-icon">
+              <img src="<%= static_url(@conn, "/images/ferry.svg") %>" />
             </div>
           </div>
           <%= subscription_info(subscription, @departure_time_map) %>

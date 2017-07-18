@@ -17,7 +17,7 @@ defmodule ConciergeSite.SubscriptionView do
 
   @type subscription_info :: %{
     amenity: [Subscription.t],
-    boat: [Subscription.t],
+    ferry: [Subscription.t],
     bus: [Subscription.t],
     commuter_rail: [Subscription.t],
     subway: [Subscription.t]
@@ -43,7 +43,7 @@ defmodule ConciergeSite.SubscriptionView do
         {route.order, relevant_days_key, subscription.start_time}
       end)
       |> Enum.group_by(& &1.type)
-    Map.merge(%{amenity: [], boat: [], bus: [], commuter_rail: [], subway: []}, subscription_map)
+    Map.merge(%{amenity: [], ferry: [], bus: [], commuter_rail: [], subway: []}, subscription_map)
   end
 
   def subscription_info(subscription, additional_info \\ nil)
@@ -116,11 +116,14 @@ defmodule ConciergeSite.SubscriptionView do
         [timeframe(subscription), " | ", direction_name(subscription), " ", parse_headsign(subscription)]
     end
   end
-  defp route_body(%{type: :commuter_rail, relevant_days: [relevant_days]} = subscription, commuter_rail_departure_time_map) do
+  defp route_body(%{type: :bus} = subscription, _) do
+    [timeframe(subscription), " | ", parse_headsign(subscription)]
+  end
+  defp route_body(%{type: :commuter_rail, relevant_days: [relevant_days]} = subscription, departure_time_map) do
     trip_entities =
       subscription.informed_entities
       |> Enum.filter(& InformedEntity.entity_type(&1) == :trip)
-      |> Enum.sort_by(& commuter_rail_departure_time_map[&1.trip])
+      |> Enum.sort_by(& departure_time_map[&1.trip])
 
     for trip_entity <- trip_entities do
       content_tag(:p, [
@@ -131,13 +134,27 @@ defmodule ConciergeSite.SubscriptionView do
         "s | Departs ",
         subscription.origin,
         " at ",
-        commuter_rail_departure_time_map[trip_entity.trip]
+        departure_time_map[trip_entity.trip]
       ])
     end
   end
-  defp route_body(%{type: :bus} = subscription, _) do
-    [timeframe(subscription), " | ", parse_headsign(subscription)]
+  defp route_body(%{type: :ferry, relevant_days: [relevant_days]} = subscription, departure_time_map) do
+    trip_entities =
+      subscription.informed_entities
+      |> Enum.filter(& InformedEntity.entity_type(&1) == :trip)
+      |> Enum.sort_by(& departure_time_map[&1.trip])
+
+    for trip_entity <- trip_entities do
+      content_tag(:p, [
+        departure_time_map[trip_entity.trip],
+        ", ",
+        relevant_days |> to_string() |> String.capitalize(),
+        "s | Departs from ",
+        subscription.origin
+      ])
+    end
   end
+
 
   defp timeframe(subscription) do
     [

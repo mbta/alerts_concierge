@@ -8,9 +8,9 @@ defmodule ConciergeSite.SubscriptionController do
     case Subscription.for_user(user) do
       [] -> redirect(conn, to: subscription_path(conn, :new))
       subscriptions ->
-        {:ok, commuter_rail_departure_time_map} = ConciergeSite.Subscriptions.DisplayInfo.departure_times_for_subscriptions(subscriptions)
+        {:ok, departure_time_map} = ConciergeSite.Subscriptions.DisplayInfo.departure_times_for_subscriptions(subscriptions)
 
-        render conn, "index.html", subscriptions: subscriptions, commuter_rail_departure_time_map: commuter_rail_departure_time_map
+        render conn, "index.html", subscriptions: subscriptions, departure_time_map: departure_time_map
     end
   end
 

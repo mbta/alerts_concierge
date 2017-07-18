@@ -17,7 +17,7 @@ defmodule ConciergeSite.Subscriptions.DisplayInfoTest do
           |> commuter_rail_subscription()
           |> weekday_subscription()
 
-        {:ok, %{
+        assert {:ok, %{
           "331" => "5:10pm",
           "221" => "6:55pm"
         }} = DisplayInfo.departure_times_for_subscriptions([subscription], @test_date)
@@ -37,7 +37,7 @@ defmodule ConciergeSite.Subscriptions.DisplayInfoTest do
           |> commuter_rail_subscription()
           |> weekday_subscription()
 
-        {:ok, %{}} == DisplayInfo.departure_times_for_subscriptions([subscription], @test_date)
+        assert {:ok, %{}} == DisplayInfo.departure_times_for_subscriptions([subscription], @test_date)
       end
     end
   end
