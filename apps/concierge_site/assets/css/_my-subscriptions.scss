@@ -51,7 +51,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  flex-basis: 33%;
+  flex-basis: 18%;
   border-right: 1px solid $border-color;
 
   .subscription-icon {
@@ -68,7 +68,7 @@
 
 .subscription-info {
   display: flex;
-  flex-basis: 66%;
+  flex-basis: 82%;
   flex-direction: column;
   justify-content: space-around;
   align-content: flex-start;
