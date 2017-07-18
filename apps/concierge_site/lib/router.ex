@@ -22,6 +22,8 @@ defmodule ConciergeSite.Router do
     get "/", PageController, :index
     resources "/account", AccountController, only: [:new, :create]
     resources "/login", SessionController, only: [:new, :create, :delete], singleton: true
+    get "/reset-password/sent", PasswordResetController, :sent
+    resources "/reset-password", PasswordResetController, only: [:new, :create, :edit]
   end
 
   scope "/", ConciergeSite do
