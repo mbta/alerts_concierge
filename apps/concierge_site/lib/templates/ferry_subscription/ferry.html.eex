@@ -13,9 +13,7 @@
 
     <%= render "_ferry_select_options.html", f: f, list_header: nil, trips: @trips %>
 
-    <%= for {param_name, value} <- atomize_keys(@subscription_params) do %>
-      <%= hidden_input f, param_name, value: value %>
-    <% end %>
+    <%= hidden_params(:trip_info, @subscription_params) %>
 
     <div class="trip-info-footer">
       <%= submit "Next", class: "btn btn-primary btn-subscription-next" %>

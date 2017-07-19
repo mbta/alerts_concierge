@@ -2,7 +2,7 @@ defmodule ConciergeSite.SubscriptionHelper do
   @moduledoc """
   Functions used across subscription views
   """
-
+  use Phoenix.HTML
   alias AlertProcessor.Model.Subscription
   alias AlertProcessor.Helpers.StringHelper
 
@@ -75,5 +75,25 @@ defmodule ConciergeSite.SubscriptionHelper do
     for param <- atomize_keys(relevant_params) do
       param
     end
+  end
+
+  @doc """
+  constructs list of hidden pinputs to pass along relevant parameters to next or previous step
+  via post request
+  """
+  @spec hidden_params(map) :: [any]
+  def hidden_params(relevant_params) do
+    for param <- atomize_keys(relevant_params) do
+      hidden_param(param)
+    end
+  end
+
+  defp hidden_param({param_name, param_value}) when param_name == :trips or param_name == :return_trips do
+    for trip_number <- param_value do
+      tag(:input, type: "hidden", name: "subscription[#{param_name}][]", value: trip_number)
+    end
+  end
+  defp hidden_param({param_name, param_value}) do
+    tag(:input, type: "hidden", name: "subscription[#{param_name}]", value: param_value)
   end
 end
