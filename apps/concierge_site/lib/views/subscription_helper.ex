@@ -2,7 +2,7 @@ defmodule ConciergeSite.SubscriptionHelper do
   @moduledoc """
   Functions used across subscription views
   """
-
+  use Phoenix.HTML
   alias AlertProcessor.Model.Subscription
   alias AlertProcessor.Helpers.StringHelper
 
@@ -65,5 +65,39 @@ defmodule ConciergeSite.SubscriptionHelper do
     |> Enum.map(&String.capitalize(Atom.to_string(&1)))
     |> Enum.intersperse("s, ")
     |> Kernel.++(["s"])
+  end
+
+  @doc """
+  conver params into keylist to be able to pass back to previous forms
+  """
+  @spec do_query_string_params(map | nil, [String.t]) :: [any]
+  def do_query_string_params(nil, _), do: []
+  def do_query_string_params(params, param_names) when is_list(param_names) do
+    relevant_params = Map.take(params, param_names)
+    for param <- atomize_keys(relevant_params) do
+      param
+    end
+  end
+
+  @doc """
+  constructs list of hidden inputs to pass along relevant parameters to next or previous step
+  via post request
+  """
+  @spec do_hidden_form_inputs(map | nil, [String.t]) :: [any]
+  def do_hidden_form_inputs(nil, _), do: []
+  def do_hidden_form_inputs(params, param_names) when is_list(param_names) do
+    relevant_params = Map.take(params, param_names)
+    for param <- atomize_keys(relevant_params) do
+      hidden_form_input(param)
+    end
+  end
+
+  defp hidden_form_input({param_name, param_value}) when is_list(param_value) do
+    for trip_number <- param_value do
+      tag(:input, type: "hidden", name: "subscription[#{param_name}][]", value: trip_number)
+    end
+  end
+  defp hidden_form_input({param_name, param_value}) do
+    tag(:input, type: "hidden", name: "subscription[#{param_name}]", value: param_value)
   end
 end

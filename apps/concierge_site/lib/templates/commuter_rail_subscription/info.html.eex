@@ -1,6 +1,6 @@
 <h1>Create New Subscription</h1>
 
-<%= render "_progress_bar.html", current_page: :trip_info, trip_type: @subscription_params["trip_type"], conn: @conn %>
+<%= render "_progress_bar.html", current_page: :trip_info, subscription_params: @subscription_params, conn: @conn %>
 
 <div class="subscription-step enter-trip-info">
   <h2>Enter your trip info</h2>
@@ -20,7 +20,8 @@
                  :origin,
                  @station_list_select_options,
                  class: "subscription-select-origin no-js",
-                 prompt: "Select a station" %>
+                 prompt: "Select a station",
+                 selected: @subscription_params["origin"] %>
     </div>
     <div class="form-group select-station">
       <label for="destination" class="station-input-label form-label">Destination</label>
@@ -28,11 +29,12 @@
                  :destination,
                  @station_list_select_options,
                  class: "subscription-select-destination no-js",
-                 prompt: "Select a station" %>
+                 prompt: "Select a station",
+                 selected: @subscription_params["destination"] %>
     </div>
     <div class="form-group select-days">
       <div class="form-label">Travel Days</div>
-      <%= select f, :relevant_days, [{"Weekdays", "weekday"}, {"Saturday", "saturday"}, {"Sunday", "sunday"}], required: true, class: "relevant-days-select" %>
+      <%= select f, :relevant_days, [{"Weekdays", "weekday"}, {"Saturday", "saturday"}, {"Sunday", "sunday"}], required: true, class: "relevant-days-select", selected: @subscription_params["relevant_days"] %>
     </div>
 
     <div class="form-group travel-times">
@@ -41,18 +43,18 @@
         We will send you notifications for any service alerts that occur during
         your planned travel time.
       </div>
-      <%= render "_travel_time_select_lists.html", trip_type: @subscription_params["trip_type"] %>
+      <%= render "_travel_time_select_lists.html", subscription_params: @subscription_params %>
     </div>
 
-    <%= for {param_name, value} <- atomize_keys(@subscription_params) do %>
-      <%= hidden_input f, param_name, value: value %>
-    <% end %>
+    <%= hidden_form_inputs(:trip_type, @subscription_params) %>
 
     <div class="trip-info-footer">
-      <%= link to: commuter_rail_subscription_path(@conn, :new), class: "subscription-info-back-link" do %>
-        <i class="fa fa-arrow-left" aria-hidden="true"></i> Go Back
-      <% end %>
       <%= submit "Next", class: "btn btn-primary btn-subscription-next" %>
     </div>
   <% end %>
+  <div class="back-link-container">
+    <%= link to: commuter_rail_subscription_path(@conn, :new), class: "subscription-info-back-link" do %>
+      <i class="fa fa-arrow-left" aria-hidden="true"></i> Go Back
+    <% end %>
+  </div>
 </div>

@@ -1,20 +1,46 @@
 defmodule ConciergeSite.CommuterRailSubscriptionView do
   use ConciergeSite.Web, :view
   import ConciergeSite.SubscriptionHelper,
-    only: [atomize_keys: 1, progress_link_class: 3]
+    only: [progress_link_class: 3, do_query_string_params: 2, do_hidden_form_inputs: 2]
   import ConciergeSite.TimeHelper,
     only: [travel_time_options: 0]
   alias AlertProcessor.Model.Trip
 
   @type trip_type :: :one_way | :round_trip
+  @type step :: :trip_type | :trip_info | :train | :preferences
 
   @disabled_progress_bar_links %{trip_info: [:trip_info, :train, :preferences],
-  train: [:train, :preferences],
-  preferences: [:preferences]}
+    train: [:train, :preferences],
+    preferences: [:preferences]}
 
   defdelegate progress_step_classes(page, step), to: ConciergeSite.SubscriptionHelper
 
   def progress_link_class(page, step), do: progress_link_class(page, step, @disabled_progress_bar_links)
+
+  @doc """
+  constructs keyword list of parameters to pass along relevant parameters to next or previous step
+  via get request
+  """
+  @spec query_string_params(step, map | nil) :: keyword(String.t)
+  def query_string_params(step, params), do: do_query_string_params(params, params_for_step(step))
+
+  @doc """
+  constructs list of hidden pinputs to pass along relevant parameters to next or previous step
+  via post request
+  """
+  @spec hidden_form_inputs(step, map | nil) :: [any]
+  def hidden_form_inputs(step, params), do: do_hidden_form_inputs(params, params_for_step(step))
+
+  @doc """
+  returns list of parameters that should be present and passed along
+  from the step given.
+  """
+  @spec params_for_step(step) :: [String.t]
+  def params_for_step(:trip_type), do: ~w(trip_type)
+  def params_for_step(:trip_info), do: ["origin", "destination", "relevant_days", "departure_start", "return_start" | params_for_step(:trip_type)]
+  def params_for_step(:train), do: ["trips", "return_trips" | params_for_step(:trip_info)]
+  def params_for_step(:preferences), do: ["alert_priority_type" | params_for_step(:train)]
+  def params_for_step(_), do: []
 
   @doc """
   Provide description text for Trip Info page based on which trip type selected

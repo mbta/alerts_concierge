@@ -7,16 +7,26 @@
              name: "Trip Type" %>
 
   <%= render "_progress_bar_item.html",
-             link_to: ferry_subscription_path(@conn, :info, trip_type: @trip_type),
+             link_to: ferry_subscription_path(@conn, :info, query_string_params(:trip_info, @subscription_params)),
              link_class: progress_link_class(@current_page, :trip_info),
              step_classes:  progress_step_classes(@current_page, :trip_info),
              name: "Trip Info" %>
 
-  <%= render "_progress_bar_item.html",
-             link_to: "#",
-             link_class: progress_link_class(@current_page, :ferry),
-             step_classes:  progress_step_classes(@current_page, :ferry),
-             name: "Ferry" %>
+  <%= if @current_page == :preferences do %>
+    <div class="progress-link <%= progress_link_class(@current_page, :ferry) %>">
+      <div class="progress-circle <%= progress_step_classes(@current_page, :ferry)[:circle] %>"></div>
+        <%= form_tag ferry_subscription_path(@conn, :ferry) do %>
+          <%= hidden_form_inputs(:ferry, @subscription_params) %>
+          <%= submit("Ferry", class: "btn btn-link progress-step-name") %>
+        <% end %>
+    </div>
+  <% else %>
+    <%= render "_progress_bar_item.html",
+              link_to: "#",
+              link_class: progress_link_class(@current_page, :ferry),
+              step_classes:  progress_step_classes(@current_page, :ferry),
+              name: "Ferry" %>
+  <% end %>
 
   <%= render "_progress_bar_item.html",
              link_to: "#",
