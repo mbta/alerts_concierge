@@ -5,6 +5,7 @@ defmodule ConciergeSite.PasswordResetController do
   alias AlertProcessor.Repo
   alias Calendar.DateTime
   alias ConciergeSite.{Email, Mailer}
+  alias Ecto.Multi
 
   @email_regex ~r/^([a-zA-Z0-9_\-\.]+)@([a-zA-Z0-9_\-\.]+)\.([a-zA-Z]{2,5})$/
 
@@ -35,8 +36,42 @@ defmodule ConciergeSite.PasswordResetController do
     render conn, "sent.html", email: email
   end
 
-  def edit(conn, _params) do
-    render conn, "edit.html"
+  def edit(conn, %{"id" => id}) do
+    password_reset = find_redeemable_password_reset_by_id!(id)
+    changeset = User.changeset(password_reset.user)
+
+    conn
+    |> assign(:changeset, changeset)
+    |> assign(:password_reset, password_reset)
+    |> render(:edit)
+  end
+
+  def update(conn, %{"user" => user_params, "id" => id}) do
+    password_reset = find_redeemable_password_reset_by_id!(id)
+    password_reset_changeset = PasswordReset.redeem_changeset(password_reset)
+    user_changeset = User.update_password_changeset(password_reset.user, user_params)
+
+    multi =
+      Multi.new
+      |> Multi.update(:user, user_changeset)
+      |> Multi.update(:password_reset, password_reset_changeset)
+
+    case Repo.transaction(multi) do
+      {:ok, %{user: user}} ->
+        conn
+        |> Guardian.Plug.sign_in(user)
+        |> put_flash(:info, "Your password has been updated.")
+        |> redirect(to: my_account_path(conn, :edit))
+      {:error, :user, changeset, _} ->
+        conn
+        |> assign(:changeset, changeset)
+        |> assign(:password_reset, password_reset)
+        |> render(:edit)
+      {:error, :password_reset, changeset, _} ->
+        conn
+        |> put_flash(:error, password_reset_errors(changeset))
+        |> redirect(to: session_path(conn, :new))
+    end
   end
 
   defp find_user_id_by_email(email) do
@@ -45,6 +80,12 @@ defmodule ConciergeSite.PasswordResetController do
       select: u.id,
       where: fragment("lower(?)", u.email) == ^String.downcase(email)
     )
+  end
+
+  defp find_redeemable_password_reset_by_id!(id) do
+    Repo.one!(from p in PasswordReset,
+      where: p.id == ^id and is_nil(p.redeemed_at) and p.expired_at > ^DateTime.now_utc())
+    |> Repo.preload([:user])
   end
 
   defp handle_unknown_email(conn, changeset, email) do
@@ -58,5 +99,10 @@ defmodule ConciergeSite.PasswordResetController do
       |> put_flash(:error, "Email is not in a valid format.")
       |> render("new.html", changeset: changeset)
     end
+  end
+
+  defp password_reset_errors(changeset) do
+    Enum.map(changeset.errors, fn ({_, {error, _}}) -> error end)
+    |> Enum.join(",")
   end
 end

@@ -20,7 +20,7 @@
     <div class="form-group">
       <%= label f, :password, "Password", class: "form-label" %>
       <%= error_tag f, :password %>
-      <%= password_input f, :password, placeholder: "Enter your password", class: "form-control", pattern: "(?=^.{6,}$)((?=.*\\d)|(?=.*\\W+))(?![.\\n])(?=.*[a-zA-Z]).*$", required: true %>
+      <%= password_input f, :password, placeholder: "Enter your password", class: "form-control", pattern: password_regex_string(), required: true %>
       <span></span>
       <p class="text-right"><%= link("Forgot password?", to: password_reset_path(@conn, :new), class: "forgot-password-link") %></p>
     </div>
