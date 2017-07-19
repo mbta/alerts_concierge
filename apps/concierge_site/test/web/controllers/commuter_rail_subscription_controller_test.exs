@@ -22,44 +22,40 @@ defmodule ConciergeSite.CommuterRailSubscriptionControllerTest do
     test "POST /subscriptions/commuter_rail/new/train one_way", %{conn: conn} do
       params = %{"subscription" => %{
         "departure_start" => "08:45:00",
-        "origin" => "place-north",
+        "origin" => "Rowley",
         "destination" => "Newburyport",
         "relevant_days" => "weekday",
         "trip_type" => "one_way",
       }}
 
-      use_cassette "commuter_rail_train_one_way", custom: true, clear_mock: true, match_requests_on: [:query] do
-        conn = post(conn, "/subscriptions/commuter_rail/new/train", params)
+      conn = post(conn, "/subscriptions/commuter_rail/new/train", params)
 
-        assert html_response(conn, 200) =~ "Choose your trains"
-        assert html_response(conn, 200) =~ "Departs North Station"
-        refute html_response(conn, 200) =~ "Departs Newburyport"
-      end
+      assert html_response(conn, 200) =~ "Choose your trains"
+      assert html_response(conn, 200) =~ "Departs Rowley"
+      refute html_response(conn, 200) =~ "Departs Newburyport"
     end
 
     test "POST /subscriptions/commuter_rail/new/train round_trip", %{conn: conn} do
       params = %{"subscription" => %{
         "departure_start" => "08:45:00",
         "return_start" => "16:00:00",
-        "origin" => "place-north",
+        "origin" => "Rowley",
         "destination" => "Newburyport",
         "relevant_days" => "weekday",
         "trip_type" => "round_trip",
       }}
 
-      use_cassette "commuter_rail_train_round_trip", custom: true, clear_mock: true, match_requests_on: [:query] do
-        conn = post(conn, "/subscriptions/commuter_rail/new/train", params)
+      conn = post(conn, "/subscriptions/commuter_rail/new/train", params)
 
-        assert html_response(conn, 200) =~ "Choose your trains"
-        assert html_response(conn, 200) =~ "Departs North Station"
-        assert html_response(conn, 200) =~ "Departs Newburyport"
-      end
+      assert html_response(conn, 200) =~ "Choose your trains"
+      assert html_response(conn, 200) =~ "Departs Rowley"
+      assert html_response(conn, 200) =~ "Departs Newburyport"
     end
 
     test "POST /subscriptions/commuter_rail/new/preferences", %{conn: conn} do
       params = %{"subscription" => %{
         "departure_start" => "08:45:00",
-        "origin" => "place-north",
+        "origin" => "Rowley",
         "destination" => "Newburyport",
         "trips" => ["123"],
         "relevant_days" => "weekday",
@@ -74,26 +70,24 @@ defmodule ConciergeSite.CommuterRailSubscriptionControllerTest do
     test "POST /subscriptions/commuter_rail/new/preferences with invalid params for one way", %{conn: conn} do
       params = %{"subscription" => %{
         "departure_start" => "08:45:00",
-        "origin" => "place-north",
+        "origin" => "Rowley",
         "destination" => "Newburyport",
         "trips" => [],
         "relevant_days" => "weekday",
         "trip_type" => "one_way",
       }}
 
-      use_cassette "commuter_rail_train_one_way", clear_mock: true do
-        conn = post(conn, "/subscriptions/commuter_rail/new/preferences", params)
+      conn = post(conn, "/subscriptions/commuter_rail/new/preferences", params)
 
-        assert html_response(conn, 200) =~ "Choose your trains"
-        assert html_response(conn, 200) =~ "lease select at least one trip."
-      end
+      assert html_response(conn, 200) =~ "Choose your trains"
+      assert html_response(conn, 200) =~ "lease select at least one trip."
     end
 
     test "POST /subscriptions/commuter_rail/new/preferences with invalid params for round trip", %{conn: conn} do
       params = %{"subscription" => %{
         "departure_start" => "08:45:00",
         "return_start" => "17:45:00",
-        "origin" => "place-north",
+        "origin" => "Rowley",
         "destination" => "Newburyport",
         "trips" => [],
         "return_trips" => [],
@@ -101,13 +95,11 @@ defmodule ConciergeSite.CommuterRailSubscriptionControllerTest do
         "trip_type" => "round_trip",
       }}
 
-      use_cassette "commuter_rail_train_round_trip", clear_mock: true do
-        conn = post(conn, "/subscriptions/commuter_rail/new/preferences", params)
+      conn = post(conn, "/subscriptions/commuter_rail/new/preferences", params)
 
-        assert html_response(conn, 200) =~ "Choose your trains"
-        assert html_response(conn, 200) =~ "Please select at least one trip."
-        assert html_response(conn, 200) =~ "Please select at least one return trip."
-      end
+      assert html_response(conn, 200) =~ "Choose your trains"
+      assert html_response(conn, 200) =~ "Please select at least one trip."
+      assert html_response(conn, 200) =~ "Please select at least one return trip."
     end
 
     test "POST /subscriptions/commuter_rail", %{conn: conn} do
@@ -121,16 +113,14 @@ defmodule ConciergeSite.CommuterRailSubscriptionControllerTest do
         "trip_type" => "one_way"
       }}
 
-      use_cassette "commuter_rail_create", clear_mock: true do
-        conn = post(conn, "/subscriptions/commuter_rail", params)
+      conn = post(conn, "/subscriptions/commuter_rail", params)
 
-        subscriptions = Repo.all(Subscription)
-        [ie | _] = InformedEntity |> Repo.all() |> Repo.preload(:subscription)
+      subscriptions = Repo.all(Subscription)
+      [ie | _] = InformedEntity |> Repo.all() |> Repo.preload(:subscription)
 
-        assert html_response(conn, 302) =~ "my-subscriptions"
-        assert length(subscriptions) == 1
-        assert ie.subscription == List.first(subscriptions)
-      end
+      assert html_response(conn, 302) =~ "my-subscriptions"
+      assert length(subscriptions) == 1
+      assert ie.subscription == List.first(subscriptions)
     end
 
     test "GET /subscriptions/commuter_rail/:id/edit", %{conn: conn, user: user} do
@@ -141,11 +131,9 @@ defmodule ConciergeSite.CommuterRailSubscriptionControllerTest do
         |> Map.merge(%{user: user, relevant_days: [:weekday]})
         |> insert()
 
-      use_cassette "commuter_rail_edit", clear_mock: true do
-        conn = get(conn, "/subscriptions/commuter_rail/#{subscription.id}/edit")
+      conn = get(conn, "/subscriptions/commuter_rail/#{subscription.id}/edit")
 
-        assert html_response(conn, 200) =~ "Edit Subscription"
-      end
+      assert html_response(conn, 200) =~ "Edit Subscription"
     end
 
     test "PATCH /subscriptions/commuter_rail/:id", %{conn: conn, user: user} do
@@ -161,11 +149,9 @@ defmodule ConciergeSite.CommuterRailSubscriptionControllerTest do
         "trips" => ["341"]
       }}
 
-      use_cassette "commuter_rail_update", clear_mock: true  do
-        conn = patch(conn, "/subscriptions/commuter_rail/#{subscription.id}", params)
+      conn = patch(conn, "/subscriptions/commuter_rail/#{subscription.id}", params)
 
-        assert html_response(conn, 302) =~ "my-subscriptions"
-      end
+      assert html_response(conn, 302) =~ "my-subscriptions"
     end
 
     test "PATCH /subscriptions/commuter_rail/:id displays error if trip not selected", %{conn: conn, user: user} do
@@ -181,12 +167,10 @@ defmodule ConciergeSite.CommuterRailSubscriptionControllerTest do
         "trips" => []
       }}
 
-      use_cassette "commuter_rail_update_invalid", clear_mock: true do
-        conn = patch(conn, "/subscriptions/commuter_rail/#{subscription.id}", params)
+      conn = patch(conn, "/subscriptions/commuter_rail/#{subscription.id}", params)
 
-        assert html_response(conn, 200) =~ "Edit Subscription"
-        assert html_response(conn, 200) =~ "Please select at least one trip"
-      end
+      assert html_response(conn, 200) =~ "Edit Subscription"
+      assert html_response(conn, 200) =~ "Please select at least one trip"
     end
   end
 
