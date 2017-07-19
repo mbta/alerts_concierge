@@ -1,4 +1,4 @@
-<h1>Route Name</h1>
+<h1><%= route_name(@subscription) %></h1>
 
 <div class="edit-subscription subscription-step">
   <h2>Edit Subscription</h2>

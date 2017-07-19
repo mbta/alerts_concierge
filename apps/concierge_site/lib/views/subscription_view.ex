@@ -172,7 +172,7 @@ defmodule ConciergeSite.SubscriptionView do
     route
   end
 
-  defp parse_route(subscription) do
+  def parse_route(subscription) do
     {:ok, route} = subscription |> parse_route_id() |> ServiceInfoCache.get_route()
     route
   end

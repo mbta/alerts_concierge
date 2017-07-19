@@ -125,6 +125,7 @@ defmodule ConciergeSite.BusSubscriptionControllerTest do
       factory =
         subscription_factory()
         |> bus_subscription()
+        |> Map.put(:informed_entities, bus_subscription_entities())
         |> Map.merge(%{user: user})
       subscription = insert(factory)
 
