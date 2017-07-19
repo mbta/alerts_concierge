@@ -14,6 +14,7 @@ defmodule ConciergeSite.AccountController do
     account_changeset = User.create_account_changeset(%User{}, user_params)
     case Repo.insert(account_changeset) do
       {:ok, user} ->
+        # TODO: Send SMS/email
         conn
         |> Guardian.Plug.sign_in(user)
         |> redirect(to: "/my-subscriptions")
