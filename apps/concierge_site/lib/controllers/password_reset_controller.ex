@@ -38,9 +38,9 @@ defmodule ConciergeSite.PasswordResetController do
 
   def edit(conn, %{"id" => id}) do
     password_reset = find_redeemable_password_reset_by_id!(id)
-    changeset = User.update_password_changeset(password_reset.user)
     render conn, "edit.html",
       changeset: changeset, password_reset: password_reset
+    changeset = User.changeset(password_reset.user)
   end
 
   def update(conn, %{"user" => user_params, "id" => id}) do
