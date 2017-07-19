@@ -60,17 +60,19 @@ defmodule ConciergeSite.PasswordResetControllerTest do
   test "GET /reset-password/:id/edit with an expired password reset", %{conn: conn}  do
     password_reset = insert(:password_reset, expired_at: DateTime.subtract!(DateTime.now_utc, 1))
 
-    assert_raise Ecto.NoResultsError, fn ->
+    response = assert_error_sent 404, fn ->
       get(conn, password_reset_path(conn, :edit, password_reset))
     end
+    assert {404, _, "Page not found"} = response
   end
 
   test "GET /reset-password/:id/edit with a redeemed password reset", %{conn: conn}  do
     password_reset = insert(:password_reset, redeemed_at: DateTime.subtract!(DateTime.now_utc, 1))
 
-    assert_raise Ecto.NoResultsError, fn ->
+    response = assert_error_sent 404, fn ->
       get(conn, password_reset_path(conn, :edit, password_reset))
     end
+    assert {404, _, "Page not found"} = response
   end
 
   test "PATCH /reset-password/:id/ with a redeemable Password Reset", %{conn: conn} do
@@ -120,9 +122,10 @@ defmodule ConciergeSite.PasswordResetControllerTest do
       "password_confirmation" => "P@ssword1",
     }}
 
-    assert_raise Ecto.NoResultsError, fn ->
+    response = assert_error_sent 404, fn ->
       patch(conn, password_reset_path(conn, :update, password_reset), params)
     end
+    assert {404, _, "Page not found"} = response
 
     updated_user = Repo.get(User, user.id)
     assert updated_user.encrypted_password == @encrypted_password
@@ -137,9 +140,10 @@ defmodule ConciergeSite.PasswordResetControllerTest do
       "password_confirmation" => "P@ssword1",
     }}
 
-    assert_raise Ecto.NoResultsError, fn ->
+    response = assert_error_sent 404, fn ->
       patch(conn, password_reset_path(conn, :update, password_reset), params)
     end
+    assert {404, _, "Page not found"} = response
 
     updated_user = Repo.get(User, user.id)
     assert updated_user.encrypted_password == @encrypted_password
