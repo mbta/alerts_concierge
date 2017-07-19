@@ -1,4 +1,4 @@
-<%= if !Enum.empty?(@subscriptions) do %>
+<%= unless Enum.empty?(@subscriptions) do %>
   <div class="commuter-rail-subscriptions">
     <h6>Commuter Rail</h6>
     <%= for subscription <- @subscriptions do %>
@@ -9,7 +9,7 @@
               <img src="<%= static_url(@conn, "/images/commuter-rail.svg") %>" />
             </div>
           </div>
-          <%= subscription_info(subscription, @commuter_rail_departure_time_map) %>
+          <%= subscription_info(subscription, @departure_time_map) %>
           <div class="subscription-edit-link">
             <i class="fa fa-chevron-right" aria-hidden="true"></i>
           </div>

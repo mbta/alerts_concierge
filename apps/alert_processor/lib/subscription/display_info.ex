@@ -1,10 +1,10 @@
-defmodule ConciergeSite.Subscriptions.DisplayInfo do
+defmodule AlertProcessor.Subscription.DisplayInfo do
   @moduledoc """
   module for gathering info to display subscription info
   in a meaningful way to a user.
   """
 
-  alias AlertProcessor.{ApiClient, Helpers.DateTimeHelper, Model.InformedEntity, Model.Subscription}
+  alias AlertProcessor.{ApiClient, Helpers.DateTimeHelper, Model.InformedEntity, Model.Subscription, ServiceInfoCache}
 
   @spec departure_times_for_subscriptions([Subscription.t], Date.t | nil) :: {:ok, map} | :error
   def departure_times_for_subscriptions(subscriptions, selected_date \\ nil) do
@@ -48,14 +48,22 @@ defmodule ConciergeSite.Subscriptions.DisplayInfo do
   end
 
   defp map_trip_names(schedules, trips) do
-    {schedules, Map.new(trips, fn(%{"id" => id, "attributes" => %{"name" => name}}) -> {id, name} end)}
+    name_map =
+      for %{"id" => id, "attributes" => %{"name" => name}} <- trips, into: %{} do
+        case ServiceInfoCache.get_generalized_trip_id(id) do
+          {:ok, nil} -> {id, name}
+          {:ok, generalized_trip_id} -> {id, generalized_trip_id}
+        end
+      end
+
+    {schedules, name_map}
   end
 
   defp map_trip_departure_times(schedules, trip_names_map) do
-    schedules_map = Enum.group_by(schedules, fn(%{"relationships" => %{"trip" => %{"data" => %{"id" => id}}}}) -> id end)
+    schedules_map = Enum.group_by(schedules, & &1["relationships"]["trip"]["data"]["id"])
 
     for {_id, schedules} <- schedules_map, Enum.count(schedules) > 1, into: %{} do
-      [departure_schedule | _] = Enum.sort_by(schedules, fn(%{"attributes" => %{"departure_time" => departure_timestamp}}) -> departure_timestamp end)
+      [departure_schedule | _] = Enum.sort_by(schedules, & &1["attributes"]["departure_time"])
       %{
         "attributes" => %{
           "departure_time" => departure_timestamp
@@ -75,7 +83,7 @@ defmodule ConciergeSite.Subscriptions.DisplayInfo do
         |> Calendar.Strftime.strftime!("%l:%M%P")
         |> String.trim()
 
-      {Map.get(trip_names_map, trip_id), departure_timestamp}
+      {Map.get(trip_names_map, trip_id, trip_id), departure_timestamp}
     end
   end
 end

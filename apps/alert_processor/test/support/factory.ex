@@ -45,18 +45,6 @@ defmodule AlertProcessor.Factory do
       destination: "Harvard"}
   end
 
-  def bus_subscription(%Subscription{} = subscription) do
-    %{subscription |
-      type: :bus
-    }
-  end
-
-  def amenity_subscription(%Subscription{} = subscription) do
-    %{subscription |
-      type: :amenity
-     }
-  end
-
   def subway_subscription_entities() do
     [
       %InformedEntity{route_type: 1},
@@ -64,6 +52,20 @@ defmodule AlertProcessor.Factory do
       %InformedEntity{route_type: 1, route: "Red", direction_id: 0},
       %InformedEntity{route_type: 1, route: "Red", stop: "place-davis"},
       %InformedEntity{route_type: 1, route: "Red", stop: "place-harsq"}
+    ]
+  end
+
+  def bus_subscription(%Subscription{} = subscription) do
+    %{subscription |
+      type: :bus
+    }
+  end
+
+  def bus_subscription_entities() do
+    [
+      %InformedEntity{route_type: 3},
+      %InformedEntity{route_type: 3, route: "57A"},
+      %InformedEntity{route_type: 3, route: "57A", direction_id: 0}
     ]
   end
 
@@ -86,12 +88,29 @@ defmodule AlertProcessor.Factory do
     ]
   end
 
-  def bus_subscription_entities() do
+  def ferry_subscription(%Subscription{} = subscription) do
+    %{subscription |
+      type: :ferry,
+      origin: "Long Wharf, Boston",
+      destination: "Charlestown Navy Yard"
+    }
+  end
+
+  def ferry_subscription_entities() do
     [
-      %InformedEntity{route_type: 3},
-      %InformedEntity{route_type: 3, route: "57A"},
-      %InformedEntity{route_type: 3, route: "57A", direction_id: 0}
+      %InformedEntity{route_type: 4},
+      %InformedEntity{trip: "Boat-F4-Boat-Long-17:15:00-weekday-0"},
+      %InformedEntity{trip: "Boat-F4-Boat-Long-17:00:00-weekday-0"},
+      %InformedEntity{route_type: 4, route: "Boat-F4", direction_id: 1},
+      %InformedEntity{route_type: 4, route: "Boat-F4", stop: "Boat-Charlestown"},
+      %InformedEntity{route_type: 4, route: "Boat-F4", stop: "Boat-Long"}
     ]
+  end
+
+  def amenity_subscription(%Subscription{} = subscription) do
+    %{subscription |
+      type: :amenity
+     }
   end
 
   def user_factory do
