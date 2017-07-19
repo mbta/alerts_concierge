@@ -23,8 +23,7 @@ defmodule AlertProcessor.Model.Notification do
   import Ecto.Changeset
   alias AlertProcessor.{Model.User, Repo}
 
-  @spec save(__MODULE__.t, atom) ::
-  {:ok, __MODULE__.t} | {:error, Ecto.Changeset.t}
+  @spec save(__MODULE__.t, atom) :: {:ok, __MODULE__.t} | {:error, Ecto.Changeset.t}
   def save(notification, status) do
     Repo.insert(__MODULE__.create_changeset(%{notification | status: status}))
   end
