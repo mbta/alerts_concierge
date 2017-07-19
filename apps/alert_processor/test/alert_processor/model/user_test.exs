@@ -104,4 +104,35 @@ defmodule AlertProcessor.Model.UserTest do
       refute changeset.valid?
     end
   end
+
+  describe "update_vacation_changeset" do
+    test "will create a valid changeset with end time in the future" do
+      changeset = User.update_vacation_changeset(%User{}, %{"vacation_start" => "2017-09-01T00:00:00+00:00", "vacation_end" => "2035-09-01T00:00:00+00:00"})
+      assert changeset.valid?
+    end
+
+    test "will create an invalid changeset with vacation_end in past" do
+      changeset = User.update_vacation_changeset(%User{}, %{"vacation_start" => "2014-09-01T00:00:00+00:00", "vacation_end" => "2015-09-01T00:00:00+00:00"})
+      refute changeset.valid?
+      assert changeset.errors[:vacation_end] == {"Vacation period must end sometime in the future.", []}
+    end
+
+    test "will create an invalid changeset with vacation_end before vacation_start" do
+      changeset = User.update_vacation_changeset(%User{}, %{"vacation_start" => "2037-09-01T00:00:00+00:00", "vacation_end" => "2035-09-01T00:00:00+00:00"})
+      refute changeset.valid?
+      assert changeset.errors[:vacation_end] == {"Vacation period must have an end time later than the start time.", []}
+    end
+  end
+
+  describe "remove_vacation_changeset" do
+    test "will create a valid changeset when vacation period is set" do
+      changeset = User.remove_vacation_changeset(%User{vacation_start: ~N[2017-07-01 00:00:00], vacation_end: ~N[2018-07-01 00:00:00]})
+      assert changeset.valid?
+    end
+
+    test "will create a valid changeset when vacation period is not set" do
+      changeset = User.remove_vacation_changeset(%User{vacation_start: nil, vacation_end: nil})
+      assert changeset.valid?
+    end
+  end
 end

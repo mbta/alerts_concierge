@@ -115,7 +115,7 @@ defmodule AlertProcessor.Model.User do
     |> hash_password()
   end
 
-  @spec update_account_changeset(__MODULE__.t, map) :: Ecto.Changeset.t
+  @spec update_vacation_changeset(__MODULE__.t, map) :: Ecto.Changeset.t
   def update_vacation_changeset(struct, params \\ %{}) do
     struct
     |> cast(params, ~w(vacation_start vacation_end)a)
@@ -142,7 +142,8 @@ defmodule AlertProcessor.Model.User do
     end
   end
 
-  def remove_vacation_period_changeset(struct) do
+  @spec remove_vacation_changeset(__MODULE__.t) :: Ecto.Changeset.t
+  def remove_vacation_changeset(struct) do
     struct
     |> change(vacation_start: nil)
     |> change(vacation_end: nil)

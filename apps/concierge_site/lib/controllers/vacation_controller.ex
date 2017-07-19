@@ -25,7 +25,7 @@ defmodule ConciergeSite.VacationController do
   end
 
   def delete(conn, _params, user, _claims) do
-    changeset = User.remove_vacation_period_changeset(user)
+    changeset = User.remove_vacation_changeset(user)
 
     case Repo.update(changeset) do
       {:ok, _user} ->

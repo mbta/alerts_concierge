@@ -43,21 +43,6 @@ defmodule ConciergeSite.VacationControllerTest do
       assert updated_user.vacation_start == nil
       assert updated_user.vacation_end == nil
     end
-
-    test "PATCH /my-account/vacation with vacation_end before vacation_start", %{conn: conn, user: user} do
-      params = %{"user" => %{
-        "vacation_start" => "2035-09-01T00:00:00+00:00",
-        "vacation_end" => "2017-09-01T00:00:00+00:00"
-      }}
-
-      conn = patch(conn, my_account_vacation_path(conn, :update, params))
-
-      updated_user = Repo.get(User, user.id)
-
-      assert html_response(conn, 200) =~ "Vacation period must have an end time later than the start time"
-      assert updated_user.vacation_start == nil
-      assert updated_user.vacation_end == nil
-    end
   end
 
   describe "unauthorized" do
