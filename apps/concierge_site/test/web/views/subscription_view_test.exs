@@ -1,7 +1,8 @@
 defmodule ConciergeSite.SubscriptionViewTest do
   use ExUnit.Case
   alias ConciergeSite.SubscriptionView
-  alias AlertProcessor.Model.{InformedEntity, Subscription}
+  alias AlertProcessor.Model.{InformedEntity, Route, Subscription}
+  import AlertProcessor.Factory
 
   describe "sorted_subscription/1" do
     test "sorted_subscriptions groups subscriptions by mode" do
@@ -37,6 +38,17 @@ defmodule ConciergeSite.SubscriptionViewTest do
       sub5 = %Subscription{origin: "Davis", destination: "Park Street", type: :subway, start_time: ~T[14:00:00], end_time: ~T[15:00:00], informed_entities: [%InformedEntity{route: "Red", route_type: 1}], relevant_days: [:weekday, :saturday]}
       sub6 = %Subscription{origin: "Davis", destination: "Park Street", type: :subway, start_time: ~T[14:00:00], end_time: ~T[15:00:00], informed_entities: [%InformedEntity{route: "Red", route_type: 1}], relevant_days: [:weekday, :sunday]}
       assert %{amenity: [], ferry: [], bus: [], commuter_rail: [], subway: [^sub4, ^sub5, ^sub6, ^sub1, ^sub2, ^sub3]} = SubscriptionView.sorted_subscriptions(Enum.shuffle([sub1, sub2, sub3, sub4, sub5, sub6]))
+    end
+  end
+
+  describe "parse_route/1" do
+    test "returns the route for a given subscription" do
+      subscription =
+        subscription_factory()
+        |> bus_subscription()
+        |> Map.put(:informed_entities, bus_subscription_entities())
+
+      assert %Route{route_id: "57A"} = SubscriptionView.parse_route(subscription)
     end
   end
 end

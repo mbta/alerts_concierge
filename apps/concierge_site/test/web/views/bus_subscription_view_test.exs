@@ -1,6 +1,7 @@
 defmodule ConciergeSite.BusSubscriptionViewTest do
   use ExUnit.Case
   alias ConciergeSite.BusSubscriptionView
+  import AlertProcessor.Factory
 
   describe "progress_link_class" do
     test "it returns the disabled class when the page is trip_type" do
@@ -81,6 +82,17 @@ defmodule ConciergeSite.BusSubscriptionViewTest do
       routes = BusSubscriptionView.trip_summary_routes(params)
 
       assert routes == [["08:45 AM", " - ", "09:15 AM", " | ", "Inbound"], ["04:45 PM", " - ", "05:15 PM", " | ", "Outbound"]]
+    end
+  end
+
+  describe "route_name/1" do
+    test "returns full route name with direction" do
+      subscription =
+        subscription_factory()
+        |> bus_subscription()
+        |> Map.put(:informed_entities, bus_subscription_entities())
+
+      assert "Route 57A Outbound" == BusSubscriptionView.route_name(subscription) |> IO.iodata_to_binary()
     end
   end
 end

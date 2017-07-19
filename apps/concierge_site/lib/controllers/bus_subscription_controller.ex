@@ -9,7 +9,7 @@ defmodule ConciergeSite.BusSubscriptionController do
   end
 
   def edit(conn, %{"id" => id}, user, _claims) do
-    subscription = Subscription.one_for_user!(id, user.id)
+    subscription = Subscription.one_for_user!(id, user.id, true)
     changeset = Subscription.create_changeset(subscription)
     render conn, "edit.html", subscription: subscription, changeset: changeset
   end

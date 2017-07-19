@@ -5,6 +5,8 @@ defmodule ConciergeSite.BusSubscriptionView do
   import ConciergeSite.TimeHelper,
     only: [travel_time_options: 0, time_option_local_strftime: 1,
            format_time: 1]
+  import ConciergeSite.SubscriptionView,
+    only: [parse_route: 1]
 
   @disabled_progress_bar_links %{trip_info: [:trip_info, :preferences],
     preferences: [:preferences]}
@@ -12,6 +14,24 @@ defmodule ConciergeSite.BusSubscriptionView do
   defdelegate progress_step_classes(page, step), to: ConciergeSite.SubscriptionHelper
 
   def progress_link_class(page, step), do: progress_link_class(page, step, @disabled_progress_bar_links)
+
+  @doc """
+  Returns a route's full name, example: "Route 57A Inbound"
+  """
+  @spec route_name(Subscription.t) :: iodata
+  def route_name(subscription) do
+    route = parse_route(subscription)
+    direction = direction_name(subscription)
+    ["Route ", route.long_name, " ", direction]
+  end
+
+  defp direction_name(subscription) do
+    subscription.informed_entities
+    |> Enum.filter_map(&(!is_nil(&1.direction_id)), &(&1.direction_id))
+    |> List.first()
+    |> Integer.to_string()
+    |> named_direction()
+  end
 
   @doc """
   Returns a summary of a subscription's associated trip days, times, and stops
