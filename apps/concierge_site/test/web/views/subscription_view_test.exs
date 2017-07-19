@@ -51,4 +51,43 @@ defmodule ConciergeSite.SubscriptionViewTest do
       assert %Route{route_id: "57A"} = SubscriptionView.parse_route(subscription)
     end
   end
+
+  describe "vacation_color_class/2" do
+    test "class when alerts are paused" do
+      assert IO.iodata_to_binary(SubscriptionView.vacation_color_class(~N[2017-07-10 00:00:00], ~N[2117-07-10 00:00:00])) == "callout-active"
+    end
+
+    test "class when alerts are not paused" do
+      assert IO.iodata_to_binary(SubscriptionView.vacation_color_class(nil, nil)) == "callout-inactive"
+    end
+  end
+
+  describe "vacation_banner_content/2" do
+    test "message when alerts are paused" do
+      assert IO.iodata_to_binary(SubscriptionView.vacation_banner_content(~N[2017-07-10 00:00:00], ~N[2117-07-10 00:00:00])) == "Your alerts have been paused until July 10, 2117."
+    end
+
+    test "message when alerts are not paused" do
+      assert IO.iodata_to_binary(SubscriptionView.vacation_banner_content(nil, nil)) == "Don't need updates right now?"
+    end
+  end
+
+  describe "on_vacation?/2" do
+    test "returns true if now is later than vacation start and before vacation end" do
+      assert SubscriptionView.on_vacation?(~N[2010-07-10 00:00:00], ~N[2200-07-10 00:00:00])
+    end
+
+    test "returns false if vacation_end is in the past" do
+      refute SubscriptionView.on_vacation?(~N[2017-04-01 00:00:00], ~N[2017-05-01 00:00:00])
+    end
+
+    test "returns false if vacation_start is in the future" do
+      refute SubscriptionView.on_vacation?(~N[2217-04-01 00:00:00], ~N[2217-05-01 00:00:00])
+    end
+
+    test "returns false if either value is nil" do
+      refute SubscriptionView.on_vacation?(nil, ~N[2035-07-01 00:00:00])
+      refute SubscriptionView.on_vacation?(~N[2035-07-01 00:00:00], nil)
+    end
+  end
 end

@@ -1,0 +1,32 @@
+<h1>My Account</h1>
+<div>
+  <h2>Pause T-Alerts</h2>
+  <%= flash_error(@conn) %>
+  <p>
+    Headed out of town? Let us know when you do not wish to be disturbed and we will suspend your T-Alerts during that time.
+  </p>
+
+  <%= form_for @changeset, my_account_vacation_path(@conn, :update), fn f -> %>
+    <div>
+      <div class="form-group <%= if :vacation_start in @changeset.errors, do: "has-danger" %>">
+        <%= label f, :vacation_start, "Start Date:", class: "form-label" %>
+        <%= error_tag f, :vacation_start %>
+        <%= text_input f, :vacation_start, class: "form-control form-control-success form-control-danger", required: true %>
+        <span></span>
+      </div>
+
+      <div class="form-group <%= if :vacation_end in @changeset.errors, do: "has-danger" %>">
+        <%= label f, :vacation_end, "End Date:", class: "form-label" %>
+        <%= error_tag f, :vacation_end %>
+        <%= text_input f, :vacation_end, class: "form-control form-control-success form-control-danger", required: true %>
+        <span></span>
+      </div>
+
+    </div>
+
+    <div>
+      <%= submit "Pause My Alerts", class: "btn btn-primary btn-wide" %>
+      <%= link("Cancel", to: subscription_path(@conn, :index)) %>
+    </div>
+  <% end %>
+<div>

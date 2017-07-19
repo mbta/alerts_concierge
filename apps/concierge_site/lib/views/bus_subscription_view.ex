@@ -1,5 +1,6 @@
 defmodule ConciergeSite.BusSubscriptionView do
   use ConciergeSite.Web, :view
+  alias AlertProcessor.Model.Subscription
   import ConciergeSite.SubscriptionHelper,
     only: [atomize_keys: 1, joined_day_list: 1, progress_link_class: 3]
   import ConciergeSite.TimeHelper,

@@ -31,6 +31,7 @@ defmodule ConciergeSite.Router do
     get "/my-subscriptions", SubscriptionController, :index
     resources "/my-account", MyAccountController, only: [:edit, :update], singleton: true do
       resources "/password", PasswordController, only: [:edit, :update], singleton: true
+      resources "/vacation", VacationController, only: [:edit, :update, :delete], singleton: true
     end
     resources "/subscriptions", SubscriptionController, only: [:new, :edit]
   end

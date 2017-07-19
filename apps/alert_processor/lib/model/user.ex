@@ -115,6 +115,40 @@ defmodule AlertProcessor.Model.User do
     |> hash_password()
   end
 
+  @spec update_vacation_changeset(__MODULE__.t, map) :: Ecto.Changeset.t
+  def update_vacation_changeset(struct, params \\ %{}) do
+    struct
+    |> cast(params, ~w(vacation_start vacation_end)a)
+    |> validate_vacation_period()
+  end
+
+  defp validate_vacation_period(changeset) do
+    vacation_start = get_field(changeset, :vacation_start)
+    vacation_end = get_field(changeset, :vacation_end)
+    case {vacation_start, vacation_end} do
+      {nil, nil} ->
+        changeset
+      {vacation_start, vacation_end} ->
+        now = DateTime.utc_now()
+        with {:lt, :valid_period} <- {DateTime.compare(vacation_start, vacation_end), :valid_period},
+            {:lt, :in_future} <- {DateTime.compare(now, vacation_end), :in_future} do
+          changeset
+        else
+          {_, :in_future} ->
+            add_error(changeset, :vacation_end, "Vacation period must end sometime in the future.")
+          {_, :valid_period} ->
+            add_error(changeset, :vacation_end, "Vacation period must have an end time later than the start time.")
+        end
+    end
+  end
+
+  @spec remove_vacation_changeset(__MODULE__.t) :: Ecto.Changeset.t
+  def remove_vacation_changeset(struct) do
+    struct
+    |> change(vacation_start: nil)
+    |> change(vacation_end: nil)
+  end
+
   @doc """
   Checks if user's login credentials are valid
   """
