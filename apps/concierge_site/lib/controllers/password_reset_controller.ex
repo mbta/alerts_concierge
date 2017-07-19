@@ -62,10 +62,12 @@ defmodule ConciergeSite.PasswordResetController do
       {:error, :user, changeset, _} ->
         render conn, "edit.html",
           changeset: changeset, password_reset: password_reset
-      {:error, :password_reset, _, _} ->
         conn
-        |> put_flash(:error, "Password could not be reset. Please try again.")
-        |> redirect(to: session_path(conn, :new))
+      {:error, :password_reset, changeset, _} ->
+        conn
+        |> put_flash(:error, password_reset_errors(changeset))
+        |> redirect(to: session_path(conn, :new)
+      end
     end
   end
 
@@ -94,5 +96,10 @@ defmodule ConciergeSite.PasswordResetController do
       |> put_flash(:error, "Email is not in a valid format.")
       |> render("new.html", changeset: changeset)
     end
+  end
+
+  defp password_reset_errors(changeset) do
+    Enum.map(changeset.errors, fn ({_, {error, _}}) -> error end) 
+    |> Enum.join(",")
   end
 end
