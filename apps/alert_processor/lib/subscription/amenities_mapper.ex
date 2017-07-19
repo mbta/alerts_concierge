@@ -60,7 +60,7 @@ defmodule AlertProcessor.Subscription.AmenitiesMapper do
       |> map_stop_names()
       |> set_alert_priority()
 
-      with {:ok, subscriptions} <- map_timeframe(params),
+    with {:ok, subscriptions} <- map_timeframe(params),
          {:ok, subscriptions} <- map_priority(subscriptions, params),
          subscriptions <- map_type(subscriptions, :amenity)
          do
