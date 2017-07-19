@@ -82,53 +82,79 @@ defmodule ConciergeSite.Subscriptions.CommuterRailParamsTest do
     end
   end
 
-  describe "prepare_for_mapper" do
-    test "it preps params for one way parameters" do
-      params = %{
-        "alert_priority_type" => "low",
-        "departure_start" => "09:00:00",
-        "destination" => "Morton Street",
-        "origin" => "Fairmount",
-        "relevant_days" => "weekday",
-        "route_type" => "2",
-        "trip_type" => "one_way",
-        "trips" => ["755", "757", "759"],
-        "user_id" => "123-456-7890"
-      }
+  describe "prepare_for_mapper one_way" do
+    @params %{
+      "alert_priority_type" => "low",
+      "departure_start" => "09:00:00",
+      "destination" => "Fairmount",
+      "origin" => "Morton Street",
+      "relevant_days" => "weekday",
+      "route_type" => "2",
+      "trip_type" => "one_way",
+      "trips" => ["755", "757", "759"],
+      "user_id" => "123-456-7890"
+    }
 
-      assert CommuterRailParams.prepare_for_mapper(params) == Map.merge(params, %{
+    test "it preps params for one way parameters" do
+      assert CommuterRailParams.prepare_for_mapper(@params) == Map.merge(@params, %{
         "amenities" => [],
-        "departure_start" => "08:25:00",
-        "departure_end" => "10:06:00",
+        "departure_start" => "08:21:00",
+        "departure_end" => "10:10:00",
         "relevant_days" => ["weekday"],
         "return_start" => nil,
         "return_end" => nil
       })
     end
 
-    test "it preps params for round trip parameters" do
-      params = %{
-        "alert_priority_type" => "low",
-        "departure_start" => "09:00:00",
-        "destination" => "Morton Street",
-        "origin" => "Fairmount",
-        "relevant_days" => "weekday",
-        "return_start" => "14:00:00",
-        "return_trips" => ["768"],
-        "route_type" => "2",
-        "trip_type" => "round_trip",
-        "trips" => ["755", "757", "759"],
-        "user_id" => "123-456-7890"
-      }
+    test "it adjusts the actual departure_start and departure_end timestamps based on trips selected" do
+      assert %{"departure_start" => "08:21:00", "departure_end" => "10:10:00"} = CommuterRailParams.prepare_for_mapper(@params)
+    end
 
-      assert CommuterRailParams.prepare_for_mapper(params) == Map.merge(params, %{
+    test "it transform single relevant days value into array with same value" do
+      assert %{"relevant_days" => ["weekday"]} = CommuterRailParams.prepare_for_mapper(@params)
+    end
+
+    test "it sets return_start and return_end to nil" do
+      assert %{"return_start" => nil, "return_end" => nil} = CommuterRailParams.prepare_for_mapper(@params)
+    end
+  end
+
+  describe "prepare_for_mapper round_trip" do
+    @params %{
+      "alert_priority_type" => "low",
+      "departure_start" => "09:00:00",
+      "destination" => "Fairmount",
+      "origin" => "Morton Street",
+      "relevant_days" => "weekday",
+      "return_start" => "14:00:00",
+      "return_trips" => ["768"],
+      "route_type" => "2",
+      "trip_type" => "round_trip",
+      "trips" => ["755", "757", "759"],
+      "user_id" => "123-456-7890"
+    }
+
+    test "it preps params for round trip parameters" do
+      assert CommuterRailParams.prepare_for_mapper(@params) == Map.merge(@params, %{
         "amenities" => [],
-        "departure_start" => "08:25:00",
-        "departure_end" => "10:06:00",
+        "departure_start" => "08:21:00",
+        "departure_end" => "10:10:00",
         "relevant_days" => ["weekday"],
-        "return_start" => "14:48:00",
-        "return_end" => "14:43:00"
+        "return_start" => "14:43:00",
+        "return_end" => "14:48:00"
       })
+    end
+
+    test "it adjusts the actual departure_start and departure_end timestamps based on trips selected" do
+      assert %{"departure_start" => "08:21:00", "departure_end" => "10:10:00"} = CommuterRailParams.prepare_for_mapper(@params)
+    end
+
+    test "it transform single relevant days value into array with same value" do
+      assert %{"relevant_days" => ["weekday"]} = CommuterRailParams.prepare_for_mapper(@params)
+    end
+
+    test "it sets return_start and return_end to nil" do
+      assert %{"return_start" => "14:43:00", "return_end" => "14:48:00"} = CommuterRailParams.prepare_for_mapper(@params)
     end
   end
 end
