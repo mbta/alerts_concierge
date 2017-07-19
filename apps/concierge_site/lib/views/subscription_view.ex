@@ -120,12 +120,7 @@ defmodule ConciergeSite.SubscriptionView do
     [timeframe(subscription), " | ", parse_headsign(subscription)]
   end
   defp route_body(%{type: :commuter_rail, relevant_days: [relevant_days]} = subscription, departure_time_map) do
-    trip_entities =
-      subscription.informed_entities
-      |> Enum.filter(& InformedEntity.entity_type(&1) == :trip)
-      |> Enum.sort_by(& departure_time_map[&1.trip])
-
-    for trip_entity <- trip_entities do
+    for trip_entity <- get_trip_entities(subscription, departure_time_map) do
       content_tag(:p, [
         "Train ",
         trip_entity.trip,
@@ -139,12 +134,7 @@ defmodule ConciergeSite.SubscriptionView do
     end
   end
   defp route_body(%{type: :ferry, relevant_days: [relevant_days]} = subscription, departure_time_map) do
-    trip_entities =
-      subscription.informed_entities
-      |> Enum.filter(& InformedEntity.entity_type(&1) == :trip)
-      |> Enum.sort_by(& departure_time_map[&1.trip])
-
-    for trip_entity <- trip_entities do
+    for trip_entity <- get_trip_entities(subscription, departure_time_map) do
       content_tag(:p, [
         departure_time_map[trip_entity.trip],
         ", ",
@@ -155,6 +145,11 @@ defmodule ConciergeSite.SubscriptionView do
     end
   end
 
+  defp get_trip_entities(subscription, departure_time_map) do
+    subscription.informed_entities
+    |> Enum.filter(& InformedEntity.entity_type(&1) == :trip)
+    |> Enum.sort_by(& departure_time_map[&1.trip])
+  end
 
   defp timeframe(subscription) do
     [

@@ -1,4 +1,4 @@
-<%= if !Enum.empty?(@subscriptions) do %>
+<%= unless Enum.empty?(@subscriptions) do %>
   <div class="ferry-rail-subscriptions">
     <h6>Ferry</h6>
     <%= for subscription <- @subscriptions do %>

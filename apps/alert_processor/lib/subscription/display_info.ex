@@ -1,4 +1,4 @@
-defmodule ConciergeSite.Subscriptions.DisplayInfo do
+defmodule AlertProcessor.Subscription.DisplayInfo do
   @moduledoc """
   module for gathering info to display subscription info
   in a meaningful way to a user.

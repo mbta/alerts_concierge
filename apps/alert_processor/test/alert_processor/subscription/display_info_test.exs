@@ -1,8 +1,8 @@
-defmodule ConciergeSite.Subscriptions.DisplayInfoTest do
+defmodule AlertProcessor.Subscriptions.DisplayInfoTest do
   use ExUnit.Case
   use ExVCR.Mock, adapter: ExVCR.Adapter.Hackney
   import AlertProcessor.Factory
-  alias ConciergeSite.Subscriptions.DisplayInfo
+  alias AlertProcessor.Subscription.DisplayInfo
   alias AlertProcessor.Model.InformedEntity
 
   @test_date Calendar.Date.from_ordinal!(2017, 193)
