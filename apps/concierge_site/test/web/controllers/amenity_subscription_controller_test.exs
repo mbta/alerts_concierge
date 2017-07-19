@@ -1,6 +1,6 @@
 defmodule ConciergeSite.AmenitySubscriptionControllerTest do
   use ConciergeSite.ConnCase
-
+  use ExVCR.Mock, adapter: ExVCR.Adapter.Hackney
   alias AlertProcessor.{Model.Subscription, Repo}
 
   describe "authorized" do
@@ -111,8 +111,10 @@ defmodule ConciergeSite.AmenitySubscriptionControllerTest do
         |> Map.merge(%{user: user, relevant_days: [:weekday]})
         |> insert()
 
-      conn = get(conn, "/subscriptions/amenities/#{subscription.id}/edit")
-      assert html_response(conn, 200) =~ "Edit Station Amenity"
+      use_cassette "amenities_update", clear_mock: true  do
+        conn = get(conn, "/subscriptions/amenities/#{subscription.id}/edit")
+        assert html_response(conn, 200) =~ "Edit Station Amenity"
+      end
     end
 
     test "PATCH /subscriptions/amenities/:id", %{conn: conn, user: user} do
@@ -130,8 +132,10 @@ defmodule ConciergeSite.AmenitySubscriptionControllerTest do
         "routes" => ["blue"]
       }}
 
-      conn = patch(conn, "/subscriptions/amenities/#{subscription.id}", params)
-      assert html_response(conn, 302) =~ "my-subscriptions"
+      use_cassette "amenities_update", clear_mock: true  do
+        conn = patch(conn, "/subscriptions/amenities/#{subscription.id}", params)
+        assert html_response(conn, 302) =~ "my-subscriptions"
+      end
     end
   end
 
