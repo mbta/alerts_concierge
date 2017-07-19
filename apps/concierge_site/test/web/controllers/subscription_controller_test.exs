@@ -4,7 +4,7 @@ defmodule ConciergeSite.SubscriptionControllerTest do
   import AlertProcessor.Factory
   import Ecto.Query
   alias AlertProcessor.{Model, Repo}
-  alias Model.{InformedEntity, Subscription, User}
+  alias Model.{InformedEntity, Subscription}
 
   describe "authorized" do
     test "GET /my-subscriptions", %{conn: conn}  do
@@ -123,6 +123,30 @@ defmodule ConciergeSite.SubscriptionControllerTest do
       assert html_response(conn, 200) =~ "Create New Subscription"
     end
 
+    test "GET /subscriptions/:id/confirm_delete with a user who owns the subscription", %{conn: conn} do
+      user = insert(:user)
+      {:ok, subscription} = insert_bus_subscription_for_user(user)
+
+      conn = user
+      |> guardian_login(conn)
+      |> get(subscription_path(conn, :confirm_delete, subscription))
+
+      assert html_response(conn, 200) =~ "Delete Subscription?"
+    end
+
+    test "GET /subscriptions/:id/confirm_delete with a user who does not own the subscription", %{conn: conn} do
+      user = insert(:user)
+      other_user = insert(:user)
+
+      {:ok, subscription} = insert_bus_subscription_for_user(other_user)
+      conn = guardian_login(user, conn)
+
+      response = assert_error_sent 404, fn ->
+        get(conn, subscription_path(conn, :confirm_delete, subscription))
+      end
+      assert {404, _, "Page not found"} = response
+    end
+
     test "DELETE /subscriptions/:id with a user who owns the subscription", %{conn: conn} do
       user = insert(:user)
       {:ok, subscription} = insert_bus_subscription_for_user(user)
@@ -146,9 +170,10 @@ defmodule ConciergeSite.SubscriptionControllerTest do
       {:ok, subscription} = insert_bus_subscription_for_user(other_user)
       conn = guardian_login(user, conn)
 
-      assert_raise Ecto.NoResultsError, fn ->
+      response = assert_error_sent 404, fn ->
         delete(conn, subscription_path(conn, :delete, subscription))
       end
+      assert {404, _, "Page not found"} = response
 
       informed_entity_count = Repo.one(from i in InformedEntity, select: count("*"))
       subscription_count = Repo.one(from s in Subscription, select: count("*"))
@@ -181,6 +206,15 @@ defmodule ConciergeSite.SubscriptionControllerTest do
       assert html_response(conn, 302) =~ "/login/new"
       assert subscription_count == 1
       assert informed_entity_count == 3
+    end
+
+    test "GET /subscriptions/:id/confirm_delete", %{conn: conn} do
+      user = insert(:user)
+      {:ok, subscription} = insert_bus_subscription_for_user(user)
+
+      conn = get(conn, subscription_path(conn, :confirm_delete, subscription))
+
+      assert html_response(conn, 302) =~ "/login/new"
     end
   end
 

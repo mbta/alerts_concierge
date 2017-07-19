@@ -1,0 +1,8 @@
+<h1><%= @subscription.origin %> - <%= @subscription.destination %></h1>
+<div class="subscription-step">
+  <h2>Delete Subscription?</h2>
+  <%= flash_error(@conn) %>
+  <p>Are you sure that you'd like to delete this T-Alert subscription? This action cannot be undone.</p>
+  <%= button("Yes, delete this subscription", to: subscription_path(@conn, :delete, @subscription), method: "delete", class: "btn btn-primary btn-wide") %>
+  <%= link("Cancel", to: subscription_path(@conn, :index)) %>
+</div>

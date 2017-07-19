@@ -28,9 +28,22 @@ defmodule ConciergeSite.SubscriptionController do
     render conn, "edit.html"
   end
 
+  def confirm_delete(conn, %{"id" => id}, user, _claims) do
+    subscription = Subscription.one_for_user!(id, user.id)
+    render conn, "confirm_delete.html", subscription: subscription
+  end
+
   def delete(conn, %{"id" => id}, user, _claims) do
     subscription = Subscription.one_for_user!(id, user.id)
-    Repo.delete!(subscription)
-    redirect(conn, to: subscription_path(conn, :index))
+    case Repo.delete(subscription) do
+      {:ok, _} ->
+        conn
+        |> put_flash(:info, "Subscription deleted")
+        |> redirect(to: subscription_path(conn, :index))
+      {:error, _} ->
+        conn
+        |> put_flash(:error, "Subscription could not be deleted. Please try again.")
+        |> render("confirm_delete.html", subscription: subscription)
+    end
   end
 end

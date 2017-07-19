@@ -33,6 +33,7 @@ defmodule ConciergeSite.Router do
       resources "/password", PasswordController, only: [:edit, :update], singleton: true
       resources "/vacation", VacationController, only: [:edit, :update, :delete], singleton: true
     end
+    get "/subscriptions/:id/confirm_delete", SubscriptionController, :confirm_delete
     resources "/subscriptions", SubscriptionController, only: [:new, :edit, :delete]
   end
 
