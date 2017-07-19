@@ -153,7 +153,7 @@ defmodule ConciergeSite.Subscriptions.CommuterRailParamsTest do
       assert %{"relevant_days" => ["weekday"]} = CommuterRailParams.prepare_for_mapper(@params)
     end
 
-    test "it sets return_start and return_end to nil" do
+    test "it sets return_start and return_end to correct times" do
       assert %{"return_start" => "14:43:00", "return_end" => "14:48:00"} = CommuterRailParams.prepare_for_mapper(@params)
     end
   end
