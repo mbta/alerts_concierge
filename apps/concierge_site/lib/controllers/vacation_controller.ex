@@ -10,9 +10,7 @@ defmodule ConciergeSite.VacationController do
   end
 
   def update(conn, %{"user" => user_params}, user, _claims) do
-    changeset = User.update_vacation_changeset(
-      user, Map.take(user_params, ["vacation_start", "vacation_end"])
-    )
+    changeset = User.update_vacation_changeset(user, user_params)
 
     case Repo.update(changeset) do
       {:ok, user} ->

@@ -219,9 +219,9 @@ defmodule ConciergeSite.SubscriptionView do
 
   def vacation_color_class(vacation_start, vacation_end) do
     if on_vacation?(vacation_start, vacation_end) do
-      "vacation-active"
+      "callout-active"
     else
-      "vacation-inactive"
+      "callout-inactive"
     end
   end
 

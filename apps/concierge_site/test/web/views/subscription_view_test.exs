@@ -54,11 +54,11 @@ defmodule ConciergeSite.SubscriptionViewTest do
 
   describe "vacation_color_class/2" do
     test "class when alerts are paused" do
-      assert IO.iodata_to_binary(SubscriptionView.vacation_color_class(~N[2017-07-10 00:00:00], ~N[2117-07-10 00:00:00])) == "vacation-active"
+      assert IO.iodata_to_binary(SubscriptionView.vacation_color_class(~N[2017-07-10 00:00:00], ~N[2117-07-10 00:00:00])) == "callout-active"
     end
 
     test "class when alerts are not paused" do
-      assert IO.iodata_to_binary(SubscriptionView.vacation_color_class(nil, nil)) == "vacation-inactive"
+      assert IO.iodata_to_binary(SubscriptionView.vacation_color_class(nil, nil)) == "callout-inactive"
     end
   end
 

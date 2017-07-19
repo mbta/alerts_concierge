@@ -115,6 +115,7 @@ defmodule AlertProcessor.Model.User do
     |> hash_password()
   end
 
+  @spec update_account_changeset(__MODULE__.t, map) :: Ecto.Changeset.t
   def update_vacation_changeset(struct, params \\ %{}) do
     struct
     |> cast(params, ~w(vacation_start vacation_end)a)
@@ -134,9 +135,9 @@ defmodule AlertProcessor.Model.User do
           changeset
         else
           {_, :in_future} ->
-            add_error(changeset, :vacation_end, "Vacation period must end sometime in the future")
+            add_error(changeset, :vacation_end, "Vacation period must end sometime in the future.")
           {_, :valid_period} ->
-            add_error(changeset, :vacation_end, "Vacation period must have an end time later than the start time")
+            add_error(changeset, :vacation_end, "Vacation period must have an end time later than the start time.")
         end
     end
   end
