@@ -38,9 +38,12 @@ defmodule ConciergeSite.PasswordResetController do
 
   def edit(conn, %{"id" => id}) do
     password_reset = find_redeemable_password_reset_by_id!(id)
-    render conn, "edit.html",
-      changeset: changeset, password_reset: password_reset
     changeset = User.changeset(password_reset.user)
+
+    conn
+    |> assign(:changeset, changeset)
+    |> assign(:password_reset, password_reset)
+    |> render(:edit)
   end
 
   def update(conn, %{"user" => user_params, "id" => id}) do
@@ -60,14 +63,14 @@ defmodule ConciergeSite.PasswordResetController do
         |> put_flash(:info, "Your password has been updated.")
         |> redirect(to: my_account_path(conn, :edit))
       {:error, :user, changeset, _} ->
-        render conn, "edit.html",
-          changeset: changeset, password_reset: password_reset
         conn
+        |> assign(:changeset, changeset)
+        |> assign(:password_reset, password_reset)
+        |> render(:edit)
       {:error, :password_reset, changeset, _} ->
         conn
         |> put_flash(:error, password_reset_errors(changeset))
-        |> redirect(to: session_path(conn, :new)
-      end
+        |> redirect(to: session_path(conn, :new))
     end
   end
 
@@ -99,7 +102,7 @@ defmodule ConciergeSite.PasswordResetController do
   end
 
   defp password_reset_errors(changeset) do
-    Enum.map(changeset.errors, fn ({_, {error, _}}) -> error end) 
+    Enum.map(changeset.errors, fn ({_, {error, _}}) -> error end)
     |> Enum.join(",")
   end
 end
