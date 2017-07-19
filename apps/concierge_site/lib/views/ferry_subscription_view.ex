@@ -2,11 +2,11 @@ defmodule ConciergeSite.FerrySubscriptionView do
   use ConciergeSite.Web, :view
   alias AlertProcessor.Model.Trip
   import ConciergeSite.SubscriptionHelper,
-    only: [progress_link_class: 3, query_string_params: 1, hidden_params: 1]
+    only: [progress_link_class: 3, do_query_string_params: 2, do_hidden_form_inputs: 2]
   import ConciergeSite.TimeHelper,
     only: [travel_time_options: 0]
 
-  @type steps :: :trip_type | :trip_info | :ferry | :preferences
+  @type step :: :trip_type | :trip_info | :ferry | :preferences
 
   @disabled_progress_bar_links %{trip_info: [:trip_info, :ferry, :preferences],
   ferry: [:ferry, :preferences],
@@ -20,23 +20,21 @@ defmodule ConciergeSite.FerrySubscriptionView do
   constructs keyword list of parameters to pass along relevant parameters to next or previous step
   via get request
   """
-  @spec query_string_params(steps, map | nil) :: keyword(String.t)
-  def query_string_params(_step, nil), do: []
-  def query_string_params(step, params), do: query_string_params(Map.take(params, params_for_step(step)))
+  @spec query_string_params(step, map | nil) :: keyword(String.t)
+  def query_string_params(step, params), do: do_query_string_params(params, params_for_step(step))
 
   @doc """
   constructs list of hidden pinputs to pass along relevant parameters to next or previous step
   via post request
   """
-  @spec hidden_params(steps, map | nil) :: [any]
-  def hidden_params(_step, nil), do: []
-  def hidden_params(step, params), do: hidden_params(Map.take(params, params_for_step(step)))
+  @spec hidden_form_inputs(step, map | nil) :: [any]
+  def hidden_form_inputs(step, params), do: do_hidden_form_inputs(params, params_for_step(step))
 
   @doc """
   returns list of parameters that should be present and passed along
   from the step given.
   """
-  @spec params_for_step(steps) :: [String.t]
+  @spec params_for_step(step) :: [String.t]
   def params_for_step(:trip_type), do: ~w(trip_type)
   def params_for_step(:trip_info), do: ["origin", "destination", "relevant_days", "departure_start", "return_start" | params_for_step(:trip_type)]
   def params_for_step(:ferry), do:  ["trips", "return_trips" | params_for_step(:trip_info)]

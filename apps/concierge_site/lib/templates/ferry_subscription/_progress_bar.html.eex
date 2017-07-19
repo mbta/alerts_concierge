@@ -16,7 +16,7 @@
     <div class="progress-link <%= progress_link_class(@current_page, :ferry) %>">
       <div class="progress-circle <%= progress_step_classes(@current_page, :ferry)[:circle] %>"></div>
         <%= form_tag ferry_subscription_path(@conn, :ferry) do %>
-          <%= hidden_params(:ferry, @subscription_params) %>
+          <%= hidden_form_inputs(:ferry, @subscription_params) %>
           <%= submit("Ferry", class: "btn btn-link progress-step-name") %>
         <% end %>
     </div>

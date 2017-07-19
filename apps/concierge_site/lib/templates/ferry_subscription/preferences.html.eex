@@ -3,7 +3,7 @@ Preferences. In progress.
 
   <div class="back-link-container">
     <%= form_tag ferry_subscription_path(@conn, :ferry) do %>
-      <%= hidden_params(:ferry, @subscription_params) %>
+      <%= hidden_form_inputs(:ferry, @subscription_params) %>
       <%= submit(class: "btn btn-link subscription-info-back-link") do %>
         <i class="fa fa-arrow-left" aria-hidden="true"></i> Go Back
       <% end %>

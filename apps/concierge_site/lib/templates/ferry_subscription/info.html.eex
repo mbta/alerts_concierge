@@ -46,7 +46,7 @@
       <%= render "_travel_time_select_lists.html", subscription_params: @subscription_params %>
     </div>
 
-    <%= hidden_params(:trip_type, @subscription_params) %>
+    <%= hidden_form_inputs(:trip_type, @subscription_params) %>
 
     <div class="trip-info-footer">
       <%= submit "Next", class: "btn btn-primary btn-subscription-next" %>

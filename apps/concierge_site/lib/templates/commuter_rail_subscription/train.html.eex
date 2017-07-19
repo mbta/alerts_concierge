@@ -13,7 +13,7 @@
 
     <%= render "_train_select_options.html", f: f, list_header: nil, trips: @trips %>
 
-    <%= hidden_params(:trip_info, @subscription_params) %>
+    <%= hidden_form_inputs(:trip_info, @subscription_params) %>
 
     <div class="trip-info-footer">
       <%= submit "Next", class: "btn btn-primary btn-subscription-next" %>

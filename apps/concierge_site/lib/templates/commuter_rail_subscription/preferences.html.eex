@@ -19,7 +19,7 @@
                action: "new" %>
     </div>
 
-    <%= hidden_params(:preferences, @subscription_params) %>
+    <%= hidden_form_inputs(:preferences, @subscription_params) %>
 
     <div class="trip-info-footer">
       <%= submit "Create Subscription", class: "btn btn-primary btn-subscription-next" %>
@@ -27,7 +27,7 @@
   <% end %>
   <div class="back-link-container">
     <%= form_tag commuter_rail_subscription_path(@conn, :train) do %>
-      <%= hidden_params(:train, @subscription_params) %>
+      <%= hidden_form_inputs(:train, @subscription_params) %>
       <%= submit(class: "btn btn-link subscription-info-back-link") do %>
         <i class="fa fa-arrow-left" aria-hidden="true"></i> Go Back
       <% end %>

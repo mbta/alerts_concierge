@@ -16,7 +16,7 @@
     <div class="progress-link <%= progress_link_class(@current_page, :train) %>">
       <div class="progress-circle <%= progress_step_classes(@current_page, :train)[:circle] %>"></div>
         <%= form_tag commuter_rail_subscription_path(@conn, :train) do %>
-          <%= hidden_params(:train, @subscription_params) %>
+          <%= hidden_form_inputs(:train, @subscription_params) %>
           <%= submit("Train", class: "btn btn-link progress-step-name") %>
         <% end %>
     </div>
