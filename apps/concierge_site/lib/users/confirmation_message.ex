@@ -11,11 +11,10 @@ defmodule ConciergeSite.ConfirmationMessage do
   Sends email or SMS to uesr based on if they have a phone number
   """
   def send_confirmation(user) do
-    if is_nil(user.phone_number) do
-      send_email_confirmation(user)
-    else
+    unless is_nil(user.phone_number) do
       send_sms_confirmation(user.phone_number)
     end
+    send_email_confirmation(user)
   end
 
   defp send_email_confirmation(user) do

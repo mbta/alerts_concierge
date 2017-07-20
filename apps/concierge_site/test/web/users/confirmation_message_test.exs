@@ -26,7 +26,7 @@ defmodule ConciergeSite.ConfirmationMessageTest do
       ConfirmationMessage.send_confirmation(user)
 
       assert_received :publish
-      refute_delivered_email Email.confirmation_email(user.email)
+      assert_delivered_email Email.confirmation_email(user.email)
     end
   end
 end
