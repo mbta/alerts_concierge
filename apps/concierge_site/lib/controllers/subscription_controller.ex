@@ -29,7 +29,10 @@ defmodule ConciergeSite.SubscriptionController do
   end
 
   def confirm_delete(conn, %{"id" => id}, user, _claims) do
-    subscription = Subscription.one_for_user!(id, user.id)
+    subscription =
+      id
+      |> Subscription.one_for_user!(user.id)
+      |> Repo.preload(:informed_entities)
     render conn, "confirm_delete.html", subscription: subscription
   end
 

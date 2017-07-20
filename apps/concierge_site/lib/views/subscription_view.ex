@@ -80,14 +80,14 @@ defmodule ConciergeSite.SubscriptionView do
     end
   end
 
-  defp route_header(%{type: :bus} = subscription) do
+  def route_header(%{type: :bus} = subscription) do
     [
       content_tag(:span, parse_route(subscription).long_name),
       content_tag(:i, "", class: "fa fa-long-arrow-right"),
       content_tag(:span, direction_name(subscription))
     ]
   end
-  defp route_header(subscription) do
+  def route_header(subscription) do
     case direction_name(subscription) do
       :roaming -> content_tag(:span, "#{subscription.origin} - #{subscription.destination}")
       _ -> [
