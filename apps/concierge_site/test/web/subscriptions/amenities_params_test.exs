@@ -17,7 +17,7 @@ defmodule ConciergeSite.Subscriptions.AmenitiesParamsTest do
     test "handles empty strings" do
       params = Map.put(@valid_params, "relevant_days", ["", "", ""])
 
-      assert AmenitiesParams.validate_info_params(params) == {:error, _}
+      assert {:error, _} = AmenitiesParams.validate_info_params(params)
     end
 
     test "errors if no travel days selected" do

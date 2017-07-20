@@ -116,16 +116,34 @@ defmodule ConciergeSite.AmenitySubscriptionController do
       {:error, message} ->
         conn
         |> put_flash(:error, message)
-        |> redirect(to: amenity_subscription_path(conn, :new))
-      error ->
+        |> render_new_page(sub_params)
+      _ ->
         conn
-        |> put_flash(:error, "There was an error saving the subscription. Please try again.")
-        |> redirect(to: amenity_subscription_path(conn, :new))
+        |> put_flash(:error, "there was an error saving the subscription. Please try again.")
+        |> render_new_page(sub_params)
     end
   end
 
   def edit(conn, %{"id" => _id}, _user, _) do
     conn
     |> render(:edit)
+  end
+
+  defp render_new_page(conn, sub_params) do
+    with {:ok, subway_stations} <- ServiceInfoCache.get_subway_full_routes(),
+      {:ok, cr_stations} <- ServiceInfoCache.get_commuter_rail_info() do
+
+      station_select_options = station_options(cr_stations, subway_stations)
+
+      render conn, "new.html",
+        subscription_params: sub_params,
+        station_list_select_options: station_select_options,
+        selected_stations: String.split(sub_params["stops"], ",", trim: true)
+    else
+      _error ->
+        conn
+        |> put_flash(:error, "There was an error fetching station data. Please try again.")
+        |> redirect(to: "/subscriptions/new")
+    end
   end
 end

@@ -6,7 +6,7 @@
       <div class="amenity-subscription-form-section">
         <%= render "_amenity_options.html",
             form: f,
-            checked: @subscription_params["amenities"] || [],
+            checked: Map.get(@subscription_params, "amenities", []),
             action: "new" %>
 
         <%= render "_station_select.html",
