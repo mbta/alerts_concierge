@@ -11,7 +11,8 @@ export default function($) {
 
   if ($(".enter-trip-info").length) {
     const className = "select.subscription-select-amenity-station";
-    state.selectableStations = generateStationList(className, $).map(station => station.name);
+    const stations = generateStationList(className, $).map(station => station.name);
+    state.selectableStations = stations.slice(1, stations.length);
     attachSuggestionInput();
   }
 
