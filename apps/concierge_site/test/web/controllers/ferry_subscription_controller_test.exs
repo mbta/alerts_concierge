@@ -52,6 +52,23 @@ defmodule ConciergeSite.FerrySubscriptionControllerTest do
       assert html_response(conn, 200) =~ "4:00pm from Long Wharf, Boston, arrives at Charlestown Navy Yard at 4:10pm"
     end
 
+    test "POST /subscriptions/ferry/new/preferences", %{conn: conn} do
+      params = %{"subscription" => %{
+        "origin" => "Boat-Long",
+        "destination" => "Boat-Hingham",
+        "trips" => ["Boat-F1-Boat-Hingham-10:00:00-weekday-1", "Boat-F1-Boat-Hingham-12:00:00-weekday-1"],
+        "relevant_days" => "weekday",
+        "departure_start" => "09:00:00",
+        "alert_priority_type" => "low",
+        "trip_type" => "one_way"
+      }}
+
+      conn = post(conn, "/subscriptions/ferry/new/preferences", params)
+
+      assert html_response(conn, 200) =~ "Set your preferences for your trip:"
+      assert html_response(conn, 200) =~ "2 ferries"
+    end
+
     test "POST /subscriptions/ferry/new/preferences with invalid params for one way", %{conn: conn} do
       params = %{"subscription" => %{
         "departure_start" => "08:45:00",
