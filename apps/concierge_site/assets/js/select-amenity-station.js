@@ -24,8 +24,8 @@ export default function($) {
       state.selectedStations = selectedStops.split(",");
     }
 
-    const stations = generateStationList(className, $).map(station => station.name);
     const className = "select.subscription-select-amenity-station";
+    const stations = generateStationList(className, $).map(station => station.name);
     state.selectableStations = stations
       .slice(1, stations.length)
       .filter(stationName => !state.selectedStations.includes(stationName));
