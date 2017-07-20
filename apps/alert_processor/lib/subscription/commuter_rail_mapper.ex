@@ -169,7 +169,7 @@ defmodule AlertProcessor.Subscription.CommuterRailMapper do
       } = schedule
 
       {:ok, departure_datetime, _} = DateTime.from_iso8601(departure_time)
-      {{includes_info[stop_id], includes_info[trip_id]}, DateTime.to_time(departure_datetime)}
+      {{includes_info[stop_id], includes_info[trip_id]}, departure_datetime}
     end
   end
 end

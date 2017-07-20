@@ -55,12 +55,23 @@ defmodule AlertProcessor.Helpers.DateTimeHelper do
   """
   @spec timestamp_to_utc(String.t, String.t) :: Time.t | {:error, any}
   def timestamp_to_utc(timestamp, time_zone \\ "America/New_York") do
+    with utc_datetime <- timestamp_to_utc_datetime(timestamp, time_zone),
+         {:ok, utc_timestamp} <- DateTime.to_time(utc_datetime) do
+      utc_timestamp
+    end
+  end
+
+  @doc """
+  converts 24hr format timestamp to utc datetime using optional
+  timezone, otherwise uses America/New_York
+  """
+  @spec timestamp_to_utc_datetime(String.t, String.t) :: DateTime.t | {:error, any}
+  def timestamp_to_utc_datetime(timestamp, time_zone \\ "America/New_York") do
     with {:ok, local_time} <- Time.from_iso8601(timestamp),
          local_date <- D.today!(time_zone),
          {:ok, local_datetime} <- DT.from_date_and_time_and_zone(local_date, local_time, time_zone),
-         {:ok, utc_datetime} <- DT.shift_zone(local_datetime, "UTC"),
-         {:ok, utc_timestamp} <- DateTime.to_time(utc_datetime) do
-      utc_timestamp
+         {:ok, utc_datetime} <- DT.shift_zone(local_datetime, "UTC") do
+      utc_datetime
     end
   end
 

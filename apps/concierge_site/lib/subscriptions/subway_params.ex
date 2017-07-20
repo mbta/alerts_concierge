@@ -113,8 +113,8 @@ defmodule ConciergeSite.Subscriptions.SubwayParams do
     translated_params = %{
       "relevant_days" => relevant_days_from_booleans(Map.take(params, ~w(weekday saturday sunday))),
       "roaming" => "false",
-      "departure_start" => DateTimeHelper.timestamp_to_utc(params["departure_start"]),
-      "departure_end" => DateTimeHelper.timestamp_to_utc(params["departure_end"]),
+      "departure_start" => DateTimeHelper.timestamp_to_utc_datetime(params["departure_start"]),
+      "departure_end" => DateTimeHelper.timestamp_to_utc_datetime(params["departure_end"]),
       "return_start" => nil,
       "return_end" => nil,
       "amenities" => []
@@ -126,10 +126,10 @@ defmodule ConciergeSite.Subscriptions.SubwayParams do
     translated_params = %{
       "relevant_days" => relevant_days_from_booleans(Map.take(params, ~w(weekday saturday sunday))),
       "roaming" => "false",
-      "departure_start" => DateTimeHelper.timestamp_to_utc(params["departure_start"]),
-      "departure_end" => DateTimeHelper.timestamp_to_utc(params["departure_end"]),
-      "return_start" => DateTimeHelper.timestamp_to_utc(params["return_start"]),
-      "return_end" => DateTimeHelper.timestamp_to_utc(params["return_end"]),
+      "departure_start" => DateTimeHelper.timestamp_to_utc_datetime(params["departure_start"]),
+      "departure_end" => DateTimeHelper.timestamp_to_utc_datetime(params["departure_end"]),
+      "return_start" => DateTimeHelper.timestamp_to_utc_datetime(params["return_start"]),
+      "return_end" => DateTimeHelper.timestamp_to_utc_datetime(params["return_end"]),
       "amenities" => []
     }
 
@@ -139,10 +139,10 @@ defmodule ConciergeSite.Subscriptions.SubwayParams do
     translated_params = %{
       "relevant_days" => relevant_days_from_booleans(Map.take(params, ~w(weekday saturday sunday))),
       "roaming" => "true",
-      "departure_start" => DateTimeHelper.timestamp_to_utc(params["departure_start"]),
-      "departure_end" => DateTimeHelper.timestamp_to_utc(params["departure_end"]),
-      "return_start" => DateTimeHelper.timestamp_to_utc(params["return_start"]),
-      "return_end" => DateTimeHelper.timestamp_to_utc(params["return_end"]),
+      "departure_start" => DateTimeHelper.timestamp_to_utc_datetime(params["departure_start"]),
+      "departure_end" => DateTimeHelper.timestamp_to_utc_datetime(params["departure_end"]),
+      "return_start" => DateTimeHelper.timestamp_to_utc_datetime(params["return_start"]),
+      "return_end" => DateTimeHelper.timestamp_to_utc_datetime(params["return_end"]),
       "amenities" => []
     }
 

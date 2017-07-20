@@ -7,8 +7,8 @@ defmodule AlertProcessor.Subscription.BusMapperTest do
   @one_way_params %{
     "route" => "16 - 1",
     "relevant_days" => ["weekday", "saturday"],
-    "departure_start" => ~T[12:00:00],
-    "departure_end" => ~T[14:00:00],
+    "departure_start" => DateTime.from_naive!(~N[2017-07-20 12:00:00], "Etc/UTC"),
+    "departure_end" => DateTime.from_naive!(~N[2017-07-20 14:00:00], "Etc/UTC"),
     "return_start" => nil,
     "return_end" => nil,
     "alert_priority_type" => "low",
@@ -18,10 +18,10 @@ defmodule AlertProcessor.Subscription.BusMapperTest do
   @round_trip_params %{
     "route" => "16 - 0",
     "relevant_days" => ["weekday", "saturday"],
-    "departure_start" => ~T[12:00:00],
-    "departure_end" => ~T[14:00:00],
-    "return_start" => ~T[18:00:00],
-    "return_end" => ~T[20:00:00],
+    "departure_start" => DateTime.from_naive!(~N[2017-07-20 12:00:00], "Etc/UTC"),
+    "departure_end" => DateTime.from_naive!(~N[2017-07-20 14:00:00], "Etc/UTC"),
+    "return_start" => DateTime.from_naive!(~N[2017-07-20 18:00:00], "Etc/UTC"),
+    "return_end" => DateTime.from_naive!(~N[2017-07-20 20:00:00], "Etc/UTC"),
     "alert_priority_type" => "low",
     "trip_type" => "round_trip"
   }
@@ -168,10 +168,10 @@ defmodule AlertProcessor.Subscription.BusMapperTest do
     @round_trip_params %{
       "route" => "16 - 0",
       "relevant_days" => ["weekday", "saturday"],
-      "departure_start" => "12:00:00",
-      "departure_end" => "14:00:00",
-      "return_start" => "18:00:00",
-      "return_end" => "20:00:00",
+      "departure_start" => DateTime.from_naive!(~N[2017-07-20 12:00:00], "Etc/UTC"),
+      "departure_end" => DateTime.from_naive!(~N[2017-07-20 14:00:00], "Etc/UTC"),
+      "return_start" => DateTime.from_naive!(~N[2017-07-20 18:00:00], "Etc/UTC"),
+      "return_end" => DateTime.from_naive!(~N[2017-07-20 20:00:00], "Etc/UTC"),
       "alert_priority_type" => "low",
       "trip_type" => "round_trip"
     }

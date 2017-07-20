@@ -43,8 +43,8 @@ defmodule ConciergeSite.Subscriptions.BusParams do
   def prepare_for_mapper(%{"trip_type" => "one_way"} = params) do
     translated_params = %{
       "relevant_days" => relevant_days_from_booleans(Map.take(params, ~w(weekday saturday sunday))),
-      "departure_start" => DateTimeHelper.timestamp_to_utc(params["departure_start"]),
-      "departure_end" => DateTimeHelper.timestamp_to_utc(params["departure_end"]),
+      "departure_start" => DateTimeHelper.timestamp_to_utc_datetime(params["departure_start"]),
+      "departure_end" => DateTimeHelper.timestamp_to_utc_datetime(params["departure_end"]),
       "return_start" => nil,
       "return_end" => nil,
       "amenities" => []
@@ -55,10 +55,10 @@ defmodule ConciergeSite.Subscriptions.BusParams do
   def prepare_for_mapper(%{"trip_type" => "round_trip"} = params) do
     translated_params = %{
       "relevant_days" => relevant_days_from_booleans(Map.take(params, ~w(weekday saturday sunday))),
-      "departure_start" => DateTimeHelper.timestamp_to_utc(params["departure_start"]),
-      "departure_end" => DateTimeHelper.timestamp_to_utc(params["departure_end"]),
-      "return_start" => DateTimeHelper.timestamp_to_utc(params["return_start"]),
-      "return_end" => DateTimeHelper.timestamp_to_utc(params["return_end"]),
+      "departure_start" => DateTimeHelper.timestamp_to_utc_datetime(params["departure_start"]),
+      "departure_end" => DateTimeHelper.timestamp_to_utc_datetime(params["departure_end"]),
+      "return_start" => DateTimeHelper.timestamp_to_utc_datetime(params["return_start"]),
+      "return_end" => DateTimeHelper.timestamp_to_utc_datetime(params["return_end"]),
       "amenities" => []
     }
 

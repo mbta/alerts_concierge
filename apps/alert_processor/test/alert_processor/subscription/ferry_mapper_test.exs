@@ -10,8 +10,8 @@ defmodule AlertProcessor.Subscription.FerryMapperTest do
       "destination" => "Boat-Hingham",
       "trips" => ["Boat-F1-Boat-Long-18:05:00-weekday-0", "Boat-F1-Boat-Long-21:10:00-weekday-0"],
       "relevant_days" => ["weekday"],
-      "departure_start" => ~T[12:00:00],
-      "departure_end" => ~T[14:00:00],
+      "departure_start" => DateTime.from_naive!(~N[2017-07-20 12:00:00], "Etc/UTC"),
+      "departure_end" => DateTime.from_naive!(~N[2017-07-20 14:00:00], "Etc/UTC"),
       "return_start" => nil,
       "return_end" => nil,
       "alert_priority_type" => "low",
@@ -134,10 +134,10 @@ defmodule AlertProcessor.Subscription.FerryMapperTest do
       "trips" => ["Boat-F1-Boat-Long-18:05:00-weekday-0", "Boat-F1-Boat-Long-21:10:00-weekday-0"],
       "return_trips" => ["Boat-F1-Boat-Hingham-21:00:00-weekday-1"],
       "relevant_days" => ["weekday"],
-      "departure_start" => ~T[12:00:00],
-      "departure_end" => ~T[14:00:00],
-      "return_start" => ~T[18:00:00],
-      "return_end" => ~T[20:00:00],
+      "departure_start" => DateTime.from_naive!(~N[2017-07-20 12:00:00], "Etc/UTC"),
+      "departure_end" => DateTime.from_naive!(~N[2017-07-20 14:00:00], "Etc/UTC"),
+      "return_start" => DateTime.from_naive!(~N[2017-07-20 18:00:00], "Etc/UTC"),
+      "return_end" => DateTime.from_naive!(~N[2017-07-20 20:00:00], "Etc/UTC"),
       "alert_priority_type" => "low",
       "amenities" => ["elevator"]
     }
@@ -604,10 +604,10 @@ defmodule AlertProcessor.Subscription.FerryMapperTest do
       "trips" => ["Boat-F1-Boat-Long-18:05:00-weekday-0", "Boat-F1-Boat-Long-21:10:00-weekday-0"],
       "return_trips" => ["Boat-F1-Boat-Hingham-21:00:00-weekday-1"],
       "relevant_days" => ["weekday"],
-      "departure_start" => "12:00:00",
-      "departure_end" => "14:00:00",
-      "return_start" => "18:00:00",
-      "return_end" => "20:00:00",
+      "departure_start" => DateTime.from_naive!(~N[2017-07-20 12:00:00], "Etc/UTC"),
+      "departure_end" => DateTime.from_naive!(~N[2017-07-20 14:00:00], "Etc/UTC"),
+      "return_start" => DateTime.from_naive!(~N[2017-07-20 18:00:00], "Etc/UTC"),
+      "return_end" => DateTime.from_naive!(~N[2017-07-20 20:00:00], "Etc/UTC"),
       "alert_priority_type" => "low",
       "amenities" => ["elevator"]
     }
@@ -637,8 +637,8 @@ defmodule AlertProcessor.Subscription.FerryMapperTest do
 
       params = %{
         "alert_priority_type" => :high,
-        "end_time" => "11:15:00",
-        "start_time" => "11:25:00",
+        "end_time" => DateTime.from_naive!(~N[2017-07-20 11:15:00], "Etc/UTC"),
+        "start_time" => DateTime.from_naive!(~N[2017-07-20 11:25:00], "Etc/UTC"),
         "trips" => ["Boat-F4-Boat-Charlestown-11:15:00-weekday-1"]
       }
 

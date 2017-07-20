@@ -10,8 +10,8 @@ defmodule AlertProcessor.Subscription.CommuterRailMapperTest do
       "destination" => "place-north",
       "trips" => ["123", "125"],
       "relevant_days" => ["saturday"],
-      "departure_start" => ~T[12:00:00],
-      "departure_end" => ~T[14:00:00],
+      "departure_start" => DateTime.from_naive!(~N[2017-07-20 12:00:00], "Etc/UTC"),
+      "departure_end" => DateTime.from_naive!(~N[2017-07-20 14:00:00], "Etc/UTC"),
       "return_start" => nil,
       "return_end" => nil,
       "alert_priority_type" => "low",
@@ -134,10 +134,10 @@ defmodule AlertProcessor.Subscription.CommuterRailMapperTest do
       "trips" => ["123", "125"],
       "return_trips" => ["588", "590"],
       "relevant_days" => ["weekday"],
-      "departure_start" => ~T[12:00:00],
-      "departure_end" => ~T[14:00:00],
-      "return_start" => ~T[18:00:00],
-      "return_end" => ~T[20:00:00],
+      "departure_start" => DateTime.from_naive!(~N[2017-07-20 12:00:00], "Etc/UTC"),
+      "departure_end" => DateTime.from_naive!(~N[2017-07-20 14:00:00], "Etc/UTC"),
+      "return_start" => DateTime.from_naive!(~N[2017-07-20 18:00:00], "Etc/UTC"),
+      "return_end" => DateTime.from_naive!(~N[2017-07-20 20:00:00], "Etc/UTC"),
       "alert_priority_type" => "low",
       "amenities" => ["elevator"]
     }
@@ -590,10 +590,10 @@ defmodule AlertProcessor.Subscription.CommuterRailMapperTest do
       "trips" => ["123", "125"],
       "return_trips" => ["588", "590"],
       "relevant_days" => ["weekday"],
-      "departure_start" => "12:00:00",
-      "departure_end" => "14:00:00",
-      "return_start" => "18:00:00",
-      "return_end" => "20:00:00",
+      "departure_start" => DateTime.from_naive!(~N[2017-07-20 12:00:00], "Etc/UTC"),
+      "departure_end" => DateTime.from_naive!(~N[2017-07-20 14:00:00], "Etc/UTC"),
+      "return_start" => DateTime.from_naive!(~N[2017-07-20 18:00:00], "Etc/UTC"),
+      "return_end" => DateTime.from_naive!(~N[2017-07-20 20:00:00], "Etc/UTC"),
       "alert_priority_type" => "low",
       "amenities" => ["elevator"]
     }
@@ -623,8 +623,8 @@ defmodule AlertProcessor.Subscription.CommuterRailMapperTest do
 
       params = %{
         "alert_priority_type" => :high,
-        "end_time" => "20:59:00",
-        "start_time" => "20:35:00",
+        "end_time" => DateTime.from_naive!(~N[2017-07-20 20:59:00], "Etc/UTC"),
+        "start_time" => DateTime.from_naive!(~N[2017-07-20 20:35:00], "Etc/UTC"),
         "trips" => ["341"]
       }
 

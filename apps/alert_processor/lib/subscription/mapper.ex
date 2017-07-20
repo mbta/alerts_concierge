@@ -19,8 +19,8 @@ defmodule AlertProcessor.Subscription.Mapper do
 
   def do_map_timeframe(start_time, end_time, relevant_days) do
     %Subscription{
-      start_time: start_time,
-      end_time: end_time,
+      start_time: DateTime.to_time(start_time),
+      end_time: DateTime.to_time(end_time),
       relevant_days: Enum.map(relevant_days, &String.to_existing_atom/1)
     }
   end
