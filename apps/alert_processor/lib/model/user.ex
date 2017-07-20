@@ -160,10 +160,14 @@ defmodule AlertProcessor.Model.User do
   """
   def authenticate(%{"email" => email, "password" => password} = params) do
     user = Repo.get_by(__MODULE__, email: email)
-    if check_password(user, password) do
-      {:ok, user}
-    else
-      {:error, login_changeset(%__MODULE__{}, params)}
+
+    cond do
+      user && is_nil(user.encrypted_password) ->
+        :disabled
+      check_password(user, password) ->
+        {:ok, user}
+      true ->
+        {:error, login_changeset(%__MODULE__{}, params)}
     end
   end
 

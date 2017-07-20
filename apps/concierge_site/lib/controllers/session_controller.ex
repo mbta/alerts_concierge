@@ -21,6 +21,10 @@ defmodule ConciergeSite.SessionController do
         conn
         |> put_flash(:error, "Sorry, your login information was incorrect. Please try again.")
         |> render("new.html", login_changeset: changeset)
+      :disabled ->
+        conn
+        |> put_flash(:error, "Account has been disabled. Please enter your email to reset your password.")
+        |> redirect(to: password_reset_path(conn, :new))
     end
   end
 

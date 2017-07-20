@@ -4,6 +4,7 @@ defmodule ConciergeSite.SessionControllerTest do
 
   @password "password1"
   @encrypted_password Comeonin.Bcrypt.hashpwsalt(@password)
+  @disabled_password nil
 
   test "GET /login", %{conn: conn} do
     conn = get(conn, "/login/new")
@@ -22,6 +23,20 @@ defmodule ConciergeSite.SessionControllerTest do
 
     conn = post(conn, "/login", params)
     assert html_response(conn, 302) =~ "<a href=\"/my-subscriptions\">"
+  end
+
+  test "POST /login when the user's account is disabled", %{conn: conn} do
+    user = Repo.insert!(%User{email: "test@email.com",
+                              role: "user",
+                              encrypted_password: @disabled_password})
+
+    params = %{"user" => %{
+      "email" => user.email,
+      "password" => @password
+    }}
+
+    conn = post(conn, "/login", params)
+    assert html_response(conn, 302) =~ "/reset-password/new"
   end
 
   test "DELETE /login", %{conn: conn} do

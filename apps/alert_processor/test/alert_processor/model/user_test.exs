@@ -13,6 +13,7 @@ defmodule AlertProcessor.Model.UserTest do
   @invalid_attrs %{}
   @password "password1"
   @encrypted_password Comeonin.Bcrypt.hashpwsalt(@password)
+  @disabled_password nil
 
   describe "user changeset" do
     test "changeset with valid attributes" do
@@ -39,6 +40,11 @@ defmodule AlertProcessor.Model.UserTest do
 
     test "does not authenticate if user doesn't exist" do
       assert {:error, _} = User.authenticate(%{"email" => "nope@invalid.com", "password" => @password})
+    end
+
+    test "does not authenticate if user's account is disabled" do
+      Repo.insert!(%User{email: "test@email.com", role: "user", encrypted_password: @disabled_password})
+      assert :disabled = User.authenticate(%{"email" => "test@email.com", "password" => @password})    
     end
   end
 
