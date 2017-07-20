@@ -120,9 +120,7 @@ defmodule ConciergeSite.Subscriptions.SubwayParams do
       "amenities" => []
     }
 
-    params
-    |> Map.take(["alert_priority_type", "departure_end", "departure_start", "destination", "origin"])
-    |> Map.merge(translated_params)
+    do_prepare_for_mapper(params, translated_params)
   end
   def prepare_for_mapper(%{"trip_type" => "round_trip"} = params) do
     translated_params = %{
@@ -135,9 +133,7 @@ defmodule ConciergeSite.Subscriptions.SubwayParams do
       "amenities" => []
     }
 
-    params
-    |> Map.take(["alert_priority_type", "departure_end", "departure_start", "destination", "origin"])
-    |> Map.merge(translated_params)
+    do_prepare_for_mapper(params, translated_params)
   end
   def prepare_for_mapper(%{"trip_type" => "roaming"} = params) do
     translated_params = %{
@@ -150,6 +146,10 @@ defmodule ConciergeSite.Subscriptions.SubwayParams do
       "amenities" => []
     }
 
+    do_prepare_for_mapper(params, translated_params)
+  end
+
+  def do_prepare_for_mapper(params, translated_params) do
     params
     |> Map.take(["alert_priority_type", "departure_end", "departure_start", "destination", "origin"])
     |> Map.merge(translated_params)

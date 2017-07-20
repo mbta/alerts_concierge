@@ -50,9 +50,7 @@ defmodule ConciergeSite.Subscriptions.BusParams do
       "amenities" => []
     }
 
-    params
-    |> Map.take(["alert_priority_type", "departure_end", "departure_start", "route"])
-    |> Map.merge(translated_params)
+    do_prepare_for_mapper(params, translated_params)
   end
   def prepare_for_mapper(%{"trip_type" => "round_trip"} = params) do
     translated_params = %{
@@ -64,6 +62,10 @@ defmodule ConciergeSite.Subscriptions.BusParams do
       "amenities" => []
     }
 
+    do_prepare_for_mapper(params, translated_params)
+  end
+
+  def do_prepare_for_mapper(params, translated_params) do
     params
     |> Map.take(["alert_priority_type", "departure_end", "departure_start", "return_start", "return_end", "route"])
     |> Map.merge(translated_params)
