@@ -1,6 +1,30 @@
-Preferences. In progress.
+<h1>Create New Subscription</h1>
 
+<%= render "_progress_bar.html", current_page: :preferences, subscription_params: @subscription_params, conn: @conn %>
 
+<div class="subscription-step trip-preferences">
+  <h2 class="preferences-subtitle">Set your preferences for your trip:</h2>
+  <div class="trip-summary">
+    <p>
+      <strong><%= trip_summary_header(@subscription_params, @origin, @destination) %></strong>
+    </p>
+    <%= trip_summary_details(@subscription_params, @origin, @destination) %>
+  </div>
+
+  <%= form_for @conn, ferry_subscription_path(@conn, :create), [class: "sub-creation-form trip-prefs-form ferry", as: :subscription], fn f -> %>
+    <div class="trip-alert-priority">
+    <%= render "_alert_type_radio_buttons.html",
+               form: f,
+               checked: :medium,
+               action: "new" %>
+    </div>
+
+    <%= hidden_form_inputs(:preferences, @subscription_params) %>
+
+    <div class="trip-info-footer">
+      <%= submit "Create Subscription", class: "btn btn-primary btn-subscription-next" %>
+    </div>
+  <% end %>
   <div class="back-link-container">
     <%= form_tag ferry_subscription_path(@conn, :ferry) do %>
       <%= hidden_form_inputs(:ferry, @subscription_params) %>
@@ -9,3 +33,4 @@ Preferences. In progress.
       <% end %>
     <% end %>
   </div>
+</div>

@@ -103,8 +103,8 @@ defmodule ConciergeSite.CommuterRailSubscriptionController do
   end
 
   def create(conn, params, user, _claims) do
-    subway_params = CommuterRailParams.prepare_for_mapper(params["subscription"])
-    {:ok, subscription_infos} = CommuterRailMapper.map_subscriptions(subway_params)
+    commuter_rail_params = CommuterRailParams.prepare_for_mapper(params["subscription"])
+    {:ok, subscription_infos} = CommuterRailMapper.map_subscriptions(commuter_rail_params)
 
     multi = CommuterRailMapper.build_subscription_transaction(subscription_infos, user)
 

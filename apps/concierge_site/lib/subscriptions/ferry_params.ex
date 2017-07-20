@@ -89,4 +89,52 @@ defmodule ConciergeSite.Subscriptions.FerryParams do
         {params, ["Please select at least one return trip." | errors]}
     end
   end
+
+  @doc """
+  Transform submitted subscription params for FerryMapper
+  """
+  @spec prepare_for_mapper(map) :: map
+  def prepare_for_mapper(%{"relevant_days" => relevant_days, "origin" => origin, "destination" => destination, "trips" => trips, "return_trips" => return_trips, "trip_type" => "round_trip"} = params) do
+    trip_schedule_map = FerryMapper.trip_schedule_info_map(origin, destination, relevant_days)
+    {departure_start, departure_end} = subscription_timestamps(trip_schedule_map, origin, destination, trips)
+    {return_start, return_end} = subscription_timestamps(trip_schedule_map, destination, origin, return_trips)
+
+    Map.merge(params, %{
+      "amenities" => [],
+      "departure_start" => departure_start,
+      "departure_end" => departure_end,
+      "relevant_days" => [relevant_days],
+      "return_start" => return_start,
+      "return_end" => return_end
+    })
+  end
+  def prepare_for_mapper(%{"relevant_days" => relevant_days, "origin" => origin, "destination" => destination, "trips" => trips, "trip_type" => "one_way"} = params) do
+    trip_schedule_map = FerryMapper.trip_schedule_info_map(origin, destination, relevant_days)
+    {departure_start, departure_end} = subscription_timestamps(trip_schedule_map, origin, destination, trips)
+
+    Map.merge(params, %{
+      "amenities" => [],
+      "departure_start" => departure_start,
+      "departure_end" => departure_end,
+      "relevant_days" => [relevant_days],
+      "return_start" => nil,
+      "return_end" => nil
+    })
+  end
+
+  defp subscription_timestamps(trip_schedule_map, origin, destination, trips) do
+    start_time = earliest_departure_time(trip_schedule_map, origin, trips)
+    end_time = latest_departure_time(trip_schedule_map, destination, trips)
+    {start_time, end_time}
+  end
+
+  defp earliest_departure_time(sm, station, trips), do: do_departure_time(sm, station, trips, &Enum.min/1)
+  defp latest_departure_time(sm, station, trips), do: do_departure_time(sm, station, trips, &Enum.max/1)
+
+  defp do_departure_time(schedule_map, station, trips, sort_order) do
+    trips
+    |> Enum.map(& schedule_map[{station, &1}])
+    |> sort_order.()
+    |> Calendar.Strftime.strftime!("%H:%M:%S")
+  end
 end

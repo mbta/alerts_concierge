@@ -2,7 +2,7 @@ defmodule ConciergeSite.FerrySubscriptionController do
   use ConciergeSite.Web, :controller
   use Guardian.Phoenix.Controller
   alias ConciergeSite.Subscriptions.{FerryParams, Lines, TemporaryState}
-  alias AlertProcessor.{ServiceInfoCache, Subscription.FerryMapper}
+  alias AlertProcessor.{Repo, ServiceInfoCache, Subscription.FerryMapper}
 
   def new(conn, _params, _user, _claims) do
     render conn, "new.html"
@@ -65,6 +65,22 @@ defmodule ConciergeSite.FerrySubscriptionController do
         handle_invalid_trip_submission(conn, subscription_params, token, message)
       _ ->
         handle_invalid_trip_submission(conn, subscription_params, token, "Something went wrong, please try again.")
+    end
+  end
+
+  def create(conn, params, user, _claims) do
+    ferry_params = FerryParams.prepare_for_mapper(params["subscription"])
+    {:ok, subscription_infos} = FerryMapper.map_subscriptions(ferry_params)
+
+    multi = FerryMapper.build_subscription_transaction(subscription_infos, user)
+
+    case Repo.transaction(multi) do
+      {:ok, _} ->
+        redirect(conn, to: subscription_path(conn, :index))
+      {:error, _} ->
+        conn
+        |> put_flash(:error, "There was an error saving the subscription. Please try again.")
+        |> render("new.html")
     end
   end
 

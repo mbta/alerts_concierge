@@ -81,4 +81,80 @@ defmodule ConciergeSite.Subscriptions.FerryParamsTest do
       assert :ok = FerryParams.validate_trip_params(params)
     end
   end
+
+  describe "prepare_for_mapper one_way" do
+    @params %{
+      "alert_priority_type" => "low",
+      "departure_start" => "09:00:00",
+      "destination" => "Boat-Long",
+      "origin" => "Boat-Hingham",
+      "relevant_days" => "weekday",
+      "route_type" => "4",
+      "trip_type" => "one_way",
+      "trips" => ["Boat-F1-Boat-Hingham-06:40:00-weekday-1"],
+      "user_id" => "123-456-7890"
+    }
+
+    test "it preps params for one way parameters" do
+      assert FerryParams.prepare_for_mapper(@params) == Map.merge(@params, %{
+        "amenities" => [],
+        "departure_start" => "06:40:00",
+        "departure_end" => "07:23:00",
+        "relevant_days" => ["weekday"],
+        "return_start" => nil,
+        "return_end" => nil
+      })
+    end
+
+    test "it adjusts the actual departure_start and departure_end timestamps based on trips selected" do
+      assert %{"departure_start" => "06:40:00", "departure_end" => "07:23:00"} = FerryParams.prepare_for_mapper(@params)
+    end
+
+    test "it transform single relevant days value into array with same value" do
+      assert %{"relevant_days" => ["weekday"]} = FerryParams.prepare_for_mapper(@params)
+    end
+
+    test "it sets return_start and return_end to nil" do
+      assert %{"return_start" => nil, "return_end" => nil} = FerryParams.prepare_for_mapper(@params)
+    end
+  end
+
+  describe "prepare_for_mapper round_trip" do
+    @params %{
+      "alert_priority_type" => "low",
+      "departure_start" => "09:00:00",
+      "destination" => "Boat-Long",
+      "origin" => "Boat-Hingham",
+      "relevant_days" => "weekday",
+      "return_start" => "14:00:00",
+      "return_trips" => ["Boat-F1-Boat-Long-21:10:00-weekday-0"],
+      "route_type" => "4",
+      "trip_type" => "round_trip",
+      "trips" => ["Boat-F1-Boat-Hingham-10:00:00-weekday-1", "Boat-F1-Boat-Hingham-12:00:00-weekday-1"],
+      "user_id" => "123-456-7890"
+    }
+
+    test "it preps params for round trip parameters" do
+      assert FerryParams.prepare_for_mapper(@params) == Map.merge(@params, %{
+        "amenities" => [],
+        "departure_start" => "10:00:00",
+        "departure_end" => "12:55:00",
+        "relevant_days" => ["weekday"],
+        "return_start" => "21:10:00",
+        "return_end" => "22:05:00"
+      })
+    end
+
+    test "it adjusts the actual departure_start and departure_end timestamps based on trips selected" do
+      assert %{"departure_start" => "10:00:00", "departure_end" => "12:55:00"} = FerryParams.prepare_for_mapper(@params)
+    end
+
+    test "it transform single relevant days value into array with same value" do
+      assert %{"relevant_days" => ["weekday"]} = FerryParams.prepare_for_mapper(@params)
+    end
+
+    test "it sets return_start and return_end to nil" do
+      assert %{"return_start" => "21:10:00", "return_end" => "22:05:00"} = FerryParams.prepare_for_mapper(@params)
+    end
+  end
 end

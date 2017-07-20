@@ -109,4 +109,54 @@ defmodule ConciergeSite.FerrySubscriptionView do
     {:ok, time_string} = Calendar.Strftime.strftime(time, "%l:%M%P")
     String.trim(time_string)
   end
+
+  def trip_summary_header(subscription_params, {origin_name, _}, {destination_name, _}) do
+    [
+      trip_summary_header_trip_type(subscription_params),
+      " ",
+      trip_summary_header_relevant_days(subscription_params),
+      " travel between ",
+      origin_name,
+      " and ",
+      destination_name,
+      ":"
+    ]
+  end
+  defp trip_summary_header_trip_type(%{"trip_type" => "one_way"}), do: "One way"
+  defp trip_summary_header_trip_type(%{"trip_type" => "round_trip"}), do: "Round trip"
+
+  defp trip_summary_header_relevant_days(%{"relevant_days" => "weekday"}), do: "weekday"
+  defp trip_summary_header_relevant_days(%{"relevant_days" => "sunday"}), do: "Sunday"
+  defp trip_summary_header_relevant_days(%{"relevant_days" => "saturday"}), do: "Saturday"
+
+  def trip_summary_details(%{"trip_type" => "one_way", "trips" => trips}, {origin_name, _}, {destination_name, _}) do
+    [
+      trip_summary_details_ferry_count(trips),
+        " from ",
+        origin_name,
+        " to ",
+        destination_name
+    ]
+  end
+  def trip_summary_details(%{"trip_type" => "round_trip", "trips" => trips, "return_trips" => return_trips}, {origin_name, _}, {destination_name, _}) do
+    [
+      content_tag(:div, [
+        trip_summary_details_ferry_count(trips),
+          " from ",
+          origin_name,
+          " to ",
+          destination_name
+      ]),
+      content_tag(:div, [
+        trip_summary_details_ferry_count(return_trips),
+          " from ",
+          destination_name,
+          " to ",
+          origin_name
+      ])
+    ]
+  end
+
+  defp trip_summary_details_ferry_count([_trip]), do: "1 ferry"
+  defp trip_summary_details_ferry_count(trips), do: [trips |> Enum.count() |> to_string(), " ferries"]
 end

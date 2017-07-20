@@ -126,4 +126,48 @@ defmodule AlertProcessor.Subscription.CommuterRailMapper do
   defp map_schedule_time(schedule_datetime) do
     schedule_datetime |> NaiveDateTime.from_iso8601! |> NaiveDateTime.to_time()
   end
+
+  @spec trip_schedule_info_map(String.t, String.t, Subscription.relevant_day) :: %{optional({Route.stop_id, Trip.id}) => NaiveDateTime.t}
+  def trip_schedule_info_map(origin, destination, relevant_days, today_date \\ Calendar.Date.today!("America/New_York")) do
+    relevant_date = DateTimeHelper.determine_date(relevant_days, today_date)
+    {:ok, data, includes} = ApiClient.schedules(origin, destination, nil, [], relevant_date)
+    includes_info =
+      for include <- includes, into: %{} do
+        case include do
+          %{"type" => "trip", "attributes" => %{"name" => name}, "id" => id} ->
+            {id, name}
+          %{"type" => "stop", "relationships" => %{"parent_station" => %{"data" => parent_station}}, "id" => id} ->
+            case {id, parent_station} do
+              {^origin, nil} ->
+                {origin, origin}
+              {^destination, nil} ->
+                {destination, destination}
+              {id, %{"id" => parent_station_id}} ->
+                {id, parent_station_id}
+            end
+        end
+      end
+
+    for schedule <- data, into: %{} do
+      %{
+        "attributes" => %{
+          "departure_time" => departure_time
+        },
+        "relationships" => %{
+          "trip" => %{
+            "data" => %{
+              "id" => trip_id
+            }
+          },
+          "stop" => %{
+            "data" => %{
+              "id" => stop_id
+            }
+          }
+        }
+      } = schedule
+
+      {{includes_info[stop_id], includes_info[trip_id]}, NaiveDateTime.from_iso8601!(departure_time)}
+    end
+  end
 end

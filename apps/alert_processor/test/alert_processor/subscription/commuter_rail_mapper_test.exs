@@ -535,4 +535,50 @@ defmodule AlertProcessor.Subscription.CommuterRailMapperTest do
       {:error, _} = CommuterRailMapper.populate_trip_options(params)
     end
   end
+
+  describe "trip_schedule_info_map" do
+    @test_date Calendar.Date.from_ordinal!(2017, 201)
+
+    test "maps schedule info between two stations on weekday" do
+      use_cassette "trip_schedule_info_weekday_commuter_rail", custom: true, clear_mock: true, match_requests_on: [:query] do
+        trip_schedule_info_map = CommuterRailMapper.trip_schedule_info_map("Newburyport", "Rowley", :weekday, @test_date)
+        assert %{
+          {"Newburyport", "NB161"} => _,
+          {"Rowley", "NB161"} => _,
+          {"Newburyport", "NB164"} => _,
+          {"Rowley", "NB164"} => _,
+          {"Newburyport", "NB173"} => _,
+          {"Rowley", "NB173"} => _,
+        } = trip_schedule_info_map
+      end
+    end
+
+    test "maps schedule info between two stations on saturday" do
+      use_cassette "trip_schedule_info_saturday_commuter_rail", custom: true, clear_mock: true, match_requests_on: [:query] do
+        trip_schedule_info_map = CommuterRailMapper.trip_schedule_info_map("place-north", "Fitchburg", :saturday, @test_date)
+        assert %{
+          {"place-north", "1401"} => _,
+          {"Fitchburg", "1401"} => _,
+          {"place-north", "1404"} => _,
+          {"Fitchburg", "1404"} => _,
+          {"place-north", "1410"} => _,
+          {"Fitchburg", "1410"} => _,
+        } = trip_schedule_info_map
+      end
+    end
+
+    test "maps schedule info between two stations on sunday" do
+      use_cassette "trip_schedule_info_sunday_commuter_rail", custom: true, clear_mock: true, match_requests_on: [:query] do
+        trip_schedule_info_map = CommuterRailMapper.trip_schedule_info_map("Lowell", "place-north", :saturday, @test_date)
+        assert %{
+          {"place-north", "1300"} => _,
+          {"Lowell", "1300"} => _,
+          {"place-north", "1305"} => _,
+          {"Lowell", "1305"} => _,
+          {"place-north", "1315"} => _,
+          {"Lowell", "1315"} => _,
+        } = trip_schedule_info_map
+      end
+    end
+  end
 end
