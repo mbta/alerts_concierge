@@ -3,6 +3,7 @@ defmodule ConciergeSite.SubscriptionController do
   use Guardian.Phoenix.Controller
 
   alias AlertProcessor.{Model.Subscription, Subscription.DisplayInfo}
+  alias AlertProcessor.Repo
 
   def index(conn, _params, user, _claims) do
     case Subscription.for_user(user) do
@@ -25,5 +26,27 @@ defmodule ConciergeSite.SubscriptionController do
 
   def edit(conn, _params, _user, _claims) do
     render conn, "edit.html"
+  end
+
+  def confirm_delete(conn, %{"id" => id}, user, _claims) do
+    subscription =
+      id
+      |> Subscription.one_for_user!(user.id)
+      |> Repo.preload(:informed_entities)
+    render conn, "confirm_delete.html", subscription: subscription
+  end
+
+  def delete(conn, %{"id" => id}, user, _claims) do
+    subscription = Subscription.one_for_user!(id, user.id)
+    case Repo.delete(subscription) do
+      {:ok, _} ->
+        conn
+        |> put_flash(:info, "Subscription deleted")
+        |> redirect(to: subscription_path(conn, :index))
+      {:error, _} ->
+        conn
+        |> put_flash(:error, "Subscription could not be deleted. Please try again.")
+        |> render("confirm_delete.html", subscription: subscription)
+    end
   end
 end
