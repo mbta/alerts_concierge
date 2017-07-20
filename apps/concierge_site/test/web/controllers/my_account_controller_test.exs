@@ -1,4 +1,4 @@
-defmodule ConciergeSite.AccountControllerTest do
+defmodule ConciergeSite.MyAccountControllerTest do
   use ConciergeSite.ConnCase
   alias AlertProcessor.{Model, Repo}
   alias Model.User

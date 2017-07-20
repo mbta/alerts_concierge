@@ -32,4 +32,13 @@ defmodule ConciergeSite.Email do
     |> put_html_layout({ConciergeSite.LayoutView, "email.html"})
     |> render("unknown_password_reset.html", email: email)
   end
+
+  def confirmation_email(email) do
+    new_email()
+    |> to(email)
+    |> from(@from)
+    |> subject("MBTA Alerts Account Confirmation")
+    |> put_html_layout({ConciergeSite.LayoutView, "email.html"})
+    |> render(:confirmation)
+  end
 end
