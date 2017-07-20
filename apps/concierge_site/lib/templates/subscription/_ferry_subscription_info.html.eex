@@ -2,7 +2,7 @@
   <div class="ferry-rail-subscriptions">
     <h6>Ferry</h6>
     <%= for subscription <- @subscriptions do %>
-      <%= link(to: subscription_path(@conn, :edit, subscription), class: "subscription-link") do %>
+      <%= link(to: ferry_subscription_path(@conn, :edit, subscription), class: "subscription-link") do %>
         <div class="subscription">
           <div class="subscription-icon-container">
             <div class="ferry-icon subscription-icon">
