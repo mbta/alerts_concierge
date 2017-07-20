@@ -1,6 +1,7 @@
 defmodule AlertProcessor.Subscription.FerryMapperTest do
-  use ExUnit.Case
+  use AlertProcessor.DataCase
   use ExVCR.Mock, adapter: ExVCR.Adapter.Hackney
+  import AlertProcessor.Factory
   alias AlertProcessor.{Model.InformedEntity, Model.Trip, Subscription.FerryMapper}
 
   describe "map_subscriptions one way" do
@@ -593,6 +594,34 @@ defmodule AlertProcessor.Subscription.FerryMapperTest do
           {"Boat-Hull", "Boat-F1-Boat-Long-19:45:00-weekend-0"} => _,
         } = trip_schedule_info_map
       end
+    end
+  end
+
+  describe "build_subscription_transaction" do
+    @round_trip_params %{
+      "origin" => "Boat-Long",
+      "destination" => "Boat-Hingham",
+      "trips" => ["Boat-F1-Boat-Long-18:05:00-weekday-0", "Boat-F1-Boat-Long-21:10:00-weekday-0"],
+      "return_trips" => ["Boat-F1-Boat-Hingham-21:00:00-weekday-1"],
+      "relevant_days" => ["weekday"],
+      "departure_start" => "12:00:00",
+      "departure_end" => "14:00:00",
+      "return_start" => "18:00:00",
+      "return_end" => "20:00:00",
+      "alert_priority_type" => "low",
+      "amenities" => ["elevator"]
+    }
+
+    test "it builds a multi struct to persist subscriptions" do
+      user = insert(:user)
+      {:ok, subscription_infos} = FerryMapper.map_subscriptions(@round_trip_params)
+      multi = FerryMapper.build_subscription_transaction(subscription_infos, user)
+      assert [
+          {{:subscription, 0}, {:insert, subscription_changeset_1, []}},
+          {{:subscription, 1}, {:insert, subscription_changeset_2, []}}
+        ] = Ecto.Multi.to_list(multi)
+      assert subscription_changeset_1.valid?
+      assert subscription_changeset_2.valid?
     end
   end
 end
