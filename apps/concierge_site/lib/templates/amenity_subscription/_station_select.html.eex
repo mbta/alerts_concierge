@@ -5,7 +5,8 @@
     <%= select @form,
               :station,
               @select_options,
-              class: "subscription-select subscription-select-amenity-station no-js" %>
+              class: "subscription-select subscription-select-amenity-station no-js",
+              prompt: "Enter a station" %>
 
     <%= submit "Add Station",
         formaction: @formaction,

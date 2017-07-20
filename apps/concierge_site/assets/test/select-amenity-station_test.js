@@ -83,6 +83,16 @@ describe("selectAmenityStation", function() {
       assert.lengthOf($suggestions, 1)
       assert.include(routeSuggestion, "Central Square")
     });
+
+    it("does not show prompt as a suggestion", () => {
+      const $stationInput = $("input.subscription-select-amenity-station");
+      $stationInput.val("Select");
+
+      simulateKeyUp($stationInput[0]);
+
+      const $suggestions = $(".amenity-station")
+      assert.lengthOf($suggestions, 0)
+    });
   });
 
   describe("clicking on a suggestion", () => {
