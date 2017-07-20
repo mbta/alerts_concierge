@@ -2,7 +2,7 @@ defmodule ConciergeSite.CommuterRailSubscriptionController do
   use ConciergeSite.Web, :controller
   use Guardian.Phoenix.Controller
   alias ConciergeSite.Subscriptions.{CommuterRailParams, Lines, TemporaryState}
-  alias AlertProcessor.Model.{InformedEntity, Subscription}
+  alias AlertProcessor.Model.Subscription
   alias AlertProcessor.{Repo, ServiceInfoCache, Subscription.CommuterRailMapper}
 
   def new(conn, _params, _user, _claims) do
@@ -12,16 +12,7 @@ defmodule ConciergeSite.CommuterRailSubscriptionController do
   def edit(conn, %{"id" => id}, user, _claims) do
     subscription = Subscription.one_for_user!(id, user.id, true)
     changeset = Subscription.create_changeset(subscription)
-    {:ok, {_name, origin_id}} = ServiceInfoCache.get_stop_by_name(subscription.origin)
-    {:ok, {_name, destination_id}} = ServiceInfoCache.get_stop_by_name(subscription.destination)
-    [relevant_days] = subscription.relevant_days
-    selected_trips =
-      subscription.informed_entities
-      |> Enum.filter(fn(informed_entity) ->
-           InformedEntity.entity_type(informed_entity) == :trip
-         end)
-      |> Enum.map(& &1.trip)
-    {:ok, trips} = CommuterRailMapper.get_trip_info(origin_id, destination_id, relevant_days, selected_trips)
+    {:ok, trips} = CommuterRailMapper.get_trip_info_from_subscription(subscription)
     render conn, "edit.html", subscription: subscription, changeset: changeset, trips: %{departure_trips: trips}
   end
 
@@ -153,16 +144,7 @@ defmodule ConciergeSite.CommuterRailSubscriptionController do
   end
 
   def handle_invalid_update_submission(conn, subscription, changeset) do
-    {:ok, {_name, origin_id}} = ServiceInfoCache.get_stop_by_name(subscription.origin)
-    {:ok, {_name, destination_id}} = ServiceInfoCache.get_stop_by_name(subscription.destination)
-    [relevant_days] = subscription.relevant_days
-    selected_trips =
-      subscription.informed_entities
-      |> Enum.filter(fn(informed_entity) ->
-        InformedEntity.entity_type(informed_entity) == :trip
-      end)
-      |> Enum.map(& &1.trip)
-    {:ok, trips} = CommuterRailMapper.get_trip_info(origin_id, destination_id, relevant_days, selected_trips)
+    {:ok, trips} = CommuterRailMapper.get_trip_info_from_subscription(subscription)
     conn
     |> put_flash(:error, "Please select at least one trip")
     |> render("edit.html", subscription: subscription, changeset: changeset, trips: %{departure_trips: trips})

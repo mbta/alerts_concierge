@@ -7,6 +7,8 @@ defmodule AlertProcessor.Subscription.Mapper do
   alias Ecto.Multi
   import Ecto.Query
 
+  @type map_trip_info_fn :: (String.t, String.t, Subscription.relevant_day -> :error | {:ok, [Trip.t]})
+
   def map_timeframe(%{"departure_start" => ds, "departure_end" => de, "return_start" => nil, "return_end" => nil, "relevant_days" => rd}) do
     {:ok, [do_map_timeframe(ds, de, rd)]}
   end
@@ -228,7 +230,7 @@ defmodule AlertProcessor.Subscription.Mapper do
     |> Multi.update(:subscription, subscription_changeset)
   end
 
-  @spec populate_trip_options(map, (String.t, String.t, Subscription.relevant_day -> :error | {:ok, [Trip.t]})) :: {:ok, map} | {:error, String.t}
+  @spec populate_trip_options(map, map_trip_info_fn) :: {:ok, map} | {:error, String.t}
   def populate_trip_options(%{"trip_type" => "one_way", "trips" => trips} = subscription_params, map_trip_options_fn) do
     %{"origin" => origin, "destination" => destination, "relevant_days" => relevant_days} = subscription_params
     case get_trip_info(origin, destination, relevant_days, trips, map_trip_options_fn) do
@@ -266,7 +268,7 @@ defmodule AlertProcessor.Subscription.Mapper do
     end
   end
 
-  @spec get_trip_info(Route.stop_id, Route.stop_id, Subscription.relevant_day, [Trip.id] | String.t, (String.t, String.t, Subscription.relevant_day -> :error | {:ok, [Trip.t]})) :: {:ok, [Trip.t]} | :error
+  @spec get_trip_info(Route.stop_id, Route.stop_id, Subscription.relevant_day, [Trip.id] | String.t, map_trip_info_fn) :: {:ok, [Trip.t]} | :error
   def get_trip_info(origin, destination, relevant_days, selected_trip_numbers, map_trip_options_fn) when is_list(selected_trip_numbers) do
     case map_trip_options_fn.(origin, destination, relevant_days) do
       {:ok, trips} ->
@@ -305,5 +307,17 @@ defmodule AlertProcessor.Subscription.Mapper do
   defp calculate_difference(trip, departure_start) do
     departure_time = DateTimeHelper.seconds_of_day(trip.departure_time)
     abs(departure_start - departure_time)
+  end
+
+  @spec get_trip_info_from_subscription(Subscription.t, map_trip_info_fn) :: {:ok, [Trip.t]} | :error
+  def get_trip_info_from_subscription(subscription, map_trip_options_fn) do
+    with {:ok, {_name, origin_id}} <- ServiceInfoCache.get_stop_by_name(subscription.origin),
+         {:ok, {_name, destination_id}} <- ServiceInfoCache.get_stop_by_name(subscription.destination),
+         [relevant_days] <- subscription.relevant_days,
+         selected_trips <- Subscription.subscription_trip_ids(subscription) do
+      get_trip_info(origin_id, destination_id, relevant_days, selected_trips, map_trip_options_fn)
+    else
+      _ -> :error
+    end
   end
 end

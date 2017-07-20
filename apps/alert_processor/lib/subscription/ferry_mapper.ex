@@ -12,6 +12,7 @@ defmodule AlertProcessor.Subscription.FerryMapper do
 
   def populate_trip_options(subscription_params), do: populate_trip_options(subscription_params, &map_trip_options/3)
   def get_trip_info(origin_id, destination_id, relevant_days, selected_trips_or_timestamp), do: get_trip_info(origin_id, destination_id, relevant_days, selected_trips_or_timestamp, &map_trip_options/3)
+  def get_trip_info_from_subscription(subscription), do: get_trip_info_from_subscription(subscription, &map_trip_options/3)
 
   @spec map_subscriptions(map) :: {:ok, [Subscription.subscription_info]} | :error
   def map_subscriptions(subscription_params) do

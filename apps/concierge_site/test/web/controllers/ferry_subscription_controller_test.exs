@@ -132,7 +132,8 @@ defmodule ConciergeSite.FerrySubscriptionControllerTest do
         subscription_factory()
         |> Map.put(:informed_entities, ferry_subscription_entities())
         |> ferry_subscription()
-        |> Map.merge(%{user: user, relevant_days: [:weekday]})
+        |> weekday_subscription()
+        |> Map.merge(%{user: user})
         |> insert()
 
       conn = get(conn, "/subscriptions/ferry/#{subscription.id}/edit")
@@ -145,7 +146,8 @@ defmodule ConciergeSite.FerrySubscriptionControllerTest do
         subscription_factory()
         |> Map.put(:informed_entities, ferry_subscription_entities())
         |> ferry_subscription()
-        |> Map.merge(%{user: user, relevant_days: [:weekday]})
+        |> weekday_subscription()
+        |> Map.merge(%{user: user})
         |> insert()
 
       params = %{"subscription" => %{
@@ -163,7 +165,8 @@ defmodule ConciergeSite.FerrySubscriptionControllerTest do
         subscription_factory()
         |> Map.put(:informed_entities, ferry_subscription_entities())
         |> ferry_subscription()
-        |> Map.merge(%{user: user, relevant_days: [:weekday]})
+        |> weekday_subscription()
+        |> Map.merge(%{user: user})
         |> insert()
 
       params = %{"subscription" => %{

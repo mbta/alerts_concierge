@@ -3,7 +3,7 @@ defmodule AlertProcessor.Model.Subscription do
   Set of criteria on which a user wants to be sent alerts.
   """
 
-  alias AlertProcessor.{Helpers.DateTimeHelper, Model.InformedEntity, Model.User, Repo, TimeFrameComparison}
+  alias AlertProcessor.{Helpers.DateTimeHelper, Model.InformedEntity, Model.Trip, Model.User, Repo, TimeFrameComparison}
   import Ecto.Query
 
   @type id :: String.t
@@ -156,5 +156,14 @@ defmodule AlertProcessor.Model.Subscription do
   """
   def subscription_types do
     [:bus, :subway, :commuter_rail, :boat, :amenity]
+  end
+
+  @spec subscription_trip_ids(__MODULE__.t) :: [Trip.id]
+  def subscription_trip_ids(subscription) do
+    subscription.informed_entities
+    |> Enum.filter(fn(informed_entity) ->
+         InformedEntity.entity_type(informed_entity) == :trip
+       end)
+    |> Enum.map(& &1.trip)
   end
 end
