@@ -3,7 +3,7 @@ defmodule ConciergeSite.AmenitySubscriptionController do
   use Guardian.Phoenix.Controller
   alias AlertProcessor.{Repo, ServiceInfoCache, Subscription}
   alias Subscription.AmenitiesMapper
-  alias ConciergeSite.Subscriptions.{Lines, TemporaryState}
+  alias ConciergeSite.Subscriptions.{AmenitiesParams, Lines, TemporaryState}
 
   def new(conn, _params, _user, _claims) do
     with {:ok, subway_stations} <- ServiceInfoCache.get_subway_full_routes(),
@@ -11,7 +11,7 @@ defmodule ConciergeSite.AmenitySubscriptionController do
 
       station_select_options = station_options(cr_stations, subway_stations)
 
-      render conn, "new.html",
+      render conn, :new,
         subscription_params: %{"stops" => []},
         station_list_select_options: station_select_options,
         selected_stations: []
@@ -19,7 +19,7 @@ defmodule ConciergeSite.AmenitySubscriptionController do
       _error ->
         conn
         |> put_flash(:error, "There was an error fetching station data. Please try again.")
-        |> redirect(to: "/subscriptions/new")
+        |> redirect(to: subscription_path(conn, :new))
     end
   end
 
@@ -40,7 +40,7 @@ defmodule ConciergeSite.AmenitySubscriptionController do
 
       token = TemporaryState.encode(subscription_params)
 
-      render conn, "new.html",
+      render conn, :new,
         subscription_params: subscription_params,
         station_list_select_options: station_select_options,
         selected_stations: new_stations,
@@ -49,7 +49,7 @@ defmodule ConciergeSite.AmenitySubscriptionController do
       _error ->
         conn
         |> put_flash(:error, "There was an error fetching station data. Please try again.")
-        |> redirect(to: "/subscriptions/new")
+        |> redirect(to: subscription_path(conn, :new))
     end
   end
 
@@ -82,7 +82,7 @@ defmodule ConciergeSite.AmenitySubscriptionController do
     with {:ok, subway_stations} <- ServiceInfoCache.get_subway_full_routes(),
       {:ok, cr_stations} <- ServiceInfoCache.get_commuter_rail_info() do
         station_select_options = station_options(cr_stations, subway_stations)
-        render conn, "new.html",
+        render conn, :new,
           subscription_params: subscription_params,
           station_list_select_options: station_select_options,
           selected_stations: new_stations,
@@ -91,7 +91,7 @@ defmodule ConciergeSite.AmenitySubscriptionController do
       _error ->
         conn
         |> put_flash(:error, "There was an error. Please try again.")
-        |> redirect(to: "/subscriptions/new")
+        |> redirect(to: subscription_path(conn, :new))
     end
   end
 
@@ -107,20 +107,43 @@ defmodule ConciergeSite.AmenitySubscriptionController do
   end
 
   def create(conn, %{"subscription" => sub_params}, user, _claims) do
-    with {:ok, subscription_infos} <- AmenitiesMapper.map_subscriptions(sub_params),
+    with :ok <- AmenitiesParams.validate_info_params(sub_params),
+      {:ok, subscription_infos} <- AmenitiesMapper.map_subscriptions(sub_params),
       multi <- AmenitiesMapper.build_subscription_transaction(subscription_infos, user),
       {:ok, _} <- Repo.transaction(multi) do
         redirect(conn, to: subscription_path(conn, :index))
     else
+      {:error, message} ->
+        conn
+        |> put_flash(:error, message)
+        |> render_new_page(sub_params)
       _ ->
         conn
-        |> put_flash(:error, "There was an error saving the subscription. Please try again.")
-        |> redirect(to: amenity_subscription_path(conn, :new))
+        |> put_flash(:error, "there was an error saving the subscription. Please try again.")
+        |> render_new_page(sub_params)
     end
   end
 
   def edit(conn, %{"id" => _id}, _user, _) do
     conn
     |> render(:edit)
+  end
+
+  defp render_new_page(conn, sub_params) do
+    with {:ok, subway_stations} <- ServiceInfoCache.get_subway_full_routes(),
+      {:ok, cr_stations} <- ServiceInfoCache.get_commuter_rail_info() do
+
+      station_select_options = station_options(cr_stations, subway_stations)
+
+      render conn, :new,
+        subscription_params: sub_params,
+        station_list_select_options: station_select_options,
+        selected_stations: String.split(sub_params["stops"], ",", trim: true)
+    else
+      _error ->
+        conn
+        |> put_flash(:error, "There was an error fetching station data. Please try again.")
+        |> redirect(to: subscription_path(conn, :new))
+    end
   end
 end

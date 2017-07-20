@@ -93,7 +93,14 @@ defmodule ConciergeSite.AmenitySubscriptionControllerTest do
       conn = conn
       |> post("/subscriptions/amenities", params)
 
-      assert html_response(conn, 302) =~ "/subscriptions/amenities/new"
+      expected_error = "Please correct the following errors to proceed: At least one station or line must be selected. At least one travel day must be selected. At least one amenity must be selected."
+      error =
+        conn
+        |> get_flash("error")
+        |> IO.iodata_to_binary()
+
+      assert html_response(conn, 200) =~ "Create New Subscription"
+      assert expected_error == error
     end
   end
 

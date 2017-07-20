@@ -1,12 +1,12 @@
 <h1>Create New Subscription</h1>
-
+<%= flash_error(@conn) %>
 <div class="subscription-step amenities">
   <div class="enter-trip-info">
     <%= form_for @conn, amenity_subscription_path(@conn, :create), [class: "trip-info-form amenities", as: :subscription], fn f -> %>
       <div class="amenity-subscription-form-section">
         <%= render "_amenity_options.html",
             form: f,
-            checked: @subscription_params["amenities"] || [],
+            checked: Map.get(@subscription_params, "amenities", []),
             action: "new" %>
 
         <%= render "_station_select.html",
