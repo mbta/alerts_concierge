@@ -4,9 +4,6 @@
   flex-flow: row wrap;
   justify-content: space-between;
   margin-bottom: 1.75rem;
-  @include media-breakpoint-down(xs) {
-    margin-bottom: 2.5rem;
-  }
   padding-bottom: 0;
 }
 
@@ -14,13 +11,4 @@
   font-size: $base-font-size-xxl;
   font-weight: normal;
   margin-left: auto;
-  @include media-breakpoint-down(xs) {
-    position: absolute;
-    right: 1rem;
-    top: 6rem;
-  }
-
-  @media (max-width: 336px) {
-    top: 10rem;
-  }
 }
