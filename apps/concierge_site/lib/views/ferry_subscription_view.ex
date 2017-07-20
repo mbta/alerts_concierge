@@ -159,4 +159,12 @@ defmodule ConciergeSite.FerrySubscriptionView do
 
   defp trip_summary_details_ferry_count([_trip]), do: "1 ferry"
   defp trip_summary_details_ferry_count(trips), do: [trips |> Enum.count() |> to_string(), " ferries"]
+
+  defp trip_list_header(subscription) do
+    case subscription.relevant_days do
+      [:weekday] -> "Select Weekday Ferries"
+      [:sunday] -> "Select Sunday Ferries"
+      [:saturday] -> "Select Saturday Ferries"
+    end
+  end
 end

@@ -1,5 +1,6 @@
 defmodule AlertProcessor.Subscription.SubwayMapperTest do
-  use ExUnit.Case
+  use AlertProcessor.DataCase
+  import AlertProcessor.Factory
   alias AlertProcessor.Subscription.SubwayMapper
   alias AlertProcessor.Model.InformedEntity
 
@@ -414,6 +415,32 @@ defmodule AlertProcessor.Subscription.SubwayMapperTest do
           InformedEntity.entity_type(informed_entity) == :stop
         end)
       assert total_station_count == 3
+    end
+  end
+
+  describe "build_subscription_transaction" do
+    @round_trip_params %{
+      "origin" => "place-davis",
+      "destination" => "place-harsq",
+      "relevant_days" => ["weekday", "saturday"],
+      "departure_start" => "12:00:00",
+      "departure_end" => "14:00:00",
+      "return_start" => "18:00:00",
+      "return_end" => "20:00:00",
+      "alert_priority_type" => "low",
+      "amenities" => ["elevator"]
+    }
+
+    test "it builds a multi struct to persist subscriptions" do
+      user = insert(:user)
+      {:ok, subscription_infos} = SubwayMapper.map_subscriptions(@round_trip_params)
+      multi = SubwayMapper.build_subscription_transaction(subscription_infos, user)
+      assert [
+          {{:subscription, 0}, {:insert, subscription_changeset_1, []}},
+          {{:subscription, 1}, {:insert, subscription_changeset_2, []}}
+        ] = Ecto.Multi.to_list(multi)
+      assert subscription_changeset_1.valid?
+      assert subscription_changeset_2.valid?
     end
   end
 end

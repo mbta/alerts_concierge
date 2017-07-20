@@ -1,6 +1,7 @@
 defmodule AlertProcessor.Subscription.CommuterRailMapperTest do
-  use ExUnit.Case
+  use AlertProcessor.DataCase
   use ExVCR.Mock, adapter: ExVCR.Adapter.Hackney
+  import AlertProcessor.Factory
   alias AlertProcessor.{Model.InformedEntity, Model.Trip, Subscription.CommuterRailMapper}
 
   describe "map_subscriptions one way" do
@@ -579,6 +580,68 @@ defmodule AlertProcessor.Subscription.CommuterRailMapperTest do
           {"Lowell", "1315"} => _,
         } = trip_schedule_info_map
       end
+    end
+  end
+
+  describe "build_subscription_transaction" do
+    @round_trip_params %{
+      "origin" => "place-north",
+      "destination" => "Anderson/ Woburn",
+      "trips" => ["123", "125"],
+      "return_trips" => ["588", "590"],
+      "relevant_days" => ["weekday"],
+      "departure_start" => "12:00:00",
+      "departure_end" => "14:00:00",
+      "return_start" => "18:00:00",
+      "return_end" => "20:00:00",
+      "alert_priority_type" => "low",
+      "amenities" => ["elevator"]
+    }
+
+    test "it builds a multi struct to persist subscriptions" do
+      user = insert(:user)
+      {:ok, subscription_infos} = CommuterRailMapper.map_subscriptions(@round_trip_params)
+      multi = CommuterRailMapper.build_subscription_transaction(subscription_infos, user)
+      assert [
+          {{:subscription, 0}, {:insert, subscription_changeset_1, []}},
+          {{:subscription, 1}, {:insert, subscription_changeset_2, []}}
+        ] = Ecto.Multi.to_list(multi)
+      assert subscription_changeset_1.valid?
+      assert subscription_changeset_2.valid?
+    end
+  end
+
+  describe "build_update_subscription_transaction" do
+    test "it builds a multi struct to update subscription" do
+      user = insert(:user)
+      subscription =
+          subscription_factory()
+          |> Map.put(:informed_entities, commuter_rail_subscription_entities())
+          |> commuter_rail_subscription()
+          |> Map.merge(%{user: user, relevant_days: [:weekday]})
+          |> insert()
+
+      params = %{
+        "alert_priority_type" => :high,
+        "end_time" => "20:59:00",
+        "start_time" => "20:35:00",
+        "trips" => ["341"]
+      }
+
+      multi = CommuterRailMapper.build_update_subscription_transaction(subscription, params)
+
+      assert [
+        {{:informed_entity, 0}, {:insert, insert_entity_changeset, []}},
+        {:remove_old, {:delete_all, removal_query, []}},
+        {:subscription, {:update, update_subscription_changeset, []}}
+      ] = Ecto.Multi.to_list(multi)
+      assert insert_entity_changeset.valid?
+      subscription.informed_entities
+      |> Enum.filter(& InformedEntity.entity_type(&1) == :trip)
+      |> Enum.each(fn(ie) ->
+        assert String.contains?(inspect(removal_query), ie.id)
+      end)
+      assert update_subscription_changeset.valid?
     end
   end
 end

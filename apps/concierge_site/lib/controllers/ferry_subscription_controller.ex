@@ -2,10 +2,34 @@ defmodule ConciergeSite.FerrySubscriptionController do
   use ConciergeSite.Web, :controller
   use Guardian.Phoenix.Controller
   alias ConciergeSite.Subscriptions.{FerryParams, Lines, TemporaryState}
-  alias AlertProcessor.{Repo, ServiceInfoCache, Subscription.FerryMapper}
+  alias AlertProcessor.{Model.Subscription, Repo, ServiceInfoCache, Subscription.FerryMapper}
 
   def new(conn, _params, _user, _claims) do
     render conn, "new.html"
+  end
+
+  def edit(conn, %{"id" => id}, user, _claims) do
+    subscription = Subscription.one_for_user!(id, user.id, true)
+    changeset = Subscription.create_changeset(subscription)
+    {:ok, trips} = FerryMapper.get_trip_info_from_subscription(subscription)
+    render conn, "edit.html", subscription: subscription, changeset: changeset, trips: %{departure_trips: trips}
+  end
+
+  def update(conn, %{"id" => id, "subscription" => subscription_params}, user, _claims) do
+    subscription = Subscription.one_for_user!(id, user.id, true)
+    with {:ok, params} <- FerryParams.prepare_for_update_changeset(subscription, subscription_params),
+         multi <- FerryMapper.build_update_subscription_transaction(subscription, params),
+         {:ok, _subscription} <- Repo.transaction(multi) do
+      conn
+      |> put_flash(:info, "Subscription updated.")
+      |> redirect(to: subscription_path(conn, :index))
+    else
+      {:error, %Ecto.Changeset{} = changeset} ->
+        handle_invalid_update_submission(conn, subscription, changeset)
+      _ ->
+        changeset = Subscription.create_changeset(subscription)
+        handle_invalid_update_submission(conn, subscription, changeset)
+    end
   end
 
   def info(conn, params, user, _claims) do
@@ -116,5 +140,12 @@ defmodule ConciergeSite.FerrySubscriptionController do
       subscription_params: Map.drop(subscription_params, ["trips", "return_trips"]),
       trips: trips
     )
+  end
+
+  def handle_invalid_update_submission(conn, subscription, changeset) do
+    {:ok, trips} = FerryMapper.get_trip_info_from_subscription(subscription)
+    conn
+    |> put_flash(:error, "Please select at least one trip")
+    |> render("edit.html", subscription: subscription, changeset: changeset, trips: %{departure_trips: trips})
   end
 end

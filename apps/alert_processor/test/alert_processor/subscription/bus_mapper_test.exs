@@ -1,5 +1,6 @@
 defmodule AlertProcessor.Subscription.BusMapperTest do
-  use ExUnit.Case
+  use AlertProcessor.DataCase
+  import AlertProcessor.Factory
   alias AlertProcessor.Subscription.BusMapper
   alias AlertProcessor.Model.InformedEntity
 
@@ -160,6 +161,31 @@ defmodule AlertProcessor.Subscription.BusMapperTest do
           match?(%InformedEntity{route: nil, route_type: 3}, informed_entity)
         end)
       assert route_type_entity_count == 1
+    end
+  end
+
+  describe "build_subscription_transaction" do
+    @round_trip_params %{
+      "route" => "16 - 0",
+      "relevant_days" => ["weekday", "saturday"],
+      "departure_start" => "12:00:00",
+      "departure_end" => "14:00:00",
+      "return_start" => "18:00:00",
+      "return_end" => "20:00:00",
+      "alert_priority_type" => "low",
+      "trip_type" => "round_trip"
+    }
+
+    test "it builds a multi struct to persist subscriptions" do
+      user = insert(:user)
+      {:ok, subscription_infos} = BusMapper.map_subscription(@round_trip_params)
+      multi = BusMapper.build_subscription_transaction(subscription_infos, user)
+      assert [
+          {{:subscription, 0}, {:insert, subscription_changeset_1, []}},
+          {{:subscription, 1}, {:insert, subscription_changeset_2, []}}
+        ] = Ecto.Multi.to_list(multi)
+      assert subscription_changeset_1.valid?
+      assert subscription_changeset_2.valid?
     end
   end
 end

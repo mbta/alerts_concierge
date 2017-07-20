@@ -4,7 +4,7 @@ defmodule ConciergeSite.Subscriptions.FerryParams do
   """
 
   import ConciergeSite.Subscriptions.ParamsValidator
-  alias AlertProcessor.Subscription.FerryMapper
+  alias AlertProcessor.{Model.Subscription, ServiceInfoCache, Subscription.FerryMapper}
 
   @spec validate_info_params(map) :: :ok | {:error, String.t}
   def validate_info_params(params) do
@@ -136,5 +136,25 @@ defmodule ConciergeSite.Subscriptions.FerryParams do
     |> Enum.map(& schedule_map[{station, &1}])
     |> sort_order.()
     |> Calendar.Strftime.strftime!("%H:%M:%S")
+  end
+
+  @spec prepare_for_update_changeset(Subscription.t, map) :: {:ok, map} | :error
+  def prepare_for_update_changeset(subscription, params) do
+    with %{"alert_priority_type" => alert_priority_type, "trips" => trips} <- params,
+         [_trip | _t] <- trips,
+         {:ok, {_name, origin_id}} <- ServiceInfoCache.get_stop_by_name(subscription.origin),
+         {:ok, {_name, destination_id}} <- ServiceInfoCache.get_stop_by_name(subscription.destination),
+         [relevant_days] <- subscription.relevant_days,
+         trip_schedule_map <- FerryMapper.trip_schedule_info_map(origin_id, destination_id, relevant_days),
+         {start_time, end_time} <- subscription_timestamps(trip_schedule_map, origin_id, destination_id, trips) do
+      {:ok, %{
+        "alert_priority_type" => String.to_existing_atom(alert_priority_type),
+        "start_time" => start_time,
+        "end_time" => end_time,
+        "trips" => trips
+      }}
+    else
+      _ -> :error
+    end
   end
 end

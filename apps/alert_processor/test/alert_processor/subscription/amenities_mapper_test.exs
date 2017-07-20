@@ -1,5 +1,6 @@
 defmodule AlertProcessor.Subscription.AmenitiesMapperTest do
-  use ExUnit.Case
+  use AlertProcessor.DataCase
+  import AlertProcessor.Factory
   alias AlertProcessor.Subscription.AmenitiesMapper
   alias AlertProcessor.Model.InformedEntity
 
@@ -103,6 +104,25 @@ defmodule AlertProcessor.Subscription.AmenitiesMapperTest do
           match?(%InformedEntity{facility_type: :elevator, stop: "place-sstat"}, informed_entity)
         end)
       assert south_station_entities_count == 1
+    end
+  end
+
+  describe "build_subscription_transaction" do
+    @params %{
+      "amenities" => ["elevator"],
+      "stops" => "North Station,South Station",
+      "routes" => ["red"],
+      "relevant_days" => ["weekday"]
+    }
+
+    test "it builds a multi struct to persist subscriptions" do
+      user = insert(:user)
+      {:ok, subscription_infos} = AmenitiesMapper.map_subscriptions(@params)
+      multi = AmenitiesMapper.build_subscription_transaction(subscription_infos, user)
+      assert [
+          {{:subscription, 0}, {:insert, subscription_changeset, []}}
+        ] = Ecto.Multi.to_list(multi)
+      assert subscription_changeset.valid?
     end
   end
 end

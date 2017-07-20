@@ -126,6 +126,59 @@ defmodule ConciergeSite.FerrySubscriptionControllerTest do
         assert ie.subscription == List.first(subscriptions)
       end
     end
+
+    test "GET /subscriptions/ferry/:id/edit", %{conn: conn, user: user} do
+      subscription =
+        subscription_factory()
+        |> Map.put(:informed_entities, ferry_subscription_entities())
+        |> ferry_subscription()
+        |> weekday_subscription()
+        |> Map.merge(%{user: user})
+        |> insert()
+
+      conn = get(conn, "/subscriptions/ferry/#{subscription.id}/edit")
+
+      assert html_response(conn, 200) =~ "Edit Subscription"
+    end
+
+    test "PATCH /subscriptions/ferry/:id", %{conn: conn, user: user} do
+      subscription =
+        subscription_factory()
+        |> Map.put(:informed_entities, ferry_subscription_entities())
+        |> ferry_subscription()
+        |> weekday_subscription()
+        |> Map.merge(%{user: user})
+        |> insert()
+
+      params = %{"subscription" => %{
+        "alert_priority_type" => "high",
+        "trips" => ["Boat-F4-Boat-Charlestown-11:15:00-weekday-1"]
+      }}
+
+      conn = patch(conn, "/subscriptions/ferry/#{subscription.id}", params)
+
+      assert html_response(conn, 302) =~ "my-subscriptions"
+    end
+
+    test "PATCH /subscriptions/ferry/:id displays error if trip not selected", %{conn: conn, user: user} do
+      subscription =
+        subscription_factory()
+        |> Map.put(:informed_entities, ferry_subscription_entities())
+        |> ferry_subscription()
+        |> weekday_subscription()
+        |> Map.merge(%{user: user})
+        |> insert()
+
+      params = %{"subscription" => %{
+        "alert_priority_type" => "high",
+        "trips" => []
+      }}
+
+      conn = patch(conn, "/subscriptions/ferry/#{subscription.id}", params)
+
+      assert html_response(conn, 200) =~ "Edit Subscription"
+      assert html_response(conn, 200) =~ "Please select at least one trip"
+    end
   end
 
   describe "unauthorized" do
