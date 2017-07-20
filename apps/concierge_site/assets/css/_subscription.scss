@@ -63,6 +63,9 @@
 
 .subway-icon {
   background-color: $brand-subway;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 
   img {
     height: 1rem;
@@ -71,35 +74,44 @@
 
 .commuter-rail-icon {
   background-color: $brand-commuter-rail;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 
   img {
-    bottom: .03125rem;
-    height: 1.125rem;
+    height: 1rem;
   }
 }
 
 .bus-icon {
   background-color: $brand-bus;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 
   img {
     height: 1rem;
-    left: .0625rem;
   }
 }
 
 .ferry-icon {
   background-color: $brand-ferry;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 
   img {
-    bottom: .0625rem;
     height: 1rem;
   }
 }
 
 .mbta-icon {
+  display: flex;
+  justify-content: center;
+  align-items: center;
 
   img {
-    bottom: .1875rem;
+    height: 1.5rem;
   }
 }
 
