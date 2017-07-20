@@ -3,7 +3,7 @@ defmodule ConciergeSite.AmenitySubscriptionController do
   use Guardian.Phoenix.Controller
   alias AlertProcessor.{Repo, ServiceInfoCache, Subscription}
   alias Subscription.AmenitiesMapper
-  alias ConciergeSite.Subscriptions.{Lines, TemporaryState}
+  alias ConciergeSite.Subscriptions.{AmenitiesParams, Lines, TemporaryState}
 
   def new(conn, _params, _user, _claims) do
     with {:ok, subway_stations} <- ServiceInfoCache.get_subway_full_routes(),
@@ -107,12 +107,17 @@ defmodule ConciergeSite.AmenitySubscriptionController do
   end
 
   def create(conn, %{"subscription" => sub_params}, user, _claims) do
-    with {:ok, subscription_infos} <- AmenitiesMapper.map_subscriptions(sub_params),
+    with :ok <- AmenitiesParams.validate_info_params(sub_params),
+      {:ok, subscription_infos} <- AmenitiesMapper.map_subscriptions(sub_params),
       multi <- AmenitiesMapper.build_subscription_transaction(subscription_infos, user),
       {:ok, _} <- Repo.transaction(multi) do
         redirect(conn, to: subscription_path(conn, :index))
     else
-      _ ->
+      {:error, message} ->
+        conn
+        |> put_flash(:error, message)
+        |> redirect(to: amenity_subscription_path(conn, :new))
+      error ->
         conn
         |> put_flash(:error, "There was an error saving the subscription. Please try again.")
         |> redirect(to: amenity_subscription_path(conn, :new))
