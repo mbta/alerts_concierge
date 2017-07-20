@@ -32,7 +32,7 @@ defmodule AlertProcessor.Model.User do
     field :vacation_end, :utc_datetime
     field :do_not_disturb_start, :time
     field :do_not_disturb_end, :time
-    field :encrypted_password, :string, null: false
+    field :encrypted_password, :string
     field :password, :string, virtual: true
     field :password_confirmation, :string, virtual: true
     field :sms_toggle, :boolean, virtual: true
