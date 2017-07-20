@@ -98,8 +98,8 @@ defmodule ConciergeSite.Subscriptions.FerryParamsTest do
     test "it preps params for one way parameters" do
       assert FerryParams.prepare_for_mapper(@params) == Map.merge(@params, %{
         "amenities" => [],
-        "departure_start" => "06:40:00",
-        "departure_end" => "07:23:00",
+        "departure_start" => ~T[10:40:00],
+        "departure_end" => ~T[11:23:00],
         "relevant_days" => ["weekday"],
         "return_start" => nil,
         "return_end" => nil
@@ -107,7 +107,7 @@ defmodule ConciergeSite.Subscriptions.FerryParamsTest do
     end
 
     test "it adjusts the actual departure_start and departure_end timestamps based on trips selected" do
-      assert %{"departure_start" => "06:40:00", "departure_end" => "07:23:00"} = FerryParams.prepare_for_mapper(@params)
+      assert %{"departure_start" => ~T[10:40:00], "departure_end" => ~T[11:23:00]} = FerryParams.prepare_for_mapper(@params)
     end
 
     test "it transform single relevant days value into array with same value" do
@@ -137,16 +137,16 @@ defmodule ConciergeSite.Subscriptions.FerryParamsTest do
     test "it preps params for round trip parameters" do
       assert FerryParams.prepare_for_mapper(@params) == Map.merge(@params, %{
         "amenities" => [],
-        "departure_start" => "10:00:00",
-        "departure_end" => "12:55:00",
+        "departure_start" => ~T[14:00:00],
+        "departure_end" => ~T[16:55:00],
         "relevant_days" => ["weekday"],
-        "return_start" => "21:10:00",
-        "return_end" => "22:05:00"
+        "return_start" => ~T[01:10:00],
+        "return_end" => ~T[02:05:00]
       })
     end
 
     test "it adjusts the actual departure_start and departure_end timestamps based on trips selected" do
-      assert %{"departure_start" => "10:00:00", "departure_end" => "12:55:00"} = FerryParams.prepare_for_mapper(@params)
+      assert %{"departure_start" => ~T[14:00:00], "departure_end" => ~T[16:55:00]} = FerryParams.prepare_for_mapper(@params)
     end
 
     test "it transform single relevant days value into array with same value" do
@@ -154,7 +154,7 @@ defmodule ConciergeSite.Subscriptions.FerryParamsTest do
     end
 
     test "it sets return_start and return_end to nil" do
-      assert %{"return_start" => "21:10:00", "return_end" => "22:05:00"} = FerryParams.prepare_for_mapper(@params)
+      assert %{"return_start" => ~T[01:10:00], "return_end" => ~T[02:05:00]} = FerryParams.prepare_for_mapper(@params)
     end
   end
 end

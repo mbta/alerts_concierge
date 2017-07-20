@@ -98,8 +98,8 @@ defmodule ConciergeSite.Subscriptions.CommuterRailParamsTest do
     test "it preps params for one way parameters" do
       assert CommuterRailParams.prepare_for_mapper(@params) == Map.merge(@params, %{
         "amenities" => [],
-        "departure_start" => "08:21:00",
-        "departure_end" => "10:10:00",
+        "departure_start" => ~T[12:21:00],
+        "departure_end" => ~T[14:10:00],
         "relevant_days" => ["weekday"],
         "return_start" => nil,
         "return_end" => nil
@@ -107,7 +107,7 @@ defmodule ConciergeSite.Subscriptions.CommuterRailParamsTest do
     end
 
     test "it adjusts the actual departure_start and departure_end timestamps based on trips selected" do
-      assert %{"departure_start" => "08:21:00", "departure_end" => "10:10:00"} = CommuterRailParams.prepare_for_mapper(@params)
+      assert %{"departure_start" => ~T[12:21:00], "departure_end" => ~T[14:10:00]} = CommuterRailParams.prepare_for_mapper(@params)
     end
 
     test "it transform single relevant days value into array with same value" do
@@ -137,16 +137,16 @@ defmodule ConciergeSite.Subscriptions.CommuterRailParamsTest do
     test "it preps params for round trip parameters" do
       assert CommuterRailParams.prepare_for_mapper(@params) == Map.merge(@params, %{
         "amenities" => [],
-        "departure_start" => "08:21:00",
-        "departure_end" => "10:10:00",
+        "departure_start" => ~T[12:21:00],
+        "departure_end" => ~T[14:10:00],
         "relevant_days" => ["weekday"],
-        "return_start" => "14:43:00",
-        "return_end" => "14:48:00"
+        "return_start" => ~T[18:43:00],
+        "return_end" => ~T[18:48:00]
       })
     end
 
     test "it adjusts the actual departure_start and departure_end timestamps based on trips selected" do
-      assert %{"departure_start" => "08:21:00", "departure_end" => "10:10:00"} = CommuterRailParams.prepare_for_mapper(@params)
+      assert %{"departure_start" => ~T[12:21:00], "departure_end" => ~T[14:10:00]} = CommuterRailParams.prepare_for_mapper(@params)
     end
 
     test "it transform single relevant days value into array with same value" do
@@ -154,7 +154,7 @@ defmodule ConciergeSite.Subscriptions.CommuterRailParamsTest do
     end
 
     test "it sets return_start and return_end to correct times" do
-      assert %{"return_start" => "14:43:00", "return_end" => "14:48:00"} = CommuterRailParams.prepare_for_mapper(@params)
+      assert %{"return_start" => ~T[18:43:00], "return_end" => ~T[18:48:00]} = CommuterRailParams.prepare_for_mapper(@params)
     end
   end
 end

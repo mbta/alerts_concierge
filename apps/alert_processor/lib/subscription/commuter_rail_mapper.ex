@@ -128,7 +128,7 @@ defmodule AlertProcessor.Subscription.CommuterRailMapper do
     schedule_datetime |> NaiveDateTime.from_iso8601! |> NaiveDateTime.to_time()
   end
 
-  @spec trip_schedule_info_map(String.t, String.t, Subscription.relevant_day) :: %{optional({Route.stop_id, Trip.id}) => NaiveDateTime.t}
+  @spec trip_schedule_info_map(String.t, String.t, Subscription.relevant_day) :: %{optional({Route.stop_id, Trip.id}) => DateTime.t}
   def trip_schedule_info_map(origin, destination, relevant_days, today_date \\ Calendar.Date.today!("America/New_York")) do
     relevant_date = DateTimeHelper.determine_date(relevant_days, today_date)
     {:ok, data, includes} = ApiClient.schedules(origin, destination, nil, [], relevant_date)
@@ -168,7 +168,8 @@ defmodule AlertProcessor.Subscription.CommuterRailMapper do
         }
       } = schedule
 
-      {{includes_info[stop_id], includes_info[trip_id]}, NaiveDateTime.from_iso8601!(departure_time)}
+      {:ok, departure_datetime, _} = DateTime.from_iso8601(departure_time)
+      {{includes_info[stop_id], includes_info[trip_id]}, DateTime.to_time(departure_datetime)}
     end
   end
 end

@@ -10,8 +10,8 @@ defmodule AlertProcessor.Subscription.CommuterRailMapperTest do
       "destination" => "place-north",
       "trips" => ["123", "125"],
       "relevant_days" => ["saturday"],
-      "departure_start" => "12:00:00",
-      "departure_end" => "14:00:00",
+      "departure_start" => ~T[12:00:00],
+      "departure_end" => ~T[14:00:00],
       "return_start" => nil,
       "return_end" => nil,
       "alert_priority_type" => "low",
@@ -36,8 +36,8 @@ defmodule AlertProcessor.Subscription.CommuterRailMapperTest do
 
     test "constructs subscription with timeframe" do
       {:ok, [{subscription, _ie}]} = CommuterRailMapper.map_subscriptions(@one_way_params)
-      assert subscription.start_time == ~T[16:00:00]
-      assert subscription.end_time == ~T[18:00:00]
+      assert subscription.start_time == ~T[12:00:00]
+      assert subscription.end_time == ~T[14:00:00]
       assert subscription.relevant_days == [:saturday]
     end
 
@@ -134,10 +134,10 @@ defmodule AlertProcessor.Subscription.CommuterRailMapperTest do
       "trips" => ["123", "125"],
       "return_trips" => ["588", "590"],
       "relevant_days" => ["weekday"],
-      "departure_start" => "12:00:00",
-      "departure_end" => "14:00:00",
-      "return_start" => "18:00:00",
-      "return_end" => "20:00:00",
+      "departure_start" => ~T[12:00:00],
+      "departure_end" => ~T[14:00:00],
+      "return_start" => ~T[18:00:00],
+      "return_end" => ~T[20:00:00],
       "alert_priority_type" => "low",
       "amenities" => ["elevator"]
     }
@@ -164,11 +164,11 @@ defmodule AlertProcessor.Subscription.CommuterRailMapperTest do
 
     test "constructs subscription with timeframe" do
       {:ok, [{sub1, _ie1}, {sub2, _ie2}]} = CommuterRailMapper.map_subscriptions(@round_trip_params)
-      assert sub1.start_time == ~T[16:00:00]
-      assert sub1.end_time == ~T[18:00:00]
+      assert sub1.start_time == ~T[12:00:00]
+      assert sub1.end_time == ~T[14:00:00]
       assert sub1.relevant_days == [:weekday]
-      assert sub2.start_time == ~T[22:00:00]
-      assert sub2.end_time == ~T[00:00:00]
+      assert sub2.start_time == ~T[18:00:00]
+      assert sub2.end_time == ~T[20:00:00]
       assert sub2.relevant_days == [:weekday]
     end
 
