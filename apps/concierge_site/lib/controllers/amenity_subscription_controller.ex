@@ -11,7 +11,7 @@ defmodule ConciergeSite.AmenitySubscriptionController do
 
       station_select_options = station_options(cr_stations, subway_stations)
 
-      render conn, "new.html",
+      render conn, :new,
         subscription_params: %{"stops" => []},
         station_list_select_options: station_select_options,
         selected_stations: []
@@ -19,7 +19,7 @@ defmodule ConciergeSite.AmenitySubscriptionController do
       _error ->
         conn
         |> put_flash(:error, "There was an error fetching station data. Please try again.")
-        |> redirect(to: "/subscriptions/new")
+        |> redirect(to: subscription_path(conn, :new))
     end
   end
 
@@ -40,7 +40,7 @@ defmodule ConciergeSite.AmenitySubscriptionController do
 
       token = TemporaryState.encode(subscription_params)
 
-      render conn, "new.html",
+      render conn, :new,
         subscription_params: subscription_params,
         station_list_select_options: station_select_options,
         selected_stations: new_stations,
@@ -49,7 +49,7 @@ defmodule ConciergeSite.AmenitySubscriptionController do
       _error ->
         conn
         |> put_flash(:error, "There was an error fetching station data. Please try again.")
-        |> redirect(to: "/subscriptions/new")
+        |> redirect(to: subscription_path(conn, :new))
     end
   end
 
@@ -82,7 +82,7 @@ defmodule ConciergeSite.AmenitySubscriptionController do
     with {:ok, subway_stations} <- ServiceInfoCache.get_subway_full_routes(),
       {:ok, cr_stations} <- ServiceInfoCache.get_commuter_rail_info() do
         station_select_options = station_options(cr_stations, subway_stations)
-        render conn, "new.html",
+        render conn, :new,
           subscription_params: subscription_params,
           station_list_select_options: station_select_options,
           selected_stations: new_stations,
@@ -91,7 +91,7 @@ defmodule ConciergeSite.AmenitySubscriptionController do
       _error ->
         conn
         |> put_flash(:error, "There was an error. Please try again.")
-        |> redirect(to: "/subscriptions/new")
+        |> redirect(to: subscription_path(conn, :new))
     end
   end
 
@@ -135,7 +135,7 @@ defmodule ConciergeSite.AmenitySubscriptionController do
 
       station_select_options = station_options(cr_stations, subway_stations)
 
-      render conn, "new.html",
+      render conn, :new,
         subscription_params: sub_params,
         station_list_select_options: station_select_options,
         selected_stations: String.split(sub_params["stops"], ",", trim: true)
@@ -143,7 +143,7 @@ defmodule ConciergeSite.AmenitySubscriptionController do
       _error ->
         conn
         |> put_flash(:error, "There was an error fetching station data. Please try again.")
-        |> redirect(to: "/subscriptions/new")
+        |> redirect(to: subscription_path(conn, :new))
     end
   end
 end
