@@ -173,11 +173,16 @@ defmodule ConciergeSite.AmenitySubscriptionController do
 
   def update(conn, %{"id" => id, "subscription" => sub_params}, user, _) do
     with subscription <- Subscription.one_for_user!(id, user.id, true),
+      :ok <- AmenitiesParams.validate_info_params(sub_params),
       {:ok, subscription_infos} <- AmenitiesMapper.map_subscriptions(sub_params),
       multi <- AmenitiesMapper.build_subscription_update_transaction(subscription, subscription_infos),
       {:ok, _} <- Repo.transaction(multi) do
         redirect(conn, to: subscription_path(conn, :index))
     else
+      {:error, message} ->
+        conn
+        |> put_flash(:error, message)
+        |> redirect(to: amenity_subscription_path(conn, :edit, id))
       _ ->
         conn
         |> put_flash(:error, "There was an error saving the subscription. Please try again.")
