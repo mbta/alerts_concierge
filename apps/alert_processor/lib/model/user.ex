@@ -84,6 +84,12 @@ defmodule AlertProcessor.Model.User do
     |> validate_format(:phone_number, ~r/^[0-9]{10}$/, message: "Phone number is not in a valid format.")
   end
 
+  def disable_account_changeset(struct, params \\ %{}) do
+    struct
+    |> cast(params, [:encrypted_password])
+    |> validate_required([:encrypted_password])
+  end
+
   defp hash_password(changeset) do
     case changeset do
       %Ecto.Changeset{valid?: true, changes: %{password: password}} ->

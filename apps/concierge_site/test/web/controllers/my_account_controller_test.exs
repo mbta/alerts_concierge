@@ -1,7 +1,8 @@
 defmodule ConciergeSite.MyAccountControllerTest do
   use ConciergeSite.ConnCase
   alias AlertProcessor.{Model, Repo}
-  alias Model.User
+  alias Model.{InformedEntity, Subscription, User}
+  import Ecto.Query
 
   describe "authorized" do
     setup :insert_user
@@ -53,6 +54,31 @@ defmodule ConciergeSite.MyAccountControllerTest do
 
       assert html_response(conn, 200) =~ "Account Preferences could not be updated. Please see errors below."
     end
+
+    test "DELETE /my-account", %{conn: conn, user: user} do
+      insert_bus_subscription_for_user(user)
+
+      conn = user
+      |> guardian_login(conn)
+      |> delete(my_account_path(conn, :delete))
+
+      updated_user = Repo.get(User, user.id)
+      informed_entity_count = Repo.one(from i in InformedEntity, select: count("*"))
+      subscription_count = Repo.one(from s in Subscription, select: count("*"))
+
+      assert html_response(conn, 302) =~ "/login/new"
+      assert subscription_count == 0
+      assert informed_entity_count == 0
+      assert is_nil(updated_user.encrypted_password)
+    end
+
+    test "GET /my-account/confirm_delete", %{conn: conn, user: user} do
+      conn = user
+      |> guardian_login(conn)
+      |> get(my_account_path(conn, :confirm_delete))
+
+      assert html_response(conn, 200) =~ "Delete Account?"
+    end
   end
 
   describe "unauthorized" do
@@ -60,9 +86,30 @@ defmodule ConciergeSite.MyAccountControllerTest do
       conn = get(conn, "/my-account/edit")
       assert html_response(conn, 302) =~ "/login"
     end
+
+    test "DELETE /my-account", %{conn: conn} do
+      conn = delete(conn, my_account_path(conn, :delete))
+      assert html_response(conn, 302) =~ "/login"
+    end
+
+    test "GET /my-account/confirm_delete", %{conn: conn} do
+      conn = get(conn, my_account_path(conn, :confirm_delete))
+      assert html_response(conn, 302) =~ "/login"
+    end
   end
 
   defp insert_user(_context) do
     {:ok, [user: insert(:user)]}
+  end
+
+  defp insert_bus_subscription_for_user(user) do
+    :subscription
+    |> build(user: user)
+    |> weekday_subscription()
+    |> bus_subscription()
+    |> Repo.preload(:informed_entities)
+    |> Ecto.Changeset.change()
+    |> Ecto.Changeset.put_assoc(:informed_entities, bus_subscription_entities())
+    |> Repo.insert()
   end
 end
