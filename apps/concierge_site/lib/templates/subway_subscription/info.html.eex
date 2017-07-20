@@ -1,5 +1,5 @@
 <h1>Create New Subscription</h1>
-<%= render "_progress_bar.html", current_page: :trip_info, conn: @conn %>
+<%= render "_progress_bar.html", current_page: :trip_info, subscription_params: @subscription_params, conn: @conn %>
 
 <div class="subscription-step enter-trip-info">
   <h2>Enter your trip info</h2>
@@ -33,7 +33,7 @@
     </div>
     <%= render "_travel_days_checkboxes.html",
                form: f,
-               checked: [],
+               checked: selected_relevant_days(@subscription_params),
                action: "new" %>
 
     <div class="form-group travel-times">
@@ -43,7 +43,7 @@
         your planned travel time.
       </div>
       <%= render "_travel_time_select_lists.html",
-                 trip_type: @subscription_params["trip_type"],
+                 subscription_params: @subscription_params,
                  form: f %>
     </div>
 
@@ -52,11 +52,13 @@
                    value: @subscription_params["trip_type"],
                    hidden: true %>
 
-  <div class="trip-info-footer">
+    <div class="trip-info-footer">
+      <%= submit "Next", class: "btn btn-primary btn-subscription-next" %>
+    </div>
+  <% end %>
+  <div class="back-link-container">
     <%= link to: subway_subscription_path(@conn, :new), class: "subscription-info-back-link" do %>
       <i class="fa fa-arrow-left" aria-hidden="true"></i> Go Back
     <% end %>
-    <%= submit "Next", class: "btn btn-primary btn-subscription-next" %>
   </div>
-  <%= end %>
 </div>

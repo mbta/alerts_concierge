@@ -20,7 +20,7 @@
     </div>
   <% end %>
   <div class="back-link-container">
-    <%= link to: commuter_rail_subscription_path(@conn, :info, trip_type: @subscription_params["trip_type"]), class: "subscription-info-back-link" do %>
+    <%= link to: commuter_rail_subscription_path(@conn, :info, query_string_params(:trip_info, @subscription_params)), class: "subscription-info-back-link" do %>
       <i class="fa fa-arrow-left" aria-hidden="true"></i> Go Back
     <% end %>
   </div>

@@ -2,12 +2,15 @@ defmodule ConciergeSite.BusSubscriptionView do
   use ConciergeSite.Web, :view
   alias AlertProcessor.Model.Subscription
   import ConciergeSite.SubscriptionHelper,
-    only: [atomize_keys: 1, joined_day_list: 1, progress_link_class: 3]
+    only: [atomize_keys: 1, joined_day_list: 1, progress_link_class: 3, do_query_string_params: 2]
   import ConciergeSite.TimeHelper,
     only: [travel_time_options: 0, time_option_local_strftime: 1,
            format_time: 1]
   import ConciergeSite.SubscriptionView,
     only: [parse_route: 1]
+  alias ConciergeSite.Subscriptions.SubscriptionParams
+
+  @type step :: :trip_type | :trip_info | :preferences
 
   @disabled_progress_bar_links %{trip_info: [:trip_info, :preferences],
     preferences: [:preferences]}
@@ -15,6 +18,32 @@ defmodule ConciergeSite.BusSubscriptionView do
   defdelegate progress_step_classes(page, step), to: ConciergeSite.SubscriptionHelper
 
   def progress_link_class(page, step), do: progress_link_class(page, step, @disabled_progress_bar_links)
+
+  @doc """
+  constructs keyword list of parameters to pass along relevant parameters to next or previous step
+  via get request
+  """
+  @spec query_string_params(step, map | nil) :: keyword(String.t)
+  def query_string_params(step, params), do: do_query_string_params(params, params_for_step(step))
+
+  @doc """
+  returns list of parameters that should be present and passed along
+  from the step given.
+  """
+  @spec params_for_step(step) :: [String.t]
+  def params_for_step(:trip_type), do: ~w(trip_type)
+  def params_for_step(:trip_info), do: [
+    "route", "departure_start", "departure_end", "return_start", "return_end",
+    "weekday", "saturday", "sunday" | params_for_step(:trip_type)
+  ]
+  def params_for_step(:preferences), do: ["alert_priority_type" | params_for_step(:trip_info)]
+  def params_for_step(_), do: []
+
+  def selected_relevant_days(params) do
+    params
+    |> SubscriptionParams.relevant_days_from_booleans()
+    |> Enum.map(&String.to_existing_atom/1)
+  end
 
   @doc """
   Returns a route's full name, example: "Route 57A Inbound"

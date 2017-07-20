@@ -4,12 +4,14 @@ defmodule ConciergeSite.SubwaySubscriptionView do
     only: [travel_time_options: 0, format_time: 1,
            time_option_local_strftime: 1]
   import ConciergeSite.SubscriptionHelper,
-    only: [joined_day_list: 1, atomize_keys: 1, progress_link_class: 3]
+    only: [joined_day_list: 1, atomize_keys: 1, progress_link_class: 3, do_query_string_params: 2]
+  alias ConciergeSite.Subscriptions.SubscriptionParams
 
   @typedoc """
   Possible values for trip types in Create Subscription flow
   """
   @type trip_type :: :one_way | :round_trip | :roaming
+  @type step :: :trip_type | :trip_info | :preferences
 
   @disabled_progress_bar_links %{trip_info: [:trip_info, :preferences],
     preferences: [:preferences]}
@@ -19,9 +21,34 @@ defmodule ConciergeSite.SubwaySubscriptionView do
   def progress_link_class(page, step), do: progress_link_class(page, step, @disabled_progress_bar_links)
 
   @doc """
+  constructs keyword list of parameters to pass along relevant parameters to next or previous step
+  via get request
+  """
+  @spec query_string_params(step, map | nil) :: keyword(String.t)
+  def query_string_params(step, params), do: do_query_string_params(params, params_for_step(step))
+
+  @doc """
+  returns list of parameters that should be present and passed along
+  from the step given.
+  """
+  @spec params_for_step(step) :: [String.t]
+  def params_for_step(:trip_type), do: ~w(trip_type)
+  def params_for_step(:trip_info), do: [
+    "origin", "destination", "departure_start", "departure_end", "return_start", "return_end",
+    "weekday", "saturday", "sunday" | params_for_step(:trip_type)
+  ]
+  def params_for_step(:preferences), do: ["alert_priority_type" | params_for_step(:trip_info)]
+  def params_for_step(_), do: []
+
+  def selected_relevant_days(params) do
+    params
+    |> SubscriptionParams.relevant_days_from_booleans()
+    |> Enum.map(&String.to_existing_atom/1)
+  end
+
+  @doc """
   Provide description text for Trip Info page based on which trip type selected
   """
-
   @spec trip_info_description(trip_type) :: String.t
   def trip_info_description(:one_way) do
     "Please note: We will only send you alerts about service updates that affect your origin and destination stations."

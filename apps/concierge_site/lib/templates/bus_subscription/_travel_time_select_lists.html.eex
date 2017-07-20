@@ -2,22 +2,22 @@
   <label for="subscription_departure_start" class="travel-time-label">
     Departure Trip:
   </label>
-  <%= select @f, :departure_start, travel_time_options(), class: "travel-time-select", selected: "08:45:00" %>
+  <%= select @f, :departure_start, travel_time_options(), class: "travel-time-select", selected: @subscription_params["departure_start"] || "08:45:00" %>
   <label for="subscription_departure_end" class="travel-time-connector">
     to
   </label>
-  <%= select @f, :departure_end, travel_time_options(), class: "travel-time-select", selected: "09:15:00" %>
+  <%= select @f, :departure_end, travel_time_options(), class: "travel-time-select", selected: @subscription_params["departure_end"] || "09:15:00" %>
 </div>
 
-<%= if @trip_type == "round_trip" do %>
+<%= if @subscription_params["trip_type"] == "round_trip" do %>
   <div class="travel-time-select-section">
     <label for="subscription_return_start" class="travel-time-label">
       Return Trip:
     </label>
-    <%= select @f, :return_start, travel_time_options(), class: "travel-time-select", selected: "16:45:00" %>
+    <%= select @f, :return_start, travel_time_options(), class: "travel-time-select", selected: @subscription_params["return_start"] || "16:45:00" %>
     <label for="subscription_return_end" class="travel-time-connector">
       to
     </label>
-    <%= select @f, :return_end, travel_time_options(), class: "travel-time-select", selected: "15:15:00" %>
+    <%= select @f, :return_end, travel_time_options(), class: "travel-time-select", selected: @subscription_params["return_end"] || "17:15:00" %>
   </div>
 <%= end %>

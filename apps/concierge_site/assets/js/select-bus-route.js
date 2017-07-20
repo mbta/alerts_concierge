@@ -12,15 +12,21 @@ export default function($) {
     props.allRoutes = generateRoutes();
     props.allRouteNames = generateRouteNames();
     attachSuggestionInput();
+    validateRouteInput();
   }
 
   function attachSuggestionInput() {
-    $("label[for='route']").after(renderRouteInput());
+    const preselectedValue = $(`select[name="subscription[route]"]`).find("option:selected").first();
+    if (preselectedValue && preselectedValue.val()) {
+      $("label[for='route']").after(renderRouteInput(preselectedValue.text()));
+    } else {
+      $("label[for='route']").after(renderRouteInput(""));
+    }
   }
 
-  function renderRouteInput() {
+  function renderRouteInput(preselectedValue) {
     return `
-      <input type="text" name="route" placeholder="Enter your bus number" class="subscription-select subscription-select-route station-input" data-valid="false" autocomplete="off"/>
+      <input type="text" name="route" value="${preselectedValue}" placeholder="Enter your bus number" class="subscription-select subscription-select-route station-input" data-valid="false" autocomplete="off"/>
       <div class="suggestion-container"></div>
       <i class="fa fa-check-circle valid-checkmark-icon"></i>
     `
