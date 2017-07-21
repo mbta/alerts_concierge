@@ -3,19 +3,15 @@ defmodule AlertProcessor.Model.RouteTest do
 
   alias AlertProcessor.Model.Route
 
-  describe "name/2" do
-    test "uses preferred name if present" do
-      route = %Route{long_name: "Test", short_name: "T"}
-
+  describe "name/1" do
+    test "uses long name if present" do
+      route = %Route{long_name: "Test"}
       assert Route.name(route) == "Test"
-      assert Route.name(route, :long_name) == "Test"
-      assert Route.name(route, :short_name) == "T"
     end
 
-    test "uses inverse if name not present" do
-      route = %Route{long_name: "Test", short_name: ""}
-
-      assert Route.name(route, :short_name) == "Test"
+    test "uses short_name if long name not present" do
+      route = %Route{long_name: "", short_name: "Test"}
+      assert Route.name(route) == "Test"
     end
   end
 end

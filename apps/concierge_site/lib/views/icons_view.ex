@@ -4,7 +4,7 @@ defmodule ConciergeSite.IconsView do
   alias AlertProcessor.Model.Route
 
   def render("_circle_icon.html", %{route: route, large: true}) do
-    route_name = Route.name(route, :long_name)
+    route_name = Route.name(route)
     downcase_route_name = route_name
       |> String.split()
       |> List.first()
@@ -14,7 +14,7 @@ defmodule ConciergeSite.IconsView do
   end
 
   def render("_circle_icon.html", %{route: route}) do
-    route_name = Route.name(route, :long_name)
+    route_name = Route.name(route)
     downcase_route_name = route_name
       |> String.split()
       |> List.first()

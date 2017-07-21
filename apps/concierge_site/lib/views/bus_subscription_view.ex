@@ -52,7 +52,7 @@ defmodule ConciergeSite.BusSubscriptionView do
   def route_name(subscription) do
     route = parse_route(subscription)
     direction = direction_name(subscription)
-    ["Route ", Route.name(route, :long_name), " ", direction]
+    ["Route ", Route.name(route), " ", direction]
   end
 
   defp direction_name(subscription) do

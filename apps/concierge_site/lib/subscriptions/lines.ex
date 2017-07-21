@@ -13,7 +13,7 @@ defmodule ConciergeSite.Subscriptions.Lines do
   """
   @spec station_list_select_options([%Route{}]) :: [{String.t, list}]
   def station_list_select_options(routes) do
-    Enum.map(routes, fn(route) -> {Route.name(route, :long_name), route.stop_list} end)
+    Enum.map(routes, fn(route) -> {Route.name(route), route.stop_list} end)
   end
 
   @doc """

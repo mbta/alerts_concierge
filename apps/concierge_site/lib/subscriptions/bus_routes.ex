@@ -15,8 +15,8 @@ defmodule ConciergeSite.Subscriptions.BusRoutes do
   def route_list_select_options(routes) do
     Enum.flat_map(routes, fn(route) ->
       [
-        "Route #{Route.name(route, :long_name)} - Inbound": "#{route.route_id} - 1",
-        "Route #{Route.name(route, :long_name)} - Outbound": "#{route.route_id} - 0"
+        "Route #{Route.name(route)} - Inbound": "#{route.route_id} - 1",
+        "Route #{Route.name(route)} - Outbound": "#{route.route_id} - 0"
       ]
     end)
   end

@@ -98,7 +98,7 @@ defmodule ConciergeSite.CommuterRailSubscriptionView do
     {destination_name, _} = trip.destination
 
     [
-      Route.name(trip.route, :long_name),
+      Route.name(trip.route),
       " ",
       trip.trip_number,
       " | Departs ",

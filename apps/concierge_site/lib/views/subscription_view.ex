@@ -82,7 +82,7 @@ defmodule ConciergeSite.SubscriptionView do
 
   def route_header(%{type: :bus} = subscription) do
     [
-      content_tag(:span, Route.name(parse_route(subscription), :long_name)),
+      content_tag(:span, Route.name(parse_route(subscription))),
       content_tag(:i, "", class: "fa fa-long-arrow-right"),
       content_tag(:span, direction_name(subscription))
     ]

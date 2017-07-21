@@ -29,15 +29,6 @@ defmodule AlertProcessor.Model.Route do
     order: integer
   }
 
-  def name(route, type \\ :long_name) do
-    route = Map.from_struct(route)
-    if is_nil(route[type]) || route[type] == "" do
-      route[opposite_name(type)]
-    else
-      route[type]
-    end
-  end
-
-  defp opposite_name(:long_name), do: :short_name
-  defp opposite_name(:short_name), do: :long_name
+  def name(%__MODULE__{long_name: "", short_name: name}), do: name
+  def name(%__MODULE__{long_name: name}), do: name
 end
