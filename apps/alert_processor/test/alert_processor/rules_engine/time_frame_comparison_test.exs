@@ -41,9 +41,11 @@ defmodule AlertProcessor.TimeFrameComparisonTest do
 
     test "matches overlapping, overnight timeframes" do
       alert_timeframe_map = %{
-        sunday: %{end: 7200, start: 14_400}
+        saturday: %{end: 86_399, start: 14_400},
+        sunday: %{end: 7200, start: 0}
       }
       subscription_timeframe_map = %{
+        saturday: %{end: 86_399, start: 57_600},
         sunday: %{end: 3600, start: 0}
       }
       assert TimeFrameComparison.match?(alert_timeframe_map, subscription_timeframe_map)
@@ -51,10 +53,12 @@ defmodule AlertProcessor.TimeFrameComparisonTest do
 
     test "doesn't match non-overlapping, overnight timeframes" do
       alert_timeframe_map = %{
-        sunday: %{end: 7200, start: 14_400}
+        saturday: %{end: 86_399, start: 14_400},
+        sunday: %{end: 7200, start: 0}
       }
       subscription_timeframe_map = %{
-        saturday: %{end: 7800, start: 28_800}
+        sunday: %{end: 86_399, start: 14_400},
+        monday: %{end: 7200, start: 0}
       }
       refute TimeFrameComparison.match?(alert_timeframe_map, subscription_timeframe_map)
     end
