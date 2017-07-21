@@ -2,5 +2,5 @@
   <div class="<%= @icon_class %> subscription-icon">
     <img src="<%= @icon_src %>" />
   </div>
-  <div><%= @name %></div>
+  <div class="subscription-text"><%= @name %></div>
 <% end %>

@@ -51,6 +51,7 @@
   position: absolute;
   top: 1.125rem;
   width: 1.5rem;
+  display: inline-block;
 
   img {
     position: relative;
@@ -59,6 +60,11 @@
   .amenity {
     height: 36px;
   }
+}
+
+.subscription-text {
+  display: inline-block;
+  width: 67%;
 }
 
 .subway-icon {
