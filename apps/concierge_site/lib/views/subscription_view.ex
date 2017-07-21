@@ -33,7 +33,7 @@ defmodule ConciergeSite.SubscriptionView do
     subscription_map =
       subscriptions
       |> Enum.sort_by(fn(subscription) ->
-        route = parse_route(subscription) || %{order: 1}
+        route = parse_route(subscription)
         relevant_days_key =
           {
             !Enum.member?(subscription.relevant_days, :weekday),
@@ -172,6 +172,7 @@ defmodule ConciergeSite.SubscriptionView do
     route
   end
 
+  def parse_route(%Subscription{type: :amenity}), do: %{order: 1}
   def parse_route(subscription) do
     {:ok, route} = subscription |> parse_route_id() |> ServiceInfoCache.get_route()
     route
