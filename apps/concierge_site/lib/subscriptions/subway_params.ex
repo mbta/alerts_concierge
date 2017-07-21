@@ -141,8 +141,8 @@ defmodule ConciergeSite.Subscriptions.SubwayParams do
       "roaming" => "true",
       "departure_start" => DateTimeHelper.timestamp_to_utc_datetime(params["departure_start"]),
       "departure_end" => DateTimeHelper.timestamp_to_utc_datetime(params["departure_end"]),
-      "return_start" => DateTimeHelper.timestamp_to_utc_datetime(params["return_start"]),
-      "return_end" => DateTimeHelper.timestamp_to_utc_datetime(params["return_end"]),
+      "return_start" => nil,
+      "return_end" => nil,
       "amenities" => []
     }
 
