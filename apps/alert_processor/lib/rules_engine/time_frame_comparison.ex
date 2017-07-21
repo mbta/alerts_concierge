@@ -7,9 +7,15 @@ defmodule AlertProcessor.TimeFrameComparison do
   """
 
   @type second_of_day :: 0..86_399
-  @type timeframe_map :: %{optional(:sunday) => %{start: second_of_day, end: second_of_day},
-                           optional(:saturday) => %{start: second_of_day, end: second_of_day},
-                           optional(:weekday) => %{start: second_of_day, end: second_of_day}}
+  @type timeframe_map :: %{
+                            optional(:sunday) => %{start: second_of_day, end: second_of_day},
+                            optional(:monday) => %{start: second_of_day, end: second_of_day},
+                            optional(:tuesday) => %{start: second_of_day, end: second_of_day},
+                            optional(:wednesday) => %{start: second_of_day, end: second_of_day},
+                            optional(:thursday) => %{start: second_of_day, end: second_of_day},
+                            optional(:friday) => %{start: second_of_day, end: second_of_day},
+                            optional(:saturday) => %{start: second_of_day, end: second_of_day},
+                          }
   @type time_period :: %{start: second_of_day, end: second_of_day}
 
 

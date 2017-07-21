@@ -28,11 +28,11 @@ defmodule AlertProcessor.Model.Subscription do
   }
 
   @relevant_day_of_week_types %{
-    1 => :weekday,
-    2 => :weekday,
-    3 => :weekday,
-    4 => :weekday,
-    5 => :weekday,
+    1 => :monday,
+    2 => :tuesday,
+    3 => :wednesday,
+    4 => :thursday,
+    5 => :friday,
     6 => :saturday,
     7 => :sunday
   }
@@ -133,7 +133,7 @@ defmodule AlertProcessor.Model.Subscription do
   @doc """
   return relevant day of week subscription atom value based on day of week number
   """
-  @spec relevant_day_of_week_type(integer) :: :saturday | :sunday | :weekday
+  @spec relevant_day_of_week_type(integer) :: :sunday | :monday | :tuesday | :wednesday | :thursday | :friday | :saturday
   def relevant_day_of_week_type(day_of_week) do
     @relevant_day_of_week_types[day_of_week]
   end
@@ -145,10 +145,67 @@ defmodule AlertProcessor.Model.Subscription do
   """
   @spec timeframe_map(__MODULE__.t) :: TimeFrameComparison.timeframe_map
   def timeframe_map(subscription) do
-    Map.new(subscription.relevant_days, fn(relevant_day) ->
-      {relevant_day, %{start: DateTimeHelper.seconds_of_day(subscription.start_time), end: DateTimeHelper.seconds_of_day(subscription.end_time)}}
+    Enum.reduce(subscription.relevant_days, %{}, fn(relevant_day, acc) ->
+      map_timeframe(relevant_day, subscription.start_time, subscription.end_time, acc)
     end)
   end
+
+  defp map_timeframe(:weekday, start_time, end_time, acc) when start_time >= end_time do
+    acc
+    |> Map.put(:monday, do_map_timeframe(start_time, ~T[23:59:59]))
+    |> Map.put(:tuesday, do_map_timeframe(start_time, end_time))
+    |> Map.put(:wednesday, do_map_timeframe(start_time, end_time))
+    |> Map.put(:thursday, do_map_timeframe(start_time, end_time))
+    |> Map.put(:friday, do_map_timeframe(start_time, end_time))
+    |> Map.put_new(:saturday, do_map_timeframe(~T[00:00:00], end_time))
+  end
+  defp map_timeframe(:saturday, start_time, end_time, acc) when start_time >= end_time do
+    acc
+    |> Map.put(:saturday, do_map_timeframe(start_time, ~T[23:59:59]))
+    |> Map.put_new(:sunday, do_map_timeframe(~T[00:00:00], end_time))
+  end
+  defp map_timeframe(:sunday, start_time, end_time, acc) when start_time >= end_time do
+    acc
+    |> Map.put(:sunday, do_map_timeframe(start_time, ~T[23:59:59]))
+    |> Map.put_new(:monday, do_map_timeframe(~T[00:00:00], end_time))
+  end
+  defp map_timeframe(:weekday, start_time, end_time, acc) do
+    if after_midnight?(start_time) do
+      acc
+      |> Map.put(:tuesday, do_map_timeframe(start_time, end_time))
+      |> Map.put(:wednesday, do_map_timeframe(start_time, end_time))
+      |> Map.put(:thursday, do_map_timeframe(start_time, end_time))
+      |> Map.put(:friday, do_map_timeframe(start_time, end_time))
+      |> Map.put(:saturday, do_map_timeframe(start_time, end_time))
+    else
+      acc
+      |> Map.put(:monday, do_map_timeframe(start_time, end_time))
+      |> Map.put(:tuesday, do_map_timeframe(start_time, end_time))
+      |> Map.put(:wednesday, do_map_timeframe(start_time, end_time))
+      |> Map.put(:thursday, do_map_timeframe(start_time, end_time))
+      |> Map.put(:friday, do_map_timeframe(start_time, end_time))
+    end
+  end
+  defp map_timeframe(relevant_day, start_time, end_time, acc) do
+    if after_midnight?(start_time) do
+      Map.put(acc, next_timeframe(relevant_day), do_map_timeframe(start_time, end_time))
+    else
+      Map.put(acc, relevant_day, do_map_timeframe(start_time, end_time))
+    end
+  end
+
+  defp do_map_timeframe(start_time, end_time) do
+    %{start: DateTimeHelper.seconds_of_day(start_time), end: DateTimeHelper.seconds_of_day(end_time)}
+  end
+
+  defp after_midnight?(timestamp) do
+    local_timestamp = Time.compare(timestamp, ~T[04:00:00])
+    local_timestamp != :gt
+  end
+
+  defp next_timeframe(:weekday), do: :saturday
+  defp next_timeframe(:saturday), do: :sunday
+  defp next_timeframe(:sunday), do: :monday
 
   @doc """
   function used to make sure subscription type atoms are available in runtime
