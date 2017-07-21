@@ -3,6 +3,7 @@ defmodule ConciergeSite.Subscriptions.BusRoutes do
   Module for transforming ServiceInfoCache bus info
   """
 
+  alias AlertProcessor.Model.Route
   @doc """
   Transform AlertProcessor.Model.Route struct into keyword list of {"Route Name", [Routes]}
 
@@ -10,12 +11,12 @@ defmodule ConciergeSite.Subscriptions.BusRoutes do
   become the label of an <optgroup> containing <option>s for each route.
   """
 
-  @spec route_list_select_options([%AlertProcessor.Model.Route{}]) :: Keyword.t
+  @spec route_list_select_options([%Route{}]) :: Keyword.t
   def route_list_select_options(routes) do
     Enum.flat_map(routes, fn(route) ->
       [
-        "Route #{route.long_name} - Inbound": "#{route.route_id} - 1",
-        "Route #{route.long_name} - Outbound": "#{route.route_id} - 0"
+        "Route #{Route.name(route)} - Inbound": "#{route.route_id} - 1",
+        "Route #{Route.name(route)} - Outbound": "#{route.route_id} - 0"
       ]
     end)
   end

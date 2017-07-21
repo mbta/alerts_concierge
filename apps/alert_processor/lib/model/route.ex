@@ -5,7 +5,8 @@ defmodule AlertProcessor.Model.Route do
   when displaying subscriptions
   """
 
-  defstruct [:direction_names, :headsigns, :long_name, :order, :route_id, :route_type, stop_list: []]
+  defstruct [:direction_names, :headsigns, :long_name, :order, :route_id,
+             :route_type, :short_name, stop_list: []]
 
   @type direction_id :: integer
   @type headsigns :: %{
@@ -23,7 +24,11 @@ defmodule AlertProcessor.Model.Route do
     long_name: String.t,
     route_id: route_id,
     route_type: route_type,
+    short_name: String.t,
     stop_list: [stop],
     order: integer
   }
+
+  def name(%__MODULE__{long_name: "", short_name: name}), do: name
+  def name(%__MODULE__{long_name: name}), do: name
 end

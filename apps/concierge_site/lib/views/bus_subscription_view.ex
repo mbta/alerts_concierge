@@ -1,6 +1,6 @@
 defmodule ConciergeSite.BusSubscriptionView do
   use ConciergeSite.Web, :view
-  alias AlertProcessor.Model.Subscription
+  alias AlertProcessor.Model.{Route, Subscription}
   import ConciergeSite.SubscriptionHelper,
     only: [atomize_keys: 1, joined_day_list: 1, progress_link_class: 3, do_query_string_params: 2]
   import ConciergeSite.TimeHelper,
@@ -52,7 +52,7 @@ defmodule ConciergeSite.BusSubscriptionView do
   def route_name(subscription) do
     route = parse_route(subscription)
     direction = direction_name(subscription)
-    ["Route ", route.long_name, " ", direction]
+    ["Route ", Route.name(route), " ", direction]
   end
 
   defp direction_name(subscription) do
