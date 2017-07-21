@@ -1,12 +1,10 @@
 defmodule ConciergeSite.MyAccountController do
   use ConciergeSite.Web, :controller
   use Guardian.Phoenix.Controller
-  import Ecto.Query
   alias AlertProcessor.{Model, Repo}
-  alias Model.{Subscription, User}
+  alias Model.User
   alias AlertProcessor.Repo
   alias ConciergeSite.UserParams
-  alias Ecto.Multi
 
   def edit(conn, _params, user, _claims) do
     changeset = User.update_account_changeset(user)
@@ -30,21 +28,15 @@ defmodule ConciergeSite.MyAccountController do
   end
 
   def delete(conn, _params, user, _claims) do
-    changeset = User.disable_account_changeset(user, %{encrypted_password: nil})
-    subscription_query = from s in Subscription, where: s.user_id == ^user.id
+    changeset = User.disable_account_changeset(user)
 
-    multi =
-      Multi.new
-      |> Multi.update(:user, changeset)
-      |> Multi.delete_all(:subscriptions, subscription_query)
-
-    case Repo.transaction(multi) do
+    case Repo.update(changeset) do
       {:ok, _} ->
         conn
         |> Guardian.Plug.sign_out()
         |> put_flash(:info, "Your account has been deleted.")
         |> redirect(to: session_path(conn, :new))
-      {:error, _, _, _} ->
+      {:error, _} ->
         conn
         |> put_flash(:error, "Your account could not be deleted, please try again.")
         |> render("confirm_delete.html")

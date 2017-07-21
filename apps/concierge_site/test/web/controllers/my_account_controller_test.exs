@@ -1,8 +1,7 @@
 defmodule ConciergeSite.MyAccountControllerTest do
   use ConciergeSite.ConnCase
   alias AlertProcessor.{Model, Repo}
-  alias Model.{InformedEntity, Subscription, User}
-  import Ecto.Query
+  alias Model.User
 
   describe "authorized" do
     setup :insert_user
@@ -56,20 +55,16 @@ defmodule ConciergeSite.MyAccountControllerTest do
     end
 
     test "DELETE /my-account", %{conn: conn, user: user} do
-      insert_bus_subscription_for_user(user)
-
       conn = user
       |> guardian_login(conn)
       |> delete(my_account_path(conn, :delete))
 
       updated_user = Repo.get(User, user.id)
-      informed_entity_count = Repo.one(from i in InformedEntity, select: count("*"))
-      subscription_count = Repo.one(from s in Subscription, select: count("*"))
 
       assert html_response(conn, 302) =~ "/login/new"
-      assert subscription_count == 0
-      assert informed_entity_count == 0
-      assert is_nil(updated_user.encrypted_password)
+      assert updated_user.encrypted_password == ""
+      refute is_nil(updated_user.vacation_start)
+      refute updated_user.vacation_end == DateTime.from_naive!(~N[9999-12-25 23:59:59], "Etc/UTC")
     end
 
     test "GET /my-account/confirm_delete", %{conn: conn, user: user} do
@@ -100,16 +95,5 @@ defmodule ConciergeSite.MyAccountControllerTest do
 
   defp insert_user(_context) do
     {:ok, [user: insert(:user)]}
-  end
-
-  defp insert_bus_subscription_for_user(user) do
-    :subscription
-    |> build(user: user)
-    |> weekday_subscription()
-    |> bus_subscription()
-    |> Repo.preload(:informed_entities)
-    |> Ecto.Changeset.change()
-    |> Ecto.Changeset.put_assoc(:informed_entities, bus_subscription_entities())
-    |> Repo.insert()
   end
 end

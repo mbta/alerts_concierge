@@ -84,10 +84,11 @@ defmodule AlertProcessor.Model.User do
     |> validate_format(:phone_number, ~r/^[0-9]{10}$/, message: "Phone number is not in a valid format.")
   end
 
-  def disable_account_changeset(struct, params \\ %{}) do
+  def disable_account_changeset(struct) do
     struct
-    |> cast(params, [:encrypted_password])
-    |> validate_required([:encrypted_password])
+    |> change(encrypted_password: "")
+    |> change(vacation_start: DateTime.utc_now())
+    |> change(vacation_end: DateTime.from_naive!(~N[9999-12-25 23:59:59], "Etc/UTC"))
   end
 
   defp hash_password(changeset) do
@@ -162,8 +163,8 @@ defmodule AlertProcessor.Model.User do
     user = Repo.get_by(__MODULE__, email: email)
 
     cond do
-      user && is_nil(user.encrypted_password) ->
-        :disabled
+      user && user.encrypted_password == "" ->
+        {:error, :disabled}
       check_password(user, password) ->
         {:ok, user}
       true ->

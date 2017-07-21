@@ -4,7 +4,7 @@ defmodule ConciergeSite.SessionControllerTest do
 
   @password "password1"
   @encrypted_password Comeonin.Bcrypt.hashpwsalt(@password)
-  @disabled_password nil
+  @disabled_password ""
 
   test "GET /login", %{conn: conn} do
     conn = get(conn, "/login/new")
