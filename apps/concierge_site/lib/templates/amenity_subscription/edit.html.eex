@@ -1,4 +1,9 @@
-<h1>Edit Station Amenity</h1>
+<h1 class="header-container">
+  <div>Edit Station Amenity</div>
+  <%= link to: subscription_path(@conn, :confirm_delete, @subscription), class: "header-link" do %>
+    Delete Subscription <i class="fa fa-trash-o"></i>
+  <% end %>
+</h1>
 <%= flash_error(@conn) %>
 
 <div class="subscription-step amenities">

@@ -1,4 +1,9 @@
-<h1><%= @subscription.origin %> <i class="fa fa-long-arrow-right" aria-hidden="true"></i> <%= @subscription.destination %></h1>
+<h1 class="header-container">
+  <div><%= @subscription.origin %> <i class="fa fa-long-arrow-right" aria-hidden="true"></i> <%= @subscription.destination %></div>
+  <%= link to: subscription_path(@conn, :confirm_delete, @subscription), class: "header-link" do %>
+    Delete Subscription <i class="fa fa-trash-o"></i>
+  <% end %>
+</h1>
 
 <div class="edit-subscription subscription-step">
   <h2>Edit Subscription</h2>
