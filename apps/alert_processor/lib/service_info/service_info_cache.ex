@@ -265,20 +265,18 @@ defmodule AlertProcessor.ServiceInfoCache do
     {:ok, routes} = ApiClient.routes(route_types)
     routes
     |> Enum.map(
-        fn(%{"attributes" => %{"type" => route_type, "long_name" => long_name, "direction_names" => direction_names}, "id" => id}) ->
-          case long_name do
-            "" -> {id, route_type, id, direction_names}
-            _ -> {id, route_type, long_name, direction_names}
-          end
+      fn(%{"attributes" => %{"type" => route_type, "long_name" => long_name, "short_name" => short_name, "direction_names" => direction_names}, "id" => id}) ->
+          {id, route_type, long_name, short_name, direction_names}
       end)
     |> Enum.with_index()
     |> Enum.map(&map_route_struct/1)
   end
 
-  defp map_route_struct({{route_id, route_type, long_name, direction_names}, index}) do
+  defp map_route_struct({{route_id, route_type, long_name, short_name, direction_names}, index}) do
     %Route{
       route_id: route_id,
       long_name: long_name,
+      short_name: short_name,
       route_type: route_type,
       direction_names: direction_names,
       order: index,
@@ -296,7 +294,6 @@ defmodule AlertProcessor.ServiceInfoCache do
       {name, id}
     end)
   end
-
 
   defp fetch_headsigns(3, route_id) do
     [zero_task, one_task] =

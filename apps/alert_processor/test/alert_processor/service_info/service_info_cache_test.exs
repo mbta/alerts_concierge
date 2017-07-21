@@ -45,7 +45,8 @@ defmodule AlertProcessor.ServiceInfoCacheTest do
       assert [
         %Route{
           route_id: "57",
-          long_name: "57",
+          long_name: "",
+          short_name: "57",
           route_type: 3,
           direction_names: ["Outbound", "Inbound"],
           headsigns: %{
@@ -56,6 +57,7 @@ defmodule AlertProcessor.ServiceInfoCacheTest do
         %Route{
           route_id: "741",
           long_name: "Silver Line SL1",
+          short_name: "SL1",
           route_type: 3,
           direction_names: ["Outbound", "Inbound"],
           headsigns: %{
@@ -65,7 +67,8 @@ defmodule AlertProcessor.ServiceInfoCacheTest do
         },
         %Route{
           route_id: "87",
-          long_name: "87",
+          long_name: "",
+          short_name: "87",
           route_type: 3,
           direction_names: ["Outbound", "Inbound"],
           headsigns: %{
@@ -160,10 +163,10 @@ defmodule AlertProcessor.ServiceInfoCacheTest do
   test "get_route returns the correct Route" do
     use_cassette "service_info", custom: true, clear_mock: true, match_requests_on: [:query] do
       {:ok, pid} = ServiceInfoCache.start_link([name: :service_info_cache_test_get_route])
-      assert {:ok, %Route{long_name: "Red Line"}} = ServiceInfoCache.get_route(pid, "Red")
-      assert {:ok, %Route{long_name: "Green Line B"}} = ServiceInfoCache.get_route(pid, "Green-B")
-      assert {:ok, %Route{long_name: "Mattapan Trolley"}} = ServiceInfoCache.get_route(pid, "Mattapan")
-      assert {:ok, %Route{long_name: "Orange Line"}} = ServiceInfoCache.get_route(pid, "Orange")
+      assert {:ok, %Route{long_name: "Red Line", short_name: "Red"}} = ServiceInfoCache.get_route(pid, "Red")
+      assert {:ok, %Route{long_name: "Green Line B", short_name: "Green B"}} = ServiceInfoCache.get_route(pid, "Green-B")
+      assert {:ok, %Route{long_name: "Mattapan Trolley", short_name: "Mattapan"}} = ServiceInfoCache.get_route(pid, "Mattapan")
+      assert {:ok, %Route{long_name: "Orange Line", short_name: "Orange"}} = ServiceInfoCache.get_route(pid, "Orange")
     end
   end
 
