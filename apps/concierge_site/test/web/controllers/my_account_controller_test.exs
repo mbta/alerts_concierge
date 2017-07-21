@@ -53,11 +53,42 @@ defmodule ConciergeSite.MyAccountControllerTest do
 
       assert html_response(conn, 200) =~ "Account Preferences could not be updated. Please see errors below."
     end
+
+    test "DELETE /my-account", %{conn: conn, user: user} do
+      conn = user
+      |> guardian_login(conn)
+      |> delete(my_account_path(conn, :delete))
+
+      updated_user = Repo.get(User, user.id)
+
+      assert html_response(conn, 302) =~ "/login/new"
+      assert updated_user.encrypted_password == ""
+      refute is_nil(updated_user.vacation_start)
+      refute updated_user.vacation_end == DateTime.from_naive!(~N[9999-12-25 23:59:59], "Etc/UTC")
+    end
+
+    test "GET /my-account/confirm_delete", %{conn: conn, user: user} do
+      conn = user
+      |> guardian_login(conn)
+      |> get(my_account_path(conn, :confirm_delete))
+
+      assert html_response(conn, 200) =~ "Delete Account?"
+    end
   end
 
   describe "unauthorized" do
     test "GET /my-account/edit", %{conn: conn} do
       conn = get(conn, "/my-account/edit")
+      assert html_response(conn, 302) =~ "/login"
+    end
+
+    test "DELETE /my-account", %{conn: conn} do
+      conn = delete(conn, my_account_path(conn, :delete))
+      assert html_response(conn, 302) =~ "/login"
+    end
+
+    test "GET /my-account/confirm_delete", %{conn: conn} do
+      conn = get(conn, my_account_path(conn, :confirm_delete))
       assert html_response(conn, 302) =~ "/login"
     end
   end

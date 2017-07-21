@@ -1,7 +1,8 @@
 defmodule ConciergeSite.MyAccountController do
   use ConciergeSite.Web, :controller
   use Guardian.Phoenix.Controller
-  alias AlertProcessor.Model.User
+  alias AlertProcessor.{Model, Repo}
+  alias Model.User
   alias AlertProcessor.Repo
   alias ConciergeSite.UserParams
 
@@ -24,5 +25,25 @@ defmodule ConciergeSite.MyAccountController do
         |> put_flash(:error, "Account Preferences could not be updated. Please see errors below.")
         |> render("edit.html", user: user, changeset: changeset)
     end
+  end
+
+  def delete(conn, _params, user, _claims) do
+    changeset = User.disable_account_changeset(user)
+
+    case Repo.update(changeset) do
+      {:ok, _} ->
+        conn
+        |> Guardian.Plug.sign_out()
+        |> put_flash(:info, "Your account has been deleted.")
+        |> redirect(to: session_path(conn, :new))
+      {:error, _} ->
+        conn
+        |> put_flash(:error, "Your account could not be deleted, please try again.")
+        |> render("confirm_delete.html")
+    end
+  end
+
+  def confirm_delete(conn, _params, _user, _claims) do
+    render conn, "confirm_delete.html"
   end
 end

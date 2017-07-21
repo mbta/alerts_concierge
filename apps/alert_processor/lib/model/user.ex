@@ -32,7 +32,7 @@ defmodule AlertProcessor.Model.User do
     field :vacation_end, :utc_datetime
     field :do_not_disturb_start, :time
     field :do_not_disturb_end, :time
-    field :encrypted_password, :string, null: false
+    field :encrypted_password, :string
     field :password, :string, virtual: true
     field :password_confirmation, :string, virtual: true
     field :sms_toggle, :boolean, virtual: true
@@ -82,6 +82,13 @@ defmodule AlertProcessor.Model.User do
     struct
     |> cast(params, ~w(phone_number do_not_disturb_start do_not_disturb_end amber_alert_opt_in))
     |> validate_format(:phone_number, ~r/^[0-9]{10}$/, message: "Phone number is not in a valid format.")
+  end
+
+  def disable_account_changeset(struct) do
+    struct
+    |> change(encrypted_password: "")
+    |> change(vacation_start: DateTime.utc_now())
+    |> change(vacation_end: DateTime.from_naive!(~N[9999-12-25 23:59:59], "Etc/UTC"))
   end
 
   defp hash_password(changeset) do
@@ -154,10 +161,14 @@ defmodule AlertProcessor.Model.User do
   """
   def authenticate(%{"email" => email, "password" => password} = params) do
     user = Repo.get_by(__MODULE__, email: email)
-    if check_password(user, password) do
-      {:ok, user}
-    else
-      {:error, login_changeset(%__MODULE__{}, params)}
+
+    cond do
+      user && user.encrypted_password == "" ->
+        {:error, :disabled}
+      check_password(user, password) ->
+        {:ok, user}
+      true ->
+        {:error, login_changeset(%__MODULE__{}, params)}
     end
   end
 
