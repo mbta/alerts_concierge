@@ -147,28 +147,36 @@ defmodule ConciergeSite.AmenitySubscriptionController do
   end
 
   defp selected_trip_options(%Subscription{informed_entities: ies}, options) do
-    Enum.reduce(ies, %{amenities: [], routes: [], stations: []}, fn(ie, acc) ->
-      routes = acc.routes ++ [ie.route]
-        |> Enum.filter_map(&(!is_nil(&1)), &String.downcase/1)
-        |> Enum.uniq
+    ies
+    |> Enum.reduce(
+      %{amenities: MapSet.new, routes: MapSet.new, stations: MapSet.new},
+      fn(ie, acc) ->
+        acc = case id_to_name(ie.stop, options) do
+          {name, _id} ->
+            Map.put(acc, :stations, MapSet.put(acc.stations, name))
+          _ -> acc
+        end
 
-      name = case id_to_name(ie.stop, options) do
-        {name, _id} -> name
-        _ -> nil
-      end
+        acc = if is_nil(ie.facility_type) do
+          acc
+        else
+          amenities = MapSet.put(acc.amenities, ie.facility_type)
+          Map.put(acc, :amenities, amenities)
+        end
 
-      stations = acc.stations ++ [name]
-         |> Enum.filter(&(!is_nil(&1)))
-         |> Enum.uniq
-      amenities = acc.amenities ++ [ie.facility_type]
-        |> Enum.filter(&(!is_nil(&1)))
-        |> Enum.uniq
-
-      acc
-      |> Map.put(:routes, routes)
-      |> Map.put(:stations, stations)
-      |> Map.put(:amenities, amenities)
-    end)
+        if is_nil(ie.route) do
+          acc
+        else
+          routes = MapSet.put(
+            acc.amenities,
+            String.downcase(ie.route)
+          )
+          Map.put(acc, :routes, routes)
+        end
+      end)
+      |> Enum.reduce(%{}, fn({k, v}, acc) ->
+        Map.put(acc, k, MapSet.to_list(v))
+      end)
   end
 
   def update(conn, %{"id" => id, "subscription" => sub_params}, user, _) do

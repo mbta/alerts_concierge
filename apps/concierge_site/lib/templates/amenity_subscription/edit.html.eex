@@ -28,7 +28,7 @@
 
         <%= render "_travel_days_checkboxes.html",
                     form: f,
-                    checked: Map.get(@subscription, :relevant_days, []) |> Enum.map(&Atom.to_string/1),
+                    checked: @subscription.relevant_days |> Enum.map(&Atom.to_string/1),
                     action: "edit" %>
       </div>
 

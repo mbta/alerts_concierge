@@ -108,7 +108,8 @@ defmodule ConciergeSite.AmenitySubscriptionControllerTest do
         subscription_factory()
         |> Map.put(:informed_entities, amenity_subscription_entities())
         |> amenity_subscription()
-        |> Map.merge(%{user: user, relevant_days: [:weekday]})
+        |> weekday_subscription()
+        |> Map.merge(%{user: user})
         |> insert()
 
       use_cassette "amenities_update", clear_mock: true  do
@@ -122,7 +123,8 @@ defmodule ConciergeSite.AmenitySubscriptionControllerTest do
         subscription_factory()
         |> Map.put(:informed_entities, amenity_subscription_entities())
         |> amenity_subscription()
-        |> Map.merge(%{user: user, relevant_days: [:weekday]})
+        |> weekday_subscription()
+        |> Map.merge(%{user: user})
         |> insert()
 
       params = %{"subscription" => %{

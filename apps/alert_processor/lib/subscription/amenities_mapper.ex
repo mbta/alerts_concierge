@@ -13,8 +13,8 @@ defmodule AlertProcessor.Subscription.AmenitiesMapper do
   defdelegate build_subscription_transaction(subscriptions, user), to: AlertProcessor.Subscription.Mapper
 
   @doc """
-  build_subscription_update_transaction/3 receives a the current subscription, the update params,
-  and the user and builds and update transaction.
+  build_subscription_update_transaction/3 receives a the current subscription
+  and the update params and builds and Ecto.Multi transaction.
 
   1. It updates the subscription data
   2. It regenerates the informed entities for that subscription from the new data

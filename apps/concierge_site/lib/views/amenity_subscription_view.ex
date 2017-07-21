@@ -53,6 +53,7 @@ defmodule ConciergeSite.AmenitySubscriptionView do
       &(!is_nil(&1.stop)),
       &(&1.stop)
     )
+    |> Enum.uniq
     |> length
   end
 
