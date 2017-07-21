@@ -18,7 +18,7 @@ defmodule AlertProcessor.Model.User do
 
   use Ecto.Schema
   import Ecto.{Changeset, Query}
-  alias AlertProcessor.{Model.Subscription, Repo}
+  alias AlertProcessor.{Model.Subscription, HoldingQueue, Repo}
   alias Comeonin.Bcrypt
 
   @primary_key {:id, :binary_id, autogenerate: true}
@@ -193,5 +193,10 @@ defmodule AlertProcessor.Model.User do
     Repo.update_all(from(u in __MODULE__, where: u.id in ^user_ids),
                     set: [vacation_start: DateTime.utc_now(),
                           vacation_end: DateTime.from_naive!(~N[9999-12-25 23:59:59], "Etc/UTC")])
+  end
+
+  @spec clear_holding_queue_for_user_id(id) :: :ok
+  def clear_holding_queue_for_user_id(user_id) do
+    HoldingQueue.remove_user_notifications(user_id)
   end
 end

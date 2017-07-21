@@ -16,7 +16,8 @@ defmodule ConciergeSite.MyAccountController do
     changeset = User.update_account_changeset(user, params)
 
     case Repo.update(changeset) do
-      {:ok, _user} ->
+      {:ok, user} ->
+        :ok = User.clear_holding_queue_for_user_id(user.id)
         conn
         |> put_flash(:info, "Account Preferences updated.")
         |> redirect(to: my_account_path(conn, :edit))

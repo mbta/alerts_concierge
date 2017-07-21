@@ -2,7 +2,7 @@ defmodule ConciergeSite.CommuterRailSubscriptionController do
   use ConciergeSite.Web, :controller
   use Guardian.Phoenix.Controller
   alias ConciergeSite.Subscriptions.{CommuterRailParams, Lines, TemporaryState}
-  alias AlertProcessor.Model.Subscription
+  alias AlertProcessor.Model.{Subscription, User}
   alias AlertProcessor.{Repo, ServiceInfoCache, Subscription.CommuterRailMapper}
 
   def new(conn, _params, _user, _claims) do
@@ -21,6 +21,7 @@ defmodule ConciergeSite.CommuterRailSubscriptionController do
     with {:ok, params} <- CommuterRailParams.prepare_for_update_changeset(subscription, subscription_params),
          multi <- CommuterRailMapper.build_update_subscription_transaction(subscription, params),
          {:ok, _subscription} <- Repo.transaction(multi) do
+      :ok = User.clear_holding_queue_for_user_id(user.id)
       conn
       |> put_flash(:info, "Subscription updated.")
       |> redirect(to: subscription_path(conn, :index))

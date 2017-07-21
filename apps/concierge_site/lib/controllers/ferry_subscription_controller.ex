@@ -2,7 +2,7 @@ defmodule ConciergeSite.FerrySubscriptionController do
   use ConciergeSite.Web, :controller
   use Guardian.Phoenix.Controller
   alias ConciergeSite.Subscriptions.{FerryParams, Lines, TemporaryState}
-  alias AlertProcessor.{Model.Subscription, Repo, ServiceInfoCache, Subscription.FerryMapper}
+  alias AlertProcessor.{Model.Subscription, Model.User, Repo, ServiceInfoCache, Subscription.FerryMapper}
 
   def new(conn, _params, _user, _claims) do
     render conn, "new.html"
@@ -20,6 +20,7 @@ defmodule ConciergeSite.FerrySubscriptionController do
     with {:ok, params} <- FerryParams.prepare_for_update_changeset(subscription, subscription_params),
          multi <- FerryMapper.build_update_subscription_transaction(subscription, params),
          {:ok, _subscription} <- Repo.transaction(multi) do
+      :ok = User.clear_holding_queue_for_user_id(user.id)
       conn
       |> put_flash(:info, "Subscription updated.")
       |> redirect(to: subscription_path(conn, :index))

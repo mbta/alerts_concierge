@@ -9,6 +9,7 @@ defmodule ConciergeSite.SubwaySubscriptionController do
   alias AlertProcessor.ServiceInfoCache
   alias AlertProcessor.Subscription.SubwayMapper
   alias AlertProcessor.Model.Subscription
+  alias AlertProcessor.Model.User
 
   def new(conn, _params, _user, _claims) do
     render conn, "new.html"
@@ -27,6 +28,7 @@ defmodule ConciergeSite.SubwaySubscriptionController do
 
     case Repo.update(changeset) do
       {:ok, _subscription} ->
+        :ok = User.clear_holding_queue_for_user_id(user.id)
         conn
         |> put_flash(:info, "Subscription updated.")
         |> redirect(to: subscription_path(conn, :index))
