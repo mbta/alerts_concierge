@@ -26,6 +26,7 @@ import selectAmenityStation from './select-amenity-station';
 import selectTrip from './select-trip';
 import myAccountToggleSections from './my-account-toggle-sections';
 import formHelpers from './form-helpers';
+import vacationDatepicker from './vacation-datepicker';
 
 selectBusRoute();
 selectStation();
@@ -33,5 +34,6 @@ selectAmenityStation();
 selectTrip();
 myAccountToggleSections();
 formHelpers();
+vacationDatepicker();
 
 document.body.className = document.body.className.replace("no-js", "js");
