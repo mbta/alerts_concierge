@@ -2,7 +2,7 @@
 
 <%= flash_error(@conn) %>
 
-<%= render "_progress_bar.html", current_page: :trip_type, conn: @conn %>
+<%= render "_progress_bar.html", current_page: :trip_type, subscription_params: nil, conn: @conn %>
 
 <div class="subscription-step select-trip-type">
   <h2 class="select-trip-type-header">What type of trip do you take?</h2>
