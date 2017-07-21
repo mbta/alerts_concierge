@@ -24,7 +24,7 @@ defmodule ConciergeSite.ConfirmationMessage do
   end
 
   defp send_sms_confirmation(phone_number) do
-    %Notification{header: "Thanks for signing up for MBTA Alerts. You will receive notifications for your subscriptions. Reply STOP to unsubscribe anytime"}
+    %Notification{header: "You have been subscribed to MBTA alerts. To stop receiving SMS alerts, reply STOP. Data rates may apply."}
     |> NotificationSmser.notification_sms(phone_number)
     |> @ex_aws.request([])
   end
