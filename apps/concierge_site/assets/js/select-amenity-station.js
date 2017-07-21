@@ -1,5 +1,9 @@
 import filterSuggestions from './filter-suggestions';
-import {generateStationList, renderStationInput, unmountStationSuggestions} from './station-select-helpers';
+import {
+  generateStationList,
+  renderStationInput,
+  unmountStationSuggestions
+} from './station-select-helpers';
 
 export default function($) {
   $ = $ || window.jQuery;
@@ -10,10 +14,21 @@ export default function($) {
   };
 
   if ($(".enter-trip-info").length) {
+    setSelectedStations();
+    attachSuggestionInput();
+  }
+
+  function setSelectedStations() {
+    const selectedStops = $(".subscription-amenities-stops").val();
+    if (selectedStops) {
+      state.selectedStations = selectedStops.split(",");
+    }
+
     const className = "select.subscription-select-amenity-station";
     const stations = generateStationList(className, $).map(station => station.name);
-    state.selectableStations = stations.slice(1, stations.length);
-    attachSuggestionInput();
+    state.selectableStations = stations
+      .slice(1, stations.length)
+      .filter(stationName => !state.selectedStations.includes(stationName));
   }
 
   function attachSuggestionInput() {

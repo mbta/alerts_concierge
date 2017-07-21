@@ -55,4 +55,9 @@ function generateStationList(className, $) {
   return stations;
 }
 
-export { generateRouteList, generateStationList, renderStationInput, unmountStationSuggestions};
+export {
+  generateRouteList,
+  generateStationList,
+  renderStationInput,
+  unmountStationSuggestions
+};

@@ -1,9 +1,9 @@
 defmodule ConciergeSite.AmenitySubscriptionController do
   use ConciergeSite.Web, :controller
   use Guardian.Phoenix.Controller
-  alias AlertProcessor.{Repo, ServiceInfoCache, Subscription}
-  alias Subscription.AmenitiesMapper
   alias ConciergeSite.Subscriptions.{AmenitiesParams, Lines, TemporaryState}
+  alias AlertProcessor.{Repo, ServiceInfoCache,
+    Subscription.AmenitiesMapper, Model.Subscription}
 
   def new(conn, _params, _user, _claims) do
     with {:ok, subway_stations} <- ServiceInfoCache.get_subway_full_routes(),
@@ -124,9 +124,78 @@ defmodule ConciergeSite.AmenitySubscriptionController do
     end
   end
 
-  def edit(conn, %{"id" => _id}, _user, _) do
-    conn
-    |> render(:edit)
+  def edit(conn, %{"id" => id}, user, _) do
+    with {:ok, subway_stations} <- ServiceInfoCache.get_subway_full_routes(),
+      {:ok, cr_stations} <- ServiceInfoCache.get_commuter_rail_info() do
+        station_select_options = station_options(cr_stations, subway_stations)
+        subscription = Subscription.one_for_user!(id, user.id, true)
+        changeset = Subscription.update_changeset(subscription)
+        st = selected_trip_options(subscription, station_select_options)
+
+        render conn,
+          "edit.html",
+          subscription: subscription,
+          changeset: changeset,
+          station_select_options: station_select_options,
+          selected_trip_options: st
+    else
+      _error ->
+        conn
+        |> put_flash(:error, "There was an error. Please try again.")
+        |> redirect(to: subscription_path(conn, :index))
+    end
+  end
+
+  defp selected_trip_options(%Subscription{informed_entities: ies}, options) do
+    ies
+    |> Enum.reduce(
+      %{amenities: MapSet.new, routes: MapSet.new, stations: MapSet.new},
+      fn(ie, acc) ->
+        acc = case id_to_name(ie.stop, options) do
+          {name, _id} ->
+            Map.put(acc, :stations, MapSet.put(acc.stations, name))
+          _ -> acc
+        end
+
+        acc = if is_nil(ie.facility_type) do
+          acc
+        else
+          amenities = MapSet.put(acc.amenities, ie.facility_type)
+          Map.put(acc, :amenities, amenities)
+        end
+
+        if is_nil(ie.route) do
+          acc
+        else
+          routes = MapSet.put(
+            acc.amenities,
+            String.downcase(ie.route)
+          )
+          Map.put(acc, :routes, routes)
+        end
+      end)
+      |> Enum.reduce(%{}, fn({k, v}, acc) ->
+        Map.put(acc, k, MapSet.to_list(v))
+      end)
+  end
+
+  def update(conn, %{"id" => id, "subscription" => sub_params}, user, _) do
+    with subscription <- Subscription.one_for_user!(id, user.id, true),
+      :ok <- AmenitiesParams.validate_info_params(sub_params),
+      {:ok, subscription_infos} <- AmenitiesMapper.map_subscriptions(sub_params),
+      multi <- AmenitiesMapper.build_subscription_update_transaction(subscription, subscription_infos),
+      {:ok, _} <- Repo.transaction(multi) do
+        redirect(conn, to: subscription_path(conn, :index))
+    else
+      {:error, message} ->
+        conn
+        |> put_flash(:error, message)
+        |> redirect(to: amenity_subscription_path(conn, :edit, id))
+      _ ->
+        conn
+        |> put_flash(:error, "There was an error saving the subscription. Please try again.")
+        |> redirect(to: amenity_subscription_path(conn, :edit, id))
+    end
   end
 
   defp render_new_page(conn, sub_params) do

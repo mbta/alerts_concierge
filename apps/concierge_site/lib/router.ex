@@ -39,13 +39,16 @@ defmodule ConciergeSite.Router do
 
   scope "/subscriptions", ConciergeSite do
     pipe_through [:browser, :browser_auth]
-    resources "/subway", SubwaySubscriptionController, only: [:new, :edit, :update, :create]
+    resources "/subway", SubwaySubscriptionController,
+      only: [:new, :edit, :update, :create]
     get "/subway/new/info", SubwaySubscriptionController, :info
     post "/subway/new/preferences", SubwaySubscriptionController, :preferences
-    resources "/bus", BusSubscriptionController, only: [:new, :edit, :update, :create]
+    resources "/bus", BusSubscriptionController,
+      only: [:new, :edit, :update, :create]
     get "/bus/new/info", BusSubscriptionController, :info
     post "/bus/new/preferences", BusSubscriptionController, :preferences
-    resources "/commuter_rail", CommuterRailSubscriptionController, only: [:new, :create, :edit, :update]
+    resources "/commuter_rail", CommuterRailSubscriptionController,
+      only: [:new, :create, :edit, :update]
     get "/commuter_rail/new/info", CommuterRailSubscriptionController, :info
     post "/commuter_rail/new/train", CommuterRailSubscriptionController, :train
     post "/commuter_rail/new/preferences", CommuterRailSubscriptionController, :preferences
@@ -53,7 +56,8 @@ defmodule ConciergeSite.Router do
     get "/ferry/new/info", FerrySubscriptionController, :info
     post "/ferry/new/ferry", FerrySubscriptionController, :ferry
     post "/ferry/new/preferences", FerrySubscriptionController, :preferences
-    resources "/amenities", AmenitySubscriptionController, only: [:new, :create, :edit]
+    resources "/amenities", AmenitySubscriptionController,
+      only: [:new, :create, :edit, :update]
     post "/amenities/add_station", AmenitySubscriptionController, :add_station
     post "/amenities/remove_station/:station", AmenitySubscriptionController, :remove_station
   end

@@ -1,10 +1,10 @@
 defmodule ConciergeSite.AmenitySubscriptionControllerTest do
   use ConciergeSite.ConnCase
-
+  use ExVCR.Mock, adapter: ExVCR.Adapter.Hackney
   alias AlertProcessor.{Model.Subscription, Repo}
 
   describe "authorized" do
-    setup :insert_user
+    setup :login_user
 
     test "GET /subscriptions/amenities/new", %{conn: conn}  do
       conn = conn
@@ -102,6 +102,43 @@ defmodule ConciergeSite.AmenitySubscriptionControllerTest do
       assert html_response(conn, 200) =~ "Create New Subscription"
       assert expected_error == error
     end
+
+    test "GET /subscriptions/amenities/:id/edit", %{conn: conn, user: user} do
+      subscription =
+        subscription_factory()
+        |> Map.put(:informed_entities, amenity_subscription_entities())
+        |> amenity_subscription()
+        |> weekday_subscription()
+        |> Map.merge(%{user: user})
+        |> insert()
+
+      use_cassette "amenities_update", clear_mock: true  do
+        conn = get(conn, "/subscriptions/amenities/#{subscription.id}/edit")
+        assert html_response(conn, 200) =~ "Edit Station Amenity"
+      end
+    end
+
+    test "PATCH /subscriptions/amenities/:id", %{conn: conn, user: user} do
+      subscription =
+        subscription_factory()
+        |> Map.put(:informed_entities, amenity_subscription_entities())
+        |> amenity_subscription()
+        |> weekday_subscription()
+        |> Map.merge(%{user: user})
+        |> insert()
+
+      params = %{"subscription" => %{
+        "stops" => "North Quincy,Forest Hills",
+        "amenities" => ["elevator"],
+        "relevant_days" => ["saturday"],
+        "routes" => ["blue"]
+      }}
+
+      use_cassette "amenities_update", clear_mock: true  do
+        conn = patch(conn, "/subscriptions/amenities/#{subscription.id}", params)
+        assert html_response(conn, 302) =~ "my-subscriptions"
+      end
+    end
   end
 
   describe "unauthorized" do
@@ -111,10 +148,9 @@ defmodule ConciergeSite.AmenitySubscriptionControllerTest do
     end
   end
 
-  defp insert_user(%{conn: c}) do
-    conn = :user
-    |> insert()
-    |> guardian_login(c)
-    {:ok, [conn: conn]}
+  defp login_user(%{conn: c}) do
+    user = insert(:user)
+    conn = guardian_login(user, c)
+    {:ok, [conn: conn, user: user]}
   end
 end
