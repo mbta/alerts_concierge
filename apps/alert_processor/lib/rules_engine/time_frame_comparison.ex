@@ -35,9 +35,14 @@ defmodule AlertProcessor.TimeFrameComparison do
     !MapSet.disjoint?(range_map(active_period), range_map(subscription_time_period))
   end
 
-  defp range_map(%{start: start_seconds, end: end_seconds}) do
+  def range_map(%{start: start_seconds, end: end_seconds}) when end_seconds > start_seconds do
     start_minute = Integer.floor_div(start_seconds, 60) * 60
     end_minute = Integer.floor_div(end_seconds, 60) * 60
     MapSet.new(Enum.take_every(start_minute..end_minute, 60))
+  end
+  def range_map(%{start: start_seconds, end: end_seconds}) do
+    start_minute = Integer.floor_div(start_seconds, 60) * 60
+    end_minute = Integer.floor_div(end_seconds, 60) * 60
+    MapSet.union(MapSet.new(Enum.take_every(0..end_minute, 60)), MapSet.new(Enum.take_every(start_minute..86_399, 60)))
   end
 end

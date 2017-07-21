@@ -146,55 +146,68 @@ defmodule AlertProcessor.Model.Subscription do
   @spec timeframe_map(__MODULE__.t) :: TimeFrameComparison.timeframe_map
   def timeframe_map(subscription) do
     Enum.reduce(subscription.relevant_days, %{}, fn(relevant_day, acc) ->
-      map_timeframe(relevant_day, subscription.start_time, subscription.end_time, acc)
+      overnight_timeframe = Time.compare(subscription.start_time, subscription.end_time) != :lt
+      map_timeframe(relevant_day, overnight_timeframe, subscription.start_time, subscription.end_time, acc)
     end)
   end
 
-  defp map_timeframe(:weekday, start_time, end_time, acc) when start_time >= end_time do
+  defp map_timeframe(:weekday, true, start_time, end_time, acc) do
     acc
-    |> Map.put(:monday, do_map_timeframe(start_time, ~T[23:59:59]))
-    |> Map.put(:tuesday, do_map_timeframe(start_time, end_time))
-    |> Map.put(:wednesday, do_map_timeframe(start_time, end_time))
-    |> Map.put(:thursday, do_map_timeframe(start_time, end_time))
-    |> Map.put(:friday, do_map_timeframe(start_time, end_time))
-    |> Map.put_new(:saturday, do_map_timeframe(~T[00:00:00], end_time))
+    |> Map.update(:monday, map_timeframe_range(start_time, ~T[23:59:59]), fn(_) ->
+         map_timeframe_range(start_time, end_time)
+       end)
+    |> Map.put(:tuesday, map_timeframe_range(start_time, end_time))
+    |> Map.put(:wednesday, map_timeframe_range(start_time, end_time))
+    |> Map.put(:thursday, map_timeframe_range(start_time, end_time))
+    |> Map.put(:friday, map_timeframe_range(start_time, end_time))
+    |> Map.update(:saturday, map_timeframe_range(~T[00:00:00], end_time), fn(_) ->
+         map_timeframe_range(start_time, end_time)
+       end)
   end
-  defp map_timeframe(:saturday, start_time, end_time, acc) when start_time >= end_time do
+  defp map_timeframe(:saturday, true, start_time, end_time, acc) do
     acc
-    |> Map.put(:saturday, do_map_timeframe(start_time, ~T[23:59:59]))
-    |> Map.put_new(:sunday, do_map_timeframe(~T[00:00:00], end_time))
+    |> Map.update(:saturday, map_timeframe_range(start_time, ~T[23:59:59]), fn(_) ->
+         map_timeframe_range(start_time, end_time)
+       end)
+    |> Map.update(:sunday, map_timeframe_range(~T[00:00:00], end_time), fn(_) ->
+         map_timeframe_range(start_time, end_time)
+       end)
   end
-  defp map_timeframe(:sunday, start_time, end_time, acc) when start_time >= end_time do
+  defp map_timeframe(:sunday, true, start_time, end_time, acc) do
     acc
-    |> Map.put(:sunday, do_map_timeframe(start_time, ~T[23:59:59]))
-    |> Map.put_new(:monday, do_map_timeframe(~T[00:00:00], end_time))
+    |> Map.update(:sunday, map_timeframe_range(start_time, ~T[23:59:59]), fn(_) ->
+         map_timeframe_range(start_time, end_time)
+       end)
+    |> Map.update(:monday, map_timeframe_range(~T[00:00:00], end_time), fn(_) ->
+         map_timeframe_range(start_time, end_time)
+       end)
   end
-  defp map_timeframe(:weekday, start_time, end_time, acc) do
+  defp map_timeframe(:weekday, false, start_time, end_time, acc) do
     if after_midnight?(start_time) do
       acc
-      |> Map.put(:tuesday, do_map_timeframe(start_time, end_time))
-      |> Map.put(:wednesday, do_map_timeframe(start_time, end_time))
-      |> Map.put(:thursday, do_map_timeframe(start_time, end_time))
-      |> Map.put(:friday, do_map_timeframe(start_time, end_time))
-      |> Map.put(:saturday, do_map_timeframe(start_time, end_time))
+      |> Map.put(:tuesday, map_timeframe_range(start_time, end_time))
+      |> Map.put(:wednesday, map_timeframe_range(start_time, end_time))
+      |> Map.put(:thursday, map_timeframe_range(start_time, end_time))
+      |> Map.put(:friday, map_timeframe_range(start_time, end_time))
+      |> Map.put(:saturday, map_timeframe_range(start_time, end_time))
     else
       acc
-      |> Map.put(:monday, do_map_timeframe(start_time, end_time))
-      |> Map.put(:tuesday, do_map_timeframe(start_time, end_time))
-      |> Map.put(:wednesday, do_map_timeframe(start_time, end_time))
-      |> Map.put(:thursday, do_map_timeframe(start_time, end_time))
-      |> Map.put(:friday, do_map_timeframe(start_time, end_time))
+      |> Map.put(:monday, map_timeframe_range(start_time, end_time))
+      |> Map.put(:tuesday, map_timeframe_range(start_time, end_time))
+      |> Map.put(:wednesday, map_timeframe_range(start_time, end_time))
+      |> Map.put(:thursday, map_timeframe_range(start_time, end_time))
+      |> Map.put(:friday, map_timeframe_range(start_time, end_time))
     end
   end
-  defp map_timeframe(relevant_day, start_time, end_time, acc) do
+  defp map_timeframe(relevant_day, false, start_time, end_time, acc) do
     if after_midnight?(start_time) do
-      Map.put(acc, next_timeframe(relevant_day), do_map_timeframe(start_time, end_time))
+      Map.put(acc, next_timeframe(relevant_day), map_timeframe_range(start_time, end_time))
     else
-      Map.put(acc, relevant_day, do_map_timeframe(start_time, end_time))
+      Map.put(acc, relevant_day, map_timeframe_range(start_time, end_time))
     end
   end
 
-  defp do_map_timeframe(start_time, end_time) do
+  defp map_timeframe_range(start_time, end_time) do
     %{start: DateTimeHelper.seconds_of_day(start_time), end: DateTimeHelper.seconds_of_day(end_time)}
   end
 

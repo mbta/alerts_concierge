@@ -192,8 +192,26 @@ defmodule AlertProcessor.Model.SubscriptionTest do
         wednesday: %{start: 43_200, end: 14_400},
         thursday: %{start: 43_200, end: 14_400},
         friday: %{start: 43_200, end: 14_400},
-        saturday: %{start: 43_200, end: 86_399},
+        saturday: %{start: 43_200, end: 14_400},
         sunday: %{start: 0, end: 14_400}
+      } == timeframe_map
+    end
+
+    test "maps early segment for timeframes that go over midnight for all relevant days" do
+      subscription = %Subscription{
+        start_time: ~T[12:00:00],
+        end_time: ~T[04:00:00],
+        relevant_days: [:weekday, :saturday, :sunday]
+      }
+      timeframe_map = Subscription.timeframe_map(subscription)
+      assert %{
+        monday: %{start: 43_200, end: 14_400},
+        tuesday: %{start: 43_200, end: 14_400},
+        wednesday: %{start: 43_200, end: 14_400},
+        thursday: %{start: 43_200, end: 14_400},
+        friday: %{start: 43_200, end: 14_400},
+        saturday: %{start: 43_200, end: 14_400},
+        sunday: %{start: 43_200, end: 14_400}
       } == timeframe_map
     end
   end
