@@ -28,10 +28,13 @@ defmodule ConciergeSite.Subscriptions.SubscriptionParamsTest do
         "weekday" => "true"
       }
 
-      update_params = SubscriptionParams.prepare_for_update_changeset(params)
+      %{
+        "start_time" => st,
+        "end_time" => et
+        } = SubscriptionParams.prepare_for_update_changeset(params)
 
-      assert Map.has_key?(update_params, "start_time")
-      assert Map.has_key?(update_params, "end_time")
+      assert DateTime.to_time(st) == ~T[03:00:00]
+      assert DateTime.to_time(et) == ~T[03:15:00]
     end
 
     test "it converts alert_priority_type to an atom" do

@@ -4,7 +4,7 @@ defmodule ConciergeSite.Subscriptions.SubwayParams do
   """
 
   import ConciergeSite.Subscriptions.{ParamsValidator, SubscriptionParams}
-  alias AlertProcessor.ApiClient
+  alias AlertProcessor.{ApiClient, Helpers.DateTimeHelper}
 
   @spec validate_info_params(map) :: :ok | {:error, String.t}
   def validate_info_params(params) do
@@ -109,19 +109,49 @@ defmodule ConciergeSite.Subscriptions.SubwayParams do
   Transform submitted subscription params for SubwayMapper
   """
   @spec prepare_for_mapper(map) :: map
-  def prepare_for_mapper(params) do
+  def prepare_for_mapper(%{"trip_type" => "one_way"} = params) do
     translated_params = %{
-      "relevant_days" =>
-        relevant_days_from_booleans(Map.take(params, ~w(weekday saturday sunday))),
-      "roaming" => Atom.to_string(params["trip_type"] == "roaming"),
-      "return_start" => params["return_start"],
-      "return_end" => params["return_end"],
+      "relevant_days" => relevant_days_from_booleans(Map.take(params, ~w(weekday saturday sunday))),
+      "roaming" => "false",
+      "departure_start" => DateTimeHelper.timestamp_to_utc_datetime(params["departure_start"]),
+      "departure_end" => DateTimeHelper.timestamp_to_utc_datetime(params["departure_end"]),
+      "return_start" => nil,
+      "return_end" => nil,
       "amenities" => []
     }
 
+    do_prepare_for_mapper(params, translated_params)
+  end
+  def prepare_for_mapper(%{"trip_type" => "round_trip"} = params) do
+    translated_params = %{
+      "relevant_days" => relevant_days_from_booleans(Map.take(params, ~w(weekday saturday sunday))),
+      "roaming" => "false",
+      "departure_start" => DateTimeHelper.timestamp_to_utc_datetime(params["departure_start"]),
+      "departure_end" => DateTimeHelper.timestamp_to_utc_datetime(params["departure_end"]),
+      "return_start" => DateTimeHelper.timestamp_to_utc_datetime(params["return_start"]),
+      "return_end" => DateTimeHelper.timestamp_to_utc_datetime(params["return_end"]),
+      "amenities" => []
+    }
+
+    do_prepare_for_mapper(params, translated_params)
+  end
+  def prepare_for_mapper(%{"trip_type" => "roaming"} = params) do
+    translated_params = %{
+      "relevant_days" => relevant_days_from_booleans(Map.take(params, ~w(weekday saturday sunday))),
+      "roaming" => "true",
+      "departure_start" => DateTimeHelper.timestamp_to_utc_datetime(params["departure_start"]),
+      "departure_end" => DateTimeHelper.timestamp_to_utc_datetime(params["departure_end"]),
+      "return_start" => DateTimeHelper.timestamp_to_utc_datetime(params["return_start"]),
+      "return_end" => DateTimeHelper.timestamp_to_utc_datetime(params["return_end"]),
+      "amenities" => []
+    }
+
+    do_prepare_for_mapper(params, translated_params)
+  end
+
+  def do_prepare_for_mapper(params, translated_params) do
     params
-    |> Map.take(["alert_priority_type", "departure_end", "departure_start",
-      "destination", "origin"])
+    |> Map.take(["alert_priority_type", "departure_end", "departure_start", "destination", "origin"])
     |> Map.merge(translated_params)
   end
 end

@@ -14,8 +14,8 @@ defmodule ConciergeSite.Subscriptions.SubscriptionParams do
 
     %{"alert_priority_type" => String.to_existing_atom(params["alert_priority_type"]),
       "relevant_days" => relevant_days,
-      "end_time" => DateTimeHelper.timestamp_to_utc(params["departure_end"]),
-      "start_time" => DateTimeHelper.timestamp_to_utc(params["departure_start"])}
+      "end_time" => DateTimeHelper.timestamp_to_utc_datetime(params["departure_end"]),
+      "start_time" => DateTimeHelper.timestamp_to_utc_datetime(params["departure_start"])}
   end
 
   def relevant_days_from_booleans(day_map) do

@@ -135,7 +135,6 @@ defmodule ConciergeSite.Subscriptions.FerryParams do
     trips
     |> Enum.map(& schedule_map[{station, &1}])
     |> sort_order.()
-    |> Calendar.Strftime.strftime!("%H:%M:%S")
   end
 
   @spec prepare_for_update_changeset(Subscription.t, map) :: {:ok, map} | :error

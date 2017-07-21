@@ -3,6 +3,7 @@ defmodule ConciergeSite.Subscriptions.BusParams do
   Functions for processing user input during the bus subscription flow
   """
   import ConciergeSite.Subscriptions.{ParamsValidator, SubscriptionParams}
+  alias AlertProcessor.Helpers.DateTimeHelper
 
   @spec validate_info_params(map) :: :ok | {:error, String.t}
   def validate_info_params(params) do
@@ -42,21 +43,29 @@ defmodule ConciergeSite.Subscriptions.BusParams do
   def prepare_for_mapper(%{"trip_type" => "one_way"} = params) do
     translated_params = %{
       "relevant_days" => relevant_days_from_booleans(Map.take(params, ~w(weekday saturday sunday))),
+      "departure_start" => DateTimeHelper.timestamp_to_utc_datetime(params["departure_start"]),
+      "departure_end" => DateTimeHelper.timestamp_to_utc_datetime(params["departure_end"]),
       "return_start" => nil,
       "return_end" => nil,
       "amenities" => []
     }
 
-    params
-    |> Map.take(["alert_priority_type", "departure_end", "departure_start", "route"])
-    |> Map.merge(translated_params)
+    do_prepare_for_mapper(params, translated_params)
   end
   def prepare_for_mapper(%{"trip_type" => "round_trip"} = params) do
     translated_params = %{
       "relevant_days" => relevant_days_from_booleans(Map.take(params, ~w(weekday saturday sunday))),
+      "departure_start" => DateTimeHelper.timestamp_to_utc_datetime(params["departure_start"]),
+      "departure_end" => DateTimeHelper.timestamp_to_utc_datetime(params["departure_end"]),
+      "return_start" => DateTimeHelper.timestamp_to_utc_datetime(params["return_start"]),
+      "return_end" => DateTimeHelper.timestamp_to_utc_datetime(params["return_end"]),
       "amenities" => []
     }
 
+    do_prepare_for_mapper(params, translated_params)
+  end
+
+  def do_prepare_for_mapper(params, translated_params) do
     params
     |> Map.take(["alert_priority_type", "departure_end", "departure_start", "return_start", "return_end", "route"])
     |> Map.merge(translated_params)
