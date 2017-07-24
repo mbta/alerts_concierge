@@ -3,6 +3,7 @@
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width">
+    <link rel="stylesheet" href="<%= static_url(ConciergeSite.Endpoint, "/css/app.css") %>">
   </head>
   <body>
     <%= render @view_module, @view_template, assigns %>

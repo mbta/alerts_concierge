@@ -1,0 +1,21 @@
+.email-header {
+  border-bottom: 0.25rem solid $brand-purple;
+  font-weight: $headings-font-weight;
+  margin-bottom: 1rem;
+  width: 100%;
+  padding-bottom: 1rem;
+}
+
+.email-header-image {
+  height: 3rem;
+  padding-left: .5rem;
+}
+
+.email-footer {
+  background-color: $brand-navy-dark;
+  color: $white;
+  height: 5rem;
+  padding: 2rem 0;
+  text-align: center;
+  width: 100%;
+}
