@@ -1,8 +1,7 @@
 <%= render ConciergeSite.SubscriptionView,
            "_edit_subscription_header.html",
            title: route_name(@subscription),
-           subscription: @subscription,
-           conn: @conn %>
+           subscription: @subscription %>
 
 <div class="edit-subscription subscription-step">
   <h2>Edit Subscription</h2>
