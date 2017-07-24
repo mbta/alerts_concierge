@@ -1,0 +1,6 @@
+<h1 class="header-container">
+  <div><%= @title %></div>
+  <%= link to: subscription_path(@conn, :confirm_delete, @subscription), class: "header-link" do %>
+    Delete Subscription <i class="fa fa-trash-o"></i>
+  <% end %>
+</h1>

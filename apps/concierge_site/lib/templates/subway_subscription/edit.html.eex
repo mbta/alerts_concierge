@@ -1,9 +1,8 @@
-<h1 class="header-container">
-  <div><%= @subscription.origin %> - <%= @subscription.destination %></div>
-  <%= link to: subscription_path(@conn, :confirm_delete, @subscription), class: "header-link" do %>
-    Delete Subscription <i class="fa fa-trash-o"></i>
-  <% end %>
-</h1>
+<%= render ConciergeSite.SubscriptionView,
+           "_edit_subscription_header.html",
+           title: [@subscription.origin, " - ", @subscription.destination],
+           subscription: @subscription,
+           conn: @conn %>
 
 <div class="edit-subscription subscription-step">
   <h2>Edit Subscription</h2>

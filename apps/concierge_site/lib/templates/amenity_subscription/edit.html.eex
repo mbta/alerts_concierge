@@ -1,9 +1,9 @@
-<h1 class="header-container">
-  <div>Edit Station Amenity</div>
-  <%= link to: subscription_path(@conn, :confirm_delete, @subscription), class: "header-link" do %>
-    Delete Subscription <i class="fa fa-trash-o"></i>
-  <% end %>
-</h1>
+<%= render ConciergeSite.SubscriptionView,
+           "_edit_subscription_header.html",
+           title: "Edit Station Amenity",
+           subscription: @subscription,
+           conn: @conn %>
+
 <%= flash_error(@conn) %>
 
 <div class="subscription-step amenities">
