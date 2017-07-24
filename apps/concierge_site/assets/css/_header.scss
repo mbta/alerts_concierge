@@ -11,4 +11,12 @@
   font-size: $base-font-size-xxl;
   font-weight: normal;
   margin-left: auto;
+  @include media-breakpoint-down(xs) {
+    position: absolute;
+    right: 1rem;
+  }
+}
+
+.header-text {
+  padding-top: 1.5rem;
 }
