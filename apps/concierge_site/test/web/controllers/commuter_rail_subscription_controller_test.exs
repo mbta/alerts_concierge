@@ -1,7 +1,7 @@
 defmodule ConciergeSite.CommuterRailSubscriptionControllerTest do
   use ConciergeSite.ConnCase
   use ExVCR.Mock, adapter: ExVCR.Adapter.Hackney
-  alias AlertProcessor.Repo
+  alias AlertProcessor.{HoldingQueue, Repo}
   alias AlertProcessor.Model.{InformedEntity, Subscription}
 
   describe "authorized" do
@@ -137,6 +137,8 @@ defmodule ConciergeSite.CommuterRailSubscriptionControllerTest do
     end
 
     test "PATCH /subscriptions/commuter_rail/:id", %{conn: conn, user: user} do
+      notification = build(:notification, user_id: user.id, send_after: DateTime.from_unix!(4_078_579_247))
+      :ok = HoldingQueue.enqueue(notification)
       subscription =
         subscription_factory()
         |> Map.put(:informed_entities, commuter_rail_subscription_entities())
@@ -152,6 +154,7 @@ defmodule ConciergeSite.CommuterRailSubscriptionControllerTest do
       conn = patch(conn, "/subscriptions/commuter_rail/#{subscription.id}", params)
 
       assert html_response(conn, 302) =~ "my-subscriptions"
+      assert :error = HoldingQueue.pop()
     end
 
     test "PATCH /subscriptions/commuter_rail/:id displays error if trip not selected", %{conn: conn, user: user} do
