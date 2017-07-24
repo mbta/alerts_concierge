@@ -76,7 +76,7 @@
 
 .vacation-date-form-section {
   border-radius: 4px;
-  border: 1px solid $dark-blue;
+  border: 1px solid $brand-primary;
   color: $black;
   cursor: pointer;
   height: 5rem;
@@ -94,8 +94,8 @@
 
 .vacation-calendar-icon {
   border-radius: 100%;
-  border: 1px solid $dark-blue;
-  color: $dark-blue;
+  border: 1px solid $brand-primary;
+  color: $brand-primary;
   font-size: 1.5rem;
   position: absolute;
   padding: 0.5rem;
@@ -117,5 +117,5 @@
 .vacation-start-display,
 .vacation-end-display {
   font-size: $base-font-size-xxl;
-  color: $dark-blue;
+  color: $brand-primary;
 }
