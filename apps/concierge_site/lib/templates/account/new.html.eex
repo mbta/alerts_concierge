@@ -24,6 +24,7 @@
     </div>
 
     <h2 class="create-account-header">SMS Messaging</h2>
+    <p>Would you like to receive alerts via SMS? If not, we will send you alerts via the email address you provided. You may always update this preference later.</p>
     <%= radio_button f, :sms_toggle, true, class: "radio toggle_show" %> Yes<br>
     <%= radio_button f, :sms_toggle, false, class: "radio toggle_hide" %> No<br>
 
