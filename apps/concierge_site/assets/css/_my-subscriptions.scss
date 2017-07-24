@@ -3,6 +3,7 @@
     @include make-col(7);
     @include make-col-offset(2.5);
   }
+  padding-bottom: 1rem;
 }
 
 .subscription-link {
@@ -35,6 +36,9 @@
   margin: 0 auto;
   display: block;
   margin-top: 2.4rem;
+  @include media-breakpoint-down(xs) {
+    width: 100%;
+  }
 }
 
 .subscription {
