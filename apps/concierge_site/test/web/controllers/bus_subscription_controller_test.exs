@@ -38,7 +38,7 @@ defmodule ConciergeSite.BusSubscriptionControllerTest do
       params = %{"subscription" => %{
         "departure_start" => "08:45:00",
         "departure_end" => "09:15:00",
-        "route" => "Silver Line SL1 - 1",
+        "route" => "741 - 1",
         "saturday" => "true",
         "sunday" => "false",
         "weekday" => "false",
@@ -49,14 +49,33 @@ defmodule ConciergeSite.BusSubscriptionControllerTest do
       |> guardian_login(conn)
       |> post("/subscriptions/bus/new/preferences", params)
 
-      assert html_response(conn, 200) =~ "Create New Subscription"
+      assert html_response(conn, 200) =~ "Set your preferences for your trip:"
+      assert html_response(conn, 200) =~ "One way Saturday travel on the Silver Line SL1 bus:"
+    end
+
+    test "POST /subscriptions/bus/new/preferences with an invalid submission", %{conn: conn, user: user} do
+      params = %{"subscription" => %{
+        "departure_start" => "08:45:00",
+        "departure_end" => "09:15:00",
+        "route" => "",
+        "saturday" => "false",
+        "sunday" => "false",
+        "weekday" => "false",
+        "trip_type" => "one_way",
+      }}
+
+      conn = user
+      |> guardian_login(conn)
+      |> post("/subscriptions/bus/new/preferences", params)
+
+      assert html_response(conn, 200) =~ "Please correct the following errors to proceed: At least one travel day option must be selected. Route is invalid."
     end
 
     test "POST /subscriptions/bus/new/preferences displays summary of a one-way trip", %{conn: conn, user: user} do
       params = %{"subscription" => %{
         "departure_start" => "08:45:00",
         "departure_end" => "09:15:00",
-        "route" => "Silver Line SL1 - 1",
+        "route" => "741 - 1",
         "saturday" => "true",
         "sunday" => "false",
         "weekday" => "false",
@@ -78,7 +97,7 @@ defmodule ConciergeSite.BusSubscriptionControllerTest do
         "departure_end" => "09:15:00",
         "return_start" => "16:45:00",
         "return_end" => "17:15:00",
-        "route" => "Silver Line SL1 - 1",
+        "route" => "741 - 1",
         "saturday" => "true",
         "sunday" => "false",
         "weekday" => "false",
@@ -101,7 +120,7 @@ defmodule ConciergeSite.BusSubscriptionControllerTest do
         "departure_end" => "09:15:00",
         "return_start" => "16:45:00",
         "return_end" => "17:15:00",
-        "route" => "Silver Line SL1 - 1",
+        "route" => "741 - 1",
         "saturday" => "true",
         "sunday" => "false",
         "weekday" => "false",
@@ -148,7 +167,7 @@ defmodule ConciergeSite.BusSubscriptionControllerTest do
         "departure_end" => "09:15:00",
         "return_start" => "16:45:00",
         "return_end" => "17:15:00",
-        "route" => "Silver Line SL1 - 1",
+        "route" => "741 - 1",
         "saturday" => "true",
         "sunday" => "false",
         "weekday" => "false",
