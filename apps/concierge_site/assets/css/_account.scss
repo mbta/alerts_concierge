@@ -1,3 +1,8 @@
+.login-header-text {
+  margin-left: 1.2rem;
+  margin-right: 1rem;
+}
+
 .create-account-container,
 .login-container {
   @include media-breakpoint-up(sm) {
@@ -39,6 +44,9 @@
   width: 15rem;
   margin: 0 auto;
   margin-bottom: $cta-margin-bottom;
+  @include media-breakpoint-down(sm) {
+    width: 100%;
+  }
 }
 
 .account-creation-footer,
@@ -47,9 +55,17 @@
     @include make-col(6);
     @include make-col-offset(3);
   }
+  @include media-breakpoint-down(sm) {
+    text-align: left;
+  }
   text-align: center;
 }
 
 .delete-account-content {
   text-align: center;
+}
+
+.forgot-password-link {
+  position: relative;
+  left: .5rem;
 }
