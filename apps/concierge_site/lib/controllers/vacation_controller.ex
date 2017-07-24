@@ -27,13 +27,13 @@ defmodule ConciergeSite.VacationController do
 
   def delete(conn, _params, user, _claims) do
     changeset = User.remove_vacation_changeset(user)
-
-    case Repo.update(changeset) do
-      {:ok, _user} ->
+    with {:ok, _} <- User.opt_in_phone_number(user),
+      {:ok, _user} <- Repo.update(changeset) do
         conn
         |> put_flash(:info, "Your alerts are no longer paused.")
         |> redirect(to: subscription_path(conn, :index))
-      {:error, _} ->
+    else
+      _ ->
         conn
         |> put_flash(:error, "Something went wrong, please try again.")
         |> redirect(to: subscription_path(conn, :index))

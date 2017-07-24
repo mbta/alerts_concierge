@@ -46,6 +46,19 @@ defmodule ConciergeSite.VacationControllerTest do
       assert updated_user.vacation_start == nil
       assert updated_user.vacation_end == nil
     end
+
+    test "DELETE /my-account/vacation", %{conn: conn} do
+      user = insert(:user, vacation_start: ~N[2017-07-01 00:00:00.00], vacation_end: ~N[2117-07-01 00:00:00.00])
+      conn = guardian_login(user, conn)
+      conn = delete(conn, my_account_vacation_path(conn, :delete))
+
+      updated_user = Repo.get(User, user.id)
+
+      assert html_response(conn, 302) =~ "/my-subscriptions"
+      assert updated_user.vacation_start == nil
+      assert updated_user.vacation_end == nil
+      assert_received :opt_in_phone_number
+    end
   end
 
   describe "unauthorized" do

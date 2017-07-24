@@ -21,6 +21,8 @@ defmodule AlertProcessor.Model.User do
   alias AlertProcessor.{Model.Subscription, HoldingQueue, Repo}
   alias Comeonin.Bcrypt
 
+  @ex_aws Application.get_env(:alert_processor, :ex_aws)
+
   @primary_key {:id, :binary_id, autogenerate: true}
 
   schema "users" do
@@ -154,6 +156,14 @@ defmodule AlertProcessor.Model.User do
     struct
     |> change(vacation_start: nil)
     |> change(vacation_end: nil)
+  end
+
+  def opt_in_phone_number(%__MODULE__{phone_number: nil}), do: {:ok, nil}
+  def opt_in_phone_number(%__MODULE__{phone_number: phone_number}) do
+    IO.inspect(phone_number)
+    phone_number
+    |> ExAws.SNS.opt_in_phone_number()
+    |> @ex_aws.request([])
   end
 
   @doc """
