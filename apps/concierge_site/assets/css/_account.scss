@@ -13,12 +13,19 @@
 }
 
 .login-header {
-  text-align: center
+  text-align: center;
+  @include media-breakpoint-down(sm) {
+    text-align: left;
+  }
 }
 
 .login-container {
+  padding: 0 1rem;
   p {
     text-align: center;
+    @include media-breakpoint-down(sm) {
+      text-align: left;
+    }
   }
 }
 
