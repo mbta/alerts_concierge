@@ -9,17 +9,17 @@
   <%= form_for @changeset, my_account_vacation_path(@conn, :update), fn f -> %>
     <div>
       <div class="form-group vacation-date-form-section">
-        <%= label f, :vacation_start, "Start Date:", class: "form-label" %>
+        <%= label f, :vacation_start, "Start Date:", class: "form-label vacation-form-label" %>
         <%= error_tag f, :vacation_start %>
         <%= text_input f, :vacation_start, required: true %>
-        <i class="fa fa-calendar"></i>
+        <i class="fa fa-calendar vacation-calendar-icon"></i>
       </div>
 
       <div class="form-group vacation-date-form-section">
-        <%= label f, :vacation_end, "End Date:", class: "form-label" %>
+        <%= label f, :vacation_end, "End Date:", class: "form-label vacation-form-label" %>
         <%= error_tag f, :vacation_end %>
         <%= text_input f, :vacation_end, required: true %>
-        <i class="fa fa-calendar"></i>
+        <i class="fa fa-calendar vacation-calendar-icon"></i>
       </div>
     </div>
     <input class="vacation-datepicker" />

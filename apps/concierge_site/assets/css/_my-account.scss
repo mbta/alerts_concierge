@@ -85,22 +85,22 @@
   position: relative;
   text-align: left;
   width: 19rem;
+}
 
-  .form-label {
-    font-size: $base-font-size-xxl;
-    font-weight: normal;
-  }
+.vacation-form-label {
+  font-size: $base-font-size-xxl;
+  font-weight: normal;
+}
 
-  .fa-calendar {
-    border-radius: 100%;
-    border: 1px solid $dark-blue;
-    color: $dark-blue;
-    font-size: 1.5rem;
-    position: absolute;
-    padding: 0.5rem;
-    right: 1rem;
-    top: 1.75rem;
-  }
+.vacation-calendar-icon {
+  border-radius: 100%;
+  border: 1px solid $dark-blue;
+  color: $dark-blue;
+  font-size: 1.5rem;
+  position: absolute;
+  padding: 0.5rem;
+  right: 1rem;
+  top: 1.75rem;
 }
 
 .vacation-datepicker {

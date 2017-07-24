@@ -3,16 +3,19 @@ const flatpickr = require("flatpickr");
 export default function($) {
   $ = $ || window.jQuery;
 
-  $("#user_vacation_start").after("<div class='vacation-start-display'></div>");
-  $("#user_vacation_start").css("display", "none");
-  $("#user_vacation_end").after("<div class='vacation-end-display'></div>");
-  $("#user_vacation_end").css("display", "none");
+  const $vacationStartInput = $("#user_vacation_start");
+  const $vacationEndInput = $("#user_vacation_end");
+  
+  $vacationStartInput.after("<div class='vacation-start-display'></div>");
+  $vacationStartInput.css("display", "none");
+  $vacationEndInput.after("<div class='vacation-end-display'></div>");
+  $vacationEndInput.css("display", "none");
 
   const setVacationDates = function(selectedDates, dateStr, instance) {
-    $("#user_vacation_start").val(selectedDates[0].toISOString());
+    $vacationStartInput.val(selectedDates[0].toISOString());
     $(".vacation-start-display").text(selectedDates[0].toLocaleDateString());
     if (selectedDates[1]) {
-      $("#user_vacation_end").val(selectedDates[1].toISOString());
+      $vacationEndInput.val(selectedDates[1].toISOString());
       $(".vacation-end-display").text(selectedDates[1].toLocaleDateString());
     }
   }
