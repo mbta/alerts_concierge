@@ -2,8 +2,10 @@
 
 <%= render "_progress_bar.html", current_page: :trip_info, subscription_params: @subscription_params, conn: @conn %>
 
-<div class="enter-trip-info">
+<div class="subscription-step enter-trip-info">
   <h2 class="trip-info-header bus">Enter your trip info</h2>
+
+  <%= flash_error(@conn) %>
 
   <%= form_for @conn, bus_subscription_path(@conn, :preferences), [class: "trip-info-form bus", as: :subscription], fn f -> %>
     <div class="form-group select-station">
