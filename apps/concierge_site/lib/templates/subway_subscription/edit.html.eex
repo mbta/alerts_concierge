@@ -1,4 +1,7 @@
-<h1><%= @subscription.origin %> - <%= @subscription.destination %></h1>
+<%= render ConciergeSite.SubscriptionView,
+           "_edit_subscription_header.html",
+           title: [@subscription.origin, " - ", @subscription.destination],
+           subscription: @subscription %>
 
 <div class="edit-subscription subscription-step">
   <h2>Edit Subscription</h2>

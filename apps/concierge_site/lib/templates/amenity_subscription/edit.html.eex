@@ -1,4 +1,8 @@
-<h1>Edit Station Amenity</h1>
+<%= render ConciergeSite.SubscriptionView,
+           "_edit_subscription_header.html",
+           title: "Edit Station Amenity",
+           subscription: @subscription %>
+
 <%= flash_error(@conn) %>
 
 <div class="subscription-step amenities">

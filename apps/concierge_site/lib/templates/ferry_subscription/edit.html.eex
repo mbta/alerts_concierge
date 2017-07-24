@@ -1,4 +1,7 @@
-<h1><%= @subscription.origin %> <i class="fa fa-long-arrow-right" aria-hidden="true"></i> <%= @subscription.destination %></h1>
+<%= render ConciergeSite.SubscriptionView,
+           "_edit_subscription_header.html",
+           title: [@subscription.origin, " ", content_tag(:i, "", [class: "fa fa-long-arrow-right", aria: [hidden: "true"]]), " ", @subscription.destination],
+           subscription: @subscription %>
 
 <div class="edit-subscription subscription-step">
   <h2>Edit Subscription</h2>

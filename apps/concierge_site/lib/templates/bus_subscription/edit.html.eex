@@ -1,4 +1,7 @@
-<h1><%= route_name(@subscription) %></h1>
+<%= render ConciergeSite.SubscriptionView,
+           "_edit_subscription_header.html",
+           title: route_name(@subscription),
+           subscription: @subscription %>
 
 <div class="edit-subscription subscription-step">
   <h2>Edit Subscription</h2>
