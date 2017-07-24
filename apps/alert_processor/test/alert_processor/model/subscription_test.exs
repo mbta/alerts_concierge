@@ -136,6 +136,30 @@ defmodule AlertProcessor.Model.SubscriptionTest do
       } == timeframe_map
     end
 
+    test "maps timeframe to next timeframe for late night service for saturday" do
+      subscription = %Subscription{
+        start_time: ~T[01:00:00],
+        end_time: ~T[04:00:00],
+        relevant_days: [:saturday]
+      }
+      timeframe_map = Subscription.timeframe_map(subscription)
+      assert %{
+        sunday: %{start: 3600, end: 14_400}
+      } == timeframe_map
+    end
+
+    test "maps timeframe to next timeframe for late night service for sunday" do
+      subscription = %Subscription{
+        start_time: ~T[01:00:00],
+        end_time: ~T[04:00:00],
+        relevant_days: [:sunday]
+      }
+      timeframe_map = Subscription.timeframe_map(subscription)
+      assert %{
+        monday: %{start: 3600, end: 14_400}
+      } == timeframe_map
+    end
+
     test "maps early segment for timeframes that go over midnight for weekday" do
       subscription = %Subscription{
         start_time: ~T[12:00:00],
@@ -202,6 +226,42 @@ defmodule AlertProcessor.Model.SubscriptionTest do
         start_time: ~T[12:00:00],
         end_time: ~T[04:00:00],
         relevant_days: [:weekday, :saturday, :sunday]
+      }
+      timeframe_map = Subscription.timeframe_map(subscription)
+      assert %{
+        monday: %{start: 43_200, end: 14_400},
+        tuesday: %{start: 43_200, end: 14_400},
+        wednesday: %{start: 43_200, end: 14_400},
+        thursday: %{start: 43_200, end: 14_400},
+        friday: %{start: 43_200, end: 14_400},
+        saturday: %{start: 43_200, end: 14_400},
+        sunday: %{start: 43_200, end: 14_400}
+      } == timeframe_map
+    end
+
+    test "maps early segment for timeframes that go over midnight for all relevant days different order" do
+      subscription = %Subscription{
+        start_time: ~T[12:00:00],
+        end_time: ~T[04:00:00],
+        relevant_days: [:saturday, :weekday, :sunday]
+      }
+      timeframe_map = Subscription.timeframe_map(subscription)
+      assert %{
+        monday: %{start: 43_200, end: 14_400},
+        tuesday: %{start: 43_200, end: 14_400},
+        wednesday: %{start: 43_200, end: 14_400},
+        thursday: %{start: 43_200, end: 14_400},
+        friday: %{start: 43_200, end: 14_400},
+        saturday: %{start: 43_200, end: 14_400},
+        sunday: %{start: 43_200, end: 14_400}
+      } == timeframe_map
+    end
+
+    test "maps early segment for timeframes that go over midnight for all relevant days different order still doesnt matter" do
+      subscription = %Subscription{
+        start_time: ~T[12:00:00],
+        end_time: ~T[04:00:00],
+        relevant_days: [:sunday, :saturday, :weekday]
       }
       timeframe_map = Subscription.timeframe_map(subscription)
       assert %{
