@@ -39,16 +39,11 @@ defmodule ConciergeSite.BusSubscriptionController do
       {:ok, _} <- Repo.transaction(multi) do
         redirect(conn, to: subscription_path(conn, :index))
     else
-      _ -> handle_error_info_submission(conn, params["subscription"], user)
+      _ ->
+        conn
+        |> put_flash(:error, "There was an error saving the subscription. Please try again.")
+        |> render("new.html")
     end
-  end
-
-  defp handle_error_info_submission(conn, params, user) do
-    subscription_params = Map.merge(params, %{user_id: user.id, route_type: 3})
-    token = TemporaryState.encode(subscription_params)
-    conn
-    |> put_flash(:error, "There was an error creating your subscription. Please try again.")
-    |> render("new.html", token: token, subscription_params: subscription_params)
   end
 
   def info(conn, params, user, _claims) do
@@ -76,14 +71,37 @@ defmodule ConciergeSite.BusSubscriptionController do
 
     token = TemporaryState.encode(subscription_params)
 
-    case BusParams.validate_info_params(subscription_params) do
-      :ok ->
-        render conn, "preferences.html",
-          token: token,
-          subscription_params: subscription_params
+    with :ok <- BusParams.validate_info_params(subscription_params),
+      route_id <- subscription_params["route"] |> String.split(" - ") |> List.first(),
+      {:ok, route} <- ServiceInfoCache.get_route(route_id) do
+      render conn, "preferences.html",
+        token: token,
+        route: route,
+        subscription_params: subscription_params
+    else
       {:error, message} ->
+        handle_error_info_submission(conn, subscription_params, token, message)
+      _ ->
+        handle_error_info_submission(conn, subscription_params, token, "Something went wrong, please try again.")
+    end
+  end
+
+  defp handle_error_info_submission(conn, subscription_params, token, error_message) do
+    case ServiceInfoCache.get_bus_info() do
+      {:ok, routes} ->
+        route_list_select_options = BusRoutes.route_list_select_options(routes)
+
         conn
-        |> put_flash(:error, message)
+        |> put_flash(:error, error_message)
+        |> render(
+          "info.html",
+          token: token,
+          subscription_params: subscription_params,
+          route_list_select_options: route_list_select_options
+        )
+      _error ->
+        conn
+        |> put_flash(:error, "There was an error fetching route data. Please try again.")
         |> render("new.html", token: token, subscription_params: subscription_params)
     end
   end

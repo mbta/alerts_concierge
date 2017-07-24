@@ -1,6 +1,7 @@
 defmodule ConciergeSite.BusSubscriptionViewTest do
   use ExUnit.Case
   alias ConciergeSite.BusSubscriptionView
+  alias AlertProcessor.Model.Route
   import AlertProcessor.Factory
 
   describe "progress_link_class" do
@@ -41,29 +42,40 @@ defmodule ConciergeSite.BusSubscriptionViewTest do
       "departure_end" => "09:15:00",
       "return_start" => "16:45:00",
       "return_end" => "17:15:00",
-      "route" => "Silver Line SL1 - 1",
+      "route" => "741 - 1",
       "saturday" => "true",
       "sunday" => "false",
       "weekday" => "false"
     }
 
+    @route %Route{
+      direction_names: ["Outbound", "Inbound"],
+      headsigns: %{0 => ["Logan Airport", "Silver Line Way"], 1 => ["South Station"]},
+      long_name: "Silver Line SL1",
+      order: 0,
+      route_id: "741",
+      route_type: 3,
+      short_name: "SL1",
+      stop_list: []
+    }
+
     test "returns title from subscription params for one_way trip_type" do
       params = Map.merge(@params, %{"trip_type" => "one_way"})
-      title = Enum.join BusSubscriptionView.trip_summary_title(params), ""
+      title = Enum.join BusSubscriptionView.trip_summary_title(params, @route), ""
 
       assert title == "One way Saturday travel on the Silver Line SL1 bus:"
     end
 
     test "returns title from subscription params for round_trip trip_type" do
       params = Map.merge(@params, %{"trip_type" => "round_trip"})
-      title = Enum.join BusSubscriptionView.trip_summary_title(params), ""
+      title = Enum.join BusSubscriptionView.trip_summary_title(params, @route), ""
 
       assert title == "Round trip Saturday travel on the Silver Line SL1 bus:"
     end
 
     test "handles multiple travel times" do
       params = Map.merge(@params, %{"trip_type" => "one_way", "weekday": "true"})
-      title = Enum.join BusSubscriptionView.trip_summary_title(params), ""
+      title = Enum.join BusSubscriptionView.trip_summary_title(params, @route), ""
 
       assert title == "One way Saturday travel on the Silver Line SL1 bus:"
     end

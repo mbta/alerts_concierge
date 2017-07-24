@@ -7,7 +7,7 @@
 
   <div class="trip-summary">
     <div class="form-label">
-      <%= trip_summary_title(@subscription_params) %>
+      <%= trip_summary_title(@subscription_params, @route) %>
     </div>
     <%= for trip <- trip_summary_routes(@subscription_params) do %>
       <div><%= trip %></div>
