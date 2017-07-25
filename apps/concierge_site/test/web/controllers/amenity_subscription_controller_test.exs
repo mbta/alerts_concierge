@@ -142,6 +142,60 @@ defmodule ConciergeSite.AmenitySubscriptionControllerTest do
         assert :error = HoldingQueue.pop()
       end
     end
+
+    test "PATCH /subscriptions/amenities/add_station", %{conn: conn, user: user} do
+      sub = subscription_factory()
+      |> Map.put(:informed_entities, amenity_subscription_entities())
+      |> amenity_subscription()
+      |> weekday_subscription()
+      |> Map.merge(%{user: user})
+      |> insert()
+
+      params = %{
+        "subscription" => %{
+          "stops" => "North Quincy",
+          "amenities" => ["elevator"],
+          "relevant_days" => ["saturday"],
+          "routes" => ["blue"],
+          "station" => "place-forhl",
+          "id" => sub.id
+        },
+      }
+
+      station_link = "formaction=\"/subscriptions/amenities/remove_station/Forest%20Hills\" type=\"submit\">"
+
+      use_cassette "amenities_update", clear_mock: true  do
+        conn = patch(conn, "/subscriptions/amenities/add_station", params)
+        assert html_response(conn, 200) =~ station_link
+      end
+    end
+
+    test "PATCH /subscriptions/amenities/remove_station/:station", %{conn: conn, user: user} do
+      sub = subscription_factory()
+      |> Map.put(:informed_entities, amenity_subscription_entities())
+      |> amenity_subscription()
+      |> weekday_subscription()
+      |> Map.merge(%{user: user})
+      |> insert()
+
+      params = %{
+        "subscription" => %{
+          "stops" => "North Quincy,Forest Hills",
+          "amenities" => ["elevator"],
+          "relevant_days" => ["saturday"],
+          "routes" => ["blue"],
+          "id" => sub.id
+        },
+        "station" => "Forest Hills"
+      }
+
+      station_link = "formaction=\"/subscriptions/amenities/remove_station/Forest%20Hills\" type=\"submit\">\nForest Hills"
+
+      use_cassette "amenities_update", clear_mock: true  do
+        conn = patch(conn, "/subscriptions/amenities/remove_station/Forest%20Hills", params)
+        refute html_response(conn, 200) =~ station_link
+      end
+    end
   end
 
   describe "unauthorized" do
