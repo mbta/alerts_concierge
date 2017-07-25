@@ -18,7 +18,7 @@ defmodule AlertProcessor.Model.User do
 
   use Ecto.Schema
   import Ecto.{Changeset, Query}
-  alias AlertProcessor.{Model.Subscription, HoldingQueue, Repo}
+  alias AlertProcessor.{Aws.AwsClient, Model.Subscription, HoldingQueue, Repo}
   alias Comeonin.Bcrypt
 
   @primary_key {:id, :binary_id, autogenerate: true}
@@ -154,6 +154,13 @@ defmodule AlertProcessor.Model.User do
     struct
     |> change(vacation_start: nil)
     |> change(vacation_end: nil)
+  end
+
+  def opt_in_phone_number(%__MODULE__{phone_number: nil}), do: {:ok, nil}
+  def opt_in_phone_number(%__MODULE__{phone_number: phone_number}) do
+    phone_number
+    |> ExAws.SNS.opt_in_phone_number()
+    |> AwsClient.request()
   end
 
   @doc """

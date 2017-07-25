@@ -59,7 +59,7 @@ defmodule AlertProcessor.Mixfile do
       {:dialyxir, "~> 0.5.0", only: [:dev]},
       {:ecto, "~> 2.1"},
       {:excoveralls, "~> 0.5", only: [:dev, :test]},
-      {:ex_aws, git: "https://github.com/bfauble/ex_aws", ref: "fde7a918c90a640b6c8389fe4c36566957d0555c"},
+      {:ex_aws, git: "https://github.com/bfauble/ex_aws", ref: "f64f2cb026171dc6def03102ccae31906797deb0"},
       {:ex_machina, "~> 2.0", only: :test},
       {:exvcr, "~> 0.8", runtime: :false},
       {:gettext, "~> 0.11"},

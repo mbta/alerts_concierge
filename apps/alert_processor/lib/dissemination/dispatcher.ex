@@ -2,19 +2,14 @@ defmodule AlertProcessor.Dispatcher do
   @moduledoc """
   Module to handle the dissemination of notifications to proper mediums based on user subscriptions.
   """
-  @ex_aws Application.get_env(:alert_processor, :ex_aws)
 
-  alias AlertProcessor.{Model.Notification, NotificationMailer, NotificationSmser}
-
-  @type ex_aws_success :: {:ok, map}
-  @type ex_aws_error :: {:error, map}
-  @type request_error :: {:error, String.t}
+  alias AlertProcessor.{Aws.AwsClient, Model.Notification, NotificationMailer, NotificationSmser}
 
   @doc """
   send_notification/1 receives a map of user information and notification to
   delegate to the proper api.
   """
-  @spec send_notification(Notification.t) :: ex_aws_success | ex_aws_error | request_error
+  @spec send_notification(Notification.t) :: AwsClient.response
   def send_notification(%Notification{email: email, phone_number: phone_number} = notification) do
     do_send_notification(email, phone_number, notification)
   end
@@ -37,6 +32,6 @@ defmodule AlertProcessor.Dispatcher do
   defp do_send_notification(_email, phone_number, notification) do
     notification
     |> NotificationSmser.notification_sms(phone_number)
-    |> @ex_aws.request([])
+    |> AwsClient.request()
   end
 end
