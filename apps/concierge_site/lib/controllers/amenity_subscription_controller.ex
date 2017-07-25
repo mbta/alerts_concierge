@@ -178,7 +178,7 @@ defmodule ConciergeSite.AmenitySubscriptionController do
     put_in(trip_options, [:stations], stations)
   end
 
-  defp remove_station_selection(trip_options, params, options) do
+  defp remove_station_selection(trip_options, params, _options) do
     stations = remove_station_from_list(params, params["station"])
     put_in(trip_options, [:stations], stations)
   end
