@@ -4,6 +4,7 @@ defmodule ConciergeSite.UserParams do
   """
 
   alias AlertProcessor.Helpers.DateTimeHelper
+  alias Calendar.DateTime
 
   @doc """
   Map radio button selections from Update Account page to appropriate user attributes
@@ -31,5 +32,24 @@ defmodule ConciergeSite.UserParams do
     |> Map.take(["amber_alert_opt_in"])
     |> Map.merge(phone_number)
     |> Map.merge(do_not_disturb)
+  end
+
+  @doc """
+  Convert date string values in map of %{vacation_start: MM/DD/YYYY, vacation_end: MM/DD/YYYY }
+  to DateTimes
+  """
+  @spec convert_vacation_strings_to_datetimes(map) :: map
+  def convert_vacation_strings_to_datetimes(%{"vacation_start" => vacation_start, "vacation_end" => vacation_end}) do
+    [start_month, start_day, start_year] = parse_date_string(vacation_start)
+    [end_month, end_day, end_year] = parse_date_string(vacation_end)
+
+    %{"vacation_start" => DateTime.from_erl!({{start_year, start_month, start_day}, {0, 0, 0}}, "Etc/UTC"),
+      "vacation_end" => DateTime.from_erl!({{end_year, end_month, end_day}, {0, 0, 0}}, "Etc/UTC") }
+  end
+
+  defp parse_date_string(date_string) do
+    date_string
+    |> String.split("/")
+    |> Enum.map(&String.to_integer/1)
   end
 end

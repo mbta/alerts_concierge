@@ -104,5 +104,9 @@
 }
 
 .vacation-input {
-  border: none;
+  border-bottom: 1px solid $brand-primary;
+  border-left: none;
+  border-radius: 0;
+  border-right: none;
+  border-top: none;
 }

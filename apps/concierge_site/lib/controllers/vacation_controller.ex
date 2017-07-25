@@ -2,6 +2,7 @@ defmodule ConciergeSite.VacationController do
   use ConciergeSite.Web, :controller
   use Guardian.Phoenix.Controller
   alias AlertProcessor.{Model, Repo}
+  alias ConciergeSite.UserParams
   alias Model.User
 
   def edit(conn, _params, user, _claims) do
@@ -10,7 +11,8 @@ defmodule ConciergeSite.VacationController do
   end
 
   def update(conn, %{"user" => user_params}, user, _claims) do
-    changeset = User.update_vacation_changeset(user, user_params)
+    vacation_dates = UserParams.convert_vacation_strings_to_datetimes(user_params)
+    changeset = User.update_vacation_changeset(user, vacation_dates)
 
     case Repo.update(changeset) do
       {:ok, user} ->
