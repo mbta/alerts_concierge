@@ -160,7 +160,6 @@ defmodule AlertProcessor.Model.User do
 
   def opt_in_phone_number(%__MODULE__{phone_number: nil}), do: {:ok, nil}
   def opt_in_phone_number(%__MODULE__{phone_number: phone_number}) do
-    IO.inspect(phone_number)
     phone_number
     |> ExAws.SNS.opt_in_phone_number()
     |> @ex_aws.request([])
