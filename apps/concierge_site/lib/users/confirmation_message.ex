@@ -2,10 +2,8 @@ defmodule ConciergeSite.ConfirmationMessage do
   @moduledoc """
   Handles user confirmation messaging
   """
-  alias AlertProcessor.{Model.Notification, NotificationSmser}
+  alias AlertProcessor.{Aws.AwsClient, Model.Notification, NotificationSmser}
   alias ConciergeSite.{Email, Mailer}
-
-  @ex_aws Application.get_env(:alert_processor, :ex_aws)
 
   @doc """
   Sends email or SMS to uesr based on if they have a phone number
@@ -26,6 +24,6 @@ defmodule ConciergeSite.ConfirmationMessage do
   defp send_sms_confirmation(phone_number) do
     %Notification{header: "You have been subscribed to MBTA alerts. To stop receiving SMS alerts, reply STOP. Data rates may apply."}
     |> NotificationSmser.notification_sms(phone_number)
-    |> @ex_aws.request([])
+    |> AwsClient.request()
   end
 end

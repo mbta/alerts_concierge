@@ -6,11 +6,11 @@ defmodule AlertProcessor.SmsOptOutWorker do
   sending alerts.
   """
   use GenServer
+  alias AlertProcessor.Aws.AwsClient
   alias AlertProcessor.Model.User
   alias AlertProcessor.HoldingQueue
   alias AlertProcessor.Helpers.ConfigHelper
 
-  @ex_aws Application.get_env(:alert_processor, :ex_aws)
   @type phone_number :: String.t
 
   @doc false
@@ -60,7 +60,7 @@ defmodule AlertProcessor.SmsOptOutWorker do
     {:ok, %{body: %{phone_numbers: phone_numbers} = body}} =
       next_token
       |> list_phone_numbers_opted_out_query()
-      |> @ex_aws.request([])
+      |> AwsClient.request()
 
     case body[:next_token] do
       nil -> opted_out_list ++ phone_numbers

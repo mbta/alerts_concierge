@@ -18,10 +18,8 @@ defmodule AlertProcessor.Model.User do
 
   use Ecto.Schema
   import Ecto.{Changeset, Query}
-  alias AlertProcessor.{Model.Subscription, HoldingQueue, Repo}
+  alias AlertProcessor.{Aws.AwsClient, Model.Subscription, HoldingQueue, Repo}
   alias Comeonin.Bcrypt
-
-  @ex_aws Application.get_env(:alert_processor, :ex_aws)
 
   @primary_key {:id, :binary_id, autogenerate: true}
 
@@ -162,7 +160,7 @@ defmodule AlertProcessor.Model.User do
   def opt_in_phone_number(%__MODULE__{phone_number: phone_number}) do
     phone_number
     |> ExAws.SNS.opt_in_phone_number()
-    |> @ex_aws.request([])
+    |> AwsClient.request()
   end
 
   @doc """
