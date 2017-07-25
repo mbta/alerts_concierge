@@ -19,7 +19,7 @@ h1,
   }
 
   @include media-breakpoint-down(xs) {
-    font-size: $font-size-h2-xxl;
+    font-size: $font-size-h1-xs;
   }
 }
 
@@ -29,6 +29,6 @@ h2,
     font-size: $font-size-h2-xxl;
   }
   @include media-breakpoint-down(xs) {
-    font-size: $base-font-size-xxl;
+    font-size: $font-size-h2-xs;
   }
 }
