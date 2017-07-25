@@ -3,7 +3,7 @@ defmodule ConciergeSite.AmenitySubscriptionController do
   use Guardian.Phoenix.Controller
   alias ConciergeSite.Subscriptions.{AmenitiesParams, Lines, TemporaryState}
   alias AlertProcessor.{Repo, ServiceInfoCache,
-    Subscription.AmenitiesMapper, Model.Subscription}
+    Subscription.AmenitiesMapper, Model.Subscription, Model.User}
 
   def new(conn, _params, _user, _claims) do
     with {:ok, subway_stations} <- ServiceInfoCache.get_subway_full_routes(),
@@ -184,7 +184,8 @@ defmodule ConciergeSite.AmenitySubscriptionController do
       :ok <- AmenitiesParams.validate_info_params(sub_params),
       {:ok, subscription_infos} <- AmenitiesMapper.map_subscriptions(sub_params),
       multi <- AmenitiesMapper.build_subscription_update_transaction(subscription, subscription_infos),
-      {:ok, _} <- Repo.transaction(multi) do
+      {:ok, _subscription} <- Repo.transaction(multi) do
+        :ok = User.clear_holding_queue_for_user_id(user.id)
         redirect(conn, to: subscription_path(conn, :index))
     else
       {:error, message} ->

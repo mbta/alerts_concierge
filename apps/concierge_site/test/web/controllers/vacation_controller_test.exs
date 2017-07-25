@@ -1,7 +1,7 @@
 defmodule ConciergeSite.VacationControllerTest do
   use ConciergeSite.ConnCase
   import AlertProcessor.Factory
-  alias AlertProcessor.{Model, Repo}
+  alias AlertProcessor.{HoldingQueue, Model, Repo}
   alias Model.User
 
 
@@ -15,6 +15,8 @@ defmodule ConciergeSite.VacationControllerTest do
     end
 
     test "PATCH /my-account/vacation with a valid submission", %{conn: conn, user: user} do
+      notification = build(:notification, user_id: user.id, send_after: DateTime.from_unix!(4_078_579_247))
+      :ok = HoldingQueue.enqueue(notification)
       params = %{"user" => %{
         "vacation_start" => "2017-09-01T00:00:00+00:00",
         "vacation_end" => "2035-09-01T00:00:00+00:00"
@@ -27,6 +29,7 @@ defmodule ConciergeSite.VacationControllerTest do
       assert html_response(conn, 302) =~ subscription_path(conn, :index)
       assert :eq = NaiveDateTime.compare(updated_user.vacation_start, ~N[2017-09-01 00:00:00])
       assert :eq = NaiveDateTime.compare(updated_user.vacation_end, ~N[2035-09-01 00:00:00])
+      assert :error = HoldingQueue.pop()
     end
 
     test "PATCH /my-account/vacation with vacation_end in past", %{conn: conn, user: user} do

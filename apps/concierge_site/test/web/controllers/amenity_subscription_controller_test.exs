@@ -1,7 +1,7 @@
 defmodule ConciergeSite.AmenitySubscriptionControllerTest do
   use ConciergeSite.ConnCase
   use ExVCR.Mock, adapter: ExVCR.Adapter.Hackney
-  alias AlertProcessor.{Model.Subscription, Repo}
+  alias AlertProcessor.{HoldingQueue, Model.Subscription, Repo}
 
   describe "authorized" do
     setup :login_user
@@ -119,6 +119,8 @@ defmodule ConciergeSite.AmenitySubscriptionControllerTest do
     end
 
     test "PATCH /subscriptions/amenities/:id", %{conn: conn, user: user} do
+      notification = build(:notification, user_id: user.id, send_after: DateTime.from_unix!(4_078_579_247))
+      :ok = HoldingQueue.enqueue(notification)
       subscription =
         subscription_factory()
         |> Map.put(:informed_entities, amenity_subscription_entities())
@@ -137,6 +139,7 @@ defmodule ConciergeSite.AmenitySubscriptionControllerTest do
       use_cassette "amenities_update", clear_mock: true  do
         conn = patch(conn, "/subscriptions/amenities/#{subscription.id}", params)
         assert html_response(conn, 302) =~ "my-subscriptions"
+        assert :error = HoldingQueue.pop()
       end
     end
   end

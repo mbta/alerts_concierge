@@ -16,6 +16,7 @@ defmodule ConciergeSite.VacationController do
       {:ok, user} ->
         vacation_start = Calendar.Strftime.strftime!(user.vacation_start, "%B %e, %Y")
         vacation_end = Calendar.Strftime.strftime!(user.vacation_end, "%B %e, %Y")
+        :ok = User.clear_holding_queue_for_user_id(user.id)
         conn
         |> put_flash(:info, "Your alerts will be paused between #{vacation_start} and #{vacation_end}.")
         |> redirect(to: subscription_path(conn, :index))

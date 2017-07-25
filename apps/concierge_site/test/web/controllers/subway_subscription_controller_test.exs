@@ -1,7 +1,7 @@
 defmodule ConciergeSite.SubwaySubscriptionControllerTest do
   use ConciergeSite.ConnCase
   use ExVCR.Mock, adapter: ExVCR.Adapter.Hackney
-  alias AlertProcessor.{Model, Repo}
+  alias AlertProcessor.{HoldingQueue, Model, Repo}
   alias Model.{InformedEntity, Subscription}
 
   describe "authorized" do
@@ -141,6 +141,8 @@ defmodule ConciergeSite.SubwaySubscriptionControllerTest do
     end
 
     test "PATCH /subscriptions/subway/:id", %{conn: conn, user: user} do
+      notification = build(:notification, user_id: user.id, send_after: DateTime.from_unix!(4_078_579_247))
+      :ok = HoldingQueue.enqueue(notification)
       subscription =
         subscription_factory()
         |> subway_subscription()
@@ -161,6 +163,7 @@ defmodule ConciergeSite.SubwaySubscriptionControllerTest do
       |> patch("/subscriptions/subway/#{subscription.id}", params)
 
       assert html_response(conn, 302) =~ "my-subscriptions"
+      assert :error = HoldingQueue.pop()
     end
   end
 

@@ -2,7 +2,7 @@ defmodule ConciergeSite.BusSubscriptionController do
   use ConciergeSite.Web, :controller
   use Guardian.Phoenix.Controller
   alias ConciergeSite.Subscriptions.{BusParams, BusRoutes, TemporaryState, SubscriptionParams}
-  alias AlertProcessor.{Model.Subscription, Repo, ServiceInfoCache, Subscription.BusMapper}
+  alias AlertProcessor.{Model.Subscription, Model.User, Repo, ServiceInfoCache, Subscription.BusMapper}
 
   def new(conn, _params, _user, _claims) do
     render conn, "new.html"
@@ -21,6 +21,7 @@ defmodule ConciergeSite.BusSubscriptionController do
 
     case Repo.update(changeset) do
       {:ok, _subscription} ->
+        :ok = User.clear_holding_queue_for_user_id(user.id)
         conn
         |> put_flash(:info, "Subscription updated.")
         |> redirect(to: subscription_path(conn, :index))

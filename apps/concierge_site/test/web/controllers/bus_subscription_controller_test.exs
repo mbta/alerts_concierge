@@ -1,7 +1,7 @@
 defmodule ConciergeSite.BusSubscriptionControllerTest do
   use ConciergeSite.ConnCase
   use ExVCR.Mock, adapter: ExVCR.Adapter.Hackney
-  alias AlertProcessor.{Model, Repo}
+  alias AlertProcessor.{HoldingQueue, Model, Repo}
   alias Model.{InformedEntity, Subscription}
 
   @password "password1"
@@ -156,6 +156,8 @@ defmodule ConciergeSite.BusSubscriptionControllerTest do
     end
 
     test "PATCH /subscriptions/bus/:id", %{conn: conn, user: user} do
+      notification = build(:notification, user_id: user.id, send_after: DateTime.from_unix!(4_078_579_247))
+      :ok = HoldingQueue.enqueue(notification)
       subscription =
         subscription_factory()
         |> bus_subscription()
@@ -180,6 +182,7 @@ defmodule ConciergeSite.BusSubscriptionControllerTest do
       |> patch("/subscriptions/bus/#{subscription.id}", params)
 
       assert html_response(conn, 302) =~ "my-subscriptions"
+      assert :error = HoldingQueue.pop()
     end
   end
 
