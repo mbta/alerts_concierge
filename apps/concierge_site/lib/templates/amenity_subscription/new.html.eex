@@ -2,7 +2,7 @@
 <%= flash_error(@conn) %>
 <div class="subscription-step amenities">
   <div class="enter-trip-info">
-    <%= form_for @conn, amenity_subscription_path(@conn, :create), [class: "trip-info-form amenities", as: :subscription], fn f -> %>
+    <%= form_for @conn, amenity_subscription_path(@conn, :create), [class: "sub-creation-form trip-info-form amenities", as: :subscription], fn f -> %>
       <div class="amenity-subscription-form-section">
         <%= render "_amenity_options.html",
             form: f,
