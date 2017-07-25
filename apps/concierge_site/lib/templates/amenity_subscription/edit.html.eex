@@ -37,6 +37,7 @@
       </div>
 
       <%= hidden_input f, :stops, value: stringify(Map.get(@selected_trip_options, :stations, [])), class: "subscription-amenities-stops" %>
+      <%= hidden_input f, :id, value: @subscription.id %>
 
       <%= submit "Update Subscription",
           class: "btn btn-primary btn-amenity-submit" %>
