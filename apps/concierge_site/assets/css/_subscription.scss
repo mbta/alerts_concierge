@@ -221,10 +221,7 @@
 }
 
 .subscription-day-checkbox {
-  margin: 0 .25rem 0 2rem;
-  @include media-breakpoint-down(xs) {
-    margin: 0 auto;
-  }
+  margin-right: .25rem;
 }
 
 #subscription_weekday {
@@ -232,9 +229,7 @@
 }
 
 .travel-day-label {
-  @include media-breakpoint-down(xs) {
-    width: 100%;
-  }
+  width: 100%;
 }
 
 .travel-time-select-section {
