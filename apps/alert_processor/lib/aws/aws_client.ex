@@ -5,11 +5,9 @@ defmodule AlertProcessor.Aws.AwsClient do
   """
   @ex_aws Application.get_env(:alert_processor, :ex_aws)
 
-  @type aws_success :: {:ok, map}
-  @type aws_error :: {:error, map}
-  @type request_error :: {:error, String.t}
+  @type response :: {:ok, map} | {:error, map} | {:error, String.t}
 
-  @spec request(ExAws.Operation.Query.t, list | nil) :: aws_success | aws_error | request_error
+  @spec request(ExAws.Operation.Query.t, list | nil) :: response
   def request(operation, opts \\ []) do
     @ex_aws.request(operation, opts)
   end

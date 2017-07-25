@@ -9,7 +9,7 @@ defmodule AlertProcessor.Dispatcher do
   send_notification/1 receives a map of user information and notification to
   delegate to the proper api.
   """
-  @spec send_notification(Notification.t) :: AwsClient.aws_success | AwsClient.aws_error | AwsClient.request_error
+  @spec send_notification(Notification.t) :: AwsClient.response
   def send_notification(%Notification{email: email, phone_number: phone_number} = notification) do
     do_send_notification(email, phone_number, notification)
   end
