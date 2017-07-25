@@ -22,6 +22,15 @@ export default function($) {
     minDate: now
   });
 
-  flatpickr("#user_vacation_start", vacationStartConfig);
-  flatpickr("#user_vacation_end", vacationEndConfig);
+  const vacationStartDatepicker =
+    flatpickr("#user_vacation_start", vacationStartConfig);
+  const vacationEndDatepicker =
+    flatpickr("#user_vacation_end", vacationEndConfig);
+
+  function openDatepicker(datepicker) {
+    datepicker.open();
+  }
+
+  $(document).on("click", ".vacation-start-icon", openDatepicker.bind(null, vacationStartDatepicker));
+  $(document).on("click", ".vacation-end-icon", openDatepicker.bind(null, vacationEndDatepicker));
 }
