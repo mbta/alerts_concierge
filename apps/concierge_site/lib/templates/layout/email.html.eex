@@ -6,6 +6,8 @@
     <link rel="stylesheet" href="<%= static_url(ConciergeSite.Endpoint, "/css/app.css") %>">
   </head>
   <body>
+    <%= render "_email_header.html" %>
     <%= render @view_module, @view_template, assigns %>
+    <%= render "_email_footer.html" %>
   </body>
 </html>

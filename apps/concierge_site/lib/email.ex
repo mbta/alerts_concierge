@@ -29,7 +29,6 @@ defmodule ConciergeSite.Email do
   def unknown_password_reset_html_email(email) do
     email
     |> unknown_password_reset_text_email()
-    |> put_html_layout({ConciergeSite.LayoutView, "email.html"})
     |> render("unknown_password_reset.html", email: email)
   end
 
