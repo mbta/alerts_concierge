@@ -49,14 +49,12 @@ defmodule ConciergeSite.SubscriptionHelper do
   Provide css classes for the text and circle in progress bar steps
   """
   def progress_step_classes(page, step) do
-    ordered_steps = [{:trip_type, 0}, {:trip_info, 1}, {:train, 2}, {:ferry, 2}, {:preferences, 3}]
+    ordered_steps = %{trip_type: 0, trip_info: 1, train: 2, ferry: 2, preferences: 3}
     if ordered_steps[page] >= ordered_steps[step] do
       %{circle: "active-circle", name: "active-page"}
+    else
+      %{}
     end
-  end
-
-  def progress_step_classes(_page, _step) do
-    %{}
   end
 
   @doc """
