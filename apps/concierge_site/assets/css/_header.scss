@@ -20,6 +20,6 @@
 .header-text {
   padding-top: 1.5rem;
   @include media-breakpoint-down(xs) {
-    font-size: $font-size-h1-xxl;
+    font-size: $font-size-h1;
   }
 }

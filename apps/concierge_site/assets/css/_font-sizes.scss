@@ -13,15 +13,4 @@ h1,
   font-weight: $headings-font-weight;
   margin-bottom: 2.875rem;
   padding: 1.75rem 0 0.5rem;
-
-  @include media-breakpoint-up(xxl) {
-    font-size: $font-size-h1-xxl;
-  }
-}
-
-h2,
-.h2 {
-  @include media-breakpoint-up(xxl) {
-    font-size: $font-size-h2-xxl;
-  }
 }
