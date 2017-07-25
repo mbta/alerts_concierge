@@ -17,11 +17,18 @@ h1,
   @include media-breakpoint-up(xxl) {
     font-size: $font-size-h1-xxl;
   }
+
+  @include media-breakpoint-down(xs) {
+    font-size: $font-size-h2-xxl;
+  }
 }
 
 h2,
 .h2 {
   @include media-breakpoint-up(xxl) {
     font-size: $font-size-h2-xxl;
+  }
+  @include media-breakpoint-down(xs) {
+    font-size: $base-font-size-xxl;
   }
 }
