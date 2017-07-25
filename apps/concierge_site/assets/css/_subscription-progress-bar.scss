@@ -6,6 +6,13 @@
   position: relative;
   text-align: center;
   z-index: 1;
+
+  @include media-breakpoint-down(xs) {
+    max-width: none;
+    width: 82%;
+    margin-left: auto;
+    margin-right: auto;
+  }
 }
 
 .progress-bar {
@@ -16,6 +23,12 @@
   height: .1rem;
   position: relative;
   top: .75rem;
+
+  @include media-breakpoint-down(xs) {
+    max-width: none;
+    width: 80%;
+    margin: 0 auto;
+  }
 }
 
 .progress-step-name {
