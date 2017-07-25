@@ -15,20 +15,20 @@ h1,
   padding: 1.75rem 0 0.5rem;
 
   @include media-breakpoint-up(xxl) {
-    font-size: $font-size-h1-xxl;
+    font-size: $font-size-h1;
   }
 
   @include media-breakpoint-down(xs) {
-    font-size: $font-size-h1-xs;
+    font-size: $font-size-h1;
   }
 }
 
 h2,
 .h2 {
   @include media-breakpoint-up(xxl) {
-    font-size: $font-size-h2-xxl;
+    font-size: $font-size-h2;
   }
   @include media-breakpoint-down(xs) {
-    font-size: $font-size-h2-xs;
+    font-size: $font-size-h2;
   }
 }
