@@ -63,6 +63,7 @@ defmodule AlertProcessor.Mixfile do
       {:ex_machina, "~> 2.0", only: :test},
       {:exvcr, "~> 0.8", runtime: :false},
       {:gettext, "~> 0.11"},
+      {:guardian, "~> 0.14"},
       {:hackney, "~> 1.6"},
       {:httpoison, "~> 0.1"},
       {:poison, "~> 2.0"},

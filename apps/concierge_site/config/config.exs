@@ -53,6 +53,8 @@ config :guardian_db, GuardianDb,
   schema_name: "guardian_tokens",
   sweep_interval: 120
 
+config :concierge_site, hostname: {:system, "DOMAIN_URL", "http://localhost:3000"}
+
 # Import environment specific config. This must remain at the bottom
 # of this file so it overrides the configuration defined above.
 import_config "#{Mix.env}.exs"
