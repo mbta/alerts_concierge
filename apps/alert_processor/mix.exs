@@ -61,6 +61,7 @@ defmodule AlertProcessor.Mixfile do
       {:gettext, "~> 0.11"},
       {:hackney, "~> 1.6"},
       {:httpoison, "~> 0.1"},
+      {:paper_trail, "~> 0.7.5"},
       {:poison, "~> 2.0"},
       {:poolboy, ">= 0.0.0"},
       {:postgrex, ">= 0.0.0"},
