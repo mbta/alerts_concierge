@@ -12,21 +12,21 @@ defmodule AlertProcessor.NotificationMailer do
     :def,
     :html_email,
     Path.join(@template_dir, "notification.html.eex"),
-    [:notification])
+    [:notification, :unsubscribe_url])
   EEx.function_from_file(
     :def,
     :text_email,
     Path.join(~w(#{System.cwd!} lib mail_templates notification.txt.eex)),
-    [:notification])
+    [:notification, :unsubscribe_url])
 
-  @doc "notification_email/2 takes a message and a user's email address and builds an email to be sent to user."
+  @doc "notification_email/2 takes a message and an unsubscribe url and builds an email to be sent to user."
   @spec notification_email(Notification.t, String.t) :: Elixir.Bamboo.Email.t
-  def notification_email(notification, user_email) do
+  def notification_email(notification, unsubscribe_url) do
     base_email()
-    |> to(user_email)
+    |> to(notification.email)
     |> subject("MBTA Alert")
-    |> html_body(html_email(notification))
-    |> text_body(text_email(notification))
+    |> html_body(html_email(notification, unsubscribe_url))
+    |> text_body(text_email(notification, unsubscribe_url))
   end
 
   @spec base_email() :: Elixir.Bamboo.Email.t
