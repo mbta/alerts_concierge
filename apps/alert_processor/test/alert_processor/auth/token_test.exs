@@ -1,8 +1,8 @@
-defmodule ConciergeSite.Auth.TokenTest do
-  use ConciergeSite.ConnCase
+defmodule AlertProcess.Auth.TokenTest do
+  use AlertProcessor.DataCase
   import AlertProcessor.Factory
 
-  alias ConciergeSite.Auth.Token
+  alias AlertProcessor.Auth.Token
 
   @seconds_in_day (60 * 60 * 24)
 
