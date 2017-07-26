@@ -2,7 +2,7 @@ defmodule ConciergeSite.PasswordResetController do
   use ConciergeSite.Web, :controller
   import Ecto.Query
   alias AlertProcessor.Model.{PasswordReset, User}
-  alias AlertProcessor.Repo
+  alias AlertProcessor.{MailHelper, Repo}
   alias Calendar.DateTime
   alias ConciergeSite.{Email, Mailer}
   alias Ecto.Multi
@@ -15,15 +15,21 @@ defmodule ConciergeSite.PasswordResetController do
   end
 
   def create(conn, %{"password_reset" => %{"email" => email}}) do
-    user_id = find_user_id_by_email(email)
-
+    user = find_user_by_email(email)
+    user_id =
+      if user == nil do
+        nil
+      else
+        user.id
+      end
     changeset = PasswordReset.create_changeset(
       %PasswordReset{},
       %{user_id: user_id, redeemed_at: nil, expired_at: DateTime.add!(DateTime.now_utc, 3600)}
     )
     case Repo.insert(changeset) do
       {:ok, password_reset} ->
-        Email.password_reset_html_email(email, password_reset.id)
+        unsubscribe_url = MailHelper.unsubscribe_url(user)
+        Email.password_reset_html_email(email, password_reset.id, unsubscribe_url)
         |> Mailer.deliver_later
 
         redirect(conn, to: password_reset_path(conn, :sent, %{email: email}))
@@ -74,10 +80,9 @@ defmodule ConciergeSite.PasswordResetController do
     end
   end
 
-  defp find_user_id_by_email(email) do
+  defp find_user_by_email(email) do
     Repo.one(
       from u in User,
-      select: u.id,
       where: fragment("lower(?)", u.email) == ^String.downcase(email)
     )
   end

@@ -1,6 +1,6 @@
 defmodule ConciergeSite.Email do
   use Bamboo.Phoenix, view: ConciergeSite.EmailView
-
+  alias AlertProcessor.MailHelper
   @from Application.get_env(:concierge_site, __MODULE__)[:from]
 
   def password_reset_text_email({email, password_reset_id, unsubscribe_url}) do
@@ -34,11 +34,12 @@ defmodule ConciergeSite.Email do
   end
 
   def confirmation_email(user) do
+    unsubscribe_url = MailHelper.unsubscribe_url(user)
     new_email()
     |> to(user.email)
     |> from(@from)
     |> subject("MBTA Alerts Account Confirmation")
     |> put_html_layout({ConciergeSite.LayoutView, "email.html"})
-    |> render(:confirmation)
+    |> render(:confirmation, unsubscribe_url: unsubscribe_url)
   end
 end

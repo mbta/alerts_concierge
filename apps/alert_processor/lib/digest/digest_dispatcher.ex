@@ -2,7 +2,7 @@ defmodule AlertProcessor.DigestDispatcher do
   @moduledoc """
   Sends digests to users
   """
-  alias AlertProcessor.{DigestMailer, Model}
+  alias AlertProcessor.{DigestMailer, MailHelper, Model}
   alias Model.DigestMessage
 
   @doc """
@@ -14,8 +14,9 @@ defmodule AlertProcessor.DigestDispatcher do
   end
 
   defp send_email(digest_message) do
+    unsubscribe_url = MailHelper.unsubscribe_url(digest_message.user)
     digest_message
-    |> DigestMailer.digest_email()
+    |> DigestMailer.digest_email(unsubscribe_url)
     |> DigestMailer.deliver_later
    end
 end
