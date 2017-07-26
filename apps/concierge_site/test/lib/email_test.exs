@@ -6,7 +6,7 @@ defmodule ConciergeSite.EmailTest do
     password_reset = insert(:password_reset)
     email_address = "testemail@example.com"
 
-    email = Email.password_reset_html_email(email_address, password_reset.id)
+    email = Email.password_reset_html_email(email_address, password_reset.id, "/unsubscribe/top_secret_token")
 
     assert email.to == email_address
     assert email.subject == "Reset Your MBTA Alerts Password"

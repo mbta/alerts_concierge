@@ -1,6 +1,6 @@
 defmodule AlertProcessor.DigestMailerTest do
   @moduledoc false
-  use ExUnit.Case, async: false
+  use AlertProcessor.DataCase, async: false
   use Bamboo.Test, shared: true
 
   alias AlertProcessor.{DigestMailer, Model}
@@ -41,7 +41,7 @@ defmodule AlertProcessor.DigestMailerTest do
     user = %User{email: "abc@123.com"}
     digest = %Digest{user: user, alerts: [@alert], digest_date_group: @ddg}
     message = DigestMessage.from_digest(digest)
-    email = DigestMailer.digest_email(message)
+    email = DigestMailer.digest_email(message, "/unsubscribe/top_secret_token")
     body = email.text_body
 
     assert email.to == user.email
@@ -49,13 +49,14 @@ defmodule AlertProcessor.DigestMailerTest do
     assert body =~ "Service Effect"
     assert body =~ "https://t.mbta.com/"
     assert body =~ "This Weekend, May 26 - 27"
+    assert body =~ "unsubscribe/top_secret_token"
  end
 
   test "html_email/1 has all content and link for alerts page" do
     user = %User{email: "abc@123.com"}
     digest = %Digest{user: user, alerts: [@alert], digest_date_group: @ddg}
     message = DigestMessage.from_digest(digest)
-    email = DigestMailer.digest_email(message)
+    email = DigestMailer.digest_email(message, "/unsubscribe/top_secret_token")
     body = email.html_body
 
     assert email.to == user.email
@@ -63,5 +64,6 @@ defmodule AlertProcessor.DigestMailerTest do
     assert body =~ "Service Effect"
     assert body =~ "href=\"https://t.mbta.com/\""
     assert body =~ "This Weekend, May 26 - 27"
+    assert body =~ "unsubscribe/top_secret_token"
   end
 end

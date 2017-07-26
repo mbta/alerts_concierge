@@ -1,7 +1,6 @@
 defmodule ConciergeSite.AccountControllerTest do
   use ConciergeSite.ConnCase
   use Bamboo.Test
-  alias ConciergeSite.Email
 
   describe "valid params" do
     test "creates user", %{conn: conn} do
@@ -47,7 +46,7 @@ defmodule ConciergeSite.AccountControllerTest do
 
       post(conn, "/account", params)
 
-      assert_delivered_email Email.confirmation_email("test@email.com")
+      assert_delivered_with(to: [{nil, "test@email.com"}])
     end
   end
 
