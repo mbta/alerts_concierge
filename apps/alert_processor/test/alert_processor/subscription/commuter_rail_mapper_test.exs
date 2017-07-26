@@ -603,11 +603,9 @@ defmodule AlertProcessor.Subscription.CommuterRailMapperTest do
       {:ok, subscription_infos} = CommuterRailMapper.map_subscriptions(@round_trip_params)
       multi = CommuterRailMapper.build_subscription_transaction(subscription_infos, user)
       assert [
-          {{:subscription, 0}, {:insert, subscription_changeset_1, []}},
-          {{:subscription, 1}, {:insert, subscription_changeset_2, []}}
+          {{:subscription, 0}, {:run, _function1}},
+          {{:subscription, 1}, {:run, _function2}}
         ] = Ecto.Multi.to_list(multi)
-      assert subscription_changeset_1.valid?
-      assert subscription_changeset_2.valid?
     end
   end
 
@@ -631,17 +629,11 @@ defmodule AlertProcessor.Subscription.CommuterRailMapperTest do
       multi = CommuterRailMapper.build_update_subscription_transaction(subscription, params)
 
       assert [
-        {{:informed_entity, 0}, {:insert, insert_entity_changeset, []}},
-        {:remove_old, {:delete_all, removal_query, []}},
-        {:subscription, {:update, update_subscription_changeset, []}}
+        {{:informed_entity, 0}, {:run, _function1}},
+        {{:remove_old, 0}, {:run, _function2}},
+        {{:remove_old, 1}, {:run, _function3}},
+        {:subscription, {:run, _function4}}
       ] = Ecto.Multi.to_list(multi)
-      assert insert_entity_changeset.valid?
-      subscription.informed_entities
-      |> Enum.filter(& InformedEntity.entity_type(&1) == :trip)
-      |> Enum.each(fn(ie) ->
-        assert String.contains?(inspect(removal_query), ie.id)
-      end)
-      assert update_subscription_changeset.valid?
     end
   end
 end

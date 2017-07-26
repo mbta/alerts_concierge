@@ -20,6 +20,7 @@ defmodule AlertProcessor.Model.User do
   import Ecto.{Changeset, Query}
   alias AlertProcessor.{Aws.AwsClient, Model.Subscription, HoldingQueue, Repo}
   alias Comeonin.Bcrypt
+  alias Ecto.Multi
 
   @primary_key {:id, :binary_id, autogenerate: true}
 
@@ -197,9 +198,17 @@ defmodule AlertProcessor.Model.User do
   Takes a list of user ids and puts on vacation mode ending in the year 9999
   """
   def put_users_on_indefinite_vacation(user_ids) do
-    Repo.update_all(from(u in __MODULE__, where: u.id in ^user_ids),
-                    set: [vacation_start: DateTime.utc_now(),
-                          vacation_end: DateTime.from_naive!(~N[9999-12-25 23:59:59], "Etc/UTC")])
+    user_ids
+    |> Enum.with_index()
+    |> Enum.reduce(Multi.new(), fn({user_id, index}, acc) ->
+          Multi.run(acc, {:user, index}, fn _ ->
+            __MODULE__
+            |> Repo.get(user_id)
+            |> update_vacation_changeset(%{vacation_start: DateTime.utc_now(), vacation_end: DateTime.from_naive!(~N[9999-12-25 23:59:59], "Etc/UTC")})
+            |> PaperTrail.update()
+          end)
+        end)
+    |> Repo.transaction()
   end
 
   @doc """

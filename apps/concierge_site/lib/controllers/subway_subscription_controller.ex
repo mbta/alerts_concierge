@@ -26,7 +26,7 @@ defmodule ConciergeSite.SubwaySubscriptionController do
     params = SubscriptionParams.prepare_for_update_changeset(subscription_params)
     changeset = Subscription.update_changeset(subscription, params)
 
-    case Repo.update(changeset) do
+    case PaperTrail.update(changeset) do
       {:ok, _subscription} ->
         :ok = User.clear_holding_queue_for_user_id(user.id)
         conn

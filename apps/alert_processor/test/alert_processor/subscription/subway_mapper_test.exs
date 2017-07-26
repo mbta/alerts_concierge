@@ -436,11 +436,9 @@ defmodule AlertProcessor.Subscription.SubwayMapperTest do
       {:ok, subscription_infos} = SubwayMapper.map_subscriptions(@round_trip_params)
       multi = SubwayMapper.build_subscription_transaction(subscription_infos, user)
       assert [
-          {{:subscription, 0}, {:insert, subscription_changeset_1, []}},
-          {{:subscription, 1}, {:insert, subscription_changeset_2, []}}
+          {{:subscription, 0}, {:run, _function1}},
+          {{:subscription, 1}, {:run, _function2}}
         ] = Ecto.Multi.to_list(multi)
-      assert subscription_changeset_1.valid?
-      assert subscription_changeset_2.valid?
     end
   end
 end

@@ -43,7 +43,7 @@ defmodule ConciergeSite.SubscriptionController do
 
   def delete(conn, %{"id" => id}, user, _claims) do
     subscription = Subscription.one_for_user!(id, user.id)
-    case Repo.delete(subscription) do
+    case PaperTrail.delete(subscription) do
       {:ok, _} ->
         :ok = User.clear_holding_queue_for_user_id(user.id)
         conn
