@@ -1,0 +1,8 @@
+<h1>My Account</h1>
+
+<div class="my-account-container">
+  <div class="unsubscribe-content">
+    <h2>You have been unsubscribed</h2>
+    <p>You have been unsubscribed from all future alerts. To begin receiving alerts again, log in and click <strong>Resume Alerts</strong></p>
+  </div>
+</div>

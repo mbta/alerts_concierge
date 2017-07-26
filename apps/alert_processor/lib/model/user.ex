@@ -202,6 +202,16 @@ defmodule AlertProcessor.Model.User do
                           vacation_end: DateTime.from_naive!(~N[9999-12-25 23:59:59], "Etc/UTC")])
   end
 
+  @doc """
+  take a user and put into vacation mode ending in the year 9999
+  """
+  @spec put_user_on_indefinite_vacation(__MODULE__.t) :: {:ok, __MODULE__.t} | {:error, Ecto.Changeset.t}
+  def put_user_on_indefinite_vacation(user) do
+    user
+    |> update_vacation_changeset(%{vacation_start: DateTime.utc_now(), vacation_end: DateTime.from_naive!(~N[9999-12-25 23:59:59], "Etc/UTC")})
+    |> Repo.update()
+  end
+
   @spec clear_holding_queue_for_user_id(id) :: :ok
   def clear_holding_queue_for_user_id(user_id) do
     HoldingQueue.remove_user_notifications(user_id)

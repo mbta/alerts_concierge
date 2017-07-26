@@ -44,7 +44,8 @@ config :guardian, Guardian,
   hooks: GuardianDb,
   permissions: %{
     default: [
-      :reset_password
+      :reset_password,
+      :unsubscribe
     ]
   }
 
