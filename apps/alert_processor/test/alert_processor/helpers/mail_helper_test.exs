@@ -1,6 +1,7 @@
 defmodule AlertProcessor.MailHelperTest do
   @moduledoc false
-  use ExUnit.Case
+  use AlertProcessor.DataCase
+  import AlertProcessor.Factory
   alias AlertProcessor.{MailHelper, Model.Alert, Model.InformedEntity}
 
   @alert %Alert{
@@ -122,6 +123,14 @@ defmodule AlertProcessor.MailHelperTest do
       facility = "logo-facility"
 
       assert MailHelper.alt_text_for_alert(alert) == facility
+    end
+  end
+
+  describe "unsubscribe_url" do
+    test "constructs an unsubscribe url for use in emails" do
+      user = insert(:user)
+      unsubscribe_url = MailHelper.unsubscribe_url(user)
+      assert unsubscribe_url =~ "http://localhost:3000/unsubscribe/"
     end
   end
 end
