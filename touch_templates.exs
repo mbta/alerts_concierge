@@ -26,16 +26,21 @@ defmodule TouchTemplates do
     cond do
       String.ends_with?(file, "digest.html.eex") -> insert_content(file, :digest)
       String.ends_with?(file, "notification.html.eex") -> insert_content(file, :notification)
+      String.ends_with?(file, "footer.html.eex") -> insert_content(file, :footer)
       true -> File.touch!(file)
     end
   end
 
   defp insert_content(file, :digest) do
-    content = "<%= digest_date_groups %>"
+    content = "<%= digest_date_groups %><%= unsubscribe_url %>"
     File.write!(file, content)
   end
   defp insert_content(file, :notification) do
-    content = "<%= notification %>"
+    content = "<%= notification %><%= unsubscribe_url %>"
+    File.write!(file, content)
+  end
+  defp insert_content(file, :footer) do
+    content = "<%= unsubscribe_url %>"
     File.write!(file, content)
   end
 end
