@@ -9,7 +9,7 @@ defmodule ConciergeSite.UnsubscribeController do
       true <- Guardian.Permissions.any?(default_permissions, [:unsubscribe], :default),
       {:ok, user} <- Guardian.serializer.from_token(claims["sub"]),
       :ok <- User.clear_holding_queue_for_user_id(user.id),
-      {1, nil} <- User.put_users_on_indefinite_vacation([user.id]) do
+      {:ok, _user} <- User.put_user_on_indefinite_vacation(user) do
       render(conn, "unsubscribe.html")
     else
       _ ->
