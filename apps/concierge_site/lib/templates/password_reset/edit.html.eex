@@ -6,21 +6,8 @@
 
   <%= form_for @changeset, password_reset_path(@conn, :update, @password_reset), [{:method, :patch}], fn f -> %>
     <div class="update-password-section">
-      <div class="form-group <%= if :password in @changeset.errors, do: "has-danger" %>">
-        <%= label f, :password, "New password", class: "form-label" %>
-        <%= error_tag f, :password %>
-        <%= password_input f, :password, placeholder: "Please enter your password", class: "form-control form-control-success form-control-danger", pattern: password_regex_string(), required: true %>
-        <span></span>
-      </div>
-
-      <div class="form-group <%= if :password_confirmation in @changeset.errors, do: "has-danger" %>">
-        <%= label f, :password_confirmation, "Re-enter new password", class: "form-label" %>
-        <%= error_tag f, :password_confirmation %>
-        <%= password_input f, :password_confirmation, placeholder: "Please re-enter your password", class: "form-control form-control-success form-control-danger", pattern: password_regex_string(), required: true %>
-        <span></span>
-      </div>
+      <%= render ConciergeSite.PasswordView, "_password_entry_form_section.html", f: f, changeset: @changeset %>
     </div>
-
     <div class="update-password-footer">
       <%= submit "Reset Password", class: "btn btn-primary btn-wide" %>
     </div>
