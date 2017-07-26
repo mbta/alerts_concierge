@@ -9,20 +9,7 @@
       <%= email_input f, :email, placeholder: "your@email.com", class: "form-control form-control-success form-control-danger", required: true  %>
       <span></span>
     </div>
-    <div class="form-group <%= if :password in @errors, do: "has-danger" %>">
-      <%= label f, :password, "Password", class: "form-label" %>
-      <%= label f, :password, "Your password must be at least 6 characters, with one number or special character (? & % $ # !, etc)", class: "form-sub-label" %>
-      <%= error_tag f, :password %>
-      <%= password_input f, :password, placeholder: "Please enter your password", class: "form-control form-control-success form-control-danger", pattern: password_regex_string(), required: true %>
-      <span></span>
-    </div>
-    <div class="form-group <%= if :password_confirmation in @errors, do: "has-danger" %>">
-      <%= label f, :password_confirmation, "Confirm Password", class: "form-label" %>
-      <%= error_tag f, :password_confirmation %>
-      <%= password_input f, :password_confirmation, placeholder: "Please re-enter your password", class: "form-control form-control-success form-control-danger", pattern: password_regex_string(), required: true %>
-      <span></span>
-    </div>
-
+    <%= render ConciergeSite.PasswordView, "_password_entry_form_section.html", f: f, changeset: @account_changeset %>
     <h2 class="create-account-header">SMS Messaging</h2>
     <p>Would you like to receive alerts via SMS? If not, we will send you alerts via the email address you provided. You may always update this preference later.</p>
     <%= radio_button f, :sms_toggle, true, class: "radio toggle_show" %> Yes<br>
