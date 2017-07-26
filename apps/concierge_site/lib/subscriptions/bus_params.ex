@@ -11,6 +11,7 @@ defmodule ConciergeSite.Subscriptions.BusParams do
       {params, []}
       |> validate_presence_of_route()
       |> validate_at_least_one_travel_day()
+      |> validate_endtime_after_starttime()
 
     if errors == [] do
       :ok
@@ -33,6 +34,25 @@ defmodule ConciergeSite.Subscriptions.BusParams do
       {params, errors}
     else
       {params, ["At least one travel day option must be selected." | errors]}
+    end
+  end
+
+  defp validate_endtime_after_starttime({%{"return_start" => _} = params, errors}) do
+    cond do
+      params["return_end"] <= params["return_start"] ->
+        {params, ["Start time on return trip cannot be same as or later than end time"]}
+      params["departure_end"] <= params["departure_start"] ->
+        {params, ["Start time on departure trip cannot be same as or later than end time"]}
+      true ->
+        {params, errors}
+    end
+  end
+
+  defp validate_endtime_after_starttime({params, errors}) do
+    if params["departure_end"] <= params["departure_start"] do
+      {params, ["Start time on departure trip cannot be same as or later than end time"]}
+    else
+      {params, errors}
     end
   end
 

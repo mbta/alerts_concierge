@@ -23,6 +23,40 @@ defmodule ConciergeSite.Subscriptions.SubwayParamsTest do
       end
     end
 
+    test "it returns error messages when the departure end is before departure start" do
+      params = %{
+        "departure_start" => "08:45 AM",
+        "departure_end" => "08:15 AM",
+        "origin" => "place-brntn",
+        "destination" => "place-qamnl",
+        "saturday" => "false",
+        "sunday" => "false",
+        "weekday" => "true",
+        "trip_type" => "one_way",
+      }
+
+      {:error, message} = SubwayParams.validate_info_params(params)
+      assert IO.iodata_to_binary(message) == "Please correct the following errors to proceed: Start time on departure trip cannot be same as or later than end time"
+    end
+
+    test "it returns error messages when the return end is before return start" do
+      params = %{
+        "departure_start" => "08:45 AM",
+        "departure_end" => "09:15 AM",
+        "return_start" => "10:45 AM",
+        "return_end" => "09:45 AM",
+        "origin" => "place-brntn",
+        "destination" => "place-qamnl",
+        "saturday" => "false",
+        "sunday" => "false",
+        "weekday" => "true",
+        "trip_type" => "round_trip",
+      }
+
+      {:error, message} = SubwayParams.validate_info_params(params)
+      assert IO.iodata_to_binary(message) == "Please correct the following errors to proceed: Start time on return trip cannot be same as or later than end time"
+    end
+
     test "it returns ok when origin and destination are on the same line" do
       use_cassette "subway_schedules", custom: true, clear_mock: true, match_requests_on: [:query] do
         params = %{

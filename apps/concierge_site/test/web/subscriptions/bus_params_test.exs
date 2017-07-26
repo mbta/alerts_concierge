@@ -40,6 +40,32 @@ defmodule ConciergeSite.Subscriptions.BusParamsTest do
       assert IO.iodata_to_binary(message) == "Please correct the following errors to proceed: At least one travel day option must be selected."
     end
 
+    test "it returns error messages when the departure end is before departure start" do
+      params = %{
+        "route" => "88 - 0",
+        "departure_start" => "14:00:00",
+        "departure_end" => "12:00:00",
+        "trip_type" => "one_way"
+      }
+
+      {:error, message} = BusParams.validate_info_params(params)
+      assert IO.iodata_to_binary(message) == "Please correct the following errors to proceed: Start time on departure trip cannot be same as or later than end time"
+    end
+
+    test "it returns error messages when the return end is before return start" do
+      params = %{
+        "route" => "88 - 0",
+        "departure_start" => "12:00:00",
+        "departure_end" => "14:00:00",
+        "return_start" => "18:00:00",
+        "return_end" => "17:00:00",
+        "trip_type" => "one_way"
+      }
+
+      {:error, message} = BusParams.validate_info_params(params)
+      assert IO.iodata_to_binary(message) == "Please correct the following errors to proceed: Start time on return trip cannot be same as or later than end time"
+    end
+
     test "it returns ok when route and relevant day(s) are selected" do
       params = %{
         "route" => "88 - 0",

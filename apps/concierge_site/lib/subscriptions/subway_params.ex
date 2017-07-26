@@ -14,6 +14,7 @@ defmodule ConciergeSite.Subscriptions.SubwayParams do
       |> validate_presence_of_destination()
       |> validate_at_least_one_travel_day()
       |> validate_station_pair()
+      |> validate_endtime_after_starttime()
 
     case errors do
       [] ->
@@ -60,6 +61,25 @@ defmodule ConciergeSite.Subscriptions.SubwayParams do
         end
       {:error, message} ->
         {params, [message | errors]}
+    end
+  end
+
+  defp validate_endtime_after_starttime({%{"return_start" => _} = params, errors}) do
+    cond do
+      params["return_end"] <= params["return_start"] ->
+        {params, ["Start time on return trip cannot be same as or later than end time"]}
+      params["departure_end"] <= params["departure_start"] ->
+        {params, ["Start time on departure trip cannot be same as or later than end time"]}
+      true ->
+        {params, errors}
+    end
+  end
+
+  defp validate_endtime_after_starttime({params, errors}) do
+    if params["departure_end"] <= params["departure_start"] do
+      {params, ["Start time on departure trip cannot be same as or later than end time"]}
+    else
+      {params, errors}
     end
   end
 
