@@ -29,8 +29,8 @@ defmodule ConciergeSite.SubwaySubscriptionViewTest do
       assert classes == @active_classes
     end
 
-    test "it returns an empty map when step and page are different" do
-      classes = SubwaySubscriptionView.progress_step_classes(:preferences, :trip_type)
+    test "it returns an empty map when step is ahead of current page" do
+      classes = SubwaySubscriptionView.progress_step_classes(:trip_type, :preferences)
       assert classes == %{}
     end
   end
