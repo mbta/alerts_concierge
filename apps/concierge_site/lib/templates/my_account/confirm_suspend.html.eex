@@ -1,0 +1,11 @@
+<h1>My Account</h1>
+
+<div class="my-account-container">
+  <div class="suspend-account-content">
+    <h2>Suspend Account?</h2>
+    <%= flash_error(@conn) %>
+    <p>Are you sure that you’d like to suspend your account? No further notifications will be sent, and you will be unable to login into your account. Your account may be recovered by initiating a password reset.</p>
+    <%= button("Yes, suspend this account", to: my_account_path(@conn, :delete), method: "delete", class: "btn btn-primary btn-wide") %>
+    <%= link("Cancel", to: my_account_path(@conn, :edit)) %>
+  </div>
+</div>

@@ -44,7 +44,7 @@ defmodule ConciergeSite.MyAccountController do
     end
   end
 
-  def confirm_delete(conn, _params, _user, _claims) do
+  def confirm_suspend(conn, _params, _user, _claims) do
     render conn, "confirm_delete.html"
   end
 end

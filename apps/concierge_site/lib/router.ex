@@ -30,7 +30,7 @@ defmodule ConciergeSite.Router do
   scope "/", ConciergeSite do
     pipe_through [:browser, :browser_auth]
     get "/my-subscriptions", SubscriptionController, :index
-    get "/my-account/confirm_delete", MyAccountController, :confirm_delete
+    get "/my-account/confirm_suspend", MyAccountController, :confirm_suspend
     resources "/my-account", MyAccountController, only: [:edit, :update, :delete], singleton: true do
       resources "/password", PasswordController, only: [:edit, :update], singleton: true
       resources "/vacation", VacationController, only: [:edit, :update, :delete], singleton: true

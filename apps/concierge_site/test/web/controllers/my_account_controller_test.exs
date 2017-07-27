@@ -70,12 +70,12 @@ defmodule ConciergeSite.MyAccountControllerTest do
       refute updated_user.vacation_end == DateTime.from_naive!(~N[9999-12-25 23:59:59], "Etc/UTC")
     end
 
-    test "GET /my-account/confirm_delete", %{conn: conn, user: user} do
+    test "GET /my-account/confirm_suspend", %{conn: conn, user: user} do
       conn = user
       |> guardian_login(conn)
-      |> get(my_account_path(conn, :confirm_delete))
+      |> get(my_account_path(conn, :confirm_suspend))
 
-      assert html_response(conn, 200) =~ "Delete Account?"
+      assert html_response(conn, 200) =~ "Suspend Account?"
     end
   end
 
@@ -90,8 +90,8 @@ defmodule ConciergeSite.MyAccountControllerTest do
       assert html_response(conn, 302) =~ "/login"
     end
 
-    test "GET /my-account/confirm_delete", %{conn: conn} do
-      conn = get(conn, my_account_path(conn, :confirm_delete))
+    test "GET /my-account/confirm_suspend", %{conn: conn} do
+      conn = get(conn, my_account_path(conn, :confirm_suspend))
       assert html_response(conn, 302) =~ "/login"
     end
   end
