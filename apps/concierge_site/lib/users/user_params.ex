@@ -6,6 +6,8 @@ defmodule ConciergeSite.UserParams do
   alias AlertProcessor.Helpers.DateTimeHelper
   alias Calendar.DateTime
 
+  @vacation_date_regex ~r/[0-9]{1,2}\/[0-9]{1,2}\/[0-9]{4}/
+
   @doc """
   Map radio button selections from Update Account page to appropriate user attributes
   """
@@ -38,18 +40,28 @@ defmodule ConciergeSite.UserParams do
   Convert date string values in map of %{vacation_start: MM/DD/YYYY, vacation_end: MM/DD/YYYY }
   to DateTimes
   """
-  @spec convert_vacation_strings_to_datetimes(map) :: map
+  @spec convert_vacation_strings_to_datetimes(map) :: {:ok, map} | :error
   def convert_vacation_strings_to_datetimes(%{"vacation_start" => vacation_start, "vacation_end" => vacation_end}) do
-    [start_month, start_day, start_year] = parse_date_string(vacation_start)
-    [end_month, end_day, end_year] = parse_date_string(vacation_end)
-
-    %{"vacation_start" => DateTime.from_erl!({{start_year, start_month, start_day}, {0, 0, 0}}, "Etc/UTC"),
-      "vacation_end" => DateTime.from_erl!({{end_year, end_month, end_day}, {0, 0, 0}}, "Etc/UTC") }
+    case {parse_date_string(vacation_start), parse_date_string(vacation_end)} do
+      {{:ok, start_datetime}, {:ok, end_datetime}} ->
+        {:ok, %{"vacation_start" => start_datetime, "vacation_end" => end_datetime}}
+      _ ->
+        :error
+    end
   end
 
   defp parse_date_string(date_string) do
-    date_string
-    |> String.split("/")
-    |> Enum.map(&String.to_integer/1)
+    if String.match?(date_string, @vacation_date_regex) do
+      date_string
+      |> String.split("/")
+      |> Enum.map(&String.to_integer/1)
+      |> build_datetime()
+    else
+      {:error, :invalid_date}
+    end
+  end
+
+  defp build_datetime([month, day, year]) do
+    DateTime.from_erl({{year, month, day}, {0, 0, 0}}, "Etc/UTC")
   end
 end

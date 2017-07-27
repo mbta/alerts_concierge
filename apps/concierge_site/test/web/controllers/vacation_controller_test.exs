@@ -47,6 +47,21 @@ defmodule ConciergeSite.VacationControllerTest do
       assert updated_user.vacation_end == nil
     end
 
+    test "PATCH /my-account/vacation with invalid dates", %{conn: conn, user: user} do
+      params = %{"user" => %{
+        "vacation_start" => "09/71/2014",
+        "vacation_end" => "Sep 1 2020"
+      }}
+
+      conn = patch(conn, my_account_vacation_path(conn, :update, params))
+
+      updated_user = Repo.get(User, user.id)
+
+      assert html_response(conn, 200) =~ "Unable to pause alerts. Dates must match MM/DD/YYYY format."
+      assert updated_user.vacation_start == nil
+      assert updated_user.vacation_end == nil
+    end
+
     test "DELETE /my-account/vacation", %{conn: conn} do
       user = insert(:user, vacation_start: ~N[2017-07-01 00:00:00.00], vacation_end: ~N[2117-07-01 00:00:00.00])
       conn = guardian_login(user, conn)
