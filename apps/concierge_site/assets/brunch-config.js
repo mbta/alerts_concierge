@@ -61,6 +61,11 @@ exports.config = {
         includePaths: ["node_modules/bootstrap/scss", "node_modules/font-awesome/scss"],
         precision: 8
       }
+    },
+    postcss: {
+      processors: [
+        require('autoprefixer')(['last 8 version']),
+      ]
     }
   },
 
