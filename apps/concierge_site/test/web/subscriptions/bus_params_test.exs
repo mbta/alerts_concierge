@@ -48,7 +48,7 @@ defmodule ConciergeSite.Subscriptions.BusParamsTest do
         "trip_type" => "one_way"
       }
 
-      {:error, message} = BusParams.validate_info_params(params)
+      {:error, message} = BusParams.validate_info_params(params) 
       assert IO.iodata_to_binary(message) == "Please correct the following errors to proceed: Start time on departure trip cannot be same as or later than end time. End of service day is 03:00AM."
     end
 

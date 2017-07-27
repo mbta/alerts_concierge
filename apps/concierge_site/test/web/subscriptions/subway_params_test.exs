@@ -57,7 +57,7 @@ defmodule ConciergeSite.Subscriptions.SubwayParamsTest do
       assert IO.iodata_to_binary(message) == "Please correct the following errors to proceed: Start time on return trip cannot be same as or later than end time. End of service day is 03:00AM."
     end
 
-    test "it returns ok when the return end is before return start but before 03:00AM" do
+    test "it returns ok when the timeframe is within valid service time range" do
       params = %{
         "departure_start" => "08:45 AM",
         "departure_end" => "09:15 AM",

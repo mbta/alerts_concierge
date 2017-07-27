@@ -66,9 +66,9 @@ defmodule ConciergeSite.Subscriptions.SubwayParams do
 
   defp validate_endtime_after_starttime({%{"return_start" => _} = params, errors}) do
     cond do
-      params["return_end"] <= params["return_start"] and params["return_end"] > "03:00:00" ->
+      outside_service_time_range(params["return_start"], params["return_end"]) ->
         {params, ["Start time on return trip cannot be same as or later than end time. End of service day is 03:00AM."]}
-      params["departure_end"] <= params["departure_start"] and params["departure_end"] > "03:00:00" ->
+      outside_service_time_range(params["departure_start"], params["departure_end"]) ->
         {params, ["Start time on departure trip cannot be same as or later than end time. End of service day is 03:00AM."]}
       true ->
         {params, errors}
@@ -76,10 +76,23 @@ defmodule ConciergeSite.Subscriptions.SubwayParams do
   end
 
   defp validate_endtime_after_starttime({params, errors}) do
-    if params["departure_end"] <= params["departure_start"] and params["departure_end"] > "03:00:00" do
+    if outside_service_time_range(params["departure_start"], params["departure_end"]) do
       {params, ["Start time on departure trip cannot be same as or later than end time. End of service day is 03:00AM."]}
     else
       {params, errors}
+    end
+  end
+
+  defp outside_service_time_range(start_time, end_time) do
+    cond do
+      end_time > start_time and end_time > "00:00:00" and end_time <= "03:00:00" ->
+        false
+      end_time > start_time and start_time >= "03:00:00" ->
+        false
+      start_time >= "03:00:00" and end_time >= "00:00:00" and end_time < "03:00:00" ->
+        false
+      true ->
+        true
     end
   end
 

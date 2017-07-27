@@ -1,3 +1,4 @@
+require IEx
 defmodule ConciergeSite.TimeHelper do
   @moduledoc """
   Time functions for subscription views
@@ -12,11 +13,14 @@ defmodule ConciergeSite.TimeHelper do
   fifteen-minute intervals
   """
   def travel_time_options do
-    0
-    |> Stream.iterate(&(&1 + 900))
-    |> Stream.map(&T.from_second_in_day/1)
-    |> Stream.map((& {Strftime.strftime!(&1, "%I:%M %p"), Strftime.strftime!(&1, "%H:%M:%S")}))
-    |> Enum.take(96)
+    {before_three, after_three} =
+      0
+      |> Stream.iterate(&(&1 + 900))
+      |> Stream.map(&T.from_second_in_day/1)
+      |> Stream.map((& {Strftime.strftime!(&1, "%I:%M %p"), Strftime.strftime!(&1, "%H:%M:%S")}))
+      |> Enum.take(96)
+      |> Enum.split(12)
+    after_three ++ before_three
   end
 
   @doc """
