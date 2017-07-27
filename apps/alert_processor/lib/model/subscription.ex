@@ -1,4 +1,3 @@
-require IEx
 defmodule AlertProcessor.Model.Subscription do
   @moduledoc """
   Set of criteria on which a user wants to be sent alerts.
@@ -73,6 +72,7 @@ defmodule AlertProcessor.Model.Subscription do
     |> validate_inclusion(:alert_priority_type, [:low, :medium, :high])
     |> validate_subset(:relevant_days, @valid_days)
     |> validate_length(:relevant_days, min: 1)
+    |> validate_only_one_amenity
   end
 
   @doc """
@@ -114,6 +114,25 @@ defmodule AlertProcessor.Model.Subscription do
       preload: [:informed_entities]
 
     Repo.all(query)
+  end
+
+  defp validate_only_one_amenity(changeset) do
+    type = get_field(changeset, :type)
+    user_id = get_field(changeset, :user_id)
+    if type == :amenity and AlertProcessor.Model.Subscription.amenity_count(user_id) > 0 do
+      add_error(changeset, :type, "User can only have one amenity")
+    else
+      changeset
+    end
+  end
+
+  def amenity_count(user_id) do
+    query = from s in __MODULE__,
+      where: s.user_id == ^user_id and s.type == "amenity",
+      preload: [:informed_entities]
+
+    query
+    |> Repo.aggregate(:count, :id)
   end
 
   def amenity_subscription(user) do
@@ -245,4 +264,5 @@ defmodule AlertProcessor.Model.Subscription do
        end)
     |> Enum.map(& &1.trip)
   end
+
 end
