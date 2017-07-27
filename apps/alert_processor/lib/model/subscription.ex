@@ -1,3 +1,4 @@
+require IEx
 defmodule AlertProcessor.Model.Subscription do
   @moduledoc """
   Set of criteria on which a user wants to be sent alerts.
@@ -113,6 +114,14 @@ defmodule AlertProcessor.Model.Subscription do
       preload: [:informed_entities]
 
     Repo.all(query)
+  end
+
+  def amenity_subscription(user) do
+    query = from s in __MODULE__,
+      where: s.user_id == ^user.id and s.type == "amenity",
+      preload: [:informed_entities]
+
+    Repo.one(query)
   end
 
   @doc """

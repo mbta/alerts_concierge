@@ -20,8 +20,8 @@ defmodule ConciergeSite.SubscriptionController do
     end
   end
 
-  def new(conn, _params, _user, _claims) do
-    render conn, "new.html"
+  def new(conn, _params, user, _claims) do
+    render conn, "new.html", user_amenity: Subscription.amenity_subscription(user)
   end
 
   def edit(conn, _params, _user, _claims) do
