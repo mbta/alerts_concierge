@@ -1,0 +1,9 @@
+<h1>T-Alerts</h1>
+<div class="suspend-account-content">
+  <h2>Account Suspended</h2>
+  <p>
+    Your account has been suspended. No further notifications will be sent,
+    and you will be unable to login into your account. Your account may be
+    recovered by initiating a password reset.
+  </p>
+<div>

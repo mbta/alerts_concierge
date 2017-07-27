@@ -64,7 +64,7 @@ defmodule ConciergeSite.MyAccountControllerTest do
 
       updated_user = Repo.get(User, user.id)
 
-      assert html_response(conn, 302) =~ "/login/new"
+      assert html_response(conn, 302) =~ "/account_suspended"
       assert updated_user.encrypted_password == ""
       refute is_nil(updated_user.vacation_start)
       refute updated_user.vacation_end == DateTime.from_naive!(~N[9999-12-25 23:59:59], "Etc/UTC")

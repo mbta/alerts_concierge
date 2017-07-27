@@ -35,16 +35,15 @@ defmodule ConciergeSite.MyAccountController do
       {:ok, _} ->
         conn
         |> Guardian.Plug.sign_out()
-        |> put_flash(:info, "Your account has been deleted.")
-        |> redirect(to: session_path(conn, :new))
+        |> redirect(to: page_path(conn, :account_suspended))
       {:error, _} ->
         conn
         |> put_flash(:error, "Your account could not be deleted, please try again.")
-        |> render("confirm_delete.html")
+        |> render("confirm_suspend.html")
     end
   end
 
   def confirm_suspend(conn, _params, _user, _claims) do
-    render conn, "confirm_delete.html"
+    render conn, "confirm_suspend.html"
   end
 end
