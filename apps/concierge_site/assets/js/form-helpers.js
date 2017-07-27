@@ -7,8 +7,8 @@ export default function($) {
 
   $("form.single-submit-form").one("submit", function(event){
     event.preventDefault();
-    $("form.single-submit-form button").prop("disabled", true);
-    $("form.single-submit-form input[type=submit]").prop("disabled", true);
+    $("button", event.target).prop("disabled", true);
+    $("input[type=submit]", event.target).prop("disabled", true);
     event.target.submit();
   });
 }
