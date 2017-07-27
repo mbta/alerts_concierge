@@ -83,19 +83,6 @@ defmodule ConciergeSite.Subscriptions.SubwayParams do
     end
   end
 
-  defp outside_service_time_range(start_time, end_time) do
-    cond do
-      end_time > start_time and end_time > "00:00:00" and end_time <= "03:00:00" ->
-        false
-      end_time > start_time and start_time >= "03:00:00" ->
-        false
-      start_time >= "03:00:00" and end_time >= "00:00:00" and end_time < "03:00:00" ->
-        false
-      true ->
-        true
-    end
-  end
-
   def map_station_schedules(origin, destination) do
     case ApiClient.subway_schedules_union(origin, destination) do
       {:ok, schedule_data, included_data} ->

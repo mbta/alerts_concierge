@@ -56,19 +56,6 @@ defmodule ConciergeSite.Subscriptions.BusParams do
     end
   end
 
-  defp outside_service_time_range(start_time, end_time) do
-    cond do
-      end_time > start_time and end_time > "00:00:00" and end_time <= "03:00:00" ->
-        false
-      end_time > start_time and start_time >= "03:00:00" ->
-        false
-      start_time >= "03:00:00" and end_time >= "00:00:00" and end_time <= "03:00:00" ->
-        false
-      true ->
-        true
-    end
-  end
-
   @doc """
   Transform submitted subscription params for BusMapper
   """
