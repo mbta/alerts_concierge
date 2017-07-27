@@ -290,8 +290,11 @@
 
 .back-link-container {
   position: absolute;
-  bottom: 3rem;
+  bottom: 6rem;
   padding: 0;
+  @include media-breakpoint-down(sm) {
+    bottom: 3rem;
+  }
 }
 
 .subscription-info-back-link {
