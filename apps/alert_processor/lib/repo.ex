@@ -11,8 +11,6 @@ defmodule AlertProcessor.Repo do
   end
 
   defp database_suffix do
-    Mix.env
-    |> Atom.to_string
-    |> String.upcase
+    System.get_env("MIX_ENV") || "DEV"
   end
 end
