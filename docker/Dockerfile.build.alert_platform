@@ -1,0 +1,47 @@
+FROM elixir:1.4
+
+ENV REFRESHED_AT 2017-07-27
+# 2017-07-27 Initial Release
+
+# Configure Git to use HTTPS in order to avoid issues with the internal MBTA network
+RUN git config --global url.https://github.com/.insteadOf git://github.com/
+
+# Install Hex+Rebar
+RUN mix local.hex --force && \
+  mix local.rebar --force
+
+# Install node/npm
+# Instructions from https://nodejs.org/en/download/package-manager/#debian-and-ubuntu-based-linux-distributions
+RUN curl -sL https://deb.nodesource.com/setup_6.x | bash - && \
+    apt-get install -y nodejs && \
+    npm install -g brunch
+
+# Clean up
+RUN apt-get clean
+
+WORKDIR /alert_platform/apps/concierge_site/mail_inlining
+RUN echo "npm install" && \
+  npm install
+
+COPY . /alert_platform
+WORKDIR /alert_platform
+
+RUN elixir touch_templates.exs
+RUN /bin/bash -c "source .env"
+
+RUN export MIX_ENV=prod
+RUN mix deps.get
+RUN mix deps.compile
+
+WORKDIR /alert_platform/apps/concierge_site/assets
+
+RUN npm rebuild node-sass
+RUN npm install && brunch build --production
+
+WORKDIR /alert_platform
+
+RUN MIX_ENV=prod mix compile
+RUN MIX_ENV=prod mix phx.digest
+
+RUN MIX_ENV=prod mix release --profile=alert_processor:prod
+RUN MIX_ENV=prod mix release --profile=concierge_site:prod

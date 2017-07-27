@@ -10,7 +10,7 @@ use Mix.Releases.Config,
     # This sets the default release built by `mix release`
     default_release: :default,
     # This sets the default environment used by `mix release`
-    default_environment: Mix.env()
+    default_environment: :prod
 
 # For a full list of config options for both releases
 # and environments, visit https://hexdocs.pm/distillery/configuration.html
@@ -20,16 +20,10 @@ use Mix.Releases.Config,
 # when building in that environment, this combination of release
 # and environment configuration is called a profile
 
-environment :dev do
-  set dev_mode: true
-  set include_erts: false
-  set cookie: :"{yFccSU4iMib.MMFBQhe2`=hk?9Z{/,B)jJsm>,H*II_U4^[|/{z:~2.=dRV)2JQ"
-end
-
 environment :prod do
   set include_erts: true
   set include_src: false
-  set cookie: :"M:@Sab|O}Wsv)qDe(doxzSar6vV[:.ksO0xPIRwN!nOucS(QI_P:M:qG)*etl&(u"
+  set cookie: System.get_env("APP_COOKIE")
 end
 
 # You may define one or more releases in this file.
@@ -39,14 +33,18 @@ end
 
 release :alert_processor do
   set version: current_version(:alert_processor)
+  set output_dir: "./releases/alert_processor"
   set applications: [
     :alert_processor
   ]
+  plugin Releases.Plugin.LinkConfig
 end
 
 release :concierge_site do
   set version: current_version(:concierge_site)
+  set output_dir: "./releases/concierge_site"
   set applications: [
     :concierge_site
   ]
+  plugin Releases.Plugin.LinkConfig
 end

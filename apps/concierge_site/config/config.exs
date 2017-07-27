@@ -24,7 +24,7 @@ config :concierge_site, temp_state_key: {:system, "TEMP_STATE_KEY", "top_secret_
 config :concierge_site, ConciergeSite.Dissemination.Mailer,
   adapter: Bamboo.LocalAdapter
 
-config :concierge_site, send_from_email: {:system, "SENDER_EMAIL_ADDRESS", "noreply@mbta.com"}
+config :concierge_site, send_from_email: {:system, "SENDER_EMAIL_ADDRESS", "developer@mbta.com"}
 
 # Configures Elixir's Logger
 config :logger, :console,
@@ -38,7 +38,7 @@ config :guardian, Guardian,
   ttl: {60, :minutes},
   allowed_drift: 2000,
   verify_issuer: true,
-  secret_key:  System.get_env("GUARDIAN_AUTH_KEY"),
+  secret_key: {:system, "GUARDIAN_AUTH_KEY"},
   serializer: ConciergeSite.GuardianSerializer,
   hooks: GuardianDb,
   permissions: %{

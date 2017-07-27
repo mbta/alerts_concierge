@@ -2,6 +2,7 @@ use Mix.Config
 
 # Print only warnings and errors during test
 config :logger, level: :warn
+config :alert_processor, database_url: {:system, "DATABASE_URL_TEST", "postgresql://postgres:postgres@localhost:5432/alert_concierge_test"}
 
 # Configure your database
 config :alert_processor, AlertProcessor.Repo,

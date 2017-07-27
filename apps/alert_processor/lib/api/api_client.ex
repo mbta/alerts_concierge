@@ -5,6 +5,7 @@ defmodule AlertProcessor.ApiClient do
   use HTTPoison.Base
 
   alias AlertProcessor.Model.{Route, Trip}
+  alias AlertProcessor.Helpers.ConfigHelper
 
   @doc """
   Helper function that fetches all alerts from
@@ -163,7 +164,10 @@ defmodule AlertProcessor.ApiClient do
   end
 
   defp process_url(url) do
-    "API_URL" |> System.get_env |> URI.merge(url) |> URI.to_string
+    :api_url
+    |> ConfigHelper.get_string()
+    |> URI.merge(url)
+    |> URI.to_string()
   end
 
   defp process_response_body(body) do

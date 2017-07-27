@@ -17,7 +17,7 @@ config :concierge_site, ConciergeSite.Endpoint,
   on_init: {ConciergeSite.Endpoint, :load_from_system_env, []},
   cache_static_manifest: "priv/static/cache_manifest.json",
   http: [port: 4000],
-  url: [host: "localhost", port: 4000],
+  url: [host: "ec2-34-201-4-141.compute-1.amazonaws.com", port: 80],
   server: true,
   root: ".",
   version: Mix.Project.config[:version]
@@ -66,12 +66,12 @@ config :logger, :logentries,
 # If you are doing OTP releases, you need to instruct Phoenix
 # to start the server for all endpoints:
 #
-#     config :phoenix, :serve_endpoints, true
+   # config :phoenix, :serve_endpoints, true
 #
 # Alternatively, you can configure exactly which server to
 # start per endpoint:
 #
-#     config :concierge_site, ConciergeSite.Endpoint, server: true
+    # config :concierge_site, ConciergeSite.Endpoint, server: true
 #
 
 # Finally import the config/prod.secret.exs
