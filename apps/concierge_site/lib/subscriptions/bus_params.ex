@@ -39,18 +39,18 @@ defmodule ConciergeSite.Subscriptions.BusParams do
 
   defp validate_endtime_after_starttime({%{"return_start" => _} = params, errors}) do
     cond do
-      params["return_end"] <= params["return_start"] ->
-        {params, ["Start time on return trip cannot be same as or later than end time"]}
-      params["departure_end"] <= params["departure_start"] ->
-        {params, ["Start time on departure trip cannot be same as or later than end time"]}
+      params["return_end"] <= params["return_start"] and params["return_end"] > "03:00:00" ->
+        {params, ["Start time on return trip cannot be same as or later than end time. End of service day is 03:00AM."]}
+      params["departure_end"] <= params["departure_start"] and params["departure_end"] > "03:00:00" ->
+        {params, ["Start time on departure trip cannot be same as or later than end time. End of service day is 03:00AM."]}
       true ->
         {params, errors}
     end
   end
 
   defp validate_endtime_after_starttime({params, errors}) do
-    if params["departure_end"] <= params["departure_start"] do
-      {params, ["Start time on departure trip cannot be same as or later than end time"]}
+    if params["departure_end"] <= params["departure_start"] and params["departure_end"] > "03:00:00" do
+      {params, ["Start time on departure trip cannot be same as or later than end time. End of service day is 03:00AM."]}
     else
       {params, errors}
     end
