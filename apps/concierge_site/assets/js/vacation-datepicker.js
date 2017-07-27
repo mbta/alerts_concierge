@@ -27,10 +27,11 @@ export default function($) {
   const vacationEndDatepicker =
     flatpickr("#user_vacation_end", vacationEndConfig);
 
-  function openDatepicker(datepicker) {
+  function openDatepicker() {
+    const datepickerId = $(this).data("datepicker");
+    const datepicker = $(datepickerId)[0]._flatpickr;
     datepicker.open();
   }
 
-  $(document).on("click", ".vacation-start-icon", openDatepicker.bind(null, vacationStartDatepicker));
-  $(document).on("click", ".vacation-end-icon", openDatepicker.bind(null, vacationEndDatepicker));
+  $(document).on("click", "[data-datepicker]", openDatepicker)
 }
