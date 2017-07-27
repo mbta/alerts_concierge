@@ -3,6 +3,8 @@
   <h2>Delete Subscription?</h2>
   <%= flash_error(@conn) %>
   <p>Are you sure that you'd like to delete this T-Alert subscription? This action cannot be undone.</p>
-  <%= button("Yes, delete this subscription", to: subscription_path(@conn, :delete, @subscription), method: "delete", class: "btn btn-primary btn-wide") %>
+  <%= form_for @conn, subscription_path(@conn, :delete, @subscription), [as: :subscription, method: :delete, class: "single-submit-form"], fn _f -> %>
+    <%= submit("Yes, delete this subscription", class: "btn btn-primary btn-wide") %>
+  <% end %>
   <%= link("Cancel", to: subscription_path(@conn, :index)) %>
 </div>
