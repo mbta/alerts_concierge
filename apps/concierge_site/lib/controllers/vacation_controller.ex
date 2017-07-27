@@ -2,6 +2,7 @@ defmodule ConciergeSite.VacationController do
   use ConciergeSite.Web, :controller
   use Guardian.Phoenix.Controller
   alias AlertProcessor.{Model, Repo}
+  alias ConciergeSite.UserParams
   alias Model.User
 
   def edit(conn, _params, user, _claims) do
@@ -10,18 +11,25 @@ defmodule ConciergeSite.VacationController do
   end
 
   def update(conn, %{"user" => user_params}, user, _claims) do
-    changeset = User.update_vacation_changeset(user, user_params)
-
-    case Repo.update(changeset) do
-      {:ok, user} ->
-        vacation_start = Calendar.Strftime.strftime!(user.vacation_start, "%B %e, %Y")
-        vacation_end = Calendar.Strftime.strftime!(user.vacation_end, "%B %e, %Y")
-        :ok = User.clear_holding_queue_for_user_id(user.id)
+    case UserParams.convert_vacation_strings_to_datetimes(user_params) do
+      {:ok, vacation_dates} ->
+        changeset = User.update_vacation_changeset(user, vacation_dates)
+        case Repo.update(changeset) do
+          {:ok, user} ->
+            vacation_start = Calendar.Strftime.strftime!(user.vacation_start, "%B %e, %Y")
+            vacation_end = Calendar.Strftime.strftime!(user.vacation_end, "%B %e, %Y")
+            :ok = User.clear_holding_queue_for_user_id(user.id)
+            conn
+            |> put_flash(:info, "Your alerts will be paused between #{vacation_start} and #{vacation_end}.")
+            |> redirect(to: subscription_path(conn, :index))
+          {:error, changeset} ->
+            render conn, "edit.html", user: user, changeset: changeset
+        end
+      :error ->
+        changeset = User.update_vacation_changeset(user, user_params)
         conn
-        |> put_flash(:info, "Your alerts will be paused between #{vacation_start} and #{vacation_end}.")
-        |> redirect(to: subscription_path(conn, :index))
-      {:error, changeset} ->
-        render conn, "edit.html", user: user, changeset: changeset
+        |> put_flash(:error, "Unable to pause alerts. Dates must match MM/DD/YYYY format.")
+        |> render("edit.html", changeset: changeset, user: user)
     end
   end
 

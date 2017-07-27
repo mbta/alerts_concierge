@@ -18,8 +18,8 @@ defmodule ConciergeSite.VacationControllerTest do
       notification = build(:notification, user_id: user.id, send_after: DateTime.from_unix!(4_078_579_247))
       :ok = HoldingQueue.enqueue(notification)
       params = %{"user" => %{
-        "vacation_start" => "2017-09-01T00:00:00+00:00",
-        "vacation_end" => "2035-09-01T00:00:00+00:00"
+        "vacation_start" => "09/01/2017",
+        "vacation_end" => "09/01/2035"
       }}
 
       conn = patch(conn, my_account_vacation_path(conn, :update, params))
@@ -34,8 +34,8 @@ defmodule ConciergeSite.VacationControllerTest do
 
     test "PATCH /my-account/vacation with vacation_end in past", %{conn: conn, user: user} do
       params = %{"user" => %{
-        "vacation_start" => "2014-09-01T00:00:00+00:00",
-        "vacation_end" => "2015-09-01T00:00:00+00:00"
+        "vacation_start" => "09/01/2014",
+        "vacation_end" => "09/01/2015"
       }}
 
       conn = patch(conn, my_account_vacation_path(conn, :update, params))
@@ -43,6 +43,21 @@ defmodule ConciergeSite.VacationControllerTest do
       updated_user = Repo.get(User, user.id)
 
       assert html_response(conn, 200) =~ "Vacation period must end sometime in the future"
+      assert updated_user.vacation_start == nil
+      assert updated_user.vacation_end == nil
+    end
+
+    test "PATCH /my-account/vacation with invalid dates", %{conn: conn, user: user} do
+      params = %{"user" => %{
+        "vacation_start" => "09/71/2014",
+        "vacation_end" => "Sep 1 2020"
+      }}
+
+      conn = patch(conn, my_account_vacation_path(conn, :update, params))
+
+      updated_user = Repo.get(User, user.id)
+
+      assert html_response(conn, 200) =~ "Unable to pause alerts. Dates must match MM/DD/YYYY format."
       assert updated_user.vacation_start == nil
       assert updated_user.vacation_end == nil
     end
@@ -69,8 +84,8 @@ defmodule ConciergeSite.VacationControllerTest do
 
     test "PATCH /my-account/vacation", %{conn: conn} do
       params = %{"user" => %{
-        "vacation_start" => "2035-09-01T00:00:00+00:00",
-        "vacation_end" => "2017-09-01T00:00:00+00:00"
+        "vacation_start" => "09/01/2035",
+        "vacation_end" => "09/01/2017"
       }}
 
       conn = patch(conn, my_account_vacation_path(conn, :update, params))

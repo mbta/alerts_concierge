@@ -79,9 +79,8 @@
   border: 1px solid $brand-primary;
   color: $black;
   cursor: pointer;
-  height: 5rem;
   margin: 0 auto 2rem;
-  padding: 1rem 1rem 5rem;
+  padding: 1rem 5rem 3rem 1rem;
   position: relative;
   text-align: left;
   width: 19rem;
@@ -103,19 +102,10 @@
   top: 1.75rem;
 }
 
-.vacation-datepicker {
-  border: none;
-  bottom: 1rem;
-  display: block;
-  height: 0;
-  margin: 0 auto;
-  padding: 0;
-  position: relative;
-  width: 19rem;
-}
-
-.vacation-start-display,
-.vacation-end-display {
-  font-size: $base-font-size-xxl;
-  color: $brand-primary;
+.vacation-input {
+  border-bottom: 1px solid $brand-primary;
+  border-left: none;
+  border-radius: 0;
+  border-right: none;
+  border-top: none;
 }
