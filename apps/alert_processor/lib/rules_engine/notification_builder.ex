@@ -28,7 +28,7 @@ defmodule AlertProcessor.NotificationBuilder do
         %DateTime{} = time ->
           notification = %Notification{
               alert_id: alert.id,
-              user_id: user.id,
+              user: user,
               header: alert.header,
               service_effect: alert.service_effect,
               description: alert.description,

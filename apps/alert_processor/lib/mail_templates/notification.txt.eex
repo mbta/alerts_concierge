@@ -3,3 +3,5 @@
 <%= notification.header %>
 
 <%= notification.description %>
+
+If you no longer wish to receive any emails please unsubscribe: <%= unsubscribe_url %>

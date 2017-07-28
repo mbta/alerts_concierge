@@ -16,13 +16,14 @@ defmodule AlertProcessor.MailHelper do
   @green "#{@asset_url}/icons/icn_green-line.png"
 
   alias AlertProcessor.Model.{Alert, InformedEntity}
+  alias AlertProcessor.Auth.Token
   require EEx
 
   EEx.function_from_file(
     :def,
     :footer,
     Path.join(@template_dir, "_footer.html.eex"),
-    []
+    [:unsubscribe_url]
   )
 
   EEx.function_from_file(
@@ -74,6 +75,7 @@ defmodule AlertProcessor.MailHelper do
       "Green-C" -> @green
       "Green-D" -> @green
       "Green-E" -> @green
+      nil -> @logo
     end
   end
 
@@ -95,6 +97,15 @@ defmodule AlertProcessor.MailHelper do
       "Green-C" -> "logo-green-line"
       "Green-D" -> "logo-green-line"
       "Green-E" -> "logo-green-line"
+      nil -> "logo-mbta"
     end
+  end
+
+  def unsubscribe_url(user) do
+    {:ok, token, _permissions} = Token.issue(user, [:unsubscribe])
+    domain = AlertProcessor.Helpers.ConfigHelper.get_string(:domain_url)
+    domain <> "/unsubscribe/#{token}"
+    |> URI.parse()
+    |> URI.to_string()
   end
 end

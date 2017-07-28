@@ -27,7 +27,7 @@
       </p>
     </div>
     <center>
-      <%= AlertProcessor.MailHelper.footer %>
+      <%= AlertProcessor.MailHelper.footer(unsubscribe_url) %>
     </center>
 	</body>
 </html>

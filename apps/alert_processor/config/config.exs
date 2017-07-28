@@ -23,6 +23,20 @@ config :alert_processor, AlertProcessor.DigestMailer,
   adapter: Bamboo.LocalAdapter,
   from: {:system, "SENDER_EMAIL_ADDRESS", "noreply@mbta.com"}
 
+config :guardian, Guardian,
+  allowed_algos: ["HS512"],
+  verify_module: Guardian.JWT,
+  issuer: "AlertsConcierge",
+  ttl: {90, :days},
+  allowed_drift: 2000,
+  verify_issuer: true,
+  secret_key:  System.get_env("GUARDIAN_AUTH_KEY"),
+  permissions: %{
+    default: [
+      :reset_password
+    ]
+  }
+
 config :alert_processor, AlertProcessor,
   pool_size: 2,
   overflow: 1
@@ -39,6 +53,8 @@ config :alert_processor, opted_out_list_fetch_interval: {:system, "OPTED_OUT_LIS
 config :alert_processor, service_info_update_interval: {:system, "SERVICE_INFO_UPDATE_INTERVAL", "86400000"}
 config :alert_processor, alert_api_url: {:system, "ALERT_API_URL", "http://s3.amazonaws.com/mbta-realtime-test/alerts_enhanced.json"}
 config :alert_processor, mail_template_dir: Path.join(~w(#{System.cwd!} apps alert_processor generated_templates))
+
+config :alert_processor, domain_url: {:system, "DOMAIN_URL", "http://localhost:3000"}
 
 # Import environment specific config. This must remain at the bottom
 # of this file so it overrides the configuration defined above.

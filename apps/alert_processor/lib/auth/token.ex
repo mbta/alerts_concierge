@@ -1,4 +1,4 @@
-defmodule ConciergeSite.Auth.Token do
+defmodule AlertProcessor.Auth.Token do
   @moduledoc """
   module to generate jwt tokens to use for auto-login links. password reset, etc.
   """

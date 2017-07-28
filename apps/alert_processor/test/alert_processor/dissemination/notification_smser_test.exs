@@ -13,7 +13,7 @@ defmodule AlertProcessor.NotificationSmserTest do
       phone_number: @phone_number
     }
 
-    sms_operation = NotificationSmser.notification_sms(notification, @phone_number)
+    sms_operation = NotificationSmser.notification_sms(notification)
     params = sms_operation.params
 
     assert params["Message"] == @message

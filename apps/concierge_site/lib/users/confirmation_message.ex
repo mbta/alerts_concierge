@@ -16,14 +16,17 @@ defmodule ConciergeSite.ConfirmationMessage do
   end
 
   defp send_email_confirmation(user) do
-    user.email
+    user
     |> Email.confirmation_email()
     |> Mailer.deliver_later
   end
 
   defp send_sms_confirmation(phone_number) do
-    %Notification{header: "You have been subscribed to MBTA alerts. To stop receiving SMS alerts, reply STOP. Data rates may apply."}
-    |> NotificationSmser.notification_sms(phone_number)
+    %Notification{
+      phone_number: phone_number,
+      header: "You have been subscribed to MBTA alerts. To stop receiving SMS alerts, reply STOP. Data rates may apply."
+    }
+    |> NotificationSmser.notification_sms()
     |> AwsClient.request()
   end
 end

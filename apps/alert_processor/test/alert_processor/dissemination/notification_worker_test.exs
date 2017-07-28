@@ -1,8 +1,8 @@
 defmodule AlertProcessor.NotificationWorkerTest do
   use AlertProcessor.DataCase
   use Bamboo.Test, shared: true
-
-  alias AlertProcessor.{Model, NotificationMailer, NotificationWorker, SendingQueue}
+  import AlertProcessor.Factory
+  alias AlertProcessor.{Model, NotificationWorker, SendingQueue}
   alias Model.{Alert, InformedEntity, Notification}
 
   @alert %Alert{
@@ -14,11 +14,13 @@ defmodule AlertProcessor.NotificationWorkerTest do
 
   setup_all do
     email = "test@example.com"
+    email2 = "test2@example.com"
     body = "This is a test alert"
     body_2 = "Another alert"
     status = "unsent"
 
     notification = %Notification{
+      user: build(:user),
       header: body,
       email: email,
       phone_number: nil,
@@ -28,8 +30,9 @@ defmodule AlertProcessor.NotificationWorkerTest do
     }
 
     notification_2 = %Notification{
+      user: build(:user),
       header: body_2,
-      email: email,
+      email: email2,
       phone_number: nil,
       send_after: DateTime.utc_now(),
       status: status,
@@ -44,20 +47,20 @@ defmodule AlertProcessor.NotificationWorkerTest do
     NotificationWorker.start_link([])
     SendingQueue.enqueue(notification)
 
-    assert_delivered_email NotificationMailer.notification_email(notification, email)
+    assert_delivered_with(to: [{nil, email}])
   end
 
-  test "Worker runs on interval jobs from sending queue to notification", %{notification: notification, notification_2: notification_2, email: email} do
+  test "Worker runs on interval jobs from sending queue to notification", %{notification: notification, notification_2: notification_2} do
     SendingQueue.start_link()
     NotificationWorker.start_link([])
     SendingQueue.enqueue(notification)
 
-    assert_delivered_email NotificationMailer.notification_email(notification, email)
+    assert_delivered_with(to: [{nil, notification.email}])
     assert SendingQueue.pop == :error
 
     SendingQueue.enqueue(notification_2)
     :timer.sleep(101)
 
-    assert_delivered_email NotificationMailer.notification_email(notification_2, email)
+    assert_delivered_with(to: [{nil, notification_2.email}])
   end
 end

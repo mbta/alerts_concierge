@@ -1,8 +1,8 @@
 defmodule AlertProcessor.DispatcherTest do
-  use ExUnit.Case
+  use AlertProcessor.DataCase
   use Bamboo.Test
-
-  alias AlertProcessor.{Dispatcher, Model, NotificationMailer}
+  import AlertProcessor.Factory
+  alias AlertProcessor.{Dispatcher, Model}
   alias Model.{Alert, InformedEntity, Notification}
 
   @email "test@example.com"
@@ -17,6 +17,7 @@ defmodule AlertProcessor.DispatcherTest do
 
   test "notification_email/1 requires a header" do
     notification = %Notification{
+      user: build(:user, email: @email, phone_number: @phone_number),
       header: nil,
       email: @email,
       phone_number: @phone_number
@@ -28,6 +29,7 @@ defmodule AlertProcessor.DispatcherTest do
 
   test "notification_email/1 requires an email or phone number" do
     notification = %Notification{
+      user: build(:user, email: @email, phone_number: @phone_number),
       header: @body,
       email: nil,
       phone_number: nil
@@ -38,6 +40,7 @@ defmodule AlertProcessor.DispatcherTest do
 
   test "notification_email/1 can send sms" do
     notification = %Notification{
+      user: build(:user, email: @email, phone_number: @phone_number),
       header: @body,
       email: nil,
       phone_number: @phone_number
@@ -49,6 +52,7 @@ defmodule AlertProcessor.DispatcherTest do
 
   test "notification_email/1 can send email" do
     notification = %Notification{
+      user: build(:user, email: @email, phone_number: nil),
       header: @body,
       email: @email,
       phone_number: nil,
@@ -56,18 +60,19 @@ defmodule AlertProcessor.DispatcherTest do
     }
 
     {:ok, _} = Dispatcher.send_notification(notification)
-    assert_delivered_email NotificationMailer.notification_email(notification, @email)
+    assert_delivered_with(to: [{nil, @email}])
   end
 
   test "notification_email/1 cannot send both sms and email" do
     notification = %Notification{
+      user: build(:user, email: @email, phone_number: @phone_number),
       header: @body,
       email: @email,
       phone_number: @phone_number,
       alert: @alert
     }
     {:ok, _} = Dispatcher.send_notification(notification)
-    refute_delivered_email NotificationMailer.notification_email(notification, @email)
+    assert_no_emails_delivered()
     assert_received :publish
   end
 end
