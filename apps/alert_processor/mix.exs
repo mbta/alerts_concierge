@@ -10,7 +10,7 @@ defmodule AlertProcessor.Mixfile do
      lockfile: "../../mix.lock",
      elixir: "~> 1.4",
      elixirc_paths: elixirc_paths(Mix.env),
-     compilers: [:gettext, :yecc, :leex, :erlang, :elixir, :xref, :alert_mail, :app],
+     compilers: [:gettext] ++ Mix.compilers,
      build_embedded: Mix.env == :prod,
      start_permanent: Mix.env == :prod,
      dialyzer: [plt_add_deps: :transitive],

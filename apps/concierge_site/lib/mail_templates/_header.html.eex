@@ -1,7 +1,7 @@
 <div class="header">
   <img
     class="header-image"
-    src="<%= AlertProcessor.MailHelper.mbta_logo() %>"
+    src="<%= ConciergeSite.Helpers.MailHelper.mbta_logo() %>"
     alt="Logo of the Massachusetts Bay Transportation Authority"
     height="48px"
   >

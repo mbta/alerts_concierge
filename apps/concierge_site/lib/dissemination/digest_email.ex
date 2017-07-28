@@ -6,7 +6,7 @@ defmodule ConciergeSite.Dissemination.DigestEmail do
   require EEx
 
   @from ConfigHelper.get_string(:send_from_email, :concierge_site)
-  @template_dir Application.get_env(:alert_processor, :mail_template_dir)
+  @template_dir Application.get_env(:concierge_site, :mail_template_dir)
 
   EEx.function_from_file(
     :def,
@@ -16,7 +16,7 @@ defmodule ConciergeSite.Dissemination.DigestEmail do
   EEx.function_from_file(
     :def,
     :text_email,
-    Path.join(~w(#{System.cwd!} .. .. apps alert_processor lib mail_templates digest.txt.eex)),
+    Path.join(~w(#{System.cwd!} lib mail_templates digest.txt.eex)),
     [:digest_date_groups])
 
   @doc "digest_email/1 takes a digest and builds a message to a user"

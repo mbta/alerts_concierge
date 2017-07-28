@@ -19,7 +19,3 @@ config :alert_processor, :ex_aws, ExAws.Mock
 config :alert_processor, :alert_parser, AlertProcessor.AlertParserMock
 
 config :alert_processor, :mailer, AlertProcessor.MailerMock
-
-config :alert_processor,
-  asset_url: "https://example.com/assets"
-

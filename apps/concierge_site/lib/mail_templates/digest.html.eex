@@ -14,7 +14,7 @@
     </style>
   </head>
   <body leftmargin="0" marginwidth="0" topmargin="0" marginheight="0" offset="0">
-    <%= AlertProcessor.MailHelper.header %>
+    <%= ConciergeSite.Helpers.MailHelper.header() %>
 
     <h1 class="digest-title">
       T-Alerts: Weekly Digest
@@ -30,8 +30,8 @@
             <table class="digest-group-alert">
               <tr>
                 <td class="alert-logo">
-                  <img src="<%= AlertProcessor.MailHelper.logo_for_alert(alert) %>"
-                   alt="<%= AlertProcessor.MailHelper.alt_text_for_alert(alert) %>">
+                  <img src="<%= ConciergeSite.Helpers.MailHelper.logo_for_alert(alert) %>"
+                   alt="<%= ConciergeSite.Helpers.MailHelper.alt_text_for_alert(alert) %>">
                 </td>
                 <td class="alert-details">
                   <p class="alert-service-effect">
@@ -65,7 +65,7 @@
         </div>
       </div>
 
-      <%= AlertProcessor.MailHelper.footer %>
+      <%= ConciergeSite.Helpers.MailHelper.footer() %>
     </center>
 	</body>
 </html>

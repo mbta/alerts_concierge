@@ -1,6 +1,6 @@
 defmodule TouchTemplates do
-  @template_dir Path.join(~w(#{System.cwd!} apps alert_processor lib mail_templates))
-  @output_dir Path.join(~w(#{System.cwd!} apps alert_processor generated_templates))
+  @template_dir Path.join(~w(#{System.cwd!} apps concierge_site lib mail_templates))
+  @output_dir Path.join(~w(#{System.cwd!} apps concierge_site generated_templates))
 
   def run!() do
     IO.inspect "Touching generated_templates"
