@@ -9,8 +9,8 @@ defmodule ConciergeSite.Dissemination.MailerInterface do
 
   @lookup_tuple {:via, Registry, {:mailer_process_registry, :mailer}}
 
-  def start_link() do
-    GenServer.start_link(__MODULE__, [], name: @lookup_tuple)
+  def start_link(opts \\ [name: @lookup_tuple]) do
+    GenServer.start_link(__MODULE__, [], opts)
   end
 
   def init(_) do
