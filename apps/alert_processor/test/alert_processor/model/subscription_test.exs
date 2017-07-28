@@ -3,7 +3,7 @@ defmodule AlertProcessor.Model.SubscriptionTest do
   use AlertProcessor.DataCase
   import AlertProcessor.Factory
 
-  alias AlertProcessor.Model.Subscription
+  alias AlertProcessor.Model.{Subscription, InformedEntity}
 
   @base_attrs %{
     alert_priority_type: :low,
@@ -47,6 +47,26 @@ defmodule AlertProcessor.Model.SubscriptionTest do
 
   test "create_changeset/2 validates alert priority type", %{valid_attrs: valid_attrs} do
     attrs = Map.put(valid_attrs, :alert_priority_type, :garbage)
+    changeset = Subscription.create_changeset(%Subscription{}, attrs)
+
+    refute changeset.valid?
+  end
+
+  test "create_changeset/2 validates that the user has at most one amenity", %{user: user, valid_attrs: valid_attrs} do
+    amenity_entity = [
+      %InformedEntity{route_type: 4, facility_type: :elevator, route: "Green"}
+    ]
+
+    :subscription
+    |> build(user: user)
+    |> weekday_subscription()
+    |> amenity_subscription()
+    |> Repo.preload(:informed_entities)
+    |> Ecto.Changeset.change()
+    |> Ecto.Changeset.put_assoc(:informed_entities, amenity_entity)
+    |> Repo.insert()
+
+    attrs = Map.put(valid_attrs, :type, :amenity)
     changeset = Subscription.create_changeset(%Subscription{}, attrs)
 
     refute changeset.valid?
