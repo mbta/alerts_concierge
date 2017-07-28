@@ -1,6 +1,6 @@
-defmodule ConciergeSite.EmailTest do
+defmodule ConciergeSite.Dissemination.EmailTest do
   use ConciergeSite.ConnCase
-  alias ConciergeSite.Email
+  alias ConciergeSite.Dissemination.Email
 
   test "password reset email" do
     password_reset = insert(:password_reset)

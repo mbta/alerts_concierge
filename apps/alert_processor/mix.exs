@@ -24,8 +24,6 @@ defmodule AlertProcessor.Mixfile do
   def application do
     [mod: {AlertProcessor, []},
       extra_applications: [
-        :bamboo,
-        :bamboo_smtp,
         :calendar,
         :comeonin,
         :sweet_xml, # Must come before ex_aws
@@ -51,8 +49,6 @@ defmodule AlertProcessor.Mixfile do
   # Type `mix help deps` for examples and options.
   defp deps do
     [
-      {:bamboo, "~> 0.8"},
-      {:bamboo_smtp, "~> 1.3.0"},
       {:calendar, "~> 0.16.1"},
       {:comeonin, "~> 3.0"},
       {:cowboy, "~> 1.0"},

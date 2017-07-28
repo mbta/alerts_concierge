@@ -21,11 +21,10 @@ config :concierge_site, ConciergeSite.Endpoint,
 config :concierge_site, temp_state_key: {:system, "TEMP_STATE_KEY", "top_secret_temp_state_key"}
 
 # Bamboo config for emails
-config :concierge_site, ConciergeSite.Mailer,
+config :concierge_site, ConciergeSite.Dissemination.Mailer,
   adapter: Bamboo.LocalAdapter
 
-config :concierge_site, ConciergeSite.Email,
-  from: {:system, "SENDER_EMAIL_ADDRESS", "noreply@mbta.com"}
+config :concierge_site, send_from_email: {:system, "SENDER_EMAIL_ADDRESS", "noreply@mbta.com"}
 
 # Configures Elixir's Logger
 config :logger, :console,
