@@ -119,7 +119,6 @@ defmodule AlertProcessor.Model.Subscription do
   defp validate_only_one_amenity(changeset) do
     type = get_field(changeset, :type)
     user_id = get_field(changeset, :user_id)
-
     if type == :amenity and AlertProcessor.Model.Subscription.amenity_count(user_id) > 0 do
       add_error(changeset, :type, "User can only have one amenity")
     else
