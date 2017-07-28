@@ -35,6 +35,7 @@ defmodule AlertProcessor.Supervisor do
     ]
 
     children = [
+      supervisor(Registry, [:unique, :mailer_process_registry]),
       supervisor(AlertProcessor.Repo, []),
       worker(Logger.Backend.Logentries.Output.SslKeepOpen.Server, []),
       worker(ServiceInfoCache, []),
