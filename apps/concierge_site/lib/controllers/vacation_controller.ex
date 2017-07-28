@@ -13,7 +13,7 @@ defmodule ConciergeSite.VacationController do
     case UserParams.convert_vacation_strings_to_datetimes(user_params) do
       {:ok, vacation_dates} ->
         case User.update_vacation(user, vacation_dates) do
-          {:ok, %{model: user}} ->
+          {:ok, user} ->
             vacation_start = Calendar.Strftime.strftime!(user.vacation_start, "%B %e, %Y")
             vacation_end = Calendar.Strftime.strftime!(user.vacation_end, "%B %e, %Y")
             :ok = User.clear_holding_queue_for_user_id(user.id)
@@ -33,7 +33,7 @@ defmodule ConciergeSite.VacationController do
 
   def delete(conn, _params, user, _claims) do
     with {:ok, _} <- User.opt_in_phone_number(user),
-      {:ok, %{model: _user}} <- User.remove_vacation(user) do
+      {:ok, _user} <- User.remove_vacation(user) do
         conn
         |> put_flash(:info, "Your alerts are no longer paused.")
         |> redirect(to: subscription_path(conn, :index))

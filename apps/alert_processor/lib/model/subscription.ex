@@ -90,10 +90,13 @@ defmodule AlertProcessor.Model.Subscription do
     struct
     |> update_changeset(params)
     |> PaperTrail.update()
+    |> normalize_papertrail_result()
   end
 
   def delete_subscription(struct) do
-    PaperTrail.delete(struct)
+    struct
+    |> PaperTrail.delete()
+    |> normalize_papertrail_result()
   end
 
   @doc """
@@ -276,4 +279,7 @@ defmodule AlertProcessor.Model.Subscription do
        end)
     |> Enum.map(& &1.trip)
   end
+
+  defp normalize_papertrail_result({:ok, %{model: subscription}}), do: {:ok, subscription}
+  defp normalize_papertrail_result(result), do: result
 end

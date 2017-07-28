@@ -80,6 +80,7 @@ defmodule AlertProcessor.Model.User do
     struct
     |> update_account_changeset(params)
     |> PaperTrail.update()
+    |> normalize_papertrail_result()
   end
 
   @doc """
@@ -95,6 +96,7 @@ defmodule AlertProcessor.Model.User do
     struct
     |> disable_account_changeset()
     |> PaperTrail.update()
+    |> normalize_papertrail_result()
   end
 
   def disable_account_changeset(struct) do
@@ -139,12 +141,14 @@ defmodule AlertProcessor.Model.User do
     user
     |> update_vacation_changeset(params)
     |> PaperTrail.update()
+    |> normalize_papertrail_result()
   end
 
   def remove_vacation(user) do
     user
     |> remove_vacation_changeset()
     |> PaperTrail.update()
+    |> normalize_papertrail_result()
   end
 
   @spec update_vacation_changeset(__MODULE__.t, map) :: Ecto.Changeset.t
@@ -243,10 +247,14 @@ defmodule AlertProcessor.Model.User do
     user
     |> update_vacation_changeset(%{vacation_start: DateTime.utc_now(), vacation_end: DateTime.from_naive!(~N[9999-12-25 23:59:59], "Etc/UTC")})
     |> PaperTrail.update()
+    |> normalize_papertrail_result()
   end
 
   @spec clear_holding_queue_for_user_id(id) :: :ok
   def clear_holding_queue_for_user_id(user_id) do
     HoldingQueue.remove_user_notifications(user_id)
   end
+
+  defp normalize_papertrail_result({:ok, %{model: user}}), do: {:ok, user}
+  defp normalize_papertrail_result(result), do: result
 end

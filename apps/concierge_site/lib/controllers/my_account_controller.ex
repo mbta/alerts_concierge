@@ -13,7 +13,7 @@ defmodule ConciergeSite.MyAccountController do
     params = UserParams.prepare_for_update_changeset(user_params)
 
     case User.update_account(user, params) do
-      {:ok, %{model: user}} ->
+      {:ok, user} ->
         :ok = User.clear_holding_queue_for_user_id(user.id)
         conn
         |> put_flash(:info, "Account Preferences updated.")
@@ -27,7 +27,7 @@ defmodule ConciergeSite.MyAccountController do
 
   def delete(conn, _params, user, _claims) do
     case User.disable_account(user) do
-      {:ok, %{model: _user}} ->
+      {:ok, _} ->
         conn
         |> Guardian.Plug.sign_out()
         |> redirect(to: page_path(conn, :account_disabled))
