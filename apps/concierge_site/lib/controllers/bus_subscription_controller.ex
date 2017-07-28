@@ -17,9 +17,8 @@ defmodule ConciergeSite.BusSubscriptionController do
   def update(conn, %{"id" => id, "subscription" => subscription_params}, user, _claims) do
     subscription = Subscription.one_for_user!(id, user.id)
     params = SubscriptionParams.prepare_for_update_changeset(subscription_params)
-    changeset = Subscription.update_changeset(subscription, params)
 
-    case PaperTrail.update(changeset) do
+    case Subscription.update_subscription(subscription, params) do
       {:ok, _subscription} ->
         :ok = User.clear_holding_queue_for_user_id(user.id)
         conn

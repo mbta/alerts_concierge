@@ -76,6 +76,12 @@ defmodule AlertProcessor.Model.User do
     |> hash_password()
   end
 
+  def update_account(struct, params) do
+    struct
+    |> update_account_changeset(params)
+    |> PaperTrail.update()
+  end
+
   @doc """
   Builds changeset for updating an existing user account
   """
@@ -83,6 +89,12 @@ defmodule AlertProcessor.Model.User do
     struct
     |> cast(params, ~w(phone_number do_not_disturb_start do_not_disturb_end amber_alert_opt_in))
     |> validate_format(:phone_number, ~r/^[0-9]{10}$/, message: "Phone number is not in a valid format.")
+  end
+
+  def disable_account(struct) do
+    struct
+    |> disable_account_changeset()
+    |> PaperTrail.update()
   end
 
   def disable_account_changeset(struct) do
@@ -121,6 +133,18 @@ defmodule AlertProcessor.Model.User do
     |> validate_length(:password, min: 6, message: "Password must be at least six characters long.")
     |> validate_format(:password, ~r/[^a-zA-Z\s:]{1}/, message: "Password must contain one number or special character (? & % $ # !, etc).")
     |> hash_password()
+  end
+
+  def update_vacation(user, params) do
+    user
+    |> update_vacation_changeset(params)
+    |> PaperTrail.update()
+  end
+
+  def remove_vacation(user) do
+    user
+    |> remove_vacation_changeset()
+    |> PaperTrail.update()
   end
 
   @spec update_vacation_changeset(__MODULE__.t, map) :: Ecto.Changeset.t
@@ -218,7 +242,7 @@ defmodule AlertProcessor.Model.User do
   def put_user_on_indefinite_vacation(user) do
     user
     |> update_vacation_changeset(%{vacation_start: DateTime.utc_now(), vacation_end: DateTime.from_naive!(~N[9999-12-25 23:59:59], "Etc/UTC")})
-    |> Repo.update()
+    |> PaperTrail.update()
   end
 
   @spec clear_holding_queue_for_user_id(id) :: :ok

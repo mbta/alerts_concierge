@@ -11,9 +11,8 @@ defmodule ConciergeSite.MyAccountController do
 
   def update(conn, %{"user" => user_params}, user, _claims) do
     params = UserParams.prepare_for_update_changeset(user_params)
-    changeset = User.update_account_changeset(user, params)
 
-    case PaperTrail.update(changeset) do
+    case User.update_account(user, params) do
       {:ok, %{model: user}} ->
         :ok = User.clear_holding_queue_for_user_id(user.id)
         conn
@@ -27,9 +26,7 @@ defmodule ConciergeSite.MyAccountController do
   end
 
   def delete(conn, _params, user, _claims) do
-    changeset = User.disable_account_changeset(user)
-
-    case PaperTrail.update(changeset) do
+    case User.disable_account(user) do
       {:ok, %{model: _user}} ->
         conn
         |> Guardian.Plug.sign_out()

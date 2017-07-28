@@ -86,6 +86,16 @@ defmodule AlertProcessor.Model.Subscription do
     |> validate_length(:relevant_days, min: 1)
   end
 
+  def update_subscription(struct, params) do
+    struct
+    |> update_changeset(params)
+    |> PaperTrail.update()
+  end
+
+  def delete_subscription(struct) do
+    PaperTrail.delete(struct)
+  end
+
   @doc """
   return the numeric value for a subscription's alert priority type.
   the higher the number, the fewer amount of alerts should be received.

@@ -7,7 +7,7 @@ defmodule Repo.Migrations.AddVersions do
       add :item_type,    :string, null: false
       add :item_id,      :binary_id
       add :item_changes, :map, null: false
-      add :originator_id, references(:users, type: :binary_id) # you can change :users to your own foreign key constraint
+      add :originator_id, references(:users, type: :binary_id)
       add :origin,       :string, size: 50
       add :meta,         :map
 
