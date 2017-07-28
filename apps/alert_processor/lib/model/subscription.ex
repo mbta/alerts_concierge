@@ -264,5 +264,4 @@ defmodule AlertProcessor.Model.Subscription do
        end)
     |> Enum.map(& &1.trip)
   end
-
 end

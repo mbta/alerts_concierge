@@ -21,7 +21,12 @@ defmodule ConciergeSite.SubscriptionController do
   end
 
   def new(conn, _params, user, _claims) do
-    render conn, "new.html", user_amenity: Subscription.amenity_subscription(user)
+    {amenity_name, amenity_url} = if amenity_sub = Subscription.amenity_subscription(user) do
+      {"Edit Station Amenities (elevators & escalators)", amenity_subscription_path(conn, :edit, amenity_sub)}
+    else
+      {"Station Amenities (elevators & escalators)", amenity_subscription_path(conn, :new)}
+    end
+    render conn, amenity_url: amenity_url, amenity_name: amenity_name
   end
 
   def edit(conn, _params, _user, _claims) do

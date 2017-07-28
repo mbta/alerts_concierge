@@ -28,19 +28,11 @@
                icon_src: static_url(@conn, "/images/ferry.svg"),
                name: "Ferry" %>
 
-    <%= if @user_amenity do %>
-      <%= render "_service_option.html",
-                link_to: amenity_subscription_path(@conn, :edit, @user_amenity),
-                icon_class: "mbta-icon",
-                icon_src: static_url(@conn, "/images/m-b-t-a.svg"),
-                name: "Edit Station Amenities (elevators & escalators)" %>
-    <% else %>
-      <%= render "_service_option.html",
-                link_to: amenity_subscription_path(@conn, :new),
-                icon_class: "mbta-icon",
-                icon_src: static_url(@conn, "/images/m-b-t-a.svg"),
-                name: "Station Amenities (elevators & escalators)" %>
-    <% end %>
+    <%= render "_service_option.html",
+              link_to: @amenity_url,
+              icon_class: "mbta-icon",
+              icon_src: static_url(@conn, "/images/m-b-t-a.svg"),
+              name: @amenity_name %>
 
   </div>
 </div>
