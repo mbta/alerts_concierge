@@ -1,7 +1,8 @@
-defmodule AlertProcessor.MailHelperTest do
+defmodule ConcerigeSite.Helpers.MailHelperTest do
   @moduledoc false
   use ExUnit.Case
-  alias AlertProcessor.{MailHelper, Model.Alert, Model.InformedEntity}
+  alias ConciergeSite.Helpers.MailHelper
+  alias AlertProcessor.{Model.Alert, Model.InformedEntity}
 
   @alert %Alert{
     id: "1",

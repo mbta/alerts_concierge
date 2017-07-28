@@ -1,10 +1,10 @@
-defmodule AlertProcessor.MailHelper do
+defmodule ConciergeSite.Helpers.MailHelper do
   @moduledoc """
   Functions to use in rendering dynamically generated properties on
   digest emails
   """
-  @template_dir Application.get_env(:alert_processor, :mail_template_dir)
-  @asset_url Application.get_env(:alert_processor, :asset_url)
+  @template_dir Application.get_env(:concierge_site, :mail_template_dir)
+  @asset_url Application.get_env(:concierge_site, :asset_url)
   @commuter_rail "#{@asset_url}/icons/icn_commuter.png"
   @bus "#{@asset_url}/icons/icn_bus.png"
   @ferry "#{@asset_url}/icons/icn_ferry.png"
