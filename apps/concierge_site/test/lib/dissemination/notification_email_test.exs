@@ -1,27 +1,28 @@
-defmodule AlertProcessor.NotificationMailerTest do
+defmodule ConciergeSite.Dissemination.NotificationEmailTest do
   @moduledoc false
   use ExUnit.Case, async: false
   use Bamboo.Test, shared: true
 
-  alias AlertProcessor.{Model, NotificationMailer}
-  alias Model.{Alert, InformedEntity, Notification}
+  alias ConciergeSite.Dissemination.NotificationEmail
+  alias AlertProcessor.Model.{Alert, InformedEntity, Notification}
 
   @alert %Alert{
     id: "1",
     informed_entities: [%InformedEntity{route_type: 1, route: "Red"}]
   }
 
+  @email "test@test.com"
+
   @notification %Notification{
+    email: @email,
     service_effect: "Red line delay",
     header: "Red line inbound from Alewife station closure",
     description: "There is a fire in at south station so it is closed",
     alert: @alert
   }
 
-  @email "test@test.com"
-
   test "text_email/1 has all necessary content" do
-    email = NotificationMailer.notification_email(@notification, @email)
+    email = NotificationEmail.notification_email(@notification)
     body = email.text_body
 
     assert email.to == @email
@@ -31,7 +32,7 @@ defmodule AlertProcessor.NotificationMailerTest do
  end
 
   test "html_email/1 has all content and link for alerts page" do
-    email = NotificationMailer.notification_email(@notification, @email)
+    email = NotificationEmail.notification_email(@notification)
     body = email.html_body
 
     assert email.to == @email

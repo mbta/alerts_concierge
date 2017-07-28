@@ -9,13 +9,6 @@ config :alert_processor, AlertProcessor.Repo,
 
   pool: Ecto.Adapters.SQL.Sandbox
 
-# Bamboo
-config :alert_processor, AlertProcessor.NotificationMailer,
-  adapter: Bamboo.TestAdapter
-
-config :alert_processor, AlertProcessor.DigestMailer,
-  adapter: Bamboo.TestAdapter
-
 config :alert_processor, AlertProcessor.HoldingQueue,
   filter_interval: 100 # 0.1 sec
 
@@ -24,6 +17,8 @@ config :alert_processor, :ex_aws, ExAws.Mock
 
 # Config for alert parser
 config :alert_processor, :alert_parser, AlertProcessor.AlertParserMock
+
+config :alert_processor, :mailer, AlertProcessor.MailerMock
 
 config :alert_processor,
   asset_url: "https://example.com/assets"

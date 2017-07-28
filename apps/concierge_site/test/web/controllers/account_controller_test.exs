@@ -1,7 +1,7 @@
 defmodule ConciergeSite.AccountControllerTest do
   use ConciergeSite.ConnCase
   use Bamboo.Test
-  alias ConciergeSite.Email
+  alias ConciergeSite.Dissemination.Email
 
   describe "valid params" do
     test "creates user", %{conn: conn} do

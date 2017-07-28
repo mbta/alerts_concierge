@@ -1,10 +1,10 @@
-defmodule AlertProcessor.DigestMailerTest do
+defmodule ConciergeSite.Dissemination.DigestEmailTest do
   @moduledoc false
   use ExUnit.Case, async: false
   use Bamboo.Test, shared: true
 
-  alias AlertProcessor.{DigestMailer, Model}
-  alias Model.{Alert, Digest, DigestDateGroup, DigestMessage, InformedEntity, User}
+  alias ConciergeSite.Dissemination.DigestEmail
+  alias AlertProcessor.Model.{Alert, Digest, DigestDateGroup, DigestMessage, InformedEntity, User}
   alias Calendar.DateTime, as: DT
 
   @now Calendar.DateTime.now!("America/New_York")
@@ -41,7 +41,7 @@ defmodule AlertProcessor.DigestMailerTest do
     user = %User{email: "abc@123.com"}
     digest = %Digest{user: user, alerts: [@alert], digest_date_group: @ddg}
     message = DigestMessage.from_digest(digest)
-    email = DigestMailer.digest_email(message)
+    email = DigestEmail.digest_email(message)
     body = email.text_body
 
     assert email.to == user.email
@@ -55,7 +55,7 @@ defmodule AlertProcessor.DigestMailerTest do
     user = %User{email: "abc@123.com"}
     digest = %Digest{user: user, alerts: [@alert], digest_date_group: @ddg}
     message = DigestMessage.from_digest(digest)
-    email = DigestMailer.digest_email(message)
+    email = DigestEmail.digest_email(message)
     body = email.html_body
 
     assert email.to == user.email

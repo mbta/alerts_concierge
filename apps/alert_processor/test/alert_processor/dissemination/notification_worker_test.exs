@@ -2,7 +2,7 @@ defmodule AlertProcessor.NotificationWorkerTest do
   use AlertProcessor.DataCase
   use Bamboo.Test, shared: true
 
-  alias AlertProcessor.{Model, NotificationMailer, NotificationWorker, SendingQueue}
+  alias AlertProcessor.{Model, NotificationWorker, SendingQueue}
   alias Model.{Alert, InformedEntity, Notification}
 
   @alert %Alert{
@@ -36,28 +36,29 @@ defmodule AlertProcessor.NotificationWorkerTest do
       alert: @alert
     }
 
-    {:ok, notification: notification, notification_2: notification_2, email: email}
+    {:ok, notification: notification, notification_2: notification_2}
   end
 
-  test "Worker passes jobs from sending queue to notificationr", %{notification: notification,  email: email} do
+  test "Worker passes jobs from sending queue to notificationr", %{notification: notification} do
     SendingQueue.start_link()
-    NotificationWorker.start_link([])
-    SendingQueue.enqueue(notification)
+    {:ok, pid} = NotificationWorker.start_link([name: :notification_worker_test])
+    :erlang.trace(pid, true, [:receive])
 
-    assert_delivered_email NotificationMailer.notification_email(notification, email)
+    SendingQueue.enqueue(notification)
+    :timer.sleep(101)
+    assert_received {:trace, ^pid, :receive, {:sent_notification_email, ^notification}}
   end
 
-  test "Worker runs on interval jobs from sending queue to notification", %{notification: notification, notification_2: notification_2, email: email} do
+  test "Worker runs on interval jobs from sending queue to notification", %{notification: notification, notification_2: notification_2} do
     SendingQueue.start_link()
-    NotificationWorker.start_link([])
+    {:ok, pid} = NotificationWorker.start_link([name: :notification_worker_interval_test])
+    :erlang.trace(pid, true, [:receive])
     SendingQueue.enqueue(notification)
-
-    assert_delivered_email NotificationMailer.notification_email(notification, email)
+    :timer.sleep(101)
+    assert_received {:trace, ^pid, :receive, {:sent_notification_email, ^notification}}
     assert SendingQueue.pop == :error
-
     SendingQueue.enqueue(notification_2)
     :timer.sleep(101)
-
-    assert_delivered_email NotificationMailer.notification_email(notification_2, email)
+    assert_received {:trace, ^pid, :receive, {:sent_notification_email, ^notification_2}}
   end
 end

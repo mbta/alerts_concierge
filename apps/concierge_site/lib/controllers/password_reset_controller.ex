@@ -4,7 +4,7 @@ defmodule ConciergeSite.PasswordResetController do
   alias AlertProcessor.Model.{PasswordReset, User}
   alias AlertProcessor.Repo
   alias Calendar.DateTime
-  alias ConciergeSite.{Email, Mailer}
+  alias ConciergeSite.Dissemination.{Email, Mailer}
   alias Ecto.Multi
 
   @email_regex ~r/^([a-zA-Z0-9_\-\.]+)@([a-zA-Z0-9_\-\.]+)\.([a-zA-Z]{2,5})$/

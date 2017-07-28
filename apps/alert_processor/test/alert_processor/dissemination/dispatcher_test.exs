@@ -2,7 +2,7 @@ defmodule AlertProcessor.DispatcherTest do
   use ExUnit.Case
   use Bamboo.Test
 
-  alias AlertProcessor.{Dispatcher, Model, NotificationMailer}
+  alias AlertProcessor.{Dispatcher, Model}
   alias Model.{Alert, InformedEntity, Notification}
 
   @email "test@example.com"
@@ -56,7 +56,7 @@ defmodule AlertProcessor.DispatcherTest do
     }
 
     {:ok, _} = Dispatcher.send_notification(notification)
-    assert_delivered_email NotificationMailer.notification_email(notification, @email)
+    assert_received {:sent_notification_email, ^notification}
   end
 
   test "notification_email/1 cannot send both sms and email" do
@@ -67,7 +67,7 @@ defmodule AlertProcessor.DispatcherTest do
       alert: @alert
     }
     {:ok, _} = Dispatcher.send_notification(notification)
-    refute_delivered_email NotificationMailer.notification_email(notification, @email)
+    refute_received {:sent_notification_email, ^notification}
     assert_received :publish
   end
 end

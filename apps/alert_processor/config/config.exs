@@ -14,15 +14,6 @@ config :logger, :console,
   format: "$time $metadata[$level] $message\n",
   metadata: [:request_id]
 
-# Bamboo
-config :alert_processor, AlertProcessor.NotificationMailer,
-  adapter: Bamboo.LocalAdapter,
-  from: {:system, "SENDER_EMAIL_ADDRESS", "noreply@mbta.com"}
-
-config :alert_processor, AlertProcessor.DigestMailer,
-  adapter: Bamboo.LocalAdapter,
-  from: {:system, "SENDER_EMAIL_ADDRESS", "noreply@mbta.com"}
-
 config :alert_processor, AlertProcessor,
   pool_size: 2,
   overflow: 1
@@ -31,6 +22,8 @@ config :alert_processor, AlertProcessor,
 config :alert_processor, AlertProcessor.Repo,
   adapter: Ecto.Adapters.Postgres,
   pool_size: 10
+
+config :alert_processor, :mailer, AlertProcessor.Dissemination.Mailer
 
 # Config for alert parser
 config :alert_processor, :alert_parser, AlertProcessor.AlertParser
