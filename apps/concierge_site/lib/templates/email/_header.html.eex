@@ -1,7 +1,8 @@
-<div class="email-header">
+<div class="header">
   <img
-    class="email-header-image"
+    class="header-image"
     src="<%= AlertProcessor.MailHelper.mbta_logo() %>"
     alt="Logo of the Massachusetts Bay Transportation Authority"
+    height="48px"
   >
 </div>
