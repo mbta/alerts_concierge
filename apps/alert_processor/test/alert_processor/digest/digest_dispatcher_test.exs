@@ -3,7 +3,7 @@ defmodule AlertProcessor.DigestDispatcherTest do
   use ExUnit.Case, async: false
   use Bamboo.Test, shared: true
 
-  alias AlertProcessor.{DigestDispatcher, DigestMailer, Model}
+  alias AlertProcessor.{DigestDispatcher, Model}
   alias Model.{Alert, Digest, DigestDateGroup, DigestMessage, InformedEntity, User}
 
   @now Calendar.DateTime.now!("America/New_York")
@@ -35,6 +35,6 @@ defmodule AlertProcessor.DigestDispatcherTest do
     message = DigestMessage.from_digest(digest)
 
     DigestDispatcher.send_emails([message])
-    assert_delivered_email DigestMailer.digest_email(message)
+    assert_received {:sent_digest_email, ^message}
   end
 end

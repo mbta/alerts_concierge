@@ -4,7 +4,7 @@ defmodule ConciergeSite.PasswordResetControllerTest do
   import Ecto.Query
   alias AlertProcessor.{Model, Repo}
   alias Model.{PasswordReset, User}
-  alias ConciergeSite.Email
+  alias ConciergeSite.Dissemination.Email
   alias Calendar.DateTime
 
   @password "password1"

@@ -7,8 +7,8 @@ defmodule AlertProcessor.NotificationWorker do
   @type notifications :: [Notification.t]
 
   @doc false
-  def start_link([]) do
-    GenServer.start_link(__MODULE__, [], [])
+  def start_link(opts \\ [name: __MODULE__]) do
+    GenServer.start_link(__MODULE__, [], opts)
   end
 
   @doc false

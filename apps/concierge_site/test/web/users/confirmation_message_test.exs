@@ -1,7 +1,8 @@
 defmodule ConciergeSite.ConfirmationMessageTest do
   use ExUnit.Case
   use Bamboo.Test
-  alias ConciergeSite.{ConfirmationMessage, Email}
+  alias ConciergeSite.Dissemination.Email
+  alias ConciergeSite.ConfirmationMessage
 
   describe "send_confirmation/1" do
     test "sends email to user without phone number" do

@@ -3,11 +3,11 @@ defmodule AlertProcessor.Model.Notification do
   An individual message generated from an alert
   """
 
-  alias AlertProcessor.Model.Alert
+  alias AlertProcessor.Model.{Alert, User}
 
   @type t :: %__MODULE__{
     alert_id: String.t,
-    user_id: String.t,
+    user: User.t,
     send_after: DateTime.t,
     service_effect: String.t,
     description: String.t | nil,
