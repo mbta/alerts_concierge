@@ -6,8 +6,8 @@ defmodule ConciergeSite.PageControllerTest do
     assert html_response(conn, 302) =~ "my-subscriptions"
   end
 
-  test "GET /account_suspended", %{conn: conn} do
-    conn = get conn, "/account_suspended"
-    assert html_response(conn, 200) =~ "Account Suspended"
+  test "GET /account_disabled", %{conn: conn} do
+    conn = get conn, "/account_disabled"
+    assert html_response(conn, 200) =~ "Account Disabled"
   end
 end
