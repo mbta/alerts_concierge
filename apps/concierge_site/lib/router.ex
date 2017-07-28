@@ -20,6 +20,7 @@ defmodule ConciergeSite.Router do
     pipe_through :browser
 
     get "/", PageController, :index
+    get "/account_disabled", PageController, :account_disabled
     resources "/account", AccountController, only: [:new, :create]
     resources "/login", SessionController, only: [:new, :create, :delete], singleton: true
     get "/reset-password/sent", PasswordResetController, :sent
@@ -30,7 +31,7 @@ defmodule ConciergeSite.Router do
   scope "/", ConciergeSite do
     pipe_through [:browser, :browser_auth]
     get "/my-subscriptions", SubscriptionController, :index
-    get "/my-account/confirm_delete", MyAccountController, :confirm_delete
+    get "/my-account/confirm_disable", MyAccountController, :confirm_disable
     resources "/my-account", MyAccountController, only: [:edit, :update, :delete], singleton: true do
       resources "/password", PasswordController, only: [:edit, :update], singleton: true
       resources "/vacation", VacationController, only: [:edit, :update, :delete], singleton: true

@@ -64,18 +64,18 @@ defmodule ConciergeSite.MyAccountControllerTest do
 
       updated_user = Repo.get(User, user.id)
 
-      assert html_response(conn, 302) =~ "/login/new"
+      assert html_response(conn, 302) =~ "/account_disabled"
       assert updated_user.encrypted_password == ""
       refute is_nil(updated_user.vacation_start)
       refute updated_user.vacation_end == DateTime.from_naive!(~N[9999-12-25 23:59:59], "Etc/UTC")
     end
 
-    test "GET /my-account/confirm_delete", %{conn: conn, user: user} do
+    test "GET /my-account/confirm_disable", %{conn: conn, user: user} do
       conn = user
       |> guardian_login(conn)
-      |> get(my_account_path(conn, :confirm_delete))
+      |> get(my_account_path(conn, :confirm_disable))
 
-      assert html_response(conn, 200) =~ "Delete Account?"
+      assert html_response(conn, 200) =~ "Disable Account?"
     end
   end
 
@@ -90,8 +90,8 @@ defmodule ConciergeSite.MyAccountControllerTest do
       assert html_response(conn, 302) =~ "/login"
     end
 
-    test "GET /my-account/confirm_delete", %{conn: conn} do
-      conn = get(conn, my_account_path(conn, :confirm_delete))
+    test "GET /my-account/confirm_disable", %{conn: conn} do
+      conn = get(conn, my_account_path(conn, :confirm_disable))
       assert html_response(conn, 302) =~ "/login"
     end
   end
