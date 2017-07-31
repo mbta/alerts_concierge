@@ -1,3 +1,5 @@
 Congratulations, you have successfully subscribed to receive MBTA email alerts.
 To update your subscription preferences, please tap on the Edit your Subscriptions link below.
 To stop receiving email alerts, please click unsubscribe below.
+
+If you no longer wish to receive any emails please unsubscribe: <%= @unsubscribe_url %>

@@ -6,7 +6,7 @@
   <table class="footer-links">
     <tr>
       <td >
-        <a class="footer-link" href="#">Unsubscribe</a>
+        <a class="footer-link" href="<%= @unsubscribe_url %>">Unsubscribe</a>
       </td>
       <td class="footer-link-separator">
         <div class="footer-link-separator-bullet" />

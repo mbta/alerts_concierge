@@ -1,5 +1,5 @@
 defmodule ConciergeSite.Dissemination.MailerInterfaceTest do
-  use ExUnit.Case
+  use ConciergeSite.ConnCase
   alias ConciergeSite.Dissemination.MailerInterface
   alias AlertProcessor.Model.{Alert, Digest, DigestDateGroup, DigestMessage, InformedEntity, Notification, User}
 
@@ -13,6 +13,7 @@ defmodule ConciergeSite.Dissemination.MailerInterfaceTest do
       email = "test@test.com"
 
       notification = %Notification{
+        user: build(:user, email: email),
         email: email,
         service_effect: "Red line delay",
         header: "Red line inbound from Alewife station closure",

@@ -1,8 +1,8 @@
 defmodule ConciergeSite.Dissemination.NotificationEmailTest do
   @moduledoc false
-  use ExUnit.Case, async: false
+  use ConciergeSite.ConnCase
   use Bamboo.Test, shared: true
-
+  import AlertProcessor.Factory
   alias ConciergeSite.Dissemination.NotificationEmail
   alias AlertProcessor.Model.{Alert, InformedEntity, Notification}
 
@@ -14,6 +14,7 @@ defmodule ConciergeSite.Dissemination.NotificationEmailTest do
   @email "test@test.com"
 
   @notification %Notification{
+    user: build(:user),
     email: @email,
     service_effect: "Red line delay",
     header: "Red line inbound from Alewife station closure",

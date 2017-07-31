@@ -1,6 +1,6 @@
 defmodule ConciergeSite.Dissemination.DigestEmailTest do
   @moduledoc false
-  use ExUnit.Case, async: false
+  use ConciergeSite.ConnCase
   use Bamboo.Test, shared: true
 
   alias ConciergeSite.Dissemination.DigestEmail

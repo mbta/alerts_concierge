@@ -1,3 +1,5 @@
 <p>Congratulations, you have successfully subscribed to receive MBTA email alerts.</p>
 <p>To update your subscription preferences, please tap on the Edit your Subscriptions link below.</p>
 <p>To stop receiving email alerts, please click unsubscribe below.</p>
+
+<%= render "_footer.html", unsubscribe_url: @unsubscribe_url %>
