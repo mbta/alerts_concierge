@@ -119,24 +119,21 @@ defmodule AlertProcessor.Model.Subscription do
   defp validate_only_one_amenity(changeset) do
     type = get_field(changeset, :type)
     user_id = get_field(changeset, :user_id)
-    if type == :amenity and AlertProcessor.Model.Subscription.amenity_count(user_id) > 0 do
+    if type == :amenity and AlertProcessor.Model.Subscription.amenity_exists(user_id) do
       add_error(changeset, :type, "User can only have one amenity")
     else
       changeset
     end
   end
 
-  def amenity_count(user_id) do
-    query = from s in __MODULE__,
-      where: s.user_id == ^user_id and s.type == "amenity",
-      preload: [:informed_entities]
-
-    query
-    |> Repo.aggregate(:count, :id)
+  def amenity_exists(user_id) do
+    from s in __MODULE__,
+      where: s.user_id == ^user_id and s.type == "amenity" and fragment("EXISTS(?)")
   end
 
-  def amenity_subscription(user) do
-    query = from s in __MODULE__,
+  def user_amenity(user) do
+    query =
+      from s in __MODULE__,
       where: s.user_id == ^user.id and s.type == "amenity",
       preload: [:informed_entities]
 
