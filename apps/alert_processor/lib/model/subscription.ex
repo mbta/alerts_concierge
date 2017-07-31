@@ -127,8 +127,14 @@ defmodule AlertProcessor.Model.Subscription do
   end
 
   def amenity_exists(user_id) do
-    from s in __MODULE__,
-      where: s.user_id == ^user_id and s.type == "amenity" and fragment("EXISTS(?)")
+    query =
+      from s in __MODULE__,
+      where: s.user_id == ^user_id and s.type == "amenity"
+
+    case Repo.all(query) do
+      [_] -> true
+      [] -> false
+    end
   end
 
   def user_amenity(user) do
