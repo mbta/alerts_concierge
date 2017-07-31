@@ -1,0 +1,22 @@
+<h1 class="login-header-text">T-Concierge Admin Account</h1>
+<%= flash_error(@conn) %>
+<div class="login-container">
+  <h2>Sign into your account</h2>
+  <%= form_for @login_changeset, admin_session_path(@conn, :create), fn f -> %>
+    <div class="form-group">
+      <%= label f, :email, "Email Address", class: "form-label" %>
+      <%= error_tag f, :email %>
+      <%= email_input f, :email, placeholder: "your@email.com", class: "form-control", required: true %>
+      <span></span>
+    </div>
+    <div class="form-group">
+      <%= label f, :password, "Password", class: "form-label" %>
+      <%= error_tag f, :password %>
+      <%= password_input f, :password, placeholder: "Enter your password", class: "form-control", pattern: password_regex_string(), required: true %>
+      <span></span>
+    </div>
+    <div class="login-footer">
+      <%= submit "Sign In", class: "btn btn-primary btn-login" %>
+    </div>
+  <% end %>
+</div>
