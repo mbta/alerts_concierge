@@ -102,6 +102,8 @@
   <%= end %>
 
   <div class="log-out-link">
-    <%= link("Log Out", to: "/login", method: "delete") %>
+    <%= form_for @conn, session_path(@conn, :delete), [method: "delete", as: :custom_delete, _csrf_token: get_csrf_token()], fn _ -> %>
+      <%= submit "Log Out", class: "btn btn-primary" %>
+    <% end %>
   </div>
 </div>
