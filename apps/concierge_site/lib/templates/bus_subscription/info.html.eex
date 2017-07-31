@@ -11,7 +11,7 @@
     <div class="form-group select-station">
     <label for="route" class="station-input-label form-label">What bus do you take?</label>
     <div class="form-sub-label route-sub-label">
-      Roundtrips will automatically select the opposite direction for the return trip.
+      Round trips will automatically select the opposite direction for the return trip.
     </div>
     <%= select f,
                :route,
