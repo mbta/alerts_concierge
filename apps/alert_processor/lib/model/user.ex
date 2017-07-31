@@ -47,6 +47,8 @@ defmodule AlertProcessor.Model.User do
     password_confirmation amber_alert_opt_in)a
   @required_fields ~w(email password)a
 
+  @admin_roles ~w(junior_admin super_admin)
+
   @doc """
   Builds a changeset based on the `struct` and `params`.
   """
@@ -229,6 +231,25 @@ defmodule AlertProcessor.Model.User do
     case user do
       nil -> Bcrypt.dummy_checkpw()
       _ -> Bcrypt.checkpw(password, user.encrypted_password)
+    end
+  end
+
+  @doc """
+  Checks if a user's login credentials are valid and that the user has either the
+  junior_admin or super_admin role
+  """
+  def authenticate_admin(params) do
+    params
+    |> authenticate()
+    |> authorize_admin()
+  end
+
+  defp authorize_admin({:error, result}), do: {:error, result}
+  defp authorize_admin({:ok, user}) do
+    if user.role in @admin_roles do
+      {:ok, user, user.role}
+    else
+      {:unauthorized, user}
     end
   end
 

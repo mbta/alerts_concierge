@@ -60,6 +60,27 @@ defmodule AlertProcessor.Model.UserTest do
     end
   end
 
+  describe "authenticate_admin/1" do
+    test "authenticates if email and password are valid and user has the super_admin role" do
+      Repo.insert!(%User{email: "test@email.com", role: "super_admin", encrypted_password: @encrypted_password})
+      assert {:ok, _, "super_admin"} = User.authenticate_admin(%{"email" => "test@email.com", "password" => @password})
+    end
+
+    test "authenticates if email and password are valid and user has the junior_admin role" do
+      Repo.insert!(%User{email: "test@email.com", role: "junior_admin", encrypted_password: @encrypted_password})
+      assert {:ok, _, "junior_admin"} = User.authenticate_admin(%{"email" => "test@email.com", "password" => @password})
+    end
+
+    test "does not authenticate if email and password are valid but user has user role" do
+      Repo.insert!(%User{email: "test@email.com", role: "user", encrypted_password: @encrypted_password})
+      assert {:unauthorized, _} = User.authenticate_admin(%{"email" => "test@email.com", "password" => @password})
+    end
+
+    test "does not authenticate if user doesn't exist" do
+      assert {:error, _} = User.authenticate(%{"email" => "nope@invalid.com", "password" => @password})
+    end
+  end
+
   describe "create_account_changeset" do
     test "will create a valid changeset with valid params" do
       changeset = User.create_account_changeset(%User{}, @valid_account_attrs)

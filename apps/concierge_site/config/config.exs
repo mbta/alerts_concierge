@@ -47,6 +47,10 @@ config :guardian, Guardian,
       :unsubscribe,
       :disable_account,
       :full_permissions
+    ],
+    admin: [
+      :junior,
+      :super
     ]
   }
 
