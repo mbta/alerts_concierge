@@ -1,8 +1,7 @@
 defmodule ConciergeSite.PasswordController do
   use ConciergeSite.Web, :controller
   use Guardian.Phoenix.Controller
-  alias AlertProcessor.{Model, Repo}
-  alias Model.User
+  alias AlertProcessor.Model.User
 
   plug :reauthorize_user when action in [:update]
 
@@ -12,11 +11,7 @@ defmodule ConciergeSite.PasswordController do
   end
 
   def update(conn, %{"user" => user_params}, user, _claims) do
-    changeset = User.update_password_changeset(
-      user, Map.take(user_params, ["password", "password_confirmation"])
-    )
-
-    case Repo.update(changeset) do
+    case User.update_password(user, user_params) do
       {:ok, _user} ->
         conn
         |> put_flash(:info, "Your password has been updated.")

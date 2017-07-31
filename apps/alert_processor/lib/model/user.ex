@@ -56,6 +56,13 @@ defmodule AlertProcessor.Model.User do
     |> validate_required(@required_fields)
   end
 
+  def create_account(params) do
+    %__MODULE__{}
+    |> create_account_changeset(params)
+    |> PaperTrail.insert()
+    |> normalize_papertrail_result()
+  end
+
   @doc """
   Builds changeset used for registering a new user account
   """
@@ -109,7 +116,10 @@ defmodule AlertProcessor.Model.User do
   defp hash_password(changeset) do
     case changeset do
       %Ecto.Changeset{valid?: true, changes: %{password: password}} ->
-        put_change(changeset, :encrypted_password, Bcrypt.hashpwsalt(password))
+        changeset
+        |> put_change(:encrypted_password, Bcrypt.hashpwsalt(password))
+        |> delete_change(:password)
+        |> delete_change(:password_confirmation)
       _ ->
         changeset
     end
@@ -124,12 +134,19 @@ defmodule AlertProcessor.Model.User do
     |> validate_required([:email, :password])
   end
 
+  def update_password(user, params) do
+    user
+    |> update_password_changeset(params)
+    |> PaperTrail.update()
+    |> normalize_papertrail_result()
+  end
+
   @doc """
   Builds a changeset to update password
   """
   def update_password_changeset(struct, params \\ %{}) do
     struct
-    |> cast(params, @permitted_fields)
+    |> cast(params, [:password, :password_confirmation])
     |> validate_required(:password)
     |> validate_confirmation(:password, required: true, message: "Password and password confirmation did not match.")
     |> validate_length(:password, min: 6, message: "Password must be at least six characters long.")
@@ -237,6 +254,7 @@ defmodule AlertProcessor.Model.User do
           end)
         end)
     |> Repo.transaction()
+    |> normalize_papertrail_result()
   end
 
   @doc """
