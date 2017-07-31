@@ -126,10 +126,13 @@ defmodule AlertProcessor.Model.Subscription do
     end
   end
 
-  def amenity_exists(user_id) do
-    query =
-      from s in __MODULE__,
+  def amenity_query(user_id) do
+    from s in __MODULE__,
       where: s.user_id == ^user_id and s.type == "amenity"
+  end
+
+  def amenity_exists(user_id) do
+    query = amenity_query(user_id)
 
     case Repo.all(query) do
       [_] -> true
@@ -138,12 +141,8 @@ defmodule AlertProcessor.Model.Subscription do
   end
 
   def user_amenity(user) do
-    query =
-      from s in __MODULE__,
-      where: s.user_id == ^user.id and s.type == "amenity",
-      preload: [:informed_entities]
-
-    Repo.one(query)
+    amenity_query(user.id)
+    |> Repo.one
   end
 
   @doc """
