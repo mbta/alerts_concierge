@@ -4,6 +4,7 @@
 @import "vendor/flatpickr";
 @import "bootstrap";
 @import "font-sizes";
+@import "footer";
 @import "font-awesome";
 @import "lato";
 @import "forms";
@@ -23,4 +24,5 @@ body {
   -webkit-font-smoothing: antialiased;
   min-width: 20rem;
   text-rendering: optimizeLegibility;
+  position: relative;
 }

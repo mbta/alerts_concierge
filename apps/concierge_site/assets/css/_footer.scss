@@ -1,0 +1,16 @@
+.footer {
+  background-color: #092e4d;
+  height: 8rem;
+  position: absolute;
+  bottom: 0;
+  width: 100%;
+  overflow: hidden;
+}
+
+.footer > p {
+  color: white;
+  text-align: center;
+  position: relative;
+  top: 5rem;
+  margin-bottom: 0;
+}
