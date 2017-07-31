@@ -1,6 +1,6 @@
 defmodule AlertProcessor.Model.UserTest do
   use AlertProcessor.DataCase
-
+  import AlertProcessor.Factory
   alias AlertProcessor.Model.User
 
   @valid_attrs %{email: "email@test.com", role: "user", password: "password1"}
@@ -48,6 +48,18 @@ defmodule AlertProcessor.Model.UserTest do
     end
   end
 
+  describe "create_account" do
+    test "creates new account" do
+      assert {:ok, user} = User.create_account(@valid_account_attrs)
+      assert user.id != nil
+    end
+
+    test "does not create new account" do
+      assert {:error, changeset} = User.create_account(Map.put(@valid_account_attrs, "password_confirmation", "Garbage"))
+      refute changeset.valid?
+    end
+  end
+
   describe "create_account_changeset" do
     test "will create a valid changeset with valid params" do
       changeset = User.create_account_changeset(%User{}, @valid_account_attrs)
@@ -89,6 +101,44 @@ defmodule AlertProcessor.Model.UserTest do
     end
   end
 
+  describe "update_account" do
+    test "updates account" do
+      user = insert(:user)
+      assert {:ok, user} = User.update_account(user, %{"amber_alert_opt_in" => "true"})
+      assert user.amber_alert_opt_in
+    end
+
+    test "does not update account" do
+      user = insert(:user)
+      assert {:error, changeset} = User.update_account(user, %{"amber_alert_opt_in" => "no way!"})
+      refute changeset.valid?
+    end
+  end
+
+  describe "disable_account" do
+    test "removes password and puts into indefinite vacation mode" do
+      user = insert(:user)
+      assert {:ok, user} = User.disable_account(user)
+      assert DateTime.compare(user.vacation_end, DateTime.from_naive!(~N[9999-12-25 23:59:59], "Etc/UTC")) == :eq
+      assert user.encrypted_password == ""
+    end
+  end
+
+  describe "update_password" do
+    test "updates password" do
+      user = insert(:user)
+      current_password = user.encrypted_password
+      assert {:ok, user} = User.update_password(user, %{"password" => "Password1", "password_confirmation" => "Password1"})
+      assert current_password != user.encrypted_password
+    end
+
+    test "does not update password" do
+      user = insert(:user)
+      assert {:error, changeset} = User.update_password(user, %{"password" => "Password1", "password_confirmation" => "Garbage"})
+      refute changeset.valid?
+    end
+  end
+
   describe "update_password_changeset" do
     test "will create a valid changeset with password containing special characters and at least 6 characters" do
       changeset = User.update_password_changeset(%User{}, %{"password" => "P@ssword", "password_confirmation" => "P@ssword"})
@@ -107,6 +157,23 @@ defmodule AlertProcessor.Model.UserTest do
 
     test "will create an invalid changeset with invalid password that does not contain a digit or special character" do
       changeset = User.update_password_changeset(%User{}, %{"password" => "Password", "password_confirmation" => "Password"})
+      refute changeset.valid?
+    end
+  end
+
+  describe "update_vacation" do
+    test "updates vacation" do
+      user = insert(:user)
+      assert user.vacation_start == nil
+      assert user.vacation_end == nil
+      {:ok, user} = User.update_vacation(user, %{"vacation_start" => "2017-09-01T00:00:00+00:00", "vacation_end" => "2035-09-01T00:00:00+00:00"})
+      assert DateTime.compare(user.vacation_start, DateTime.from_naive!(~N[2017-09-01 00:00:00], "Etc/UTC")) == :eq
+      assert DateTime.compare(user.vacation_end, DateTime.from_naive!(~N[2035-09-01 00:00:00], "Etc/UTC")) == :eq
+    end
+
+    test "does not update vacation" do
+      user = insert(:user)
+      {:error, changeset} = User.update_vacation(user, %{"vacation_start" => "2017-09-01T00:00:00+00:00", "vacation_end" => "2015-09-01T00:00:00+00:00"})
       refute changeset.valid?
     end
   end
@@ -130,6 +197,15 @@ defmodule AlertProcessor.Model.UserTest do
     end
   end
 
+  describe "remove_vacation" do
+    test "removes vacation" do
+      user = insert(:user, vacation_start: ~N[2017-07-01 00:00:00], vacation_end: ~N[2099-07-01 00:00:00])
+      {:ok, user} = User.remove_vacation(user)
+      assert user.vacation_start == nil
+      assert user.vacation_end == nil
+    end
+  end
+
   describe "remove_vacation_changeset" do
     test "will create a valid changeset when vacation period is set" do
       changeset = User.remove_vacation_changeset(%User{vacation_start: ~N[2017-07-01 00:00:00], vacation_end: ~N[2018-07-01 00:00:00]})
@@ -139,6 +215,33 @@ defmodule AlertProcessor.Model.UserTest do
     test "will create a valid changeset when vacation period is not set" do
       changeset = User.remove_vacation_changeset(%User{vacation_start: nil, vacation_end: nil})
       assert changeset.valid?
+    end
+  end
+
+  describe "put_users_on_indefinite_vacation" do
+    test "it sets list of users on vacation with an end time in the year 9999" do
+      user0 = insert(:user)
+      user1 = insert(:user)
+      {:ok,
+        %{
+          {:user, 0} => %{model: user_0},
+          {:user, 1} => %{model: user_1},
+        }
+      } = User.put_users_on_indefinite_vacation([user0.id, user1.id])
+      assert DateTime.compare(user_0.vacation_end, DateTime.from_naive!(~N[9999-12-25 23:59:59], "Etc/UTC")) == :eq
+      assert DateTime.compare(user_1.vacation_end, DateTime.from_naive!(~N[9999-12-25 23:59:59], "Etc/UTC")) == :eq
+    end
+
+    test "doesnt do anything if no users are passed" do
+      assert {:ok, %{}} = User.put_users_on_indefinite_vacation([])
+    end
+  end
+
+  describe "put_user_on_indefinite_vacation" do
+    test "puts user on vacation with end time in year 9999" do
+      user = insert(:user)
+      {:ok, user} = User.put_user_on_indefinite_vacation(user)
+      assert DateTime.compare(user.vacation_end, DateTime.from_naive!(~N[9999-12-25 23:59:59], "Etc/UTC")) == :eq
     end
   end
 end

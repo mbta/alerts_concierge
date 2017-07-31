@@ -436,9 +436,13 @@ defmodule AlertProcessor.Subscription.SubwayMapperTest do
       {:ok, subscription_infos} = SubwayMapper.map_subscriptions(@round_trip_params)
       multi = SubwayMapper.build_subscription_transaction(subscription_infos, user)
       assert [
-          {{:subscription, 0}, {:run, _function1}},
-          {{:subscription, 1}, {:run, _function2}}
+          {{:subscription, 0}, {:run, function1}},
+          {{:subscription, 1}, {:run, function2}}
         ] = Ecto.Multi.to_list(multi)
+      {:ok, %{model: subscription1}} = function1.(nil)
+      {:ok, %{model: subscription2}} = function2.(nil)
+      assert subscription1.id != nil
+      assert subscription2.id != nil
     end
   end
 end

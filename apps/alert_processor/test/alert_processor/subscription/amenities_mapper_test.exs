@@ -120,8 +120,10 @@ defmodule AlertProcessor.Subscription.AmenitiesMapperTest do
       {:ok, subscription_infos} = AmenitiesMapper.map_subscriptions(@params)
       multi = AmenitiesMapper.build_subscription_transaction(subscription_infos, user)
       assert [
-          {{:subscription, 0}, {:run, _function}}
+          {{:subscription, 0}, {:run, function}}
         ] = Ecto.Multi.to_list(multi)
+      {:ok, %{model: subscription}} = function.(nil)
+      assert subscription.id != nil
     end
   end
 end

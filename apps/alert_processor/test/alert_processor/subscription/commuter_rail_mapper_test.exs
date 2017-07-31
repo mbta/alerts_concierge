@@ -603,9 +603,13 @@ defmodule AlertProcessor.Subscription.CommuterRailMapperTest do
       {:ok, subscription_infos} = CommuterRailMapper.map_subscriptions(@round_trip_params)
       multi = CommuterRailMapper.build_subscription_transaction(subscription_infos, user)
       assert [
-          {{:subscription, 0}, {:run, _function1}},
-          {{:subscription, 1}, {:run, _function2}}
+          {{:subscription, 0}, {:run, function1}},
+          {{:subscription, 1}, {:run, function2}}
         ] = Ecto.Multi.to_list(multi)
+      {:ok, %{model: subscription1}} = function1.(nil)
+      {:ok, %{model: subscription2}} = function2.(nil)
+      assert subscription1.id != nil
+      assert subscription2.id != nil
     end
   end
 
@@ -629,11 +633,17 @@ defmodule AlertProcessor.Subscription.CommuterRailMapperTest do
       multi = CommuterRailMapper.build_update_subscription_transaction(subscription, params)
 
       assert [
-        {{:informed_entity, 0}, {:run, _function1}},
-        {{:remove_old, 0}, {:run, _function2}},
-        {{:remove_old, 1}, {:run, _function3}},
-        {:subscription, {:run, _function4}}
+        {{:informed_entity, 0}, {:run, function1}},
+        {{:remove_old, 0}, {:run, function2}},
+        {{:remove_old, 1}, {:run, function3}},
+        {:subscription, {:run, function4}}
       ] = Ecto.Multi.to_list(multi)
+      assert {:ok, %{model: informed_entity1, version: %{event: "insert"}}} = function1.(nil)
+      assert informed_entity1.subscription_id == subscription.id
+      assert {:ok, %{model: _informed_entity2, version: %{event: "delete"}}} = function2.(nil)
+      assert {:ok, %{model: _informed_entity3, version: %{event: "delete"}}} = function3.(nil)
+      assert {:ok, %{model: updated_subscription, version: %{event: "update"}}} = function4.(nil)
+      assert updated_subscription.id == subscription.id
     end
   end
 end
