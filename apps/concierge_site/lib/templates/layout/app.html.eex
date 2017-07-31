@@ -12,11 +12,28 @@
   </head>
 
   <body class="no-js">
-    <div class="container">
+    <header class="header">
+      <nav class="navbar">
+        <div class="top-navbar">
+          <a href="https://t.mbta.com/"><%= img_tag(static_url(@conn, "/images/mbta-beta-logo.png"), class: "mbta-beta-logo") %></a>
+        </div>
+        <div class="bg-faded">
+          <div class="breadcrumb">
+            <a class="breadcrumb-item" href="https://t.mbta.com/">Home</a>
+            <span>></span>
+            <a class="breadcrumb-item" href="/my-subscriptions">T-Alerts</a>
+          </div>
+        </div>
+      </nav>
+    </header>
+    <div class="container page-content">
       <main id="main" tabindex="-1">
         <%= render @view_module, @view_template, assigns %>
       </main>
     </div>
+    <footer class="footer">
+      <p>&copy; Massachusetts Bay Transportation Authority, all rights reserved.</p>
+    </footer>
     <script src="<%= static_path(@conn, "/js/app.js") %>"></script>
   </body>
 </html>
