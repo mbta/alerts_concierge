@@ -36,19 +36,38 @@ defmodule AlertProcessor.NotificationWorkerTest do
       alert: @alert
     }
 
-    {:ok, notification: notification, notification_2: notification_2}
+    notification_3 = %Notification{
+      header: body,
+      email: email,
+      phone_number: nil,
+      send_after: DateTime.utc_now(),
+      status: status,
+      alert: @alert
+    }
+
+    {:ok, notification: notification, notification_2: notification_2, notification_3: notification_3}
   end
 
-  test "Worker runs on interval jobs from sending queue to notification", %{notification: notification, notification_2: notification_2} do
+  test "Worker passes jobs from sending queue to notification", %{notification: notification} do
     SendingQueue.start_link()
-    {:ok, pid} = NotificationWorker.start_link([name: :notification_worker_interval_test])
+    {:ok, pid} = NotificationWorker.start_link([name: :notification_worker_test])
     :erlang.trace(pid, true, [:receive])
+
     SendingQueue.enqueue(notification)
     :timer.sleep(101)
     assert_received {:trace, ^pid, :receive, {:sent_notification_email, ^notification}}
-    assert SendingQueue.pop == :error
+  end
+
+  test "Worker runs on interval jobs from sending queue to notification", %{notification_2: notification_2, notification_3: notification_3} do
+    SendingQueue.start_link()
+    {:ok, pid} = NotificationWorker.start_link([name: :notification_worker_interval_test])
+    :erlang.trace(pid, true, [:receive])
     SendingQueue.enqueue(notification_2)
     :timer.sleep(101)
     assert_received {:trace, ^pid, :receive, {:sent_notification_email, ^notification_2}}
+    assert SendingQueue.pop == :error
+    SendingQueue.enqueue(notification_3)
+    :timer.sleep(101)
+    assert_received {:trace, ^pid, :receive, {:sent_notification_email, ^notification_3}}
   end
 end
