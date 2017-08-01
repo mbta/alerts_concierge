@@ -9,8 +9,8 @@ defmodule ConciergeSite.Admin.SessionControllerTest do
     assert html_response(conn, 200) =~ "Admin"
   end
 
-  test "POST /login with a junior admin", %{conn: conn} do
-    user = insert(:user, role: "junior_admin", encrypted_password: @encrypted_password)
+  test "POST /login with a customer suppport user", %{conn: conn} do
+    user = insert(:user, role: "customer_support", encrypted_password: @encrypted_password)
     params = %{"user" => %{
       "email" => user.email,
       "password" => @password
@@ -20,8 +20,8 @@ defmodule ConciergeSite.Admin.SessionControllerTest do
     assert html_response(conn, 302) =~ "/admin/subscribers"
   end
 
-  test "POST /login with a super admin", %{conn: conn} do
-    user = insert(:user, role: "super_admin", encrypted_password: @encrypted_password)
+  test "POST /login with an application administration user", %{conn: conn} do
+    user = insert(:user, role: "application_administration", encrypted_password: @encrypted_password)
     params = %{"user" => %{
       "email" => user.email,
       "password" => @password

@@ -5,8 +5,8 @@ defmodule ConciergeSite.Admin.SubscriberControllerTest do
     test "GET /admin/subscribers", %{conn: conn} do
       conn =
         :user
-        |> insert(role: "junior_admin")
-        |> guardian_login(conn, :token, perms: %{default: Guardian.Permissions.max, admin: [:junior]})
+        |> insert(role: "customer_support")
+        |> guardian_login(conn, :token, perms: %{default: Guardian.Permissions.max, admin: [:customer_support]})
         |> get(admin_subscriber_path(conn, :index))
 
       assert html_response(conn, 200) =~ "Subscribers"

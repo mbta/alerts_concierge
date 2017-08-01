@@ -27,7 +27,7 @@ defmodule ConciergeSite.Router do
 
   pipeline :admin_auth do
     plug Guardian.Plug.EnsurePermissions,
-      [handler: ConciergeSite.Admin.SessionController, admin: ["junior"]]
+      [handler: ConciergeSite.Admin.SessionController, admin: ["customer_support"]]
   end
 
   scope "/", ConciergeSite do

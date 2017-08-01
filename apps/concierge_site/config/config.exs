@@ -49,8 +49,8 @@ config :guardian, Guardian,
       :full_permissions
     ],
     admin: [
-      :junior,
-      :super
+      :customer_support,
+      :application_administration
     ]
   }
 

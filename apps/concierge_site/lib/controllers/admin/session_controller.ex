@@ -10,15 +10,18 @@ defmodule ConciergeSite.Admin.SessionController do
 
   def create(conn, %{"user" => login_params}) do
     case User.authenticate_admin(login_params) do
-      {:ok, user, "junior_admin"} ->
+      {:ok, user, "customer_support"} ->
         conn
         |> Guardian.Plug.sign_in(user, :token,
-          perms: %{default: Guardian.Permissions.max, admin: [:junior]})
+          perms: %{default: Guardian.Permissions.max, admin: [:customer_support]})
         |> redirect(to: admin_subscriber_path(conn, :index))
-      {:ok, user, "super_admin"} ->
+      {:ok, user, "application_administration"} ->
         conn
         |> Guardian.Plug.sign_in(user, :token,
-          perms: %{default: Guardian.Permissions.max, admin: [:junior, :super]})
+          perms: %{
+            default: Guardian.Permissions.max,
+            admin: [:customer_support, :application_administration]
+          })
         |> redirect(to: admin_subscriber_path(conn, :index))
       {:unauthorized, user} ->
         changeset = User.login_changeset(user)
