@@ -16,7 +16,7 @@ defmodule ConciergeSite.ConfirmationMessage do
   end
 
   defp send_email_confirmation(user) do
-    user.email
+    user
     |> Email.confirmation_email()
     |> Mailer.deliver_later
   end

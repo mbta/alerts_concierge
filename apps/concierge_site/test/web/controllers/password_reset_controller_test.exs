@@ -21,11 +21,10 @@ defmodule ConciergeSite.PasswordResetControllerTest do
     conn = post(conn, password_reset_path(conn, :create), params)
 
     password_reset_count = Repo.one(from p in PasswordReset, select: count("*"))
-    password_reset = Repo.one(PasswordReset)
 
     assert password_reset_count == 1
     assert html_response(conn, 302) =~ "/reset-password/sent"
-    assert_delivered_email Email.password_reset_html_email(user.email, password_reset.id)
+    assert_delivered_with(to: [{nil, user.email}])
   end
 
   test "POST /reset-password/ with a valid but unknown email", %{conn: conn}  do
@@ -37,7 +36,7 @@ defmodule ConciergeSite.PasswordResetControllerTest do
 
     assert password_reset_count == 0
     assert html_response(conn, 302) =~ "/reset-password/sent"
-    assert_delivered_email Email.unknown_password_reset_html_email(email)
+    assert_delivered_email Email.unknown_password_reset_email(email)
   end
 
   test "POST /reset-password/ with an invalid email", %{conn: conn}  do
