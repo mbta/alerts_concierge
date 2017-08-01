@@ -100,6 +100,14 @@ button {
   display: none;
 }
 
+.toggle_show:checked ~ .toggleable {
+  display: block;
+}
+
+.toggle_hide:checked ~ .toggleable {
+  display: none;
+}
+
 .toggle_show:checked + label ~ .toggleable {
   display: block;
 }
