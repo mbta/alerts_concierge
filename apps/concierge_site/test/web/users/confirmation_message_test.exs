@@ -1,7 +1,6 @@
 defmodule ConciergeSite.ConfirmationMessageTest do
-  use ConciergeSite.ConnCase
+  use ConciergeSite.DataCase
   use Bamboo.Test
-  import AlertProcessor.Factory
   alias ConciergeSite.Dissemination.Email
   alias ConciergeSite.ConfirmationMessage
 
@@ -17,7 +16,7 @@ defmodule ConciergeSite.ConfirmationMessageTest do
       assert email.html_body =~ "Congratulations, you have successfully subscribed to receive MBTA email alerts"
     end
 
-    test "sends SMS to user with phone number" do
+    test "sends SMS and email to user with phone number" do
       user = insert(:user, email: "test@test.com", phone_number: "5556667777")
 
       ConfirmationMessage.send_confirmation(user)

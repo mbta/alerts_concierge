@@ -1,8 +1,7 @@
 defmodule ConciergeSite.Dissemination.NotificationEmailTest do
   @moduledoc false
-  use ConciergeSite.ConnCase
+  use ConciergeSite.DataCase
   use Bamboo.Test, shared: true
-  import AlertProcessor.Factory
   alias ConciergeSite.Dissemination.NotificationEmail
   alias AlertProcessor.Model.{Alert, InformedEntity, Notification}
 

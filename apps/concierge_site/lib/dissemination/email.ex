@@ -5,16 +5,17 @@ defmodule ConciergeSite.Dissemination.Email do
 
   @from ConfigHelper.get_string(:send_from_email, :concierge_site)
 
-  def password_reset_text_email(password_reset, email, unsubscribe_url) do
+  def password_reset_text_email(user, password_reset, unsubscribe_url) do
     base_email()
-    |> to(email)
+    |> to(user.email)
     |> subject("Reset Your MBTA Alerts Password")
     |> render("password_reset.text", password_reset_id: password_reset.id, unsubscribe_url: unsubscribe_url)
   end
 
-  def password_reset_html_email(password_reset, email, unsubscribe_url) do
-    password_reset
-    |> password_reset_text_email(email, unsubscribe_url)
+  def password_reset_html_email(user, password_reset) do
+    unsubscribe_url = MailHelper.unsubscribe_url(user)
+    user
+    |> password_reset_text_email(password_reset, unsubscribe_url)
     |> put_html_layout({ConciergeSite.LayoutView, "email.html"})
     |> render("password_reset.html", password_reset_id: password_reset.id, unsubscribe_url: unsubscribe_url)
   end

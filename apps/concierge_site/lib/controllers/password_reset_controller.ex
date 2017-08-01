@@ -5,7 +5,6 @@ defmodule ConciergeSite.PasswordResetController do
   alias AlertProcessor.Repo
   alias Calendar.DateTime
   alias ConciergeSite.Dissemination.{Email, Mailer}
-  alias ConciergeSite.Helpers.MailHelper
   alias Ecto.Multi
 
   @email_regex ~r/^([a-zA-Z0-9_\-\.]+)@([a-zA-Z0-9_\-\.]+)\.([a-zA-Z]{2,5})$/
@@ -17,12 +16,7 @@ defmodule ConciergeSite.PasswordResetController do
 
   def create(conn, %{"password_reset" => %{"email" => email}}) do
     user = find_user_by_email(email)
-    user_id =
-      if user == nil do
-        nil
-      else
-        user.id
-      end
+    user_id = user && user.id
 
     changeset = PasswordReset.create_changeset(
       %PasswordReset{},
@@ -30,8 +24,7 @@ defmodule ConciergeSite.PasswordResetController do
     )
     case Repo.insert(changeset) do
       {:ok, password_reset} ->
-        unsubscribe_url = MailHelper.unsubscribe_url(user)
-        Email.password_reset_html_email(password_reset, email, unsubscribe_url)
+        Email.password_reset_html_email(user, password_reset)
         |> Mailer.deliver_later
 
         redirect(conn, to: password_reset_path(conn, :sent, %{email: email}))

@@ -55,7 +55,6 @@ config :guardian_db, GuardianDb,
 
 config :concierge_site, mail_template_dir: Path.join(~w(#{System.cwd!} apps concierge_site generated_templates))
 config :concierge_site, asset_url: "https://s3.amazonaws.com/mbta-assets"
-config :concierge_site, domain_url: {:system, "DOMAIN_URL", "http://localhost:3000"}
 
 # Import environment specific config. This must remain at the bottom
 # of this file so it overrides the configuration defined above.

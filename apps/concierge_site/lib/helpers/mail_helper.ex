@@ -103,9 +103,6 @@ defmodule ConciergeSite.Helpers.MailHelper do
 
   def unsubscribe_url(user) do
     {:ok, token, _permissions} = Token.issue(user, [:unsubscribe])
-    domain = AlertProcessor.Helpers.ConfigHelper.get_string(:domain_url, :concierge_site)
-    domain <> "/unsubscribe/#{token}"
-    |> URI.parse()
-    |> URI.to_string()
+    ConciergeSite.Router.Helpers.unsubscribe_url(ConciergeSite.Endpoint, :unsubscribe, token)
   end
 end

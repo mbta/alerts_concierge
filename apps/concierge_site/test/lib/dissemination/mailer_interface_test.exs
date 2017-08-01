@@ -1,5 +1,5 @@
 defmodule ConciergeSite.Dissemination.MailerInterfaceTest do
-  use ConciergeSite.ConnCase
+  use ConciergeSite.DataCase
   alias ConciergeSite.Dissemination.MailerInterface
   alias AlertProcessor.Model.{Alert, Digest, DigestDateGroup, DigestMessage, InformedEntity, Notification, User}
 
