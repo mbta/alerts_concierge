@@ -1,7 +1,10 @@
 <div class="callout <%= vacation_color_class(@vacation_start, @vacation_end) %>">
   <%= vacation_banner_content(@vacation_start, @vacation_end) %>
   <%= if on_vacation?(@vacation_start, @vacation_end) do %>
-    <%= link("Resume Alerts", to: "/my-account/vacation", method: :delete) %>
+    <%= form_for @conn, my_account_vacation_path(@conn, :delete),
+        [method: "delete", as: :custom_delete, _csrf_token: get_csrf_token()], fn _ -> %>
+      <%= submit "Resume Alerts", class: "btn-link" %>
+    <% end %>
   <% else %>
     <%= link("Pause Alerts", to: "/my-account/vacation/edit") %>
   <% end %>
