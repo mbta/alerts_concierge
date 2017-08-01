@@ -29,9 +29,10 @@
                name: "Ferry" %>
 
     <%= render "_service_option.html",
-               link_to: amenity_subscription_path(@conn, :new),
-               icon_class: "mbta-icon",
-               icon_src: static_url(@conn, "/images/m-b-t-a.svg"),
-               name: "Station Amenities (elevators, escalators, etc.)" %>
+              link_to: @amenity_url,
+              icon_class: "mbta-icon",
+              icon_src: static_url(@conn, "/images/m-b-t-a.svg"),
+              name: @amenity_name %>
+
   </div>
 </div>
