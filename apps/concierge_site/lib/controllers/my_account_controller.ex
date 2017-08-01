@@ -28,9 +28,7 @@ defmodule ConciergeSite.MyAccountController do
   def delete(conn, _params, user, _claims) do
     case User.disable_account(user) do
       {:ok, _} ->
-        conn
-        |> Guardian.Plug.sign_out()
-        |> redirect(to: page_path(conn, :account_disabled))
+        redirect(conn, to: page_path(conn, :account_disabled))
       {:error, _} ->
         conn
         |> put_flash(:error, "Your account could not be deleted, please try again.")

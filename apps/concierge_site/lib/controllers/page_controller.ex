@@ -6,6 +6,8 @@ defmodule ConciergeSite.PageController do
   end
 
   def account_disabled(conn, _params) do
-    render(conn, "account_disabled.html")
+    conn
+    |> Guardian.Plug.sign_out()
+    |> render("account_disabled.html")
   end
 end

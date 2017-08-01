@@ -27,11 +27,11 @@ defmodule ConciergeSite.ConnCase do
       # Import ExMachina Factories
       import AlertProcessor.Factory
 
-      def guardian_login(user, conn, token \\ :token, opts \\ []) do
+      def guardian_login(user, conn, type \\ :access, perms \\ %{default: Guardian.Permissions.max}) do
         conn
           |> bypass_through(ConciergeSite.Router, [:browser])
           |> get("/")
-          |> Guardian.Plug.sign_in(user, token, opts)
+          |> Guardian.Plug.sign_in(user, :access, perms: perms)
           |> send_resp(200, "Flush the session")
           |> recycle()
       end

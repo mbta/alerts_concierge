@@ -60,7 +60,7 @@ defmodule ConciergeSite.PasswordResetController do
     case Repo.transaction(multi) do
       {:ok, %{user: user}} ->
         conn
-        |> Guardian.Plug.sign_in(user)
+        |> Guardian.Plug.sign_in(user, :access, perms: %{default: Guardian.Permissions.max})
         |> put_flash(:info, "Your password has been updated.")
         |> redirect(to: my_account_path(conn, :edit))
       {:error, :user, changeset, _} ->

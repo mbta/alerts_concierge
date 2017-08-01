@@ -44,7 +44,10 @@ config :guardian, Guardian,
   permissions: %{
     default: [
       :reset_password,
-      :unsubscribe
+      :unsubscribe,
+      :disable_account,
+      :manage_subscriptions,
+      :full_permissions
     ]
   }
 
