@@ -36,6 +36,11 @@ defmodule ConciergeSite.RejectedEmailControllerTest do
       refute user.vacation_start == nil
       refute user.vacation_end == nil
     end
+
+    test "POST /rejected_email with no user", %{conn: conn} do
+      conn = post(conn, rejected_email_path(conn, :handle_rejected_email), @bounce)
+      assert json_response(conn, 200)
+    end
   end
 
   describe "complaint emails" do

@@ -275,4 +275,8 @@ defmodule AlertProcessor.Model.User do
 
   defp normalize_papertrail_result({:ok, %{model: user}}), do: {:ok, user}
   defp normalize_papertrail_result(result), do: result
+
+  def for_email(email) do
+    Repo.get_by(__MODULE__, email: email)
+  end
 end
