@@ -24,7 +24,7 @@ defmodule ConciergeSite.PasswordResetController do
     )
     case Repo.insert(changeset) do
       {:ok, password_reset} ->
-        Email.password_reset_html_email(user, password_reset)
+        Email.password_reset_email(user, password_reset)
         |> Mailer.deliver_later
 
         redirect(conn, to: password_reset_path(conn, :sent, %{email: email}))
@@ -90,7 +90,7 @@ defmodule ConciergeSite.PasswordResetController do
 
   defp handle_unknown_email(conn, changeset, email) do
     if String.match?(email, @email_regex) do
-      Email.unknown_password_reset_html_email(email)
+      Email.unknown_password_reset_email(email)
       |> Mailer.deliver_later
 
       redirect(conn, to: password_reset_path(conn, :sent, %{email: email}))

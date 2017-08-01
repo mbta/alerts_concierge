@@ -6,7 +6,7 @@ defmodule ConciergeSite.Dissemination.EmailTest do
     user = insert(:user)
     password_reset = insert(:password_reset, user: user)
 
-    email = Email.password_reset_html_email(user, password_reset)
+    email = Email.password_reset_email(user, password_reset)
 
     assert email.to == user.email
     assert email.subject == "Reset Your MBTA Alerts Password"

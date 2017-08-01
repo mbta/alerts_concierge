@@ -36,7 +36,7 @@ defmodule ConciergeSite.PasswordResetControllerTest do
 
     assert password_reset_count == 0
     assert html_response(conn, 302) =~ "/reset-password/sent"
-    assert_delivered_email Email.unknown_password_reset_html_email(email)
+    assert_delivered_email Email.unknown_password_reset_email(email)
   end
 
   test "POST /reset-password/ with an invalid email", %{conn: conn}  do
