@@ -9,7 +9,7 @@ defmodule ConciergeSite.Plugs.AutoLogin do
   def init(opts \\ %{}), do: Enum.into(opts, %{})
 
   def call(conn, _) do
-    case conn.query_params["token"] do
+    case conn.params["token"] do
       nil -> conn
       token ->
         with {:ok, claims} <- Guardian.decode_and_verify(token),

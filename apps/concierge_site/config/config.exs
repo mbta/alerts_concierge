@@ -46,7 +46,6 @@ config :guardian, Guardian,
       :reset_password,
       :unsubscribe,
       :disable_account,
-      :manage_subscriptions,
       :full_permissions
     ]
   }

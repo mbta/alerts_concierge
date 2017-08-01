@@ -67,7 +67,33 @@ defmodule ConciergeSite.MyAccountControllerTest do
       assert html_response(conn, 302) =~ "/account_disabled"
       assert updated_user.encrypted_password == ""
       refute is_nil(updated_user.vacation_start)
-      refute updated_user.vacation_end == DateTime.from_naive!(~N[9999-12-25 23:59:59], "Etc/UTC")
+      assert DateTime.compare(updated_user.vacation_end, DateTime.from_naive!(~N[9999-12-25 23:59:59], "Etc/UTC")) == :eq
+    end
+
+    test "DELETE /my-account with valid token", %{conn: conn, user: user} do
+      conn = user
+      |> guardian_login(conn, :access, %{default: [:disable_account]})
+      |> delete(my_account_path(conn, :delete))
+
+      updated_user = Repo.get(User, user.id)
+
+      assert html_response(conn, 302) =~ "/account_disabled"
+      assert updated_user.encrypted_password == ""
+      refute is_nil(updated_user.vacation_start)
+      assert DateTime.compare(updated_user.vacation_end, DateTime.from_naive!(~N[9999-12-25 23:59:59], "Etc/UTC")) == :eq
+    end
+
+    test "DELETE /my-account without valid token", %{conn: conn, user: user} do
+      conn = user
+      |> guardian_login(conn, :access, %{default: [:unsubscribe]})
+      |> delete(my_account_path(conn, :delete))
+
+      updated_user = Repo.get(User, user.id)
+
+      assert html_response(conn, 302) =~ "/login"
+      refute updated_user.encrypted_password == ""
+      assert is_nil(updated_user.vacation_start)
+      assert is_nil(updated_user.vacation_end)
     end
 
     test "GET /my-account/confirm_disable", %{conn: conn, user: user} do
@@ -76,6 +102,17 @@ defmodule ConciergeSite.MyAccountControllerTest do
       |> get(my_account_path(conn, :confirm_disable))
 
       assert html_response(conn, 200) =~ "Disable Account?"
+    end
+
+    test "GET /my-account/confirm_disable with valid token", %{conn: conn, user: user} do
+      {:ok, token, _} = ConciergeSite.Auth.Token.issue(user, [:disable_account])
+      conn = get(conn, my_account_path(conn, :confirm_disable, token: token))
+      assert html_response(conn, 200) =~ "Disable Account?"
+    end
+
+    test "GET /my-account/confirm_disable without valid token", %{conn: conn} do
+      conn = get(conn, my_account_path(conn, :confirm_disable, token: "notatoken"))
+      assert html_response(conn, 302) =~ "/login"
     end
   end
 
