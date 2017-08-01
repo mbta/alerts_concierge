@@ -108,6 +108,24 @@ button {
   display: none;
 }
 
+input#user_sms_toggle_true:checked + label ~ div.wireless-number-section.supporting-info-section {
+  display: block;
+}
+
+input#user_sms_toggle_false:checked + label ~ div.wireless-number-section.supporting-info-section {
+  display: none;
+}
+
+input#user_dnd_toggle_true:checked + label ~
+div.do-not-disturb-time-section.supporting-info-section {
+  display: block;
+}
+
+input#user_dnd_toggle_false:checked + label ~
+div.do-not-disturb-time-section.supporting-info-section {
+  display: none;
+}
+
 .large-input {
   border: 1px solid $steel;
   border-radius: 4px;
