@@ -24,6 +24,11 @@ defmodule AlertProcessor.Mixfile do
   def application do
     [mod: {AlertProcessor, []},
       extra_applications: [
+        :elixir_make,
+        :plug,
+        :jsx,
+        :public_key,
+        :crypto,
         :calendar,
         :comeonin,
         :sweet_xml, # Must come before ex_aws
@@ -35,7 +40,8 @@ defmodule AlertProcessor.Mixfile do
         :poison,
         :poolboy,
         :postgrex,
-        :runtime_tools
+        :runtime_tools,
+        :edeliver,
      ]
     ]
   end
@@ -66,6 +72,7 @@ defmodule AlertProcessor.Mixfile do
       {:poolboy, ">= 0.0.0"},
       {:postgrex, ">= 0.0.0"},
       {:sweet_xml, "~> 0.6"},
+      {:edeliver, "1.4.3"}
     ]
   end
 

@@ -25,7 +25,9 @@ defmodule ConciergeSite.Mixfile do
   def application do
     [mod: {ConciergeSite, []},
      extra_applications: [
-       :alert_processor,
+       :elixir_make,
+       :public_key,
+       :crypto,
        :bamboo,
        :logger,
        :logger_logentries_backend,
