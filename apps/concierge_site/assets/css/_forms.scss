@@ -100,31 +100,11 @@ button {
   display: none;
 }
 
-.toggle_show:checked ~ .toggleable {
+.toggle_show:checked + label ~ .toggleable {
   display: block;
 }
 
-.toggle_hide:checked ~ .toggleable {
-  display: none;
-}
-
-input#user_sms_toggle_true:checked + label ~
-div.wireless-number-section.supporting-info-section {
-  display: block;
-}
-
-input#user_sms_toggle_false:checked + label ~
-div.wireless-number-section.supporting-info-section {
-  display: none;
-}
-
-input#user_dnd_toggle_true:checked + label ~
-div.do-not-disturb-time-section.supporting-info-section {
-  display: block;
-}
-
-input#user_dnd_toggle_false:checked + label ~
-div.do-not-disturb-time-section.supporting-info-section {
+.toggle_hide:checked + label ~ .toggleable {
   display: none;
 }
 
