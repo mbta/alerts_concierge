@@ -295,4 +295,44 @@ defmodule AlertProcessor.Model.SubscriptionTest do
       } == timeframe_map
     end
   end
+
+  describe "update_subscription" do
+    test "updates subscription" do
+      user = insert(:user)
+      subscription =
+        subscription_factory()
+        |> bus_subscription()
+        |> Map.merge(%{user_id: user.id})
+        |> insert()
+
+      assert {:ok, subscription} = Subscription.update_subscription(subscription, %{"alert_priority_type" => :low})
+      assert subscription.alert_priority_type == :low
+    end
+
+    test "does not update subscription" do
+      user = insert(:user)
+      subscription =
+        subscription_factory()
+        |> bus_subscription()
+        |> Map.merge(%{user_id: user.id})
+        |> insert()
+
+      assert {:error, changeset} = Subscription.update_subscription(subscription, %{"alert_priority_type" => :super_high})
+      refute changeset.valid?
+    end
+  end
+
+  describe "delete_subscription" do
+    test "deletes subscription" do
+      user = insert(:user)
+      subscription =
+        subscription_factory()
+        |> bus_subscription()
+        |> Map.merge(%{user_id: user.id})
+        |> insert()
+
+      assert {:ok, subscription} = Subscription.delete_subscription(subscription)
+      assert nil == Repo.get(Subscription, subscription.id)
+    end
+  end
 end

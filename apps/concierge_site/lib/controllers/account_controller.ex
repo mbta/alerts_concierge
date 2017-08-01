@@ -1,7 +1,7 @@
 defmodule ConciergeSite.AccountController do
   use ConciergeSite.Web, :controller
 
-  alias AlertProcessor.{Model.User, Repo}
+  alias AlertProcessor.Model.User
   alias ConciergeSite.ConfirmationMessage
 
   plug :scrub_params, "user" when action in [:create]
@@ -12,8 +12,7 @@ defmodule ConciergeSite.AccountController do
   end
 
   def create(conn, %{"user" => user_params}) do
-    account_changeset = User.create_account_changeset(%User{}, user_params)
-    case Repo.insert(account_changeset) do
+    case User.create_account(user_params) do
       {:ok, user} ->
         ConfirmationMessage.send_confirmation(user)
         conn

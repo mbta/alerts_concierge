@@ -1,9 +1,8 @@
 defmodule ConciergeSite.VacationController do
   use ConciergeSite.Web, :controller
   use Guardian.Phoenix.Controller
-  alias AlertProcessor.{Model, Repo}
   alias ConciergeSite.UserParams
-  alias Model.User
+  alias AlertProcessor.Model.User
 
   def edit(conn, _params, user, _claims) do
     changeset = User.update_vacation_changeset(user)
@@ -13,8 +12,7 @@ defmodule ConciergeSite.VacationController do
   def update(conn, %{"user" => user_params}, user, _claims) do
     case UserParams.convert_vacation_strings_to_datetimes(user_params) do
       {:ok, vacation_dates} ->
-        changeset = User.update_vacation_changeset(user, vacation_dates)
-        case Repo.update(changeset) do
+        case User.update_vacation(user, vacation_dates) do
           {:ok, user} ->
             vacation_start = Calendar.Strftime.strftime!(user.vacation_start, "%B %e, %Y")
             vacation_end = Calendar.Strftime.strftime!(user.vacation_end, "%B %e, %Y")
@@ -34,9 +32,8 @@ defmodule ConciergeSite.VacationController do
   end
 
   def delete(conn, _params, user, _claims) do
-    changeset = User.remove_vacation_changeset(user)
     with {:ok, _} <- User.opt_in_phone_number(user),
-      {:ok, _user} <- Repo.update(changeset) do
+      {:ok, _user} <- User.remove_vacation(user) do
         conn
         |> put_flash(:info, "Your alerts are no longer paused.")
         |> redirect(to: subscription_path(conn, :index))

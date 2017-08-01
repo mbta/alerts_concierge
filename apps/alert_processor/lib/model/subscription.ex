@@ -46,7 +46,7 @@ defmodule AlertProcessor.Model.Subscription do
     belongs_to :user, User, type: :binary_id
     has_many :informed_entities, InformedEntity
     field :alert_priority_type, AlertProcessor.AtomType
-    field :relevant_days, AlertProcessor.AtomArrayType
+    field :relevant_days, {:array, AlertProcessor.AtomType}
     field :start_time, :time, null: false
     field :end_time, :time, null: false
     field :origin, :string
@@ -59,7 +59,7 @@ defmodule AlertProcessor.Model.Subscription do
   @permitted_fields ~w(alert_priority_type user_id relevant_days start_time end_time type)a
   @required_fields ~w(alert_priority_type user_id start_time end_time)a
   @update_permitted_fields ~w(alert_priority_type relevant_days start_time end_time)a
-  @valid_days [array: :weekday, array: :saturday, array: :sunday]
+  @valid_days ~w(weekday saturday sunday)a
 
   @doc """
   Changeset for persisting a Subscription
@@ -84,6 +84,19 @@ defmodule AlertProcessor.Model.Subscription do
     |> validate_inclusion(:alert_priority_type, [:low, :medium, :high])
     |> validate_subset(:relevant_days, @valid_days)
     |> validate_length(:relevant_days, min: 1)
+  end
+
+  def update_subscription(struct, params) do
+    struct
+    |> update_changeset(params)
+    |> PaperTrail.update()
+    |> normalize_papertrail_result()
+  end
+
+  def delete_subscription(struct) do
+    struct
+    |> PaperTrail.delete()
+    |> normalize_papertrail_result()
   end
 
   @doc """
@@ -266,4 +279,7 @@ defmodule AlertProcessor.Model.Subscription do
        end)
     |> Enum.map(& &1.trip)
   end
+
+  defp normalize_papertrail_result({:ok, %{model: subscription}}), do: {:ok, subscription}
+  defp normalize_papertrail_result(result), do: result
 end

@@ -1,9 +1,7 @@
 defmodule ConciergeSite.MyAccountController do
   use ConciergeSite.Web, :controller
   use Guardian.Phoenix.Controller
-  alias AlertProcessor.{Model, Repo}
-  alias Model.User
-  alias AlertProcessor.Repo
+  alias AlertProcessor.Model.User
   alias ConciergeSite.UserParams
 
   def edit(conn, _params, user, _claims) do
@@ -13,9 +11,8 @@ defmodule ConciergeSite.MyAccountController do
 
   def update(conn, %{"user" => user_params}, user, _claims) do
     params = UserParams.prepare_for_update_changeset(user_params)
-    changeset = User.update_account_changeset(user, params)
 
-    case Repo.update(changeset) do
+    case User.update_account(user, params) do
       {:ok, user} ->
         :ok = User.clear_holding_queue_for_user_id(user.id)
         conn
@@ -29,9 +26,7 @@ defmodule ConciergeSite.MyAccountController do
   end
 
   def delete(conn, _params, user, _claims) do
-    changeset = User.disable_account_changeset(user)
-
-    case Repo.update(changeset) do
+    case User.disable_account(user) do
       {:ok, _} ->
         conn
         |> Guardian.Plug.sign_out()

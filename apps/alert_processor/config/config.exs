@@ -9,6 +9,8 @@ use Mix.Config
 config :alert_processor,
   ecto_repos: [AlertProcessor.Repo]
 
+config :paper_trail, repo: AlertProcessor.Repo, item_type: Ecto.UUID, originator_type: Ecto.UUID
+
 # Configures Elixir's Logger
 config :logger, :console,
   format: "$time $metadata[$level] $message\n",

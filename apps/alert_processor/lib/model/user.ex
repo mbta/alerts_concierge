@@ -20,6 +20,7 @@ defmodule AlertProcessor.Model.User do
   import Ecto.{Changeset, Query}
   alias AlertProcessor.{Aws.AwsClient, Model.Subscription, HoldingQueue, Repo}
   alias Comeonin.Bcrypt
+  alias Ecto.Multi
 
   @primary_key {:id, :binary_id, autogenerate: true}
 
@@ -55,6 +56,13 @@ defmodule AlertProcessor.Model.User do
     |> validate_required(@required_fields)
   end
 
+  def create_account(params) do
+    %__MODULE__{}
+    |> create_account_changeset(params)
+    |> PaperTrail.insert()
+    |> normalize_papertrail_result()
+  end
+
   @doc """
   Builds changeset used for registering a new user account
   """
@@ -75,6 +83,13 @@ defmodule AlertProcessor.Model.User do
     |> hash_password()
   end
 
+  def update_account(struct, params) do
+    struct
+    |> update_account_changeset(params)
+    |> PaperTrail.update()
+    |> normalize_papertrail_result()
+  end
+
   @doc """
   Builds changeset for updating an existing user account
   """
@@ -82,6 +97,13 @@ defmodule AlertProcessor.Model.User do
     struct
     |> cast(params, ~w(phone_number do_not_disturb_start do_not_disturb_end amber_alert_opt_in))
     |> validate_format(:phone_number, ~r/^[0-9]{10}$/, message: "Phone number is not in a valid format.")
+  end
+
+  def disable_account(struct) do
+    struct
+    |> disable_account_changeset()
+    |> PaperTrail.update()
+    |> normalize_papertrail_result()
   end
 
   def disable_account_changeset(struct) do
@@ -94,7 +116,10 @@ defmodule AlertProcessor.Model.User do
   defp hash_password(changeset) do
     case changeset do
       %Ecto.Changeset{valid?: true, changes: %{password: password}} ->
-        put_change(changeset, :encrypted_password, Bcrypt.hashpwsalt(password))
+        changeset
+        |> put_change(:encrypted_password, Bcrypt.hashpwsalt(password))
+        |> delete_change(:password)
+        |> delete_change(:password_confirmation)
       _ ->
         changeset
     end
@@ -109,17 +134,38 @@ defmodule AlertProcessor.Model.User do
     |> validate_required([:email, :password])
   end
 
+  def update_password(user, params) do
+    user
+    |> update_password_changeset(params)
+    |> PaperTrail.update()
+    |> normalize_papertrail_result()
+  end
+
   @doc """
   Builds a changeset to update password
   """
   def update_password_changeset(struct, params \\ %{}) do
     struct
-    |> cast(params, @permitted_fields)
+    |> cast(params, [:password, :password_confirmation])
     |> validate_required(:password)
     |> validate_confirmation(:password, required: true, message: "Password and password confirmation did not match.")
     |> validate_length(:password, min: 6, message: "Password must be at least six characters long.")
     |> validate_format(:password, ~r/[^a-zA-Z\s:]{1}/, message: "Password must contain one number or special character (? & % $ # !, etc).")
     |> hash_password()
+  end
+
+  def update_vacation(user, params) do
+    user
+    |> update_vacation_changeset(params)
+    |> PaperTrail.update()
+    |> normalize_papertrail_result()
+  end
+
+  def remove_vacation(user) do
+    user
+    |> remove_vacation_changeset()
+    |> PaperTrail.update()
+    |> normalize_papertrail_result()
   end
 
   @spec update_vacation_changeset(__MODULE__.t, map) :: Ecto.Changeset.t
@@ -197,9 +243,18 @@ defmodule AlertProcessor.Model.User do
   Takes a list of user ids and puts on vacation mode ending in the year 9999
   """
   def put_users_on_indefinite_vacation(user_ids) do
-    Repo.update_all(from(u in __MODULE__, where: u.id in ^user_ids),
-                    set: [vacation_start: DateTime.utc_now(),
-                          vacation_end: DateTime.from_naive!(~N[9999-12-25 23:59:59], "Etc/UTC")])
+    user_ids
+    |> Enum.with_index()
+    |> Enum.reduce(Multi.new(), fn({user_id, index}, acc) ->
+          Multi.run(acc, {:user, index}, fn _ ->
+            __MODULE__
+            |> Repo.get(user_id)
+            |> update_vacation_changeset(%{vacation_start: DateTime.utc_now(), vacation_end: DateTime.from_naive!(~N[9999-12-25 23:59:59], "Etc/UTC")})
+            |> PaperTrail.update()
+          end)
+        end)
+    |> Repo.transaction()
+    |> normalize_papertrail_result()
   end
 
   @doc """
@@ -209,11 +264,15 @@ defmodule AlertProcessor.Model.User do
   def put_user_on_indefinite_vacation(user) do
     user
     |> update_vacation_changeset(%{vacation_start: DateTime.utc_now(), vacation_end: DateTime.from_naive!(~N[9999-12-25 23:59:59], "Etc/UTC")})
-    |> Repo.update()
+    |> PaperTrail.update()
+    |> normalize_papertrail_result()
   end
 
   @spec clear_holding_queue_for_user_id(id) :: :ok
   def clear_holding_queue_for_user_id(user_id) do
     HoldingQueue.remove_user_notifications(user_id)
   end
+
+  defp normalize_papertrail_result({:ok, %{model: user}}), do: {:ok, user}
+  defp normalize_papertrail_result(result), do: result
 end

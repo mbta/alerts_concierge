@@ -5,7 +5,6 @@ defmodule AlertProcessor.Subscription.Mapper do
   """
   alias AlertProcessor.{Helpers.DateTimeHelper, Model.InformedEntity, Model.Route, Model.Subscription, Model.Trip, ServiceInfoCache}
   alias Ecto.Multi
-  import Ecto.Query
 
   @type map_trip_info_fn :: (String.t, String.t, Subscription.relevant_day -> :error | {:ok, [Trip.t]})
 
@@ -210,24 +209,37 @@ defmodule AlertProcessor.Subscription.Mapper do
       |> Subscription.create_changeset()
 
       acc
-      |> Multi.insert({:subscription, index}, sub_to_insert)
+      |> Multi.run({:subscription, index}, fn _ ->
+           PaperTrail.insert(sub_to_insert)
+         end)
     end)
   end
 
   def build_update_subscription_transaction(subscription, %{"trips" => trips} = params) do
     subscription_changeset = Subscription.create_changeset(subscription, params)
-    current_trip_entity_ids =
+    current_trip_entities =
       subscription.informed_entities
       |> Enum.filter(& InformedEntity.entity_type(&1) == :trip)
-      |> Enum.map(& &1.id)
 
-    trips
+    multi =
+      trips
+      |> Enum.with_index()
+      |> Enum.reduce(Multi.new(), fn({trip, index}, acc) ->
+           Multi.run(acc, {:informed_entity, index}, fn _ ->
+             PaperTrail.insert(%InformedEntity{subscription_id: subscription.id, trip: trip})
+           end)
+         end)
+
+    current_trip_entities
     |> Enum.with_index()
-    |> Enum.reduce(Multi.new(), fn({trip, index}, acc) ->
-         Multi.insert(acc, {:informed_entity, index}, %InformedEntity{subscription_id: subscription.id, trip: trip})
+    |> Enum.reduce(multi, fn({current_trip_entity, index}, acc) ->
+          Multi.run(acc, {:remove_old, index}, fn _ ->
+            PaperTrail.delete(current_trip_entity)
+          end)
+        end)
+    |> Multi.run(:subscription, fn _ ->
+         PaperTrail.update(subscription_changeset)
        end)
-    |> Multi.delete_all(:remove_old, from(ie in InformedEntity, where: ie.id in ^current_trip_entity_ids))
-    |> Multi.update(:subscription, subscription_changeset)
   end
 
   @spec populate_trip_options(map, map_trip_info_fn) :: {:ok, map} | {:error, String.t}
