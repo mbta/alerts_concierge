@@ -8,6 +8,11 @@ export default function($) {
     route: undefined,
   };
 
+  const $enterTripInfoContainer = $("div.enter-trip-info.bus")[0];
+  if ($enterTripInfoContainer === undefined) {
+    return;
+  }
+
   if ($(".enter-trip-info").length) {
     props.allRoutes = generateRoutes();
     props.allRouteNames = generateRouteNames();
