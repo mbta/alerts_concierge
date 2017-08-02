@@ -12,5 +12,6 @@ defmodule ConciergeSite.Dissemination.EmailTest do
     assert email.subject == "Reset Your MBTA Alerts Password"
     assert email.html_body =~ "Please click the link below and follow the instructions on the page to reset your password"
     assert email.html_body =~ "/unsubscribe"
+    assert email.html_body =~ "/my-account/confirm_disable?token="
   end
 end

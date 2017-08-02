@@ -24,11 +24,12 @@ defmodule ConciergeSite.Dissemination.Email do
 
   def confirmation_email(user) do
     unsubscribe_url = MailHelper.unsubscribe_url(user)
+    disable_account_url = MailHelper.disable_account_url(user)
     base_email()
     |> to(user.email)
     |> subject("MBTA Alerts Account Confirmation")
     |> put_html_layout({ConciergeSite.LayoutView, "email.html"})
-    |> render(:confirmation, unsubscribe_url: unsubscribe_url)
+    |> render(:confirmation, unsubscribe_url: unsubscribe_url, disable_account_url: disable_account_url)
   end
 
   defp base_email do
