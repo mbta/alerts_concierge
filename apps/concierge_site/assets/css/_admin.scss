@@ -1,0 +1,26 @@
+.admin-table-email-column,
+.admin-table-role-column {
+  @include make-col(6);
+}
+
+.admin-table-header {
+  background-color: $brand-navy-dark;
+  color: $white;
+  display: flex;
+  font-size: $base-font-size-xxl;
+  font-weight: bold;
+  padding: 1rem;
+}
+
+.admin-table-row {
+  display: flex;
+  padding: 1rem;
+
+  &:nth-of-type(even) {
+    background-color: $pale-grey;
+  }
+}
+
+.admin-table-cell {
+  color: $brand-primary;
+}
