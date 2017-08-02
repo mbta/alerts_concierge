@@ -39,7 +39,7 @@ defmodule AlertProcessor.DigestBuilder do
       end)
     end)
     |> Enum.map(fn({user, alerts}) ->
-      %Digest{user: user, alerts: alerts, digest_date_group: digest_date_group}
+      %Digest{user: user, alerts: Enum.uniq(alerts), digest_date_group: digest_date_group}
     end)
   end
 end
