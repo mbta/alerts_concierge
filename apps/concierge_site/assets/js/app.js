@@ -31,7 +31,6 @@ selectBusRoute();
 selectStation();
 selectAmenityStation();
 selectTrip();
-myAccountToggleSections();
 formHelpers();
 vacationDatepicker();
 

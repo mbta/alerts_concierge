@@ -10,6 +10,11 @@ export default function($) {
     destination: {}
   };
 
+  const $enterTripInfoContainer = $("div.enter-trip-info")[0];
+  if ($enterTripInfoContainer === undefined) {
+    return;
+  }
+
   if ($(".enter-trip-info").length) {
     const className = "select.subscription-select-origin optgroup";
     props.allRoutes = generateRouteList(className, $);

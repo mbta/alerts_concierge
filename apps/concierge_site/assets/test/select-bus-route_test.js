@@ -148,7 +148,7 @@ describe("selectBusRoute", function() {
   });
 
   const tripInfoPageHtml = `
-    <div class="enter-trip-info">
+    <div class="enter-trip-info bus">
       <form>
         <div class="form-group select-route">
           <label for="route" class="station-input-label form-label">Origin</label>
