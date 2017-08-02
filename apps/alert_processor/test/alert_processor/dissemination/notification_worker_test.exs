@@ -1,8 +1,9 @@
 defmodule AlertProcessor.NotificationWorkerTest do
   use AlertProcessor.DataCase
   use Bamboo.Test, shared: true
+  import ExUnit.CaptureLog
 
-  alias AlertProcessor.{Model, NotificationWorker, SendingQueue}
+  alias AlertProcessor.{Model, NotificationWorker, RateLimiter, SendingQueue}
   alias Model.{Alert, InformedEntity, Notification}
   import AlertProcessor.Factory
 
@@ -68,6 +69,33 @@ defmodule AlertProcessor.NotificationWorkerTest do
     :timer.sleep(101)
 
     assert_number_of_notifications_persisted_for_user(1, user)
+  end
+
+  test "Does not exceed rate limit", %{notification: notification} do
+    user = insert :user
+    notification = Map.put(notification, :user, user)
+
+    Application.put_env(:alert_processor, :rate_limit_scale, "1000000")
+    Application.put_env(:alert_processor, :rate_limit, "1")
+
+    RateLimiter.check_rate_limit(user.id)
+
+    SendingQueue.start_link()
+    {:ok, pid} = NotificationWorker.start_link([name: :notification_worker_test])
+    :erlang.trace(pid, true, [:receive])
+
+    a = fn ->
+      SendingQueue.enqueue(notification)
+      :timer.sleep(101)
+
+      assert_number_of_notifications_persisted_for_user(0, user)
+    end
+
+    assert capture_log(a) =~ "Sending rate exceeded for user: #{user.id}"
+
+    # Reset limits so other tests can run
+    Application.put_env(:alert_processor, :rate_limit_scale, "3600000")
+    Application.put_env(:alert_processor, :rate_limit, "100")
   end
 
   test "Worker runs on interval jobs from sending queue to notification", %{notification_2: notification_2, notification_3: notification_3} do

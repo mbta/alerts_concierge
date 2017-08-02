@@ -3,7 +3,8 @@ defmodule AlertProcessor.NotificationWorker do
   Worker process for processing a single Notification from SendingQueue
   """
   use GenServer
-  alias AlertProcessor.{SendingQueue, Dispatcher, Model.Notification}
+  require Logger
+  alias AlertProcessor.{SendingQueue, Dispatcher, Model.Notification, RateLimiter}
   @type notifications :: [Notification.t]
 
   @doc false
@@ -35,8 +36,11 @@ defmodule AlertProcessor.NotificationWorker do
   end
 
   defp send_notification(notification) do
-    case Dispatcher.send_notification(notification) do
-      {:ok, _} -> Notification.save(notification, :sent)
+    with :ok <- RateLimiter.check_rate_limit(notification.user.id),
+      {:ok, _} <- Dispatcher.send_notification(notification) do
+        Notification.save(notification, :sent)
+    else
+      {:error, :rate_exceeded} -> Logger.warn("Sending rate exceeded for user: #{notification.user.id}")
       {:error, _} -> Notification.save(notification, :failed)
     end
   end
