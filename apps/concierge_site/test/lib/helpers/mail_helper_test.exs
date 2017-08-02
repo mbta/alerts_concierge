@@ -132,7 +132,7 @@ defmodule ConcerigeSite.Helpers.MailHelperTest do
       user = insert(:user)
       url = MailHelper.unsubscribe_url(user)
       assert url =~ "http"
-      assert url =~ "/unsubscribe/"
+      assert Regex.match?(~r/unsubscribe\/(.+)/, url)
     end
   end
 
@@ -141,7 +141,7 @@ defmodule ConcerigeSite.Helpers.MailHelperTest do
       user = insert(:user)
       url = MailHelper.disable_account_url(user)
       assert url =~ "http"
-      assert url =~ "/my-account/confirm_disable?token="
+      assert Regex.match?(~r/my-account\/confirm_disable\?token=(.+)/, url)
     end
   end
 end
