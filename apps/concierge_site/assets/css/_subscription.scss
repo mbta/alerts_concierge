@@ -295,10 +295,10 @@
 
 .back-link-container {
   position: absolute;
-  bottom: 6rem;
+  bottom: 16rem;
   padding: 0;
   @include media-breakpoint-down(sm) {
-    bottom: 3rem;
+    bottom: 12rem;
   }
 }
 
