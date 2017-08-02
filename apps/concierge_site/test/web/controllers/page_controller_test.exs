@@ -7,7 +7,11 @@ defmodule ConciergeSite.PageControllerTest do
   end
 
   test "GET /account_disabled", %{conn: conn} do
-    conn = get conn, "/account_disabled"
+    conn =
+      :user
+      |> insert()
+      |> guardian_login(conn, :access, %{default: [:disable_account]})
+      |> get("/account_disabled")
     assert html_response(conn, 200) =~ "Account Disabled"
   end
 end

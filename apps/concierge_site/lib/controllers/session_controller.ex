@@ -15,7 +15,7 @@ defmodule ConciergeSite.SessionController do
     case User.authenticate(login_params) do
       {:ok, user} ->
         conn
-        |> Guardian.Plug.sign_in(user)
+        |> Guardian.Plug.sign_in(user, :access, perms: %{default: Guardian.Permissions.max})
         |> redirect(to: "/my-subscriptions")
       {:error, :disabled} ->
         conn

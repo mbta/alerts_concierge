@@ -10,17 +10,25 @@ defmodule ConciergeSite.Router do
   end
 
   pipeline :browser_auth do
+    plug ConciergeSite.Plugs.TokenLogin
     plug Guardian.Plug.VerifySession
     plug Guardian.Plug.LoadResource
     plug Guardian.Plug.EnsureAuthenticated,
       handler: ConciergeSite.SessionController
   end
 
+  pipeline :disable_account_auth do
+    plug Guardian.Plug.EnsurePermissions, handler: ConciergeSite.Auth.ErrorHandler, default: [:disable_account]
+  end
+
+  pipeline :full_auth do
+    plug Guardian.Plug.EnsurePermissions, handler: ConciergeSite.Auth.ErrorHandler, default: [:full_permissions]
+  end
+
   scope "/", ConciergeSite do
     pipe_through :browser
 
     get "/", PageController, :index
-    get "/account_disabled", PageController, :account_disabled
     resources "/account", AccountController, only: [:new, :create]
     resources "/login", SessionController, only: [:new, :create, :delete], singleton: true
     get "/reset-password/sent", PasswordResetController, :sent
@@ -29,10 +37,16 @@ defmodule ConciergeSite.Router do
   end
 
   scope "/", ConciergeSite do
-    pipe_through [:browser, :browser_auth]
-    get "/my-subscriptions", SubscriptionController, :index
+    pipe_through [:browser, :browser_auth, :disable_account_auth]
     get "/my-account/confirm_disable", MyAccountController, :confirm_disable
-    resources "/my-account", MyAccountController, only: [:edit, :update, :delete], singleton: true do
+    delete "/my-account", MyAccountController, :delete
+    get "/account_disabled", PageController, :account_disabled
+  end
+
+  scope "/", ConciergeSite do
+    pipe_through [:browser, :browser_auth, :full_auth]
+    get "/my-subscriptions", SubscriptionController, :index
+    resources "/my-account", MyAccountController, only: [:edit, :update], singleton: true do
       resources "/password", PasswordController, only: [:edit, :update], singleton: true
       resources "/vacation", VacationController, only: [:edit, :update, :delete], singleton: true
     end
@@ -41,7 +55,7 @@ defmodule ConciergeSite.Router do
   end
 
   scope "/subscriptions", ConciergeSite do
-    pipe_through [:browser, :browser_auth]
+    pipe_through [:browser, :browser_auth, :full_auth]
     resources "/subway", SubwaySubscriptionController,
       only: [:new, :edit, :update, :create]
     get "/subway/new/info", SubwaySubscriptionController, :info

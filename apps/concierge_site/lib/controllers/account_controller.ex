@@ -16,7 +16,7 @@ defmodule ConciergeSite.AccountController do
       {:ok, user} ->
         ConfirmationMessage.send_confirmation(user)
         conn
-        |> Guardian.Plug.sign_in(user)
+        |> Guardian.Plug.sign_in(user, :access, perms: %{default: Guardian.Permissions.max})
         |> redirect(to: "/my-subscriptions")
       {:error, changeset} ->
         render conn, "new.html", account_changeset: changeset, errors: errors(changeset)
