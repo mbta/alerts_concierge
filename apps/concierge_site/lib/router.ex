@@ -10,7 +10,7 @@ defmodule ConciergeSite.Router do
   end
 
   pipeline :browser_auth do
-    plug ConciergeSite.Plugs.AutoLogin
+    plug ConciergeSite.Plugs.TokenLogin
     plug Guardian.Plug.VerifySession
     plug Guardian.Plug.LoadResource
     plug Guardian.Plug.EnsureAuthenticated,
