@@ -379,27 +379,23 @@ defmodule AlertProcessor.Subscription.CommuterRailMapperTest do
 
   describe "get_trip_info" do
     test "returns trip options with closest trip preselected" do
-      {:ok, trips} = CommuterRailMapper.get_trip_info("Anderson/ Woburn", "place-north", :sunday, "10:00:00")
-      assert [%AlertProcessor.Model.Trip{trip_number: "2300", selected: false},
-              %AlertProcessor.Model.Trip{trip_number: "2302", selected: true},
-              %AlertProcessor.Model.Trip{trip_number: "2304", selected: false},
-              %AlertProcessor.Model.Trip{trip_number: "2306", selected: false},
-              %AlertProcessor.Model.Trip{trip_number: "2308", selected: false},
-              %AlertProcessor.Model.Trip{trip_number: "2310", selected: false},
-              %AlertProcessor.Model.Trip{trip_number: "2312", selected: false},
-              %AlertProcessor.Model.Trip{trip_number: "2314", selected: false}] = trips
+      {:ok, trips} = CommuterRailMapper.get_trip_info("Reading", "place-north", :sunday, "10:00:00")
+      assert [%AlertProcessor.Model.Trip{trip_number: "2200", selected: false},
+              %AlertProcessor.Model.Trip{trip_number: "2202", selected: true},
+              %AlertProcessor.Model.Trip{trip_number: "2204", selected: false},
+              %AlertProcessor.Model.Trip{trip_number: "2206", selected: false},
+              %AlertProcessor.Model.Trip{trip_number: "2208", selected: false},
+              %AlertProcessor.Model.Trip{trip_number: "2210", selected: false}] = trips
     end
 
     test "returns trip options with preselected values" do
-      {:ok, trips} = CommuterRailMapper.get_trip_info("Anderson/ Woburn", "place-north", :sunday, ["2302", "2308"])
-      assert [%AlertProcessor.Model.Trip{trip_number: "2300", selected: false},
-             %AlertProcessor.Model.Trip{trip_number: "2302", selected: true},
-             %AlertProcessor.Model.Trip{trip_number: "2304", selected: false},
-             %AlertProcessor.Model.Trip{trip_number: "2306", selected: false},
-             %AlertProcessor.Model.Trip{trip_number: "2308", selected: true},
-             %AlertProcessor.Model.Trip{trip_number: "2310", selected: false},
-             %AlertProcessor.Model.Trip{trip_number: "2312", selected: false},
-             %AlertProcessor.Model.Trip{trip_number: "2314", selected: false}] = trips
+      {:ok, trips} = CommuterRailMapper.get_trip_info("Reading", "place-north", :sunday, ["2202", "2208"])
+      assert [%AlertProcessor.Model.Trip{trip_number: "2200", selected: false},
+             %AlertProcessor.Model.Trip{trip_number: "2202", selected: true},
+             %AlertProcessor.Model.Trip{trip_number: "2204", selected: false},
+             %AlertProcessor.Model.Trip{trip_number: "2206", selected: false},
+             %AlertProcessor.Model.Trip{trip_number: "2208", selected: true},
+             %AlertProcessor.Model.Trip{trip_number: "2210", selected: false}] = trips
     end
 
     test "returns error if origin/destination are not on the same route" do
