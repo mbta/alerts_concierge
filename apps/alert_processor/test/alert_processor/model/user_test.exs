@@ -276,4 +276,18 @@ defmodule AlertProcessor.Model.UserTest do
       assert nil == User.for_email("test@nonexistent.com")
     end
   end
+
+  describe "all_admin_users/0" do
+    test "returns all users with admin roles" do
+      application_admin = insert(:user, role: "application_administration")
+      customer_support = insert(:user, role: "customer_support")
+      user = insert(:user, role: "user")
+
+      all_admin_users = User.all_admin_users()
+
+      assert application_admin in all_admin_users
+      assert customer_support in all_admin_users
+      refute user in all_admin_users
+    end
+  end
 end
