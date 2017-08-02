@@ -34,6 +34,7 @@ defmodule ConciergeSite.Router do
     get "/reset-password/sent", PasswordResetController, :sent
     resources "/reset-password", PasswordResetController, only: [:new, :create, :edit, :update]
     get "/unsubscribe/:token", UnsubscribeController, :unsubscribe
+    post "/rejected_email", RejectedEmailController, :handle_rejected_email
   end
 
   scope "/", ConciergeSite do

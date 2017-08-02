@@ -244,4 +244,15 @@ defmodule AlertProcessor.Model.UserTest do
       assert DateTime.compare(user.vacation_end, DateTime.from_naive!(~N[9999-12-25 23:59:59], "Etc/UTC")) == :eq
     end
   end
+
+  describe "for_email/1" do
+    test "returns a user if present" do
+      user = insert(:user)
+      assert user == User.for_email(user.email)
+    end
+
+    test "returns nil if no matching user" do
+      assert nil == User.for_email("test@nonexistent.com")
+    end
+  end
 end
