@@ -2,4 +2,6 @@
 <p>To update your subscription preferences, please tap on the Edit your Subscriptions link below.</p>
 <p>To stop receiving email alerts, please click unsubscribe below.</p>
 
+<p>If you did NOT request an account to receive MBTA alerts, click <%= link("here", to: @disable_account_url) %> to disable the account.<p>
+
 <%= render "_footer.html", unsubscribe_url: @unsubscribe_url %>

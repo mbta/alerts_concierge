@@ -1,6 +1,7 @@
 defmodule ConcerigeSite.Helpers.MailHelperTest do
   @moduledoc false
-  use ExUnit.Case
+  use ConciergeSite.DataCase
+  import AlertProcessor.Factory
   alias ConciergeSite.Helpers.MailHelper
   alias AlertProcessor.{Model.Alert, Model.InformedEntity}
 
@@ -123,6 +124,24 @@ defmodule ConcerigeSite.Helpers.MailHelperTest do
       facility = "logo-facility"
 
       assert MailHelper.alt_text_for_alert(alert) == facility
+    end
+  end
+
+  describe "unsubscribe_url" do
+    test "generates url with token" do
+      user = insert(:user)
+      url = MailHelper.unsubscribe_url(user)
+      assert url =~ "http"
+      assert url =~ ~r/unsubscribe\/(.+)/
+    end
+  end
+
+  describe "disable_account_url" do
+    test "generates url with token" do
+      user = insert(:user)
+      url = MailHelper.disable_account_url(user)
+      assert url =~ "http"
+      assert url =~ ~r/my-account\/confirm_disable\?token=(.+)/
     end
   end
 end

@@ -3,3 +3,5 @@ To update your subscription preferences, please tap on the Edit your Subscriptio
 To stop receiving email alerts, please click unsubscribe below.
 
 If you no longer wish to receive any emails please unsubscribe: <%= @unsubscribe_url %>
+
+If you did NOT request an account to receive MBTA alerts, click here to disable the account: <%= @disable_account_url %>
