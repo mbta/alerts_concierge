@@ -93,8 +93,8 @@ defmodule AlertProcessor.Model.NotificationTest do
     refute invalid_changeset.valid?
   end
 
-  test "save/2 saves notification with given status", %{valid_attrs: valid_attrs} do
-    notification = struct(Notification, valid_attrs)
+  test "save/2 saves notification with given status", %{user: user, valid_attrs: valid_attrs} do
+    notification = struct(Notification, Map.put(valid_attrs, :user, user))
     {:ok, saved_notification} = Notification.save(notification, :sent)
 
     assert saved_notification.status == :sent

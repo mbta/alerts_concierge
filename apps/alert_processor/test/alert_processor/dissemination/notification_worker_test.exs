@@ -4,6 +4,7 @@ defmodule AlertProcessor.NotificationWorkerTest do
 
   alias AlertProcessor.{Model, NotificationWorker, SendingQueue}
   alias Model.{Alert, InformedEntity, Notification}
+  import AlertProcessor.Factory
 
   @alert %Alert{
     id: "1",
@@ -16,10 +17,13 @@ defmodule AlertProcessor.NotificationWorkerTest do
     email = "test@example.com"
     body = "This is a test alert"
     body_2 = "Another alert"
+    effect = "effect"
     status = "unsent"
 
     notification = %Notification{
       header: body,
+      service_effect: effect,
+      alert_id: "1",
       email: email,
       phone_number: nil,
       send_after: DateTime.utc_now(),
@@ -29,6 +33,8 @@ defmodule AlertProcessor.NotificationWorkerTest do
 
     notification_2 = %Notification{
       header: body_2,
+      service_effect: effect,
+      alert_id: "1",
       email: email,
       phone_number: nil,
       send_after: DateTime.utc_now(),
@@ -38,6 +44,8 @@ defmodule AlertProcessor.NotificationWorkerTest do
 
     notification_3 = %Notification{
       header: body,
+      service_effect: effect,
+      alert_id: "1",
       email: email,
       phone_number: nil,
       send_after: DateTime.utc_now(),
@@ -49,25 +57,40 @@ defmodule AlertProcessor.NotificationWorkerTest do
   end
 
   test "Worker passes jobs from sending queue to notification", %{notification: notification} do
+    user = insert :user
+    notification = Map.put(notification, :user, user)
+
     SendingQueue.start_link()
     {:ok, pid} = NotificationWorker.start_link([name: :notification_worker_test])
     :erlang.trace(pid, true, [:receive])
 
     SendingQueue.enqueue(notification)
     :timer.sleep(101)
-    assert_received {:trace, ^pid, :receive, {:sent_notification_email, ^notification}}
+
+    assert_number_of_notifications_persisted_for_user(1, user)
   end
 
   test "Worker runs on interval jobs from sending queue to notification", %{notification_2: notification_2, notification_3: notification_3} do
+    user = insert :user
+    notification_2 = Map.put(notification_2, :user, user)
+    notification_3 = Map.put(notification_3, :user, user)
+
     SendingQueue.start_link()
     {:ok, pid} = NotificationWorker.start_link([name: :notification_worker_interval_test])
     :erlang.trace(pid, true, [:receive])
     SendingQueue.enqueue(notification_2)
     :timer.sleep(101)
-    assert_received {:trace, ^pid, :receive, {:sent_notification_email, ^notification_2}}
+
+    assert_number_of_notifications_persisted_for_user(1, user)
+
     assert SendingQueue.pop == :error
     SendingQueue.enqueue(notification_3)
     :timer.sleep(101)
-    assert_received {:trace, ^pid, :receive, {:sent_notification_email, ^notification_3}}
+
+    assert_number_of_notifications_persisted_for_user(2, user)
+  end
+
+  defp assert_number_of_notifications_persisted_for_user(count, user) do
+    assert count == Repo.one(from n in Notification, where: n.user_id == ^user.id, select: count(n.id))
   end
 end
