@@ -47,6 +47,8 @@ defmodule AlertProcessor.Model.User do
     password_confirmation amber_alert_opt_in)a
   @required_fields ~w(email password)a
 
+  @admin_roles ~w(customer_support application_administration)
+
   @doc """
   Builds a changeset based on the `struct` and `params`.
   """
@@ -231,6 +233,23 @@ defmodule AlertProcessor.Model.User do
       _ -> Bcrypt.checkpw(password, user.encrypted_password)
     end
   end
+
+  @doc """
+  Checks if a user's login credentials are valid and that the user has either the
+  customer_support or application_administration role
+  """
+  def authenticate_admin(params) do
+    params
+    |> authenticate()
+    |> authorize_admin()
+  end
+
+  defp authorize_admin({:ok, %__MODULE__{role: role}} = {_, user}) when role in @admin_roles do
+     {:ok, user, role}
+  end
+
+  defp authorize_admin({:ok, _user}), do: :unauthorized
+  defp authorize_admin({:error, result}), do: {:error, result}
 
   @doc """
   Returns user ids based on a list of phone numbers

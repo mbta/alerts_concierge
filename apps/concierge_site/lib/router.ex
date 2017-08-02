@@ -25,6 +25,10 @@ defmodule ConciergeSite.Router do
     plug Guardian.Plug.EnsurePermissions, handler: ConciergeSite.Auth.ErrorHandler, default: [:full_permissions]
   end
 
+  pipeline :admin_auth do
+    plug Guardian.Plug.EnsurePermissions, handler: ConciergeSite.Admin.SessionController, admin: [:customer_support]
+  end
+
   scope "/", ConciergeSite do
     pipe_through :browser
 
@@ -80,6 +84,18 @@ defmodule ConciergeSite.Router do
     patch "/amenities/remove_station/:station", AmenitySubscriptionController, :remove_station
     resources "/amenities", AmenitySubscriptionController,
       only: [:new, :create, :edit, :update]
+  end
+
+  scope "/admin", ConciergeSite, as: :admin do
+    pipe_through :browser
+
+    resources "/login", Admin.SessionController, only: [:new, :create], singleton: true
+  end
+
+  scope "/admin", ConciergeSite, as: :admin do
+    pipe_through [:browser, :browser_auth, :admin_auth]
+
+    resources "/subscribers", Admin.SubscriberController, only: [:index]
   end
 
   if Mix.env == :dev do
