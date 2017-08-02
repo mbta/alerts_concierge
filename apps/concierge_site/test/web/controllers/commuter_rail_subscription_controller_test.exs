@@ -104,10 +104,10 @@ defmodule ConciergeSite.CommuterRailSubscriptionControllerTest do
 
     test "POST /subscriptions/commuter_rail", %{conn: conn} do
       params = %{"subscription" => %{
-        "origin" => "Anderson/ Woburn",
+        "origin" => "Reading",
         "destination" => "place-north",
-        "trips" => ["1312", "1314"],
-        "relevant_days" => "saturday",
+        "trips" => ["2202", "2208"],
+        "relevant_days" => "sunday",
         "departure_start" => "12:00:00",
         "alert_priority_type" => "low",
         "trip_type" => "one_way"
