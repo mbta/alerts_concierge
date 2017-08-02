@@ -244,14 +244,12 @@ defmodule AlertProcessor.Model.User do
     |> authorize_admin()
   end
 
-  defp authorize_admin({:error, result}), do: {:error, result}
-  defp authorize_admin({:ok, user}) do
-    if user.role in @admin_roles do
-      {:ok, user, user.role}
-    else
-      {:unauthorized, user}
-    end
+  defp authorize_admin({:ok, %__MODULE__{role: role}} = {_, user}) when role in @admin_roles do
+     {:ok, user, role}
   end
+
+  defp authorize_admin({:ok, _user}), do: :unauthorized
+  defp authorize_admin({:error, result}), do: {:error, result}
 
   @doc """
   Returns user ids based on a list of phone numbers

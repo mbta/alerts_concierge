@@ -40,6 +40,6 @@ defmodule ConciergeSite.Admin.SessionControllerTest do
     }}
 
     conn = post(conn, admin_session_path(conn, :create), params)
-    assert html_response(conn, 200) =~ "Sorry, you are not authorized to log in."
+    assert html_response(conn, 403) =~ "Forbidden"
   end
 end

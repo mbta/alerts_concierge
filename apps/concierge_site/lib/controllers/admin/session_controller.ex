@@ -23,11 +23,10 @@ defmodule ConciergeSite.Admin.SessionController do
             admin: [:customer_support, :application_administration]
           })
         |> redirect(to: admin_subscriber_path(conn, :index))
-      {:unauthorized, user} ->
-        changeset = User.login_changeset(user)
+      :unauthorized ->
         conn
-        |> put_flash(:error, "Sorry, you are not authorized to log in.")
-        |> render("new.html", login_changeset: changeset)
+        |> put_status(403)
+        |> render(ConciergeSite.ErrorView, "403.html")
       {:error, changeset} ->
         conn
         |> put_flash(:error, "Sorry, your login information was incorrect. Please try again.")
@@ -37,7 +36,7 @@ defmodule ConciergeSite.Admin.SessionController do
 
   def unauthorized(conn, _params) do
     conn
-    |> put_flash(:error, "Sorry, you are not authorized to view this page.")
-    |> redirect(to: session_path(conn, :new))
+    |> put_status(403)
+    |> render(ConciergeSite.ErrorView, "403.html")
   end
 end
