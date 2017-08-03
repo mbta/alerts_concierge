@@ -1,0 +1,6 @@
+[{kernel,
+  [
+    {sync_nodes_optional, ['alert_processor@ec2-34-201-0-106.compute-1.amazonaws.com']},
+    {sync_nodes_timeout, 30000}
+  ]}
+].

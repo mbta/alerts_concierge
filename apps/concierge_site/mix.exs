@@ -26,6 +26,7 @@ defmodule ConciergeSite.Mixfile do
     [mod: {ConciergeSite, []},
      extra_applications: [
        :elixir_make,
+       :ex2ms,
        :public_key,
        :crypto,
        :bamboo,

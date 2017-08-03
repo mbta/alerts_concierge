@@ -25,6 +25,7 @@ defmodule AlertProcessor.Mixfile do
     [mod: {AlertProcessor, []},
       extra_applications: [
         :elixir_make,
+        :ex2ms,
         :plug,
         :jsx,
         :public_key,
