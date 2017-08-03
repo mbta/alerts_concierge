@@ -308,11 +308,36 @@ defmodule AlertProcessor.Model.User do
   def for_email(email) do
     Repo.get_by(__MODULE__, email: email)
   end
-  
+
   @doc """
   Returns all users with one of the admin_roles
   """
   def all_admin_users do
     Repo.all(from u in __MODULE__, where: u.role in @admin_roles)
+  end
+
+  @doc """
+  return list of users ordered by email address
+  """
+  def ordered_by_email do
+    Repo.all(
+      from u in __MODULE__,
+      order_by: u.email,
+      limit: 25
+    )
+  end
+
+  @doc """
+  filter users based on search criteria for either email
+  address or phone number
+  """
+  def search_by_contact_info(search_term) do
+    Repo.all(
+      from u in __MODULE__,
+      where: ilike(u.email, ^"%#{search_term}%"),
+      or_where: ilike(u.phone_number, ^"%#{search_term}%"),
+      order_by: u.email,
+      limit: 25
+    )
   end
 end
