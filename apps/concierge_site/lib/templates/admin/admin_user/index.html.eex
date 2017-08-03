@@ -1,0 +1,15 @@
+<h1 class="header-container">Admins</h1>
+<div class="admin-table">
+  <div class="admin-table-header">
+    <div class="admin-table-email-column">Admin Email</div>
+    <div class="admin-table-role-column">Role</div>
+  </div>
+  <div class="admin-table-body">
+    <%= for user <- @admin_users do %>
+      <div class="admin-table-row">
+        <div class="admin-table-email-column admin-table-cell"><%= user.email %></div>
+        <div class="admin-table-role-column admin-table-cell"><%= display_role(user) %></div>
+      </div>
+    <% end %>
+  </div>
+</div>

@@ -298,4 +298,11 @@ defmodule AlertProcessor.Model.User do
   def for_email(email) do
     Repo.get_by(__MODULE__, email: email)
   end
+  
+  @doc """
+  Returns all users with one of the admin_roles
+  """
+  def all_admin_users do
+    Repo.all(from u in __MODULE__, where: u.role in @admin_roles)
+  end
 end
