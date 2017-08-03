@@ -33,6 +33,7 @@ defmodule AlertProcessor.Mixfile do
         :comeonin,
         :sweet_xml, # Must come before ex_aws
         :ex_aws,
+        :ex_rated,
         :hackney,
         :httpoison,
         :logger,
@@ -63,6 +64,7 @@ defmodule AlertProcessor.Mixfile do
       {:excoveralls, "~> 0.5", only: [:dev, :test]},
       {:ex_aws, git: "https://github.com/bfauble/ex_aws", ref: "f64f2cb026171dc6def03102ccae31906797deb0"},
       {:ex_machina, "~> 2.0", only: :test},
+      {:ex_rated, "~> 1.3"},
       {:exvcr, "~> 0.8", runtime: :false},
       {:gettext, "~> 0.11"},
       {:hackney, "~> 1.6"},

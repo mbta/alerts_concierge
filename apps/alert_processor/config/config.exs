@@ -36,6 +36,10 @@ config :alert_processor, alert_api_url: {:system, "ALERT_API_URL", "http://s3.am
 config :alert_processor, api_url: {:system, "API_URL", "https://dev.api.mbtace.com/"}
 config :alert_processor, database_url: {:system, "DATABASE_URL_DEV", "postgresql://postgres:postgres@localhost:5432/alert_concierge_dev"}
 
+# Config for Rate Limiter. Scale: time period in ms. Limit: # of requests per time period
+config :alert_processor, rate_limit_scale: {:system, "RATE_LIMIT_SCALE", "3600000"}
+config :alert_processor, rate_limit: {:system, "RATE_LIMIT", "100"}
+
 # Import environment specific config. This must remain at the bottom
 # of this file so it overrides the configuration defined above.
 import_config "#{Mix.env}.exs"
