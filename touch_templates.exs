@@ -36,7 +36,7 @@ defmodule TouchTemplates do
     File.write!(file, content)
   end
   defp insert_content(file, :notification) do
-    content = "<%= notification %><%= unsubscribe_url %>"
+    content = "<%= notification.header %><%= unsubscribe_url %>"
     File.write!(file, content)
   end
   defp insert_content(file, :footer) do
