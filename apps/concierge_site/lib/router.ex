@@ -96,7 +96,7 @@ defmodule ConciergeSite.Router do
     pipe_through [:browser, :browser_auth, :admin_auth]
 
     resources "/subscribers", Admin.SubscriberController, only: [:index]
-    resources "/admin_users", Admin.AdminUserController, only: [:index]
+    resources "/admin_users", Admin.AdminUserController, only: [:index, :new, :create]
   end
 
   if Mix.env == :dev do
