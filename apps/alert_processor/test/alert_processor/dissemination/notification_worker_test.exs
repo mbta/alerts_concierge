@@ -75,6 +75,10 @@ defmodule AlertProcessor.NotificationWorkerTest do
     user = insert :user
     notification = Map.put(notification, :user, user)
 
+    old_config = Application.get_all_env(:alert_processor)
+    on_exit fn ->
+      for {k, v} <- old_config, do: Application.put_env(:alert_processor, k, v)
+    end
     Application.put_env(:alert_processor, :rate_limit_scale, "1000000")
     Application.put_env(:alert_processor, :rate_limit, "1")
 
@@ -92,10 +96,6 @@ defmodule AlertProcessor.NotificationWorkerTest do
     end
 
     assert capture_log(a) =~ "Sending rate exceeded for user: #{user.id}"
-
-    # Reset limits so other tests can run
-    Application.put_env(:alert_processor, :rate_limit_scale, "3600000")
-    Application.put_env(:alert_processor, :rate_limit, "100")
   end
 
   test "Worker runs on interval jobs from sending queue to notification", %{notification_2: notification_2, notification_3: notification_3} do
