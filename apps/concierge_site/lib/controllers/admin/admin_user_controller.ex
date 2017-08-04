@@ -27,7 +27,7 @@ defmodule ConciergeSite.Admin.AdminUserController do
 
   def create(conn, %{"user" => admin_user_params}, _user, _claims) do
     case User.create_admin_account(admin_user_params) do
-      {:ok, admin_user} ->
+      {:ok, _} ->
         conn
         |> redirect(to: "/admin/admin_users")
       {:error, changeset} ->

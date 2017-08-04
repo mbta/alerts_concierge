@@ -78,6 +78,13 @@ defmodule AlertProcessor.Model.UserTest do
                                 "role", nil))
       refute changeset.valid?
     end
+
+    test "cannot have an invalid role name" do
+      assert {:error, changeset} =
+        User.create_admin_account(Map.put(@valid_admin_account_attrs,
+                                          "role", "super_user"))
+      refute changeset.valid?
+    end
   end
 
   describe "authenticate_admin/1" do

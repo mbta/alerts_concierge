@@ -69,6 +69,7 @@ defmodule AlertProcessor.Model.User do
     %__MODULE__{}
     |> cast(params, [:role])
     |> validate_required([:role])
+    |> validate_inclusion(:role, @admin_roles)
     |> create_account_changeset(params)
     |> PaperTrail.insert()
     |> normalize_papertrail_result()

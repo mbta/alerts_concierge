@@ -23,4 +23,7 @@
       <%= submit "Save New Admin", class: "btn btn-primary btn-create-account" %>
     </div>
   <% end %>
+    <div class="create-admin-cancel-container">
+      <%= link "Cancel", to: admin_admin_user_path(@conn, :index) %>
+    </div>
 </div>
