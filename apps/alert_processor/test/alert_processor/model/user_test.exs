@@ -10,6 +10,12 @@ defmodule AlertProcessor.Model.UserTest do
     "password_confirmation" => "Password1",
     "sms_toggle" => "false"
   }
+  @valid_admin_account_attrs %{
+    "email" => "test@email.com",
+    "password" => "Password1",
+    "password_confirmation" => "Password1",
+    "role" => "customer_support"
+  }
   @invalid_attrs %{}
   @password "password1"
   @encrypted_password Comeonin.Bcrypt.hashpwsalt(@password)
@@ -56,6 +62,27 @@ defmodule AlertProcessor.Model.UserTest do
 
     test "does not create new account" do
       assert {:error, changeset} = User.create_account(Map.put(@valid_account_attrs, "password_confirmation", "Garbage"))
+      refute changeset.valid?
+    end
+  end
+
+  describe "create_admin_account" do
+    test "creates new admin account" do
+      assert {:ok, user} = User.create_admin_account(@valid_admin_account_attrs)
+      assert user.id != nil
+    end
+
+    test "does not create new account" do
+      assert {:error, changeset} =
+        User.create_admin_account(Map.put(@valid_admin_account_attrs,
+                                "role", nil))
+      refute changeset.valid?
+    end
+
+    test "cannot have an invalid role name" do
+      assert {:error, changeset} =
+        User.create_admin_account(Map.put(@valid_admin_account_attrs,
+                                          "role", "super_user"))
       refute changeset.valid?
     end
   end

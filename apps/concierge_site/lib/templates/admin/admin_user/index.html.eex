@@ -1,4 +1,9 @@
-<h1 class="header-container">Admins</h1>
+<h1 class="header-container">
+  Admins
+  <%= button "Create New Admin +", to: admin_admin_user_path(@conn, :new),
+              method: "get",
+              class: "btn btn-primary new-admin-btn" %>
+</h1>
 <div class="admin-table">
   <div class="admin-table-header">
     <div class="admin-table-email-column">Admin Email</div>

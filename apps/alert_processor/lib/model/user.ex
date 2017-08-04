@@ -65,6 +65,16 @@ defmodule AlertProcessor.Model.User do
     |> normalize_papertrail_result()
   end
 
+  def create_admin_account(params) do
+    %__MODULE__{}
+    |> cast(params, [:role])
+    |> validate_required([:role])
+    |> validate_inclusion(:role, @admin_roles)
+    |> create_account_changeset(params)
+    |> PaperTrail.insert()
+    |> normalize_papertrail_result()
+  end
+
   @doc """
   Builds changeset used for registering a new user account
   """

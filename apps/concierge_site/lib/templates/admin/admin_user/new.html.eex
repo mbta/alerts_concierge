@@ -1,0 +1,29 @@
+<h1>Create Admin</h1>
+<%= flash_error(@conn) %>
+<div class="login-container">
+  <%= form_for @account_changeset,
+                admin_admin_user_path(@conn, :create),
+                fn f -> %>
+    <div class="form-group <%= if :email in @errors, do: "has-danger" %>">
+      <%= label f, :email, "Email Address", class: "form-label" %>
+      <%= error_tag f, :email %>
+      <%= email_input f, :email, placeholder: "user@mbta.com",
+          class: "form-control form-control-success form-control-danger",
+          required: true  %>
+      <span></span>
+    </div>
+    <div class="form-group">
+      <%= label f, :role, "Role", class: "form-label" %>
+      <%= error_tag f, :role %>
+      <%= select f, :role, @admin_roles, class: "form-control",
+          prompt: "Select a Role" %>
+    </div>
+    <%= render ConciergeSite.PasswordView, "_password_entry_form_section.html", f: f, changeset: @account_changeset %>
+    <div class="account-creation-footer">
+      <%= submit "Save New Admin", class: "btn btn-primary btn-create-account" %>
+    </div>
+  <% end %>
+    <div class="create-admin-cancel-container">
+      <%= link "Cancel", to: admin_admin_user_path(@conn, :index) %>
+    </div>
+</div>
