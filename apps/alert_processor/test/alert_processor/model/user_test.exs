@@ -317,4 +317,33 @@ defmodule AlertProcessor.Model.UserTest do
       refute user in all_admin_users
     end
   end
+
+  describe "ordered_by_email/0" do
+    test "returns users in order by email address" do
+      user1 = insert(:user, email: "test_user@gmail.com")
+      user2 = insert(:user, email: "another_test_user@gmail.com")
+
+      assert [^user2, ^user1] = User.ordered_by_email()
+    end
+  end
+
+  describe "search_by_contact_info/1" do
+    test "filters by email" do
+      user1 = insert(:user, email: "one@email.com")
+      user2 = insert(:user, email: "two@email.com")
+
+      assert [^user1] = User.search_by_contact_info("one")
+      assert [^user2] = User.search_by_contact_info("two")
+      assert [^user1, ^user2] = User.search_by_contact_info("email")
+    end
+
+    test "filters by phone_number" do
+      user1 = insert(:user, email: "a@email.com", phone_number: "5551231234")
+      user2 = insert(:user, email: "b@email.com", phone_number: "5553559999")
+
+      assert [^user1] = User.search_by_contact_info("1234")
+      assert [^user2] = User.search_by_contact_info("9999")
+      assert [^user1, ^user2] = User.search_by_contact_info("555")
+    end
+  end
 end
