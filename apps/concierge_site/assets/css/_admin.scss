@@ -44,43 +44,28 @@
   margin: 5rem auto;
   padding: 0.125rem 0;
   text-align: right;
-
-  [type=submit] {
-    display: block;
-    float: right;
-    margin-right: .125rem;
-    width: 6rem;
-  }
-
-  .btn {
-    vertical-align: middle;
-    border: 1px solid transparent;
-    white-space: nowrap;
-    font-size: 16px;
-    line-height: 1.5;
-    padding: 0.375rem 1rem;
-  }
-
-  .clear {
-    clear: both;
-  }
-
-  i {
-    color: $brand-primary;
-    float: left;
-    vertical-align: middle;
-    border: 1px solid transparent;
-    white-space: nowrap;
-    font-size: 16px;
-    line-height: 1.5;
-    padding: 0.375rem 0.8rem;
-  }
 }
 
-.search-subscriber-input {
+.clear {
+  clear: both;
+}
+
+.admin-search-icon {
+  color: $brand-primary;
+  float: left;
+  vertical-align: middle;
+  border: 1px solid transparent;
+  white-space: nowrap;
+  font-size: 16px;
+  line-height: 1.5;
+  padding: 0.375rem 0.8rem;
+}
+
+.admin-search-input {
   border-width: 0;
   display: block;
   float: left;
+  margin-right: .125rem;
   outline: 0;
   padding: .375rem .5rem;
   width: 75%; // fallback for browsers that don't support calc
@@ -90,6 +75,16 @@
     border-width: 0;
     outline: 0;
   }
+}
+
+.admin-search-submit {
+  border: 1px solid transparent;
+  font-size: 16px;
+  line-height: 1.5;
+  margin-right: .125rem;
+  padding: 0.375rem 1rem;
+  vertical-align: middle;
+  white-space: nowrap;
 }
 
 .new-admin-btn {

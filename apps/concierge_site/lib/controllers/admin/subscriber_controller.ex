@@ -8,6 +8,7 @@ defmodule ConciergeSite.Admin.SubscriberController do
     users =
       case params["search"] do
         nil -> User.ordered_by_email()
+        "" -> User.ordered_by_email()
         search_term -> User.search_by_contact_info(search_term)
       end
     render conn, "index.html", users: users, search_term: params["search"]
