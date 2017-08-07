@@ -103,6 +103,15 @@ defmodule AlertProcessor.Model.UserTest do
       assert :unauthorized = User.authenticate_admin(%{"email" => "test@email.com", "password" => @password})
     end
 
+    test "does not authenticate if user has been deactivated by admin" do
+      Repo.insert!(%User{
+        email: "test@email.com",
+        role: "deactivated_admin",
+        encrypted_password: @encrypted_password
+      })
+      assert :deactivated = User.authenticate_admin(%{"email" => "test@email.com", "password" => @password})
+    end
+
     test "does not authenticate if user doesn't exist" do
       assert {:error, _} = User.authenticate(%{"email" => "nope@invalid.com", "password" => @password})
     end
@@ -315,6 +324,29 @@ defmodule AlertProcessor.Model.UserTest do
       assert application_admin in all_admin_users
       assert customer_support in all_admin_users
       refute user in all_admin_users
+    end
+  end
+
+  describe "admin_one!/1" do
+    test "returns an admin user with matching id" do
+      user = insert(:user, role: "application_administration")
+      assert user == User.admin_one!(user.id)
+    end
+
+    test "raises an exception if matching user is not an admin" do
+      user = insert(:user, role: "user")
+
+      assert_raise Ecto.NoResultsError, fn ->
+        User.admin_one!(user.id)
+      end
+    end
+
+    test "raises an exception if no user matches id" do
+      fake_id = "01cea8b6-7031-4dce-9781-9578777e6135"
+
+      assert_raise Ecto.NoResultsError, fn ->
+        User.admin_one!(fake_id)
+      end
     end
   end
 

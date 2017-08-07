@@ -23,6 +23,11 @@ defmodule ConciergeSite.Admin.SessionController do
             admin: [:customer_support, :application_administration]
           })
         |> redirect(to: admin_subscriber_path(conn, :index))
+      :deactivated ->
+        changeset = User.login_changeset(%User{})
+        conn
+        |> put_flash(:error, "Sorry, your account has been deactivated. Please contact an administrator.")
+        |> render("new.html", login_changeset: changeset)
       :unauthorized ->
         conn
         |> put_status(403)

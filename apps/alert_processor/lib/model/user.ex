@@ -47,7 +47,8 @@ defmodule AlertProcessor.Model.User do
     password_confirmation amber_alert_opt_in)a
   @required_fields ~w(email password)a
 
-  @admin_roles ~w(customer_support application_administration)
+  @active_admin_roles ~w(customer_support application_administration)
+  @admin_roles ["deactivated_admin" | @active_admin_roles]
 
   @doc """
   Builds a changeset based on the `struct` and `params`.
@@ -123,6 +124,10 @@ defmodule AlertProcessor.Model.User do
     |> change(encrypted_password: "")
     |> change(vacation_start: DateTime.utc_now())
     |> change(vacation_end: DateTime.from_naive!(~N[9999-12-25 23:59:59], "Etc/UTC"))
+  end
+
+  def deactivate_admin_changeset(struct) do
+    change(struct, role: "deactivated_admin")
   end
 
   defp hash_password(changeset) do
@@ -254,10 +259,11 @@ defmodule AlertProcessor.Model.User do
     |> authorize_admin()
   end
 
-  defp authorize_admin({:ok, %__MODULE__{role: role}} = {_, user}) when role in @admin_roles do
+  defp authorize_admin({:ok, %__MODULE__{role: role}} = {_, user}) when role in @active_admin_roles do
      {:ok, user, role}
   end
 
+  defp authorize_admin({:ok, %__MODULE__{role: "deactivated_admin"}}), do: :deactivated
   defp authorize_admin({:ok, _user}), do: :unauthorized
   defp authorize_admin({:error, result}), do: {:error, result}
 
@@ -314,6 +320,11 @@ defmodule AlertProcessor.Model.User do
   """
   def all_admin_users do
     Repo.all(from u in __MODULE__, where: u.role in @admin_roles)
+  end
+
+  def admin_one!(id) do
+    Repo.one!(from u in __MODULE__,
+    where: u.role in @admin_roles and u.id == ^id)
   end
 
   @doc """
