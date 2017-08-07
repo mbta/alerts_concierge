@@ -1,7 +1,7 @@
 defmodule ConciergeSite.Admin.AdminUserController do
   use ConciergeSite.Web, :controller
   use Guardian.Phoenix.Controller
-  alias AlertProcessor.{Model.User}
+  alias AlertProcessor.{Model.User, Repo}
   alias ConciergeSite.AdminUserPolicy
 
   plug :scrub_params, "user" when action in [:create]
@@ -27,6 +27,35 @@ defmodule ConciergeSite.Admin.AdminUserController do
     end
   end
 
+  def show(conn, %{"id" => id}, user, _claims) do
+    if AdminUserPolicy.can?(user, :show_admin_user) do
+      admin_user = User.admin_one!(id)
+      render conn, "show.html", admin_user: admin_user
+    else
+      handle_unauthorized(conn)
+    end
+  end
+
+  def deactivate(conn, %{"id" => id}, user, _claims) do
+    if AdminUserPolicy.can?(user, :deactivate_admin_user) do
+      admin_user = User.admin_one!(id)
+      changeset = User.deactivate_admin_changeset(admin_user)
+
+      case Repo.update(changeset) do
+        {:ok, updated_user} ->
+          conn
+          |> put_flash(:error, "Admin User deactivated.")
+          |> render("show.html", admin_user: updated_user)
+        {:error, _} ->
+          conn
+          |> put_flash(:error, "Admin User could not be deactivated.")
+          |> render("show.html", admin_user: admin_user)
+      end
+    else
+      handle_unauthorized(conn)
+    end
+  end
+
   def create(conn, %{"user" => admin_user_params}, user, _claims) do
     if AdminUserPolicy.can?(user, :create_admin_users) do
       case User.create_admin_account(admin_user_params) do
@@ -38,7 +67,7 @@ defmodule ConciergeSite.Admin.AdminUserController do
                         admin_roles: @admin_roles, errors: errors(changeset)
       end
     else
-        handle_unauthorized(conn)
+      handle_unauthorized(conn)
     end
   end
 

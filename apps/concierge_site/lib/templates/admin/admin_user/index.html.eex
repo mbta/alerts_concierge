@@ -8,12 +8,14 @@
   <div class="admin-table-header">
     <div class="admin-table-column">Admin Email</div>
     <div class="admin-table-column">Role</div>
+    <div class="admin-table-column">Account Status</div>
   </div>
   <div class="admin-table-body">
     <%= for user <- @admin_users do %>
       <div class="admin-table-row">
-        <div class="admin-table-cell"><%= user.email %></div>
+        <div class="admin-table-cell"><%= link(user.email, to: admin_admin_user_path(@conn, :show, user)) %></div>
         <div class="admin-table-cell"><%= display_role(user) %></div>
+        <div class="admin-table-cell"><%= account_status(user) %></div>
       </div>
     <% end %>
   </div>

@@ -1,5 +1,6 @@
 defmodule ConciergeSite.Admin.AdminUserControllerTest do
   use ConciergeSite.ConnCase
+  alias AlertProcessor.Model.User
 
   describe "application_administration user" do
     test "GET /admin/admin_users", %{conn: conn} do
@@ -15,6 +16,21 @@ defmodule ConciergeSite.Admin.AdminUserControllerTest do
       assert html_response(conn, 200) =~ "Admins"
     end
 
+    test "GET /admin/admin_users/:id", %{conn: conn} do
+      admin = insert(:user, role: "application_administration")
+
+      conn =
+        :user
+        |> insert(role: "application_administration")
+        |> guardian_login(conn, :token, %{
+            default: Guardian.Permissions.max,
+            admin: [:application_administration, :customer_support]
+          })
+        |> get(admin_admin_user_path(conn, :show, admin))
+
+      assert html_response(conn, 200) =~ admin.email
+    end
+
     test "GET /admin/admin_users/new", %{conn: conn} do
       conn =
         :user
@@ -26,6 +42,24 @@ defmodule ConciergeSite.Admin.AdminUserControllerTest do
         |> get(admin_admin_user_path(conn, :new))
 
       assert html_response(conn, 200) =~ "Create Admin"
+    end
+
+    test "PATCH /admin/admin_users/:id/deactivate", %{conn: conn} do
+      admin = insert(:user, role: "application_administration")
+
+      conn =
+        :user
+        |> insert(role: "application_administration")
+        |> guardian_login(conn, :token, %{
+            default: Guardian.Permissions.max,
+            admin: [:application_administration, :customer_support]
+          })
+        |> patch(admin_admin_user_path(conn, :deactivate, admin))
+
+      deactivated_user = User.admin_one!(admin.id)
+
+      assert html_response(conn, 200) =~ "Inactive"
+      assert deactivated_user.role == "deactivated_admin"
     end
   end
 
@@ -40,6 +74,18 @@ defmodule ConciergeSite.Admin.AdminUserControllerTest do
       assert html_response(conn, 403) =~ "Forbidden"
     end
 
+
+    test "GET /admin/admin_users/:id", %{conn: conn} do
+      admin = insert(:user, role: "application_administration")
+      conn =
+        :user
+        |> insert(role: "customer_support")
+        |> guardian_login(conn, :token, %{default: Guardian.Permissions.max, admin: [:customer_support]})
+        |> get(admin_admin_user_path(conn, :show, admin))
+
+      assert html_response(conn, 403) =~ "Forbidden"
+    end
+
     test "GET /admin/admin_users/new", %{conn: conn} do
       conn =
         :user
@@ -48,6 +94,65 @@ defmodule ConciergeSite.Admin.AdminUserControllerTest do
         |> get(admin_admin_user_path(conn, :new))
 
       assert html_response(conn, 403) =~ "Forbidden"
+    end
+
+    test "PATCH /admin/admin_users/:id/deactivate", %{conn: conn} do
+      admin = insert(:user, role: "application_administration")
+
+      conn =
+        :user
+        |> insert(role: "customer_support")
+        |> guardian_login(conn, :token, %{
+            default: Guardian.Permissions.max,
+            admin: [:application_administration, :customer_support]
+          })
+        |> patch(admin_admin_user_path(conn, :deactivate, admin))
+
+      admin = User.admin_one!(admin.id)
+
+      assert html_response(conn, 403) =~ "Forbidden"
+      assert admin.role == "application_administration"
+    end
+  end
+
+  describe "deactivated_admin user" do
+    test "GET /admin/admin_users", %{conn: conn} do
+      conn =
+        :user
+        |> insert(role: "deactivated_admin")
+        |> guardian_login(conn, :token, %{default: Guardian.Permissions.max, admin: [:customer_support]})
+        |> get(admin_admin_user_path(conn, :index))
+
+      assert html_response(conn, 403) =~ "Forbidden"
+    end
+
+    test "GET /admin/admin_users/:id", %{conn: conn} do
+      admin = insert(:user, role: "application_administration")
+      conn =
+        :user
+        |> insert(role: "deactivated_admin")
+        |> guardian_login(conn, :token, %{default: Guardian.Permissions.max, admin: [:customer_support]})
+        |> get(admin_admin_user_path(conn, :show, admin))
+
+      assert html_response(conn, 403) =~ "Forbidden"
+    end
+
+    test "PATCH /admin/admin_users/:id/deactivate", %{conn: conn} do
+      admin = insert(:user, role: "application_administration")
+
+      conn =
+        :user
+        |> insert(role: "deactivated_admin")
+        |> guardian_login(conn, :token, %{
+            default: Guardian.Permissions.max,
+            admin: [:application_administration, :customer_support]
+          })
+        |> patch(admin_admin_user_path(conn, :deactivate, admin))
+
+      admin = User.admin_one!(admin.id)
+
+      assert html_response(conn, 403) =~ "Forbidden"
+      assert admin.role == "application_administration"
     end
   end
 
@@ -62,6 +167,17 @@ defmodule ConciergeSite.Admin.AdminUserControllerTest do
       assert html_response(conn, 403) =~ "Forbidden"
     end
 
+    test "GET /admin/admin_users/:id", %{conn: conn} do
+      admin = insert(:user, role: "application_administration")
+      conn =
+        :user
+        |> insert(role: "user")
+        |> guardian_login(conn)
+        |> get(admin_admin_user_path(conn, :show, admin))
+
+      assert html_response(conn, 403) =~ "Forbidden"
+    end
+
     test "GET /admin/admin_users/new", %{conn: conn} do
       conn =
         :user
@@ -70,6 +186,24 @@ defmodule ConciergeSite.Admin.AdminUserControllerTest do
         |> get(admin_admin_user_path(conn, :new))
 
       assert html_response(conn, 403) =~ "Forbidden"
+    end
+
+    test "PATCH /admin/admin_users/:id/deactivate", %{conn: conn} do
+      admin = insert(:user, role: "application_administration")
+
+      conn =
+        :user
+        |> insert(role: "user")
+        |> guardian_login(conn, :token, %{
+            default: Guardian.Permissions.max,
+            admin: [:application_administration, :customer_support]
+          })
+        |> patch(admin_admin_user_path(conn, :deactivate, admin))
+
+      admin = User.admin_one!(admin.id)
+
+      assert html_response(conn, 403) =~ "Forbidden"
+      assert admin.role == "application_administration"
     end
   end
 
@@ -80,10 +214,27 @@ defmodule ConciergeSite.Admin.AdminUserControllerTest do
       assert html_response(conn, 302) =~ "/login/new"
     end
 
+    test "GET /admin/admin_users/:id", %{conn: conn} do
+      conn = get(conn, admin_admin_user_path(conn, :show, 1))
+
+      assert html_response(conn, 302) =~ "/login/new"
+    end
+
     test "GET /admin/admin_users/new", %{conn: conn} do
       conn = get(conn, admin_admin_user_path(conn, :new))
 
       assert html_response(conn, 302) =~ "/login/new"
+    end
+
+    test "PATCH /admin/admin_users/:id/deactivate", %{conn: conn} do
+      admin = insert(:user, role: "application_administration")
+
+      conn = patch(conn, admin_admin_user_path(conn, :deactivate, admin))
+
+      admin = User.admin_one!(admin.id)
+
+      assert html_response(conn, 302) =~ "/login/new"
+      assert admin.role == "application_administration"
     end
   end
 
