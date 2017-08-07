@@ -1,3 +1,39 @@
-<%= @admin_user.email %>
-<%= display_role(@admin_user) %>
-<%= account_status(@admin_user) %>
+<h1 class="header-container">
+  <div class="header-text"><%= @admin_user.email %></div>
+</h1>
+
+<div class="admin-detail-view">
+  <div class="admin-side-panel">
+    <div class="admin-user-detail-info">
+      <label for="email" class="admin-user-label">EMAIL:</label>
+      <%= @admin_user.email %>
+    </div>
+    <div class="admin-user-detail-info">
+      <label for="role" class="admin-user-label">ROLE:</label>
+      <%= display_role(@admin_user) %>
+    </div>
+    <div class="admin-user-detail-buttons">
+      <%= button to: admin_admin_user_path(@conn, :deactivate, @admin_user), method: "patch", class: "btn btn-outline-primary admin-user-btn" do %>
+        <i class="fa fa-remove"></i> Deactivate Admin
+      <% end %>
+      <%= button to: "/", class: "btn btn-outline-primary admin-user-btn" do %>
+        <i class="fa fa-table"></i> Export Admin Log
+      <% end %>
+    </div>
+  </div>
+
+  <div class="admin-log">
+    <h2>Admin Log</h2>
+    <div class="admin-table">
+      <div class="admin-table-header">
+        <div class="admin-table-column">Account</div>
+        <div class="admin-table-column">Time</div>
+        <div class="admin-table-column">Action</div>
+      </div>
+      <div class="admin-table-body">
+          <div class="admin-table-row">
+          </div>
+      </div>
+    </div>
+  </div>
+</div>

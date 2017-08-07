@@ -12,6 +12,11 @@
   border: 1px solid $border-color;
 }
 
+.admin-log {
+  width: 80%;
+  margin-left: 1rem;
+}
+
 .admin-table-column {
   flex-grow: 1;
   flex-basis: 25%;
@@ -62,6 +67,32 @@
   .disabled {
     opacity: 0.4;
   }
+}
+
+.admin-detail-view {
+  display: flex;
+  flex-direction: row;
+}
+
+.admin-user-detail-info {
+  background-color: #f2f3f5;
+  margin-bottom: .1rem;
+  padding: 1rem 3rem 1rem 1rem;
+}
+
+.admin-user-detail-buttons {
+  margin-top: 3rem;
+}
+
+.admin-user-btn {
+  width: 100%;
+  margin-bottom: 1rem;
+}
+
+.admin-user-label {
+  display: inline-block;
+  width: 100%;
+  margin-bottom: 0;
 }
 
 .search-subscriber-form {
