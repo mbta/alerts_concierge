@@ -8,7 +8,7 @@ defmodule ConciergeSite.SubscriptionView do
   alias Helpers.DateTimeHelper
   alias Model.{InformedEntity, Route, Subscription}
   alias Calendar.Strftime
-  alias ConciergeSite.{AmenitySubscriptionView, SubscriptionHelper}
+  alias ConciergeSite.{AmenitySubscriptionView, SubscriptionHelper, TimeHelper}
 
   import SubscriptionHelper,
     only: [direction_id: 1, relevant_days: 1]
@@ -40,7 +40,9 @@ defmodule ConciergeSite.SubscriptionView do
             !Enum.member?(subscription.relevant_days, :saturday),
             !Enum.member?(subscription.relevant_days, :sunday)
           }
-        {route.order, relevant_days_key, subscription.start_time}
+
+        start_time_value = TimeHelper.normalized_time_value(subscription.start_time)
+        {route.order, relevant_days_key, start_time_value}
       end)
       |> Enum.group_by(& &1.type)
     Map.merge(%{amenity: [], ferry: [], bus: [], commuter_rail: [], subway: []}, subscription_map)
@@ -148,7 +150,7 @@ defmodule ConciergeSite.SubscriptionView do
   defp get_trip_entities(subscription, departure_time_map) do
     subscription.informed_entities
     |> Enum.filter(& InformedEntity.entity_type(&1) == :trip)
-    |> Enum.sort_by(& departure_time_map[&1.trip])
+    |> Enum.sort_by(&TimeHelper.normalized_time_value(departure_time_map[&1.trip]))
   end
 
   defp timeframe(subscription) do

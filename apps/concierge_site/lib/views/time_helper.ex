@@ -42,4 +42,18 @@ defmodule ConciergeSite.TimeHelper do
     |> DateTimeHelper.utc_time_to_local()
     |> Strftime.strftime!("%H:%M:%S")
   end
+
+  @doc """
+  Converts timestamp into integer value adjusting late night, after
+  midnight values into higher than times before midnight.
+  """
+  @spec normalized_time_value(Time.t) :: integer
+  def normalized_time_value(timestamp) do
+    stv = DateTimeHelper.seconds_of_day(timestamp)
+    if stv < 10_800 do
+      stv + 86_400
+    else
+      stv
+    end
+  end
 end
