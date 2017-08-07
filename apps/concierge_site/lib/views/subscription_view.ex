@@ -129,14 +129,14 @@ defmodule ConciergeSite.SubscriptionView do
         "s | Departs ",
         subscription.origin,
         " at ",
-        departure_time_map[trip_entity.trip]
+        departure_time_map[trip_entity.trip] |> Calendar.Strftime.strftime!("%l:%M%P") |> String.trim()
       ])
     end
   end
   defp route_body(%{type: :ferry, relevant_days: [relevant_days]} = subscription, departure_time_map) do
     for trip_entity <- get_trip_entities(subscription, departure_time_map) do
       content_tag(:p, [
-        departure_time_map[trip_entity.trip],
+        departure_time_map[trip_entity.trip] |> Calendar.Strftime.strftime!("%l:%M%P") |> String.trim(),
         ", ",
         relevant_days |> to_string() |> String.capitalize(),
         "s | Departs from ",
