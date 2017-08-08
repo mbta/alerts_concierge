@@ -466,4 +466,12 @@ defmodule AlertProcessor.Model.UserTest do
       assert subscriber_id == subscriber.id
     end
   end
+
+  describe "change_admin_role_changeset/2" do
+    test "changes an admin user's role" do
+      admin_user = insert(:user, role: "customer_support")
+      assert {:ok, %User{role: "application_administration"}} =
+        User.change_admin_role_changeset(admin_user, "application_administration")
+    end
+  end
 end

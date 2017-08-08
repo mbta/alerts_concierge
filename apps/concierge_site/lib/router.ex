@@ -110,6 +110,9 @@ defmodule ConciergeSite.Router do
     resources "/admin_users", Admin.AdminUserController, only: [:index, :show, :new, :create, :update]
     resources "/my-account", Admin.MyAccountController, only: [:edit, :update], singleton: true
     resources "/impersonate_sessions", Admin.ImpersonateSessionController, only: [:create]
+
+    get "/admin_users/:id/confirm_deactivate", Admin.AdminUserController, :confirm_deactivate
+    get "/admin_users/:id/confirm_activate", Admin.AdminUserController, :confirm_activate
   end
 
   if Mix.env == :dev do

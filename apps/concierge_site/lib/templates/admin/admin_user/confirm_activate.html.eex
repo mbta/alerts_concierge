@@ -1,0 +1,22 @@
+<h1>Confirm Admin Activation</h1>
+<%= flash_error(@conn) %>
+
+<div class="confirmation-page">
+  <h2>Activate Admin Account?</h2>
+  <p>
+    Are you sure that you'd like to activate 
+    <%= @admin_user.email %>?
+  </p>
+  <%= form_for @conn,
+      admin_admin_user_path(@conn, :activate, @admin_user),
+      [as: :user, method: :patch], fn f -> %>
+      <div class="form-group">
+        <%= select f,
+                  :role,
+                  @admin_roles,
+                  class: "form-control role-select" %>
+      </div>
+    <%= submit("Yes, activate this Admin", class: "btn btn-primary btn-wide") %>
+  <% end %>
+  <%= link("Cancel", to: admin_admin_user_path(@conn, :show, @admin_user)) %>
+</div>

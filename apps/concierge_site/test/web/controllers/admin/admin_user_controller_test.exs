@@ -44,7 +44,7 @@ defmodule ConciergeSite.Admin.AdminUserControllerTest do
 
       deactivated_user = User.admin_one!(admin.id)
 
-      assert html_response(conn, 200) =~ "Inactive"
+      assert html_response(conn, 200) =~ "Reactivate User"
       assert deactivated_user.role == "deactivated_admin"
     end
 
@@ -54,12 +54,23 @@ defmodule ConciergeSite.Admin.AdminUserControllerTest do
       conn =
         user
         |> guardian_login(conn, :token, @application_admin_token_params)
-        |> patch(admin_admin_user_path(conn, :activate, admin, role: "customer_support"))
+        |> patch(admin_admin_user_path(conn, :activate, admin, user: %{role: "customer_support"}))
 
       admin = User.admin_one!(admin.id)
 
-      assert html_response(conn, 200) =~ "Active"
+      assert html_response(conn, 200) =~ "Deactivate User"
       assert admin.role == "customer_support"
+    end
+
+    test "GET /admin/admin_users/:id/confirm_role_change", %{conn: conn, user: user} do
+      admin = insert(:user, role: "application_administration")
+
+      conn =
+        user
+        |> guardian_login(conn, :token, @application_admin_token_params)
+        |> get(admin_admin_user_path(conn, :confirm_role_change, admin))
+
+      assert html_response(conn, 200) =~ "Confirm Role Change"
     end
   end
 
@@ -116,7 +127,7 @@ defmodule ConciergeSite.Admin.AdminUserControllerTest do
       conn =
         user
         |> guardian_login(conn, :token, @customer_support_token_params)
-        |> patch(admin_admin_user_path(conn, :activate, admin, role: "customer_support"))
+        |> patch(admin_admin_user_path(conn, :activate, admin, user: %{role: "customer_support"}))
 
       admin = User.admin_one!(admin.id)
 
@@ -168,7 +179,7 @@ defmodule ConciergeSite.Admin.AdminUserControllerTest do
       conn =
         user
         |> guardian_login(conn, :token, @application_admin_token_params)
-        |> patch(admin_admin_user_path(conn, :activate, admin, role: "customer_support"))
+        |> patch(admin_admin_user_path(conn, :activate, admin, user: %{role: "customer_support"}))
 
       admin = User.admin_one!(admin.id)
 

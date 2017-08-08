@@ -64,7 +64,7 @@ defmodule ConciergeSite.Admin.AdminUserController do
     end
   end
 
-  def activate(conn, %{"id" => id} = params, user, _claims) do
+  def activate(conn, %{"id" => id, "user" => admin_params} = params, user, _claims) do
     if AdminUserPolicy.can?(user, :activate_admin_user) do
       admin_user = User.admin_one!(id)
 
@@ -80,6 +80,25 @@ defmodule ConciergeSite.Admin.AdminUserController do
       end
     else
       render_unauthorized(conn)
+    end
+  end
+
+  def confirm_activate(conn, %{"id" => id}, user, _claims) do
+    if AdminUserPolicy.can?(user, :activate_admin_user) do
+      admin_user = User.admin_one!(id)
+      render conn, "confirm_activate.html", admin_user: admin_user,
+                    admin_roles: @admin_roles
+    else
+      handle_unauthorized(conn)
+    end
+  end
+
+  def confirm_deactivate(conn, %{"id" => id}, user, _claims) do
+    if AdminUserPolicy.can?(user, :deactivate_admin_user) do
+      admin_user = User.admin_one!(id)
+      render conn, "confirm_deactivate.html", admin_user: admin_user
+    else
+      handle_unauthorized(conn)
     end
   end
 

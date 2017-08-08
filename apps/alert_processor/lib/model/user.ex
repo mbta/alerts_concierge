@@ -140,7 +140,7 @@ defmodule AlertProcessor.Model.User do
 
   def activate_admin(struct, params) do
     struct
-    |> activate_admin_changeset(params)
+    |> activate_admin_changeset(params["user"])
     |> PaperTrail.update()
     |> normalize_papertrail_result()
   end

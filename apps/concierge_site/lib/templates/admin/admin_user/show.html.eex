@@ -15,8 +15,12 @@
       <% end %>
     </div>
     <div class="admin-user-detail-buttons">
-      <%= button to: admin_admin_user_path(@conn, :deactivate, @admin_user), method: "patch", class: "btn btn-outline-primary admin-user-btn" do %>
-        <i class="fa fa-remove"></i> Deactivate Admin
+      <%= button(
+          to: admin_admin_user_path(@conn, activation_path(@admin_user), @admin_user),
+          method: "get",
+          class: "btn #{activation_button_class(@admin_user)}") do %>
+          <%= content_tag :i, "", class: "fa #{activation_button_icon(@admin_user)}" %>
+          <%= activation_button_text(@admin_user) %>
       <% end %>
       <%= button to: "/", class: "btn btn-outline-primary admin-user-btn" do %>
         <i class="fa fa-table"></i> Export Admin Log
