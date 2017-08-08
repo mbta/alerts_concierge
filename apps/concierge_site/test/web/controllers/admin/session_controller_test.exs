@@ -3,6 +3,10 @@ defmodule ConciergeSite.Admin.SessionControllerTest do
 
   @password "password1"
   @encrypted_password Comeonin.Bcrypt.hashpwsalt(@password)
+  @customer_support_token_params %{
+    default: Guardian.Permissions.max,
+    admin: [:customer_support]
+  }
 
   test "GET /login", %{conn: conn} do
     conn = get(conn, admin_session_path(conn, :new))
@@ -58,5 +62,16 @@ defmodule ConciergeSite.Admin.SessionControllerTest do
 
     conn = post(conn, admin_session_path(conn, :create), params)
     assert html_response(conn, 403) =~ "Forbidden"
+  end
+
+  test "DELETE /login", %{conn: conn} do
+    user = insert(:user, role: "customer_support")
+
+    conn =
+      user
+      |> guardian_login(conn, :token, @customer_support_token_params)
+      |> delete(admin_session_path(conn, :delete))
+
+    assert html_response(conn, 302) =~ "admin/login/new"
   end
 end

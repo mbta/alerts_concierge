@@ -89,7 +89,7 @@ defmodule ConciergeSite.Router do
   scope "/admin", ConciergeSite, as: :admin do
     pipe_through :browser
 
-    resources "/login", Admin.SessionController, only: [:new, :create], singleton: true
+    resources "/login", Admin.SessionController, only: [:new, :create, :delete], singleton: true
   end
 
   scope "/admin", ConciergeSite, as: :admin do

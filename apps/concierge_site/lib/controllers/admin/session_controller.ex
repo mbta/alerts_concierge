@@ -39,6 +39,13 @@ defmodule ConciergeSite.Admin.SessionController do
     end
   end
 
+  def delete(conn, _params) do
+    conn
+    |> put_flash(:info, "You have been logged out!")
+    |> Guardian.Plug.sign_out()
+    |> redirect(to: admin_session_path(conn, :new))
+  end
+
   def unauthorized(conn, _params) do
     conn
     |> put_status(403)
