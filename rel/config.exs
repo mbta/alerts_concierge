@@ -23,7 +23,7 @@ use Mix.Releases.Config,
 environment :prod do
   set include_erts: true
   set include_src: false
-  set cookie: "APP_COOKIE" |> System.get_env() |> String.to_atom()
+  set cookie: :"#{System.get_env("APP_COOKIE")}"
 end
 
 # You may define one or more releases in this file.

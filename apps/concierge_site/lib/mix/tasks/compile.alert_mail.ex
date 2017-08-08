@@ -2,10 +2,10 @@ defmodule Mix.Tasks.Compile.AlertMail do
   @moduledoc false
   use Mix.Task
 
-  @template_dir Path.join(~w(#{System.cwd!} lib mail_templates))
-  @output_dir Path.join(~w(#{System.cwd!} generated_templates))
+  @template_dir Path.join(~w(#{File.cwd!} lib mail_templates))
+  @output_dir Path.join(~w(#{File.cwd!} generated_templates))
   @style_dir Path.join(~w(#{@template_dir} styles))
-  @command "#{System.cwd!}/mail_inlining/inline_css.js"
+  @command "#{File.cwd!}/mail_inlining/inline_css.js"
 
   def run(_args) do
     build_templates_with_inline_css(template_files())

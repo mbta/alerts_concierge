@@ -83,7 +83,7 @@
     <div class="my-account-footer">
       <%= submit "Update Account Preferences", class: "btn btn-primary update-account" %>
     </div>
-  <%= end %>
+  <% end %>
 
   <div class="log-out-link">
     <%= form_for @conn, session_path(@conn, :delete), [method: "delete", as: :custom_delete, _csrf_token: get_csrf_token()], fn _ -> %>

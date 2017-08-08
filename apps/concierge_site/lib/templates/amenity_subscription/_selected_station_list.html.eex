@@ -3,6 +3,6 @@
     <%= submit formaction: amenity_subscription_path(@conn, :remove_station, station),
         class: "btn btn-sm btn-selected-station" do %>
       <%= station %>&nbsp;<i class="fa fa-times" aria-hidden="true"></i>
-    <%= end %>
+    <% end %>
   <% end %>
 </div>

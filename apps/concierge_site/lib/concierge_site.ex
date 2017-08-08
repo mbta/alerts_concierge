@@ -5,6 +5,9 @@ defmodule ConciergeSite do
   def start(_type, _args) do
     import Supervisor.Spec
 
+    if System.get_env("MIX_ENV") == "prod" do
+      ConciergeSite.RuntimeConfig.set_runtime_config()
+    end
     # Define workers and child supervisors to be supervised
     children = [
       # Start the endpoint when the application starts
