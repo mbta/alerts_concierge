@@ -1,7 +1,23 @@
 <h1>Account</h1>
-
+<%= flash_error(@conn) %>
 <div class="my-account-container">
-  <div class="my-account-footer">
+  <%= form_for @changeset, admin_my_account_path(@conn, :update), fn f -> %>
+    <div class="form-label">
+      How would you like to receive alerts?
+    </div>
+    <%= radio_button f, :sms_toggle, "false", checked: !sms_messaging_checked?(@user), class: "my-account-radio-button" %>
+    <label for="user_sms_toggle_false" class="my-account-radio-label">Email Only</label>
+    <%= radio_button f, :sms_toggle, "true", checked: sms_messaging_checked?(@user), class: "my-account-radio-button" %>
+    <label for="user_sms_toggle_true" class="my-account-radio-label">SMS</label>
+    <div class="wireless-number-section">
+      <label for="user_phone_number" class="form-label">Wireless Number</label>
+      <%= telephone_input f, :phone_number, placeholder: "###-###-####", class: "large-input", value: @user.phone_number %>
+    </div>
+    <div class="my-account-footer">
+      <%= submit "Update Account", class: "btn btn-primary update-account" %>
+    </div>
+  <% end %>
+  <div class="log-out-link">
     <%= button "Log Out", to: admin_session_path(@conn, :delete),
       method: :delete, class: "btn btn-primary" %>
   </div>
