@@ -13,7 +13,7 @@ defmodule ConciergeSite.Dissemination.NotificationEmailTest do
   @email "test@test.com"
 
   @notification %Notification{
-    user: build(:user),
+    user: build(:user, email: @email),
     email: @email,
     service_effect: "Red line delay",
     header: "Red line inbound from Alewife station closure",

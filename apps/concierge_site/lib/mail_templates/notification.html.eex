@@ -7,7 +7,7 @@
   <body leftmargin="0" marginwidth="0" topmargin="0" marginheight="0" offset="0">
     <%= ConciergeSite.Helpers.MailHelper.header() %>
     <div class="notification-content">
-      <h1 class"notification-service-effect">
+      <h1 class="notification-service-effect">
         <span class="notification-logo">
           <img src="<%= ConciergeSite.Helpers.MailHelper.logo_for_alert(notification.alert) %>"
                alt="<%= ConciergeSite.Helpers.MailHelper.alt_text_for_alert(notification.alert) %>">
