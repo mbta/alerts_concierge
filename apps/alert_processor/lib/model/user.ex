@@ -126,8 +126,29 @@ defmodule AlertProcessor.Model.User do
     |> change(vacation_end: DateTime.from_naive!(~N[9999-12-25 23:59:59], "Etc/UTC"))
   end
 
+  def deactivate_admin(struct) do
+    struct
+    |> deactivate_admin_changeset()
+    |> PaperTrail.update()
+    |> normalize_papertrail_result()
+  end
+
   def deactivate_admin_changeset(struct) do
     change(struct, role: "deactivated_admin")
+  end
+
+  def activate_admin(struct, params) do
+    struct
+    |> activate_admin_changeset(params)
+    |> PaperTrail.update()
+    |> normalize_papertrail_result()
+  end
+
+  def activate_admin_changeset(struct, params \\ %{}) do
+    struct
+    |> cast(params, [:role])
+    |> validate_required([:role])
+    |> validate_inclusion(:role, @active_admin_roles)
   end
 
   defp hash_password(changeset) do

@@ -1,15 +1,14 @@
 defmodule ConciergeSite.AdminUserPolicy do
   alias AlertProcessor.Model.User
 
-  def can?(%User{role: "application_administration"}, :list_admin_users), do: true
-  def can?(%User{}, :list_admin_users), do: false
+  @application_admin_only_actions ~w(
+    list_admin_users
+    create_admin_users
+    show_admin_user
+    deactivate_admin_user
+    activate_admin_user
+  )a
 
-  def can?(%User{role: "application_administration"}, :create_admin_users), do: true
-  def can?(%User{}, :create_admin_users), do: false
-
-  def can?(%User{role: "application_administration"}, :show_admin_user), do: true
-  def can?(%User{}, :show_admin_user), do: false
-
-  def can?(%User{role: "application_administration"}, :deactivate_admin_user), do: true
-  def can?(%User{}, :deactivate_admin_user), do: false
+  def can?(%User{role: "application_administration"}, action) when action in @application_admin_only_actions, do: true
+  def can?(%User{}, action) when action in @application_admin_only_actions, do: false
 end

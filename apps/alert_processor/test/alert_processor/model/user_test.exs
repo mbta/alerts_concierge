@@ -302,6 +302,39 @@ defmodule AlertProcessor.Model.UserTest do
     end
   end
 
+  describe "deactivate_admin/1" do
+    test "changes a user's role to deactivated_admin" do
+      user = insert(:user, role: "application_administration")
+
+      assert {:ok, %User{role: "deactivated_admin"}} = User.deactivate_admin(user)
+    end
+  end
+
+  describe "activate_admin/2" do
+    test "changes a user's role to the role passed in params" do
+      user = insert(:user, role: "deactivated_admin")
+      params = %{"role" => "customer_support"}
+
+      assert {:ok, %User{role: "customer_support"}} = User.activate_admin(user, params)
+    end
+
+    test "returns an invalid changeset if passed empty role param" do
+      user = insert(:user)
+      invalid_params = %{"role" => ""}
+      {_, changeset} = User.activate_admin(user, invalid_params)
+
+      refute changeset.valid?
+    end
+
+    test "returns an invalid changeset if passed a role other than active admin roles" do
+      user = insert(:user)
+      invalid_params = %{"role" => "deactivated_admin"}
+      {_, changeset} = User.activate_admin(user, invalid_params)
+
+      refute changeset.valid?
+    end
+  end
+
   describe "for_email/1" do
     test "returns a user if present" do
       user = insert(:user)

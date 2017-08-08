@@ -97,6 +97,7 @@ defmodule ConciergeSite.Router do
 
     resources "/subscribers", Admin.SubscriberController, only: [:index]
     patch "/admin_users/:id/deactivate", Admin.AdminUserController, :deactivate
+    patch "/admin_users/:id/activate", Admin.AdminUserController, :activate
     resources "/admin_users", Admin.AdminUserController, only: [:index, :show, :new, :create]
   end
 

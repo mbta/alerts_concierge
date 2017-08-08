@@ -1,7 +1,7 @@
 defmodule ConciergeSite.Admin.AdminUserController do
   use ConciergeSite.Web, :controller
   use Guardian.Phoenix.Controller
-  alias AlertProcessor.{Model.User, Repo}
+  alias AlertProcessor.Model.User
   alias ConciergeSite.AdminUserPolicy
 
   plug :scrub_params, "user" when action in [:create]
@@ -39,9 +39,8 @@ defmodule ConciergeSite.Admin.AdminUserController do
   def deactivate(conn, %{"id" => id}, user, _claims) do
     if AdminUserPolicy.can?(user, :deactivate_admin_user) do
       admin_user = User.admin_one!(id)
-      changeset = User.deactivate_admin_changeset(admin_user)
 
-      case Repo.update(changeset) do
+      case User.deactivate_admin(admin_user) do
         {:ok, updated_user} ->
           conn
           |> put_flash(:error, "Admin User deactivated.")
@@ -49,6 +48,25 @@ defmodule ConciergeSite.Admin.AdminUserController do
         {:error, _} ->
           conn
           |> put_flash(:error, "Admin User could not be deactivated.")
+          |> render("show.html", admin_user: admin_user)
+      end
+    else
+      handle_unauthorized(conn)
+    end
+  end
+
+  def activate(conn, %{"id" => id} = params, user, _claims) do
+    if AdminUserPolicy.can?(user, :activate_admin_user) do
+      admin_user = User.admin_one!(id)
+
+      case User.activate_admin(admin_user, params) do
+        {:ok, updated_user} ->
+          conn
+          |> put_flash(:info, "Admin User activated with #{updated_user.role} role.")
+          |> render("show.html", admin_user: updated_user)
+        {:error, _} ->
+          conn
+          |> put_flash(:error, "Admin User could not be activated.")
           |> render("show.html", admin_user: admin_user)
       end
     else
