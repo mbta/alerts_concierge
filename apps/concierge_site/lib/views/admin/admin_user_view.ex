@@ -4,6 +4,7 @@ defmodule ConciergeSite.Admin.AdminUserView do
 
   def display_role(%User{role: "application_administration"}), do: "Application Administration"
   def display_role(%User{role: "customer_support"}), do: "Customer Support"
+  def display_role(%User{role: "deactivated_admin"}), do: "Deactivated Admin"
   def display_role(%User{}), do: "User"
 
   def account_status(%User{role: "deactivated_admin"}), do: "Inactive"

@@ -68,4 +68,26 @@ defmodule ConciergeSite.AdminUserPolicyTest do
       refute AdminUserPolicy.can?(user, :deactivate_admin_user)
     end
   end
+
+  describe "activate_admin_user" do
+    test "allows users with the application_administration role" do
+      user = insert(:user, role: "application_administration")
+      assert AdminUserPolicy.can?(user, :activate_admin_user)
+    end
+
+    test "denies users with the customer_support role" do
+      user = insert(:user, role: "customer_support")
+      refute AdminUserPolicy.can?(user, :activate_admin_user)
+    end
+
+    test "denies users with the deactivated_admin role" do
+      user = insert(:user, role: "deactivated_admin")
+      refute AdminUserPolicy.can?(user, :activate_admin_user)
+    end
+
+    test "denies regular users" do
+      user = insert(:user, role: "user")
+      refute AdminUserPolicy.can?(user, :activate_admin_user)
+    end
+  end
 end
