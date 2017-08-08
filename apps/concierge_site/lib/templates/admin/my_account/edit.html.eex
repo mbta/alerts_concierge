@@ -1,0 +1,8 @@
+<h1>Account</h1>
+
+<div class="my-account-container">
+  <div class="my-account-footer">
+    <%= button "Log Out", to: admin_session_path(@conn, :delete),
+      method: :delete, class: "btn btn-primary" %>
+  </div>
+</div>
