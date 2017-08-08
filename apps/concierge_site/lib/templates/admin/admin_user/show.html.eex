@@ -10,7 +10,9 @@
     </div>
     <div class="admin-user-detail-info">
       <label for="role" class="admin-user-label">ROLE:</label>
-      <%= display_role(@admin_user) %>
+      <%= link to: admin_admin_user_path(@conn, :confirm_role_change, @admin_user) do %>
+        <%= display_role(@admin_user) %> <i class="fa fa-angle-down"></i>
+      <% end %>
     </div>
     <div class="admin-user-detail-buttons">
       <%= button to: admin_admin_user_path(@conn, :deactivate, @admin_user), method: "patch", class: "btn btn-outline-primary admin-user-btn" do %>

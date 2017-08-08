@@ -152,6 +152,13 @@ defmodule AlertProcessor.Model.User do
     |> validate_inclusion(:role, @active_admin_roles)
   end
 
+  def change_admin_role_changeset(struct, role) do
+    struct
+    |> change(role: role)
+    |> PaperTrail.update()
+    |> normalize_papertrail_result()
+  end
+
   defp hash_password(changeset) do
     case changeset do
       %Ecto.Changeset{valid?: true, changes: %{password: password}} ->

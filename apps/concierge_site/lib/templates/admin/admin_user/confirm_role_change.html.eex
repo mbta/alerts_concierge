@@ -1,0 +1,20 @@
+<h1>Confirm Role Change</h1>
+<div class="confirmation-page">
+  <p>
+    Are you sure that you'd like to change the role for 
+    <%= @admin_user.email %>?
+  </p>
+  <%= form_for @conn,
+      admin_admin_user_path(@conn, :update, @admin_user),
+      [as: :user, method: :patch], fn f -> %>
+    <div class="form-group">
+      <%= select f,
+                :role,
+                @admin_roles,
+                class: "form-control role-select",
+                selected: @admin_user.role %>
+    </div>
+    <%= submit("Yes, I'm sure", class: "btn btn-primary btn-wide") %>
+  <% end %>
+  <%= link("Cancel", to: admin_admin_user_path(@conn, :show, @admin_user)) %>
+</div>

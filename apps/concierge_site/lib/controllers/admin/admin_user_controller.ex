@@ -36,6 +36,15 @@ defmodule ConciergeSite.Admin.AdminUserController do
     end
   end
 
+  def confirm_role_change(conn, %{"id" => id}, user, _claims) do
+    if AdminUserPolicy.can?(user, :update_admin_roles) do
+      admin_user = User.admin_one!(id)
+      render conn, "confirm_role_change.html", admin_user: admin_user, admin_roles: @admin_roles
+    else
+      handle_unauthorized(conn)
+    end
+  end
+
   def deactivate(conn, %{"id" => id}, user, _claims) do
     if AdminUserPolicy.can?(user, :deactivate_admin_user) do
       admin_user = User.admin_one!(id)
@@ -86,6 +95,25 @@ defmodule ConciergeSite.Admin.AdminUserController do
       end
     else
       render_unauthorized(conn)
+    end
+  end
+
+  def update(conn, %{"id" => id, "user" => admin_user_params}, user, _claims) do
+    if AdminUserPolicy.can?(user, :update_admin_roles) do
+      admin_user = User.admin_one!(id)
+
+      case User.change_admin_role_changeset(admin_user, admin_user_params["role"]) do
+        {:ok, updated_user} ->
+          conn
+          |> put_flash(:error, "Admin User's Role has been changed.")
+          |> render("show.html", admin_user: updated_user)
+        {:error, _} ->
+          conn
+          |> put_flash(:error, "Admin User's Role cannot be changed.")
+          |> render("show.html", admin_user: admin_user)
+      end
+    else
+      handle_unauthorized(conn)
     end
   end
 
