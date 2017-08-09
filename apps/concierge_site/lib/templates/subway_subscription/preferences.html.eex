@@ -9,7 +9,7 @@
     <div class="form-label"><%= trip_summary_title(@subscription_params, @station_names) %></div>
     <%= for trip <- trip_summary_logistics(@subscription_params, @station_names) do %>
       <div><%= trip %></div>
-    <%= end %>
+    <% end %>
   </div>
 
   <%= form_for @conn, subway_subscription_path(@conn, :create), [class: "single-submit-form trip-prefs-form subway", as: :subscription], fn f -> %>

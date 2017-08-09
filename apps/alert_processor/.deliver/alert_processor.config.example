@@ -1,0 +1,6 @@
+[{kernel,
+  [
+    {sync_nodes_optional, ['concierge_site@ec2-34-201-4-141.compute-1.amazonaws.com']},
+    {sync_nodes_timeout, 30000}
+  ]}
+].

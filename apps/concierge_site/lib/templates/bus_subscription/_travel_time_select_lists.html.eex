@@ -20,4 +20,4 @@
     </label>
     <%= select @f, :return_end, travel_time_options(), class: "travel-time-select", selected: @subscription_params["return_end"] || "17:15:00" %>
   </div>
-<%= end %>
+<% end %>

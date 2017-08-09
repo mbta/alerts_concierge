@@ -10,7 +10,7 @@
       </label>
       <%= select @form, :departure_end, travel_time_options(), class: "travel-time-select", selected: @subscription_params["departure_end"] || "14:30:00" %>
     </div>
-  <%= _ -> %>
+  <% _ -> %>
     <div class="travel-time-select-section">
       <label for="subscription_departure_start" class="travel-time-label">
         Departure Trip:
@@ -21,7 +21,7 @@
       </label>
       <%= select @form, :departure_end, travel_time_options(), class: "travel-time-select", selected: @subscription_params["departure_end"] || "09:15:00" %>
     </div>
-<%= end %>
+<% end %>
 
 <%= if @subscription_params["trip_type"] == "round_trip" do %>
   <div class="travel-time-select-section">
@@ -34,4 +34,4 @@
     </label>
     <%= select @form, :return_end, travel_time_options(), class: "travel-time-select", selected: @subscription_params["return_end"] || "17:15:00" %>
   </div>
-<%= end %>
+<% end %>

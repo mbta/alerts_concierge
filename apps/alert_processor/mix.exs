@@ -3,7 +3,7 @@ defmodule AlertProcessor.Mixfile do
 
   def project do
     [app: :alert_processor,
-     version: "0.0.23",
+     version: "0.0.24",
      build_path: "../../_build",
      config_path: "../../config/config.exs",
      deps_path: "../../deps",
@@ -25,6 +25,7 @@ defmodule AlertProcessor.Mixfile do
     [mod: {AlertProcessor, []},
       extra_applications: [
         :elixir_make,
+        :ex2ms,
         :plug,
         :jsx,
         :public_key,

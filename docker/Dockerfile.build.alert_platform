@@ -19,11 +19,11 @@ RUN curl -sL https://deb.nodesource.com/setup_6.x | bash - && \
 # Clean up
 RUN apt-get clean
 
-WORKDIR /alert_platform/apps/concierge_site/mail_inlining
-RUN echo "npm install" && \
-  npm install
-
 COPY . /alert_platform
+
+WORKDIR /alert_platform/apps/concierge_site/mail_inlining
+RUN npm install
+
 WORKDIR /alert_platform
 
 RUN elixir touch_templates.exs

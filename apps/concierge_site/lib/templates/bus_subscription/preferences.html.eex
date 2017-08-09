@@ -22,7 +22,7 @@
 
     <%= for {param_name, value} <- atomize_keys(@subscription_params) do %>
       <%= hidden_input f, param_name, value: value %>
-    <%= end %>
+    <% end %>
 
     <div class="trip-info-footer">
       <%= submit "Create Subscription", class: "btn btn-primary btn-subscription-next" %>

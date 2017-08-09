@@ -1,0 +1,4 @@
+-name concierge_site@ec2-34-201-4-141.compute-1.amazonaws.com
+-setcookie super_secret_cookie
+-kernel inet_dist_listen_min 9100 inet_dist_listen_max 9155
+-config /home/ubuntu/app/concierge_site.config

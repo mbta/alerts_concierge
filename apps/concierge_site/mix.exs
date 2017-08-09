@@ -3,7 +3,7 @@ defmodule ConciergeSite.Mixfile do
 
   def project do
     [app: :concierge_site,
-     version: "0.0.23",
+     version: "0.0.24",
      build_path: "../../_build",
      config_path: "../../config/config.exs",
      deps_path: "../../deps",
@@ -26,6 +26,7 @@ defmodule ConciergeSite.Mixfile do
     [mod: {ConciergeSite, []},
      extra_applications: [
        :elixir_make,
+       :ex2ms,
        :public_key,
        :crypto,
        :bamboo,
