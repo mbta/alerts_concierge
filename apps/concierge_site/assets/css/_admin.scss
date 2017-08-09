@@ -90,3 +90,21 @@
 .create-admin-cancel-container {
   text-align: center;
 }
+
+.admin-navbar-email {
+  padding-top: .5rem;
+  padding-left: 3rem;
+  font-weight: bold;
+}
+
+.navbar {
+  padding-bottom: 0;
+}
+
+.nav-link:hover {
+  border-bottom: 5px solid #ffcf00;
+}
+
+.nav-link > a:hover {
+  text-decoration: none;
+}
