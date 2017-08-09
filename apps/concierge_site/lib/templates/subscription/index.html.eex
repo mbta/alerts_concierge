@@ -5,6 +5,7 @@
   <% end %>
 </h1>
 
+<%= flash_info(@conn) %>
 <%= render "_vacation_banner.html", conn: @conn, vacation_start: @vacation_start, vacation_end: @vacation_end %>
 
 <div class="my-subscriptions-container">
