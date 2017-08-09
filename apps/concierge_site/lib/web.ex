@@ -39,6 +39,7 @@ defmodule ConciergeSite.Web do
 
       import ConciergeSite.Router.Helpers
       import ConciergeSite.ErrorHelpers
+      import ConciergeSite.FlashHelpers
       import ConciergeSite.Gettext
       import Bodyguard.ViewHelpers
     end

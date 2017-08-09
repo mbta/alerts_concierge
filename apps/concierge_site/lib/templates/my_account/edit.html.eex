@@ -7,10 +7,7 @@
 
 <div class="my-account-container">
   <%= flash_error(@conn) %>
-  <%= if info = get_flash(@conn, :info) do %>
-    <div class="alert alert-success"><%= info %></div>
-  <%= end %>
-
+  <%= flash_info(@conn) %>
   <h2>My Information</h2>
   <div class="my-account-section">
     <div class="form-label">Email Address</div>

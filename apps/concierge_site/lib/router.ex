@@ -89,7 +89,7 @@ defmodule ConciergeSite.Router do
   scope "/admin", ConciergeSite, as: :admin do
     pipe_through :browser
 
-    resources "/login", Admin.SessionController, only: [:new, :create], singleton: true
+    resources "/login", Admin.SessionController, only: [:new, :create, :delete], singleton: true
   end
 
   scope "/admin", ConciergeSite, as: :admin do
@@ -99,6 +99,7 @@ defmodule ConciergeSite.Router do
     patch "/admin_users/:id/deactivate", Admin.AdminUserController, :deactivate
     patch "/admin_users/:id/activate", Admin.AdminUserController, :activate
     resources "/admin_users", Admin.AdminUserController, only: [:index, :show, :new, :create]
+    resources "/my-account", Admin.MyAccountController, only: [:edit, :update], singleton: true
   end
 
   if Mix.env == :dev do

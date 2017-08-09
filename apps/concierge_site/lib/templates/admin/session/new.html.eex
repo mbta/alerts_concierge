@@ -1,5 +1,6 @@
 <h1 class="login-header-text">T-Concierge Admin Account</h1>
 <%= flash_error(@conn) %>
+<%= flash_info(@conn) %>
 <div class="login-container">
   <h2>Sign into your account</h2>
   <%= form_for @login_changeset, admin_session_path(@conn, :create), fn f -> %>

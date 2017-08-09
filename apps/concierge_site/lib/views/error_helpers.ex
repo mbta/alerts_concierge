@@ -4,7 +4,6 @@ defmodule ConciergeSite.ErrorHelpers do
   """
 
   use Phoenix.HTML
-  import Phoenix.Controller, only: [get_flash: 2]
 
   @doc """
   Generates tag for inlined form input errors.
@@ -13,17 +12,6 @@ defmodule ConciergeSite.ErrorHelpers do
     if error = form.errors[field] do
       content_tag :div, class: "error-block-container" do
         content_tag :span, translate_error(error), class: "error-block"
-      end
-    end
-  end
-
-  @doc """
-  Generates flash error tag for entire form.
-  """
-  def flash_error(conn) do
-    if error = get_flash(conn, :error) do
-      content_tag :div, class: "error-block-container" do
-        content_tag :span, error, class: "error-block text-center"
       end
     end
   end
