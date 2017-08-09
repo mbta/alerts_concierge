@@ -37,6 +37,12 @@
           <a class="breadcrumb-item" href="https://t.mbta.com/">Home</a>
           <span>></span>
           <a class="breadcrumb-item" href="/my-subscriptions">T-Alerts</a>
+          <%= if admin_logged_in?(@conn) do %>
+            <%= for breadcrumb <- breadcrumbs(@conn) do %>
+              <span>></span>
+              <a class="breadcrumb-item" href="<%= breadcrumb.path %>"><%= breadcrumb.name %></a>
+            <% end %>
+          <% end %>
         </div>
       </div>
     </header>
