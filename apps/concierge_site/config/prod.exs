@@ -16,6 +16,8 @@ use Mix.Config
 config :concierge_site, ConciergeSite.Endpoint,
   cache_static_manifest: "priv/static/cache_manifest.json",
   http: [port: 4000],
+  url: [host: "${HOST_URL}", port: 80],
+  secret_key_base: "${SECRET_KEY_BASE}",
   server: true,
   root: ".",
   version: Mix.Project.config[:version]
@@ -30,7 +32,7 @@ config :logger, :logentries,
   connector: Logger.Backend.Logentries.Output.SslKeepOpen,
   host: 'data.logentries.com',
   port: 443,
-  token: "LOGENTRIES_TOKEN",
+  token: "${LOGENTRIES_TOKEN}",
   format: "$dateT$time [$level]$levelpad node=$node $metadata$message\n",
   metadata: [:request_id]
 
@@ -38,9 +40,11 @@ config :concierge_site, ConciergeSite.Dissemination.Mailer,
   adapter: Bamboo.SMTPAdapter,
   server: "email-smtp.us-east-1.amazonaws.com",
   port: 25,
-  tls: :if_available, # can be `:always` or `:never`
+  tls: :always, # can be `:always` or `:never`
   ssl: false, # can be `true`
-  retries: 1
+  retries: 1,
+  username: "${SMTP_USERNAME}",
+  password: "${SMTP_PASSWORD}"
 
 # ## SSL Support
 #

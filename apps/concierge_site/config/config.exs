@@ -38,7 +38,7 @@ config :guardian, Guardian,
   ttl: {60, :minutes},
   allowed_drift: 2000,
   verify_issuer: true,
-  secret_key: "GUARDIAN_AUTH_KEY",
+  secret_key: "${GUARDIAN_AUTH_KEY}",
   serializer: ConciergeSite.GuardianSerializer,
   hooks: GuardianDb,
   permissions: %{
