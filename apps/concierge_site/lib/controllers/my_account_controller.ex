@@ -17,7 +17,7 @@ defmodule ConciergeSite.MyAccountController do
         :ok = User.clear_holding_queue_for_user_id(user.id)
         conn
         |> put_flash(:info, "Account Preferences updated.")
-        |> redirect(to: my_account_path(conn, :edit))
+        |> redirect(to: subscription_path(conn, :index))
       {:error, changeset} ->
         conn
         |> put_flash(:error, "Account Preferences could not be updated. Please see errors below.")
