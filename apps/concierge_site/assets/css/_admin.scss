@@ -101,10 +101,15 @@
   padding-bottom: 0;
 }
 
-.nav-link:hover {
+.nav-link > a {
+  text-decoration: none;
+  color: black;
+}
+
+.nav-active {
   border-bottom: 5px solid #ffcf00;
 }
 
-.nav-link > a:hover {
-  text-decoration: none;
+.nav-active > a {
+  color: #1c77c3;
 }

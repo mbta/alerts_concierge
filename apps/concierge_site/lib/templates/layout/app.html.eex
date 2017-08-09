@@ -19,10 +19,12 @@
           <%= if admin_logged_in?(@conn) do %>
             <div class="collapse navbar-collapse justify-content-end">
               <ul class="nav navbar-nav">
-                <li class="nav-link">
+                <li class="nav-link <%= active_nav_class(@conn, "subscribers") %>">
                   <%= link "Subscribers", to: "/admin/subscribers"%>
                 </li>
-                <li class="nav-link"><%= link "Admins", to: "/admin/admin_users"%></li>
+                <li class="nav-link <%= active_nav_class(@conn, "admin_users") %>">
+                  <%= link "Admins", to: "/admin/admin_users"%>
+                </li>
                 <li class="nav-link"><%= link "+ Export Reports", to: "#"%></li>
               </ul>
               <span class="admin-navbar-email"><%= admin_user(@conn).email %></span>
