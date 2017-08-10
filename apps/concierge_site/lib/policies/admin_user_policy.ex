@@ -7,6 +7,7 @@ defmodule ConciergeSite.AdminUserPolicy do
     show_admin_user
     deactivate_admin_user
     activate_admin_user
+    send_targeted_message
   )a
 
   def can?(%User{role: "application_administration"}, action) when action in @application_admin_only_actions, do: true

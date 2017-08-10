@@ -110,6 +110,22 @@ button {
   display: none;
 }
 
+.toggle_email_message:checked ~ .toggleable_email {
+  display: block;
+}
+
+.toggle_email_message:checked ~ .toggleable_sms {
+  display: none;
+}
+
+.toggle_sms_message:checked ~ .toggleable_email {
+  display: none;
+}
+
+.toggle_sms_message:checked ~ .toggleable_sms {
+  display: block;
+}
+
 .large-input {
   border: 1px solid $steel;
   border-radius: 4px;

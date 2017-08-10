@@ -7,4 +7,8 @@ defmodule ConciergeSite.Admin.SubscriberView do
   def account_status(%User{encrypted_password: ""}), do: "Disabled"
   def account_status(%User{encrypted_password: nil}), do: "Disabled"
   def account_status(%User{}), do: "Active"
+
+  def email_or_sms_checked?(user) do
+    is_nil(user.phone_number)
+  end
 end
