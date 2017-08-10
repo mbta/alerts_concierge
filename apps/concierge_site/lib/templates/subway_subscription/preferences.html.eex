@@ -16,7 +16,7 @@
     <div class="trip-alert-priority">
       <%= render "_alert_type_radio_buttons.html",
                  form: f,
-                 checked: :medium,
+                 checked: default_severity_selection(@subscription_params["trip_type"]),
                  action: "new" %>
     </div>
 

@@ -131,4 +131,7 @@ defmodule ConciergeSite.SubwaySubscriptionView do
      " - ",
      format_time(params["departure_end"])]]
   end
+
+  def default_severity_selection("roaming"), do: :high
+  def default_severity_selection(_), do: :medium
 end
