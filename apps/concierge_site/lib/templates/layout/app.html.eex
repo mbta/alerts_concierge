@@ -25,7 +25,6 @@
                 <li class="nav-link <%= active_nav_class(@conn, "admin_users") %>">
                   <%= link "Admins", to: "/admin/admin_users"%>
                 </li>
-                <li class="nav-link"><%= link "+ Export Reports", to: "#"%></li>
               </ul>
               <span class="admin-navbar-email"><%= Guardian.Plug.current_resource(@conn).email %></span>
             </div>
