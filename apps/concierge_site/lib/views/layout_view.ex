@@ -9,15 +9,11 @@ defmodule ConciergeSite.LayoutView do
 
   def active_nav_class(conn, page_name) do
     case conn.path_info do
-      ["admin", endpoint, user] when endpoint == page_name ->
+      ["admin", endpoint, _user] when endpoint == page_name ->
         "nav-active"
-      ["admin", endpoint, user] ->
-        ""
       ["admin", endpoint] when endpoint == page_name ->
         "nav-active"
-      ["admin", endpoint] ->
-        ""
-      [_] ->
+      _ ->
         ""
     end
   end
@@ -25,11 +21,11 @@ defmodule ConciergeSite.LayoutView do
   def breadcrumbs(conn) do
     case conn.path_info do
       ["admin", endpoint, user_id] ->
-        [%{name: breadcrumb_title_parse(endpoint), path: "/admin/#{endpoint}"},
-         %{name: Repo.get(User, user_id).email, path: conn.request_path}]
+        [%{title: breadcrumb_title_parse(endpoint), path: "/admin/#{endpoint}"},
+         %{title: Repo.get(User, user_id).email, path: conn.request_path}]
       ["admin", endpoint] ->
-        [%{name: breadcrumb_title_parse(endpoint), path: conn.request_path}]
-      [_] ->
+        [%{title: breadcrumb_title_parse(endpoint), path: conn.request_path}]
+      _ ->
         ""
     end
   end
@@ -39,9 +35,5 @@ defmodule ConciergeSite.LayoutView do
       |> String.split("_")
       |> Enum.map(&(String.capitalize(&1)))
       |> Enum.join(" ")
-  end
-
-  def breadcrumb_path(conn) do
-    conn.request_path
   end
 end

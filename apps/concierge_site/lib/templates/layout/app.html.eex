@@ -40,7 +40,7 @@
           <%= if admin_logged_in?(@conn) do %>
             <%= for breadcrumb <- breadcrumbs(@conn) do %>
               <span>></span>
-              <a class="breadcrumb-item" href="<%= breadcrumb.path %>"><%= breadcrumb.name %></a>
+              <a class="breadcrumb-item" href="<%= breadcrumb.path %>"><%= breadcrumb.title %></a>
             <% end %>
           <% end %>
         </div>
