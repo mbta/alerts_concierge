@@ -156,6 +156,13 @@ defmodule AlertProcessor.Model.UserTest do
       refute Map.has_key?(changes, :phone_number)
       assert changeset.valid?
     end
+
+    test "sets do_not_disturb period from 10PM to 7AM Eastern" do
+      changeset = User.create_account_changeset(%User{}, @valid_account_attrs)
+
+      assert changeset.changes.do_not_disturb_start == ~T[02:00:00]
+      assert changeset.changes.do_not_disturb_end == ~T[11:00:00]
+    end
   end
 
   describe "update_account" do
