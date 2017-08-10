@@ -5,6 +5,7 @@ defmodule ConciergeSite.SubscriptionHelper do
   use Phoenix.HTML
   alias AlertProcessor.Model.Subscription
   alias AlertProcessor.Helpers.StringHelper
+  alias ConciergeSite.Subscriptions.SubscriptionParams
 
   @doc """
   Takes days of week of a trip and formats into a human readable manner
@@ -101,4 +102,12 @@ defmodule ConciergeSite.SubscriptionHelper do
   defp hidden_form_input({param_name, param_value}) do
     tag(:input, type: "hidden", name: "subscription[#{param_name}]", value: param_value)
   end
+
+  def selected_relevant_days(%{"saturday" => _, "sunday" => _, "weekday" => _} = params) do
+    params
+    |> SubscriptionParams.relevant_days_from_booleans()
+    |> Enum.map(&String.to_existing_atom/1)
+  end
+
+  def selected_relevant_days(%{}), do: [:weekday]
 end

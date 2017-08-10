@@ -2,13 +2,13 @@ defmodule ConciergeSite.BusSubscriptionView do
   use ConciergeSite.Web, :view
   alias AlertProcessor.Model.{Route, Subscription}
   import ConciergeSite.SubscriptionHelper,
-    only: [atomize_keys: 1, joined_day_list: 1, progress_link_class: 3, do_query_string_params: 2]
+    only: [atomize_keys: 1, joined_day_list: 1, progress_link_class: 3,
+           do_query_string_params: 2, selected_relevant_days: 1]
   import ConciergeSite.TimeHelper,
     only: [travel_time_options: 0, time_option_local_strftime: 1,
            format_time: 1]
   import ConciergeSite.SubscriptionView,
     only: [parse_route: 1]
-  alias ConciergeSite.Subscriptions.SubscriptionParams
 
   @type step :: :trip_type | :trip_info | :preferences
 
@@ -38,12 +38,6 @@ defmodule ConciergeSite.BusSubscriptionView do
   ]
   def params_for_step(:preferences), do: ["alert_priority_type" | params_for_step(:trip_info)]
   def params_for_step(_), do: []
-
-  def selected_relevant_days(params) do
-    params
-    |> SubscriptionParams.relevant_days_from_booleans()
-    |> Enum.map(&String.to_existing_atom/1)
-  end
 
   @doc """
   Returns a route's full name, example: "Route 57A Inbound"
