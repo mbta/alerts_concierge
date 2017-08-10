@@ -1,0 +1,8 @@
+// This goes at the /home/ubuntu
+// This will vary on each host, host name should be consistent with .deliver/config and <release_name>.config
+// Cookie should be consistent with one set in rel/config.exs
+
+-name <alert_processor | concierge_site_1 | concierge_site_2>@xx.xxx.xxx.xx
+-setcookie s3kr3t
+-kernel inet_dist_listen_min 9100 inet_dist_listen_max 9155
+-config /home/ubuntu/<alert_processor | concierge_site>.config
