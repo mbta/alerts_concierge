@@ -41,6 +41,21 @@
   flex-grow: 1;
 }
 
+.admin-pagination {
+  color: $link-color;
+  float: right;
+  font-size: $base-font-size;
+  margin-top: 1rem;
+
+  * {
+    margin-right: 1rem;
+  }
+
+  .disabled {
+    opacity: 0.4;
+  }
+}
+
 .search-subscriber-form {
   @include media-breakpoint-up(sm) {
     @include make-col(8);

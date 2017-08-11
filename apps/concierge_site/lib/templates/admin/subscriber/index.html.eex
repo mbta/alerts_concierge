@@ -9,7 +9,7 @@
     <div class="admin-table-column">Account Status</div>
   </div>
   <div class="admin-table-body">
-    <%= for user <- @users do %>
+    <%= for user <- @subscriber_page.entries do %>
       <div class="admin-table-row">
         <div class="admin-table-cell"><%= link(user.email, to: admin_subscriber_path(@conn, :show, user)) %></div>
         <div class="admin-table-cell"><%= user.phone_number %></div>
@@ -18,3 +18,5 @@
     <% end %>
   </div>
 </div>
+
+<%= paginate(@conn, @subscriber_page) %>

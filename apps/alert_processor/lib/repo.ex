@@ -1,5 +1,6 @@
 defmodule AlertProcessor.Repo do
   use Ecto.Repo, otp_app: :alert_processor
+  use Scrivener
   @dialyzer {:nowarn_function, rollback: 1}
   alias AlertProcessor.Helpers.ConfigHelper
 

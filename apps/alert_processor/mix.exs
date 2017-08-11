@@ -43,6 +43,7 @@ defmodule AlertProcessor.Mixfile do
         :poolboy,
         :postgrex,
         :runtime_tools,
+        :scrivener_ecto,
         :edeliver,
      ]
     ]
@@ -74,6 +75,7 @@ defmodule AlertProcessor.Mixfile do
       {:poison, "~> 2.0"},
       {:poolboy, ">= 0.0.0"},
       {:postgrex, ">= 0.0.0"},
+      {:scrivener_ecto, "~> 1.0"},
       {:sweet_xml, "~> 0.6"},
       {:edeliver, "1.4.3"}
     ]
