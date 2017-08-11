@@ -90,3 +90,31 @@
 .create-admin-cancel-container {
   text-align: center;
 }
+
+.admin-navbar-email {
+  padding-top: .5rem;
+  padding-left: 3rem;
+  font-weight: bold;
+}
+
+.navbar {
+  padding-bottom: 0;
+}
+
+.nav-link > a {
+  text-decoration: none;
+  color: black;
+}
+
+.nav-active {
+  border-bottom: 5px solid #ffcf00;
+}
+
+.nav-active > a {
+  color: #1c77c3;
+}
+
+.breadcrumb-item:last-child {
+  pointer-events: none;
+  color: black;
+}
