@@ -20,13 +20,24 @@ defmodule ExAws.Mock do
           }
         }}
       :list_phone_numbers_opted_out ->
-        {:ok, %{
-          body: %{
-            phone_numbers: ["9999999999"],
-            next_token: nil,
-            request_id: "123"
-          }
-        }}
+        case operation.params["NextToken"] do
+          nil ->
+            {:ok, %{
+              body: %{
+                phone_numbers: ["+19999999999"],
+                next_token: "this_is_a_token",
+                request_id: "123"
+              }
+            }}
+          _ ->
+            {:ok, %{
+              body: %{
+                phone_numbers: ["+15555555555"],
+                next_token: nil,
+                request_id: "456"
+              }
+            }}
+        end
       :opt_in_phone_number ->
         {:ok, %{
           body: %{

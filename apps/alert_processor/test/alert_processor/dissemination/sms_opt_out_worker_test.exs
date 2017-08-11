@@ -26,6 +26,6 @@ defmodule AlertProcessor.SmsOptOutWorkerTest do
     assert_received :list_phone_numbers_opted_out
     reloaded_user = Repo.one(from u in User, where: u.id == ^user.id)
     assert :eq = DateTime.compare(reloaded_user.vacation_end, DateTime.from_naive!(~N[9999-12-25 23:59:59], "Etc/UTC"))
-    assert new_state == ["9999999999"]
+    assert new_state == ["9999999999", "5555555555"]
   end
 end

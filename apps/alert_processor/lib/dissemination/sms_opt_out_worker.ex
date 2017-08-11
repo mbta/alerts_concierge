@@ -62,9 +62,11 @@ defmodule AlertProcessor.SmsOptOutWorker do
       |> list_phone_numbers_opted_out_query()
       |> AwsClient.request()
 
+    normalized_phone_numbers = Enum.map(phone_numbers, &String.replace_leading(&1, "+1", ""))
+
     case body[:next_token] do
-      nil -> opted_out_list ++ phone_numbers
-      nt -> fetch_opted_out_list(nt, opted_out_list ++ phone_numbers)
+      nil -> opted_out_list ++ normalized_phone_numbers
+      nt -> fetch_opted_out_list(nt, opted_out_list ++ normalized_phone_numbers)
     end
   end
 
