@@ -80,8 +80,6 @@ defmodule AlertProcessor.Subscription.DisplayInfo do
         departure_timestamp
         |> NaiveDateTime.from_iso8601!
         |> NaiveDateTime.to_time()
-        |> Calendar.Strftime.strftime!("%l:%M%P")
-        |> String.trim()
 
       {Map.get(trip_names_map, trip_id, trip_id), departure_timestamp}
     end

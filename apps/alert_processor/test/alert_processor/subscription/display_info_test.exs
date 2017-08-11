@@ -18,8 +18,8 @@ defmodule AlertProcessor.Subscriptions.DisplayInfoTest do
           |> weekday_subscription()
 
         assert {:ok, %{
-          "331" => "5:10pm",
-          "221" => "6:55pm"
+          "331" => ~T[17:10:00],
+          "221" => ~T[18:55:00]
         }} = DisplayInfo.departure_times_for_subscriptions([subscription], @test_date)
       end
     end
