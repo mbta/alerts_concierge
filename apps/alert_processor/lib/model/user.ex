@@ -374,7 +374,5 @@ defmodule AlertProcessor.Model.User do
   end
 
   def is_admin?(nil), do: false
-  def is_admin?(user) do
-    user.role in ~w(application_administration customer_support)
-  end
+  def is_admin?(user), do: user.role in @active_admin_roles
 end

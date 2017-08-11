@@ -414,13 +414,13 @@ defmodule AlertProcessor.Model.UserTest do
 
   describe "is_admin?/1" do
     test "returns true if the user is an administrator" do
-      admin = insert(:user, role: "application_administration")
+      admin = build(:user, role: "application_administration")
 
       assert User.is_admin?(admin) == true
     end
 
     test "returns false if the user is not an administrator" do
-      admin = insert(:user, role: "user")
+      admin = build(:user, role: "user")
 
       assert User.is_admin?(admin) == false
     end
