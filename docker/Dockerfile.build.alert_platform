@@ -19,12 +19,12 @@ RUN curl -sL https://deb.nodesource.com/setup_6.x | bash - && \
 # Clean up
 RUN apt-get clean
 
-COPY . /alert_platform
+COPY . /alerts_concierge
 
-WORKDIR /alert_platform/apps/concierge_site/mail_inlining
+WORKDIR /alerts_concierge/apps/concierge_site/mail_inlining
 RUN npm install
 
-WORKDIR /alert_platform
+WORKDIR /alerts_concierge
 
 RUN elixir touch_templates.exs
 RUN /bin/bash -c "source .env"
@@ -33,12 +33,12 @@ RUN export MIX_ENV=prod
 RUN mix deps.get
 RUN mix deps.compile
 
-WORKDIR /alert_platform/apps/concierge_site/assets
+WORKDIR /alerts_concierge/apps/concierge_site/assets
 
 RUN npm rebuild node-sass
 RUN npm install && brunch build --production
 
-WORKDIR /alert_platform
+WORKDIR /alerts_concierge
 
 RUN MIX_ENV=prod mix compile
 RUN MIX_ENV=prod mix phx.digest
