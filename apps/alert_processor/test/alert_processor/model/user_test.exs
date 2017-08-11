@@ -157,11 +157,11 @@ defmodule AlertProcessor.Model.UserTest do
       assert changeset.valid?
     end
 
-    test "sets do_not_disturb period from 10PM to 7AM Eastern" do
+    test "sets do_not_disturb period from 10PM to 7AM" do
       changeset = User.create_account_changeset(%User{}, @valid_account_attrs)
 
-      assert changeset.changes.do_not_disturb_start == ~T[02:00:00]
-      assert changeset.changes.do_not_disturb_end == ~T[11:00:00]
+      assert changeset.changes.do_not_disturb_start == ~T[22:00:00]
+      assert changeset.changes.do_not_disturb_end == ~T[07:00:00]
     end
   end
 
