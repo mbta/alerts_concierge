@@ -7,6 +7,7 @@ defmodule ConciergeSite.Router do
     plug :fetch_flash
     plug :protect_from_forgery
     plug :put_secure_browser_headers
+    plug ConciergeSite.Plugs.Authorized
   end
 
   pipeline :browser_auth do
@@ -15,6 +16,7 @@ defmodule ConciergeSite.Router do
     plug Guardian.Plug.LoadResource
     plug Guardian.Plug.EnsureAuthenticated,
       handler: ConciergeSite.SessionController
+    plug ConciergeSite.Plugs.Authorized
   end
 
   pipeline :disable_account_auth do

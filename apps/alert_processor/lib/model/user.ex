@@ -372,4 +372,9 @@ defmodule AlertProcessor.Model.User do
       limit: 25
     )
   end
+
+  def is_admin?(nil), do: false
+  def is_admin?(user) do
+    user.role in ~w(application_administration customer_support)
+  end
 end

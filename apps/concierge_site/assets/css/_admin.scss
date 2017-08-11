@@ -113,3 +113,8 @@
 .nav-active > a {
   color: #1c77c3;
 }
+
+.breadcrumb-item:last-child {
+  pointer-events: none;
+  color: black;
+}
