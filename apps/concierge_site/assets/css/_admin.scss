@@ -1,3 +1,13 @@
+.admin-search-hero {
+  background-image: $admin-search-hero-gradient, url('/images/td-garden-zakim.jpg');
+  margin-bottom: 1rem;
+  background-position-x: 50%;
+  background-position-y: 0;
+  background-repeat: no-repeat;
+  background-size: cover;
+  padding: 5rem;
+}
+
 .admin-table {
   border: 1px solid $border-color;
 }
@@ -41,7 +51,6 @@
   border: 1px solid $steel;
   border-radius: 0.1875rem;
   display: block;
-  margin: 5rem auto;
   padding: 0.125rem 0;
   text-align: right;
 }

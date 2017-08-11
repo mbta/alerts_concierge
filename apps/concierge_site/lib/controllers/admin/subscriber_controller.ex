@@ -13,4 +13,10 @@ defmodule ConciergeSite.Admin.SubscriberController do
       end
     render conn, "index.html", users: users, search_term: params["search"]
   end
+
+  def show(conn, %{"id" => subscriber_id}, user, _claims) do
+    subscriber = User.find_by_id(subscriber_id)
+
+    render conn, "show.html", subscriber: subscriber
+  end
 end

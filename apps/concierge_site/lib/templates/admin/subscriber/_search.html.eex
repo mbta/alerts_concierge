@@ -1,6 +1,8 @@
-<%= form_tag admin_subscriber_path(@conn, :index), method: :get, class: "search-subscriber-form" do %>
-  <i class="fa fa-search admin-search-icon" aria-hidden="true"></i>
-  <%= tag(:input, type: "text", name: "search", placeholder: "Search by Email or Phone", value: @search_term, class: "admin-search-input") %>
-  <%= submit "Search", class: "btn btn-primary admin-search-submit" %>
-  <div class="clearfix"></div>
-<% end %>
+<div class="admin-search-hero">
+  <%= form_tag admin_subscriber_path(@conn, :index), method: :get, class: "search-subscriber-form" do %>
+    <i class="fa fa-search admin-search-icon" aria-hidden="true"></i>
+    <%= tag(:input, type: "text", name: "search", placeholder: "Search by Email or Phone", value: @search_term, class: "admin-search-input") %>
+    <%= submit "Search", class: "btn btn-primary admin-search-submit" %>
+    <div class="clearfix"></div>
+  <% end %>
+</div>

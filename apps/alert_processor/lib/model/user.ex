@@ -376,4 +376,11 @@ defmodule AlertProcessor.Model.User do
 
   def is_admin?(nil), do: false
   def is_admin?(user), do: user.role in @active_admin_roles
+
+  @doc """
+  return one user based on id
+  """
+  def find_by_id(user_id) do
+    Repo.get(__MODULE__, user_id)
+  end
 end

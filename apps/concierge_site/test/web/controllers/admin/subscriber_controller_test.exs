@@ -45,6 +45,12 @@ defmodule ConciergeSite.Admin.SubscriberControllerTest do
       refute html_response(conn, 200) =~ "Active"
       assert html_response(conn, 200) =~ "Disabled"
     end
+
+    test "GET /admin/subscribers/:id", %{conn: conn, subscriber1: subscriber} do
+      conn = get(conn, admin_subscriber_path(conn, :show, subscriber))
+
+      assert html_response(conn, 200) =~ subscriber.email
+    end
   end
 
   describe "regular user" do
