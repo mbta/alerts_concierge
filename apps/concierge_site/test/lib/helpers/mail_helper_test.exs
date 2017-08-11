@@ -144,4 +144,13 @@ defmodule ConcerigeSite.Helpers.MailHelperTest do
       assert url =~ ~r/my-account\/confirm_disable\?token=(.+)/
     end
   end
+
+  describe "reset_password_url" do
+    test "generates url with password reset id" do
+      password_reset_id = "this-is-a-password-reset-id"
+      url = MailHelper.reset_password_url(password_reset_id)
+      assert url =~ "http"
+      assert url =~ "reset-password/#{password_reset_id}/edit"
+    end
+  end
 end
