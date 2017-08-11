@@ -10,7 +10,7 @@ defmodule ConciergeSite.Mixfile do
      lockfile: "../../mix.lock",
      elixir: "~> 1.4",
      elixirc_paths: elixirc_paths(Mix.env),
-     compilers: [:phoenix, :gettext, :yecc, :leex, :erlang, :elixir, :xref, :alert_mail, :app],
+     compilers: [:phoenix, :gettext, :yecc, :leex, :erlang, :elixir, :xref, :app],
      preferred_cli_env: [coveralls: :test, "coveralls.json": :test],
      build_embedded: Mix.env == :prod,
      start_permanent: Mix.env == :prod,

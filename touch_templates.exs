@@ -1,11 +1,12 @@
 defmodule TouchTemplates do
-  @template_dir Path.join(~w(#{System.cwd!} apps concierge_site lib mail_templates))
-  @output_dir Path.join(~w(#{System.cwd!} apps concierge_site generated_templates))
+  @template_dir Path.join(~w(#{File.cwd!} apps concierge_site lib mail_templates))
+  @output_dir Path.join(~w(#{File.cwd!} apps concierge_site generated_templates))
+  @style_dir Path.join(~w(#{@template_dir} styles))
+  @command "#{File.cwd!}/apps/concierge_site/mail_inlining/inline_css.js"
 
-  def run!() do
-    IO.inspect "Touching generated_templates"
-    template_files()
-    |> Enum.each(&touch_if_not_present/1)
+  def run! do
+    build_templates_with_inline_css(template_files())
+    :ok
   end
 
   defp template_files do
@@ -15,33 +16,26 @@ defmodule TouchTemplates do
     |> Enum.map(&(String.replace_suffix(&1, ".html.eex", "")))
   end
 
-  defp touch_if_not_present(template_name) do
-    file = Path.join([@output_dir, template_name]) <> ".html.eex"
-    IO.inspect file
-
-    write_base_content(file)
+  defp build_templates_with_inline_css(template_names) do
+    Enum.each(template_names, &build_template_with_inline_css/1)
   end
 
-  defp write_base_content(file) do
-    cond do
-      String.ends_with?(file, "digest.html.eex") -> insert_content(file, :digest)
-      String.ends_with?(file, "notification.html.eex") -> insert_content(file, :notification)
-      String.ends_with?(file, "footer.html.eex") -> insert_content(file, :footer)
-      true -> File.touch!(file)
-    end
+  defp build_template_with_inline_css(template_name) do
+    template_path = Path.join([@template_dir, template_name]) <> ".html.eex"
+    style_path = Path.join([@style_dir, template_name]) <> "_styles.css"
+    global_path = @style_dir <> "/_global_styles.css"
+    output_template = Path.join([@output_dir, template_name]) <> ".html.eex"
+
+   {output_html, 0} = inline_css(template_path, style_path, global_path)
+
+    File.write!(output_template, output_html, [:write])
   end
 
-  defp insert_content(file, :digest) do
-    content = "<%= digest_date_groups %><%= unsubscribe_url %>"
-    File.write!(file, content)
-  end
-  defp insert_content(file, :notification) do
-    content = "<%= notification.header %><%= unsubscribe_url %>"
-    File.write!(file, content)
-  end
-  defp insert_content(file, :footer) do
-    content = "<%= unsubscribe_url %>"
-    File.write!(file, content)
+  defp inline_css(template_path, style_path, global_path) do
+    html = "--htmlFile=" <> template_path
+    css = "--cssFile=" <> style_path
+    global = "--globalCssFile=" <> global_path
+    System.cmd("node", [@command, html, css, global])
   end
 end
 
