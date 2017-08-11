@@ -411,4 +411,19 @@ defmodule AlertProcessor.Model.UserTest do
       assert [^user1, ^user2] = User.search_by_contact_info("555")
     end
   end
+
+  describe "is_admin?/1" do
+    test "returns true if the user is an administrator" do
+      admin = insert(:user, role: "application_administration")
+
+      assert User.is_admin?(admin) == true
+    end
+
+    test "returns false if the user is not an administrator" do
+      admin = insert(:user, role: "user")
+
+      assert User.is_admin?(admin) == false
+    end
+  end
+
 end
