@@ -309,8 +309,7 @@ defmodule AlertProcessor.Model.Subscription do
       where: fragment("? not in (select ie.subscription_id from informed_entities ie)", s.id))
   end
 
-  def create_full_mode_subscriptions(_user, nil), do: {:ok, nil}
-  def create_full_mode_subscriptions(user, params) do
+  def create_full_mode_subscriptions(%User{role: "application_administration"} = user, %{} = params) do
     params
     |> Map.take(~w(bus commuter_rail ferry subway))
     |> Enum.with_index()
@@ -320,7 +319,13 @@ defmodule AlertProcessor.Model.Subscription do
           cond do
             type_val == "true" && subscription == nil ->
               %__MODULE__{}
-              |> create_changeset(%{user_id: user.id, start_time: ~T[00:00:00], end_time: ~T[23:59:59], alert_priority_type: :low, type: type})
+              |> create_changeset(%{
+                user_id: user.id,
+                relevant_days: [:weekday, :saturday, :sunday],
+                start_time: ~T[00:00:00],
+                end_time: ~T[23:59:59],
+                alert_priority_type: :low,
+                type: type})
               |> PaperTrail.insert()
             type_val == "false" && subscription != nil ->
               PaperTrail.delete(subscription)
@@ -330,6 +335,7 @@ defmodule AlertProcessor.Model.Subscription do
       end)
     |> Repo.transaction()
   end
+  def create_full_mode_subscriptions(_, _), do: {:ok, nil}
 
   defp normalize_papertrail_result({:ok, %{model: subscription}}), do: {:ok, subscription}
   defp normalize_papertrail_result(result), do: result
