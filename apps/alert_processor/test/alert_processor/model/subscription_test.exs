@@ -3,6 +3,7 @@ defmodule AlertProcessor.Model.SubscriptionTest do
   use AlertProcessor.DataCase
   import AlertProcessor.Factory
 
+  alias AlertProcessor.Repo
   alias AlertProcessor.Model.{Subscription, InformedEntity}
 
   @base_attrs %{
@@ -333,6 +334,29 @@ defmodule AlertProcessor.Model.SubscriptionTest do
 
       assert {:ok, subscription} = Subscription.delete_subscription(subscription)
       assert nil == Repo.get(Subscription, subscription.id)
+    end
+  end
+
+  describe "full_mode_subscription_types_for_user" do
+    test "matches subscriptions without informed entities for user" do
+      user = insert(:user, role: "application_administration")
+      insert(:admin_subscription, type: :bus, user: user)
+      insert(:admin_subscription, type: :subway, user: user)
+      assert Subscription.full_mode_subscription_types_for_user(user) == [:bus, :subway]
+    end
+
+    test "does not match subscriptions with informed entities for user" do
+      user = insert(:user, role: "application_administration")
+      insert(:admin_subscription, type: :bus, user: user)
+      :admin_subscription
+      |> build(type: :subway, user: user)
+      |> subway_subscription()
+      |> Repo.preload(:informed_entities)
+      |> Ecto.Changeset.change()
+      |> Ecto.Changeset.put_assoc(:informed_entities, subway_subscription_entities())
+      |> Repo.insert()
+
+      assert Subscription.full_mode_subscription_types_for_user(user) == [:bus]
     end
   end
 end

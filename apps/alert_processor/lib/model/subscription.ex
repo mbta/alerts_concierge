@@ -292,6 +292,15 @@ defmodule AlertProcessor.Model.Subscription do
     |> Enum.map(& &1.trip)
   end
 
+  def full_mode_subscription_types_for_user(user) do
+    Repo.all(from s in __MODULE__,
+      where: s.user_id == ^user.id,
+      where: fragment("? not in (select ie.subscription_id from informed_entities ie)", s.id),
+      order_by: s.type,
+      distinct: true,
+      select: s.type)
+  end
+
   defp normalize_papertrail_result({:ok, %{model: subscription}}), do: {:ok, subscription}
   defp normalize_papertrail_result(result), do: result
 end
