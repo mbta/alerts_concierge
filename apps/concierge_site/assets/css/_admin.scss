@@ -116,8 +116,10 @@
 }
 
 .admin-navbar-email {
-  padding-top: .5rem;
-  padding-left: 3rem;
+  @include media-breakpoint-up(md) {
+    margin-left: 3rem;
+  }
+
   font-weight: bold;
 }
 
