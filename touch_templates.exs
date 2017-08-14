@@ -23,19 +23,21 @@ defmodule TouchTemplates do
   defp build_template_with_inline_css(template_name) do
     template_path = Path.join([@template_dir, template_name]) <> ".html.eex"
     style_path = Path.join([@style_dir, template_name]) <> "_styles.css"
-    global_path = @style_dir <> "/_global_styles.css"
+    global_style_path = @style_dir <> "/_global_styles.css"
+    default_style_path = @style_dir <> "/default_styles.css"
     output_template = Path.join([@output_dir, template_name]) <> ".html.eex"
 
-   {output_html, 0} = inline_css(template_path, style_path, global_path)
+    {output_html, 0} = inline_css(template_path, style_path, global_style_path, default_style_path)
 
     File.write!(output_template, output_html, [:write])
   end
 
-  defp inline_css(template_path, style_path, global_path) do
+  defp inline_css(template_path, style_path, global_style_path, default_style_path) do
     html = "--htmlFile=" <> template_path
     css = "--cssFile=" <> style_path
-    global = "--globalCssFile=" <> global_path
-    System.cmd("node", [@command, html, css, global])
+    global = "--globalCssFile=" <> global_style_path
+    default = "--defaultCssFile=" <> default_style_path
+    System.cmd("node", [@command, html, css, global, default])
   end
 end
 

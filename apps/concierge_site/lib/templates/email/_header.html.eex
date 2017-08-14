@@ -1,8 +1,0 @@
-<div class="header">
-  <img
-    class="header-image"
-    src="<%= ConciergeSite.Helpers.MailHelper.mbta_logo() %>"
-    alt="Logo of the Massachusetts Bay Transportation Authority"
-    height="48px"
-  >
-</div>

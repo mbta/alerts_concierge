@@ -3,7 +3,11 @@ var juice = require('juice');
 var fs = require('fs');
 
 function read(file) {
-  return fs.readFileSync(file, 'utf8');
+  if (fs.existsSync(file)){
+    return fs.readFileSync(file, 'utf8');
+  } else {
+    return fs.readFileSync(argv.defaultCssFile, 'utf8');
+  }
 }
 
 var css = read(argv.globalCssFile) + read(argv.cssFile);

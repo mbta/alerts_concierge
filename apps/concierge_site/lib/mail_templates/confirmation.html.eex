@@ -1,0 +1,20 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html>
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <title>MBTA Alert</title>
+  </head>
+  <body leftmargin="0" marginwidth="0" topmargin="0" marginheight="0" offset="0">
+    <%= ConciergeSite.Helpers.MailHelper.header() %>
+    <div class="email-contents">
+      <p>Congratulations, you have successfully subscribed to receive MBTA email alerts.</p>
+      <p>To update your subscription preferences, please tap on the Edit your Subscriptions link below.</p>
+      <p>To stop receiving email alerts, please click unsubscribe below.</p>
+
+      <p>If you did NOT request an account to receive MBTA alerts, click <a href="<%= disable_account_url %>">here</a> to disable the account.<p>
+    </div>
+    <center>
+      <%= ConciergeSite.Helpers.MailHelper.footer(unsubscribe_url) %>
+    </center>
+  </body>
+</html>
