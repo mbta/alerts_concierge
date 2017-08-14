@@ -3,7 +3,7 @@ defmodule ConciergeSite.Admin.SubscriberController do
   use Guardian.Phoenix.Controller
   alias AlertProcessor.Model.User
   alias AlertProcessor.Repo
-  alias ConciergeSite.{AdminUserPolicy, TargetedNotification}
+  alias ConciergeSite.TargetedNotification
 
   def index(conn, params, _user, _claims) do
     page = Map.get(params, "page", 1)
@@ -23,28 +23,13 @@ defmodule ConciergeSite.Admin.SubscriberController do
     render conn, "show.html", subscriber: subscriber
   end
 
-  def new_test_message(conn, %{"subscriber_id" => id}, user, _claims) do
-    if AdminUserPolicy.can?(user, :send_targeted_message) do
-      message_recipient = Repo.get(User, id)
-      render conn, "target_message.html",
-                    message_recipient: message_recipient
-    else
-      handle_unauthorized(conn)
-    end
+  def new_message(conn, %{"subscriber_id" => id}, _user, _claims) do
+    message_recipient = Repo.get(User, id)
+    render conn, "target_message.html", message_recipient: message_recipient
   end
 
-  def send_notification(conn, %{"targeted_message" => message_params}, user, _claims) do
-    if AdminUserPolicy.can?(user, :send_targeted_message) do
-      TargetedNotification.send_targeted_notification(message_params)
-      redirect(conn, to: admin_subscriber_path(conn, :index))
-    else
-      handle_unauthorized(conn)
-    end
-  end
-
-  defp handle_unauthorized(conn) do
-    conn
-    |> put_status(403)
-    |> render(ConciergeSite.ErrorView, "403.html")
+  def send_message(conn, %{"targeted_message" => message_params}, _user, _claims) do
+    TargetedNotification.send_targeted_notification(message_params)
+    redirect(conn, to: admin_subscriber_path(conn, :index))
   end
 end
