@@ -4,7 +4,7 @@
 
 <div class="container test-message-form">
   <div>What type of message would you like to send?</div>
-  <%= form_for @conn, admin_subscriber_subscriber_path(@conn, :send_notification, @message_recipient), fn f-> %>
+  <%= form_for @conn, admin_subscriber_subscriber_path(@conn, :send_notification, @message_recipient), [as: :targeted_message], fn f-> %>
     <div class="form-group">
       <%= radio_button f, :carrier, "email", checked: email_or_sms_checked?(@message_recipient), class: "radio toggle_email_message" %> Email
       <%= radio_button f, :carrier, "sms", checked: !email_or_sms_checked?(@message_recipient), class: "radio toggle_sms_message" %> SMS
@@ -13,15 +13,15 @@
         <%= text_input f, :subscriber_email, class: "form-control", value: @message_recipient.email %>
         <label for="subject">Subject</label>
         <%= text_input f, :subject, class: "form-control", placeholder: "Test Message" %>
-        <label for="body">Body Text</label>
-        <%= textarea f, :body, class: "form-control", placeholder: "This is a test message sent from the MBTA. No response necessary." %>
+        <label for="email_body">Body Text</label>
+        <%= textarea f, :email_body, class: "form-control", placeholder: "This is a test message sent from the MBTA. No response necessary." %>
       </div>
       <div class="form-group row toggleable_sms">
-        <label for="subscriber_email">Subscriber Phone Number</label>
+        <label for="subscriber_phone_number">Subscriber Phone Number</label>
         <%= text_input f, :subscriber_phone_number, class: "form-control", placeholder: "(123) 456-7890", value: @message_recipient.phone_number %>
-        <label for="body">SMS Body Text</label>
+        <label for="sms_body">SMS Body Text</label>
         <div class="form-sub-label">140 character limit</div>
-        <%= textarea f, :body, class: "form-control", placeholder: "This is a test message sent from the MBTA. No response necessary.", maxlength: 140 %>
+        <%= textarea f, :sms_body, class: "form-control", placeholder: "This is a test message sent from the MBTA. No response necessary.", maxlength: 140 %>
       </div>
     </div>
     <div class="text-center">

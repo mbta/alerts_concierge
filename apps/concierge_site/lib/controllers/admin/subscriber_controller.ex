@@ -4,7 +4,7 @@ defmodule ConciergeSite.Admin.SubscriberController do
   alias AlertProcessor.Model.{User, Notification}
   alias AlertProcessor.Repo
   alias ConciergeSite.AdminUserPolicy
-  alias ConciergeSite.Dissemination.Email
+  alias ConciergeSite.Dissemination.{Email, Mailer}
 
   def index(conn, params, _user, _claims) do
     page = Map.get(params, "page", 1)
@@ -34,9 +34,12 @@ defmodule ConciergeSite.Admin.SubscriberController do
     end
   end
 
-  def send_notification(conn, %{"id" => id, "message" => test_message_params}, user, _claims) do
+  def send_notification(conn, %{"subscriber_id" => id, "targeted_message" => message_params}, user, _claims) do
     if AdminUserPolicy.can?(user, :send_targeted_message) do
-      subscriber = Repo.get(User, id)
+      Email.targeted_notification_email(message_params)
+      |> Mailer.deliver_later
+
+      redirect(conn, to: admin_subscriber_path(conn, :index))
     else
       handle_unauthorized(conn)
     end

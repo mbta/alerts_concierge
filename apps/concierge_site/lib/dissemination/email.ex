@@ -67,6 +67,14 @@ defmodule ConciergeSite.Dissemination.Email do
     |> text_body(confirmation_text_email(unsubscribe_url, disable_account_url))
   end
 
+  def targeted_notification_email(message) do
+    base_email()
+    |> to(message["subscriber_email"])
+    |> subject(message["subject"])
+    |> put_html_layout({ConciergeSite.LayoutView, "email.html"})
+    |> render(:targeted_notification, email_body: message["email_body"])
+  end
+
   defp base_email do
     new_email(from: @from)
   end
