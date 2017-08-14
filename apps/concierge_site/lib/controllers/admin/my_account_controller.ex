@@ -1,7 +1,7 @@
 defmodule ConciergeSite.Admin.MyAccountController do
   use ConciergeSite.Web, :controller
   use Guardian.Phoenix.Controller
-  alias AlertProcessor.Model.User
+  alias AlertProcessor.Model.{Subscription, User}
   alias ConciergeSite.UserParams
 
   def edit(conn, _params, user, _claims) do
@@ -9,17 +9,26 @@ defmodule ConciergeSite.Admin.MyAccountController do
     render conn, "edit.html", user: user, changeset: changeset
   end
 
-  def update(conn, %{"user" => user_params}, user, _claims) do
+  def update(conn, %{"user" => user_params} = params, user, _claims) do
+    mode_subscription_params = Map.get(params, "mode_subscriptions")
     update_params = UserParams.prepare_for_update_changeset(user_params)
 
-    case User.update_account(user, update_params) do
-      {:ok, _user} ->
-        conn
-        |> put_flash(:info, "Account updated.")
-        |> redirect(to: admin_my_account_path(conn, :edit))
+    with {:ok, _user} <- User.update_account(user, update_params),
+         {:ok, _} <- Subscription.create_full_mode_subscriptions(user, mode_subscription_params) do
+      conn
+      |> put_flash(:info, "Account updated.")
+      |> redirect(to: admin_my_account_path(conn, :edit))
+    else
       {:error, changeset} ->
         conn
         |> put_flash(:error, "Account could not be updated. Please see errors below.")
+        |> assign(:user, user)
+        |> assign(:changeset, changeset)
+        |> render("edit.html")
+      _ ->
+        changeset = User.update_account_changeset(user)
+        conn
+        |> put_flash(:error, "Account could not be updated.")
         |> assign(:user, user)
         |> assign(:changeset, changeset)
         |> render("edit.html")
