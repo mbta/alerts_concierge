@@ -125,4 +125,18 @@ defmodule AlertProcessor.InformedEntityFilterTest do
     assert {:ok, query, @alert5} = InformedEntityFilter.filter({:ok, QueryHelper.generate_query(Subscription, all_subscription_ids), @alert5})
     assert [sub5.id] == QueryHelper.execute_query(query)
   end
+
+  test "matches admin mode subscription", %{sub1: sub1, sub2: sub2} do
+    user = insert(:user, role: "application_administration")
+    admin_sub = insert(:admin_subscription, type: :bus, user: user)
+    assert {:ok, query, @alert4} = InformedEntityFilter.filter({:ok, QueryHelper.generate_query(Subscription, [admin_sub.id, sub1.id, sub2.id]), @alert4})
+    assert [admin_sub.id] == QueryHelper.execute_query(query)
+  end
+
+  test "doesnt match non application admin mode subscription", %{sub1: sub1, sub2: sub2} do
+    user = insert(:user, role: "customer_support")
+    admin_sub = insert(:admin_subscription, type: :bus, user: user)
+    assert {:ok, query, @alert4} = InformedEntityFilter.filter({:ok, QueryHelper.generate_query(Subscription, [admin_sub.id, sub1.id, sub2.id]), @alert4})
+    assert [] == QueryHelper.execute_query(query)
+  end
 end

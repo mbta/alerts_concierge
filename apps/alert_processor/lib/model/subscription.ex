@@ -37,6 +37,14 @@ defmodule AlertProcessor.Model.Subscription do
     7 => :sunday
   }
 
+  @subscription_type_values %{
+    0 => "subway",
+    1 => "subway",
+    2 => "commuter_rail",
+    3 => "bus",
+    4 => "ferry"
+  }
+
   use Ecto.Schema
   import Ecto.Changeset
 
@@ -269,6 +277,10 @@ defmodule AlertProcessor.Model.Subscription do
   """
   def subscription_types do
     [:bus, :subway, :commuter_rail, :boat, :amenity]
+  end
+
+  def subscription_type_from_route_type(route_type) do
+    @subscription_type_values[route_type]
   end
 
   @spec subscription_trip_ids(__MODULE__.t) :: [Trip.id]
