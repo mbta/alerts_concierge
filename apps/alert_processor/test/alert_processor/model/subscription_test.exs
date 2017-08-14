@@ -368,6 +368,7 @@ defmodule AlertProcessor.Model.SubscriptionTest do
       assert Repo.one(from s in Subscription, where: s.user_id == ^user.id, where: s.type == "bus", select: count(s.id)) == 1
       assert Repo.one(from s in Subscription, where: s.user_id == ^user.id, where: s.type == "commuter_rail", select: count(s.id)) == 1
       assert Repo.one(from s in Subscription, where: s.user_id == ^user.id, where: s.type == "subway", select: count(s.id)) == 1
+      assert Repo.one(from s in Subscription, where: s.user_id == ^user.id, where: s.type == "ferry", select: count(s.id)) == 0
     end
 
     test "creates full mode subscription in correct format" do
@@ -401,19 +402,20 @@ defmodule AlertProcessor.Model.SubscriptionTest do
       assert Repo.one(from s in Subscription, where: s.user_id == ^user.id, select: count(s.id)) == 1
       Subscription.create_full_mode_subscriptions(user, %{"bus" => "false", "commuter_rail" => "false", "ferry" => "false", "subway" => "false"})
       assert Repo.one(from s in Subscription, where: s.user_id == ^user.id, where: s.type == "bus", select: count(s.id)) == 0
+      assert Repo.get(Subscription, subscription.id) == nil
     end
 
     test "does not allow other roles to create subscriptions" do
       user = insert(:user, role: "customer_support")
       assert Repo.one(from s in Subscription, where: s.user_id == ^user.id, select: count(s.id)) == 0
-      assert {:ok, nil} = Subscription.create_full_mode_subscriptions(user, %{"bus" => "true", "commuter_rail" => "true", "ferry" => "false", "subway" => "true"})
+      assert :ok = Subscription.create_full_mode_subscriptions(user, %{"bus" => "true", "commuter_rail" => "true", "ferry" => "false", "subway" => "true"})
       assert Repo.one(from s in Subscription, where: s.user_id == ^user.id, select: count(s.id)) == 0
     end
 
-    test "returns {:ok, nil} if params are not passed in" do
+    test "returns :ok if params are not passed in" do
       user = insert(:user, role: "customer_support")
       assert Repo.one(from s in Subscription, where: s.user_id == ^user.id, select: count(s.id)) == 0
-      assert {:ok, nil} = Subscription.create_full_mode_subscriptions(user, nil)
+      assert :ok = Subscription.create_full_mode_subscriptions(user, nil)
       assert Repo.one(from s in Subscription, where: s.user_id == ^user.id, select: count(s.id)) == 0
     end
   end

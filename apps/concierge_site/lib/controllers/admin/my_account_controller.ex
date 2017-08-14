@@ -14,7 +14,7 @@ defmodule ConciergeSite.Admin.MyAccountController do
     update_params = UserParams.prepare_for_update_changeset(user_params)
 
     with {:ok, _user} <- User.update_account(user, update_params),
-         {:ok, _} <- Subscription.create_full_mode_subscriptions(user, mode_subscription_params) do
+         :ok <- Subscription.create_full_mode_subscriptions(user, mode_subscription_params) do
       conn
       |> put_flash(:info, "Account updated.")
       |> redirect(to: admin_my_account_path(conn, :edit))

@@ -132,7 +132,10 @@ defmodule AlertProcessor.Model.Subscription do
 
   def for_user(user) do
     query = from s in __MODULE__,
+      join: ie in InformedEntity,
+      on: ie.subscription_id == s.id,
       where: s.user_id == ^user.id,
+      distinct: true,
       preload: [:informed_entities]
 
     Repo.all(query)
@@ -310,32 +313,37 @@ defmodule AlertProcessor.Model.Subscription do
   end
 
   def create_full_mode_subscriptions(%User{role: "application_administration"} = user, %{} = params) do
-    params
-    |> Map.take(~w(bus commuter_rail ferry subway))
-    |> Enum.with_index()
-    |> Enum.reduce(Multi.new(), fn({{type, type_val}, index}, acc) ->
-        Multi.run(acc, {:subscription, index}, fn _ ->
-          subscription = full_mode_subscription_for_user(user, type)
-          cond do
-            type_val == "true" && subscription == nil ->
-              %__MODULE__{}
-              |> create_changeset(%{
-                user_id: user.id,
-                relevant_days: [:weekday, :saturday, :sunday],
-                start_time: ~T[00:00:00],
-                end_time: ~T[23:59:59],
-                alert_priority_type: :low,
-                type: type})
-              |> PaperTrail.insert()
-            type_val == "false" && subscription != nil ->
-              PaperTrail.delete(subscription)
-            true -> {:ok, subscription}
-          end
+    multi =
+      params
+      |> Map.take(~w(bus commuter_rail ferry subway))
+      |> Enum.with_index()
+      |> Enum.reduce(Multi.new(), fn({{type, type_val}, index}, acc) ->
+          Multi.run(acc, {:subscription, index}, fn _ ->
+            subscription = full_mode_subscription_for_user(user, type)
+            cond do
+              type_val == "true" && subscription == nil ->
+                %__MODULE__{}
+                |> create_changeset(%{
+                  user_id: user.id,
+                  relevant_days: [:weekday, :saturday, :sunday],
+                  start_time: ~T[00:00:00],
+                  end_time: ~T[23:59:59],
+                  alert_priority_type: :low,
+                  type: type})
+                |> PaperTrail.insert()
+              type_val == "false" && subscription != nil ->
+                PaperTrail.delete(subscription)
+              true -> {:ok, subscription}
+            end
+          end)
         end)
-      end)
-    |> Repo.transaction()
+
+    case Repo.transaction(multi) do
+      {:ok, _} -> :ok
+      result -> result
+    end
   end
-  def create_full_mode_subscriptions(_, _), do: {:ok, nil}
+  def create_full_mode_subscriptions(_, _), do: :ok
 
   defp normalize_papertrail_result({:ok, %{model: subscription}}), do: {:ok, subscription}
   defp normalize_papertrail_result(result), do: result
