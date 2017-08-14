@@ -25,13 +25,6 @@ defmodule ConciergeSite.Admin.MyAccountController do
         |> assign(:user, user)
         |> assign(:changeset, changeset)
         |> render("edit.html")
-      _ ->
-        changeset = User.update_account_changeset(user)
-        conn
-        |> put_flash(:error, "Account could not be updated.")
-        |> assign(:user, user)
-        |> assign(:changeset, changeset)
-        |> render("edit.html")
     end
   end
 end

@@ -395,6 +395,14 @@ defmodule AlertProcessor.Model.SubscriptionTest do
       assert Repo.one(from s in Subscription, where: s.user_id == ^user.id, where: s.type == "subway", select: count(s.id)) == 1
     end
 
+    test "deletes if already exists" do
+      user = insert(:user, role: "application_administration")
+      subscription = insert(:admin_subscription, user: user, type: "bus")
+      assert Repo.one(from s in Subscription, where: s.user_id == ^user.id, select: count(s.id)) == 1
+      Subscription.create_full_mode_subscriptions(user, %{"bus" => "false", "commuter_rail" => "false", "ferry" => "false", "subway" => "false"})
+      assert Repo.one(from s in Subscription, where: s.user_id == ^user.id, where: s.type == "bus", select: count(s.id)) == 0
+    end
+
     test "does not allow other roles to create subscriptions" do
       user = insert(:user, role: "customer_support")
       assert Repo.one(from s in Subscription, where: s.user_id == ^user.id, select: count(s.id)) == 0
