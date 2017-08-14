@@ -352,28 +352,31 @@ defmodule AlertProcessor.Model.User do
   @doc """
   return list of users ordered by email address
   """
-  def ordered_by_email do
-    Repo.all(
-      from u in __MODULE__,
-      order_by: u.email,
-      limit: 25
-    )
+  def ordered_by_email(page \\ 1) do
+    __MODULE__
+    |> order_by(:email)
+    |> Repo.paginate(page: page, page_size: 25)
   end
 
   @doc """
   filter users based on search criteria for either email
   address or phone number
   """
-  def search_by_contact_info(search_term) do
-    Repo.all(
-      from u in __MODULE__,
-      where: ilike(u.email, ^"%#{search_term}%"),
-      or_where: ilike(u.phone_number, ^"%#{search_term}%"),
-      order_by: u.email,
-      limit: 25
-    )
+  def search_by_contact_info(search_term, page \\ 1) do
+    __MODULE__
+    |> where([u], ilike(u.email, ^"%#{search_term}%"))
+    |> or_where([u], ilike(u.phone_number, ^"%#{search_term}%"))
+    |> order_by(:email)
+    |> Repo.paginate(page: page, page_size: 25)
   end
 
   def is_admin?(nil), do: false
   def is_admin?(user), do: user.role in @active_admin_roles
+
+  @doc """
+  return one user based on id
+  """
+  def find_by_id(user_id) do
+    Repo.get(__MODULE__, user_id)
+  end
 end

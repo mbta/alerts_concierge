@@ -45,6 +45,24 @@ defmodule ConciergeSite.Admin.SubscriberControllerTest do
       refute html_response(conn, 200) =~ "Active"
       assert html_response(conn, 200) =~ "Disabled"
     end
+
+    test "GET /admin/subscribers with search doesnt match empty string", %{conn: conn, subscriber1: subscriber1, subscriber2: subscriber2} do
+      conn = get(conn, admin_subscriber_path(conn, :index), search: "")
+
+      assert html_response(conn, 200) =~ "Subscribers"
+      assert html_response(conn, 200) =~ subscriber1.email
+      assert html_response(conn, 200) =~ subscriber2.email
+      assert html_response(conn, 200) =~ subscriber1.phone_number
+      assert html_response(conn, 200) =~ subscriber2.phone_number
+      assert html_response(conn, 200) =~ "Active"
+      assert html_response(conn, 200) =~ "Disabled"
+    end
+
+    test "GET /admin/subscribers/:id", %{conn: conn, subscriber1: subscriber} do
+      conn = get(conn, admin_subscriber_path(conn, :show, subscriber))
+
+      assert html_response(conn, 200) =~ subscriber.email
+    end
   end
 
   describe "regular user" do
