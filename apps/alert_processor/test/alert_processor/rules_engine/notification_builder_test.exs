@@ -106,11 +106,22 @@ defmodule AlertProcessor.NotificationBuilderTest do
   end
 
   test "do not send notification if send_time -> active_period end is inside blackout period", %{time: time} do
+    do_not_disturb_start =
+      time.now
+      |> DT.shift_zone!("America/New_York")
+      |> DT.to_time()
+
+    do_not_disturb_end =
+      time.one_hour_from_now
+      |> DT.shift_zone!("America/New_York")
+      |> DT.to_time()
+
     user = insert(
       :user,
-      do_not_disturb_start: DT.to_time(time.now),
-      do_not_disturb_end: DT.to_time(time.one_hour_from_now)
+      do_not_disturb_start: do_not_disturb_start,
+      do_not_disturb_end: do_not_disturb_end
     )
+
     sub = insert(:subscription, user: user)
     alert = %Alert{
       id: "1",
@@ -122,11 +133,22 @@ defmodule AlertProcessor.NotificationBuilderTest do
   end
 
   test "send notification at end of blackout period if active_period overlaps", %{time: time} do
+    do_not_disturb_start =
+      time.now
+      |> DT.shift_zone!("America/New_York")
+      |> DT.to_time()
+
+    do_not_disturb_end =
+      time.one_hour_from_now
+      |> DT.shift_zone!("America/New_York")
+      |> DT.to_time()
+
     user = insert(
       :user,
-      do_not_disturb_start: DT.to_time(time.now),
-      do_not_disturb_end: DT.to_time(time.one_hour_from_now)
+      do_not_disturb_start: do_not_disturb_start,
+      do_not_disturb_end: do_not_disturb_end
     )
+
     sub = insert(:subscription, user: user)
     alert = %Alert{
       id: "1",
@@ -148,9 +170,9 @@ defmodule AlertProcessor.NotificationBuilderTest do
   The active period is < 24 hours, so the default time to send the alert is immediately
   In this case, the alert would then get scheduled for 8am
   """ do
-    today_5am = DT.from_date_and_time_and_zone!({2018, 1, 8}, {5, 0, 0}, "Etc/UTC")
+    today_5am = DT.from_date_and_time_and_zone!({2018, 1, 8}, {5, 0, 0}, "America/New_York")
     tomorrow_5am = DT.add!(today_5am, 86_400)
-    today_8am = DT.from_date_and_time_and_zone!({2018, 1, 8}, {8, 0, 0}, "Etc/UTC")
+    today_8am = DT.from_date_and_time_and_zone!({2018, 1, 8}, {8, 0, 0}, "America/New_York")
     user = insert(
       :user,
       do_not_disturb_start: ~T[20:00:00],
@@ -180,9 +202,9 @@ defmodule AlertProcessor.NotificationBuilderTest do
   The default time to send the alert immediately 10pm
   In this case, the alert would then get scheduled for 8am *tomorrow*
   """ do
-    today_10pm = DT.from_date_and_time_and_zone!({2018, 1, 8}, {22, 0, 0}, "Etc/UTC")
+    today_10pm = DT.from_date_and_time_and_zone!({2018, 1, 8}, {22, 0, 0}, "America/New_York")
     tomorrow_10pm = DT.add!(today_10pm, 86_400)
-    tomorrow_8am = DT.from_date_and_time_and_zone!({2018, 1, 9}, {8, 0, 0}, "Etc/UTC")
+    tomorrow_8am = DT.from_date_and_time_and_zone!({2018, 1, 9}, {8, 0, 0}, "America/New_York")
     user = insert(
       :user,
       do_not_disturb_start: ~T[20:00:00],
@@ -199,7 +221,7 @@ defmodule AlertProcessor.NotificationBuilderTest do
       }]
     }
 
-     [notification] = NotificationBuilder.build_notifications(sub, alert, today_10pm)
-     assert notification.send_after == tomorrow_8am
+    [notification] = NotificationBuilder.build_notifications(sub, alert, today_10pm)
+    assert notification.send_after == tomorrow_8am
   end
 end
