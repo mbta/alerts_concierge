@@ -282,4 +282,18 @@ defmodule AlertProcessor.Model.Subscription do
 
   defp normalize_papertrail_result({:ok, %{model: subscription}}), do: {:ok, subscription}
   defp normalize_papertrail_result(result), do: result
+
+  def get_versions_by_date(user, date) do
+    for_user(user)
+    |> Enum.map(&(get_version_for_date(&1, date)))
+    |> List.flatten
+  end
+
+  defp get_version_for_date(sub, date) do
+    sub
+    |> PaperTrail.get_versions()
+    |> Enum.filter(fn(version) ->
+      Date.compare(version.inserted_at, date) != :gt
+    end)
+  end
 end
