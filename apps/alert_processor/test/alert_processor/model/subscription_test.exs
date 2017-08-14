@@ -359,4 +359,25 @@ defmodule AlertProcessor.Model.SubscriptionTest do
       assert Subscription.full_mode_subscription_types_for_user(user) == [:bus]
     end
   end
+
+  describe "create_full_mode_subscriptions" do
+    test "creates new full mode subscriptions" do
+      user = insert(:user, role: "application_administration")
+      assert Repo.one(from s in Subscription, where: s.user_id == ^user.id, select: count(s.id)) == 0
+      Subscription.create_full_mode_subscriptions(user, %{"bus" => "true", "commuter_rail" => "true", "ferry" => "false", "subway" => "true"})
+      assert Repo.one(from s in Subscription, where: s.user_id == ^user.id, where: s.type == "bus", select: count(s.id)) == 1
+      assert Repo.one(from s in Subscription, where: s.user_id == ^user.id, where: s.type == "commuter_rail", select: count(s.id)) == 1
+      assert Repo.one(from s in Subscription, where: s.user_id == ^user.id, where: s.type == "subway", select: count(s.id)) == 1
+    end
+
+    test "does not create new if already exists" do
+      user = insert(:user, role: "application_administration")
+      subscription = insert(:admin_subscription, user: user, type: "bus")
+      assert Repo.one(from s in Subscription, where: s.user_id == ^user.id, select: count(s.id)) == 1
+      Subscription.create_full_mode_subscriptions(user, %{"bus" => "true", "commuter_rail" => "true", "ferry" => "false", "subway" => "true"})
+      assert Repo.one(from s in Subscription, where: s.user_id == ^user.id, where: s.type == "bus", select: s.id) == subscription.id
+      assert Repo.one(from s in Subscription, where: s.user_id == ^user.id, where: s.type == "commuter_rail", select: count(s.id)) == 1
+      assert Repo.one(from s in Subscription, where: s.user_id == ^user.id, where: s.type == "subway", select: count(s.id)) == 1
+    end
+  end
 end

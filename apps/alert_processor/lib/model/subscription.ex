@@ -4,6 +4,7 @@ defmodule AlertProcessor.Model.Subscription do
   """
 
   alias AlertProcessor.{Helpers.DateTimeHelper, Model.InformedEntity, Model.Trip, Model.User, Repo, TimeFrameComparison}
+  alias Ecto.Multi
   import Ecto.Query
 
   @type id :: String.t
@@ -299,6 +300,35 @@ defmodule AlertProcessor.Model.Subscription do
       order_by: s.type,
       distinct: true,
       select: s.type)
+  end
+
+  defp full_mode_subscription_for_user(user, type) do
+    Repo.one(from s in __MODULE__,
+      where: s.user_id == ^user.id,
+      where: s.type == ^type,
+      where: fragment("? not in (select ie.subscription_id from informed_entities ie)", s.id))
+  end
+
+  def create_full_mode_subscriptions(_user, nil), do: {:ok, nil}
+  def create_full_mode_subscriptions(user, params) do
+    params
+    |> Map.take(~w(bus commuter_rail ferry subway))
+    |> Enum.with_index()
+    |> Enum.reduce(Multi.new(), fn({{type, type_val}, index}, acc) ->
+        Multi.run(acc, {:subscription, index}, fn _ ->
+          subscription = full_mode_subscription_for_user(user, type)
+          cond do
+            type_val == "true" && subscription == nil ->
+              %__MODULE__{}
+              |> create_changeset(%{user_id: user.id, start_time: ~T[00:00:00], end_time: ~T[23:59:59], alert_priority_type: :low, type: type})
+              |> PaperTrail.insert()
+            type_val == "false" && subscription != nil ->
+              PaperTrail.delete(subscription)
+            true -> {:ok, subscription}
+          end
+        end)
+      end)
+    |> Repo.transaction()
   end
 
   defp normalize_papertrail_result({:ok, %{model: subscription}}), do: {:ok, subscription}
