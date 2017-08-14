@@ -1,1 +1,1 @@
-<%= inspect(@subscriber) %>
+<%= @subscriber.email %>
