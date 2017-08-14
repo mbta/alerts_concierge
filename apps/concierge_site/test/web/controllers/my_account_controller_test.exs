@@ -34,8 +34,8 @@ defmodule ConciergeSite.MyAccountControllerTest do
 
       assert html_response(conn, 302) =~ "my-subscriptions"
       assert updated_user.phone_number == "5551234567"
-      assert updated_user.do_not_disturb_end == ~T[22:30:00.000000]
-      assert updated_user.do_not_disturb_start == ~T[20:30:00.000000]
+      assert updated_user.do_not_disturb_end == ~T[18:30:00.000000]
+      assert updated_user.do_not_disturb_start == ~T[16:30:00.000000]
       assert updated_user.amber_alert_opt_in == false
       assert :error = HoldingQueue.pop()
     end

@@ -3,7 +3,6 @@ defmodule ConciergeSite.UserParams do
   Functions for processing user input from account updates and creation
   """
 
-  alias AlertProcessor.Helpers.DateTimeHelper
   alias Calendar.DateTime
 
   @vacation_date_regex ~r/[0-9]{1,2}\/[0-9]{1,2}\/[0-9]{4}/
@@ -23,8 +22,8 @@ defmodule ConciergeSite.UserParams do
     do_not_disturb =
       case params["dnd_toggle"] do
         "true" ->
-          %{"do_not_disturb_start" => DateTimeHelper.timestamp_to_utc(params["do_not_disturb_start"]),
-            "do_not_disturb_end" => DateTimeHelper.timestamp_to_utc(params["do_not_disturb_end"])}
+          %{"do_not_disturb_start" => Time.from_iso8601!(params["do_not_disturb_start"]),
+            "do_not_disturb_end" => Time.from_iso8601!(params["do_not_disturb_end"])}
         "false" ->
           %{"do_not_disturb_start" => nil, "do_not_disturb_end" => nil}
         _ -> %{}

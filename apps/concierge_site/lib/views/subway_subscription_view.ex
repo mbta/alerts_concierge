@@ -4,8 +4,8 @@ defmodule ConciergeSite.SubwaySubscriptionView do
     only: [travel_time_options: 0, format_time: 1,
            time_option_local_strftime: 1]
   import ConciergeSite.SubscriptionHelper,
-    only: [joined_day_list: 1, atomize_keys: 1, progress_link_class: 3, do_query_string_params: 2]
-  alias ConciergeSite.Subscriptions.SubscriptionParams
+    only: [joined_day_list: 1, atomize_keys: 1, progress_link_class: 3,
+           do_query_string_params: 2, selected_relevant_days: 1]
 
   @typedoc """
   Possible values for trip types in Create Subscription flow
@@ -39,12 +39,6 @@ defmodule ConciergeSite.SubwaySubscriptionView do
   ]
   def params_for_step(:preferences), do: ["alert_priority_type" | params_for_step(:trip_info)]
   def params_for_step(_), do: []
-
-  def selected_relevant_days(params) do
-    params
-    |> SubscriptionParams.relevant_days_from_booleans()
-    |> Enum.map(&String.to_existing_atom/1)
-  end
 
   @doc """
   Provide description text for Trip Info page based on which trip type selected
@@ -137,4 +131,7 @@ defmodule ConciergeSite.SubwaySubscriptionView do
      " - ",
      format_time(params["departure_end"])]]
   end
+
+  def default_severity_selection("roaming"), do: :high
+  def default_severity_selection(_), do: :medium
 end
