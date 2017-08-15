@@ -7,7 +7,7 @@ defmodule AlertProcessor.Subscription.AmenitiesMapper do
   import AlertProcessor.Subscription.Mapper, except: [map_timeframe: 1]
   import Ecto.Query
   alias Ecto.Multi
-  alias AlertProcessor.ServiceInfoCache
+  alias AlertProcessor.{Repo, ServiceInfoCache}
   alias AlertProcessor.Model.{InformedEntity, Subscription}
 
   defdelegate build_subscription_transaction(subscriptions, user), to: AlertProcessor.Subscription.Mapper
@@ -26,25 +26,32 @@ defmodule AlertProcessor.Subscription.AmenitiesMapper do
       |> Map.put(:informed_entities, informed_entities)
       |> Map.from_struct()
 
-    subscription_changeset = Subscription.update_changeset(
-      subscription,
-      params
-    )
     current_informed_entity_ids =
       subscription.informed_entities
       |> Enum.map(& &1.id)
 
-    informed_entities
+    query = from(ie in InformedEntity, where: ie.id in ^current_informed_entity_ids)
+    current_informed_entities = Repo.all(query)
+
+    multi = informed_entities
     |> Enum.with_index()
     |> Enum.reduce(Multi.new(), fn({ie, index}, acc) ->
         ie_to_insert = Map.put(ie, :subscription_id, subscription.id)
-        Multi.insert(acc, {:informed_entity, index}, ie_to_insert)
+        Multi.run(acc, {:new_informed_entity, index}, fn _ ->
+          PaperTrail.insert(ie_to_insert)
+        end)
       end)
-    |> Multi.delete_all(
-        :remove_old,
-        from(ie in InformedEntity, where: ie.id in ^current_informed_entity_ids)
-      )
-    |> Multi.update(:subscription, subscription_changeset)
+
+    current_informed_entities
+    |> Enum.with_index
+    |> Enum.reduce(multi, fn({ie, index}, acc) ->
+      Multi.run(acc, {:remove_current, index}, fn _ ->
+        PaperTrail.delete(ie)
+      end)
+    end)
+    |> Multi.run(:subscription, fn _ ->
+      Subscription.update_subscription(subscription, params)
+    end)
   end
 
   @doc """
