@@ -6,15 +6,20 @@
   <div>What type of message would you like to send?</div>
   <%= form_for @conn, admin_subscriber_subscriber_path(@conn, :send_message, @message_recipient), [as: :targeted_message], fn f-> %>
     <div class="form-group">
-      <%= radio_button f, :carrier, "email", checked: email_or_sms_checked?(@message_recipient), class: "radio toggle_email_message" %> Email
-      <%= radio_button f, :carrier, "sms", checked: !email_or_sms_checked?(@message_recipient), class: "radio toggle_sms_message" %> SMS
+      <%= radio_button f, :carrier, "email", checked: email_or_sms_checked?(@message_recipient), class: "radio toggle_email_message" %>
+      <label for="email" class="email_sms_radio_label">Email</label>
+      <%= if @message_recipient.phone_number do %>
+        <%= radio_button f, :carrier, "sms", checked: !email_or_sms_checked?(@message_recipient), class: "radio toggle_sms_message" %>
+        <label for="email" class="email_sms_radio_label">SMS</label>
+      <% end %>
       <div class="form-group row toggleable_email">
         <label for="subscriber_email">Subscriber Email</label>
-        <%= text_input f, :subscriber_email, class: "form-control", value: @message_recipient.email %>
+        <%= text_input f, :subscriber_email, class: "form-control", value: @message_recipient.email, disabled: true %>
+        <%= hidden_input f, :subscriber_email, value: @message_recipient.email %>
         <label for="subject">Subject</label>
-        <%= text_input f, :subject, class: "form-control", placeholder: "Test Message" %>
+        <%= text_input f, :subject, class: "form-control", placeholder: "Test Message", required: true %>
         <label for="email_body">Body Text</label>
-        <%= textarea f, :email_body, class: "form-control", placeholder: "This is a test message sent from the MBTA. No response necessary." %>
+        <%= textarea f, :email_body, class: "form-control email_body_container", placeholder: "This is a test message sent from the MBTA. No response necessary.", required: true %>
       </div>
       <div class="form-group row toggleable_sms">
         <label for="subscriber_phone_number">Subscriber Phone Number</label>
