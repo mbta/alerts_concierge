@@ -13,7 +13,7 @@ defmodule ConciergeSite.Admin.AdminUserController do
       admin_users = User.all_admin_users()
       render conn, "index.html", admin_users: admin_users
     else
-      handle_unauthorized(conn)
+      render_unauthorized(conn)
     end
   end
 
@@ -23,7 +23,7 @@ defmodule ConciergeSite.Admin.AdminUserController do
       render conn, "new.html", account_changeset: account_changeset,
                     admin_roles: @admin_roles, errors: []
     else
-      handle_unauthorized(conn)
+      render_unauthorized(conn)
     end
   end
 
@@ -32,7 +32,7 @@ defmodule ConciergeSite.Admin.AdminUserController do
       admin_user = User.admin_one!(id)
       render conn, "show.html", admin_user: admin_user
     else
-      handle_unauthorized(conn)
+      render_unauthorized(conn)
     end
   end
 
@@ -51,7 +51,7 @@ defmodule ConciergeSite.Admin.AdminUserController do
           |> render("show.html", admin_user: admin_user)
       end
     else
-      handle_unauthorized(conn)
+      render_unauthorized(conn)
     end
   end
 
@@ -70,7 +70,7 @@ defmodule ConciergeSite.Admin.AdminUserController do
           |> render("show.html", admin_user: admin_user)
       end
     else
-      handle_unauthorized(conn)
+      render_unauthorized(conn)
     end
   end
 
@@ -85,7 +85,7 @@ defmodule ConciergeSite.Admin.AdminUserController do
                         admin_roles: @admin_roles, errors: errors(changeset)
       end
     else
-      handle_unauthorized(conn)
+      render_unauthorized(conn)
     end
   end
 
@@ -93,11 +93,5 @@ defmodule ConciergeSite.Admin.AdminUserController do
     Enum.map(changeset.errors, fn({field, _}) ->
       field
     end)
-  end
-
-  defp handle_unauthorized(conn) do
-    conn
-    |> put_status(403)
-    |> render(ConciergeSite.ErrorView, "403.html")
   end
 end

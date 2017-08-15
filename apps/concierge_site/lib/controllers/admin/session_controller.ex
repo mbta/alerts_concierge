@@ -46,9 +46,5 @@ defmodule ConciergeSite.Admin.SessionController do
     |> redirect(to: admin_session_path(conn, :new))
   end
 
-  def unauthorized(conn, _params) do
-    conn
-    |> put_status(403)
-    |> render(ConciergeSite.ErrorView, "403.html")
-  end
+  def unauthorized(conn, _params), do: render_unauthorized(conn)
 end

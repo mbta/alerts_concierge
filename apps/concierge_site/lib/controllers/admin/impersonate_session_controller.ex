@@ -11,16 +11,9 @@ defmodule ConciergeSite.Admin.ImpersonateSessionController do
       conn
       |> Guardian.Plug.sign_out()
       |> Guardian.Plug.sign_in(user, :access, perms: %{default: Guardian.Permissions.max}, imp: admin.id)
-      |> put_flash(:info, "You are now logged in on behalf of #{user.email}.")
       |> redirect(to: "/my-subscriptions")
     else
-      handle_unauthorized(conn)
+      render_unauthorized(conn)
     end
-  end
-
-  defp handle_unauthorized(conn) do
-    conn
-    |> put_status(403)
-    |> render(ConciergeSite.ErrorView, "403.html")
   end
 end
