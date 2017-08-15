@@ -39,7 +39,7 @@
           <span>></span>
           <a class="breadcrumb-item" href="/my-subscriptions">T-Alerts</a>
           <%= if is_admin?(@current_user) do %>
-            <%= for breadcrumb <- breadcrumbs(@conn, assigns[:admin_user] || nil) do %>
+            <%= for breadcrumb <- breadcrumbs(@conn) do %>
               <span>></span>
               <a class="breadcrumb-item" href="<%= breadcrumb.path %>"><%= breadcrumb.title %></a>
             <% end %>

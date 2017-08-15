@@ -20,4 +20,35 @@ defmodule ConciergeSite.Admin.SubscriberViewTest do
       assert SubscriberView.account_status(user) == "Disabled"
     end
   end
+
+  describe "blackout_period" do
+    test "returns N/A if not present" do
+      user = build(:user)
+      assert "N/A" = SubscriberView.blackout_period(user)
+    end
+
+    test "returns timeframe text" do
+      user = build(:user, do_not_disturb_start: ~T[20:00:00], do_not_disturb_end: ~T[06:00:00])
+      timeframe_text = SubscriberView.blackout_period(user)
+      assert "08:00 PM to 06:00 AM" = IO.iodata_to_binary(timeframe_text)
+    end
+  end
+
+  describe "vacation_period" do
+    test "returns N/A if not present" do
+      user = build(:user)
+      assert "N/A" = SubscriberView.vacation_period(user)
+    end
+
+    test "returns N/A if in past" do
+      user = build(:user, vacation_start: DateTime.from_naive!(~N[2016-08-01 12:00:00], "Etc/UTC"), vacation_end: DateTime.from_naive!(~N[2017-08-01 12:00:00], "Etc/UTC"))
+      assert "N/A" = SubscriberView.vacation_period(user)
+    end
+
+    test "returns timeframe text" do
+      user = build(:user, vacation_start: DateTime.from_naive!(~N[2017-08-01 12:00:00], "Etc/UTC"), vacation_end: DateTime.from_naive!(~N[2100-08-01 12:00:00], "Etc/UTC"))
+      timeframe_text = SubscriberView.vacation_period(user)
+      assert "Tue Aug  1 12:00:00 2017 until Sun Aug  1 12:00:00 2100" = IO.iodata_to_binary(timeframe_text)
+    end
+  end
 end

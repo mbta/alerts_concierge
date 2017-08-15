@@ -16,9 +16,9 @@ defmodule ConciergeSite.Admin.SubscriberController do
     render conn, "index.html", subscriber_page: subscriber_page, search_term: params["search"]
   end
 
-  def show(conn, %{"id" => subscriber_id}, _user, _claims) do
+  def show(conn, %{"id" => subscriber_id}, user, _claims) do
     subscriber = User.find_by_id(subscriber_id)
-
+    User.log_admin_action(:view_subscriber, user, subscriber)
     render conn, "show.html", subscriber: subscriber
   end
 

@@ -10,18 +10,27 @@ defmodule ConciergeSite.LayoutView do
     end
   end
 
-  def breadcrumbs(conn, admin_user) do
+  def breadcrumbs(conn) do
     case conn.path_info do
       ["admin", path, _endpoint, sub_endpoint] ->
         [%{title: breadcrumb_title_parse(path), path: "/admin/#{path}"},
         %{title: breadcrumb_title_parse(sub_endpoint), path: conn.request_path}]
+      ["admin", "subscribers", _endpoint] ->
+        [
+          %{title: "Subscribers", path: "/admin/subscribers"},
+          %{title: conn.assigns[:subscriber].email, path: conn.request_path}
+        ]
       ["admin", path, endpoint] ->
-        if admin_user do
-          [%{title: breadcrumb_title_parse(path), path: "/admin/#{path}"},
-          %{title: admin_user.email, path: conn.request_path}]
+        if conn.assigns[:admin_user] do
+          [
+            %{title: breadcrumb_title_parse(path), path: "/admin/#{path}"},
+            %{title: conn.assigns[:admin_user].email, path: conn.request_path}
+          ]
         else
-          [%{title: breadcrumb_title_parse(path), path: "/admin/#{path}"},
-          %{title: breadcrumb_title_parse(endpoint), path: conn.request_path}]
+          [
+            %{title: breadcrumb_title_parse(path), path: "/admin/#{path}"},
+            %{title: breadcrumb_title_parse(endpoint), path: conn.request_path}
+          ]
         end
       ["admin", path] ->
         [%{title: breadcrumb_title_parse(path), path: conn.request_path}]

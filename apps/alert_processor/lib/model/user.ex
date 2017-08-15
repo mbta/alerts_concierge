@@ -379,4 +379,14 @@ defmodule AlertProcessor.Model.User do
   def find_by_id(user_id) do
     Repo.get(__MODULE__, user_id)
   end
+
+  @doc """
+  log action by admin user using papertrail.
+  """
+  def log_admin_action(:view_subscriber, admin_user, user) do
+    admin_user
+    |> Ecto.Changeset.change()
+    |> PaperTrail.update(originator: admin_user, origin: "admin:view-subscriber", meta: %{subscriber_id: user.id, subscriber_email: user.email})
+    |> normalize_papertrail_result()
+  end
 end
