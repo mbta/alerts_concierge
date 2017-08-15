@@ -18,7 +18,8 @@ defmodule Admin.ImpersonateSessionControllerTest do
         |> guardian_login(conn, :token, @customer_support_token_params)
         |> post(admin_impersonate_session_path(conn, :create, params))
 
-      assert html_response(conn, 302), "/my-subscriptions"
+      assert user_to_impersonate == Guardian.Plug.current_resource(conn)
+      assert html_response(conn, 302) =~ "/my-subscriptions"
     end
   end
 
@@ -34,6 +35,7 @@ defmodule Admin.ImpersonateSessionControllerTest do
         |> guardian_login(conn)
         |> post(admin_impersonate_session_path(conn, :create, params))
 
+      assert user == Guardian.Plug.current_resource(conn)
       assert html_response(conn, 403) =~ "Forbidden"
     end
   end
