@@ -72,7 +72,7 @@ defmodule ConciergeSite.MyAccountControllerTest do
 
     test "DELETE /my-account with valid token", %{conn: conn, user: user} do
       conn = user
-      |> guardian_login(conn, :access, %{default: [:disable_account]})
+      |> guardian_login(conn, :access, perms: %{default: [:disable_account]})
       |> delete(my_account_path(conn, :delete))
 
       updated_user = Repo.get(User, user.id)
@@ -85,7 +85,7 @@ defmodule ConciergeSite.MyAccountControllerTest do
 
     test "DELETE /my-account without valid token", %{conn: conn, user: user} do
       conn = user
-      |> guardian_login(conn, :access, %{default: [:unsubscribe]})
+      |> guardian_login(conn, :access, perms: %{default: [:unsubscribe]})
       |> delete(my_account_path(conn, :delete))
 
       updated_user = Repo.get(User, user.id)

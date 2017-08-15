@@ -3,10 +3,6 @@ defmodule ConciergeSite.Admin.SessionControllerTest do
 
   @password "password1"
   @encrypted_password Comeonin.Bcrypt.hashpwsalt(@password)
-  @customer_support_token_params %{
-    default: Guardian.Permissions.max,
-    admin: [:customer_support]
-  }
 
   test "GET /login", %{conn: conn} do
     conn = get(conn, admin_session_path(conn, :new))

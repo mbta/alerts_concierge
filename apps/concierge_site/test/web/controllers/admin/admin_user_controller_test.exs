@@ -2,15 +2,6 @@ defmodule ConciergeSite.Admin.AdminUserControllerTest do
   use ConciergeSite.ConnCase
   alias AlertProcessor.Model.User
 
-  @application_admin_token_params %{
-    default: Guardian.Permissions.max,
-    admin: [:application_administration, :customer_support]
-  }
-  @customer_support_token_params %{
-    default: Guardian.Permissions.max,
-    admin: [:customer_support]
-  }
-
   describe "application_administration user" do
     setup :insert_application_admin
 
@@ -294,10 +285,7 @@ defmodule ConciergeSite.Admin.AdminUserControllerTest do
       conn =
         :user
         |> insert(role: "application_administration")
-        |> guardian_login(conn, :token, %{
-            default: Guardian.Permissions.max,
-            admin: [:application_administration, :customer_support]
-          })
+        |> guardian_login(conn, :token, @application_admin_token_params)
 
       admin_user_params =
               %{"user" => %{
@@ -317,10 +305,7 @@ defmodule ConciergeSite.Admin.AdminUserControllerTest do
       conn =
         :user
         |> insert(role: "application_administration")
-        |> guardian_login(conn, :token, %{
-            default: Guardian.Permissions.max,
-            admin: [:application_administration, :customer_support]
-         })
+        |> guardian_login(conn, :token, @application_admin_token_params)
 
       invalid_admin_user_params =
               %{"user" => %{

@@ -1,11 +1,6 @@
 defmodule Admin.ImpersonateSessionControllerTest do
   use ConciergeSite.ConnCase
 
-  @customer_support_token_params %{
-    default: Guardian.Permissions.max,
-    admin: [:customer_support]
-  }
-
   describe "admin user" do
     setup :insert_admin
 

@@ -24,14 +24,28 @@ defmodule ConciergeSite.ConnCase do
       # The default endpoint for testing
       @endpoint ConciergeSite.Endpoint
 
+      @customer_support_token_params %{
+        perms: %{
+          default: Guardian.Permissions.max,
+          admin: [:customer_support]
+        }
+      }
+
+      @application_admin_token_params %{
+        perms: %{
+          default: Guardian.Permissions.max,
+          admin: [:application_administration, :customer_support]
+        }
+      }
+
       # Import ExMachina Factories
       import AlertProcessor.Factory
 
-      def guardian_login(user, conn, type \\ :access, perms \\ %{default: Guardian.Permissions.max}) do
+      def guardian_login(user, conn, type \\ :access, claims \\ %{perms: %{default: Guardian.Permissions.max}}) do
         conn
           |> bypass_through(ConciergeSite.Router, [:browser])
           |> get("/")
-          |> Guardian.Plug.sign_in(user, :access, perms: perms)
+          |> Guardian.Plug.sign_in(user, :access, claims)
           |> send_resp(200, "Flush the session")
           |> recycle()
       end
