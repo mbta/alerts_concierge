@@ -36,4 +36,16 @@ defmodule ConciergeSite.LayoutView do
       |> Enum.map(&(String.capitalize(&1)))
       |> Enum.join(" ")
   end
+
+  def impersonation_banner(conn, impersonated_user) do
+    case Guardian.Plug.claims(conn) do
+      {:ok, %{"imp" => _admin_id}} ->
+        content_tag :div, class: "callout-active impersonation-callout" do
+          ["You are logged in on behalf of #{impersonated_user.email}.",
+           link("Sign Out and Return to MBTA Admin",
+             to: impersonate_session_path(conn, :delete), method: :delete)]
+        end
+      _ -> nil
+    end
+  end
 end

@@ -46,6 +46,7 @@
           <% end %>
         </div>
       </div>
+      <%= impersonation_banner(@conn, @current_user) %>
     </header>
     <div class="container page-content">
       <main id="main" tabindex="-1">
