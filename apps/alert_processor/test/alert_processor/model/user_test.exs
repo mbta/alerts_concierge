@@ -143,6 +143,11 @@ defmodule AlertProcessor.Model.UserTest do
       refute changeset.valid?
     end
 
+    test "will create a valid changeset with an email containing a + sign before the @" do
+      changeset = User.create_account_changeset(%User{}, Map.merge(@valid_account_attrs, %{"email" => "email+1@example.com"}))
+      assert changeset.valid?
+    end
+
     test "if sms_toggle is true, will validate phone number" do
       changeset = User.create_account_changeset(%User{}, Map.merge(@valid_account_attrs, %{"phone_number" => "2342342344", "sms_toggle" => "true"}))
       %{changes: %{phone_number: phone_number}} = changeset
