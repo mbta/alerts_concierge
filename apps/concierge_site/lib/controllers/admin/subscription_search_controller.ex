@@ -36,15 +36,13 @@ defmodule ConciergeSite.Admin.SubscriptionSearchController do
 
   defp get_snapshots(user, params) do
     date_params = params["alert_date"]
-    get_date = Date.new(
-     String.to_integer(date_params["year"]),
-     String.to_integer(date_params["month"]),
-     String.to_integer(date_params["day"])
-    )
-    if {:ok, date} = get_date do
+    with {year, ""} <- Integer.parse(date_params["year"]),
+      {month, ""} <- Integer.parse(date_params["month"]),
+      {day, ""} <- Integer.parse(date_params["day"]),
+      {:ok, date} <- Date.new(year, month, day) do
       {:ok, Snapshot.get_snapshots_by_date(user, date)}
     else
-      {:error, user}
+      _ -> {:error, user}
     end
   end
 

@@ -100,7 +100,7 @@ defmodule ConciergeSite.Admin.SubscriptionSearchControllerTest do
 
   defp create_and_login_user(%{conn: conn}) do
     user = insert(:user, role: "customer_support")
-    conn = guardian_login(user, conn, :token, %{default: Guardian.Permissions.max, admin: [:customer_support]})
+    conn = guardian_login(user, conn, :token, @customer_support_token_params)
     {:ok, [conn: conn, user: user]}
   end
 end
