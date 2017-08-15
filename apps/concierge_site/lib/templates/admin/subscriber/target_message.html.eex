@@ -4,18 +4,17 @@
 
 <div class="container test-message-form">
   <div>What type of message would you like to send?</div>
-  <%= form_for @conn, admin_subscriber_subscriber_path(@conn, :send_message, @message_recipient), [as: :targeted_message], fn f-> %>
+  <%= form_for @conn, admin_subscriber_subscriber_path(@conn, :send_message, @subscriber), [as: :targeted_message], fn f-> %>
     <div class="form-group">
-      <%= radio_button f, :carrier, "email", checked: email_or_sms_checked?(@message_recipient), class: "radio toggle_email_message" %>
+      <%= radio_button f, :carrier, "email", checked: email_is_default?(@subscriber), class: "radio toggle_email_message" %>
       <label for="email" class="email_sms_radio_label">Email</label>
-      <%= if @message_recipient.phone_number do %>
-        <%= radio_button f, :carrier, "sms", checked: !email_or_sms_checked?(@message_recipient), class: "radio toggle_sms_message" %>
+      <%= if @subscriber.phone_number do %>
+        <%= radio_button f, :carrier, "sms", checked: !email_is_default?(@subscriber), class: "radio toggle_sms_message" %>
         <label for="email" class="email_sms_radio_label">SMS</label>
       <% end %>
       <div class="form-group row toggleable_email">
         <label for="subscriber_email">Subscriber Email</label>
-        <%= text_input f, :subscriber_email, class: "form-control", value: @message_recipient.email, disabled: true %>
-        <%= hidden_input f, :subscriber_email, value: @message_recipient.email %>
+        <%= text_input f, :subscriber_email, class: "form-control", value: @subscriber.email, disabled: true %>
         <label for="subject">Subject</label>
         <%= text_input f, :subject, class: "form-control", placeholder: "Test Message", required: true %>
         <label for="email_body">Body Text</label>
@@ -23,8 +22,7 @@
       </div>
       <div class="form-group row toggleable_sms">
         <label for="subscriber_phone_number">Subscriber Phone Number</label>
-        <%= text_input f, :subscriber_phone_number, class: "form-control", placeholder: "(123) 456-7890", value: @message_recipient.phone_number, disabled: true %>
-        <%= hidden_input f, :subscriber_phone_number, value: @message_recipient.phone_number %>
+        <%= text_input f, :subscriber_phone_number, class: "form-control", value: @subscriber.phone_number, disabled: true %>
         <label for="sms_body">SMS Body Text</label>
         <div class="form-sub-label">140 character limit</div>
         <%= textarea f, :sms_body, class: "form-control", placeholder: "This is a test message sent from the MBTA. No response necessary.", maxlength: 140 %>
