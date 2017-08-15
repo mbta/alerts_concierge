@@ -3,6 +3,7 @@ defmodule AlertProcessor.Model.SubscriptionTest do
   use AlertProcessor.DataCase
   import AlertProcessor.Factory
 
+  alias AlertProcessor.Repo
   alias AlertProcessor.Model.{Subscription, InformedEntity}
 
   @base_attrs %{
@@ -333,6 +334,89 @@ defmodule AlertProcessor.Model.SubscriptionTest do
 
       assert {:ok, subscription} = Subscription.delete_subscription(subscription)
       assert nil == Repo.get(Subscription, subscription.id)
+    end
+  end
+
+  describe "full_mode_subscription_types_for_user" do
+    test "matches subscriptions without informed entities for user" do
+      user = insert(:user, role: "application_administration")
+      insert(:admin_subscription, type: :bus, user: user)
+      insert(:admin_subscription, type: :subway, user: user)
+      assert Subscription.full_mode_subscription_types_for_user(user) == [:bus, :subway]
+    end
+
+    test "does not match subscriptions with informed entities for user" do
+      user = insert(:user, role: "application_administration")
+      insert(:admin_subscription, type: :bus, user: user)
+      :admin_subscription
+      |> build(type: :subway, user: user)
+      |> subway_subscription()
+      |> Repo.preload(:informed_entities)
+      |> Ecto.Changeset.change()
+      |> Ecto.Changeset.put_assoc(:informed_entities, subway_subscription_entities())
+      |> Repo.insert()
+
+      assert Subscription.full_mode_subscription_types_for_user(user) == [:bus]
+    end
+  end
+
+  describe "create_full_mode_subscriptions" do
+    test "creates new full mode subscriptions" do
+      user = insert(:user, role: "application_administration")
+      assert Repo.one(from s in Subscription, where: s.user_id == ^user.id, select: count(s.id)) == 0
+      Subscription.create_full_mode_subscriptions(user, %{"bus" => "true", "commuter_rail" => "true", "ferry" => "false", "subway" => "true"})
+      assert Repo.one(from s in Subscription, where: s.user_id == ^user.id, where: s.type == "bus", select: count(s.id)) == 1
+      assert Repo.one(from s in Subscription, where: s.user_id == ^user.id, where: s.type == "commuter_rail", select: count(s.id)) == 1
+      assert Repo.one(from s in Subscription, where: s.user_id == ^user.id, where: s.type == "subway", select: count(s.id)) == 1
+      assert Repo.one(from s in Subscription, where: s.user_id == ^user.id, where: s.type == "ferry", select: count(s.id)) == 0
+    end
+
+    test "creates full mode subscription in correct format" do
+      user = insert(:user, role: "application_administration")
+      assert Repo.one(from s in Subscription, where: s.user_id == ^user.id, select: count(s.id)) == 0
+      Subscription.create_full_mode_subscriptions(user, %{"bus" => "false", "commuter_rail" => "false", "ferry" => "false", "subway" => "true"})
+      [subscription] = Repo.all(from s in Subscription, preload: [:informed_entities], where: s.user_id == ^user.id)
+      assert %Subscription{
+        informed_entities: [],
+        relevant_days: [:weekday, :saturday, :sunday],
+        start_time: ~T[00:00:00.000000],
+        end_time: ~T[23:59:59.000000],
+        alert_priority_type: :low,
+        type: :subway
+      } = subscription
+    end
+
+    test "does not create new if already exists" do
+      user = insert(:user, role: "application_administration")
+      subscription = insert(:admin_subscription, user: user, type: "bus")
+      assert Repo.one(from s in Subscription, where: s.user_id == ^user.id, select: count(s.id)) == 1
+      Subscription.create_full_mode_subscriptions(user, %{"bus" => "true", "commuter_rail" => "true", "ferry" => "false", "subway" => "true"})
+      assert Repo.one(from s in Subscription, where: s.user_id == ^user.id, where: s.type == "bus", select: s.id) == subscription.id
+      assert Repo.one(from s in Subscription, where: s.user_id == ^user.id, where: s.type == "commuter_rail", select: count(s.id)) == 1
+      assert Repo.one(from s in Subscription, where: s.user_id == ^user.id, where: s.type == "subway", select: count(s.id)) == 1
+    end
+
+    test "deletes if already exists" do
+      user = insert(:user, role: "application_administration")
+      subscription = insert(:admin_subscription, user: user, type: "bus")
+      assert Repo.one(from s in Subscription, where: s.user_id == ^user.id, select: count(s.id)) == 1
+      Subscription.create_full_mode_subscriptions(user, %{"bus" => "false", "commuter_rail" => "false", "ferry" => "false", "subway" => "false"})
+      assert Repo.one(from s in Subscription, where: s.user_id == ^user.id, where: s.type == "bus", select: count(s.id)) == 0
+      assert Repo.get(Subscription, subscription.id) == nil
+    end
+
+    test "does not allow other roles to create subscriptions" do
+      user = insert(:user, role: "customer_support")
+      assert Repo.one(from s in Subscription, where: s.user_id == ^user.id, select: count(s.id)) == 0
+      assert :ok = Subscription.create_full_mode_subscriptions(user, %{"bus" => "true", "commuter_rail" => "true", "ferry" => "false", "subway" => "true"})
+      assert Repo.one(from s in Subscription, where: s.user_id == ^user.id, select: count(s.id)) == 0
+    end
+
+    test "returns :ok if params are not passed in" do
+      user = insert(:user, role: "customer_support")
+      assert Repo.one(from s in Subscription, where: s.user_id == ^user.id, select: count(s.id)) == 0
+      assert :ok = Subscription.create_full_mode_subscriptions(user, nil)
+      assert Repo.one(from s in Subscription, where: s.user_id == ^user.id, select: count(s.id)) == 0
     end
   end
 end

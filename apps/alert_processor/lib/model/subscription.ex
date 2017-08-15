@@ -4,6 +4,7 @@ defmodule AlertProcessor.Model.Subscription do
   """
 
   alias AlertProcessor.{Helpers.DateTimeHelper, Model.InformedEntity, Model.Trip, Model.User, Repo, TimeFrameComparison}
+  alias Ecto.Multi
   import Ecto.Query
 
   @type id :: String.t
@@ -35,6 +36,14 @@ defmodule AlertProcessor.Model.Subscription do
     5 => :friday,
     6 => :saturday,
     7 => :sunday
+  }
+
+  @subscription_type_values %{
+    0 => "subway",
+    1 => "subway",
+    2 => "commuter_rail",
+    3 => "bus",
+    4 => "ferry"
   }
 
   use Ecto.Schema
@@ -123,7 +132,10 @@ defmodule AlertProcessor.Model.Subscription do
 
   def for_user(user) do
     query = from s in __MODULE__,
+      join: ie in InformedEntity,
+      on: ie.subscription_id == s.id,
       where: s.user_id == ^user.id,
+      distinct: true,
       preload: [:informed_entities]
 
     Repo.all(query)
@@ -271,6 +283,10 @@ defmodule AlertProcessor.Model.Subscription do
     [:bus, :subway, :commuter_rail, :boat, :amenity]
   end
 
+  def subscription_type_from_route_type(route_type) do
+    @subscription_type_values[route_type]
+  end
+
   @spec subscription_trip_ids(__MODULE__.t) :: [Trip.id]
   def subscription_trip_ids(subscription) do
     subscription.informed_entities
@@ -279,6 +295,55 @@ defmodule AlertProcessor.Model.Subscription do
        end)
     |> Enum.map(& &1.trip)
   end
+
+  def full_mode_subscription_types_for_user(user) do
+    Repo.all(from s in __MODULE__,
+      where: s.user_id == ^user.id,
+      where: fragment("? not in (select ie.subscription_id from informed_entities ie)", s.id),
+      order_by: s.type,
+      distinct: true,
+      select: s.type)
+  end
+
+  defp full_mode_subscription_for_user(user, type) do
+    Repo.one(from s in __MODULE__,
+      where: s.user_id == ^user.id,
+      where: s.type == ^type,
+      where: fragment("? not in (select ie.subscription_id from informed_entities ie)", s.id))
+  end
+
+  def create_full_mode_subscriptions(%User{role: "application_administration"} = user, %{} = params) do
+    multi =
+      params
+      |> Map.take(~w(bus commuter_rail ferry subway))
+      |> Enum.with_index()
+      |> Enum.reduce(Multi.new(), fn({{type, type_val}, index}, acc) ->
+          Multi.run(acc, {:subscription, index}, fn _ ->
+            subscription = full_mode_subscription_for_user(user, type)
+            cond do
+              type_val == "true" && subscription == nil ->
+                %__MODULE__{}
+                |> create_changeset(%{
+                  user_id: user.id,
+                  relevant_days: [:weekday, :saturday, :sunday],
+                  start_time: ~T[00:00:00],
+                  end_time: ~T[23:59:59],
+                  alert_priority_type: :low,
+                  type: type})
+                |> PaperTrail.insert()
+              type_val == "false" && subscription != nil ->
+                PaperTrail.delete(subscription)
+              true -> {:ok, subscription}
+            end
+          end)
+        end)
+
+    case Repo.transaction(multi) do
+      {:ok, _} -> :ok
+      result -> result
+    end
+  end
+  def create_full_mode_subscriptions(_, _), do: :ok
 
   defp normalize_papertrail_result({:ok, %{model: subscription}}), do: {:ok, subscription}
   defp normalize_papertrail_result(result), do: result
