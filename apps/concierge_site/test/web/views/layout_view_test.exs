@@ -18,7 +18,7 @@ defmodule ConciergeSite.LayoutViewTest do
     end
   end
 
-  describe "breadcrumbs/2" do
+  describe "breadcrumbs/1" do
     test "returns a list of records for breadcrumb if in admin path",
          %{conn: conn} do
       conn =
@@ -26,14 +26,14 @@ defmodule ConciergeSite.LayoutViewTest do
         |> Map.put(:path_info, ["admin", "subscribers"])
         |> Map.put(:request_path, "/admin/subscribers")
 
-      assert LayoutView.breadcrumbs(conn, nil) == [%{title: "Subscribers", path: "/admin/subscribers"}]
+      assert LayoutView.breadcrumbs(conn) == [%{title: "Subscribers", path: "/admin/subscribers"}]
     end
 
     test "returns an empty list for breadcrumb if not in admin path",
          %{conn: conn} do
       conn = Map.put(conn, :path_info, ["my-subscriptions"])
 
-      assert LayoutView.breadcrumbs(conn, nil) == []
+      assert LayoutView.breadcrumbs(conn) == []
     end
   end
 
