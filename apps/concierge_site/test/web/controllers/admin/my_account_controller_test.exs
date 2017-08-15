@@ -2,16 +2,6 @@ defmodule ConciergeSite.Admin.MyAccountControllerTest do
   use ConciergeSite.ConnCase
   alias AlertProcessor.{Model.Subscription, Model.User, Repo}
 
-  @customer_support_token_params %{
-    default: Guardian.Permissions.max,
-    admin: [:customer_support]
-  }
-
-  @application_administration_token_params %{
-    default: Guardian.Permissions.max,
-    admin: [:customer_support, :application_administration]
-  }
-
   describe "admin user" do
     setup :insert_admin
 
@@ -72,7 +62,7 @@ defmodule ConciergeSite.Admin.MyAccountControllerTest do
 
       conn =
         user
-        |> guardian_login(conn, :token, @application_administration_token_params)
+        |> guardian_login(conn, :token, @application_admin_token_params)
         |> patch(admin_my_account_path(conn, :update, params))
 
       updated_user = Repo.get(User, user.id)

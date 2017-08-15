@@ -22,6 +22,7 @@ defmodule ConciergeSite.Web do
       import Plug.Conn
       import ConciergeSite.Router.Helpers
       import ConciergeSite.Gettext
+      import ConciergeSite.AuthorizationHelper
       import Bodyguard.Controller
     end
   end

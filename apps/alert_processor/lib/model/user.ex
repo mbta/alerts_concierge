@@ -282,7 +282,7 @@ defmodule AlertProcessor.Model.User do
   end
 
   defp authorize_admin({:ok, %__MODULE__{role: role}} = {_, user}) when role in @active_admin_roles do
-     {:ok, user, role}
+     {:ok, user}
   end
 
   defp authorize_admin({:ok, %__MODULE__{role: "deactivated_admin"}}), do: :deactivated

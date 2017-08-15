@@ -1,6 +1,8 @@
 defmodule ConciergeSite.Admin.SessionController do
   use ConciergeSite.Web, :controller
   alias AlertProcessor.Model.User
+  import ConciergeSite.SignInHelper, only: [admin_guardian_sign_in: 2]
+
   plug :scrub_params, "user" when action in [:create]
 
   def new(conn, _params) do
@@ -10,18 +12,9 @@ defmodule ConciergeSite.Admin.SessionController do
 
   def create(conn, %{"user" => login_params}) do
     case User.authenticate_admin(login_params) do
-      {:ok, user, "customer_support"} ->
+      {:ok, user} ->
         conn
-        |> Guardian.Plug.sign_in(user, :token,
-          perms: %{default: Guardian.Permissions.max, admin: [:customer_support]})
-        |> redirect(to: admin_subscriber_path(conn, :index))
-      {:ok, user, "application_administration"} ->
-        conn
-        |> Guardian.Plug.sign_in(user, :token,
-          perms: %{
-            default: Guardian.Permissions.max,
-            admin: [:customer_support, :application_administration]
-          })
+        |> admin_guardian_sign_in(user)
         |> redirect(to: admin_subscriber_path(conn, :index))
       :deactivated ->
         changeset = User.login_changeset(%User{})
@@ -46,9 +39,5 @@ defmodule ConciergeSite.Admin.SessionController do
     |> redirect(to: admin_session_path(conn, :new))
   end
 
-  def unauthorized(conn, _params) do
-    conn
-    |> put_status(403)
-    |> render(ConciergeSite.ErrorView, "403.html")
-  end
+  def unauthorized(conn, _params), do: render_unauthorized(conn)
 end

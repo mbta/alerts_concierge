@@ -36,4 +36,39 @@ defmodule ConciergeSite.LayoutViewTest do
       assert LayoutView.breadcrumbs(conn, nil) == []
     end
   end
+
+  describe "impersonation_banner/2" do
+    test "admin impersonating another user", %{conn: conn} do
+      admin = insert(:user, role: "application_administration")
+      user = insert(:user)
+
+      html =
+        user
+        |> guardian_login(conn, :access, perms: %{default: Guardian.Permissions.max}, imp: admin.id)
+        |> get("/my-account/edit")
+        |> LayoutView.impersonation_banner(user)
+
+      {:safe, banner} = html
+      content = List.flatten(banner)
+
+      assert Enum.member?(content, "You are logged in on behalf of #{user.email}.")
+      assert Enum.member?(content, "Sign Out and Return to MBTA Admin")
+    end
+
+    test "user signed in but no impersonation", %{conn: conn} do
+      user = insert(:user)
+
+      html =
+        user
+        |> guardian_login(conn)
+        |> get("/my-account/edit")
+        |> LayoutView.impersonation_banner(user)
+
+      assert is_nil(html)
+    end
+
+    test "no session", %{conn: conn} do
+      assert is_nil(LayoutView.impersonation_banner(conn, nil))
+    end
+  end
 end

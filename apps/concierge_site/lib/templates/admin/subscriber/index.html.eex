@@ -1,5 +1,6 @@
 <h1 class="header-container">Subscribers</h1>
 
+<%= flash_info(@conn) %>
 <%= render "_search.html", conn: @conn, search_term: @search_term %>
 
 <div class="admin-table">

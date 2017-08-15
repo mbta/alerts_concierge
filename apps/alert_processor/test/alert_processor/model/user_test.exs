@@ -90,12 +90,12 @@ defmodule AlertProcessor.Model.UserTest do
   describe "authenticate_admin/1" do
     test "authenticates if email and password are valid and user has the application_administration role" do
       Repo.insert!(%User{email: "test@email.com", role: "application_administration", encrypted_password: @encrypted_password})
-      assert {:ok, _, "application_administration"} = User.authenticate_admin(%{"email" => "test@email.com", "password" => @password})
+      assert {:ok, _} = User.authenticate_admin(%{"email" => "test@email.com", "password" => @password})
     end
 
     test "authenticates if email and password are valid and user has the customer_support role" do
       Repo.insert!(%User{email: "test@email.com", role: "customer_support", encrypted_password: @encrypted_password})
-      assert {:ok, _, "customer_support"} = User.authenticate_admin(%{"email" => "test@email.com", "password" => @password})
+      assert {:ok, _} = User.authenticate_admin(%{"email" => "test@email.com", "password" => @password})
     end
 
     test "does not authenticate if email and password are valid but user has user role" do
