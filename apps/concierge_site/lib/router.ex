@@ -59,6 +59,7 @@ defmodule ConciergeSite.Router do
     end
     get "/subscriptions/:id/confirm_delete", SubscriptionController, :confirm_delete
     resources "/subscriptions", SubscriptionController, only: [:new, :edit, :delete]
+    resources "/impersonate_sessions", ImpersonateSessionController, only: [:delete], singleton: true
   end
 
   scope "/subscriptions", ConciergeSite do
