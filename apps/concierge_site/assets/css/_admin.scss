@@ -23,12 +23,20 @@
   display: flex;
   font-size: $base-font-size-xxl;
   font-weight: bold;
-  padding: 1rem 3rem;
+  padding: 0.25rem 1rem;
+
+  @include media-breakpoint-up(sm) {
+    padding: 1rem 3rem;
+  }
 }
 
 .admin-table-row {
   display: flex;
-  padding: 1rem 3rem;
+  padding: 0.25rem 1rem;
+
+  @include media-breakpoint-up(sm) {
+    padding: 1rem 3rem;
+  }
 
   &:nth-of-type(even) {
     background-color: $pale-grey;
@@ -152,4 +160,38 @@
 .impersonation-callout {
   padding: 1rem;
   text-align: center;
+}
+
+.admin-info-sidebar {
+  @include media-breakpoint-up(sm) {
+    @include make-col(3);
+  }
+
+  width: 100%;
+  margin-bottom: 1rem;
+}
+
+.admin-info-item {
+  background-color: $pale-grey;
+  padding: 1rem;
+  margin-bottom: 0.1rem;
+
+  .item-label {
+    font-size: $base-font-size-xs;
+    margin-bottom: 0.25rem;
+  }
+
+  .item-content {
+    font-size: $base-font-size;
+    margin-bottom: 0;
+  }
+}
+
+.admin-info-contents {
+  @include media-breakpoint-up(sm) {
+    @include make-col(8.5);
+    @include make-col-offset(0.5);
+  }
+
+  width: 100%;
 }

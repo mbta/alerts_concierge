@@ -1,1 +1,30 @@
-<%= @subscriber.email %>
+<h1><%= @subscriber.email %></h1>
+
+<div class="container">
+  <div class="row">
+    <div class="admin-info-sidebar">
+      <div class="admin-info-item">
+        <p class="item-label">EMAIL:</p>
+        <p class="item-content"><%= @subscriber.email %></p>
+      </div>
+      <div class="admin-info-item">
+        <p class="item-label">PHONE NUMBER:</p>
+        <p class="item-content"><%= @subscriber.phone_number || "N/A" %></p>
+      </div>
+      <div class="admin-info-item">
+        <p class="item-label">BLACKOUT PERIOD:</p>
+        <p class="item-content"><%= blackout_period(@subscriber) %></p>
+      </div>
+      <div class="admin-info-item">
+        <p class="item-label">VACATION PERIOD:</p>
+        <p class="item-content"><%= vacation_period(@subscriber) %></p>
+      </div>
+      <div class="admin-info-item">
+        <p class="item-label">ACCOUNT STATUS:</p>
+        <p class="item-content"><%= account_status(@subscriber) %></p>
+      </div>
+    </div>
+    <div class="admin-info-contents">
+    </div>
+  </div>
+</div>
