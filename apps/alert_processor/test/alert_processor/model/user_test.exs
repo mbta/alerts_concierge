@@ -447,4 +447,23 @@ defmodule AlertProcessor.Model.UserTest do
     end
   end
 
+  describe "log_admin_action" do
+    test "view_subscriber" do
+      admin_user = insert(:user, role: "application_administration")
+      subscriber = insert(:user)
+      assert {:ok, _} = User.log_admin_action(:view_subscriber, admin_user, subscriber)
+      assert %{
+        item_id: item_id,
+        item_type: "User",
+        origin: "admin:view-subscriber",
+        meta: %{
+          "subscriber_email" => subscriber_email,
+          "subscriber_id" => subscriber_id
+        }
+      } = PaperTrail.get_version(admin_user)
+      assert item_id == admin_user.id
+      assert subscriber_email == subscriber.email
+      assert subscriber_id == subscriber.id
+    end
+  end
 end
