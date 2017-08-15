@@ -17,14 +17,14 @@
 </div>
 
 <div class="search-results-container">
-  <%= if Enum.empty?(@versions) do %>
+  <%= if Enum.empty?(@snapshots) do %>
     <p>
       No Results
     </p>
   <% else %>
-    <%= for subscription_version <- @versions do %>
+    <%= for snapshot <- @snapshots do %>
       <p>
-        # TODO <%= subscription_version.item_id %>
+        # TODO <%= snapshot["id"] %>
       </p>
     <% end %>
   <% end %>
