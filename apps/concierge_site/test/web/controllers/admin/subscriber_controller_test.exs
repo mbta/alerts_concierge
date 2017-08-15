@@ -1,5 +1,6 @@
 defmodule ConciergeSite.Admin.SubscriberControllerTest do
   use ConciergeSite.ConnCase
+  use Bamboo.Test
 
   describe "admin user" do
     setup :create_and_login_user
@@ -63,6 +64,26 @@ defmodule ConciergeSite.Admin.SubscriberControllerTest do
 
       assert html_response(conn, 200) =~ subscriber.email
     end
+
+    test "GET /admin/subscribers/:id/new_message", %{conn: conn, subscriber1: subscriber1} do
+      conn = get(conn, admin_subscriber_subscriber_path(conn, :new_message, subscriber1))
+
+      assert html_response(conn, 200) =~ "Create Test Message"
+      assert html_response(conn, 200) =~ subscriber1.email
+    end
+
+    test "POST /admin/subscribers/:id/new_message", %{conn: conn, subscriber1: subscriber1} do
+      message_params = %{"targeted_message" => %{
+        "carrier" => "email",
+        "subscriber_email" => subscriber1.email,
+        "subject" => "Test Subject",
+        "email_body" => "This is the body of the email"
+      }}
+
+      post(conn, admin_subscriber_subscriber_path(conn, :send_message, subscriber1, message_params))
+
+      assert_delivered_with(to: [{nil, "this@email.com"}])
+    end
   end
 
   describe "regular user" do
@@ -75,11 +96,61 @@ defmodule ConciergeSite.Admin.SubscriberControllerTest do
 
       assert html_response(conn, 403) =~ "Forbidden"
     end
+
+    test "GET /admin/subscribers/:id/new_message", %{conn: conn} do
+      subscriber = insert(:user, email: "this@email.com", phone_number: "5551231234")
+      conn =
+        :user
+        |> insert(role: "user")
+        |> guardian_login(conn)
+        |> get(admin_subscriber_subscriber_path(conn, :new_message, subscriber))
+
+      assert html_response(conn, 403) =~ "Forbidden"
+    end
+
+    test "POST /admin/subscribers/:id/new_message", %{conn: conn} do
+      subscriber = insert(:user, email: "this@email.com", phone_number: "5551231234")
+      message_params = %{"targeted_message" => %{
+        "carrier" => "email",
+        "subscriber_email" => subscriber.email,
+        "subject" => "Test Subject",
+        "email_body" => "This is the body of the email"
+      }}
+
+      conn =
+        :user
+        |> insert(role: "user")
+        |> guardian_login(conn)
+
+      conn = post(conn, admin_subscriber_subscriber_path(conn, :send_message, subscriber, message_params))
+      assert html_response(conn, 403) =~ "Forbidden"
+    end
   end
 
   describe "unauthenticated" do
     test "GET /admin/subscribers", %{conn: conn} do
       conn = get(conn, admin_subscriber_path(conn, :index))
+
+      assert html_response(conn, 302) =~ "/login/new"
+    end
+
+    test "GET /admin/subscribers/:id/new_message", %{conn: conn} do
+      subscriber = insert(:user, email: "this@email.com", phone_number: "5551231234")
+      conn = get(conn, admin_subscriber_subscriber_path(conn, :new_message, subscriber))
+
+      assert html_response(conn, 302) =~ "/login/new"
+    end
+
+    test "POST /admin/subscribers/:id/new_message", %{conn: conn} do
+      subscriber = insert(:user, email: "this@email.com", phone_number: "5551231234")
+      message_params = %{"targeted_message" => %{
+        "carrier" => "email",
+        "subscriber_email" => subscriber.email,
+        "subject" => "Test Subject",
+        "email_body" => "This is the body of the email"
+      }}
+
+      conn = post(conn, admin_subscriber_subscriber_path(conn, :send_message, subscriber, message_params))
 
       assert html_response(conn, 302) =~ "/login/new"
     end

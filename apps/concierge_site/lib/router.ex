@@ -97,7 +97,11 @@ defmodule ConciergeSite.Router do
   scope "/admin", ConciergeSite, as: :admin do
     pipe_through [:browser, :browser_auth, :admin_auth]
 
-    resources "/subscribers", Admin.SubscriberController, only: [:index, :show]
+    resources "/subscribers", Admin.SubscriberController, only: [:index, :show] do
+      get "/new_message", Admin.SubscriberController, :new_message
+      post "/new_message", Admin.SubscriberController, :send_message
+    end
+
     patch "/admin_users/:id/deactivate", Admin.AdminUserController, :deactivate
     patch "/admin_users/:id/activate", Admin.AdminUserController, :activate
     resources "/admin_users", Admin.AdminUserController, only: [:index, :show, :new, :create]

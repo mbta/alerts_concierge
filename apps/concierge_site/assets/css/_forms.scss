@@ -100,13 +100,28 @@ button {
   display: none;
 }
 
+.email_sms_radio_label {
+  display: inline-block;
+  width: 95%;
+}
+
+.toggle_sms_message,
+.toggle_email_message {
+  display: inline-block;
+  width: 1rem;
+}
+
 .toggle_show:checked ~ .toggleable,
-.toggle_show:checked + label ~ .toggleable {
+.toggle_show:checked + label ~ .toggleable,
+.toggle_email_message:checked ~ .toggleable_email,
+.toggle_sms_message:checked ~ .toggleable_sms {
   display: block;
 }
 
 .toggle_hide:checked ~ .toggleable,
-.toggle_hide:checked + label ~ .toggleable {
+.toggle_hide:checked + label ~ .toggleable,
+.toggle_email_message:checked ~ .toggleable_sms,
+.toggle_sms_message:checked ~ .toggleable_email {
   display: none;
 }
 
@@ -117,4 +132,8 @@ button {
   display: block;
   width: 100%;
   padding: 0.5rem 0.75rem;
+}
+
+.email_body_container {
+  height: 8rem;
 }
