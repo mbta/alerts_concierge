@@ -18,7 +18,7 @@
 
     <%= render "_trip_type_option.html",
                link_to: subway_subscription_path(@conn, :info, trip_type: "roaming"),
-               name: "Roaming (travel in the area between two stations)" %>
+               name: "General Travel Along a Line" %>
   </div>
 
   <%= link to: subscription_path(@conn, :new), class: "subscription-back-link" do %>
