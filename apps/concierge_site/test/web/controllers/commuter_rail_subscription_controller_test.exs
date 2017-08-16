@@ -64,7 +64,7 @@ defmodule ConciergeSite.CommuterRailSubscriptionControllerTest do
 
       conn = post(conn, "/subscriptions/commuter_rail/new/preferences", params)
 
-      assert html_response(conn, 200) =~ "Set your preferences for your trip:"
+      assert html_response(conn, 200) =~ "Set your subscription preferences:"
     end
 
     test "POST /subscriptions/commuter_rail/new/preferences with invalid params for one way", %{conn: conn} do

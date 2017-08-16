@@ -34,34 +34,8 @@ defmodule ConciergeSite.CommuterRailSubscriptionViewTest do
     end
   end
 
-  describe "trip_summary_header" do
-    it "returns the correct header for one_way" do
-      params = %{
-        "trip_type" => "one_way",
-        "relevant_days" => "weekday",
-        "trips" => ["123", "345"]
-      }
-      destination = {"Newburyport", "Newburyport"}
-      origin = {"North Station", "place-north"}
-      header = CommuterRailSubscriptionView.trip_summary_header(params, origin, destination)
-      assert IO.iodata_to_binary(header) == "One way weekday travel between North Station and Newburyport:"
-    end
-
-    it "returns the correct header for round_trip" do
-      params = %{
-        "trip_type" => "round_trip",
-        "relevant_days" => "sunday",
-        "trips" => ["123", "345"]
-      }
-      destination = {"Newburyport", "Newburyport"}
-      origin = {"North Station", "place-north"}
-      header = CommuterRailSubscriptionView.trip_summary_header(params, origin, destination)
-      assert IO.iodata_to_binary(header) == "Round trip Sunday travel between North Station and Newburyport:"
-    end
-  end
-
   describe "trip_summary_details" do
-    it "returns the correct details for one_way" do
+    test " it returns the correct details for one_way" do
       params = %{
         "trip_type" => "one_way",
         "relevant_days" => "weekday",
@@ -70,10 +44,10 @@ defmodule ConciergeSite.CommuterRailSubscriptionViewTest do
       destination = {"Newburyport", "Newburyport"}
       origin = {"North Station", "place-north"}
       details = CommuterRailSubscriptionView.trip_summary_details(params, origin, destination)
-      assert IO.iodata_to_binary(details) == "2 trains from North Station to Newburyport"
+      assert IO.iodata_to_binary(details) == "2 weekday trains from North Station to Newburyport"
     end
 
-    it "returns the correct details for round_trip" do
+    test "it returns the correct details for round_trip" do
       params = %{
         "trip_type" => "round_trip",
         "relevant_days" => "sunday",
@@ -82,9 +56,12 @@ defmodule ConciergeSite.CommuterRailSubscriptionViewTest do
       }
       destination = {"Newburyport", "Newburyport"}
       origin = {"North Station", "place-north"}
-      details = CommuterRailSubscriptionView.trip_summary_details(params, origin, destination)
-      assert IO.iodata_to_binary(details) =~ "2 trains from North Station to Newburyport"
-      assert IO.iodata_to_binary(details) =~ "1 train from Newburyport to North Station"
+
+      [safe: depart, safe: return] =
+        CommuterRailSubscriptionView.trip_summary_details(params, origin, destination)
+
+      assert IO.iodata_to_binary(depart) =~ "2 Sunday trains from North Station to Newburyport"
+      assert IO.iodata_to_binary(return) =~ "1 Sunday train from Newburyport to North Station"
     end
   end
 end

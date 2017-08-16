@@ -3,11 +3,8 @@
 <%= render "_progress_bar.html", current_page: :preferences, subscription_params: @subscription_params, conn: @conn %>
 
 <div class="subscription-step trip-preferences">
-  <h2 class="preferences-subtitle">Set your preferences for your trip:</h2>
+  <h2 class="preferences-subtitle">Set your subscription preferences:</h2>
   <div class="trip-summary">
-    <p>
-      <strong><%= trip_summary_header(@subscription_params, @origin, @destination) %></strong>
-    </p>
     <%= trip_summary_details(@subscription_params, @origin, @destination) %>
   </div>
 
