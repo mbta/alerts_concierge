@@ -1,6 +1,8 @@
 defmodule ConciergeSite.Admin.AdminUserView do
   use ConciergeSite.Web, :view
   alias AlertProcessor.Model.User
+  alias Calendar.DateTime
+  alias Calendar.Strftime
 
   def display_role(%User{role: "application_administration"}), do: "Application Administration"
   def display_role(%User{role: "customer_support"}), do: "Customer Support"
@@ -21,4 +23,15 @@ defmodule ConciergeSite.Admin.AdminUserView do
 
   def activation_path(%User{role: "deactivated_admin"}), do: :confirm_activate
   def activation_path(%User{}), do: :confirm_deactivate
+
+  def display_admin_log_action(%{origin: "admin:view-subscriber"}), do: "View Subscriber"
+  def display_admin_log_action(%{origin: nil}), do: ""
+
+  def display_admin_log_time(%{inserted_at: inserted_at}) do
+    {:ok, datetime} = DateTime.from_naive(inserted_at, "Etc/UTC")
+    Strftime.strftime!(datetime, "%m/%d/%y %l:%M %p")
+  end
+
+  def admin_log_subscriber_email(%{meta: %{"subscriber_email" => email}}), do: email
+  def admin_log_subscriber_email(%{meta: nil}), do: ""
 end

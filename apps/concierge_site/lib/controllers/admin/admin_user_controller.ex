@@ -30,7 +30,8 @@ defmodule ConciergeSite.Admin.AdminUserController do
   def show(conn, %{"id" => id}, user, _claims) do
     if AdminUserPolicy.can?(user, :show_admin_user) do
       admin_user = User.admin_one!(id)
-      render conn, "show.html", admin_user: admin_user
+      log_details = PaperTrail.get_versions(admin_user)
+      render conn, "show.html", admin_user: admin_user, log_details: log_details
     else
       render_unauthorized(conn)
     end
@@ -41,42 +42,44 @@ defmodule ConciergeSite.Admin.AdminUserController do
       admin_user = User.admin_one!(id)
       render conn, "confirm_role_change.html", admin_user: admin_user, admin_roles: @admin_roles
     else
-      handle_unauthorized(conn)
+      render_unauthorized(conn)
     end
   end
 
   def deactivate(conn, %{"id" => id}, user, _claims) do
     if AdminUserPolicy.can?(user, :deactivate_admin_user) do
       admin_user = User.admin_one!(id)
+      log_details = PaperTrail.get_versions(admin_user)
 
       case User.deactivate_admin(admin_user) do
         {:ok, updated_user} ->
           conn
           |> put_flash(:error, "Admin User deactivated.")
-          |> render("show.html", admin_user: updated_user)
+          |> render("show.html", admin_user: updated_user, log_details: [])
         {:error, _} ->
           conn
           |> put_flash(:error, "Admin User could not be deactivated.")
-          |> render("show.html", admin_user: admin_user)
+          |> render("show.html", admin_user: admin_user, log_details: log_details)
       end
     else
       render_unauthorized(conn)
     end
   end
 
-  def activate(conn, %{"id" => id, "user" => admin_params} = params, user, _claims) do
+  def activate(conn, %{"id" => id} = params, user, _claims) do
     if AdminUserPolicy.can?(user, :activate_admin_user) do
       admin_user = User.admin_one!(id)
+      log_details = PaperTrail.get_versions(admin_user)
 
-      case User.activate_admin(admin_user, params) do
+      case User.activate_admin(admin_user, params["user"]) do
         {:ok, updated_user} ->
           conn
           |> put_flash(:info, "Admin User activated with #{updated_user.role} role.")
-          |> render("show.html", admin_user: updated_user)
+          |> render("show.html", admin_user: updated_user, log_details: log_details)
         {:error, _} ->
           conn
           |> put_flash(:error, "Admin User could not be activated.")
-          |> render("show.html", admin_user: admin_user)
+          |> render("show.html", admin_user: admin_user, log_details: [])
       end
     else
       render_unauthorized(conn)
@@ -89,7 +92,7 @@ defmodule ConciergeSite.Admin.AdminUserController do
       render conn, "confirm_activate.html", admin_user: admin_user,
                     admin_roles: @admin_roles
     else
-      handle_unauthorized(conn)
+      render_unauthorized(conn)
     end
   end
 
@@ -98,7 +101,7 @@ defmodule ConciergeSite.Admin.AdminUserController do
       admin_user = User.admin_one!(id)
       render conn, "confirm_deactivate.html", admin_user: admin_user
     else
-      handle_unauthorized(conn)
+      render_unauthorized(conn)
     end
   end
 
@@ -120,19 +123,20 @@ defmodule ConciergeSite.Admin.AdminUserController do
   def update(conn, %{"id" => id, "user" => admin_user_params}, user, _claims) do
     if AdminUserPolicy.can?(user, :update_admin_roles) do
       admin_user = User.admin_one!(id)
+      log_details = PaperTrail.get_versions(admin_user)
 
       case User.change_admin_role_changeset(admin_user, admin_user_params["role"]) do
         {:ok, updated_user} ->
           conn
           |> put_flash(:error, "Admin User's Role has been changed.")
-          |> render("show.html", admin_user: updated_user)
+          |> render("show.html", admin_user: updated_user, log_details: log_details)
         {:error, _} ->
           conn
           |> put_flash(:error, "Admin User's Role cannot be changed.")
-          |> render("show.html", admin_user: admin_user)
+          |> render("show.html", admin_user: admin_user, log_details: log_details)
       end
     else
-      handle_unauthorized(conn)
+      render_unauthorized(conn)
     end
   end
 
