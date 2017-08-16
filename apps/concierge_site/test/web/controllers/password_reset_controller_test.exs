@@ -12,7 +12,7 @@ defmodule ConciergeSite.PasswordResetControllerTest do
 
   test "GET /reset-password/new", %{conn: conn}  do
     conn = get(conn, password_reset_path(conn, :new))
-    assert html_response(conn, 200) =~ "Forget your password?"
+    assert html_response(conn, 200) =~ "Reset your password"
   end
 
   test "POST /reset-password/ with an email associated with a user", %{conn: conn}  do

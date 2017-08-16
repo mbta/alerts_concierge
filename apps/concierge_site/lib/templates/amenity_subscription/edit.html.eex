@@ -1,6 +1,6 @@
 <%= render ConciergeSite.SubscriptionView,
            "_edit_subscription_header.html",
-           title: "Edit Station Amenity",
+           title: "Subscribe to station amenity alerts",
            subscription: @subscription %>
 
 <%= flash_error(@conn) %>
