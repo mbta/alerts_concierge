@@ -176,6 +176,10 @@
   padding: 1rem;
   margin-bottom: 0.1rem;
 
+  &:last-of-type {
+    margin-bottom: 2rem;
+  }
+
   .item-label {
     font-size: $base-font-size-xs;
     margin-bottom: 0.25rem;
@@ -211,4 +215,12 @@
 
 .admin-account-section {
   padding-bottom: 1.5rem;
+}
+
+.admin-profile-button {
+  border: 1px solid $brand-primary;
+  border-radius: 5px;
+  display: block;
+  padding: 0.5rem;
+  text-align: center;
 }
