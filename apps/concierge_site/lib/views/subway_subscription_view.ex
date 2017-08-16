@@ -7,10 +7,6 @@ defmodule ConciergeSite.SubwaySubscriptionView do
     only: [joined_day_list: 1, atomize_keys: 1, progress_link_class: 3,
            do_query_string_params: 2, selected_relevant_days: 1]
 
-  @typedoc """
-  Possible values for trip types in Create Subscription flow
-  """
-  @type trip_type :: :one_way | :round_trip | :roaming
   @type step :: :trip_type | :trip_info | :preferences
 
   @disabled_progress_bar_links %{trip_info: [:trip_info, :preferences],
@@ -39,29 +35,6 @@ defmodule ConciergeSite.SubwaySubscriptionView do
   ]
   def params_for_step(:preferences), do: ["alert_priority_type" | params_for_step(:trip_info)]
   def params_for_step(_), do: []
-
-  @doc """
-  Provide description text for Trip Info page based on which trip type selected
-  """
-  @spec trip_info_description(trip_type) :: String.t
-  def trip_info_description(:one_way) do
-    "Please note: We will only send you alerts about service updates that affect your origin and destination stations."
-  end
-
-  def trip_info_description(:round_trip) do
-    [
-      :one_way |> trip_info_description |> String.trim_trailing("."),
-      ", in both directions."
-    ]
-  end
-
-  def trip_info_description(:roaming) do
-    "We will send you alerts and service updates that affect all stations along your specified route."
-  end
-
-  def trip_info_description(_trip_type) do
-    ""
-  end
 
   @doc """
   Returns a summary of a subscription's associated trip days, times, and stops
