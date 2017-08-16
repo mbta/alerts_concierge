@@ -290,7 +290,7 @@ defmodule AlertProcessor.Subscription.FerryMapperTest do
   end
 
   describe "map_trip_options" do
-    @test_date Calendar.Date.from_ordinal!(2017, 187)
+    @test_date Calendar.Date.from_ordinal!(2017, 226)
 
     test "returns inbound results for origin destination" do
       use_cassette "long_wharf_to_hingham_schedules", custom: true, clear_mock: true, match_requests_on: [:query] do
@@ -338,7 +338,7 @@ defmodule AlertProcessor.Subscription.FerryMapperTest do
 
     test "returns saturday results" do
       use_cassette "hingham_to_long_wharf_saturday_schedules", custom: true, clear_mock: true, match_requests_on: [:query] do
-        {:ok, trips} = FerryMapper.map_trip_options("Boat-Hingham", "Boat-Long", :saturday, @test_date)
+        {:ok, trips} = FerryMapper.map_trip_options("Boat-Hingham", "Boat-Long", :saturday, Calendar.Date.from_ordinal!(2017, 231))
         assert [%Trip{arrival_time: ~T[08:55:00], departure_time: ~T[08:00:00], destination: {"Long Wharf, Boston", "Boat-Long"}, direction_id: 1, origin: {"Hewitt's Cove, Hingham", "Boat-Hingham"}, trip_number: "Boat-F1-Boat-Hingham-08:00:00-weekend-1"},
                 %Trip{arrival_time: ~T[09:55:00], departure_time: ~T[09:00:00], destination: {"Long Wharf, Boston", "Boat-Long"}, direction_id: 1, origin: {"Hewitt's Cove, Hingham", "Boat-Hingham"}, trip_number: "Boat-F1-Boat-Hingham-09:00:00-weekend-1"},
                 %Trip{arrival_time: ~T[10:55:00], departure_time: ~T[10:00:00], destination: {"Long Wharf, Boston", "Boat-Long"}, direction_id: 1, origin: {"Hewitt's Cove, Hingham", "Boat-Hingham"}, trip_number: "Boat-F1-Boat-Hingham-10:00:00-weekend-1"},
@@ -360,7 +360,7 @@ defmodule AlertProcessor.Subscription.FerryMapperTest do
 
     test "returns sunday results" do
       use_cassette "hingham_to_long_wharf_sunday_schedules", custom: true, clear_mock: true, match_requests_on: [:query] do
-        {:ok, trips} = FerryMapper.map_trip_options("Boat-Hingham", "Boat-Long", :sunday, @test_date)
+        {:ok, trips} = FerryMapper.map_trip_options("Boat-Hingham", "Boat-Long", :sunday, Calendar.Date.from_ordinal!(2017, 232))
         assert [%{arrival_time: ~T[08:55:00], departure_time: ~T[08:00:00], destination: {"Long Wharf, Boston", "Boat-Long"}, direction_id: 1, origin: {"Hewitt's Cove, Hingham", "Boat-Hingham"}, trip_number: "Boat-F1-Boat-Hingham-08:00:00-weekend-1"},
                 %{arrival_time: ~T[09:55:00], departure_time: ~T[09:00:00], destination: {"Long Wharf, Boston", "Boat-Long"}, direction_id: 1, origin: {"Hewitt's Cove, Hingham", "Boat-Hingham"}, trip_number: "Boat-F1-Boat-Hingham-09:00:00-weekend-1"},
                 %{arrival_time: ~T[10:55:00], departure_time: ~T[10:00:00], destination: {"Long Wharf, Boston", "Boat-Long"}, direction_id: 1, origin: {"Hewitt's Cove, Hingham", "Boat-Hingham"}, trip_number: "Boat-F1-Boat-Hingham-10:00:00-weekend-1"},
@@ -552,7 +552,7 @@ defmodule AlertProcessor.Subscription.FerryMapperTest do
   end
 
   describe "trip_schedule_info_map" do
-    @test_date Calendar.Date.from_ordinal!(2017, 201)
+    @test_date Calendar.Date.from_ordinal!(2017, 226)
 
     test "maps schedule info between two stations on weekday" do
       use_cassette "trip_schedule_info_weekday_ferry", custom: true, clear_mock: true, match_requests_on: [:query] do
@@ -570,21 +570,21 @@ defmodule AlertProcessor.Subscription.FerryMapperTest do
 
     test "maps schedule info between two stations on saturday" do
       use_cassette "trip_schedule_info_saturday_ferry", custom: true, clear_mock: true, match_requests_on: [:query] do
-        trip_schedule_info_map = FerryMapper.trip_schedule_info_map("Boat-Charlestown", "Boat-Long", :saturday, @test_date)
+        trip_schedule_info_map = FerryMapper.trip_schedule_info_map("Boat-Charlestown", "Boat-Long", :saturday, Calendar.Date.from_ordinal!(2017, 231))
         assert %{
-          {"Boat-Charlestown", "Boat-F4-Boat-Charlestown-12:15:00-saturday-1"} => _,
-          {"Boat-Long", "Boat-F4-Boat-Charlestown-12:15:00-saturday-1"} => _,
-          {"Boat-Charlestown", "Boat-F4-Boat-Long-11:30:00-saturday-0"} => _,
-          {"Boat-Long", "Boat-F4-Boat-Long-11:30:00-saturday-0"} => _,
-          {"Boat-Charlestown", "Boat-F4-Boat-Charlestown-13:45:00-saturday-1"} => _,
-          {"Boat-Long", "Boat-F4-Boat-Charlestown-13:45:00-saturday-1"} => _,
+          {"Boat-Charlestown", "Boat-F4-Boat-Charlestown-12:15:00-weekend-1"} => _,
+          {"Boat-Long", "Boat-F4-Boat-Charlestown-12:15:00-weekend-1"} => _,
+          {"Boat-Charlestown", "Boat-F4-Boat-Long-11:30:00-weekend-0"} => _,
+          {"Boat-Long", "Boat-F4-Boat-Long-11:30:00-weekend-0"} => _,
+          {"Boat-Charlestown", "Boat-F4-Boat-Charlestown-13:45:00-weekend-1"} => _,
+          {"Boat-Long", "Boat-F4-Boat-Charlestown-13:45:00-weekend-1"} => _,
         } = trip_schedule_info_map
       end
     end
 
     test "maps schedule info between two stations on sunday" do
       use_cassette "trip_schedule_info_sunday_ferry", custom: true, clear_mock: true, match_requests_on: [:query] do
-        trip_schedule_info_map = FerryMapper.trip_schedule_info_map("Boat-Long", "Boat-Hull", :saturday, @test_date)
+        trip_schedule_info_map = FerryMapper.trip_schedule_info_map("Boat-Long", "Boat-Hull", :sunday, Calendar.Date.from_ordinal!(2017, 232))
         assert %{
           {"Boat-Long", "Boat-F1-Boat-Long-19:00:00-weekend-0"} => _,
           {"Boat-Hull", "Boat-F1-Boat-Long-19:00:00-weekend-0"} => _,
