@@ -1,0 +1,28 @@
+<div class="mode-subscription-section admin-account-section">
+  <div class="form-label">
+    Send me notifications for the following services:
+  </div>
+  <label class="mode-checkbox-label">
+    <%= checkbox :mode_subscriptions, :commuter_rail, class: "mode-checkbox",
+      checked: Enum.member?(@mode_subscriptions, :commuter_rail) %>
+    Commuter Rail
+  </label>
+
+  <label class="mode-checkbox-label">
+    <%= checkbox :mode_subscriptions, :subway, class: "mode-checkbox",
+      checked: Enum.member?(@mode_subscriptions, :subway) %>
+    Subway
+  </label>
+
+  <label class="mode-checkbox-label">
+    <%= checkbox :mode_subscriptions, :bus, class: "mode-checkbox",
+      checked: Enum.member?(@mode_subscriptions, :bus) %>
+    Bus
+  </label>
+
+  <label class="mode-checkbox-label">
+    <%= checkbox :mode_subscriptions, :ferry, class: "mode-checkbox",
+      checked: Enum.member?(@mode_subscriptions, :ferry) %>
+    Ferries
+  </label>
+</div>
