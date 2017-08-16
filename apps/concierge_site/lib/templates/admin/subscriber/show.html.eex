@@ -23,6 +23,10 @@
         <p class="item-label">ACCOUNT STATUS:</p>
         <p class="item-content"><%= account_status(@subscriber) %></p>
       </div>
+
+      <%= if not User.is_admin?(@subscriber) do %>
+          <%= link "Log in as user", to: admin_impersonate_session_path(@conn, :create, %{"user_id" => @subscriber.id}), class: "admin-profile-button", method: :post %>
+      <% end %>
     </div>
     <div class="admin-info-contents">
     </div>
