@@ -34,20 +34,18 @@
         <div class="admin-table-column">Action</div>
       </div>
       <div class="admin-table-body">
-        <%= for log_detail <- @log_details do %>
-          <%= if log_detail.origin do %>
-            <div class="admin-table-row">
-              <div class="admin-table-cell">
-                <%= admin_log_subscriber_email(log_detail) %>
-              </div>
-              <div class="admin-table-cell">
-                <%= display_admin_log_time(log_detail) %>
-              </div>
-              <div class="admin-table-cell">
-                <%= display_admin_log_action(log_detail) %>
-              </div>
+        <%= for log_detail <- @log_details, log_detail.origin do %>
+          <div class="admin-table-row">
+            <div class="admin-table-cell">
+              <%= admin_log_subscriber_email(log_detail) %>
             </div>
-        <% end %>
+            <div class="admin-table-cell">
+              <%= display_admin_log_time(log_detail) %>
+            </div>
+            <div class="admin-table-cell">
+              <%= display_admin_log_action(log_detail) %>
+            </div>
+          </div>
         <% end %>
       </div>
     </div>

@@ -62,6 +62,20 @@ defmodule ConciergeSite.Admin.AdminUserControllerTest do
       assert admin.role == "customer_support"
     end
 
+    test "PATCH /admin/admin_users/:id", %{conn: conn, user: user} do
+      admin = insert(:user, role: "customer_support")
+
+      conn =
+        user
+        |> guardian_login(conn, :token, @application_admin_token_params)
+        |> patch(admin_admin_user_path(conn, :update, admin, user: %{role: "application_administration"}))
+
+      admin = User.admin_one!(admin.id)
+
+      assert html_response(conn, 200) =~ "Application Administration"
+      assert admin.role == "application_administration"
+    end
+
     test "GET /admin/admin_users/:id/confirm_role_change", %{conn: conn, user: user} do
       admin = insert(:user, role: "application_administration")
 
@@ -155,6 +169,20 @@ defmodule ConciergeSite.Admin.AdminUserControllerTest do
 
       assert html_response(conn, 403) =~ "Forbidden"
       assert admin.role == "deactivated_admin"
+    end
+
+    test "PATCH /admin/admin_users/:id", %{conn: conn, user: user} do
+      admin = insert(:user, role: "customer_support")
+
+      conn =
+        user
+        |> guardian_login(conn, :token, @customer_support_token_params)
+        |> patch(admin_admin_user_path(conn, :update, admin, user: %{role: "application_administration"}))
+
+      admin = User.admin_one!(admin.id)
+
+      assert html_response(conn, 403) =~ "Forbidden"
+      assert admin.role == "customer_support"
     end
 
     test "GET /admin/admin_users/:id/confirm_role_change", %{conn: conn, user: user} do
@@ -409,6 +437,17 @@ defmodule ConciergeSite.Admin.AdminUserControllerTest do
 
       assert html_response(conn, 302) =~ "/login/new"
       assert admin.role == "deactivated_admin"
+    end
+
+    test "PATCH /admin/admin_users/:id", %{conn: conn} do
+      admin = insert(:user, role: "customer_support")
+
+      conn = patch(conn, admin_admin_user_path(conn, :update, admin, user: %{role: "application_administration"}))
+
+      admin = User.admin_one!(admin.id)
+
+      assert html_response(conn, 302) =~ "/login/new"
+      assert admin.role == "customer_support"
     end
   end
 

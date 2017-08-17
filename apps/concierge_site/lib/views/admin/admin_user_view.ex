@@ -13,6 +13,7 @@ defmodule ConciergeSite.Admin.AdminUserView do
   def account_status(%User{}), do: "Active"
 
   def activation_button_text(%User{role: "deactivated_admin"}), do: "Reactivate User"
+  def activation_button_text(%User{role: "user"}), do: ""
   def activation_button_text(%User{}), do: "Deactivate User"
 
   def activation_button_icon(%User{role: "deactivated_admin"}), do: "fa-user"
@@ -25,7 +26,6 @@ defmodule ConciergeSite.Admin.AdminUserView do
   def activation_path(%User{}), do: :confirm_deactivate
 
   def display_admin_log_action(%{origin: "admin:view-subscriber"}), do: "View Subscriber"
-  def display_admin_log_action(%{origin: nil}), do: ""
 
   def display_admin_log_time(%{inserted_at: inserted_at}) do
     {:ok, datetime} = DateTime.from_naive(inserted_at, "Etc/UTC")
