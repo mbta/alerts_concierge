@@ -114,7 +114,7 @@ defmodule ConciergeSite.AmenitySubscriptionControllerTest do
 
       use_cassette "amenities_update", clear_mock: true  do
         conn = get(conn, "/subscriptions/amenities/#{subscription.id}/edit")
-        assert html_response(conn, 200) =~ "Edit Station Amenity"
+        assert html_response(conn, 200) =~ "Subscribe to station amenity alerts"
       end
     end
 

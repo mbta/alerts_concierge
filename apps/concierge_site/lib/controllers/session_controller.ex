@@ -19,7 +19,7 @@ defmodule ConciergeSite.SessionController do
         |> redirect(to: "/my-subscriptions")
       {:error, :disabled} ->
         conn
-        |> put_flash(:error, "Account has been disabled. Please enter your email to reset your password.")
+        |> put_flash(:error, "Account has been disabled. Please enter your email to re-activate it.")
         |> redirect(to: password_reset_path(conn, :new))
       {:error, changeset} ->
         conn

@@ -4,7 +4,7 @@
   <%= form_for @account_changeset, account_path(@conn, :create), fn f -> %>
     <div class="form-group <%= if :email in @errors, do: "has-danger" %>">
       <%= label f, :email, "Email Address", class: "form-label" %>
-      <%= label f, :email, "Your contact information is used to deliver requested updates or to access your subscriber preferences. You will be sent an email request to confirm your account.", class: "form-sub-label" %>
+      <%= label f, :email, "Your contact information is used to deliver updates and weekly digests and to access your subscriber preferences. You will be sent an email request to confirm your account.", class: "form-sub-label" %>
       <%= error_tag f, :email %>
       <%= email_input f, :email, placeholder: "your@email.com", class: "form-control form-control-success form-control-danger", required: true  %>
       <span></span>
@@ -25,7 +25,7 @@
     <hr class="account-creation-divider">
     <div class="account-creation-footer">
       <%= submit "Create Account", class: "btn btn-primary btn-create-account" %>
-      <p class="account-creation-privacy-policy">By creating an account you accept our <%= link("terms and conditions", to: "#") %>, <%= link("privacy policy", to: "#") %> &amp; <%= link("terms of service", to: "#") %>.</p>
+      <p class="account-creation-privacy-policy">We will not sell or give away your email address or phone number. See our <%= link("Privacy Policy", to: "#") %> for details.</p>
       <p>Already have an account?  <%= link("Sign in.", to: session_path(@conn, :new)) %><p>
     </div>
   <% end %>

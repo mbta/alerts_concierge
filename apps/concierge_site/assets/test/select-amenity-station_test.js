@@ -142,8 +142,8 @@ describe("selectAmenityStation", function() {
     <div class="enter-trip-info">
       <form class="trip-info-form amenities">
         <div class="form-group select-station select-amenity-station">
-          <label for="station" class="station-input-label form-label">Select Individual Stations</label>
-          <div class="form-sub-label amenity-station-select-sub-label">You may enter as many as you'd like</div>
+          <label for="station" class="station-input-label form-label">What stations do you use?</label>
+          <div class="form-sub-label amenity-station-select-sub-label">Enter as many stations as you would like.</div>
           <select class="subscription-select subscription-select-amenity-station no-js">
             <option value="">Select a station</option>
             <optgroup label="Red Line">

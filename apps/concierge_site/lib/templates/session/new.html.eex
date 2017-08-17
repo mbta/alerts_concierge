@@ -4,10 +4,10 @@
   <h2 class="login-header">Transportation alerts when you need them</h1>
   <p>
     T-Alerts  lets you sign up to receive notifications of delays and disruptions,
-    as well as advanced notice of planned service changes, by e-mail or text message (SMS).
+    as well as advanced notice of planned service changes, by email or text message (SMS).
   </p>
   <p>
-    To modify existing  alerts or account preferences,  enter your email address and password.
+    Sign in or sign up to manage your subscriptions and account.
   </p>
 
   <%= form_for @login_changeset, session_path(@conn, :create), fn f -> %>
