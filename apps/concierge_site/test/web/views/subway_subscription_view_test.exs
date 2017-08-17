@@ -103,7 +103,7 @@ defmodule ConciergeSite.SubwaySubscriptionViewTest do
           |> SubwaySubscriptionView.trip_summary_title(station_names)
           |> IO.iodata_to_binary()
 
-        assert trip_summary_title == "Boston Univ. East to Boston Univ. West, weekdays 8:45 AM - 9:15 AM"
+        assert trip_summary_title == "Boston Univ. East to Boston Univ. West, weekdays  8:45 AM -  9:15 AM"
       end
     end
   end
@@ -126,13 +126,13 @@ defmodule ConciergeSite.SubwaySubscriptionViewTest do
 
         station_names = %{"origin" => "Braintree", "destination" => "Quincy Adams"}
 
-        trip_summary_logistics = params
+        [first_trip_logistics, return_trip_logistics] =
+          params
           |> SubwaySubscriptionView.trip_summary_logistics(station_names)
           |> Enum.map(&IO.iodata_to_binary/1)
 
-        assert trip_summary_logistics ==
-          ["9:45 AM - 10:15 AM from Braintree to Quincy Adams",
-           "5:45 PM - 6:15 PM from Quincy Adams to Braintree"]
+        assert first_trip_logistics =~ "9:45 AM - 10:15 AM from Braintree to Quincy Adams"
+        assert return_trip_logistics =~ "5:45 PM -  6:15 PM from Quincy Adams to Braintree"
       end
     end
   end

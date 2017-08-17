@@ -30,7 +30,6 @@ defmodule ConciergeSite.TimeHelper do
     |> List.to_tuple
     |> Time.from_erl!
     |> Strftime.strftime!("%l:%M %p")
-    |> String.replace_leading(" ", "")
   end
 
   @doc """
