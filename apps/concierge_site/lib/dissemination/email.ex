@@ -67,12 +67,23 @@ defmodule ConciergeSite.Dissemination.Email do
     |> text_body(confirmation_text_email(unsubscribe_url, disable_account_url))
   end
 
+  EEx.function_from_file(
+    :def,
+    :targeted_notification_html_email,
+    Path.join(@template_dir, "targeted_notification.html.eex"),
+    [:subject, :body])
+  EEx.function_from_file(
+    :def,
+    :targeted_notification_text_email,
+    Path.join(~w(#{System.cwd!} lib mail_templates targeted_notification.txt.eex)),
+    [:body])
+
   def targeted_notification_email(email, subject, body) do
     base_email()
     |> to(email)
     |> subject(subject)
-    |> put_html_layout({ConciergeSite.LayoutView, "email.html"})
-    |> render(:targeted_notification, email_body: body)
+    |> html_body(targeted_notification_html_email(subject, body))
+    |> text_body(targeted_notification_text_email(body))
   end
 
   defp base_email do
