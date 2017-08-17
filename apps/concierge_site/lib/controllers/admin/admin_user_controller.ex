@@ -5,6 +5,11 @@ defmodule ConciergeSite.Admin.AdminUserController do
   alias ConciergeSite.AdminUserPolicy
 
   plug :scrub_params, "user" when action in [:create]
+  plug :fetch_admin when action in [:show, :confirm_role_change, :deactivate,
+                                    :activate, :confirm_activate,
+                                    :confirm_deactivate, :update]
+  plug :fetch_log_details when action in [:show, :deactivate, :activate, :update]
+
   @admin_roles ["Customer Support": "customer_support",
                 "Application Administration": "application_administration"]
 
@@ -27,20 +32,25 @@ defmodule ConciergeSite.Admin.AdminUserController do
     end
   end
 
-  def show(conn, %{"id" => id}, user, _claims) do
+  def show(conn, _params, user, _claims) do
     if AdminUserPolicy.can?(user, :show_admin_user) do
-      admin_user = User.admin_one!(id)
-      render conn, "show.html", admin_user: admin_user
+      render conn, "show.html"
     else
       render_unauthorized(conn)
     end
   end
 
-  def deactivate(conn, %{"id" => id}, user, _claims) do
-    if AdminUserPolicy.can?(user, :deactivate_admin_user) do
-      admin_user = User.admin_one!(id)
+  def confirm_role_change(conn, _params, user, _claims) do
+    if AdminUserPolicy.can?(user, :update_admin_roles) do
+      render conn, "confirm_role_change.html", admin_roles: @admin_roles
+    else
+      render_unauthorized(conn)
+    end
+  end
 
-      case User.deactivate_admin(admin_user) do
+  def deactivate(conn, _params, user, _claims) do
+    if AdminUserPolicy.can?(user, :deactivate_admin_user) do
+      case User.deactivate_admin(conn.assigns.admin_user) do
         {:ok, updated_user} ->
           conn
           |> put_flash(:error, "Admin User deactivated.")
@@ -48,18 +58,16 @@ defmodule ConciergeSite.Admin.AdminUserController do
         {:error, _} ->
           conn
           |> put_flash(:error, "Admin User could not be deactivated.")
-          |> render("show.html", admin_user: admin_user)
+          |> render("show.html")
       end
     else
       render_unauthorized(conn)
     end
   end
 
-  def activate(conn, %{"id" => id} = params, user, _claims) do
+  def activate(conn, params, user, _claims) do
     if AdminUserPolicy.can?(user, :activate_admin_user) do
-      admin_user = User.admin_one!(id)
-
-      case User.activate_admin(admin_user, params) do
+      case User.activate_admin(conn.assigns.admin_user, params["user"]) do
         {:ok, updated_user} ->
           conn
           |> put_flash(:info, "Admin User activated with #{updated_user.role} role.")
@@ -67,8 +75,24 @@ defmodule ConciergeSite.Admin.AdminUserController do
         {:error, _} ->
           conn
           |> put_flash(:error, "Admin User could not be activated.")
-          |> render("show.html", admin_user: admin_user)
+          |> render("show.html")
       end
+    else
+      render_unauthorized(conn)
+    end
+  end
+
+  def confirm_activate(conn, _params, user, _claims) do
+    if AdminUserPolicy.can?(user, :activate_admin_user) do
+      render conn, "confirm_activate.html", admin_roles: @admin_roles
+    else
+      render_unauthorized(conn)
+    end
+  end
+
+  def confirm_deactivate(conn, _params, user, _claims) do
+    if AdminUserPolicy.can?(user, :deactivate_admin_user) do
+      render conn, "confirm_deactivate.html"
     else
       render_unauthorized(conn)
     end
@@ -89,9 +113,34 @@ defmodule ConciergeSite.Admin.AdminUserController do
     end
   end
 
+  def update(conn, params, user, _claims) do
+    if AdminUserPolicy.can?(user, :update_admin_roles) do
+      case User.activate_admin(conn.assigns.admin_user, params["user"]) do
+        {:ok, updated_user} ->
+          conn
+          |> put_flash(:error, "Admin User's Role has been changed.")
+          |> render("show.html", admin_user: updated_user)
+        {:error, _} ->
+          conn
+          |> put_flash(:error, "Admin User's Role cannot be changed.")
+          |> render("show.html")
+      end
+    else
+      render_unauthorized(conn)
+    end
+  end
+
   defp errors(changeset) do
     Enum.map(changeset.errors, fn({field, _}) ->
       field
     end)
+  end
+
+  defp fetch_admin(conn, _) do
+    assign(conn, :admin_user, User.admin_one!(conn.params["id"]))
+  end
+
+  defp fetch_log_details(conn, _) do
+    assign(conn, :log_details, PaperTrail.get_versions(conn.assigns.admin_user))
   end
 end
