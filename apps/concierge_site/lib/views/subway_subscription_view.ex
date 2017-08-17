@@ -41,12 +41,15 @@ defmodule ConciergeSite.SubwaySubscriptionView do
   """
   @spec trip_summary_title(map, map) :: iodata
   def trip_summary_title(%{"trip_type" => "one_way"} = params, station_names) do
-    ["One way ",
+    [station_names["origin"],
+     " to ",
+     station_names["destination"],
+     ", ",
      joined_day_list(params),
-     " travel between ",
-     station_names["origin"],
-     " and ",
-     station_names["destination"]]
+     " ",
+     format_time(params["departure_start"]),
+     " - ",
+     format_time(params["departure_end"])]
   end
 
   def trip_summary_title(%{"trip_type" => "round_trip"} = params, station_names) do
@@ -59,10 +62,8 @@ defmodule ConciergeSite.SubwaySubscriptionView do
   end
 
   def trip_summary_title(%{"trip_type" => "roaming"} = params, station_names) do
-    [params
-     |> joined_day_list()
-     |> String.capitalize(),
-     " roaming travel between ",
+    [joined_day_list(params),
+     " general travel between ",
      station_names["origin"],
      " and ",
      station_names["destination"]]

@@ -20,7 +20,7 @@ defmodule ConciergeSite.SubwaySubscriptionControllerTest do
       |> guardian_login(conn)
       |> get("/subscriptions/subway/new/info")
 
-      assert html_response(conn, 200) =~ "Enter your trip info"
+      assert html_response(conn, 200) =~ "Tell us about your trip"
     end
 
     test "POST /subscriptions/subway/new/preferences with a valid submission", %{conn: conn, user: user} do
@@ -40,7 +40,7 @@ defmodule ConciergeSite.SubwaySubscriptionControllerTest do
         |> guardian_login(conn)
         |> post("/subscriptions/subway/new/preferences", params)
 
-        assert html_response(conn, 200) =~ "Set your preferences for your trip:"
+        assert html_response(conn, 200) =~ "Set your subscription preferences:"
       end
     end
 

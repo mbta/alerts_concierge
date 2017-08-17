@@ -15,12 +15,15 @@ defmodule ConciergeSite.SubscriptionHelper do
     |> Map.take(~w(saturday sunday weekday))
     |> Enum.filter(fn {_day, value} -> value == "true" end)
     |> Enum.map(fn {day, _value} ->
-        if day == "saturday" || day == "sunday" do
-          String.capitalize(day)
-        else
-          day
+        cond do
+          day == "saturday" or day == "sunday" ->
+            String.capitalize(day)
+          day == "weekday" and params["trip_type"] == "one_way" ->
+            "weekdays"
+          true ->
+            day
         end
-    end)
+      end)
     |> StringHelper.or_join()
   end
 
