@@ -110,8 +110,8 @@ defmodule ConciergeSite.BusSubscriptionControllerTest do
 
       response = html_response(conn, 200)
       assert response =~ "Round trip Saturday travel on the Silver Line SL1 bus:"
-      assert response =~ "8:45 AM - 09:15 AM | Inbound"
-      assert response =~ "4:45 PM - 05:15 PM | Outbound"
+      assert response =~ "8:45 AM - 9:15 AM | Inbound"
+      assert response =~ "4:45 PM - 5:15 PM | Outbound"
     end
 
     test "POST /subscriptions/bus creates subscriptions", %{conn: conn, user: user} do
