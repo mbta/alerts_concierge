@@ -102,7 +102,7 @@ defmodule ConciergeSite.Router do
       get "/new_message", Admin.SubscriberController, :new_message
       post "/new_message", Admin.SubscriberController, :send_message
     end
-
+    resources "/subscription_search/:user_id", Admin.SubscriptionSearchController, only: [:new, :create]
     patch "/admin_users/:id/deactivate", Admin.AdminUserController, :deactivate
     patch "/admin_users/:id/activate", Admin.AdminUserController, :activate
     get "/admin_users/:id/confirm_role_change", Admin.AdminUserController, :confirm_role_change

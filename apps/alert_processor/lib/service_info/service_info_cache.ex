@@ -260,6 +260,7 @@ defmodule AlertProcessor.ServiceInfoCache do
   defp parse_time_of_week([6]), do: "saturday"
   defp parse_time_of_week([7]), do: "sunday"
   defp parse_time_of_week([6, 7]), do: "weekend"
+  defp parse_time_of_week(_), do: "weekday"
 
   defp do_fetch_service_info(route_types) do
     {:ok, routes} = ApiClient.routes(route_types)

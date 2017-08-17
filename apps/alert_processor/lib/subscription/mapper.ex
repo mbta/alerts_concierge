@@ -201,17 +201,30 @@ defmodule AlertProcessor.Subscription.Mapper do
     subscriptions
     |> Enum.with_index
     |> Enum.reduce(Multi.new, fn({{sub, ies}, index}, acc) ->
+      uuid = Ecto.UUID.generate
       sub_to_insert = sub
       |> Map.merge(%{
-        user_id: user.id,
-        informed_entities: ies
+        id: uuid,
+        user_id: user.id
       })
       |> Subscription.create_changeset()
 
-      acc
+      acc = acc
       |> Multi.run({:subscription, index}, fn _ ->
            PaperTrail.insert(sub_to_insert)
          end)
+
+      ies
+      |> Enum.with_index
+      |> Enum.reduce(acc, fn({ie, i}, accumulator) ->
+        Multi.run(accumulator, {:informed_entity, index, i}, fn _ ->
+          ie_to_insert = ie
+          |> Map.merge(%{
+            subscription_id: uuid
+          })
+          PaperTrail.insert(ie_to_insert)
+        end)
+      end)
     end)
   end
 

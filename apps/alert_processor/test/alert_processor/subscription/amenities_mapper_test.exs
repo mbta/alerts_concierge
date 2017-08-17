@@ -115,13 +115,15 @@ defmodule AlertProcessor.Subscription.AmenitiesMapperTest do
       "relevant_days" => ["weekday"]
     }
 
-    test "it builds a multi struct to persist subscriptions" do
+    test "it builds a multi struct to persist subscriptions and informed_entities" do
       user = insert(:user)
       {:ok, subscription_infos} = AmenitiesMapper.map_subscriptions(@params)
       multi = AmenitiesMapper.build_subscription_transaction(subscription_infos, user)
-      assert [
-          {{:subscription, 0}, {:run, function}}
-        ] = Ecto.Multi.to_list(multi)
+      result = Ecto.Multi.to_list(multi)
+
+      assert {{:subscription, 0}, {:run, function}} = List.first(result)
+      assert {{:informed_entity, 0, 0}, {:run, _}} = Enum.at(result, 1)
+
       {:ok, %{model: subscription}} = function.(nil)
       assert subscription.id != nil
     end
