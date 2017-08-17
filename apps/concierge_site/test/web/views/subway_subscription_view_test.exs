@@ -36,7 +36,7 @@ defmodule ConciergeSite.SubwaySubscriptionViewTest do
   end
 
   describe "trip_summary_title" do
-    test "it returns a summary of the selected params" do
+    test "it returns a summary of the selected params for a round trip" do
       use_cassette "service_info", custom: true, clear_mock: true, match_requests_on: [:query] do
         params = %{
           "departure_start" => "08:45:00",
@@ -45,6 +45,54 @@ defmodule ConciergeSite.SubwaySubscriptionViewTest do
           "destination" => "place-buwst",
           "saturday" => "true",
           "sunday" => "true",
+          "weekday" => "false",
+          "trip_type" => "round_trip",
+        }
+
+        station_names = %{"origin" => "Boston Univ. East", "destination" => "Boston Univ. West"}
+
+        trip_summary_title =
+          params
+          |> SubwaySubscriptionView.trip_summary_title(station_names)
+          |> IO.iodata_to_binary()
+
+        assert trip_summary_title == "Round trip Saturday or Sunday travel between Boston Univ. East and Boston Univ. West"
+      end
+    end
+
+    test "it returns a summary of the selected params for general travel" do
+      use_cassette "service_info", custom: true, clear_mock: true, match_requests_on: [:query] do
+        params = %{
+          "departure_start" => "16:00:00",
+          "departure_end" => "23:45:00",
+          "origin" => "place-buest",
+          "destination" => "place-buwst",
+          "saturday" => "true",
+          "sunday" => "true",
+          "weekday" => "true",
+          "trip_type" => "roaming",
+        }
+
+        station_names = %{"origin" => "Boston Univ. East", "destination" => "Boston Univ. West"}
+
+        trip_summary_title =
+          params
+          |> SubwaySubscriptionView.trip_summary_title(station_names)
+          |> IO.iodata_to_binary()
+
+        assert trip_summary_title == "Saturday, Sunday, or weekday general travel between Boston Univ. East and Boston Univ. West"
+      end
+    end
+
+    test "it returns a summary including stations, days, and times for one way trips" do
+      use_cassette "service_info", custom: true, clear_mock: true, match_requests_on: [:query] do
+        params = %{
+          "departure_start" => "08:45:00",
+          "departure_end" => "09:15:00",
+          "origin" => "place-buest",
+          "destination" => "place-buwst",
+          "saturday" => "false",
+          "sunday" => "false",
           "weekday" => "true",
           "trip_type" => "one_way",
         }
@@ -55,7 +103,7 @@ defmodule ConciergeSite.SubwaySubscriptionViewTest do
           |> SubwaySubscriptionView.trip_summary_title(station_names)
           |> IO.iodata_to_binary()
 
-        assert trip_summary_title == "One way Saturday, Sunday, or weekday travel between Boston Univ. East and Boston Univ. West"
+        assert trip_summary_title == "Boston Univ. East to Boston Univ. West, weekdays  8:45 AM -  9:15 AM"
       end
     end
   end
@@ -78,13 +126,13 @@ defmodule ConciergeSite.SubwaySubscriptionViewTest do
 
         station_names = %{"origin" => "Braintree", "destination" => "Quincy Adams"}
 
-        trip_summary_logistics = params
+        [first_trip_logistics, return_trip_logistics] =
+          params
           |> SubwaySubscriptionView.trip_summary_logistics(station_names)
           |> Enum.map(&IO.iodata_to_binary/1)
 
-        assert trip_summary_logistics ==
-          ["09:45 AM - 10:15 AM from Braintree to Quincy Adams",
-           "05:45 PM - 06:15 PM from Quincy Adams to Braintree"]
+        assert first_trip_logistics =~ "9:45 AM - 10:15 AM from Braintree to Quincy Adams"
+        assert return_trip_logistics =~ "5:45 PM -  6:15 PM from Quincy Adams to Braintree"
       end
     end
   end

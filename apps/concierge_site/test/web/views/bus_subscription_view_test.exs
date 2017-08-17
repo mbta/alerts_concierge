@@ -84,16 +84,17 @@ defmodule ConciergeSite.BusSubscriptionViewTest do
   describe "trip_summary_routes/1" do
     test "returns summary of routes for one way" do
       params = Map.merge(@params, %{"trip_type" => "one_way"})
-      routes = BusSubscriptionView.trip_summary_routes(params)
+      [route] = BusSubscriptionView.trip_summary_routes(params)
 
-      assert routes == [["08:45 AM", " - ", "09:15 AM", " | ", "Inbound"]]
+      assert IO.iodata_to_binary(route) =~ "8:45 AM -  9:15 AM | Inbound"
     end
 
     test "returns summary of routes for round trip" do
       params = Map.merge(@params, %{"trip_type" => "round_trip"})
-      routes = BusSubscriptionView.trip_summary_routes(params)
+      [inbound, outbound] = BusSubscriptionView.trip_summary_routes(params)
 
-      assert routes == [["08:45 AM", " - ", "09:15 AM", " | ", "Inbound"], ["04:45 PM", " - ", "05:15 PM", " | ", "Outbound"]]
+      assert IO.iodata_to_binary(inbound) =~ "8:45 AM -  9:15 AM | Inbound"
+      assert IO.iodata_to_binary(outbound) =~ "4:45 PM -  5:15 PM | Outbound"
     end
   end
 

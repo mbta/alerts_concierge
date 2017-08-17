@@ -22,4 +22,30 @@ defmodule ConciergeSite.SubscriptionHelperTest do
 
     assert SubscriptionHelper.selected_relevant_days(params) == [:weekday]
   end
+
+  test "joined_day_list/1 returns a comma separated string of days with weekend days capitalized" do
+    params = %{
+      "trip_type" => "round_trip",
+      "saturday" => "true",
+      "sunday" => "true",
+      "weekday" => "true"
+    }
+
+    days = SubscriptionHelper.joined_day_list(params)
+
+    assert days == "Saturday, Sunday, or weekday"
+  end
+
+  test "joined_day_list/1 pluralizes weekday when trip_type is one_way" do
+    params = %{
+      "trip_type" => "one_way",
+      "saturday" => "true",
+      "sunday" => "true",
+      "weekday" => "true"
+    }
+
+    days = SubscriptionHelper.joined_day_list(params)
+
+    assert days == "Saturday, Sunday, or weekdays"
+  end
 end

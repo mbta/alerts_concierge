@@ -2,14 +2,13 @@
 <%= render "_progress_bar.html", current_page: :trip_info, subscription_params: @subscription_params, conn: @conn %>
 
 <div class="subscription-step enter-trip-info">
-  <h2>Enter your trip info</h2>
+  <h2>Tell us about your trip</h2>
 
   <%= flash_error(@conn) %>
 
   <p>
-    <%= Map.get(@subscription_params, "trip_type", "")
-        |> String.to_existing_atom
-        |> trip_info_description %>
+    We will use this information to send you the alerts that are most relevant
+    to you.
   </p>
 
   <%= form_for @conn, subway_subscription_path(@conn, :preferences), [class: "trip-info-form subway", as: :subscription], fn f -> %>
@@ -25,7 +24,7 @@
     <div class="form-group select-station">
       <label for="destination" class="station-input-label form-label">Destination</label>
       <div class="form-sub-label route-sub-label">
-        Both Origin and Destination stations must be on the same line.
+        Both origin and destination stations must be on the same line.
       </div>
       <%= select f,
                  :destination,
@@ -42,8 +41,8 @@
     <div class="form-group travel-times">
       <div class="form-label">When do you travel?</div>
       <div class="form-sub-label travel-times-sub-label">
-        We will send you notifications for any service alerts that occur during
-        your planned travel time.
+        We will send you notifications of disruptions as soon as we know they
+        may affect your trip.
       </div>
       <%= render "_travel_time_select_lists.html",
                  subscription_params: @subscription_params,
