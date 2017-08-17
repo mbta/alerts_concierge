@@ -58,7 +58,7 @@ defmodule ConciergeSite.Admin.SubscriberViewTest do
       subscription_info = SubscriberView.subscription_info(subscription)
       refute html_to_binary(subscription_info) =~ "Origin: "
       refute html_to_binary(subscription_info) =~ "Destination: "
-      assert html_to_binary(subscription_info) =~ "10:00am to  2:00pm"
+      assert html_to_binary(subscription_info) =~ "10:00am to 2:00pm"
       assert html_to_binary(subscription_info) =~ "Sundays"
       assert html_to_binary(subscription_info) =~ "Low, Medium, &amp; High Severity"
     end
@@ -68,7 +68,7 @@ defmodule ConciergeSite.Admin.SubscriberViewTest do
       subscription_info = SubscriberView.subscription_info(subscription)
       assert html_to_binary(subscription_info) =~ "Origin: Davis"
       assert html_to_binary(subscription_info) =~ "Destination: Harvard"
-      assert html_to_binary(subscription_info) =~ "10:00am to  2:00pm"
+      assert html_to_binary(subscription_info) =~ "10:00am to 2:00pm"
       assert html_to_binary(subscription_info) =~ "Weekdays, Saturdays"
       assert html_to_binary(subscription_info) =~ "Medium &amp; High Severity"
     end

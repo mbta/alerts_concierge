@@ -147,7 +147,7 @@ describe("selectAmenityStation", function() {
           <select class="subscription-select subscription-select-amenity-station no-js">
             <option value="">Select a station</option>
             <optgroup label="Red Line">
-              <option value="place-nquincy">North Quincy</option>
+              <option value="place-nqncy">North Quincy</option>
               <option value="place-central">Central Square</option>
             </optgroup>
             <optgroup label="Needham Line">

@@ -310,7 +310,7 @@ defmodule AlertProcessor.Model.Subscription do
   defp time_value(timestamp) do
     local_time = DateTimeHelper.utc_time_to_local(timestamp)
     {:ok, output} = Strftime.strftime(local_time, "%l:%M%P")
-    output
+    String.trim(output)
   end
 
   @doc """
