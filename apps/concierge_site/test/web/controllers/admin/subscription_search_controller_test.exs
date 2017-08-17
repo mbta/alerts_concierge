@@ -24,8 +24,8 @@ defmodule ConciergeSite.Admin.SubscriptionSearchControllerTest do
     end
 
     test "POST /admin/subscription_search/:id returns all subscriptions for a given date", %{conn: conn, subscriber: subscriber} do
-      {:ok, future_date} = NaiveDateTime.from_iso8601("2118-01-01T01:01:01")
-      {:ok, date} = NaiveDateTime.from_iso8601("2017-07-11T01:01:01")
+      {:ok, future_date, _} = DateTime.from_iso8601("2118-01-01T01:01:01Z")
+      {:ok, date, _} = DateTime.from_iso8601("2017-07-11T01:01:01Z")
       sub_params = params_for(
         :subscription,
         user: subscriber,

@@ -6,9 +6,9 @@ defmodule AlertProcessor.Subscription.SnapshotTest do
   describe "get_snapshots_by_datetime/2" do
     test "returns latest version that existed on the given date" do
       subscriber = insert(:user)
-      {:ok, future_date} = NaiveDateTime.from_iso8601("2118-01-01T01:01:01")
-      {:ok, date} = NaiveDateTime.from_iso8601("2017-07-11T01:01:01")
-      {:ok, past_date} = NaiveDateTime.from_iso8601("2017-01-11T01:01:01")
+      {:ok, future_date, _} = DateTime.from_iso8601("2118-01-01T01:01:01Z")
+      {:ok, date, _} = DateTime.from_iso8601("2017-07-11T01:01:01Z")
+      {:ok, past_date, _} = DateTime.from_iso8601("2017-01-11T01:01:01Z")
       sub_params = params_for(
         :subscription,
         user: subscriber,

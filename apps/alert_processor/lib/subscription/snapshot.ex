@@ -19,7 +19,8 @@ defmodule AlertProcessor.Subscription.Snapshot do
     sub
     |> PaperTrail.get_versions()
     |> Enum.reject(fn(version) ->
-      NaiveDateTime.compare(version.inserted_at, datetime) == :gt
+      version_time = DateTime.from_naive!(version.inserted_at, "Etc/UTC")
+      DateTime.compare(version_time, datetime) == :gt
     end)
     |> Enum.reduce(%{}, fn(%{item_changes: changes}, snapshot) ->
        Map.merge(snapshot, changes)

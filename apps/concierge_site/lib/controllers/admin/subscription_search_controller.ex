@@ -36,10 +36,16 @@ defmodule ConciergeSite.Admin.SubscriptionSearchController do
 
   defp get_snapshots(user, params) do
     date_params = params["alert_date"]
-    datetime_string = "#{date_params["year"]}-#{date_params["month"]}-#{date_params["day"]} #{date_params["hour"]}:#{date_params["min"]}:00"
-    case NaiveDateTime.from_iso8601(datetime_string)  do
-      {:ok, datetime} -> {:ok, Snapshot.get_snapshots_by_datetime(user, datetime)}
-      _ -> {:error, user}
+    date = Enum.reduce(date_params, %{}, fn({k, v}, acc) ->
+      Map.put(acc, k, String.to_integer(v))
+    end)
+    erl_param = {{date["year"], date["month"], date["day"]}, {date["hour"], date["min"], 0}}
+
+    case Calendar.DateTime.from_erl(erl_param, "America/New_York") do
+      {:ok, datetime} ->
+        {:ok, Snapshot.get_snapshots_by_datetime(user, datetime)}
+      _ ->
+        {:error, user}
     end
   end
 
