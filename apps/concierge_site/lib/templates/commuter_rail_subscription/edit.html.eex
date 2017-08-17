@@ -8,7 +8,7 @@
   <%= flash_error(@conn) %>
 
   <%= form_for @changeset, commuter_rail_subscription_path(@conn, :update, @subscription), fn f -> %>
-    <%= render "_train_select_options.html", f: f, list_header: trip_list_header(@subscription), trips: @trips %>
+    <%= render "_train_select_options.html", f: f, list_header: trip_list_header(@subscription), trips: @trips, trip_type: "one_way" %>
     <%= render "_alert_type_radio_buttons.html",
                 form: f,
                 checked: @changeset.data.alert_priority_type,
