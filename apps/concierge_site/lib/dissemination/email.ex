@@ -76,14 +76,14 @@ defmodule ConciergeSite.Dissemination.Email do
     :def,
     :targeted_notification_text_email,
     Path.join(~w(#{System.cwd!} lib mail_templates targeted_notification.txt.eex)),
-    [:subject, :body])
+    [:body])
 
   def targeted_notification_email(email, subject, body) do
     base_email()
     |> to(email)
     |> subject(subject)
     |> html_body(targeted_notification_html_email(subject, body))
-    |> text_body(targeted_notification_text_email(subject, body))
+    |> text_body(targeted_notification_text_email(body))
   end
 
   defp base_email do
