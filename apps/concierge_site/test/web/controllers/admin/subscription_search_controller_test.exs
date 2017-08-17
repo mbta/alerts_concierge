@@ -53,7 +53,9 @@ defmodule ConciergeSite.Admin.SubscriptionSearchControllerTest do
           "alert_date" => %{
             "year" => "2017",
             "month" => "07",
-            "day" => "11"
+            "day" => "11",
+            "hour" => "11",
+            "min" => "11"
           }
         }
       }

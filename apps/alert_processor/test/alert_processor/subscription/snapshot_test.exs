@@ -3,7 +3,7 @@ defmodule AlertProcessor.Subscription.SnapshotTest do
   import AlertProcessor.Factory
   alias AlertProcessor.{Repo, Model.Subscription, Subscription.Snapshot}
 
-  describe "get_snapshots_by_date/2" do
+  describe "get_snapshots_by_datetime/2" do
     test "returns latest version that existed on the given date" do
       subscriber = insert(:user)
       {:ok, future_date} = NaiveDateTime.from_iso8601("2118-01-01T01:01:01")
@@ -36,7 +36,7 @@ defmodule AlertProcessor.Subscription.SnapshotTest do
       Repo.update!(update_changeset)
       Repo.update!(future_changeset)
 
-      [snapshot] = Snapshot.get_snapshots_by_date(subscriber, date)
+      [snapshot] = Snapshot.get_snapshots_by_datetime(subscriber, date)
 
       assert snapshot["relevant_days"] ==  ["saturday"]
     end

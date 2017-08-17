@@ -36,12 +36,9 @@ defmodule ConciergeSite.Admin.SubscriptionSearchController do
 
   defp get_snapshots(user, params) do
     date_params = params["alert_date"]
-    with {year, ""} <- Integer.parse(date_params["year"]),
-      {month, ""} <- Integer.parse(date_params["month"]),
-      {day, ""} <- Integer.parse(date_params["day"]),
-      {:ok, date} <- Date.new(year, month, day) do
-      {:ok, Snapshot.get_snapshots_by_date(user, date)}
-    else
+    datetime_string = "#{date_params["year"]}-#{date_params["month"]}-#{date_params["day"]} #{date_params["hour"]}:#{date_params["min"]}:00"
+    case NaiveDateTime.from_iso8601(datetime_string)  do
+      {:ok, datetime} -> {:ok, Snapshot.get_snapshots_by_datetime(user, datetime)}
       _ -> {:error, user}
     end
   end
