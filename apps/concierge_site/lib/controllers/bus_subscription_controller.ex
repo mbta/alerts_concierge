@@ -2,7 +2,7 @@ defmodule ConciergeSite.BusSubscriptionController do
   use ConciergeSite.Web, :controller
   use Guardian.Phoenix.Controller
   alias ConciergeSite.Subscriptions.{BusParams, BusRoutes, TemporaryState, SubscriptionParams}
-  alias AlertProcessor.{Model.Subscription, Model.User, Repo, ServiceInfoCache, Subscription.BusMapper}
+  alias AlertProcessor.{Model.Subscription, Model.User, ServiceInfoCache, Subscription.BusMapper}
 
   def new(conn, _params, _user, _claims) do
     render conn, "new.html"
@@ -36,7 +36,7 @@ defmodule ConciergeSite.BusSubscriptionController do
       mapper_params <- BusParams.prepare_for_mapper(subscription_params),
       {:ok, subscriptions} <- BusMapper.map_subscription(mapper_params),
       multi <- BusMapper.build_subscription_transaction(subscriptions, user),
-      {:ok, _} <- Repo.transaction(multi) do
+      :ok <- Subscription.create_subscription(multi) do
         redirect(conn, to: subscription_path(conn, :index))
     else
       _ ->

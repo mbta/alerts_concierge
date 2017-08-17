@@ -30,7 +30,7 @@ defmodule ConciergeSite.AmenitySubscriptionController do
     with :ok <- AmenitiesParams.validate_info_params(sub_params),
       {:ok, subscription_infos} <- AmenitiesMapper.map_subscriptions(sub_params),
       multi <- AmenitiesMapper.build_subscription_transaction(subscription_infos, user),
-      {:ok, _} <- Repo.transaction(multi) do
+      :ok <- Subscription.create_subscription(multi) do
         redirect(conn, to: subscription_path(conn, :index))
     else
       {:error, message} ->

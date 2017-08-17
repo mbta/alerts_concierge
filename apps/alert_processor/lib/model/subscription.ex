@@ -108,6 +108,35 @@ defmodule AlertProcessor.Model.Subscription do
     |> normalize_papertrail_result()
   end
 
+  def create_subscription(multi) do
+    with {:ok, result} <- Repo.transaction(multi),
+      :ok <- associate_informed_entity_versions(result) do
+        :ok
+    else
+      _ -> :error
+    end
+  end
+
+  defp associate_informed_entity_versions(result) do
+    [{_name, %{version: sub_version}} | informed_entities] = Map.to_list(result)
+
+    informed_entity_version_ids = Enum.map(
+      informed_entities, fn({_name, %{model: ie}}) ->
+        PaperTrail.get_version(ie).id
+      end)
+
+    sub_version_changeset = Ecto.Changeset.cast(
+      sub_version,
+      %{meta: %{informed_entity_version_ids: informed_entity_version_ids}},
+      [:meta]
+    )
+
+    case Repo.update(sub_version_changeset) do
+      {:ok, _} -> :ok
+      _ -> :error
+    end
+  end
+
   @doc """
   return the numeric value for a subscription's alert priority type.
   the higher the number, the fewer amount of alerts should be received.

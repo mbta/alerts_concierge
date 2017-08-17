@@ -5,7 +5,6 @@ defmodule ConciergeSite.SubwaySubscriptionController do
   alias ConciergeSite.Subscriptions.Lines
   alias ConciergeSite.Subscriptions.SubwayParams
   alias ConciergeSite.Subscriptions.SubscriptionParams
-  alias AlertProcessor.Repo
   alias AlertProcessor.ServiceInfoCache
   alias AlertProcessor.Subscription.SubwayMapper
   alias AlertProcessor.Model.Subscription
@@ -85,10 +84,10 @@ defmodule ConciergeSite.SubwaySubscriptionController do
 
     multi = SubwayMapper.build_subscription_transaction(subscription_infos, user)
 
-    case Repo.transaction(multi) do
-      {:ok, _} ->
+    case Subscription.create_subscription(multi) do
+      :ok ->
         redirect(conn, to: subscription_path(conn, :index))
-      {:error, _} ->
+      :error ->
         conn
         |> put_flash(:error, "There was an error saving the subscription. Please try again.")
         |> render("new.html")
