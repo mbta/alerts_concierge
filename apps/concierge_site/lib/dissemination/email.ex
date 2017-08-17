@@ -71,19 +71,19 @@ defmodule ConciergeSite.Dissemination.Email do
     :def,
     :targeted_notification_html_email,
     Path.join(@template_dir, "targeted_notification.html.eex"),
-    [:body])
+    [:subject, :body])
   EEx.function_from_file(
     :def,
     :targeted_notification_text_email,
     Path.join(~w(#{System.cwd!} lib mail_templates targeted_notification.txt.eex)),
-    [:body])
+    [:subject, :body])
 
   def targeted_notification_email(email, subject, body) do
     base_email()
     |> to(email)
     |> subject(subject)
-    |> html_body(targeted_notification_html_email(body))
-    |> text_body(targeted_notification_text_email(body))
+    |> html_body(targeted_notification_html_email(subject, body))
+    |> text_body(targeted_notification_text_email(subject, body))
   end
 
   defp base_email do
