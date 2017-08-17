@@ -43,7 +43,7 @@ defmodule ConciergeSite.SubscriptionViewTest do
     test "sorted_subscriptions sorts when amenities with no routes present" do
       sub1 = %Subscription{origin: "Davis", destination: "Park Street", type: :subway, start_time: ~T[14:00:00], end_time: ~T[15:00:00], informed_entities: [%InformedEntity{route: "Red", route_type: 1}], relevant_days: [:weekday]}
       sub2 = %Subscription{origin: "Davis", destination: "Harvard", type: :subway, start_time: ~T[12:00:00], end_time: ~T[13:00:00], informed_entities: [%InformedEntity{route: "Red", route_type: 1}], relevant_days: [:saturday, :sunday]}
-      sub3 = %Subscription{type: :amenity, start_time: ~T[12:00:00], end_time: ~T[13:00:00], informed_entities: [%InformedEntity{stop: "place-nquincy", route_type: 4}], relevant_days: [:saturday, :sunday]}
+      sub3 = %Subscription{type: :amenity, start_time: ~T[12:00:00], end_time: ~T[13:00:00], informed_entities: [%InformedEntity{stop: "place-nqncy", route_type: 4}], relevant_days: [:saturday, :sunday]}
       assert %{amenity: [^sub3], ferry: [], bus: [], commuter_rail: [], subway: [^sub1, ^sub2]} = SubscriptionView.sorted_subscriptions(Enum.shuffle([sub1, sub2, sub3]))
     end
   end

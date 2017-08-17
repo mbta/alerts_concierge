@@ -51,4 +51,104 @@ defmodule ConciergeSite.Admin.SubscriberViewTest do
       assert "Tue Aug  1 12:00:00 2017 until Sun Aug  1 12:00:00 2100" = IO.iodata_to_binary(timeframe_text)
     end
   end
+
+  describe "subscription_info" do
+    test "subscription without origin and destination" do
+      subscription = build(:subscription, alert_priority_type: :low, type: :commuter_rail, origin: nil, destination: nil) |> sunday_subscription()
+      subscription_info = SubscriberView.subscription_info(subscription)
+      refute html_to_binary(subscription_info) =~ "Origin: "
+      refute html_to_binary(subscription_info) =~ "Destination: "
+      assert html_to_binary(subscription_info) =~ "10:00am to  2:00pm"
+      assert html_to_binary(subscription_info) =~ "Sundays"
+      assert html_to_binary(subscription_info) =~ "Low, Medium, &amp; High Severity"
+    end
+
+    test "subscription with origin and destination" do
+      subscription = build(:subscription) |> saturday_subscription() |> weekday_subscription()  |> subway_subscription()
+      subscription_info = SubscriberView.subscription_info(subscription)
+      assert html_to_binary(subscription_info) =~ "Origin: Davis"
+      assert html_to_binary(subscription_info) =~ "Destination: Harvard"
+      assert html_to_binary(subscription_info) =~ "10:00am to  2:00pm"
+      assert html_to_binary(subscription_info) =~ "Weekdays, Saturdays"
+      assert html_to_binary(subscription_info) =~ "Medium &amp; High Severity"
+    end
+  end
+
+  describe "entity_info" do
+    test "lets you know if there are no entities" do
+      subscription = build(:subscription, informed_entities: [])
+      assert "No Entities" = SubscriberView.entity_info(subscription, %{})
+    end
+
+    test "amenity" do
+      subscription =
+        :subscription
+        |> build()
+        |> Map.put(:informed_entities, amenity_subscription_entities())
+        |> amenity_subscription()
+      entity_info = SubscriberView.entity_info(subscription, %{})
+      assert html_to_binary(entity_info) =~ "Escalator at North Quincy"
+      assert html_to_binary(entity_info) =~ "Elevator for Green"
+    end
+
+    test "bus" do
+      subscription =
+        :subscription
+        |> build()
+        |> Map.put(:informed_entities, bus_subscription_entities())
+        |> bus_subscription()
+      entity_info = SubscriberView.entity_info(subscription, %{})
+      assert html_to_binary(entity_info) =~ "Mode: Bus"
+      assert html_to_binary(entity_info) =~ "Route: 57A Outbound"
+      assert html_to_binary(entity_info) =~ "Route: 57A"
+    end
+
+    test "commuter_rail" do
+      subscription =
+        :subscription
+        |> build()
+        |> Map.put(:informed_entities, commuter_rail_subscription_entities())
+        |> commuter_rail_subscription()
+      entity_info = SubscriberView.entity_info(subscription, %{"221" => ~T[19:25:00], "331" => ~T[17:32:00]})
+      assert html_to_binary(entity_info) =~ "Mode: Commuter Rail"
+      assert html_to_binary(entity_info) =~ "Route: Lowell Line Inbound"
+      assert html_to_binary(entity_info) =~ "Stop: Anderson/Woburn"
+      assert html_to_binary(entity_info) =~ "Stop: North Station"
+      assert html_to_binary(entity_info) =~ "Trip: 221 departs at 7:25pm"
+      assert html_to_binary(entity_info) =~ "Trip: 331 departs at 5:32pm"
+    end
+
+    test "ferry" do
+      subscription =
+        :subscription
+        |> build()
+        |> Map.put(:informed_entities, ferry_subscription_entities())
+        |> ferry_subscription()
+      entity_info = SubscriberView.entity_info(subscription, %{"Boat-F4-Boat-Long-17:00:00-weekday-0" => ~T[17:00:00], "Boat-F4-Boat-Long-17:15:00-weekday-0" => ~T[17:15:00]})
+      assert html_to_binary(entity_info) =~ "Mode: Ferry"
+      assert html_to_binary(entity_info) =~ "Route: Charlestown Ferry Inbound"
+      assert html_to_binary(entity_info) =~ "Stop: Charlestown Navy Yard"
+      assert html_to_binary(entity_info) =~ "Stop: Long Wharf, Boston"
+      assert html_to_binary(entity_info) =~ "Trip: Boat-F4-Boat-Long-17:00:00-weekday-0 departs at 5:00pm"
+      assert html_to_binary(entity_info) =~ "Trip: Boat-F4-Boat-Long-17:15:00-weekday-0 departs at 5:15pm"
+    end
+
+    test "subway" do
+      subscription =
+        :subscription
+        |> build()
+        |> Map.put(:informed_entities, subway_subscription_entities())
+        |> subway_subscription()
+      entity_info = SubscriberView.entity_info(subscription, %{})
+      assert html_to_binary(entity_info) =~ "Mode: Subway"
+      assert html_to_binary(entity_info) =~ "Route: Red Line Southbound"
+      assert html_to_binary(entity_info) =~ "Route: Red Line"
+      assert html_to_binary(entity_info) =~ "Stop: Davis"
+      assert html_to_binary(entity_info) =~ "Stop: Harvard"
+    end
+  end
+
+  defp html_to_binary(html_list) do
+    html_list |> Phoenix.HTML.Safe.to_iodata() |> IO.iodata_to_binary()
+  end
 end

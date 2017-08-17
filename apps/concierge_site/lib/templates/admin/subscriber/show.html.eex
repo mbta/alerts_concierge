@@ -29,6 +29,21 @@
       <% end %>
     </div>
     <div class="admin-info-contents">
+      <h2>Current Subscriptions</h2>
+      <div class="admin-table">
+        <div class="admin-table-header">
+          <div class="admin-table-column">Subscription Info</div>
+          <div class="admin-table-column">Entities</div>
+        </div>
+        <div class="admin-table-body">
+          <%= for subscription <- @subscriptions do %>
+            <div class="admin-table-row">
+              <div class="admin-table-cell"><%= subscription_info(subscription) %></div>
+              <div class="admin-table-cell"><%= entity_info(subscription, @departure_time_map) %></div>
+            </div>
+          <% end %>
+        </div>
+      </div>
     </div>
   </div>
 </div>

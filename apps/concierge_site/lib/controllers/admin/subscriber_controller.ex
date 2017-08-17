@@ -1,7 +1,8 @@
 defmodule ConciergeSite.Admin.SubscriberController do
   use ConciergeSite.Web, :controller
   use Guardian.Phoenix.Controller
-  alias AlertProcessor.Model.User
+  alias AlertProcessor.Model.{Subscription, User}
+  alias AlertProcessor.Subscription.DisplayInfo
   alias ConciergeSite.TargetedNotification
 
   def index(conn, params, _user, _claims) do
@@ -18,8 +19,10 @@ defmodule ConciergeSite.Admin.SubscriberController do
 
   def show(conn, %{"id" => subscriber_id}, user, _claims) do
     subscriber = User.find_by_id(subscriber_id)
+    subscriptions = Subscription.for_user(subscriber)
+    {:ok, departure_time_map} = DisplayInfo.departure_times_for_subscriptions(subscriptions)
     User.log_admin_action(:view_subscriber, user, subscriber)
-    render conn, "show.html", subscriber: subscriber
+    render conn, "show.html", subscriber: subscriber, subscriptions: subscriptions, departure_time_map: departure_time_map
   end
 
   def new_message(conn, %{"subscriber_id" => subscriber_id}, _user, _claims) do
