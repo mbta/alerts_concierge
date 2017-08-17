@@ -83,8 +83,8 @@ defmodule ConciergeSite.SubwaySubscriptionViewTest do
           |> Enum.map(&IO.iodata_to_binary/1)
 
         assert trip_summary_logistics ==
-          ["09:45 AM - 10:15 AM from Braintree to Quincy Adams",
-           "05:45 PM - 06:15 PM from Quincy Adams to Braintree"]
+          ["9:45 AM - 10:15 AM from Braintree to Quincy Adams",
+           "5:45 PM - 6:15 PM from Quincy Adams to Braintree"]
       end
     end
   end

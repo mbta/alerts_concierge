@@ -86,14 +86,14 @@ defmodule ConciergeSite.BusSubscriptionViewTest do
       params = Map.merge(@params, %{"trip_type" => "one_way"})
       routes = BusSubscriptionView.trip_summary_routes(params)
 
-      assert routes == [["08:45 AM", " - ", "09:15 AM", " | ", "Inbound"]]
+      assert routes == [["8:45 AM", " - ", "9:15 AM", " | ", "Inbound"]]
     end
 
     test "returns summary of routes for round trip" do
       params = Map.merge(@params, %{"trip_type" => "round_trip"})
       routes = BusSubscriptionView.trip_summary_routes(params)
 
-      assert routes == [["08:45 AM", " - ", "09:15 AM", " | ", "Inbound"], ["04:45 PM", " - ", "05:15 PM", " | ", "Outbound"]]
+      assert routes == [["8:45 AM", " - ", "9:15 AM", " | ", "Inbound"], ["4:45 PM", " - ", "5:15 PM", " | ", "Outbound"]]
     end
   end
 

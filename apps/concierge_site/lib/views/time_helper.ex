@@ -29,7 +29,8 @@ defmodule ConciergeSite.TimeHelper do
     |> Enum.map(&String.to_integer/1)
     |> List.to_tuple
     |> Time.from_erl!
-    |> Strftime.strftime!("%I:%M %p")
+    |> Strftime.strftime!("%l:%M %p")
+    |> String.replace_leading(" ", "")
   end
 
   @doc """
