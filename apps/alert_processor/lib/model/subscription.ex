@@ -3,7 +3,7 @@ defmodule AlertProcessor.Model.Subscription do
   Set of criteria on which a user wants to be sent alerts.
   """
 
-  alias AlertProcessor.{Helpers.DateTimeHelper, Model.InformedEntity, Model.Trip, Model.User, Repo, TimeFrameComparison}
+  alias AlertProcessor.{Helpers.DateTimeHelper, Model.InformedEntity, Model.Trip, Model.User, Repo, TimeFrameComparison, TimeHelper}
   alias Ecto.Multi
   alias Calendar.Strftime
   import Ecto.Query
@@ -292,24 +292,6 @@ defmodule AlertProcessor.Model.Subscription do
   defp next_timeframe(:weekday), do: :saturday
   defp next_timeframe(:saturday), do: :sunday
   defp next_timeframe(:sunday), do: :monday
-
-  @doc """
-  return iodata with timeframe of subscription.
-  """
-  @spec timeframe_string(__MODULE__.t) :: iodata
-  def timeframe_string(%__MODULE__{start_time: start_time, end_time: end_time}) do
-    [
-      time_value(start_time),
-      " to ",
-      time_value(end_time)
-    ]
-  end
-
-  defp time_value(timestamp) do
-    local_time = DateTimeHelper.utc_time_to_local(timestamp)
-    {:ok, output} = Strftime.strftime(local_time, "%l:%M%P")
-    String.trim(output)
-  end
 
   @doc """
   function used to make sure subscription type atoms are available in runtime

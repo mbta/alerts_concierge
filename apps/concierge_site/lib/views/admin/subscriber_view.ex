@@ -3,6 +3,7 @@ defmodule ConciergeSite.Admin.SubscriberView do
 
   alias AlertProcessor.ServiceInfoCache
   alias AlertProcessor.Model.{InformedEntity, Subscription, User}
+  alias ConciergeSite.TimeHelper
   alias Calendar.Strftime
 
   @spec account_status(User.t) :: String.t
@@ -40,7 +41,7 @@ defmodule ConciergeSite.Admin.SubscriberView do
   def subscription_info(%Subscription{origin: nil, destination: nil} = subscription) do
     [
       content_tag(:p, Subscription.type_string(subscription)),
-      content_tag(:p, Subscription.timeframe_string(subscription)),
+      content_tag(:p, timeframe_string(subscription)),
       content_tag(:p, Subscription.relevant_days_string(subscription)),
       content_tag(:p, Subscription.severity_string(subscription))
     ]
@@ -50,7 +51,7 @@ defmodule ConciergeSite.Admin.SubscriberView do
       content_tag(:p, "Origin: #{origin}"),
       content_tag(:p, "Destination: #{destination}"),
       content_tag(:p, Subscription.type_string(subscription)),
-      content_tag(:p, Subscription.timeframe_string(subscription)),
+      content_tag(:p, timeframe_string(subscription)),
       content_tag(:p, Subscription.relevant_days_string(subscription)),
       content_tag(:p, Subscription.severity_string(subscription))
     ]
@@ -145,4 +146,16 @@ defmodule ConciergeSite.Admin.SubscriberView do
     ])
   end
   defp entity_item(_, _), do: ""
+
+  @doc """
+  return iodata with timeframe of subscription.
+  """
+  @spec timeframe_string(Subscription.t) :: iodata
+  def timeframe_string(%Subscription{start_time: start_time, end_time: end_time}) do
+    [
+      TimeHelper.format_time(start_time),
+      " to ",
+      TimeHelper.format_time(end_time)
+    ]
+  end
 end

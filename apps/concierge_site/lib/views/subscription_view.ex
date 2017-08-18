@@ -4,10 +4,8 @@ defmodule ConciergeSite.SubscriptionView do
   """
   use ConciergeSite.Web, :view
 
-  alias AlertProcessor.{Helpers, Model, ServiceInfoCache}
-  alias Helpers.DateTimeHelper
+  alias AlertProcessor.{Model, ServiceInfoCache}
   alias Model.{InformedEntity, Route, Subscription}
-  alias Calendar.Strftime
   alias ConciergeSite.{AmenitySubscriptionView, SubscriptionHelper, TimeHelper}
 
   import SubscriptionHelper,
@@ -155,18 +153,12 @@ defmodule ConciergeSite.SubscriptionView do
 
   defp timeframe(subscription) do
     [
-      pretty_time(subscription.start_time),
+      TimeHelper.format_time(subscription.start_time),
       " - ",
-      pretty_time(subscription.end_time),
+      TimeHelper.format_time(subscription.end_time),
       ", ",
       relevant_days(subscription)
     ]
-  end
-
-  defp pretty_time(timestamp) do
-    local_time = DateTimeHelper.utc_time_to_local(timestamp)
-    {:ok, output} = Strftime.strftime(local_time, "%l:%M%P")
-    output
   end
 
   defp parse_route_id(subscription) do

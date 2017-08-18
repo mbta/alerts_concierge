@@ -420,14 +420,6 @@ defmodule AlertProcessor.Model.SubscriptionTest do
     end
   end
 
-  describe "timeframe_string" do
-    test "converts subscription start and end times into human friendly iodata" do
-      subscription = build(:subscription)
-      timeframe_string = Subscription.timeframe_string(subscription)
-      assert IO.iodata_to_binary(timeframe_string) == "10:00am to 2:00pm"
-    end
-  end
-
   describe "relevant_days_string" do
     test "converts weekday subscription relevant days into human friendly iodata" do
       subscription = build(:subscription) |> weekday_subscription()

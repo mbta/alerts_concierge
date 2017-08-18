@@ -6,7 +6,7 @@ defmodule ConciergeSite.BusSubscriptionView do
            do_query_string_params: 2, selected_relevant_days: 1]
   import ConciergeSite.TimeHelper,
     only: [travel_time_options: 0, time_option_local_strftime: 1,
-           format_time: 1]
+           format_time_string: 1]
   import ConciergeSite.SubscriptionView,
     only: [parse_route: 1]
 
@@ -83,9 +83,9 @@ defmodule ConciergeSite.BusSubscriptionView do
      ", ",
      joined_day_list(params),
      " ",
-     format_time(params["departure_start"]),
+     format_time_string(params["departure_start"]),
      " - ",
-     format_time(params["departure_end"])]
+     format_time_string(params["departure_end"])]
   end
 
   defp return_format(params, route) do
@@ -97,9 +97,9 @@ defmodule ConciergeSite.BusSubscriptionView do
      ", ",
      joined_day_list(params),
      " ",
-     format_time(params["return_start"]),
+     format_time_string(params["return_start"]),
      " - ",
-     format_time(params["return_end"])]
+     format_time_string(params["return_end"])]
   end
 
   defp reverse_direction("inbound"), do: "outbound"

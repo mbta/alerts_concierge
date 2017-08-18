@@ -52,13 +52,21 @@ defmodule ConciergeSite.Admin.SubscriberViewTest do
     end
   end
 
+  describe "timeframe_string" do
+    test "converts subscription start and end times into human friendly iodata" do
+      subscription = build(:subscription)
+      timeframe_string = SubscriberView.timeframe_string(subscription)
+      assert IO.iodata_to_binary(timeframe_string) == "10:00am to  2:00pm"
+    end
+  end
+
   describe "subscription_info" do
     test "subscription without origin and destination" do
       subscription = build(:subscription, alert_priority_type: :low, type: :commuter_rail, origin: nil, destination: nil) |> sunday_subscription()
       subscription_info = SubscriberView.subscription_info(subscription)
       refute html_to_binary(subscription_info) =~ "Origin: "
       refute html_to_binary(subscription_info) =~ "Destination: "
-      assert html_to_binary(subscription_info) =~ "10:00am to 2:00pm"
+      assert html_to_binary(subscription_info) =~ "10:00am to  2:00pm"
       assert html_to_binary(subscription_info) =~ "Sundays"
       assert html_to_binary(subscription_info) =~ "High-, medium-, and low-priority alerts"
     end
@@ -68,7 +76,7 @@ defmodule ConciergeSite.Admin.SubscriberViewTest do
       subscription_info = SubscriberView.subscription_info(subscription)
       assert html_to_binary(subscription_info) =~ "Origin: Davis"
       assert html_to_binary(subscription_info) =~ "Destination: Harvard"
-      assert html_to_binary(subscription_info) =~ "10:00am to 2:00pm"
+      assert html_to_binary(subscription_info) =~ "10:00am to  2:00pm"
       assert html_to_binary(subscription_info) =~ "Weekdays, Saturdays"
       assert html_to_binary(subscription_info) =~ "High- and medium-priority alerts"
     end
