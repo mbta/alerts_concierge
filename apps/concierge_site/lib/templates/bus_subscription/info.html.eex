@@ -3,21 +3,24 @@
 <%= render "_progress_bar.html", current_page: :trip_info, subscription_params: @subscription_params, conn: @conn %>
 
 <div class="subscription-step enter-trip-info bus">
-  <h2 class="trip-info-header bus">Enter your trip info</h2>
+  <h2 class="trip-info-header bus">Tell us about your trip</h2>
 
   <%= flash_error(@conn) %>
 
   <%= form_for @conn, bus_subscription_path(@conn, :preferences), [class: "trip-info-form bus", as: :subscription], fn f -> %>
     <div class="form-group select-station">
-    <label for="route" class="station-input-label form-label">What bus do you take?</label>
-    <div class="form-sub-label route-sub-label">
-      Round trips will automatically select the opposite direction for the return trip.
-    </div>
+    <label for="route" class="station-input-label form-label">Which bus route do you take?</label>
+    <%= if @subscription_params["trip_type"] == "round_trip" do %>
+      <div class="form-sub-label route-sub-label">
+        Choose the direction of your first trip. The other direction will be
+        used for the return trip.
+      </div>
+    <% end %>
     <%= select f,
                :route,
                @route_list_select_options,
                class: "subscription-select subscription-select-route no-js",
-               prompt: "Enter your bus number",
+               prompt: "Enter your bus route and direction",
                selected: @subscription_params["route"] %>
     </div>
 
@@ -29,8 +32,8 @@
     <div class="form-group travel-times">
       <div class="form-label">When do you travel?</div>
       <div class="form-sub-label travel-times-sub-label">
-        We will send you notifications for any service alerts that occur during
-        your planned travel time.
+        We will send you notifications of disruptions as soon as we know they
+        may affect your trip.
       </div>
       <%= render "_travel_time_select_lists.html", subscription_params: @subscription_params, f: f %>
     </div>
@@ -50,5 +53,3 @@
     <% end %>
   </div>
 </div>
-
-

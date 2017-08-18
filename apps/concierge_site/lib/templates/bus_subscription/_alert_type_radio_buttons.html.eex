@@ -1,16 +1,10 @@
 <div class="trip-alert-priority">
-  <div class="form-label">Alert Type</div>
-  <%= if @action == "new" do %>
-    <div class="form-sub-label priority-sub-label">
-      What kind of alerts would you like to receive? You can edit this
-      information at any time.
-    </div>
-  <% end %>
+  <div class="form-label">What kind of alerts would you like to receive?</div>
   <div class="priority-options">
     <label class="priority-radio-option">
       <%= radio_button @form, :alert_priority_type, "high", checked: (@checked == :high) %>
       <div>
-        <div>High Priority Alerts only:</div>
+        <div>High-priority alerts only:</div>
         <div class="form-sub-label">
           Severe delays, detours, suspension of service
         </div>
@@ -20,7 +14,7 @@
     <label class="priority-radio-option">
       <%= radio_button @form, :alert_priority_type, "medium", checked: (@checked == :medium) %>
       <div>
-        <div>High and Medium Priority Alerts:</div>
+        <div>High- and medium-priority alerts:</div>
         <div class="form-sub-label">
           All of the above plus moderate delays, bus stop closures
         </div>
@@ -30,7 +24,7 @@
     <label class="priority-radio-option">
       <%= radio_button @form, :alert_priority_type, "low", checked: (@checked == :low) %>
       <div>
-        <div>High, Medium, and Low Priority Alerts:</div>
+        <div>High-, medium-, and low-priority alerts:</div>
         <div class="form-sub-label">
           All of the above plus minor delays
         </div>

@@ -36,7 +36,7 @@ defmodule ConciergeSite.BusSubscriptionViewTest do
     end
   end
 
-  describe "trip_summary_title/1" do
+  describe "trip_summary_routes/2" do
     @params %{
       "departure_start" => "08:45:00",
       "departure_end" => "09:15:00",
@@ -44,8 +44,8 @@ defmodule ConciergeSite.BusSubscriptionViewTest do
       "return_end" => "17:15:00",
       "route" => "741 - 1",
       "saturday" => "true",
-      "sunday" => "false",
-      "weekday" => "false"
+      "sunday" => "true",
+      "weekday" => "true",
     }
 
     @route %Route{
@@ -59,42 +59,19 @@ defmodule ConciergeSite.BusSubscriptionViewTest do
       stop_list: []
     }
 
-    test "returns title from subscription params for one_way trip_type" do
-      params = Map.merge(@params, %{"trip_type" => "one_way"})
-      title = Enum.join BusSubscriptionView.trip_summary_title(params, @route), ""
-
-      assert title == "One way Saturday travel on the Silver Line SL1 bus:"
-    end
-
-    test "returns title from subscription params for round_trip trip_type" do
-      params = Map.merge(@params, %{"trip_type" => "round_trip"})
-      title = Enum.join BusSubscriptionView.trip_summary_title(params, @route), ""
-
-      assert title == "Round trip Saturday travel on the Silver Line SL1 bus:"
-    end
-
-    test "handles multiple travel times" do
-      params = Map.merge(@params, %{"trip_type" => "one_way", "weekday": "true"})
-      title = Enum.join BusSubscriptionView.trip_summary_title(params, @route), ""
-
-      assert title == "One way Saturday travel on the Silver Line SL1 bus:"
-    end
-  end
-
-  describe "trip_summary_routes/1" do
     test "returns summary of routes for one way" do
       params = Map.merge(@params, %{"trip_type" => "one_way"})
-      [route] = BusSubscriptionView.trip_summary_routes(params)
+      [summary] = BusSubscriptionView.trip_summary_routes(params, @route)
 
-      assert IO.iodata_to_binary(route) =~ "8:45 AM -  9:15 AM | Inbound"
+      assert IO.iodata_to_binary(summary) =~ "Route Silver Line SL1 inbound, Saturday, Sunday, or weekdays  8:45 AM -  9:15 AM"
     end
 
     test "returns summary of routes for round trip" do
       params = Map.merge(@params, %{"trip_type" => "round_trip"})
-      [inbound, outbound] = BusSubscriptionView.trip_summary_routes(params)
+      [inbound, outbound] = BusSubscriptionView.trip_summary_routes(params, @route)
 
-      assert IO.iodata_to_binary(inbound) =~ "8:45 AM -  9:15 AM | Inbound"
-      assert IO.iodata_to_binary(outbound) =~ "4:45 PM -  5:15 PM | Outbound"
+      assert IO.iodata_to_binary(inbound) =~ "Route Silver Line SL1 inbound, Saturday, Sunday, or weekday  8:45 AM -  9:15 AM"
+      assert IO.iodata_to_binary(outbound) =~ "Route Silver Line SL1 outbound, Saturday, Sunday, or weekday  4:45 PM -  5:15 PM"
     end
   end
 
@@ -105,7 +82,7 @@ defmodule ConciergeSite.BusSubscriptionViewTest do
         |> bus_subscription()
         |> Map.put(:informed_entities, bus_subscription_entities())
 
-      assert "Route 57A Outbound" == BusSubscriptionView.route_name(subscription) |> IO.iodata_to_binary()
+      assert "Route 57A outbound" == BusSubscriptionView.route_name(subscription) |> IO.iodata_to_binary()
     end
   end
 end

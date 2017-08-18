@@ -49,8 +49,8 @@ defmodule ConciergeSite.BusSubscriptionControllerTest do
       |> guardian_login(conn)
       |> post("/subscriptions/bus/new/preferences", params)
 
-      assert html_response(conn, 200) =~ "Set your preferences for your trip:"
-      assert html_response(conn, 200) =~ "One way Saturday travel on the Silver Line SL1 bus:"
+      assert html_response(conn, 200) =~ "Set your subscription preferences:"
+      assert html_response(conn, 200) =~ "Route Silver Line SL1 inbound, Saturday  8:45 AM -  9:15 AM"
     end
 
     test "POST /subscriptions/bus/new/preferences with an invalid submission", %{conn: conn, user: user} do
@@ -87,8 +87,7 @@ defmodule ConciergeSite.BusSubscriptionControllerTest do
       |> post("/subscriptions/bus/new/preferences", params)
 
       response = html_response(conn, 200)
-      assert response =~ "One way Saturday travel on the Silver Line SL1 bus:"
-      assert response =~ "8:45 AM -  9:15 AM | Inbound"
+      assert response =~ "Route Silver Line SL1 inbound, Saturday  8:45 AM -  9:15 AM"
     end
 
     test "POST /subscriptions/bus/new/preferences displays summary of a round trip", %{conn: conn, user: user} do
@@ -109,9 +108,8 @@ defmodule ConciergeSite.BusSubscriptionControllerTest do
       |> post("/subscriptions/bus/new/preferences", params)
 
       response = html_response(conn, 200)
-      assert response =~ "Round trip Saturday travel on the Silver Line SL1 bus:"
-      assert response =~ "8:45 AM -  9:15 AM | Inbound"
-      assert response =~ "4:45 PM -  5:15 PM | Outbound"
+      assert response =~ "Route Silver Line SL1 inbound, Saturday  8:45 AM -  9:15 AM"
+      assert response =~ "Route Silver Line SL1 outbound, Saturday  4:45 PM -  5:15 PM"
     end
 
     test "POST /subscriptions/bus creates subscriptions", %{conn: conn, user: user} do
