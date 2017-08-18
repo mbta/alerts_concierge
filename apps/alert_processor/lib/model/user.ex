@@ -373,7 +373,8 @@ defmodule AlertProcessor.Model.User do
   def is_admin?(nil), do: false
   def is_admin?(user), do: user.role in @active_admin_roles
 
-  def is_app_admin?(user), do: user.role == "application_administration"
+  def is_app_admin?(%__MODULE__{role: "application_administration"}), do: true
+  def is_app_admin?(%__MODULE__{}), do: false
 
   @doc """
   return one user based on id
