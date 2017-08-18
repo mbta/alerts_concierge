@@ -75,7 +75,7 @@ defmodule ConciergeSite.Admin.SubscriberView do
   defp entity_item(%InformedEntity{stop: stop, facility_type: facility_type}, _) when is_binary(stop) and is_atom(facility_type) and not is_nil(facility_type) do
     stop_string =
       case ServiceInfoCache.get_stop(stop) do
-        {:ok, {stop_name, _}} -> stop_name
+        {:ok, {stop_name, stop_id}} -> [stop_name, " (", stop_id, ")"]
         _ -> stop
       end
 
@@ -88,7 +88,7 @@ defmodule ConciergeSite.Admin.SubscriberView do
   defp entity_item(%InformedEntity{route: r, route_type: rt, stop: stop}, _) when is_binary(r) and is_number(rt) and is_binary(stop) do
     stop_string =
       case ServiceInfoCache.get_stop(stop) do
-        {:ok, {stop_name, _}} -> stop_name
+        {:ok, {stop_name, stop_id}} -> [stop_name, " (", stop_id, ")"]
         _ -> stop
       end
 
@@ -109,7 +109,7 @@ defmodule ConciergeSite.Admin.SubscriberView do
     route_string =
       case ServiceInfoCache.get_route(route) do
         {:ok, %{long_name: ""}} -> route
-        {:ok, %{long_name: long_name}} -> long_name
+        {:ok, %{long_name: long_name}} -> [long_name, " (", route, ")"]
         _ -> route
       end
 
@@ -122,7 +122,7 @@ defmodule ConciergeSite.Admin.SubscriberView do
     route_string =
       case ServiceInfoCache.get_route(route) do
         {:ok, %{long_name: ""}} -> route
-        {:ok, %{long_name: long_name}} -> long_name
+        {:ok, %{long_name: long_name}} -> [long_name, " (", route, ")"]
         _ -> route
       end
 

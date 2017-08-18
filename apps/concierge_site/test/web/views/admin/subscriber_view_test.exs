@@ -62,7 +62,7 @@ defmodule ConciergeSite.Admin.SubscriberViewTest do
 
   describe "subscription_info" do
     test "subscription without origin and destination" do
-      subscription = build(:subscription, alert_priority_type: :low, type: :commuter_rail, origin: nil, destination: nil) |> sunday_subscription()
+      subscription = :subscription |> build(alert_priority_type: :low, type: :commuter_rail, origin: nil, destination: nil) |> sunday_subscription()
       subscription_info = SubscriberView.subscription_info(subscription)
       refute html_to_binary(subscription_info) =~ "Origin: "
       refute html_to_binary(subscription_info) =~ "Destination: "
@@ -72,7 +72,7 @@ defmodule ConciergeSite.Admin.SubscriberViewTest do
     end
 
     test "subscription with origin and destination" do
-      subscription = build(:subscription) |> saturday_subscription() |> weekday_subscription()  |> subway_subscription()
+      subscription = :subscription |> build() |> saturday_subscription() |> weekday_subscription()  |> subway_subscription()
       subscription_info = SubscriberView.subscription_info(subscription)
       assert html_to_binary(subscription_info) =~ "Origin: Davis"
       assert html_to_binary(subscription_info) =~ "Destination: Harvard"
@@ -95,7 +95,7 @@ defmodule ConciergeSite.Admin.SubscriberViewTest do
         |> Map.put(:informed_entities, amenity_subscription_entities())
         |> amenity_subscription()
       entity_info = SubscriberView.entity_info(subscription, %{})
-      assert html_to_binary(entity_info) =~ "Escalator at North Quincy"
+      assert html_to_binary(entity_info) =~ "Escalator at North Quincy (place-nqncy)"
       assert html_to_binary(entity_info) =~ "Elevator for Green"
     end
 
@@ -118,9 +118,9 @@ defmodule ConciergeSite.Admin.SubscriberViewTest do
         |> commuter_rail_subscription()
       entity_info = SubscriberView.entity_info(subscription, %{"221" => ~T[19:25:00], "331" => ~T[17:32:00]})
       assert html_to_binary(entity_info) =~ "Mode: Commuter Rail"
-      assert html_to_binary(entity_info) =~ "Route: Lowell Line Inbound"
-      assert html_to_binary(entity_info) =~ "Stop: Anderson/Woburn"
-      assert html_to_binary(entity_info) =~ "Stop: North Station"
+      assert html_to_binary(entity_info) =~ "Route: Lowell Line (CR-Lowell) Inbound"
+      assert html_to_binary(entity_info) =~ "Stop: Anderson/Woburn (Anderson/ Woburn)"
+      assert html_to_binary(entity_info) =~ "Stop: North Station (place-north)"
       assert html_to_binary(entity_info) =~ "Trip: 221 departs at 7:25pm"
       assert html_to_binary(entity_info) =~ "Trip: 331 departs at 5:32pm"
     end
@@ -133,9 +133,9 @@ defmodule ConciergeSite.Admin.SubscriberViewTest do
         |> ferry_subscription()
       entity_info = SubscriberView.entity_info(subscription, %{"Boat-F4-Boat-Long-17:00:00-weekday-0" => ~T[17:00:00], "Boat-F4-Boat-Long-17:15:00-weekday-0" => ~T[17:15:00]})
       assert html_to_binary(entity_info) =~ "Mode: Ferry"
-      assert html_to_binary(entity_info) =~ "Route: Charlestown Ferry Inbound"
-      assert html_to_binary(entity_info) =~ "Stop: Charlestown Navy Yard"
-      assert html_to_binary(entity_info) =~ "Stop: Long Wharf, Boston"
+      assert html_to_binary(entity_info) =~ "Route: Charlestown Ferry (Boat-F4) Inbound"
+      assert html_to_binary(entity_info) =~ "Stop: Charlestown Navy Yard (Boat-Charlestown)"
+      assert html_to_binary(entity_info) =~ "Stop: Long Wharf, Boston (Boat-Long)"
       assert html_to_binary(entity_info) =~ "Trip: Boat-F4-Boat-Long-17:00:00-weekday-0 departs at 5:00pm"
       assert html_to_binary(entity_info) =~ "Trip: Boat-F4-Boat-Long-17:15:00-weekday-0 departs at 5:15pm"
     end
@@ -148,10 +148,10 @@ defmodule ConciergeSite.Admin.SubscriberViewTest do
         |> subway_subscription()
       entity_info = SubscriberView.entity_info(subscription, %{})
       assert html_to_binary(entity_info) =~ "Mode: Subway"
-      assert html_to_binary(entity_info) =~ "Route: Red Line Southbound"
-      assert html_to_binary(entity_info) =~ "Route: Red Line"
-      assert html_to_binary(entity_info) =~ "Stop: Davis"
-      assert html_to_binary(entity_info) =~ "Stop: Harvard"
+      assert html_to_binary(entity_info) =~ "Route: Red Line (Red) Southbound"
+      assert html_to_binary(entity_info) =~ "Route: Red Line (Red)"
+      assert html_to_binary(entity_info) =~ "Stop: Davis (place-davis)"
+      assert html_to_binary(entity_info) =~ "Stop: Harvard (place-harsq)"
     end
   end
 

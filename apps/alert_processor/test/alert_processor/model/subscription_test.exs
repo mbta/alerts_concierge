@@ -422,19 +422,19 @@ defmodule AlertProcessor.Model.SubscriptionTest do
 
   describe "relevant_days_string" do
     test "converts weekday subscription relevant days into human friendly iodata" do
-      subscription = build(:subscription) |> weekday_subscription()
+      subscription = :subscription |> build() |> weekday_subscription()
       relevant_days_string = Subscription.relevant_days_string(subscription)
       assert IO.iodata_to_binary(relevant_days_string) == "Weekdays"
     end
 
     test "converts weekday, saturday subscription relevant days into human friendly iodata" do
-      subscription = build(:subscription) |> saturday_subscription() |> weekday_subscription()
+      subscription = :subscription |> build() |> saturday_subscription() |> weekday_subscription()
       relevant_days_string = Subscription.relevant_days_string(subscription)
       assert IO.iodata_to_binary(relevant_days_string) == "Weekdays, Saturdays"
     end
 
     test "converts weekday, saturday, sunday subscription relevant days into human friendly iodata" do
-      subscription = build(:subscription) |> sunday_subscription() |> saturday_subscription() |> weekday_subscription()
+      subscription = :subscription |> build() |> sunday_subscription() |> saturday_subscription() |> weekday_subscription()
       relevant_days_string = Subscription.relevant_days_string(subscription)
       assert IO.iodata_to_binary(relevant_days_string) == "Weekdays, Saturdays, Sundays"
     end
