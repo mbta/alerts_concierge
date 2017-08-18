@@ -3,9 +3,8 @@ defmodule AlertProcessor.Model.Subscription do
   Set of criteria on which a user wants to be sent alerts.
   """
 
-  alias AlertProcessor.{Helpers.DateTimeHelper, Model.InformedEntity, Model.Trip, Model.User, Repo, TimeFrameComparison, TimeHelper}
+  alias AlertProcessor.{Helpers.DateTimeHelper, Model.InformedEntity, Model.Trip, Model.User, Repo, TimeFrameComparison}
   alias Ecto.Multi
-  alias Calendar.Strftime
   import Ecto.Query
 
   @type id :: String.t
