@@ -40,4 +40,33 @@ defmodule ConciergeSite.Dissemination.NotificationEmailTest do
     assert body =~ "Red line inbound from Alewife station closure"
     assert body =~ "href=\"https://t.mbta.com/\""
   end
+
+  test "email_subject/1 with timeframe and recurrence" do
+    alert = %{@alert | timeframe: "starting September 1", recurrence: "on weekends"}
+    notification = %{@notification | alert: alert}
+    subject = NotificationEmail.email_subject(notification)
+
+    assert IO.iodata_to_binary(subject) == "Starting September 1: Red line delay on weekends"
+  end
+
+  test "email_subject/1 with recurrence" do
+     alert = %{@alert | recurrence: "Monday-Tuesday"}
+    notification = %{@notification | alert: alert}
+    subject = NotificationEmail.email_subject(notification)
+
+    assert IO.iodata_to_binary(subject) == "Red line delay Monday-Tuesday"
+  end
+
+  test "email_subject/1 with timeframe" do
+    alert = %{@alert | timeframe: "starting Monday"}
+    notification = %{@notification | alert: alert}
+    subject = NotificationEmail.email_subject(notification)
+
+    assert IO.iodata_to_binary(subject) == "Starting Monday: Red line delay"
+  end
+
+  test "email_subject/1 without timeframe or recurrence" do
+    subject = NotificationEmail.email_subject(@notification)
+    assert IO.iodata_to_binary(subject) == "Red line delay"
+  end
 end

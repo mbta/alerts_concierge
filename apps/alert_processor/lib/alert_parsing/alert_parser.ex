@@ -61,6 +61,8 @@ defmodule AlertProcessor.AlertParser do
       last_push_notification: alert_data |> Map.get_lazy("last_push_notification_timestamp", fn -> Map.get(alert_data, "created_timestamp") end) |> parse_datetime(),
       service_effect: parse_translation(service_effect_text_translations),
       severity: parse_severity(severity),
+      timeframe: parse_translation(alert_data["timeframe_text"]),
+      recurrence: parse_translation(alert_data["recurrence_text"]),
     }
   end
 

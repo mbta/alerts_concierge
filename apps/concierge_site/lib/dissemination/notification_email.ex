@@ -1,7 +1,7 @@
 defmodule ConciergeSite.Dissemination.NotificationEmail do
   @moduledoc "Bamboo Mailer interface"
   import Bamboo.Email
-  alias AlertProcessor.Model.Notification
+  alias AlertProcessor.Model.{Alert, Notification}
   alias AlertProcessor.Helpers.ConfigHelper
   alias ConciergeSite.Helpers.MailHelper
   require EEx
@@ -24,9 +24,11 @@ defmodule ConciergeSite.Dissemination.NotificationEmail do
   @spec notification_email(Notification.t) :: Elixir.Bamboo.Email.t
   def notification_email(%Notification{user: user} = notification) do
     unsubscribe_url = MailHelper.unsubscribe_url(user)
+    notification_email_subject = email_subject(notification)
+
     base_email()
     |> to(user.email)
-    |> subject("MBTA Alert")
+    |> subject(notification_email_subject)
     |> html_body(html_email(notification, unsubscribe_url))
     |> text_body(text_email(notification, unsubscribe_url))
   end
@@ -35,4 +37,22 @@ defmodule ConciergeSite.Dissemination.NotificationEmail do
   defp base_email do
     new_email(from: @from)
   end
+
+  def email_subject(notification) do
+    alert = notification.alert
+    [email_prefix(alert), notification.service_effect, email_suffix(alert)]
+  end
+
+  defp email_prefix(%Alert{timeframe: nil}), do: ""
+  defp email_prefix(%Alert{timeframe: timeframe}) do
+    first_capital =
+      timeframe
+      |> String.first()
+      |> String.capitalize()
+
+    [first_capital, String.slice(timeframe, 1..-1), ": "]
+  end
+
+  defp email_suffix(%Alert{recurrence: nil}), do: ""
+  defp email_suffix(%Alert{recurrence: recurrence}), do: [" ", recurrence]
 end
