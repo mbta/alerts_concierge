@@ -41,23 +41,6 @@ defmodule ConciergeSite.FerrySubscriptionView do
   def params_for_step(:preferences), do: ["alert_priority_type" | params_for_step(:ferry)]
   def params_for_step(_), do: []
 
-  @doc """
-  Provide description text for Trip Info page based on which trip type selected
-  """
-  @spec trip_info_description(any) :: String.t
-  def trip_info_description(:one_way) do
-    "Please note: We will only send you alerts about service updates that affect your origin and destination stations."
-  end
-  def trip_info_description(:round_trip) do
-    [
-      :one_way |> trip_info_description |> String.trim_trailing("."),
-      ", in both directions."
-    ]
-  end
-  def trip_info_description(_trip_type) do
-    ""
-  end
-
   @spec trip_option(Trip.t, :depart | :return) :: Phoenix.HTML.safe
   def trip_option(trip, trip_type) do
     content_tag :div, class: trip_option_classes(trip) do

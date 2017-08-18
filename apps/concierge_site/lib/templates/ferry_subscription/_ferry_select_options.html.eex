@@ -1,5 +1,7 @@
 <div class="select-trip-number">
-  <div class="trip-select-list-header"><%= @list_header || "Depart" %></div>
+  <div class="trip-select-list-header">
+    <%= if @trip_type == "round_trip", do: "Departure ferries" %>
+  </div>
   <div class="trip-select-list">
     <%= Enum.map(@trips.departure_trips, fn(trip) -> %>
       <%= trip_option(trip, :depart) %>
@@ -12,7 +14,7 @@
   </div>
 
   <%= if Map.has_key?(@trips, :return_trips) do %>
-    <div class="trip-select-list-header">Return</div>
+    <div class="trip-select-list-header">Return ferries</div>
     <div class="trip-select-list">
       <%= Enum.map(@trips.return_trips, fn(trip) -> %>
         <%= trip_option(trip, :return) %>
