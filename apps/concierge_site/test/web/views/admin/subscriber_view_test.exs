@@ -60,7 +60,7 @@ defmodule ConciergeSite.Admin.SubscriberViewTest do
       refute html_to_binary(subscription_info) =~ "Destination: "
       assert html_to_binary(subscription_info) =~ "10:00am to 2:00pm"
       assert html_to_binary(subscription_info) =~ "Sundays"
-      assert html_to_binary(subscription_info) =~ "Low, Medium, &amp; High Severity"
+      assert html_to_binary(subscription_info) =~ "High-, medium-, and low-priority alerts"
     end
 
     test "subscription with origin and destination" do
@@ -70,7 +70,7 @@ defmodule ConciergeSite.Admin.SubscriberViewTest do
       assert html_to_binary(subscription_info) =~ "Destination: Harvard"
       assert html_to_binary(subscription_info) =~ "10:00am to 2:00pm"
       assert html_to_binary(subscription_info) =~ "Weekdays, Saturdays"
-      assert html_to_binary(subscription_info) =~ "Medium &amp; High Severity"
+      assert html_to_binary(subscription_info) =~ "High- and medium-priority alerts"
     end
   end
 
@@ -100,7 +100,6 @@ defmodule ConciergeSite.Admin.SubscriberViewTest do
       entity_info = SubscriberView.entity_info(subscription, %{})
       assert html_to_binary(entity_info) =~ "Mode: Bus"
       assert html_to_binary(entity_info) =~ "Route: 57A Outbound"
-      assert html_to_binary(entity_info) =~ "Route: 57A"
     end
 
     test "commuter_rail" do

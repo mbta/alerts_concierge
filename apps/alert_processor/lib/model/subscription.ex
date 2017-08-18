@@ -122,9 +122,9 @@ defmodule AlertProcessor.Model.Subscription do
   return string representation of severities that match subscription.
   """
   @spec severity_string(__MODULE__.t) :: String.t
-  def severity_string(%__MODULE__{alert_priority_type: :low}), do: "Low, Medium, & High Severity"
-  def severity_string(%__MODULE__{alert_priority_type: :medium}), do: "Medium & High Severity"
-  def severity_string(%__MODULE__{alert_priority_type: :high}), do: "High Severity"
+  def severity_string(%__MODULE__{alert_priority_type: :low}), do: "High-, medium-, and low-priority alerts"
+  def severity_string(%__MODULE__{alert_priority_type: :medium}), do: "High- and medium-priority alerts"
+  def severity_string(%__MODULE__{alert_priority_type: :high}), do: "High-priority alerts"
 
   @doc """
   Fetches subscriptions with users eager loaded for a list of ids
@@ -207,10 +207,8 @@ defmodule AlertProcessor.Model.Subscription do
   """
   @spec relevant_days_string(__MODULE__.t) :: iodata
   def relevant_days_string(subscription) do
-    subscription.relevant_days
-    |> Enum.map(&String.capitalize(Atom.to_string(&1)))
-    |> Enum.intersperse("s, ")
-    |> Kernel.++(["s"])
+    capitalized_days = Enum.map(subscription.relevant_days, &String.capitalize(Atom.to_string(&1)))
+    [Enum.intersperse(capitalized_days, "s, "), "s"]
   end
 
   @doc """

@@ -36,7 +36,7 @@ defmodule ConciergeSite.Admin.SubscriberView do
     end
   end
 
-  @spec subscription_info(Subscription.t) :: iodata
+  @spec subscription_info(Subscription.t) :: Phoenix.HTML.Safe.t
   def subscription_info(%Subscription{origin: nil, destination: nil} = subscription) do
     [
       content_tag(:p, Subscription.type_string(subscription)),
