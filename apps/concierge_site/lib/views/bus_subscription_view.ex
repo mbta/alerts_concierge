@@ -57,26 +57,6 @@ defmodule ConciergeSite.BusSubscriptionView do
     |> named_direction()
   end
 
-  @doc """
-  Returns a summary of a subscription's associated trip days, times, and stops
-  """
-  @spec trip_summary_title(map, Route.t) :: iodata
-  def trip_summary_title(%{"trip_type" => "one_way"} = params, route) do
-    ["One way ",
-     joined_day_list(params),
-     " travel on the ",
-     Route.name(route),
-    " bus:"]
-  end
-
-  def trip_summary_title(%{"trip_type" => "round_trip"} = params, route) do
-    ["Round trip ",
-     joined_day_list(params),
-     " travel on the ",
-    Route.name(route),
-    " bus:"]
-  end
-
   defp direction_from_route(route) do
     route
     |> String.split(" - ")
@@ -84,29 +64,47 @@ defmodule ConciergeSite.BusSubscriptionView do
     |> named_direction()
   end
 
-  def trip_summary_routes(%{"trip_type" => "round_trip"} = params) do
+  def trip_summary_routes(%{"trip_type" => "round_trip"} = params, route) do
     [
-      departure_format(params),
-      return_format(params)
+      departure_format(params, route),
+      return_format(params, route)
     ]
   end
 
-  def trip_summary_routes(%{"trip_type" => "one_way"} = params) do
-    [departure_format(params)]
+  def trip_summary_routes(%{"trip_type" => "one_way"} = params, route) do
+    [departure_format(params, route)]
   end
 
-  defp departure_format(params) do
-    [format_time(params["departure_start"]), " - ", format_time(params["departure_end"]), " | ", direction_from_route(params["route"])]
+  defp departure_format(params, route) do
+    ["Route ",
+     Route.name(route),
+     " ",
+     direction_from_route(params["route"]),
+     ", ",
+     joined_day_list(params),
+     " ",
+     format_time(params["departure_start"]),
+     " - ",
+     format_time(params["departure_end"])]
   end
 
-  defp return_format(params) do
+  defp return_format(params, route) do
     direction = direction_from_route(params["route"])
-    [format_time(params["return_start"]), " - ", format_time(params["return_end"]), " | ", reverse_direction(direction)]
+    ["Route ",
+     Route.name(route),
+     " ",
+     reverse_direction(direction),
+     ", ",
+     joined_day_list(params),
+     " ",
+     format_time(params["return_start"]),
+     " - ",
+     format_time(params["return_end"])]
   end
 
-  defp reverse_direction("Inbound"), do: "Outbound"
-  defp reverse_direction("Outbound"), do: "Inbound"
+  defp reverse_direction("inbound"), do: "outbound"
+  defp reverse_direction("outbound"), do: "inbound"
 
-  defp named_direction("0"), do: "Outbound"
-  defp named_direction("1"), do: "Inbound"
+  defp named_direction("0"), do: "outbound"
+  defp named_direction("1"), do: "inbound"
 end
