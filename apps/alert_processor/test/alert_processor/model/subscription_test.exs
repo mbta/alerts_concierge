@@ -419,4 +419,24 @@ defmodule AlertProcessor.Model.SubscriptionTest do
       assert Repo.one(from s in Subscription, where: s.user_id == ^user.id, select: count(s.id)) == 0
     end
   end
+
+  describe "relevant_days_string" do
+    test "converts weekday subscription relevant days into human friendly iodata" do
+      subscription = :subscription |> build() |> weekday_subscription()
+      relevant_days_string = Subscription.relevant_days_string(subscription)
+      assert IO.iodata_to_binary(relevant_days_string) == "Weekdays"
+    end
+
+    test "converts weekday, saturday subscription relevant days into human friendly iodata" do
+      subscription = :subscription |> build() |> saturday_subscription() |> weekday_subscription()
+      relevant_days_string = Subscription.relevant_days_string(subscription)
+      assert IO.iodata_to_binary(relevant_days_string) == "Weekdays, Saturdays"
+    end
+
+    test "converts weekday, saturday, sunday subscription relevant days into human friendly iodata" do
+      subscription = :subscription |> build() |> sunday_subscription() |> saturday_subscription() |> weekday_subscription()
+      relevant_days_string = Subscription.relevant_days_string(subscription)
+      assert IO.iodata_to_binary(relevant_days_string) == "Weekdays, Saturdays, Sundays"
+    end
+  end
 end

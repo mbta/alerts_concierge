@@ -6,7 +6,7 @@ defmodule ConciergeSite.AmenitySubscriptionViewTest do
   @informed_entities [
     %InformedEntity{
       facility_type: :escalator,
-      stop: "place-nquincy"
+      stop: "place-nqncy"
     },
     %InformedEntity{
       facility_type: :elevator,

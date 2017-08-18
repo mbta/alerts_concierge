@@ -118,6 +118,14 @@ defmodule AlertProcessor.Model.Subscription do
   end
 
   @doc """
+  return string representation of severities that match subscription.
+  """
+  @spec severity_string(__MODULE__.t) :: String.t
+  def severity_string(%__MODULE__{alert_priority_type: :low}), do: "High-, medium-, and low-priority alerts"
+  def severity_string(%__MODULE__{alert_priority_type: :medium}), do: "High- and medium-priority alerts"
+  def severity_string(%__MODULE__{alert_priority_type: :high}), do: "High-priority alerts"
+
+  @doc """
   Fetches subscriptions with users eager loaded for a list of ids
   """
   @spec fetch_with_user([__MODULE__.id]) :: [__MODULE__.t]
@@ -191,6 +199,15 @@ defmodule AlertProcessor.Model.Subscription do
   @spec relevant_day_of_week_type(integer) :: :sunday | :monday | :tuesday | :wednesday | :thursday | :friday | :saturday
   def relevant_day_of_week_type(day_of_week) do
     @relevant_day_of_week_types[day_of_week]
+  end
+
+  @doc """
+  return relevant days pluralized and joined with comma.
+  """
+  @spec relevant_days_string(__MODULE__.t) :: iodata
+  def relevant_days_string(subscription) do
+    capitalized_days = Enum.map(subscription.relevant_days, &String.capitalize(Atom.to_string(&1)))
+    [Enum.intersperse(capitalized_days, "s, "), "s"]
   end
 
   @doc """
@@ -286,6 +303,16 @@ defmodule AlertProcessor.Model.Subscription do
   def subscription_type_from_route_type(route_type) do
     @subscription_type_values[route_type]
   end
+
+  @doc """
+  return string representation of subscription type.
+  """
+  @spec type_string(__MODULE__.t) :: String.t
+  def type_string(%__MODULE__{type: :amenity}), do: "Amenity"
+  def type_string(%__MODULE__{type: :bus}), do: "Bus"
+  def type_string(%__MODULE__{type: :commuter_rail}), do: "Commuter Rail"
+  def type_string(%__MODULE__{type: :ferry}), do: "Ferry"
+  def type_string(%__MODULE__{type: :subway}), do: "Subway"
 
   @spec subscription_trip_ids(__MODULE__.t) :: [Trip.id]
   def subscription_trip_ids(subscription) do

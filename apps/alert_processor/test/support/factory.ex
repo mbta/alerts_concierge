@@ -125,7 +125,7 @@ defmodule AlertProcessor.Factory do
   def amenity_subscription_entities() do
     [
       %InformedEntity{route_type: 4, facility_type: :elevator, route: "Green"},
-      %InformedEntity{route_type: 4, facility_type: :escalator, stop: "place-nquincy"}
+      %InformedEntity{route_type: 4, facility_type: :escalator, stop: "place-nqncy"}
     ]
   end
 

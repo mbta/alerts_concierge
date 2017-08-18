@@ -46,6 +46,16 @@ defmodule AlertProcessor.Model.InformedEntity do
     [:direction_id, :facility_type, :route, :route_type, :stop, :trip]
   end
 
+  @doc """
+  return string for route type based on route type integer
+  """
+  @spec route_type_string(integer) :: String.t
+  def route_type_string(0), do: "Subway"
+  def route_type_string(1), do: "Subway"
+  def route_type_string(2), do: "Commuter Rail"
+  def route_type_string(3), do: "Bus"
+  def route_type_string(4), do: "Ferry"
+
   @spec entity_type(__MODULE__.t) :: :amenity | :stop | :trip | :route | :mode | :unknown
   def entity_type(%__MODULE__{stop: s, facility_type: ft}) when is_binary(s) and is_atom(ft) and not is_nil(ft), do: :amenity
   def entity_type(%__MODULE__{route: r, route_type: rt, stop: s}) when is_binary(r) and is_number(rt) and is_binary(s), do: :stop
