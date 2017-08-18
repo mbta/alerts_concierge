@@ -22,9 +22,11 @@
                 <li class="nav-link <%= active_nav_class(@conn, "subscribers") %>">
                   <%= link "Subscribers", to: "/admin/subscribers"%>
                 </li>
-                <li class="nav-link <%= active_nav_class(@conn, "admin_users") %>">
-                  <%= link "Admins", to: "/admin/admin_users"%>
-                </li>
+                <%= if is_app_admin?(@current_user) do %>
+                  <li class="nav-link <%= active_nav_class(@conn, "admin_users") %>">
+                    <%= link "Admins", to: "/admin/admin_users"%>
+                  </li>
+                <% end %>
                 <li class="admin-navbar-email nav-link <%= active_nav_class(@conn, "my-account") %>">
                   <%= link @current_user.email, to: "/admin/my-account/edit" %>
                 </li>
