@@ -5,6 +5,7 @@ defmodule AlertProcessor.Model.SubscriptionTest do
 
   alias AlertProcessor.Repo
   alias AlertProcessor.Model.{Subscription, InformedEntity}
+  alias AlertProcessor.Subscription.{BusMapper, Mapper}
 
   @base_attrs %{
     alert_priority_type: :low,
@@ -297,6 +298,45 @@ defmodule AlertProcessor.Model.SubscriptionTest do
     end
   end
 
+  describe "create_subscription/1" do
+    @params %{
+      "route" => "16 - 0",
+      "relevant_days" => ["weekday", "saturday"],
+      "departure_start" => DateTime.from_naive!(~N[2017-07-20 12:00:00], "Etc/UTC"),
+      "departure_end" => DateTime.from_naive!(~N[2017-07-20 14:00:00], "Etc/UTC"),
+      "return_start" => DateTime.from_naive!(~N[2017-07-20 18:00:00], "Etc/UTC"),
+      "return_end" => DateTime.from_naive!(~N[2017-07-20 20:00:00], "Etc/UTC"),
+      "alert_priority_type" => "low",
+      "trip_type" => "one_way"
+    }
+
+    test "creates subscription and informed entities from Ecto.Multi" do
+      user = insert(:user)
+      {:ok, [info|_]} = BusMapper.map_subscription(@params)
+      multi = Mapper.build_subscription_transaction([info], user)
+      Subscription.create_subscription(multi)
+
+      assert [sub|_] = Repo.all(Subscription) |> Repo.preload(:informed_entities)
+      refute length(sub.informed_entities) == 0
+    end
+
+    test "associates versions of informed entities with version of subscription" do
+      user = insert(:user)
+      {:ok, [info|_]} = BusMapper.map_subscription(@params)
+      multi = Mapper.build_subscription_transaction([info], user)
+      Subscription.create_subscription(multi)
+
+      [sub|_] = Repo.all(Subscription) |> Repo.preload(:informed_entities)
+      sub_version = PaperTrail.get_version(sub)
+      informed_entity_version_ids = Enum.map(sub.informed_entities, fn(ie) ->
+        PaperTrail.get_version(ie).id
+      end)
+
+      assert MapSet.new(sub_version.meta["informed_entity_version_ids"]) ==
+        MapSet.new(informed_entity_version_ids)
+    end
+  end
+
   describe "update_subscription" do
     test "updates subscription" do
       user = insert(:user)
@@ -320,6 +360,12 @@ defmodule AlertProcessor.Model.SubscriptionTest do
 
       assert {:error, changeset} = Subscription.update_subscription(subscription, %{"alert_priority_type" => :super_high})
       refute changeset.valid?
+    end
+
+    @tag pending: true
+    test "associates versions of new informed entities with version of subscription" do
+      # update subscription
+      # check that subscription version meta lists its informed entity version ids
     end
   end
 

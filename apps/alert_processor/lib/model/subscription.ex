@@ -137,6 +137,10 @@ defmodule AlertProcessor.Model.Subscription do
     end
   end
 
+  defp update_informed_entity_versions(stuff) do
+
+  end
+
   @doc """
   return the numeric value for a subscription's alert priority type.
   the higher the number, the fewer amount of alerts should be received.
