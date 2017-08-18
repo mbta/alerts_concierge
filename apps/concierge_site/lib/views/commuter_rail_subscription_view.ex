@@ -1,7 +1,8 @@
 defmodule ConciergeSite.CommuterRailSubscriptionView do
   use ConciergeSite.Web, :view
   import ConciergeSite.SubscriptionHelper,
-    only: [progress_link_class: 3, do_query_string_params: 2, do_hidden_form_inputs: 2]
+    only: [progress_link_class: 3, do_query_string_params: 2,
+           do_hidden_form_inputs: 2, formatted_day: 1]
   import ConciergeSite.TimeHelper,
     only: [travel_time_options: 0]
   alias AlertProcessor.Model.{Route, Trip}
@@ -135,9 +136,6 @@ defmodule ConciergeSite.CommuterRailSubscriptionView do
   defp trip_summary_details_day_train_count(day, trips) do
     [trips |> Enum.count() |> to_string(), " ", formatted_day(day), " trains"]
   end
-
-  defp formatted_day(day) when day in ["saturday", "sunday"], do: String.capitalize(day)
-  defp formatted_day(day), do: day
 
   defp trip_list_header(subscription) do
     case subscription.relevant_days do

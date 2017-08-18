@@ -5,9 +5,6 @@
 <div class="subscription-step trip-preferences">
   <h2 class="preferences-subtitle">Set your preferences for your trip:</h2>
   <div class="trip-summary">
-    <p>
-      <strong><%= trip_summary_header(@subscription_params, @origin, @destination) %></strong>
-    </p>
     <%= trip_summary_details(@subscription_params, @origin, @destination) %>
   </div>
 
