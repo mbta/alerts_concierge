@@ -67,5 +67,24 @@ defmodule ConciergeSite.AccountControllerTest do
       assert response =~ "Password and password confirmation did not match."
       assert response =~ "can&#39;t be blank"
     end
+
+    test "user cannot create an account using email that has already been taken", %{conn: conn} do
+      insert(:user, email: "test@example.com")
+
+      params = %{"user" => %{
+        "email" => "TEST@example.com",
+        "password" => "password1",
+        "password_confirmation" => "password1",
+        "do_not_disturb_start" => "16:30:00",
+        "do_not_disturb_end" => "18:30:00",
+        "phone_number" => "5551234567",
+        "amber_alert_opt_in" => "false"
+      }}
+
+      conn = post(conn, "/account", params)
+      response = html_response(conn, 200)
+
+      assert response =~ "Sorry, that email has already been taken."
+    end
   end
 end

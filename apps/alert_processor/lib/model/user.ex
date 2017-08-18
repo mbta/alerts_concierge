@@ -56,6 +56,7 @@ defmodule AlertProcessor.Model.User do
   def changeset(struct, params \\ %{}) do
     struct
     |> cast(params, @permitted_fields)
+    |> update_change(:email, &String.downcase/1)
     |> validate_required(@required_fields)
   end
 
