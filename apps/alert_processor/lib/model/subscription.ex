@@ -108,7 +108,7 @@ defmodule AlertProcessor.Model.Subscription do
     |> normalize_papertrail_result()
   end
 
-  def create_subscription(multi) do
+  def set_versioned_subscription(multi) do
     with {:ok, result} <- Repo.transaction(multi),
       :ok <- associate_informed_entity_versions(result) do
         :ok
@@ -135,10 +135,6 @@ defmodule AlertProcessor.Model.Subscription do
       {:ok, _} -> :ok
       _ -> :error
     end
-  end
-
-  defp update_informed_entity_versions(stuff) do
-
   end
 
   @doc """

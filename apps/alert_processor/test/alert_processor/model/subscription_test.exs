@@ -298,7 +298,7 @@ defmodule AlertProcessor.Model.SubscriptionTest do
     end
   end
 
-  describe "create_subscription/1" do
+  describe "set_versioned_subscription/1" do
     @params %{
       "route" => "16 - 0",
       "relevant_days" => ["weekday", "saturday"],
@@ -314,7 +314,7 @@ defmodule AlertProcessor.Model.SubscriptionTest do
       user = insert(:user)
       {:ok, [info|_]} = BusMapper.map_subscription(@params)
       multi = Mapper.build_subscription_transaction([info], user)
-      Subscription.create_subscription(multi)
+      Subscription.set_versioned_subscription(multi)
 
       assert [sub|_] = Repo.all(Subscription) |> Repo.preload(:informed_entities)
       refute length(sub.informed_entities) == 0
@@ -324,7 +324,7 @@ defmodule AlertProcessor.Model.SubscriptionTest do
       user = insert(:user)
       {:ok, [info|_]} = BusMapper.map_subscription(@params)
       multi = Mapper.build_subscription_transaction([info], user)
-      Subscription.create_subscription(multi)
+      Subscription.set_versioned_subscription(multi)
 
       [sub|_] = Repo.all(Subscription) |> Repo.preload(:informed_entities)
       sub_version = PaperTrail.get_version(sub)
@@ -360,12 +360,6 @@ defmodule AlertProcessor.Model.SubscriptionTest do
 
       assert {:error, changeset} = Subscription.update_subscription(subscription, %{"alert_priority_type" => :super_high})
       refute changeset.valid?
-    end
-
-    @tag pending: true
-    test "associates versions of new informed entities with version of subscription" do
-      # update subscription
-      # check that subscription version meta lists its informed entity version ids
     end
   end
 

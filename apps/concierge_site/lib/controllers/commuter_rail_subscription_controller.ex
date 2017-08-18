@@ -20,7 +20,7 @@ defmodule ConciergeSite.CommuterRailSubscriptionController do
     subscription = Subscription.one_for_user!(id, user.id, true)
     with {:ok, params} <- CommuterRailParams.prepare_for_update_changeset(subscription, subscription_params),
          multi <- CommuterRailMapper.build_update_subscription_transaction(subscription, params),
-         {:ok, _subscription} <- Repo.transaction(multi) do
+         :ok <- Subscription.set_versioned_subscription(multi) do
       :ok = User.clear_holding_queue_for_user_id(user.id)
       conn
       |> put_flash(:info, "Subscription updated.")
@@ -100,7 +100,7 @@ defmodule ConciergeSite.CommuterRailSubscriptionController do
 
     multi = CommuterRailMapper.build_subscription_transaction(subscription_infos, user)
 
-    case Subscription.create_subscription(multi) do
+    case Subscription.set_versioned_subscription(multi) do
       :ok ->
         redirect(conn, to: subscription_path(conn, :index))
       :error ->

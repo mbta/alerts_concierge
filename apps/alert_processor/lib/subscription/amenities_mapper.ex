@@ -50,7 +50,8 @@ defmodule AlertProcessor.Subscription.AmenitiesMapper do
       end)
     end)
     |> Multi.run(:subscription, fn _ ->
-      Subscription.update_subscription(subscription, params)
+      changeset = Subscription.update_changeset(subscription, params)
+      PaperTrail.update(changeset)
     end)
   end
 

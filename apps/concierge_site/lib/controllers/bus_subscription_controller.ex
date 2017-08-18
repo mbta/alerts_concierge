@@ -36,7 +36,7 @@ defmodule ConciergeSite.BusSubscriptionController do
       mapper_params <- BusParams.prepare_for_mapper(subscription_params),
       {:ok, subscriptions} <- BusMapper.map_subscription(mapper_params),
       multi <- BusMapper.build_subscription_transaction(subscriptions, user),
-      :ok <- Subscription.create_subscription(multi) do
+      :ok <- Subscription.set_versioned_subscription(multi) do
         redirect(conn, to: subscription_path(conn, :index))
     else
       _ ->

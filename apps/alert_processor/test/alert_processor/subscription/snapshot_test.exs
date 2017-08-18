@@ -40,5 +40,12 @@ defmodule AlertProcessor.Subscription.SnapshotTest do
 
       assert snapshot["relevant_days"] ==  ["saturday"]
     end
+
+    @tag pending: true
+    test "fetches correct informed_entities for version" do
+      # create sub with informed entities
+      # make snapshot
+      # check that snapshot has right informed entities
+    end
   end
 end

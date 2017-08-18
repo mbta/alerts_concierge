@@ -84,7 +84,7 @@ defmodule ConciergeSite.SubwaySubscriptionController do
 
     multi = SubwayMapper.build_subscription_transaction(subscription_infos, user)
 
-    case Subscription.create_subscription(multi) do
+    case Subscription.set_versioned_subscription(multi) do
       :ok ->
         redirect(conn, to: subscription_path(conn, :index))
       :error ->
