@@ -31,7 +31,7 @@ export default function($) {
 
   function renderRouteInput(preselectedValue) {
     return `
-      <input type="text" name="route" value="${preselectedValue}" placeholder="Enter your bus number" class="subscription-select subscription-select-route station-input" data-valid="false" autocomplete="off"/>
+      <input type="text" name="route" value="${preselectedValue}" placeholder="Enter your bus route and direction" class="subscription-select subscription-select-route station-input" data-valid="false" autocomplete="off"/>
       <div class="suggestion-container"></div>
       <i class="fa fa-check-circle valid-checkmark-icon"></i>
     `

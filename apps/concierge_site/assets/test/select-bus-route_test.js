@@ -153,7 +153,7 @@ describe("selectBusRoute", function() {
         <div class="form-group select-route">
           <label for="route" class="station-input-label form-label">Origin</label>
           <select class="subscription-select subscription-select-route no-js">
-            <option value="">Enter your bus number</option>
+            <option value="">Enter your bus route and direction</option>
             <option value="741 - 1">Silver Line SL1 - Inbound</option>
             <option value="57 - 0">Route 57 - Outbound</option>
           </select>
