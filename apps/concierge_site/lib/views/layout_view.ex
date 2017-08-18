@@ -1,6 +1,6 @@
 defmodule ConciergeSite.LayoutView do
   use ConciergeSite.Web, :view
-  import AlertProcessor.Model.User, only: [is_admin?: 1]
+  import AlertProcessor.Model.User, only: [is_admin?: 1, is_app_admin?: 1]
 
   def active_nav_class(conn, page_name) do
     case conn.path_info do
@@ -21,16 +21,21 @@ defmodule ConciergeSite.LayoutView do
           %{title: conn.assigns[:subscriber].email, path: conn.request_path}
         ]
       ["admin", path, endpoint] ->
-        if conn.assigns[:admin_user] do
-          [
-            %{title: breadcrumb_title_parse(path), path: "/admin/#{path}"},
-            %{title: conn.assigns[:admin_user].email, path: conn.request_path}
-          ]
-        else
-          [
-            %{title: breadcrumb_title_parse(path), path: "/admin/#{path}"},
-            %{title: breadcrumb_title_parse(endpoint), path: conn.request_path}
-          ]
+        cond do
+          conn.assigns[:admin_user] ->
+            [
+              %{title: breadcrumb_title_parse(path), path: "/admin/#{path}"},
+              %{title: conn.assigns[:admin_user].email, path: conn.request_path}
+            ]
+          path == "my-account" ->
+            [
+              %{title: breadcrumb_title_parse(path), path: "/admin/#{path}"}
+            ]
+          true ->
+            [
+              %{title: breadcrumb_title_parse(path), path: "/admin/#{path}"},
+              %{title: breadcrumb_title_parse(endpoint), path: conn.request_path}
+            ]
         end
       ["admin", path] ->
         [%{title: breadcrumb_title_parse(path), path: conn.request_path}]
@@ -41,7 +46,7 @@ defmodule ConciergeSite.LayoutView do
 
   defp breadcrumb_title_parse(endpoint) do
     endpoint
-      |> String.split("_")
+      |> String.split(["_", "-"])
       |> Enum.map(&(String.capitalize(&1)))
       |> Enum.join(" ")
   end

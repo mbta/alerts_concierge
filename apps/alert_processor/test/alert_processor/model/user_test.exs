@@ -447,6 +447,20 @@ defmodule AlertProcessor.Model.UserTest do
     end
   end
 
+  describe "is_app_admin?/1" do
+    test "returns true only if the user is an application administrator" do
+      app_admin = build(:user, role: "application_administration")
+
+      assert User.is_app_admin?(app_admin) == true
+    end
+
+    test "returns false if the user is not an administrator" do
+      user = build(:user, role: "customer_support")
+
+      assert User.is_app_admin?(user) == false
+    end
+  end
+
   describe "log_admin_action" do
     test "view_subscriber" do
       admin_user = insert(:user, role: "application_administration")
