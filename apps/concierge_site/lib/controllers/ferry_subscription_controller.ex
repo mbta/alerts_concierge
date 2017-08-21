@@ -2,7 +2,7 @@ defmodule ConciergeSite.FerrySubscriptionController do
   use ConciergeSite.Web, :controller
   use Guardian.Phoenix.Controller
   alias ConciergeSite.Subscriptions.{FerryParams, Lines, TemporaryState}
-  alias AlertProcessor.{Model.Subscription, Model.User, Repo, ServiceInfoCache, Subscription.FerryMapper}
+  alias AlertProcessor.{Model.Subscription, Model.User, ServiceInfoCache, Subscription.FerryMapper}
 
   def new(conn, _params, _user, _claims) do
     render conn, "new.html"

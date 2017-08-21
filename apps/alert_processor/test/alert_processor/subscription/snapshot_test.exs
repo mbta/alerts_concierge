@@ -1,7 +1,8 @@
 defmodule AlertProcessor.Subscription.SnapshotTest do
   use AlertProcessor.DataCase
   import AlertProcessor.Factory
-  alias AlertProcessor.{Repo, Model.Subscription, Subscription.Snapshot}
+  alias AlertProcessor.{Repo, Model.Subscription}
+  alias AlertProcessor.Subscription.{Snapshot, Mapper, BusMapper}
 
   describe "get_snapshots_by_datetime/2" do
     test "returns latest version that existed on the given date" do
@@ -38,14 +39,35 @@ defmodule AlertProcessor.Subscription.SnapshotTest do
 
       [snapshot] = Snapshot.get_snapshots_by_datetime(subscriber, date)
 
-      assert snapshot["relevant_days"] ==  ["saturday"]
+      assert snapshot.subscription["relevant_days"] ==  ["saturday"]
     end
 
-    @tag pending: true
     test "fetches correct informed_entities for version" do
-      # create sub with informed entities
-      # make snapshot
-      # check that snapshot has right informed entities
+      params = %{
+        "route" => "16 - 0",
+        "relevant_days" => ["weekday", "saturday"],
+        "departure_start" => DateTime.from_naive!(~N[2017-07-20 12:00:00], "Etc/UTC"),
+        "departure_end" => DateTime.from_naive!(~N[2017-07-20 14:00:00], "Etc/UTC"),
+        "return_start" => DateTime.from_naive!(~N[2017-07-20 18:00:00], "Etc/UTC"),
+        "return_end" => DateTime.from_naive!(~N[2017-07-20 20:00:00], "Etc/UTC"),
+        "alert_priority_type" => "low",
+        "trip_type" => "one_way"
+      }
+      {:ok, future_date, _} = DateTime.from_iso8601("2118-01-01T01:01:01Z")
+      user = insert(:user)
+      {:ok, [info|_]} = BusMapper.map_subscription(params)
+      multi = Mapper.build_subscription_transaction([info], user)
+      Subscription.set_versioned_subscription(multi)
+
+      [snapshot] = Snapshot.get_snapshots_by_datetime(user, future_date)
+
+      [%{id: sub_id, informed_entities: [%{id: ie1_id}, %{id: ie2_id}, %{id: ie3_id}]}] =
+        Repo.all(Subscription) |> Repo.preload(:informed_entities)
+
+      assert %{
+        subscription: %{"id" => ^sub_id},
+        informed_entities: [%{"id" => ^ie3_id}, %{"id" => ^ie2_id}, %{"id" => ^ie1_id}]
+      } = snapshot
     end
   end
 end

@@ -3,7 +3,7 @@ defmodule ConciergeSite.CommuterRailSubscriptionController do
   use Guardian.Phoenix.Controller
   alias ConciergeSite.Subscriptions.{CommuterRailParams, Lines, TemporaryState}
   alias AlertProcessor.Model.{Subscription, User}
-  alias AlertProcessor.{Repo, ServiceInfoCache, Subscription.CommuterRailMapper}
+  alias AlertProcessor.{ServiceInfoCache, Subscription.CommuterRailMapper}
 
   def new(conn, _params, _user, _claims) do
     render conn, "new.html"
