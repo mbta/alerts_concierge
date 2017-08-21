@@ -25,7 +25,10 @@
       </div>
 
       <%= if not User.is_admin?(@subscriber) do %>
-          <%= link "Log in as user", to: admin_impersonate_session_path(@conn, :create, %{"user_id" => @subscriber.id}), class: "admin-profile-button", method: :post %>
+          <%= link "Log in as user",
+                   to: admin_impersonate_session_path(@conn, :create, %{"user_id" => @subscriber.id}),
+                   class: "btn btn-outline-primary admin-user-btn", 
+                   method: :post %>
       <% end %>
     </div>
     <div class="admin-info-contents">
