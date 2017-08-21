@@ -2,6 +2,7 @@ defmodule ConciergeSite.Admin.SubscriberViewTest do
   use ExUnit.Case
 
   import AlertProcessor.Factory
+  import ConciergeSite.HTMLTestHelper, only: [html_to_binary: 1]
   alias ConciergeSite.Admin.SubscriberView
 
   describe "account_status" do
@@ -153,9 +154,5 @@ defmodule ConciergeSite.Admin.SubscriberViewTest do
       assert html_to_binary(entity_info) =~ "Stop: Davis (place-davis)"
       assert html_to_binary(entity_info) =~ "Stop: Harvard (place-harsq)"
     end
-  end
-
-  defp html_to_binary(html_list) do
-    html_list |> Phoenix.HTML.Safe.to_iodata() |> IO.iodata_to_binary()
   end
 end

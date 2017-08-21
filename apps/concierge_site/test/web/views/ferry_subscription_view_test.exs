@@ -1,6 +1,7 @@
 defmodule ConciergeSite.FerrySubscriptionViewTest do
   use ExUnit.Case
   alias ConciergeSite.FerrySubscriptionView
+  import ConciergeSite.HTMLTestHelper, only: [html_to_binary: 1]
 
   describe "progress_link_class" do
     test "it returns the disabled class when the page is trip_type" do
@@ -45,9 +46,10 @@ defmodule ConciergeSite.FerrySubscriptionViewTest do
         "relevant_days" => "weekday"
       }
 
-      summary = FerrySubscriptionView.trip_summary_details(subscription_params, origin, destination)
+      summary =
+        FerrySubscriptionView.trip_summary_details(subscription_params, origin, destination)
 
-      assert IO.iodata_to_binary(summary) == "1 weekday ferry from Charlestown Navy Yard to Long Wharf, Boston"
+      assert html_to_binary(summary) == "1 weekday ferry from Charlestown Navy Yard to Long Wharf, Boston"
     end
 
     test "returns a summary for a round trip" do
@@ -61,11 +63,11 @@ defmodule ConciergeSite.FerrySubscriptionViewTest do
         "relevant_days" => "weekday"
       }
 
-      [safe: depart, safe: return] =
+      summary =
         FerrySubscriptionView.trip_summary_details(subscription_params, origin, destination)
 
-      assert IO.iodata_to_binary(depart) =~ "1 weekday ferry from Charlestown Navy Yard to Long Wharf, Boston"
-      assert IO.iodata_to_binary(return) =~ "1 weekday ferry from Long Wharf, Boston to Charlestown Navy Yard"
+      assert html_to_binary(summary) =~ "1 weekday ferry from Charlestown Navy Yard to Long Wharf, Boston"
+      assert html_to_binary(summary) =~ "1 weekday ferry from Long Wharf, Boston to Charlestown Navy Yard"
     end
   end
 end
