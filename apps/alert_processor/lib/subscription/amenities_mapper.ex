@@ -78,7 +78,7 @@ defmodule AlertProcessor.Subscription.AmenitiesMapper do
   end
 
   defp set_alert_priority(params) do
-    Map.put(params, "alert_priority_type", "high")
+    Map.put(params, "alert_priority_type", "low")
   end
 
   defp remove_empty_strings(params) do
