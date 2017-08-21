@@ -22,7 +22,7 @@ defmodule ConciergeSite.FlashHelpers do
   """
   def flash_info(conn) do
     if info = get_flash(conn, :info) do
-      content_tag :div, info, class: "alert alert-success"
+      content_tag :div, info, class: "alert alert-success text-center"
     end
   end
 end
