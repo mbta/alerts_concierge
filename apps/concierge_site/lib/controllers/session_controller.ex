@@ -18,7 +18,7 @@ defmodule ConciergeSite.SessionController do
         if User.is_admin?(user) do
           conn
           |> admin_guardian_sign_in(user)
-          |> redirect(to: "/my-subscriptions")
+          |> redirect(to: admin_subscriber_path(conn, :index))
         else
           conn
           |> Guardian.Plug.sign_in(user, :access, perms: %{default: Guardian.Permissions.max})
