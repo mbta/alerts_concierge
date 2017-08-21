@@ -74,6 +74,14 @@ defmodule ConciergeSite.SubscriptionViewTest do
       assert IO.iodata_to_binary(SubscriptionView.vacation_banner_content(~N[2017-07-10 00:00:00], ~N[2117-07-10 00:00:00])) == "Your alerts have been paused until July 10, 2117."
     end
 
+    test "message when alerts are paused indefinitely" do
+      vacation_start = DateTime.utc_now()
+      vacation_end = DateTime.from_naive!(~N[9999-12-25 23:59:59], "Etc/UTC")
+      banner_content = SubscriptionView.vacation_banner_content(vacation_start, vacation_end)
+      
+      assert banner_content == "Your alerts have been paused."
+    end
+
     test "message when alerts are not paused" do
       assert IO.iodata_to_binary(SubscriptionView.vacation_banner_content(nil, nil)) == "Don't need updates right now?"
     end
