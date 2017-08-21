@@ -220,6 +220,9 @@ defmodule ConciergeSite.SubscriptionView do
     end
   end
 
+  def vacation_banner_content(_, %DateTime{year: 9999}),
+    do: "Your alerts have been paused."
+
   def vacation_banner_content(vacation_start, vacation_end) do
     if on_vacation?(vacation_start, vacation_end) do
       [
