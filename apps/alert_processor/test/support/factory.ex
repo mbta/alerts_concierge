@@ -118,6 +118,7 @@ defmodule AlertProcessor.Factory do
 
   def amenity_subscription(%Subscription{} = subscription) do
     %{subscription |
+      alert_priority_type: :low,
       type: :amenity
      }
   end

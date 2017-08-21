@@ -12,9 +12,9 @@ defmodule AlertProcessor.Subscription.AmenitiesMapperTest do
   }
 
   describe "elevator only" do
-    test "constructs subscription with high severity" do
+    test "constructs subscription with low severity" do
       {:ok, [{subscription, _ie}]} = AmenitiesMapper.map_subscriptions(@params)
-      assert subscription.alert_priority_type == :high
+      assert subscription.alert_priority_type == :low
     end
 
     test "constructs subscription with type" do
@@ -60,9 +60,9 @@ defmodule AlertProcessor.Subscription.AmenitiesMapperTest do
   end
 
   describe "elevator and escalator" do
-    test "constructs subscription with high severity" do
+    test "constructs subscription with low severity" do
       {:ok, [{subscription, _ie}]} = AmenitiesMapper.map_subscriptions(Map.merge(@params, %{"amenities" => ["elevator", "escalator"]}))
-      assert subscription.alert_priority_type == :high
+      assert subscription.alert_priority_type == :low
     end
 
     test "constructs subscription with type" do
