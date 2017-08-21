@@ -20,7 +20,7 @@
         # You can give explicit globs or simply directories.
         # In the latter case `**/*.{ex,exs}` will be used.
         included: ["apps/"],
-        excluded: [~r"/_build/", ~r"/deps/"]
+        excluded: [~r"/_build/", ~r"/deps/", ~r/(.*)\/node_modules/]
       },
       #
       # If you create your own checks, you must specify the source files for
