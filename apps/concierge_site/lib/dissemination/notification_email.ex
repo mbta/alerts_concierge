@@ -43,15 +43,10 @@ defmodule ConciergeSite.Dissemination.NotificationEmail do
     [email_prefix(alert), notification.service_effect, email_suffix(alert)]
   end
 
-  defp email_prefix(%Alert{timeframe: nil}), do: ""
-  defp email_prefix(%Alert{timeframe: timeframe}) do
-    first_capital =
-      timeframe
-      |> String.first()
-      |> String.capitalize()
-
-    [first_capital, String.slice(timeframe, 1..-1), ": "]
-  end
+  defp email_prefix(%Alert{timeframe: nil}),
+    do: ""
+  defp email_prefix(%Alert{timeframe: << first_character :: binary-1, rest :: binary >>}),
+    do: [String.upcase(first_character), rest, ": "]
 
   defp email_suffix(%Alert{recurrence: nil}), do: ""
   defp email_suffix(%Alert{recurrence: recurrence}), do: [" ", recurrence]
