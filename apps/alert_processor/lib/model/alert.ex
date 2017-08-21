@@ -26,7 +26,6 @@ defmodule AlertProcessor.Model.Alert do
     id: String.t,
     informed_entities: [informed_entity],
     severity: atom,
-    active_period: [map],
     last_push_notification: DateTime.t,
     service_effect: String.t,
     description: String.t,
