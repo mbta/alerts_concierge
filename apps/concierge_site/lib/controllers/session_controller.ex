@@ -4,6 +4,7 @@ defmodule ConciergeSite.SessionController do
   """
   use ConciergeSite.Web, :controller
   alias AlertProcessor.Model.User
+  import ConciergeSite.SignInHelper, only: [admin_guardian_sign_in: 2]
   plug :scrub_params, "user" when action in [:create]
 
   def new(conn, _params) do
@@ -14,9 +15,15 @@ defmodule ConciergeSite.SessionController do
   def create(conn, %{"user" => login_params}) do
     case User.authenticate(login_params) do
       {:ok, user} ->
-        conn
-        |> Guardian.Plug.sign_in(user, :access, perms: %{default: Guardian.Permissions.max})
-        |> redirect(to: "/my-subscriptions")
+        if User.is_admin?(user) do
+          conn
+          |> admin_guardian_sign_in(user)
+          |> redirect(to: admin_subscriber_path(conn, :index))
+        else
+          conn
+          |> Guardian.Plug.sign_in(user, :access, perms: %{default: Guardian.Permissions.max})
+          |> redirect(to: "/my-subscriptions")
+        end
       {:error, :disabled} ->
         conn
         |> put_flash(:error, "Account has been disabled. Please enter your email to re-activate it.")
