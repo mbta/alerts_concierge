@@ -110,4 +110,7 @@ defmodule ConciergeSite.SubscriptionHelper do
   end
 
   def selected_relevant_days(%{}), do: [:weekday]
+
+  def formatted_day(day) when day in ["saturday", "sunday"], do: String.capitalize(day)
+  def formatted_day(day), do: day
 end

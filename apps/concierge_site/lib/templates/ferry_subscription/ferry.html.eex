@@ -11,7 +11,7 @@
 
   <%= form_for @conn, ferry_subscription_path(@conn, :preferences), [class: "trip-form ferry", as: :subscription], fn f -> %>
 
-    <%= render "_ferry_select_options.html", f: f, list_header: nil, trips: @trips %>
+    <%= render "_ferry_select_options.html", f: f, list_header: nil, trips: @trips, trip_type: @subscription_params["trip_type"] %>
 
     <%= hidden_form_inputs(:trip_info, @subscription_params) %>
 
