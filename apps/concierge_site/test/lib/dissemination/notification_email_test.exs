@@ -47,7 +47,7 @@ defmodule ConciergeSite.Dissemination.NotificationEmailTest do
       notification = %{@notification | alert: alert}
       subject = NotificationEmail.email_subject(notification)
 
-      assert IO.iodata_to_binary(subject) == "Starting September 1: Red line delay on weekends"
+      assert subject == "Starting September 1: Red line delay on weekends"
     end
 
     test "with recurrence" do
@@ -55,7 +55,7 @@ defmodule ConciergeSite.Dissemination.NotificationEmailTest do
       notification = %{@notification | alert: alert}
       subject = NotificationEmail.email_subject(notification)
 
-      assert IO.iodata_to_binary(subject) == "Red line delay Monday-Tuesday"
+      assert subject == "Red line delay Monday-Tuesday"
     end
 
     test "with timeframe" do
@@ -63,12 +63,12 @@ defmodule ConciergeSite.Dissemination.NotificationEmailTest do
       notification = %{@notification | alert: alert}
       subject = NotificationEmail.email_subject(notification)
 
-      assert IO.iodata_to_binary(subject) == "Starting Monday: Red line delay"
+      assert subject == "Starting Monday: Red line delay"
     end
 
     test "without timeframe or recurrence" do
       subject = NotificationEmail.email_subject(@notification)
-      assert IO.iodata_to_binary(subject) == "Red line delay"
+      assert subject == "Red line delay"
     end
   end
 end
