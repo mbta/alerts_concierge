@@ -17,7 +17,7 @@
       <%= select f,
                  :origin,
                  @station_list_select_options,
-                 class: "subscription-select-origin no-js",
+                 class: "subscription-select subscription-select-origin no-js",
                  prompt: "Select a station",
                  selected: @subscription_params["origin"] %>
     </div>
