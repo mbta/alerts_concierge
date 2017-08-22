@@ -480,4 +480,32 @@ defmodule AlertProcessor.Model.UserTest do
       assert subscriber_id == subscriber.id
     end
   end
+
+  describe "admin_log" do
+    test "ordered by inserted_at in descending order" do
+      admin_user = insert(:user, role: "application_administration")
+      subscriber1 = insert(:user)
+      subscriber2 = insert(:user)
+      assert {:ok, _} = User.log_admin_action(:view_subscriber, admin_user, subscriber1)
+      assert {:ok, _} = User.log_admin_action(:view_subscriber, admin_user, subscriber2)
+      assert [%{
+        item_type: "User",
+        inserted_at: subscriber2_log_time,
+        origin: "admin:view-subscriber",
+        meta: %{
+          "subscriber_email" => subscriber2_email,
+        }
+      }, %{
+        item_type: "User",
+        inserted_at: subscriber1_log_time,
+        origin: "admin:view-subscriber",
+        meta: %{
+          "subscriber_email" => subscriber1_email,
+        }
+      }] = User.admin_log(admin_user.id)
+      assert subscriber2_email == subscriber2.email
+      assert subscriber1_email == subscriber1.email
+      assert subscriber2_log_time > subscriber1_log_time
+    end
+  end
 end

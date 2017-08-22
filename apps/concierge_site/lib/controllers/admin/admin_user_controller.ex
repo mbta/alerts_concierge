@@ -141,6 +141,6 @@ defmodule ConciergeSite.Admin.AdminUserController do
   end
 
   defp fetch_log_details(conn, _) do
-    assign(conn, :log_details, PaperTrail.get_versions(conn.assigns.admin_user))
+    assign(conn, :log_details, User.admin_log(conn.assigns.admin_user.id))
   end
 end

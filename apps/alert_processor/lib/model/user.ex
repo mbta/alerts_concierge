@@ -393,4 +393,16 @@ defmodule AlertProcessor.Model.User do
     |> PaperTrail.update(originator: admin_user, origin: "admin:view-subscriber", meta: %{subscriber_id: user.id, subscriber_email: user.email})
     |> normalize_papertrail_result()
   end
+
+  @doc """
+  fetch actions logged by admin user using papertrail.
+  """
+  def admin_log(admin_user_id) do
+    Repo.all(
+      from v in PaperTrail.Version,
+      where: v.originator_id == ^admin_user_id,
+      select: [:event, :item_changes, :origin, :inserted_at, :meta],
+      order_by: [desc: v.inserted_at]
+    )
+  end
 end
