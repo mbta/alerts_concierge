@@ -52,6 +52,16 @@
   color: $brand-primary;
   flex-basis: 25%;
   flex-grow: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.admin-detail-table-cell {
+  color: $black;
+  flex-basis: 25%;
+  flex-grow: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .admin-pagination {
@@ -219,6 +229,8 @@
   .item-content {
     font-size: $base-font-size;
     margin-bottom: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
   }
 }
 
