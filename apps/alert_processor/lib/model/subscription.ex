@@ -109,10 +109,17 @@ defmodule AlertProcessor.Model.Subscription do
   end
 
   def set_versioned_subscription(multi) do
-    with {:ok, result} <- Repo.transaction(multi),
-      :ok <- associate_informed_entity_versions(result) do
-        :ok
-    else
+    result = Repo.transaction(fn ->
+      with {:ok, result} <- Repo.transaction(multi),
+        {:ok, _} <- associate_informed_entity_versions(result) do
+          :ok
+      else
+        _ -> Repo.rollback(:undo_multi)
+      end
+    end)
+
+    case result do
+      {:ok, _} -> :ok
       _ -> :error
     end
   end
@@ -131,10 +138,7 @@ defmodule AlertProcessor.Model.Subscription do
       [:meta]
     )
 
-    case Repo.update(sub_version_changeset) do
-      {:ok, _} -> :ok
-      _ -> :error
-    end
+    Repo.update(sub_version_changeset)
   end
 
   @doc """

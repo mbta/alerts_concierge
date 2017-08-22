@@ -24,21 +24,18 @@ defmodule AlertProcessor.Subscription.Snapshot do
     end)
     |> Enum.reduce(%{subscription: %{}, informed_entities: []},
         fn(%{item_changes: changes, meta: meta},
-          %{subscription: sub, informed_entities: ie}) ->
+          %{subscription: sub}) ->
           %{
             subscription: Map.merge(sub, changes),
-            informed_entities: get_informed_entities(ie, meta["informed_entity_version_ids"])
+            informed_entities: get_informed_entities(meta["informed_entity_version_ids"])
           }
-    end)
+        end)
   end
 
-  defp get_informed_entities([], nil), do: []
-  defp get_informed_entities(ie, nil), do: from_version(ie)
-  defp get_informed_entities(ie, new_ie), do: from_version(ie ++ new_ie)
-
-  defp from_version(entities) do
+  defp get_informed_entities(nil), do: []
+  defp get_informed_entities(ids) do
     query = from v in PaperTrail.Version,
-    where: v.id in ^entities
+      where: v.id in ^ids
 
     query
     |> Repo.all()

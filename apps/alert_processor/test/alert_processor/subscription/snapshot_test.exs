@@ -2,7 +2,9 @@ defmodule AlertProcessor.Subscription.SnapshotTest do
   use AlertProcessor.DataCase
   import AlertProcessor.Factory
   alias AlertProcessor.{Repo, Model.Subscription}
-  alias AlertProcessor.Subscription.{Snapshot, Mapper, BusMapper}
+  alias AlertProcessor.Subscription.{Snapshot, Mapper,
+    BusMapper, CommuterRailMapper, CommuterRailParams}
+  alias ConciergeSite.Subscriptions.CommuterRailParams
 
   describe "get_snapshots_by_datetime/2" do
     test "returns latest version that existed on the given date" do
@@ -68,6 +70,66 @@ defmodule AlertProcessor.Subscription.SnapshotTest do
         subscription: %{"id" => ^sub_id},
         informed_entities: [%{"id" => ^ie3_id}, %{"id" => ^ie2_id}, %{"id" => ^ie1_id}]
       } = snapshot
+    end
+
+    test "fetches informed_entities for correct version when multiple exist" do
+      {:ok, past_date, _} = DateTime.from_iso8601("2008-01-01T01:01:01Z")
+      {:ok, future_date, _} = DateTime.from_iso8601("2108-01-01T01:01:01Z")
+      {:ok, date, _} = DateTime.from_iso8601("2018-01-01T01:01:01Z")
+
+      user = insert(:user)
+      sub_params = %{
+        "origin" => "place-north",
+        "destination" => "Anderson/ Woburn",
+        "trips" => ["123"],
+        "return_trips" => [],
+        "relevant_days" => ["weekday"],
+        "departure_start" => DateTime.from_naive!(~N[2017-07-20 12:00:00], "Etc/UTC"),
+        "departure_end" => DateTime.from_naive!(~N[2017-07-20 14:00:00], "Etc/UTC"),
+        "return_start" => DateTime.from_naive!(~N[2017-07-20 18:00:00], "Etc/UTC"),
+        "return_end" => DateTime.from_naive!(~N[2017-07-20 20:00:00], "Etc/UTC"),
+        "alert_priority_type" => "low",
+        "amenities" => ["elevator"]
+      }
+
+      {:ok, info} = CommuterRailMapper.map_subscriptions(sub_params)
+      multi = Mapper.build_subscription_transaction(info, user)
+      Subscription.set_versioned_subscription(multi)
+      Repo.update_all(PaperTrail.Version, set: [inserted_at: past_date])
+
+      assert Snapshot.get_snapshots_by_datetime(user, date) == Snapshot.get_snapshots_by_datetime(user, future_date)
+
+      # Update Subscription
+      update_params = %{
+        "alert_priority_type" => "high",
+        "trips" => ["341"]
+      }
+
+      Subscription
+      |> Repo.all
+      |> Repo.preload(:informed_entities)
+      |> Repo.preload(:user)
+      |> Enum.each(fn(sub) ->
+        {:ok, params} = CommuterRailParams.prepare_for_update_changeset(sub, update_params)
+        multi = CommuterRailMapper.build_update_subscription_transaction(sub, params)
+        Subscription.set_versioned_subscription(multi)
+      end)
+
+      # Set update versions to future date
+      subs = Repo.all(Subscription) |> Repo.preload(:informed_entities)
+
+      Enum.each(subs, fn(sub) ->
+        sub_version = PaperTrail.get_version(sub)
+        sub_changeset = Ecto.Changeset.cast(sub_version, %{inserted_at: future_date}, [:inserted_at])
+        Repo.update!(sub_changeset)
+        Enum.each(sub.informed_entities, fn(ie) ->
+          ie_version = PaperTrail.get_version(ie)
+          ie_changeset = Ecto.Changeset.cast(ie_version, %{inserted_at: future_date}, [:inserted_at])
+          Repo.update!(ie_changeset)
+        end)
+      end)
+
+      refute Snapshot.get_snapshots_by_datetime(user, date) == Snapshot.get_snapshots_by_datetime(user, future_date)
     end
   end
 end

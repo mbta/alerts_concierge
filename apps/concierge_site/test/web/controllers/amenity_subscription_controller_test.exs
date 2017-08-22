@@ -121,13 +121,13 @@ defmodule ConciergeSite.AmenitySubscriptionControllerTest do
     test "PATCH /subscriptions/amenities/:id", %{conn: conn, user: user} do
       notification = build(:notification, user_id: user.id, send_after: DateTime.from_unix!(4_078_579_247))
       :ok = HoldingQueue.enqueue(notification)
-      {:ok, %{model: subscription}} =
+      subscription =
         subscription_factory()
         |> Map.put(:informed_entities, amenity_subscription_entities())
         |> amenity_subscription()
         |> weekday_subscription()
         |> Map.merge(%{user: user})
-        |> PaperTrail.insert()
+        |> PaperTrail.insert!()
 
       params = %{"subscription" => %{
         "stops" => "North Quincy,Forest Hills",
