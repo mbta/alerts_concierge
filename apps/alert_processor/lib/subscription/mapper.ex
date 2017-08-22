@@ -124,16 +124,7 @@ defmodule AlertProcessor.Subscription.Mapper do
   end
 
   def map_stops(subscription_infos, %{"origin" => origin, "destination" => destination, "roaming" => "true"}, routes) do
-    stop_entities =
-      Enum.flat_map(routes, fn(%Route{route_id: route, route_type: type, stop_list: stop_list}) ->
-        stop_list
-        |> Enum.drop_while(fn({_k, v}) -> v != origin && v != destination end)
-        |> Enum.reverse()
-        |> Enum.drop_while(fn({_k, v}) -> v != origin && v != destination end)
-        |> Enum.map(fn({_k, stop}) ->
-          %InformedEntity{route: route, route_type: type, stop: stop}
-        end)
-      end)
+    stop_entities = map_stops_in_range(routes, origin, destination)
 
     {:ok, {origin_name, ^origin}} = ServiceInfoCache.get_stop(origin)
     {:ok, {destination_name, ^destination}} = ServiceInfoCache.get_stop(destination)
@@ -143,13 +134,7 @@ defmodule AlertProcessor.Subscription.Mapper do
     end)
   end
   def map_stops([{sub1, ie1}, {sub2, ie2}], %{"origin" => origin, "destination" => destination}, routes) do
-    stop_entities =
-      Enum.flat_map(routes, fn(%Route{route_id: route, route_type: type}) ->
-        [
-          %InformedEntity{route: route, route_type: type, stop: origin},
-          %InformedEntity{route: route, route_type: type, stop: destination}
-        ]
-      end)
+    stop_entities = map_stops_in_range(routes, origin, destination)
 
     {:ok, {origin_name, ^origin}} = ServiceInfoCache.get_stop(origin)
     {:ok, {destination_name, ^destination}} = ServiceInfoCache.get_stop(destination)
@@ -165,18 +150,24 @@ defmodule AlertProcessor.Subscription.Mapper do
     ]
   end
   def map_stops([{subscription, informed_entities}], %{"origin" => origin, "destination" => destination}, routes) do
-    stop_entities =
-      Enum.flat_map(routes, fn(%Route{route_id: route, route_type: type}) ->
-        [
-          %InformedEntity{route: route, route_type: type, stop: origin},
-          %InformedEntity{route: route, route_type: type, stop: destination}
-        ]
-      end)
+    stop_entities = map_stops_in_range(routes, origin, destination)
 
     {:ok, {origin_name, ^origin}} = ServiceInfoCache.get_stop(origin)
     {:ok, {destination_name, ^destination}} = ServiceInfoCache.get_stop(destination)
 
     [{Map.merge(subscription, %{origin: origin_name, destination: destination_name}), informed_entities ++ stop_entities}]
+  end
+
+  defp map_stops_in_range(routes, origin, destination) do
+    Enum.flat_map(routes, fn(%Route{route_id: route, route_type: type, stop_list: stop_list}) ->
+      stop_list
+      |> Enum.drop_while(fn({_k, v}) -> v != origin && v != destination end)
+      |> Enum.reverse()
+      |> Enum.drop_while(fn({_k, v}) -> v != origin && v != destination end)
+      |> Enum.map(fn({_k, stop}) ->
+        %InformedEntity{route: route, route_type: type, stop: stop}
+      end)
+    end)
   end
 
   def map_trips([{sub1, ie1}, {sub2, ie2}], %{"trips" => trips, "return_trips" => return_trips}) do
