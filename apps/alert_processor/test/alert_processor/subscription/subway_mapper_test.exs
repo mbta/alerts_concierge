@@ -120,6 +120,11 @@ defmodule AlertProcessor.Subscription.SubwayMapperTest do
           match?(%InformedEntity{route: "Red", route_type: 1, stop: "place-davis"}, informed_entity)
         end)
       assert davis_station_count == 1
+      porter_station_count =
+        Enum.count(informed_entities, fn(informed_entity) ->
+          match?(%InformedEntity{route: "Red", route_type: 1, stop: "place-portr"}, informed_entity)
+        end)
+      assert porter_station_count == 1
       harvard_station_count =
         Enum.count(informed_entities, fn(informed_entity) ->
           match?(%InformedEntity{route: "Red", route_type: 1, stop: "place-harsq"}, informed_entity)
@@ -129,7 +134,7 @@ defmodule AlertProcessor.Subscription.SubwayMapperTest do
         Enum.count(informed_entities, fn(informed_entity) ->
           InformedEntity.entity_type(informed_entity) == :stop
         end)
-      assert total_station_count == 2
+      assert total_station_count == 3
     end
   end
 
@@ -223,6 +228,11 @@ defmodule AlertProcessor.Subscription.SubwayMapperTest do
           match?(%InformedEntity{route: "Red", route_type: 1, stop: "place-davis"}, informed_entity)
         end)
       assert davis_station_count == 1
+      porter_station_count =
+        Enum.count(ie1, fn(informed_entity) ->
+          match?(%InformedEntity{route: "Red", route_type: 1, stop: "place-portr"}, informed_entity)
+        end)
+      assert porter_station_count == 1
       harvard_station_count =
         Enum.count(ie1, fn(informed_entity) ->
           match?(%InformedEntity{route: "Red", route_type: 1, stop: "place-harsq"}, informed_entity)
@@ -232,12 +242,17 @@ defmodule AlertProcessor.Subscription.SubwayMapperTest do
         Enum.count(ie1, fn(informed_entity) ->
           InformedEntity.entity_type(informed_entity) == :stop
         end)
-      assert total_station_count == 2
+      assert total_station_count == 3
       davis_station_count =
         Enum.count(ie2, fn(informed_entity) ->
           match?(%InformedEntity{route: "Red", route_type: 1, stop: "place-davis"}, informed_entity)
         end)
       assert davis_station_count == 1
+      porter_station_count =
+        Enum.count(ie2, fn(informed_entity) ->
+          match?(%InformedEntity{route: "Red", route_type: 1, stop: "place-portr"}, informed_entity)
+        end)
+      assert porter_station_count == 1
       harvard_station_count =
         Enum.count(ie2, fn(informed_entity) ->
           match?(%InformedEntity{route: "Red", route_type: 1, stop: "place-harsq"}, informed_entity)
@@ -247,7 +262,7 @@ defmodule AlertProcessor.Subscription.SubwayMapperTest do
         Enum.count(ie2, fn(informed_entity) ->
           InformedEntity.entity_type(informed_entity) == :stop
         end)
-      assert total_station_count == 2
+      assert total_station_count == 3
     end
   end
 
@@ -319,11 +334,16 @@ defmodule AlertProcessor.Subscription.SubwayMapperTest do
           match?(%InformedEntity{route: "Green-" <> _, route_type: 0, stop: "place-kencl"}, informed_entity)
         end)
       assert kenmore_station_count == 3
+      arlington_station_count =
+        Enum.count(informed_entities, fn(informed_entity) ->
+          match?(%InformedEntity{route: "Green-" <> _, route_type: 0, stop: "place-armnl"}, informed_entity)
+        end)
+      assert arlington_station_count == 3
       total_station_count =
         Enum.count(informed_entities, fn(informed_entity) ->
           InformedEntity.entity_type(informed_entity) == :stop
         end)
-      assert total_station_count == 6
+      assert total_station_count == 27
     end
   end
 
@@ -439,8 +459,8 @@ defmodule AlertProcessor.Subscription.SubwayMapperTest do
 
       assert {{:subscription, 0}, {:run, function1}} = List.first(result)
       assert {{:informed_entity, 0, 0}, {:run, _}} = Enum.at(result, 1)
-      assert {{:subscription, 1}, {:run, function2}} = Enum.at(result, 7)
-      assert {{:informed_entity, 1, 0}, {:run, _}} = Enum.at(result, 8)
+      assert {{:subscription, 1}, {:run, function2}} = Enum.at(result, 8)
+      assert {{:informed_entity, 1, 0}, {:run, _}} = Enum.at(result, 9)
       {:ok, %{model: subscription1}} = function1.(nil)
       {:ok, %{model: subscription2}} = function2.(nil)
       assert subscription1.id != nil

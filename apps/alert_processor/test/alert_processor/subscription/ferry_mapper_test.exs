@@ -95,6 +95,26 @@ defmodule AlertProcessor.Subscription.FerryMapperTest do
           match?(%InformedEntity{route: "Boat-F1", route_type: 4, stop: "Boat-Long"}, informed_entity)
         end)
       assert boat_long_count == 1
+      boat_rowes_count =
+        Enum.count(informed_entities, fn(informed_entity) ->
+          match?(%InformedEntity{route: "Boat-F1", route_type: 4, stop: "Boat-Rowes"}, informed_entity)
+        end)
+      assert boat_rowes_count == 1
+      boat_george_count =
+        Enum.count(informed_entities, fn(informed_entity) ->
+          match?(%InformedEntity{route: "Boat-F1", route_type: 4, stop: "Boat-George"}, informed_entity)
+        end)
+      assert boat_george_count == 1
+      boat_hull_count =
+        Enum.count(informed_entities, fn(informed_entity) ->
+          match?(%InformedEntity{route: "Boat-F1", route_type: 4, stop: "Boat-Hull"}, informed_entity)
+        end)
+      assert boat_hull_count == 1
+      boat_logan_count =
+        Enum.count(informed_entities, fn(informed_entity) ->
+          match?(%InformedEntity{route: "Boat-F1", route_type: 4, stop: "Boat-Logan"}, informed_entity)
+        end)
+      assert boat_logan_count == 1
       boat_hingham_count =
         Enum.count(informed_entities, fn(informed_entity) ->
           match?(%InformedEntity{route: "Boat-F1", route_type: 4, stop: "Boat-Hingham"}, informed_entity)
@@ -104,7 +124,7 @@ defmodule AlertProcessor.Subscription.FerryMapperTest do
         Enum.count(informed_entities, fn(informed_entity) ->
           InformedEntity.entity_type(informed_entity) == :stop
         end)
-      assert total_station_count == 2
+      assert total_station_count == 6
     end
 
     test "constructs subscription with trips" do
@@ -231,6 +251,26 @@ defmodule AlertProcessor.Subscription.FerryMapperTest do
           match?(%InformedEntity{route: "Boat-F1", route_type: 4, stop: "Boat-Hingham"}, informed_entity)
         end)
       assert boat_hingham_count == 1
+      boat_rowes_count =
+        Enum.count(ie1, fn(informed_entity) ->
+          match?(%InformedEntity{route: "Boat-F1", route_type: 4, stop: "Boat-Rowes"}, informed_entity)
+        end)
+      assert boat_rowes_count == 1
+      boat_george_count =
+        Enum.count(ie1, fn(informed_entity) ->
+          match?(%InformedEntity{route: "Boat-F1", route_type: 4, stop: "Boat-George"}, informed_entity)
+        end)
+      assert boat_george_count == 1
+      boat_hull_count =
+        Enum.count(ie1, fn(informed_entity) ->
+          match?(%InformedEntity{route: "Boat-F1", route_type: 4, stop: "Boat-Hull"}, informed_entity)
+        end)
+      assert boat_hull_count == 1
+      boat_logan_count =
+        Enum.count(ie1, fn(informed_entity) ->
+          match?(%InformedEntity{route: "Boat-F1", route_type: 4, stop: "Boat-Logan"}, informed_entity)
+        end)
+      assert boat_logan_count == 1
       boat_long_count =
         Enum.count(ie1, fn(informed_entity) ->
           match?(%InformedEntity{route: "Boat-F1", route_type: 4, stop: "Boat-Long"}, informed_entity)
@@ -240,12 +280,32 @@ defmodule AlertProcessor.Subscription.FerryMapperTest do
         Enum.count(ie1, fn(informed_entity) ->
           InformedEntity.entity_type(informed_entity) == :stop
         end)
-      assert total_station_count == 2
+      assert total_station_count == 6
       boat_hingham_count =
         Enum.count(ie2, fn(informed_entity) ->
           match?(%InformedEntity{route: "Boat-F1", route_type: 4, stop: "Boat-Hingham"}, informed_entity)
         end)
       assert boat_hingham_count == 1
+      boat_rowes_count =
+        Enum.count(ie2, fn(informed_entity) ->
+          match?(%InformedEntity{route: "Boat-F1", route_type: 4, stop: "Boat-Rowes"}, informed_entity)
+        end)
+      assert boat_rowes_count == 1
+      boat_george_count =
+        Enum.count(ie2, fn(informed_entity) ->
+          match?(%InformedEntity{route: "Boat-F1", route_type: 4, stop: "Boat-George"}, informed_entity)
+        end)
+      assert boat_george_count == 1
+      boat_hull_count =
+        Enum.count(ie2, fn(informed_entity) ->
+          match?(%InformedEntity{route: "Boat-F1", route_type: 4, stop: "Boat-Hull"}, informed_entity)
+        end)
+      assert boat_hull_count == 1
+      boat_logan_count =
+        Enum.count(ie2, fn(informed_entity) ->
+          match?(%InformedEntity{route: "Boat-F1", route_type: 4, stop: "Boat-Logan"}, informed_entity)
+        end)
+      assert boat_logan_count == 1
       boat_long_count =
         Enum.count(ie2, fn(informed_entity) ->
           match?(%InformedEntity{route: "Boat-F1", route_type: 4, stop: "Boat-Long"}, informed_entity)
@@ -255,7 +315,7 @@ defmodule AlertProcessor.Subscription.FerryMapperTest do
         Enum.count(ie2, fn(informed_entity) ->
           InformedEntity.entity_type(informed_entity) == :stop
         end)
-      assert total_station_count == 2
+      assert total_station_count == 6
     end
 
     test "constructs subscription with trips" do
@@ -620,8 +680,8 @@ defmodule AlertProcessor.Subscription.FerryMapperTest do
 
       assert {{:subscription, 0}, {:run, function1}} = List.first(result)
       assert {{:informed_entity, 0, 0}, {:run, _}} = Enum.at(result, 1)
-      assert {{:subscription, 1}, {:run, function2}} = Enum.at(result, 9)
-      assert {{:informed_entity, 1, 0}, {:run, _}} = Enum.at(result, 10)
+      assert {{:subscription, 1}, {:run, function2}} = Enum.at(result, 13)
+      assert {{:informed_entity, 1, 0}, {:run, _}} = Enum.at(result, 14)
 
       {:ok, %{model: subscription1}} = function1.(nil)
       {:ok, %{model: subscription2}} = function2.(nil)
