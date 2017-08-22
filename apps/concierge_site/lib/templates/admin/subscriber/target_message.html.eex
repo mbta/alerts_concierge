@@ -18,14 +18,14 @@
         <label for="subject">Subject</label>
         <%= text_input f, :subject, class: "form-control", placeholder: "Test Message", required: true %>
         <label for="email_body">Body Text</label>
-        <%= textarea f, :email_body, class: "form-control email_body_container", placeholder: "This is a test message sent from the MBTA. No response necessary.", required: true %>
+        <%= textarea f, :email_body, class: "form-control email_body_container", value: "This is a test message sent from the MBTA. No response necessary.", required: true %>
       </div>
       <div class="form-group row toggleable_sms">
         <label for="subscriber_phone_number">Subscriber Phone Number</label>
         <%= text_input f, :subscriber_phone_number, class: "form-control", value: @subscriber.phone_number, disabled: true %>
         <label for="sms_body">SMS Body Text</label>
         <div class="form-sub-label">140 character limit</div>
-        <%= textarea f, :sms_body, class: "form-control", placeholder: "This is a test message sent from the MBTA. No response necessary.", maxlength: 140 %>
+        <%= textarea f, :sms_body, class: "form-control", value: "This is a test message sent from the MBTA. No response necessary.", maxlength: 140 %>
       </div>
     </div>
     <div class="text-center">
