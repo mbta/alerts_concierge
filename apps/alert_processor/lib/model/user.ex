@@ -401,7 +401,7 @@ defmodule AlertProcessor.Model.User do
     Repo.all(
       from v in PaperTrail.Version,
       where: v.originator_id == ^admin_user_id,
-      select: [:event, :item_changes, :origin, :inserted_at, :meta],
+      select: [:item_type, :event, :item_changes, :origin, :inserted_at, :meta],
       order_by: [desc: v.inserted_at]
     )
   end
