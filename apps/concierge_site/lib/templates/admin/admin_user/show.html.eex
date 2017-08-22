@@ -36,13 +36,14 @@
       <div class="admin-table-body">
         <%= for log_detail <- @log_details, log_detail.origin do %>
           <div class="admin-table-row">
-            <div class="admin-table-cell">
-              <%= admin_log_subscriber_email(log_detail) %>
+            <div class="admin-detail-table-cell">
+              <%= link admin_log_subscriber_email(log_detail),
+                  to: admin_subscriber_path(@conn, :show, log_detail.meta["subscriber_id"])  %>
             </div>
-            <div class="admin-table-cell">
+            <div class="admin-detail-table-cell">
               <%= display_admin_log_time(log_detail) %>
             </div>
-            <div class="admin-table-cell">
+            <div class="admin-detail-table-cell">
               <%= display_admin_log_action(log_detail) %>
             </div>
           </div>

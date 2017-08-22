@@ -54,6 +54,14 @@
   flex-grow: 1;
 }
 
+.admin-detail-table-cell {
+  color: $black;
+  flex-basis: 25%;
+  flex-grow: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
 .admin-pagination {
   color: $link-color;
   float: right;
