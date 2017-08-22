@@ -123,16 +123,6 @@ defmodule AlertProcessor.Subscription.Mapper do
     [{sub1, ie1 ++ route_entities_1}, {sub2, ie2 ++ route_entities_2}]
   end
 
-  def map_stops(subscription_infos, %{"origin" => origin, "destination" => destination, "roaming" => "true"}, routes) do
-    stop_entities = map_stops_in_range(routes, origin, destination)
-
-    {:ok, {origin_name, ^origin}} = ServiceInfoCache.get_stop(origin)
-    {:ok, {destination_name, ^destination}} = ServiceInfoCache.get_stop(destination)
-
-    Enum.map(subscription_infos, fn({subscription, informed_entities}) ->
-      {Map.merge(subscription, %{origin: origin_name, destination: destination_name}), informed_entities ++ stop_entities}
-    end)
-  end
   def map_stops([{sub1, ie1}, {sub2, ie2}], %{"origin" => origin, "destination" => destination}, routes) do
     stop_entities = map_stops_in_range(routes, origin, destination)
 
