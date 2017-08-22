@@ -40,7 +40,7 @@ defmodule ConciergeSite.Dissemination.NotificationEmail do
 
   def email_subject(notification) do
     alert = notification.alert
-    [email_prefix(alert), notification.service_effect, email_suffix(alert)]
+    IO.iodata_to_binary([email_prefix(alert), notification.service_effect, email_suffix(alert)])
   end
 
   defp email_prefix(%Alert{timeframe: nil}),
