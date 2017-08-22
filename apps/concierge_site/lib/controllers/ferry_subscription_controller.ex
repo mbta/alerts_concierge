@@ -2,7 +2,7 @@ defmodule ConciergeSite.FerrySubscriptionController do
   use ConciergeSite.Web, :controller
   use Guardian.Phoenix.Controller
   alias ConciergeSite.Subscriptions.{FerryParams, Lines, TemporaryState}
-  alias AlertProcessor.{Model.Subscription, Model.User, Repo, ServiceInfoCache, Subscription.FerryMapper}
+  alias AlertProcessor.{Model.Subscription, Model.User, ServiceInfoCache, Subscription.FerryMapper}
 
   def new(conn, _params, _user, _claims) do
     render conn, "new.html"
@@ -19,7 +19,7 @@ defmodule ConciergeSite.FerrySubscriptionController do
     subscription = Subscription.one_for_user!(id, user.id, true)
     with {:ok, params} <- FerryParams.prepare_for_update_changeset(subscription, subscription_params),
          multi <- FerryMapper.build_update_subscription_transaction(subscription, params),
-         {:ok, _subscription} <- Repo.transaction(multi) do
+         :ok <- Subscription.set_versioned_subscription(multi) do
       :ok = User.clear_holding_queue_for_user_id(user.id)
       conn
       |> put_flash(:info, "Subscription updated.")
@@ -99,10 +99,10 @@ defmodule ConciergeSite.FerrySubscriptionController do
 
     multi = FerryMapper.build_subscription_transaction(subscription_infos, user)
 
-    case Repo.transaction(multi) do
-      {:ok, _} ->
+    case Subscription.set_versioned_subscription(multi) do
+      :ok ->
         redirect(conn, to: subscription_path(conn, :index))
-      {:error, _} ->
+      :error ->
         conn
         |> put_flash(:error, "There was an error saving the subscription. Please try again.")
         |> render("new.html")

@@ -2,7 +2,7 @@ defmodule ConciergeSite.AmenitySubscriptionController do
   use ConciergeSite.Web, :controller
   use Guardian.Phoenix.Controller
   alias ConciergeSite.Subscriptions.{AmenitiesParams, Lines}
-  alias AlertProcessor.{Repo, ServiceInfoCache,
+  alias AlertProcessor.{ServiceInfoCache,
     Subscription.AmenitiesMapper, Model.Subscription, Model.User}
 
   def new(conn, _params, _user, _claims) do
@@ -30,7 +30,7 @@ defmodule ConciergeSite.AmenitySubscriptionController do
     with :ok <- AmenitiesParams.validate_info_params(sub_params),
       {:ok, subscription_infos} <- AmenitiesMapper.map_subscriptions(sub_params),
       multi <- AmenitiesMapper.build_subscription_transaction(subscription_infos, user),
-      {:ok, _} <- Repo.transaction(multi) do
+      :ok <- Subscription.set_versioned_subscription(multi) do
         redirect(conn, to: subscription_path(conn, :index))
     else
       {:error, message} ->
@@ -53,7 +53,7 @@ defmodule ConciergeSite.AmenitySubscriptionController do
       :ok <- AmenitiesParams.validate_info_params(sub_params),
       {:ok, subscription_infos} <- AmenitiesMapper.map_subscriptions(sub_params),
       multi <- AmenitiesMapper.build_subscription_update_transaction(subscription, subscription_infos),
-      {:ok, _} <- Repo.transaction(multi) do
+      :ok <- Subscription.set_versioned_subscription(multi) do
         :ok = User.clear_holding_queue_for_user_id(user.id)
         redirect(conn, to: subscription_path(conn, :index))
     else

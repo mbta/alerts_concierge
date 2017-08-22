@@ -127,7 +127,7 @@ defmodule ConciergeSite.AmenitySubscriptionControllerTest do
         |> amenity_subscription()
         |> weekday_subscription()
         |> Map.merge(%{user: user})
-        |> insert()
+        |> PaperTrail.insert!()
 
       params = %{"subscription" => %{
         "stops" => "North Quincy,Forest Hills",

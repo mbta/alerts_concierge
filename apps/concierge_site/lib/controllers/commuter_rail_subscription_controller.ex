@@ -3,7 +3,7 @@ defmodule ConciergeSite.CommuterRailSubscriptionController do
   use Guardian.Phoenix.Controller
   alias ConciergeSite.Subscriptions.{CommuterRailParams, Lines, TemporaryState}
   alias AlertProcessor.Model.{Subscription, User}
-  alias AlertProcessor.{Repo, ServiceInfoCache, Subscription.CommuterRailMapper}
+  alias AlertProcessor.{ServiceInfoCache, Subscription.CommuterRailMapper}
 
   def new(conn, _params, _user, _claims) do
     render conn, "new.html"
@@ -20,7 +20,7 @@ defmodule ConciergeSite.CommuterRailSubscriptionController do
     subscription = Subscription.one_for_user!(id, user.id, true)
     with {:ok, params} <- CommuterRailParams.prepare_for_update_changeset(subscription, subscription_params),
          multi <- CommuterRailMapper.build_update_subscription_transaction(subscription, params),
-         {:ok, _subscription} <- Repo.transaction(multi) do
+         :ok <- Subscription.set_versioned_subscription(multi) do
       :ok = User.clear_holding_queue_for_user_id(user.id)
       conn
       |> put_flash(:info, "Subscription updated.")
@@ -100,10 +100,10 @@ defmodule ConciergeSite.CommuterRailSubscriptionController do
 
     multi = CommuterRailMapper.build_subscription_transaction(subscription_infos, user)
 
-    case Repo.transaction(multi) do
-      {:ok, _} ->
+    case Subscription.set_versioned_subscription(multi) do
+      :ok ->
         redirect(conn, to: subscription_path(conn, :index))
-      {:error, _} ->
+      :error ->
         conn
         |> put_flash(:error, "There was an error saving the subscription. Please try again.")
         |> render("new.html")
