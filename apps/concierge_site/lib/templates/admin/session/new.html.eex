@@ -15,6 +15,7 @@
       <%= error_tag f, :password %>
       <%= password_input f, :password, placeholder: "Enter your password", class: "form-control", pattern: password_regex_string(), required: true %>
       <span></span>
+      <p class="text-right"><%= link("Forgot password?", to: password_reset_path(@conn, :new), class: "forgot-password-link") %></p>
     </div>
     <div class="login-footer">
       <%= submit "Sign In", class: "btn btn-primary btn-login" %>

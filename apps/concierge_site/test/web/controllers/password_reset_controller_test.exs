@@ -56,6 +56,16 @@ defmodule ConciergeSite.PasswordResetControllerTest do
     assert html_response(conn, 200) =~ "Enter and confirm your new password below."
   end
 
+  test "GET /reset-password/:id/edit with a Password Reset associated with a deactivated Admin", %{conn: conn}  do
+    user = insert(:user, role: "deactivated_admin")
+    password_reset = insert(:password_reset, user: user)
+
+    response = assert_error_sent 404, fn ->
+      get(conn, password_reset_path(conn, :edit, password_reset))
+    end
+    assert {404, _, "Page not found"} = response
+  end
+
   test "GET /reset-password/:id/edit with an expired password reset", %{conn: conn}  do
     password_reset = insert(:password_reset, expired_at: DateTime.subtract!(DateTime.now_utc, 1))
 
@@ -74,7 +84,7 @@ defmodule ConciergeSite.PasswordResetControllerTest do
     assert {404, _, "Page not found"} = response
   end
 
-  test "PATCH /reset-password/:id/ with a redeemable Password Reset", %{conn: conn} do
+  test "PATCH /reset-password/:id/ with a redeemable Password Reset and a regular user", %{conn: conn} do
     user = insert(:user, encrypted_password: @encrypted_password)
     password_reset = insert(:password_reset, user: user)
 
@@ -91,6 +101,40 @@ defmodule ConciergeSite.PasswordResetControllerTest do
     assert html_response(conn, 302) =~ "/my-account/edit"
     refute updated_user.encrypted_password == @encrypted_password
     refute is_nil(updated_password_reset.redeemed_at)
+  end
+
+  test "PATCH /reset-password/:id/ with a redeemable Password Reset and an admin user", %{conn: conn} do
+    user = insert(:user, encrypted_password: @encrypted_password, role: "customer_support")
+    password_reset = insert(:password_reset, user: user)
+
+    params = %{"user" => %{
+      "password" => "P@ssword1",
+      "password_confirmation" => "P@ssword1",
+    }}
+
+    conn = patch(conn, password_reset_path(conn, :update, password_reset), params)
+
+    updated_user = Repo.get(User, user.id)
+    updated_password_reset = Repo.get(PasswordReset, password_reset.id)
+
+    assert html_response(conn, 302) =~ "/admin/subscribers"
+    refute updated_user.encrypted_password == @encrypted_password
+    refute is_nil(updated_password_reset.redeemed_at)
+  end
+
+  test "PATCH /reset-password/:id/ with a redeemable Password Reset and a deactivated admin user", %{conn: conn} do
+    user = insert(:user, role: "deactivated_admin")
+    password_reset = insert(:password_reset, user: user)
+
+    params = %{"user" => %{
+      "password" => "P@ssword1",
+      "password_confirmation" => "P@ssword1",
+    }}
+
+    response = assert_error_sent 404, fn ->
+      patch(conn, password_reset_path(conn, :update, password_reset), params)
+    end
+    assert {404, _, "Page not found"} = response
   end
 
   test "PATCH /reset-password/:id with a redeemable Password Reset but an invalid password", %{conn: conn} do
