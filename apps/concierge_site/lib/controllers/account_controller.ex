@@ -3,6 +3,7 @@ defmodule ConciergeSite.AccountController do
 
   alias AlertProcessor.Model.User
   alias ConciergeSite.ConfirmationMessage
+  alias ConciergeSite.SignInHelper
 
   plug :scrub_params, "user" when action in [:create]
 
@@ -15,9 +16,7 @@ defmodule ConciergeSite.AccountController do
     case User.create_account(user_params) do
       {:ok, user} ->
         ConfirmationMessage.send_confirmation(user)
-        conn
-        |> Guardian.Plug.sign_in(user, :access, perms: %{default: Guardian.Permissions.max})
-        |> redirect(to: "/my-subscriptions")
+        SignInHelper.sign_in(conn, user, redirect: :default)
       {:error, changeset} ->
         render conn, "new.html", account_changeset: changeset, errors: errors(changeset)
     end

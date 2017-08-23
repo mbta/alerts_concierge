@@ -1,11 +1,11 @@
 defmodule ConciergeSite.PasswordResetController do
   use ConciergeSite.Web, :controller
-  import ConciergeSite.SignInHelper, only: [admin_guardian_sign_in: 2]
   import Ecto.Query
   alias AlertProcessor.Model.{PasswordReset, User}
   alias AlertProcessor.Repo
   alias Calendar.DateTime
   alias ConciergeSite.Dissemination.{Email, Mailer}
+  alias ConciergeSite.SignInHelper
   alias Ecto.Multi
 
   @email_regex ~r/^([a-zA-Z0-9_\-\.]+)@([a-zA-Z0-9_\-\.]+)\.([a-zA-Z]{2,5})$/
@@ -59,16 +59,10 @@ defmodule ConciergeSite.PasswordResetController do
       |> Multi.update(:password_reset, password_reset_changeset)
 
     case Repo.transaction(multi) do
-      {:ok, %{user: %User{role: role} = user}} when role in ["customer_support", "application_administration"] ->
-        conn
-        |> admin_guardian_sign_in(user)
-        |> put_flash(:info, "Your password has been updated.")
-        |> redirect(to: admin_subscriber_path(conn, :index))
       {:ok, %{user: user}} ->
         conn
-        |> Guardian.Plug.sign_in(user, :access, perms: %{default: Guardian.Permissions.max})
         |> put_flash(:info, "Your password has been updated.")
-        |> redirect(to: my_account_path(conn, :edit))
+        |> SignInHelper.sign_in(user, redirect: :my_account)
       {:error, :user, changeset, _} ->
         conn
         |> assign(:changeset, changeset)

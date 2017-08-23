@@ -117,7 +117,7 @@ defmodule ConciergeSite.PasswordResetControllerTest do
     updated_user = Repo.get(User, user.id)
     updated_password_reset = Repo.get(PasswordReset, password_reset.id)
 
-    assert html_response(conn, 302) =~ "/admin/subscribers"
+    assert html_response(conn, 302) =~ "/admin/my-account/edit"
     refute updated_user.encrypted_password == @encrypted_password
     refute is_nil(updated_password_reset.redeemed_at)
   end

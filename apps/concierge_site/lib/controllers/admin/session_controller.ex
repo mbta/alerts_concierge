@@ -1,7 +1,7 @@
 defmodule ConciergeSite.Admin.SessionController do
   use ConciergeSite.Web, :controller
   alias AlertProcessor.Model.User
-  import ConciergeSite.SignInHelper, only: [admin_guardian_sign_in: 2]
+  alias ConciergeSite.SignInHelper
 
   plug :scrub_params, "user" when action in [:create]
 
@@ -13,9 +13,7 @@ defmodule ConciergeSite.Admin.SessionController do
   def create(conn, %{"user" => login_params}) do
     case User.authenticate_admin(login_params) do
       {:ok, user} ->
-        conn
-        |> admin_guardian_sign_in(user)
-        |> redirect(to: admin_subscriber_path(conn, :index))
+        SignInHelper.sign_in(conn, user, redirect: :default)
       :deactivated ->
         changeset = User.login_changeset(%User{})
         conn
