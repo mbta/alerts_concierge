@@ -15,7 +15,7 @@ defmodule ConciergeSite.Admin.MyAccountController do
     mode_subscription_params = Map.get(params, "mode_subscriptions")
     update_params = UserParams.prepare_for_update_changeset(user_params)
 
-    with {:ok, _user} <- User.update_account(user, update_params),
+    with {:ok, _user} <- User.update_account(user, update_params, user.id),
          :ok <- Subscription.create_full_mode_subscriptions(user, mode_subscription_params) do
       conn
       |> put_flash(:info, "Account updated.")

@@ -15,10 +15,10 @@ defmodule ConciergeSite.FerrySubscriptionController do
     render conn, "edit.html", subscription: subscription, changeset: changeset, trips: %{departure_trips: trips}
   end
 
-  def update(conn, %{"id" => id, "subscription" => subscription_params}, user, _claims) do
+  def update(conn, %{"id" => id, "subscription" => subscription_params}, user, {:ok, claims}) do
     subscription = Subscription.one_for_user!(id, user.id, true)
     with {:ok, params} <- FerryParams.prepare_for_update_changeset(subscription, subscription_params),
-         multi <- FerryMapper.build_update_subscription_transaction(subscription, params),
+         multi <- FerryMapper.build_update_subscription_transaction(subscription, params, Map.get(claims, "imp", user.id)),
          :ok <- Subscription.set_versioned_subscription(multi) do
       :ok = User.clear_holding_queue_for_user_id(user.id)
       conn
@@ -93,11 +93,11 @@ defmodule ConciergeSite.FerrySubscriptionController do
     end
   end
 
-  def create(conn, params, user, _claims) do
+  def create(conn, params, user, {:ok, claims}) do
     ferry_params = FerryParams.prepare_for_mapper(params["subscription"])
     {:ok, subscription_infos} = FerryMapper.map_subscriptions(ferry_params)
 
-    multi = FerryMapper.build_subscription_transaction(subscription_infos, user)
+    multi = FerryMapper.build_subscription_transaction(subscription_infos, user, Map.get(claims, "imp", user.id))
 
     case Subscription.set_versioned_subscription(multi) do
       :ok ->

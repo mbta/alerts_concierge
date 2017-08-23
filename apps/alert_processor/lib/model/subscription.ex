@@ -95,16 +95,16 @@ defmodule AlertProcessor.Model.Subscription do
     |> validate_length(:relevant_days, min: 1)
   end
 
-  def update_subscription(struct, params) do
+  def update_subscription(struct, params, originator) do
     struct
     |> update_changeset(params)
-    |> PaperTrail.update()
+    |> PaperTrail.update(originator: User.wrap_id(originator), meta: %{owner: struct.user_id})
     |> normalize_papertrail_result()
   end
 
-  def delete_subscription(struct) do
+  def delete_subscription(struct, originator) do
     struct
-    |> PaperTrail.delete()
+    |> PaperTrail.delete(originator: User.wrap_id(originator), meta: %{owner: struct.user_id})
     |> normalize_papertrail_result()
   end
 
@@ -390,9 +390,9 @@ defmodule AlertProcessor.Model.Subscription do
                   end_time: ~T[23:59:59],
                   alert_priority_type: :low,
                   type: type})
-                |> PaperTrail.insert()
+                |> PaperTrail.insert(meta: %{owner: user.id})
               type_val == "false" && subscription != nil ->
-                PaperTrail.delete(subscription)
+                PaperTrail.delete(subscription, meta: %{owner: user.id})
               true -> {:ok, subscription}
             end
           end)

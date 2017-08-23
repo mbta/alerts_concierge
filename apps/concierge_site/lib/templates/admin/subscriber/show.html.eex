@@ -27,9 +27,10 @@
       <%= if not User.is_admin?(@subscriber) do %>
           <%= link "Log in as user",
                    to: admin_impersonate_session_path(@conn, :create, %{"user_id" => @subscriber.id}),
-                   class: "btn btn-outline-primary admin-user-btn", 
+                   class: "btn btn-outline-primary admin-user-btn",
                    method: :post %>
       <% end %>
+      <%= link "Send message", to: admin_subscriber_subscriber_path(@conn, :new_message, @subscriber.id), class: "btn btn-outline-primary admin-user-btn" %>
     </div>
     <div class="admin-info-contents">
       <h2>Current Subscriptions</h2>
@@ -51,6 +52,19 @@
           </div>
         </div>
       <% end %>
+      <h2>Account Activity</h2>
+      <div class="admin-table">
+        <div class="admin-table-header">
+          <div class="admin-table-column"></div>
+        </div>
+        <div class="admin-table-body">
+          <%= for account_change <- @account_changelog do %>
+            <div class="admin-table-row">
+              <div class="admin-table-cell"><%= account_change %></div>
+            </div>
+          <% end %>
+        </div>
+      </div>
     </div>
   </div>
 </div>

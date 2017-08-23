@@ -67,13 +67,13 @@ defmodule AlertProcessor.Model.User do
     |> normalize_papertrail_result()
   end
 
-  def create_admin_account(params) do
+  def create_admin_account(params, originator) do
     %__MODULE__{}
     |> cast(params, [:role])
     |> validate_required([:role])
     |> validate_inclusion(:role, @admin_roles)
     |> create_account_changeset(params)
-    |> PaperTrail.insert()
+    |> PaperTrail.insert(originator: wrap_id(originator))
     |> normalize_papertrail_result()
   end
 
@@ -98,10 +98,10 @@ defmodule AlertProcessor.Model.User do
     |> hash_password()
   end
 
-  def update_account(struct, params) do
+  def update_account(struct, params, originator) do
     struct
     |> update_account_changeset(params)
-    |> PaperTrail.update()
+    |> PaperTrail.update(originator: wrap_id(originator))
     |> normalize_papertrail_result()
   end
 
@@ -114,10 +114,10 @@ defmodule AlertProcessor.Model.User do
     |> validate_format(:phone_number, ~r/^[0-9]{10}$/, message: "Phone number is not in a valid format.")
   end
 
-  def disable_account(struct) do
+  def disable_account(struct, originator) do
     struct
     |> disable_account_changeset()
-    |> PaperTrail.update()
+    |> PaperTrail.update(originator: wrap_id(originator))
     |> normalize_papertrail_result()
   end
 
@@ -128,10 +128,10 @@ defmodule AlertProcessor.Model.User do
     |> change(vacation_end: DateTime.from_naive!(~N[9999-12-25 23:59:59], "Etc/UTC"))
   end
 
-  def deactivate_admin(struct) do
+  def deactivate_admin(struct, originator) do
     struct
     |> deactivate_admin_changeset()
-    |> PaperTrail.update()
+    |> PaperTrail.update(originator: wrap_id(originator))
     |> normalize_papertrail_result()
   end
 
@@ -139,10 +139,10 @@ defmodule AlertProcessor.Model.User do
     change(struct, role: "deactivated_admin")
   end
 
-  def activate_admin(struct, params) do
+  def activate_admin(struct, params, originator) do
     struct
     |> activate_admin_changeset(params)
-    |> PaperTrail.update()
+    |> PaperTrail.update(originator: wrap_id(originator))
     |> normalize_papertrail_result()
   end
 
@@ -174,10 +174,10 @@ defmodule AlertProcessor.Model.User do
     |> validate_required([:email, :password])
   end
 
-  def update_password(user, params) do
+  def update_password(user, params, originator) do
     user
     |> update_password_changeset(params)
-    |> PaperTrail.update()
+    |> PaperTrail.update(originator: wrap_id(originator))
     |> normalize_papertrail_result()
   end
 
@@ -194,17 +194,17 @@ defmodule AlertProcessor.Model.User do
     |> hash_password()
   end
 
-  def update_vacation(user, params) do
+  def update_vacation(user, params, originator) do
     user
     |> update_vacation_changeset(params)
-    |> PaperTrail.update()
+    |> PaperTrail.update(originator: wrap_id(originator))
     |> normalize_papertrail_result()
   end
 
-  def remove_vacation(user) do
+  def remove_vacation(user, originator) do
     user
     |> remove_vacation_changeset()
-    |> PaperTrail.update()
+    |> PaperTrail.update(originator: wrap_id(originator))
     |> normalize_papertrail_result()
   end
 
@@ -390,7 +390,7 @@ defmodule AlertProcessor.Model.User do
   def log_admin_action(:view_subscriber, admin_user, user) do
     admin_user
     |> Ecto.Changeset.change()
-    |> PaperTrail.update(originator: admin_user, origin: "admin:view-subscriber", meta: %{subscriber_id: user.id, subscriber_email: user.email})
+    |> PaperTrail.update(originator: wrap_id(admin_user), origin: "admin:view-subscriber", meta: %{subscriber_id: user.id, subscriber_email: user.email})
     |> normalize_papertrail_result()
   end
 
@@ -405,4 +405,8 @@ defmodule AlertProcessor.Model.User do
       order_by: [desc: v.inserted_at]
     )
   end
+
+  @spec wrap_id(__MODULE__.t | String.t) :: __MODULE__.t
+  def wrap_id(%__MODULE__{} = user), do: user
+  def wrap_id(user_id), do: %__MODULE__{id: user_id}
 end

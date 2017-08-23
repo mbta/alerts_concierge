@@ -657,7 +657,7 @@ defmodule AlertProcessor.Subscription.CommuterRailMapperTest do
     test "it builds a multi struct to persist subscriptions and informed_entities" do
       user = insert(:user)
       {:ok, subscription_infos} = CommuterRailMapper.map_subscriptions(@round_trip_params)
-      multi = CommuterRailMapper.build_subscription_transaction(subscription_infos, user)
+      multi = CommuterRailMapper.build_subscription_transaction(subscription_infos, user, user.id)
       result = Ecto.Multi.to_list(multi)
 
       assert {{:subscription, 0}, {:run, function1}} = List.first(result)
@@ -688,7 +688,7 @@ defmodule AlertProcessor.Subscription.CommuterRailMapperTest do
         "trips" => ["341"]
       }
 
-      multi = CommuterRailMapper.build_update_subscription_transaction(subscription, params)
+      multi = CommuterRailMapper.build_update_subscription_transaction(subscription, params, user.id)
 
       assert [
         {{:informed_entity, 0}, {:run, function1}},

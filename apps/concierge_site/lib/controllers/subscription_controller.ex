@@ -41,9 +41,9 @@ defmodule ConciergeSite.SubscriptionController do
     render conn, "confirm_delete.html", subscription: subscription
   end
 
-  def delete(conn, %{"id" => id}, user, _claims) do
+  def delete(conn, %{"id" => id}, user, {:ok, claims}) do
     subscription = Subscription.one_for_user!(id, user.id)
-    case Subscription.delete_subscription(subscription) do
+    case Subscription.delete_subscription(subscription, Map.get(claims, "imp", user.id)) do
       {:ok, _} ->
         :ok = User.clear_holding_queue_for_user_id(user.id)
         conn

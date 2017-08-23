@@ -10,8 +10,8 @@ defmodule ConciergeSite.PasswordController do
     render conn, "edit.html", changeset: changeset, user: user
   end
 
-  def update(conn, %{"user" => user_params}, user, _claims) do
-    case User.update_password(user, user_params) do
+  def update(conn, %{"user" => user_params}, user, {:ok, claims}) do
+    case User.update_password(user, user_params, Map.get(claims, "imp", user.id)) do
       {:ok, _user} ->
         conn
         |> put_flash(:info, "Your password has been updated.")

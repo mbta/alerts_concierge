@@ -675,7 +675,7 @@ defmodule AlertProcessor.Subscription.FerryMapperTest do
     test "it builds a multi struct to persist subscriptions and informed_entities" do
       user = insert(:user)
       {:ok, subscription_infos} = FerryMapper.map_subscriptions(@round_trip_params)
-      multi = FerryMapper.build_subscription_transaction(subscription_infos, user)
+      multi = FerryMapper.build_subscription_transaction(subscription_infos, user, user.id)
       result = Ecto.Multi.to_list(multi)
 
       assert {{:subscription, 0}, {:run, function1}} = List.first(result)
@@ -707,7 +707,7 @@ defmodule AlertProcessor.Subscription.FerryMapperTest do
         "trips" => ["Boat-F4-Boat-Charlestown-11:15:00-weekday-1"]
       }
 
-      multi = FerryMapper.build_update_subscription_transaction(subscription, params)
+      multi = FerryMapper.build_update_subscription_transaction(subscription, params, user.id)
 
       assert [
         {{:informed_entity, 0}, {:run, function1}},

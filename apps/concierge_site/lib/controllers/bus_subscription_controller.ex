@@ -14,11 +14,11 @@ defmodule ConciergeSite.BusSubscriptionController do
     render conn, "edit.html", subscription: subscription, changeset: changeset
   end
 
-  def update(conn, %{"id" => id, "subscription" => subscription_params}, user, _claims) do
+  def update(conn, %{"id" => id, "subscription" => subscription_params}, user, {:ok, claims}) do
     subscription = Subscription.one_for_user!(id, user.id)
     params = SubscriptionParams.prepare_for_update_changeset(subscription_params)
 
-    case Subscription.update_subscription(subscription, params) do
+    case Subscription.update_subscription(subscription, params, Map.get(claims, "imp", user.id)) do
       {:ok, _subscription} ->
         :ok = User.clear_holding_queue_for_user_id(user.id)
         conn
@@ -31,11 +31,11 @@ defmodule ConciergeSite.BusSubscriptionController do
     end
   end
 
-  def create(conn, params, user, _claims) do
+  def create(conn, params, user, {:ok, claims}) do
     with subscription_params <- params["subscription"],
       mapper_params <- BusParams.prepare_for_mapper(subscription_params),
       {:ok, subscriptions} <- BusMapper.map_subscription(mapper_params),
-      multi <- BusMapper.build_subscription_transaction(subscriptions, user),
+      multi <- BusMapper.build_subscription_transaction(subscriptions, user, Map.get(claims, "imp", user.id)),
       :ok <- Subscription.set_versioned_subscription(multi) do
         redirect(conn, to: subscription_path(conn, :index))
     else

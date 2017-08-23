@@ -9,10 +9,10 @@ defmodule ConciergeSite.MyAccountController do
     render conn, "edit.html", changeset: changeset, user: user
   end
 
-  def update(conn, %{"user" => user_params}, user, _claims) do
+  def update(conn, %{"user" => user_params}, user, {:ok, claims}) do
     params = UserParams.prepare_for_update_changeset(user_params)
 
-    case User.update_account(user, params) do
+    case User.update_account(user, params, Map.get(claims, "imp", user.id)) do
       {:ok, user} ->
         :ok = User.clear_holding_queue_for_user_id(user.id)
         conn
@@ -25,8 +25,8 @@ defmodule ConciergeSite.MyAccountController do
     end
   end
 
-  def delete(conn, _params, user, _claims) do
-    case User.disable_account(user) do
+  def delete(conn, _params, user, {:ok, claims}) do
+    case User.disable_account(user, Map.get(claims, "imp", user.id)) do
       {:ok, _} ->
         redirect(conn, to: page_path(conn, :account_disabled))
       {:error, _} ->

@@ -118,7 +118,7 @@ defmodule AlertProcessor.Subscription.AmenitiesMapperTest do
     test "it builds a multi struct to persist subscriptions and informed_entities" do
       user = insert(:user)
       {:ok, subscription_infos} = AmenitiesMapper.map_subscriptions(@params)
-      multi = AmenitiesMapper.build_subscription_transaction(subscription_infos, user)
+      multi = AmenitiesMapper.build_subscription_transaction(subscription_infos, user, user.id)
       result = Ecto.Multi.to_list(multi)
 
       assert {{:subscription, 0}, {:run, function}} = List.first(result)

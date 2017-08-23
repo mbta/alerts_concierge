@@ -24,11 +24,11 @@ defmodule AlertProcessor.Subscription.SnapshotTest do
       {:ok, updated_sub} = Subscription.update_subscription(inserted_sub, %{
         updated_at: date,
         relevant_days: [:saturday]
-      })
+      }, subscriber.id)
       {:ok, future_updated_sub} = Subscription.update_subscription(updated_sub, %{
         updated_at: future_date,
         relevant_days: [:saturday, :sunday]
-      })
+      }, subscriber.id)
 
       [original_version, updated_version, future_version] = PaperTrail.get_versions(future_updated_sub)
       insert_changeset = Ecto.Changeset.cast(original_version, %{inserted_at: past_date}, [:inserted_at])
@@ -58,7 +58,7 @@ defmodule AlertProcessor.Subscription.SnapshotTest do
       {:ok, future_date, _} = DateTime.from_iso8601("2118-01-01T01:01:01Z")
       user = insert(:user)
       {:ok, [info|_]} = BusMapper.map_subscription(params)
-      multi = Mapper.build_subscription_transaction([info], user)
+      multi = Mapper.build_subscription_transaction([info], user, user.id)
       Subscription.set_versioned_subscription(multi)
 
       [snapshot] = Snapshot.get_snapshots_by_datetime(user, future_date)
@@ -93,7 +93,7 @@ defmodule AlertProcessor.Subscription.SnapshotTest do
       }
 
       {:ok, info} = CommuterRailMapper.map_subscriptions(sub_params)
-      multi = Mapper.build_subscription_transaction(info, user)
+      multi = Mapper.build_subscription_transaction(info, user, user.id)
       Subscription.set_versioned_subscription(multi)
       Repo.update_all(PaperTrail.Version, set: [inserted_at: past_date])
 
@@ -111,7 +111,7 @@ defmodule AlertProcessor.Subscription.SnapshotTest do
       |> Repo.preload(:user)
       |> Enum.each(fn(sub) ->
         {:ok, params} = CommuterRailParams.prepare_for_update_changeset(sub, update_params)
-        multi = CommuterRailMapper.build_update_subscription_transaction(sub, params)
+        multi = CommuterRailMapper.build_update_subscription_transaction(sub, params, user.id)
         Subscription.set_versioned_subscription(multi)
       end)
 

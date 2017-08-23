@@ -313,7 +313,7 @@ defmodule AlertProcessor.Model.SubscriptionTest do
     test "creates subscription and informed entities from Ecto.Multi" do
       user = insert(:user)
       {:ok, [info|_]} = BusMapper.map_subscription(@params)
-      multi = Mapper.build_subscription_transaction([info], user)
+      multi = Mapper.build_subscription_transaction([info], user, user.id)
       Subscription.set_versioned_subscription(multi)
 
       assert [sub|_] = Repo.all(Subscription) |> Repo.preload(:informed_entities)
@@ -323,7 +323,7 @@ defmodule AlertProcessor.Model.SubscriptionTest do
     test "associates versions of informed entities with version of subscription" do
       user = insert(:user)
       {:ok, [info|_]} = BusMapper.map_subscription(@params)
-      multi = Mapper.build_subscription_transaction([info], user)
+      multi = Mapper.build_subscription_transaction([info], user, user.id)
       Subscription.set_versioned_subscription(multi)
 
       [sub|_] = Repo.all(Subscription) |> Repo.preload(:informed_entities)
@@ -346,7 +346,7 @@ defmodule AlertProcessor.Model.SubscriptionTest do
         |> Map.merge(%{user_id: user.id})
         |> insert()
 
-      assert {:ok, subscription} = Subscription.update_subscription(subscription, %{"alert_priority_type" => :low})
+      assert {:ok, subscription} = Subscription.update_subscription(subscription, %{"alert_priority_type" => :low}, user.id)
       assert subscription.alert_priority_type == :low
     end
 
@@ -358,7 +358,7 @@ defmodule AlertProcessor.Model.SubscriptionTest do
         |> Map.merge(%{user_id: user.id})
         |> insert()
 
-      assert {:error, changeset} = Subscription.update_subscription(subscription, %{"alert_priority_type" => :super_high})
+      assert {:error, changeset} = Subscription.update_subscription(subscription, %{"alert_priority_type" => :super_high}, user.id)
       refute changeset.valid?
     end
   end
@@ -372,7 +372,7 @@ defmodule AlertProcessor.Model.SubscriptionTest do
         |> Map.merge(%{user_id: user.id})
         |> insert()
 
-      assert {:ok, subscription} = Subscription.delete_subscription(subscription)
+      assert {:ok, subscription} = Subscription.delete_subscription(subscription, user.id)
       assert nil == Repo.get(Subscription, subscription.id)
     end
   end

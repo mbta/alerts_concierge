@@ -9,10 +9,10 @@ defmodule ConciergeSite.VacationController do
     render conn, "edit.html", changeset: changeset, user: user
   end
 
-  def update(conn, %{"user" => user_params}, user, _claims) do
+  def update(conn, %{"user" => user_params}, user, {:ok, claims}) do
     case UserParams.convert_vacation_strings_to_datetimes(user_params) do
       {:ok, vacation_dates} ->
-        case User.update_vacation(user, vacation_dates) do
+        case User.update_vacation(user, vacation_dates, Map.get(claims, "imp", user.id)) do
           {:ok, user} ->
             vacation_start = Calendar.Strftime.strftime!(user.vacation_start, "%B %e, %Y")
             vacation_end = Calendar.Strftime.strftime!(user.vacation_end, "%B %e, %Y")
@@ -31,9 +31,9 @@ defmodule ConciergeSite.VacationController do
     end
   end
 
-  def delete(conn, _params, user, _claims) do
+  def delete(conn, _params, user, {:ok, claims}) do
     with {:ok, _} <- User.opt_in_phone_number(user),
-      {:ok, _user} <- User.remove_vacation(user) do
+      {:ok, _user} <- User.remove_vacation(user, Map.get(claims, "imp", user.id)) do
         conn
         |> put_flash(:info, "Your alerts are no longer paused.")
         |> redirect(to: subscription_path(conn, :index))

@@ -20,11 +20,11 @@ defmodule ConciergeSite.SubwaySubscriptionController do
     render conn, "edit.html", subscription: subscription, changeset: changeset
   end
 
-  def update(conn, %{"id" => id, "subscription" => subscription_params}, user, _claims) do
+  def update(conn, %{"id" => id, "subscription" => subscription_params}, user, {:ok, claims}) do
     subscription = Subscription.one_for_user!(id, user.id)
     params = SubscriptionParams.prepare_for_update_changeset(subscription_params)
 
-    case Subscription.update_subscription(subscription, params) do
+    case Subscription.update_subscription(subscription, params, Map.get(claims, "imp", user.id)) do
       {:ok, _subscription} ->
         :ok = User.clear_holding_queue_for_user_id(user.id)
         conn
@@ -78,11 +78,11 @@ defmodule ConciergeSite.SubwaySubscriptionController do
     end
   end
 
-  def create(conn, params, user, _claims) do
+  def create(conn, params, user, {:ok, claims}) do
     subway_params = SubwayParams.prepare_for_mapper(params["subscription"])
     {:ok, subscription_infos} = SubwayMapper.map_subscriptions(subway_params)
 
-    multi = SubwayMapper.build_subscription_transaction(subscription_infos, user)
+    multi = SubwayMapper.build_subscription_transaction(subscription_infos, user, Map.get(claims, "imp", user.id))
 
     case Subscription.set_versioned_subscription(multi) do
       :ok ->
