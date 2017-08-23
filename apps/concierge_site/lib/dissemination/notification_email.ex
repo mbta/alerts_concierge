@@ -1,6 +1,7 @@
 defmodule ConciergeSite.Dissemination.NotificationEmail do
   @moduledoc "Bamboo Mailer interface"
   import Bamboo.Email
+  import AlertProcessor.Helpers.StringHelper, only: [capitalize_first: 1]
   alias AlertProcessor.Model.{Alert, Notification}
   alias AlertProcessor.Helpers.ConfigHelper
   alias ConciergeSite.Helpers.MailHelper
@@ -45,8 +46,8 @@ defmodule ConciergeSite.Dissemination.NotificationEmail do
 
   defp email_prefix(%Alert{timeframe: nil}),
     do: ""
-  defp email_prefix(%Alert{timeframe: << first_character :: binary-1, rest :: binary >>}),
-    do: [String.upcase(first_character), rest, ": "]
+  defp email_prefix(%Alert{timeframe: timeframe}),
+    do: [capitalize_first(timeframe), ": "]
 
   defp email_suffix(%Alert{recurrence: nil}), do: ""
   defp email_suffix(%Alert{recurrence: recurrence}), do: [" ", recurrence]
