@@ -515,4 +515,14 @@ defmodule AlertProcessor.Model.UserTest do
       assert subscriber2_log_time > subscriber1_log_time
     end
   end
+
+  describe "wrap_id/1" do
+    test "wraps id in user struct" do
+      assert %User{id: "123-456-7890"} == User.wrap_id("123-456-7890")
+    end
+
+    test "returns user struct if provided" do
+      assert %User{id: "098-765-4321"} == User.wrap_id(%User{id: "098-765-4321"})
+    end
+  end
 end

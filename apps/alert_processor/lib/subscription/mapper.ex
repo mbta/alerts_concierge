@@ -178,7 +178,7 @@ defmodule AlertProcessor.Subscription.Mapper do
     end)
   end
 
-  def build_subscription_transaction(subscriptions, user, originator_id) do
+  def build_subscription_transaction(subscriptions, user, originator) do
     subscriptions
     |> Enum.with_index
     |> Enum.reduce(Multi.new, fn({{sub, ies}, index}, acc) ->
@@ -192,7 +192,7 @@ defmodule AlertProcessor.Subscription.Mapper do
 
       acc = acc
       |> Multi.run({:subscription, index}, fn _ ->
-           PaperTrail.insert(sub_to_insert, originator: %User{id: originator_id}, meta: %{owner: user.id})
+           PaperTrail.insert(sub_to_insert, originator: User.wrap_id(originator), meta: %{owner: user.id})
          end)
 
       ies
@@ -203,13 +203,13 @@ defmodule AlertProcessor.Subscription.Mapper do
           |> Map.merge(%{
             subscription_id: uuid
           })
-          PaperTrail.insert(ie_to_insert, originator: %User{id: originator_id}, meta: %{owner: user.id})
+          PaperTrail.insert(ie_to_insert, originator: User.wrap_id(originator), meta: %{owner: user.id})
         end)
       end)
     end)
   end
 
-  def build_update_subscription_transaction(subscription, %{"trips" => trips} = params, originator_id) do
+  def build_update_subscription_transaction(subscription, %{"trips" => trips} = params, originator) do
     subscription_changeset = Subscription.create_changeset(subscription, params)
     current_trip_entities =
       subscription.informed_entities
@@ -220,7 +220,7 @@ defmodule AlertProcessor.Subscription.Mapper do
       |> Enum.with_index()
       |> Enum.reduce(Multi.new(), fn({trip, index}, acc) ->
            Multi.run(acc, {:informed_entity, index}, fn _ ->
-             PaperTrail.insert(%InformedEntity{subscription_id: subscription.id, trip: trip}, originator: %User{id: originator_id}, meta: %{owner: subscription.user_id})
+             PaperTrail.insert(%InformedEntity{subscription_id: subscription.id, trip: trip}, originator: User.wrap_id(originator), meta: %{owner: subscription.user_id})
            end)
          end)
 
@@ -228,11 +228,11 @@ defmodule AlertProcessor.Subscription.Mapper do
     |> Enum.with_index()
     |> Enum.reduce(multi, fn({current_trip_entity, index}, acc) ->
           Multi.run(acc, {:remove_old, index}, fn _ ->
-            PaperTrail.delete(current_trip_entity, originator: %User{id: originator_id}, meta: %{owner: subscription.user_id})
+            PaperTrail.delete(current_trip_entity, originator: User.wrap_id(originator), meta: %{owner: subscription.user_id})
           end)
         end)
     |> Multi.run(:subscription, fn _ ->
-         PaperTrail.update(subscription_changeset, originator: %User{id: originator_id}, meta: %{owner: subscription.user_id})
+         PaperTrail.update(subscription_changeset, originator: User.wrap_id(originator), meta: %{owner: subscription.user_id})
        end)
   end
 

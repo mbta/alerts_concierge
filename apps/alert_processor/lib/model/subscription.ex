@@ -95,16 +95,16 @@ defmodule AlertProcessor.Model.Subscription do
     |> validate_length(:relevant_days, min: 1)
   end
 
-  def update_subscription(struct, params, originator_id) do
+  def update_subscription(struct, params, originator) do
     struct
     |> update_changeset(params)
-    |> PaperTrail.update(originator: %User{id: originator_id}, meta: %{owner: struct.user_id})
+    |> PaperTrail.update(originator: User.wrap_id(originator), meta: %{owner: struct.user_id})
     |> normalize_papertrail_result()
   end
 
-  def delete_subscription(struct, originator_id) do
+  def delete_subscription(struct, originator) do
     struct
-    |> PaperTrail.delete(originator: %User{id: originator_id}, meta: %{owner: struct.user_id})
+    |> PaperTrail.delete(originator: User.wrap_id(originator), meta: %{owner: struct.user_id})
     |> normalize_papertrail_result()
   end
 
