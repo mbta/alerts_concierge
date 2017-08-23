@@ -7,6 +7,8 @@ defmodule ConciergeSite.SignInHelper do
   import Phoenix.Controller, only: [redirect: 2]
   alias AlertProcessor.Model.User
 
+  @endpoint ConciergeSite.Endpoint
+
   @doc """
   Signs in a user with Guardian and redirects based on the user's role and the
   route specified in options. Valid redirect options are :my_account and
@@ -14,16 +16,10 @@ defmodule ConciergeSite.SignInHelper do
   and regular users are redirected to my subscriptions.
   """
   @spec sign_in(Plug.Conn.t, User.t, [redirect: atom]) :: Plug.Conn.t
-  def sign_in(conn, user, redirect: :my_account) do
+  def sign_in(conn, user, opts) do
     conn
     |> sign_in_user(user)
-    |> my_account_redirect(user)
-  end
-
-  def sign_in(conn, user, redirect: :default) do
-    conn
-    |> sign_in_user(user)
-    |> default_redirect(user)
+    |> redirect(to: redirect_path(user, Keyword.get(opts, :redirect, :default)))
   end
 
   defp sign_in_user(conn, %User{role: "customer_support"} = user) do
@@ -46,19 +42,19 @@ defmodule ConciergeSite.SignInHelper do
       perms: %{default: Guardian.Permissions.max})
   end
 
-  defp my_account_redirect(conn, user) do
+  defp redirect_path(user, :default) do
     if User.is_admin?(user) do
-      redirect(conn, to: admin_my_account_path(conn, :edit))
+      admin_subscriber_path(@endpoint, :index)
     else
-      redirect(conn, to: my_account_path(conn, :edit))
+      subscription_path(@endpoint, :index)
     end
   end
 
-  defp default_redirect(conn, user) do
+  defp redirect_path(user, :my_account) do
     if User.is_admin?(user) do
-      redirect(conn, to: admin_subscriber_path(conn, :index))
+      admin_my_account_path(@endpoint, :edit)
     else
-      redirect(conn, to: subscription_path(conn, :index))
+      my_account_path(@endpoint, :edit)
     end
   end
 end
