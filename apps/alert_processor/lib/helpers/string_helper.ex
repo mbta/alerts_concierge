@@ -24,6 +24,14 @@ defmodule AlertProcessor.Helpers.StringHelper do
   end
 
   @doc """
+  Takes a string and capitalizes only the first character without doing anything
+  to the remaining characters
+  """
+  @spec capitalize_first(String.t) :: String.t
+  def capitalize_first(<< first_character :: binary-1, rest :: binary >>),
+   do: String.upcase(first_character) <> rest
+
+  @doc """
   split_capitalize takes a string and optional split string and returns
   the string split and joined with a space with each word capitalized.
   """

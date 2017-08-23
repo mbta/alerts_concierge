@@ -1,5 +1,6 @@
 defmodule ConciergeSite.SubwaySubscriptionView do
   use ConciergeSite.Web, :view
+  import AlertProcessor.Helpers.StringHelper, only: [capitalize_first: 1]
   import ConciergeSite.TimeHelper,
     only: [travel_time_options: 0, format_time_string: 1,
            time_option_local_strftime: 1]
@@ -62,7 +63,7 @@ defmodule ConciergeSite.SubwaySubscriptionView do
   end
 
   def trip_summary_title(%{"trip_type" => "roaming"} = params, station_names) do
-    [joined_day_list(params),
+    [params |> joined_day_list() |> capitalize_first(),
      " general travel between ",
      station_names["origin"],
      " and ",

@@ -45,7 +45,7 @@ defmodule ConciergeSite.SubwaySubscriptionViewTest do
           "destination" => "place-buwst",
           "saturday" => "true",
           "sunday" => "true",
-          "weekday" => "false",
+          "weekday" => "true",
           "trip_type" => "round_trip",
         }
 
@@ -56,7 +56,7 @@ defmodule ConciergeSite.SubwaySubscriptionViewTest do
           |> SubwaySubscriptionView.trip_summary_title(station_names)
           |> IO.iodata_to_binary()
 
-        assert trip_summary_title == "Round trip Saturday or Sunday travel between Boston Univ. East and Boston Univ. West"
+        assert trip_summary_title == "Round trip Saturday, Sunday, or weekday travel between Boston Univ. East and Boston Univ. West"
       end
     end
 
@@ -67,8 +67,8 @@ defmodule ConciergeSite.SubwaySubscriptionViewTest do
           "departure_end" => "23:45:00",
           "origin" => "place-buest",
           "destination" => "place-buwst",
-          "saturday" => "true",
-          "sunday" => "true",
+          "saturday" => "false",
+          "sunday" => "false",
           "weekday" => "true",
           "trip_type" => "roaming",
         }
@@ -80,7 +80,7 @@ defmodule ConciergeSite.SubwaySubscriptionViewTest do
           |> SubwaySubscriptionView.trip_summary_title(station_names)
           |> IO.iodata_to_binary()
 
-        assert trip_summary_title == "Saturday, Sunday, or weekday general travel between Boston Univ. East and Boston Univ. West"
+        assert trip_summary_title == "Weekday general travel between Boston Univ. East and Boston Univ. West"
       end
     end
 
