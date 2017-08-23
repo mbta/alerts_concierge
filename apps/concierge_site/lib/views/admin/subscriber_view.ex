@@ -2,7 +2,7 @@ defmodule ConciergeSite.Admin.SubscriberView do
   use ConciergeSite.Web, :view
 
   alias AlertProcessor.ServiceInfoCache
-  alias AlertProcessor.Model.{InformedEntity, Subscription, User}
+  alias AlertProcessor.Model.{InformedEntity, Notification, Subscription, User}
   alias ConciergeSite.TimeHelper
   alias Calendar.Strftime
 
@@ -158,4 +158,17 @@ defmodule ConciergeSite.Admin.SubscriberView do
       TimeHelper.format_time(end_time)
     ]
   end
+
+  def notification_info(%Notification{service_effect: service_effect, header: header, description: description}) do
+    [
+      content_tag(:p, service_effect),
+      content_tag(:p, header),
+      content_tag(:p, description)
+    ]
+  end
+
+  def notification_type(%Notification{phone_number: nil}), do: content_tag(:p, "Email")
+  def notification_type(%Notification{}), do: content_tag(:p, "SMS")
+
+  def notification_timestamp(%Notification{send_after: send_after}), do: content_tag(:p, Strftime.strftime!(send_after, "%F %T"))
 end

@@ -33,6 +33,27 @@
       <%= link "Send message", to: admin_subscriber_subscriber_path(@conn, :new_message, @subscriber.id), class: "btn btn-outline-primary admin-user-btn" %>
     </div>
     <div class="admin-info-contents">
+    <h2>Received Notifications</h2>
+      <%= if @notifications == [] do %>
+        <p>No Notifications</p>
+      <% else %>
+        <div class="admin-table">
+          <div class="admin-table-header">
+            <div class="admin-table-column">Notification Contents</div>
+            <div class="admin-table-column">Type</div>
+            <div class="admin-table-column">Sent At</div>
+          </div>
+          <div class="admin-table-body">
+            <%= for notification <- @notifications do %>
+              <div class="admin-table-row">
+                <div class="admin-table-cell"><%= notification_info(notification) %></div>
+                <div class="admin-table-cell"><%= notification_type(notification) %></div>
+                <div class="admin-table-cell"><%= notification_timestamp(notification) %></div>
+              </div>
+            <% end %>
+          </div>
+        </div>
+      <% end %>
       <h2>Current Subscriptions</h2>
       <%= if @subscriptions == [] do %>
         <p>No Subscriptions</p>
