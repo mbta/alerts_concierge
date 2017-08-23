@@ -7,7 +7,7 @@ defmodule AlertProcessor.Model.SavedAlert do
   @type t :: %__MODULE__{
     id: String.t,
     last_modified: DateTime.t,
-    data: Alert.t
+    data: map
   }
 
   @primary_key {:id, :binary_id, autogenerate: true}
@@ -51,7 +51,7 @@ defmodule AlertProcessor.Model.SavedAlert do
   def update_existing_alert(struct, params) do
     struct
     |> update_changeset(params)
-    |> PaperTrail.insert!()
+    |> PaperTrail.update!()
   end
 
   def save!(alerts) do

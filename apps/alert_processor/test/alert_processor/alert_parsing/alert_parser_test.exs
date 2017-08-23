@@ -3,8 +3,8 @@ defmodule AlertProcessor.AlertParserTest do
   use ExVCR.Mock, adapter: ExVCR.Adapter.Hackney
   use Bamboo.Test, shared: :true
   import AlertProcessor.Factory
-  alias AlertProcessor.{AlertParser, Model}
-  alias Model.InformedEntity
+  alias AlertProcessor.{AlertParser, Model, Repo}
+  alias Model.{InformedEntity, SavedAlert}
 
   setup_all do
     {:ok, _} = Application.ensure_all_started(:alert_processor)
@@ -20,6 +20,7 @@ defmodule AlertProcessor.AlertParserTest do
     |> insert
     use_cassette "old_alerts", custom: true, clear_mock: true, match_requests_on: [:query] do
       assert [{:ok, _} | _t] = AlertParser.process_alerts
+      assert length(Repo.all(SavedAlert)) > 0
     end
     use_cassette "new_alerts", custom: true, clear_mock: true, match_requests_on: [:query] do
       assert [{:ok, _} | _t] = AlertParser.process_alerts
