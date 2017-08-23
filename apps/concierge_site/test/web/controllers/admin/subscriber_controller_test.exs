@@ -1,6 +1,7 @@
 defmodule ConciergeSite.Admin.SubscriberControllerTest do
   use ConciergeSite.ConnCase
   use Bamboo.Test
+  alias AlertProcessor.Repo
 
   describe "admin user" do
     setup :create_and_login_user
@@ -63,6 +64,50 @@ defmodule ConciergeSite.Admin.SubscriberControllerTest do
       conn = get(conn, admin_subscriber_path(conn, :show, subscriber))
 
       assert html_response(conn, 200) =~ subscriber.email
+      assert html_response(conn, 200) =~ "No Subscriptions"
+      assert html_response(conn, 200) =~ "No Notification"
+    end
+
+    test "GET /admin/subscribers/:id with notificaitons", %{conn: conn, subscriber1: subscriber, subscriber2: other_subscriber} do
+      insert(:notification, send_after: DateTime.utc_now(), status: :sent, alert_id: "123", email: "notification_email1@example.com", user: subscriber, service_effect: "Service Effect", header: "Notification Header", description: "Notification Description")
+      insert(:notification, send_after: DateTime.utc_now(), status: :sent, alert_id: "456", email: "notification_email1@example.com", phone_number: "5551231234", user: subscriber, service_effect: "Service SMS Effect", header: "Notification SMS Header", description: "Notification SMS Description")
+      insert(:notification, send_after: DateTime.utc_now(), status: :failed, alert_id: "789", email: "notification_email1@example.com", user: subscriber, service_effect: "Service Failed Effect", header: "Notification Failed Header", description: "Notification Failed Description")
+      insert(:notification, send_after: DateTime.utc_now(), status: :sent, alert_id: "101", email: "notification_email3@example.com", user: other_subscriber, service_effect: "Service Other Subscriber Effect", header: "Notification Other Subscriber Header", description: "Notification Other Subscriber Description")
+
+      conn = get(conn, admin_subscriber_path(conn, :show, subscriber))
+
+      assert html_response(conn, 200) =~ subscriber.email
+      assert html_response(conn, 200) =~ "No Subscriptions"
+      refute html_response(conn, 200) =~ "No Notification"
+      assert html_response(conn, 200) =~ "Service Effect"
+      assert html_response(conn, 200) =~ "Notification Header"
+      assert html_response(conn, 200) =~ "Notification Description"
+      assert html_response(conn, 200) =~ "Email"
+      assert html_response(conn, 200) =~ "Service SMS Effect"
+      assert html_response(conn, 200) =~ "Notification SMS Header"
+      assert html_response(conn, 200) =~ "Notification SMS Description"
+      refute html_response(conn, 200) =~ "Failed"
+      refute html_response(conn, 200) =~ "Other Subscriber"
+    end
+
+    test "GET /admin/subscribers/:id with subscriptions", %{conn: conn, subscriber1: subscriber} do
+      {:ok, subscription} =
+        :subscription
+        |> build(user: subscriber)
+        |> weekday_subscription()
+        |> subway_subscription()
+        |> Repo.preload(:informed_entities)
+        |> Ecto.Changeset.change()
+        |> Ecto.Changeset.put_assoc(:informed_entities, subway_subscription_entities())
+        |> Repo.insert()
+
+      conn = get(conn, admin_subscriber_path(conn, :show, subscriber))
+
+      assert html_response(conn, 200) =~ subscriber.email
+      refute html_response(conn, 200) =~ "No Subscriptions"
+      assert html_response(conn, 200) =~ "No Notification"
+      assert html_response(conn, 200) =~ "Origin: #{subscription.origin}"
+      assert html_response(conn, 200) =~ "Destination: #{subscription.destination}"
     end
 
     test "GET /admin/subscribers/:id/new_message", %{conn: conn, subscriber1: subscriber1} do

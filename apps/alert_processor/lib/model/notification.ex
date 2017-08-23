@@ -20,7 +20,7 @@ defmodule AlertProcessor.Model.Notification do
  }
 
   use Ecto.Schema
-  import Ecto.Changeset
+  import Ecto.{Changeset, Query}
   alias AlertProcessor.{Model.User, Repo}
 
   @primary_key {:id, :binary_id, autogenerate: true}
@@ -67,5 +67,13 @@ defmodule AlertProcessor.Model.Notification do
       {nil, nil} -> add_error(changeset, :dispatch, "Must have email OR phone number")
       _ -> changeset
     end
+  end
+
+  def sent_to_user(user) do
+    Repo.all(
+      from n in __MODULE__,
+      where: n.user_id == ^user.id and n.status == "sent",
+      order_by: [asc: n.inserted_at]
+    )
   end
 end
