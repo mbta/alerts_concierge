@@ -7,7 +7,7 @@ defmodule AlertProcessor.Subscription.BusMapper do
   import AlertProcessor.Subscription.Mapper
   alias AlertProcessor.Model.{InformedEntity, Subscription}
 
-  defdelegate build_subscription_transaction(subscriptions, user), to: AlertProcessor.Subscription.Mapper
+  defdelegate build_subscription_transaction(subscriptions, user, originator_id), to: AlertProcessor.Subscription.Mapper
 
   @doc """
   map_subscription/1 receives a map of bus subscription params and returns

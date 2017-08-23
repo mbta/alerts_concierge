@@ -454,7 +454,7 @@ defmodule AlertProcessor.Subscription.SubwayMapperTest do
     test "it builds a multi struct to persist subscriptions and informed_entities" do
       user = insert(:user)
       {:ok, subscription_infos} = SubwayMapper.map_subscriptions(@round_trip_params)
-      multi = SubwayMapper.build_subscription_transaction(subscription_infos, user)
+      multi = SubwayMapper.build_subscription_transaction(subscription_infos, user, user.id)
       result = Ecto.Multi.to_list(multi)
 
       assert {{:subscription, 0}, {:run, function1}} = List.first(result)

@@ -179,7 +179,7 @@ defmodule AlertProcessor.Subscription.BusMapperTest do
     test "it builds a multi struct to persist subscriptions and informed_entities" do
       user = insert(:user)
       {:ok, subscription_infos} = BusMapper.map_subscription(@round_trip_params)
-      multi = BusMapper.build_subscription_transaction(subscription_infos, user)
+      multi = BusMapper.build_subscription_transaction(subscription_infos, user, user.id)
       result = Ecto.Multi.to_list(multi)
 
       assert {{:subscription, 0}, {:run, function1}} = List.first(result)

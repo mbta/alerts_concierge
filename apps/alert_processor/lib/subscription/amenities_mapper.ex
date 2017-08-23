@@ -8,9 +8,9 @@ defmodule AlertProcessor.Subscription.AmenitiesMapper do
   import Ecto.Query
   alias Ecto.Multi
   alias AlertProcessor.{Repo, ServiceInfoCache}
-  alias AlertProcessor.Model.{InformedEntity, Subscription}
+  alias AlertProcessor.Model.{InformedEntity, Subscription, User}
 
-  defdelegate build_subscription_transaction(subscriptions, user), to: AlertProcessor.Subscription.Mapper
+  defdelegate build_subscription_transaction(subscriptions, user, originator_id), to: AlertProcessor.Subscription.Mapper
 
   @doc """
   build_subscription_update_transaction/3 receives a the current subscription
@@ -19,7 +19,7 @@ defmodule AlertProcessor.Subscription.AmenitiesMapper do
   1. It updates the subscription data
   2. It regenerates the informed entities for that subscription from the new data
   """
-  def build_subscription_update_transaction(subscription, subscription_infos) do
+  def build_subscription_update_transaction(subscription, subscription_infos, originator_id) do
     [{sub_changes, informed_entities}] = subscription_infos
     params =
       sub_changes
@@ -38,7 +38,7 @@ defmodule AlertProcessor.Subscription.AmenitiesMapper do
     |> Enum.reduce(Multi.new(), fn({ie, index}, acc) ->
         ie_to_insert = Map.put(ie, :subscription_id, subscription.id)
         Multi.run(acc, {:new_informed_entity, index}, fn _ ->
-          PaperTrail.insert(ie_to_insert)
+          PaperTrail.insert(ie_to_insert, originator: %User{id: originator_id}, meta: %{owner: subscription.user_id})
         end)
       end)
 
@@ -46,12 +46,12 @@ defmodule AlertProcessor.Subscription.AmenitiesMapper do
     |> Enum.with_index
     |> Enum.reduce(multi, fn({ie, index}, acc) ->
       Multi.run(acc, {:remove_current, index}, fn _ ->
-        PaperTrail.delete(ie)
+        PaperTrail.delete(ie, originator: %User{id: originator_id}, meta: %{owner: subscription.user_id})
       end)
     end)
     |> Multi.run(:subscription, fn _ ->
       changeset = Subscription.update_changeset(subscription, params)
-      PaperTrail.update(changeset)
+      PaperTrail.update(changeset, originator: %User{id: originator_id}, meta: %{owner: subscription.user_id})
     end)
   end
 

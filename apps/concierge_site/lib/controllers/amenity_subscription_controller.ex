@@ -25,11 +25,11 @@ defmodule ConciergeSite.AmenitySubscriptionController do
     render_new_page(conn, sub_params, new_stations, :remove)
   end
 
-  def create(conn, %{"subscription" => sub_params}, user, _claims) do
+  def create(conn, %{"subscription" => sub_params}, user, {:ok, claims}) do
     sub_params = Map.merge(sub_params, %{"user_id" => user.id})
     with :ok <- AmenitiesParams.validate_info_params(sub_params),
       {:ok, subscription_infos} <- AmenitiesMapper.map_subscriptions(sub_params),
-      multi <- AmenitiesMapper.build_subscription_transaction(subscription_infos, user),
+      multi <- AmenitiesMapper.build_subscription_transaction(subscription_infos, user, Map.get(claims, "imp", user.id)),
       :ok <- Subscription.set_versioned_subscription(multi) do
         redirect(conn, to: subscription_path(conn, :index))
     else
@@ -48,11 +48,11 @@ defmodule ConciergeSite.AmenitySubscriptionController do
     render_edit_page(conn, id, user, %{}, nil)
   end
 
-  def update(conn, %{"id" => id, "subscription" => sub_params}, user, _) do
+  def update(conn, %{"id" => id, "subscription" => sub_params}, user, {:ok, claims}) do
     with subscription <- Subscription.one_for_user!(id, user.id, true),
       :ok <- AmenitiesParams.validate_info_params(sub_params),
       {:ok, subscription_infos} <- AmenitiesMapper.map_subscriptions(sub_params),
-      multi <- AmenitiesMapper.build_subscription_update_transaction(subscription, subscription_infos),
+      multi <- AmenitiesMapper.build_subscription_update_transaction(subscription, subscription_infos, Map.get(claims, "imp", user.id)),
       :ok <- Subscription.set_versioned_subscription(multi) do
         :ok = User.clear_holding_queue_for_user_id(user.id)
         redirect(conn, to: subscription_path(conn, :index))

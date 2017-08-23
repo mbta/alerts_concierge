@@ -16,10 +16,10 @@ defmodule ConciergeSite.CommuterRailSubscriptionController do
     render conn, "edit.html", subscription: subscription, changeset: changeset, trips: %{departure_trips: trips}
   end
 
-  def update(conn, %{"id" => id, "subscription" => subscription_params}, user, _claims) do
+  def update(conn, %{"id" => id, "subscription" => subscription_params}, user, {:ok, claims}) do
     subscription = Subscription.one_for_user!(id, user.id, true)
     with {:ok, params} <- CommuterRailParams.prepare_for_update_changeset(subscription, subscription_params),
-         multi <- CommuterRailMapper.build_update_subscription_transaction(subscription, params),
+         multi <- CommuterRailMapper.build_update_subscription_transaction(subscription, params, Map.get(claims, "imp", user.id)),
          :ok <- Subscription.set_versioned_subscription(multi) do
       :ok = User.clear_holding_queue_for_user_id(user.id)
       conn
@@ -94,11 +94,11 @@ defmodule ConciergeSite.CommuterRailSubscriptionController do
     end
   end
 
-  def create(conn, params, user, _claims) do
+  def create(conn, params, user, {:ok, claims}) do
     commuter_rail_params = CommuterRailParams.prepare_for_mapper(params["subscription"])
     {:ok, subscription_infos} = CommuterRailMapper.map_subscriptions(commuter_rail_params)
 
-    multi = CommuterRailMapper.build_subscription_transaction(subscription_infos, user)
+    multi = CommuterRailMapper.build_subscription_transaction(subscription_infos, user, Map.get(claims, "imp", user.id))
 
     case Subscription.set_versioned_subscription(multi) do
       :ok ->

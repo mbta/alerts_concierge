@@ -50,7 +50,7 @@ defmodule ConciergeSite.Admin.AdminUserController do
 
   def deactivate(conn, _params, user, _claims) do
     if AdminUserPolicy.can?(user, :deactivate_admin_user) do
-      case User.deactivate_admin(conn.assigns.admin_user) do
+      case User.deactivate_admin(conn.assigns.admin_user, user) do
         {:ok, updated_user} ->
           conn
           |> put_flash(:error, "Admin User deactivated.")
@@ -67,7 +67,7 @@ defmodule ConciergeSite.Admin.AdminUserController do
 
   def activate(conn, params, user, _claims) do
     if AdminUserPolicy.can?(user, :activate_admin_user) do
-      case User.activate_admin(conn.assigns.admin_user, params["user"]) do
+      case User.activate_admin(conn.assigns.admin_user, params["user"], user) do
         {:ok, updated_user} ->
           conn
           |> put_flash(:info, "Admin User activated with #{updated_user.role} role.")
@@ -100,7 +100,7 @@ defmodule ConciergeSite.Admin.AdminUserController do
 
   def create(conn, %{"user" => admin_user_params}, user, _claims) do
     if AdminUserPolicy.can?(user, :create_admin_users) do
-      case User.create_admin_account(admin_user_params) do
+      case User.create_admin_account(admin_user_params, user) do
         {:ok, _} ->
           conn
           |> redirect(to: "/admin/admin_users")
@@ -115,7 +115,7 @@ defmodule ConciergeSite.Admin.AdminUserController do
 
   def update(conn, params, user, _claims) do
     if AdminUserPolicy.can?(user, :update_admin_roles) do
-      case User.activate_admin(conn.assigns.admin_user, params["user"]) do
+      case User.activate_admin(conn.assigns.admin_user, params["user"], user) do
         {:ok, updated_user} ->
           conn
           |> put_flash(:error, "Admin User's Role has been changed.")

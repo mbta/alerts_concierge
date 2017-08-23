@@ -68,21 +68,24 @@ defmodule AlertProcessor.Model.UserTest do
 
   describe "create_admin_account" do
     test "creates new admin account" do
-      assert {:ok, user} = User.create_admin_account(@valid_admin_account_attrs)
+      admin_user = insert(:user, role: "application_administration")
+      assert {:ok, user} = User.create_admin_account(@valid_admin_account_attrs, admin_user)
       assert user.id != nil
     end
 
     test "does not create new account" do
+      admin_user = insert(:user, role: "application_administration")
       assert {:error, changeset} =
         User.create_admin_account(Map.put(@valid_admin_account_attrs,
-                                "role", nil))
+                                "role", nil), admin_user)
       refute changeset.valid?
     end
 
     test "cannot have an invalid role name" do
+      admin_user = insert(:user, role: "application_administration")
       assert {:error, changeset} =
         User.create_admin_account(Map.put(@valid_admin_account_attrs,
-                                          "role", "super_user"))
+                                          "role", "super_user"), admin_user)
       refute changeset.valid?
     end
   end
@@ -173,13 +176,13 @@ defmodule AlertProcessor.Model.UserTest do
   describe "update_account" do
     test "updates account" do
       user = insert(:user)
-      assert {:ok, user} = User.update_account(user, %{"amber_alert_opt_in" => "true"})
+      assert {:ok, user} = User.update_account(user, %{"amber_alert_opt_in" => "true"}, user.id)
       assert user.amber_alert_opt_in
     end
 
     test "does not update account" do
       user = insert(:user)
-      assert {:error, changeset} = User.update_account(user, %{"amber_alert_opt_in" => "no way!"})
+      assert {:error, changeset} = User.update_account(user, %{"amber_alert_opt_in" => "no way!"}, user.id)
       refute changeset.valid?
     end
   end
@@ -187,7 +190,7 @@ defmodule AlertProcessor.Model.UserTest do
   describe "disable_account" do
     test "removes password and puts into indefinite vacation mode" do
       user = insert(:user)
-      assert {:ok, user} = User.disable_account(user)
+      assert {:ok, user} = User.disable_account(user, user.id)
       assert DateTime.compare(user.vacation_end, DateTime.from_naive!(~N[9999-12-25 23:59:59], "Etc/UTC")) == :eq
       assert user.encrypted_password == ""
     end
@@ -197,13 +200,13 @@ defmodule AlertProcessor.Model.UserTest do
     test "updates password" do
       user = insert(:user)
       current_password = user.encrypted_password
-      assert {:ok, user} = User.update_password(user, %{"password" => "Password1", "password_confirmation" => "Password1"})
+      assert {:ok, user} = User.update_password(user, %{"password" => "Password1", "password_confirmation" => "Password1"}, user.id)
       assert current_password != user.encrypted_password
     end
 
     test "does not update password" do
       user = insert(:user)
-      assert {:error, changeset} = User.update_password(user, %{"password" => "Password1", "password_confirmation" => "Garbage"})
+      assert {:error, changeset} = User.update_password(user, %{"password" => "Password1", "password_confirmation" => "Garbage"}, user.id)
       refute changeset.valid?
     end
   end
@@ -235,14 +238,14 @@ defmodule AlertProcessor.Model.UserTest do
       user = insert(:user)
       assert user.vacation_start == nil
       assert user.vacation_end == nil
-      {:ok, user} = User.update_vacation(user, %{"vacation_start" => "2017-09-01T00:00:00+00:00", "vacation_end" => "2035-09-01T00:00:00+00:00"})
+      {:ok, user} = User.update_vacation(user, %{"vacation_start" => "2017-09-01T00:00:00+00:00", "vacation_end" => "2035-09-01T00:00:00+00:00"}, user.id)
       assert DateTime.compare(user.vacation_start, DateTime.from_naive!(~N[2017-09-01 00:00:00], "Etc/UTC")) == :eq
       assert DateTime.compare(user.vacation_end, DateTime.from_naive!(~N[2035-09-01 00:00:00], "Etc/UTC")) == :eq
     end
 
     test "does not update vacation" do
       user = insert(:user)
-      {:error, changeset} = User.update_vacation(user, %{"vacation_start" => "2017-09-01T00:00:00+00:00", "vacation_end" => "2015-09-01T00:00:00+00:00"})
+      {:error, changeset} = User.update_vacation(user, %{"vacation_start" => "2017-09-01T00:00:00+00:00", "vacation_end" => "2015-09-01T00:00:00+00:00"}, user.id)
       refute changeset.valid?
     end
   end
@@ -269,7 +272,7 @@ defmodule AlertProcessor.Model.UserTest do
   describe "remove_vacation" do
     test "removes vacation" do
       user = insert(:user, vacation_start: ~N[2017-07-01 00:00:00], vacation_end: ~N[2099-07-01 00:00:00])
-      {:ok, user} = User.remove_vacation(user)
+      {:ok, user} = User.remove_vacation(user, user.id)
       assert user.vacation_start == nil
       assert user.vacation_end == nil
     end
@@ -316,32 +319,36 @@ defmodule AlertProcessor.Model.UserTest do
 
   describe "deactivate_admin/1" do
     test "changes a user's role to deactivated_admin" do
+      admin_user = insert(:user, role: "application_administration")
       user = insert(:user, role: "application_administration")
 
-      assert {:ok, %User{role: "deactivated_admin"}} = User.deactivate_admin(user)
+      assert {:ok, %User{role: "deactivated_admin"}} = User.deactivate_admin(user, admin_user)
     end
   end
 
   describe "activate_admin/2" do
     test "changes a user's role to the role passed in params" do
+      admin_user = insert(:user, role: "application_administration")
       user = insert(:user, role: "deactivated_admin")
       params = %{"role" => "customer_support"}
 
-      assert {:ok, %User{role: "customer_support"}} = User.activate_admin(user, params)
+      assert {:ok, %User{role: "customer_support"}} = User.activate_admin(user, params, admin_user)
     end
 
     test "returns an invalid changeset if passed empty role param" do
+      admin_user = insert(:user, role: "application_administration")
       user = insert(:user)
       invalid_params = %{"role" => ""}
-      {_, changeset} = User.activate_admin(user, invalid_params)
+      {_, changeset} = User.activate_admin(user, invalid_params, admin_user)
 
       refute changeset.valid?
     end
 
     test "returns an invalid changeset if passed a role other than active admin roles" do
+      admin_user = insert(:user, role: "application_administration")
       user = insert(:user)
       invalid_params = %{"role" => "deactivated_admin"}
-      {_, changeset} = User.activate_admin(user, invalid_params)
+      {_, changeset} = User.activate_admin(user, invalid_params, admin_user)
 
       refute changeset.valid?
     end

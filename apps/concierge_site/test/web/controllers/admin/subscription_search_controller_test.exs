@@ -37,7 +37,7 @@ defmodule ConciergeSite.Admin.SubscriptionSearchControllerTest do
       inserted_sub = PaperTrail.insert!(create_changeset)
       {:ok, _updated_sub} = Subscription.update_subscription(inserted_sub, %{
         updated_at: future_date
-      })
+      }, subscriber.id)
 
       # update papertrail version dates
       [insert_version, update_version] = PaperTrail.get_versions(inserted_sub)
