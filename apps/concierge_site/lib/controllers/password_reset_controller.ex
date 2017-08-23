@@ -5,6 +5,7 @@ defmodule ConciergeSite.PasswordResetController do
   alias AlertProcessor.Repo
   alias Calendar.DateTime
   alias ConciergeSite.Dissemination.{Email, Mailer}
+  alias ConciergeSite.SignInHelper
   alias Ecto.Multi
 
   @email_regex ~r/^([a-zA-Z0-9_\-\.]+)@([a-zA-Z0-9_\-\.]+)\.([a-zA-Z]{2,5})$/
@@ -60,9 +61,8 @@ defmodule ConciergeSite.PasswordResetController do
     case Repo.transaction(multi) do
       {:ok, %{user: user}} ->
         conn
-        |> Guardian.Plug.sign_in(user, :access, perms: %{default: Guardian.Permissions.max})
         |> put_flash(:info, "Your password has been updated.")
-        |> redirect(to: my_account_path(conn, :edit))
+        |> SignInHelper.sign_in(user, redirect: :my_account)
       {:error, :user, changeset, _} ->
         conn
         |> assign(:changeset, changeset)
@@ -84,7 +84,12 @@ defmodule ConciergeSite.PasswordResetController do
 
   defp find_redeemable_password_reset_by_id!(id) do
     Repo.one!(from p in PasswordReset,
-      where: p.id == ^id and is_nil(p.redeemed_at) and p.expired_at > ^DateTime.now_utc())
+      left_join: u in assoc(p, :user),
+      where: p.id == ^id and
+        is_nil(p.redeemed_at) and
+        p.expired_at > ^DateTime.now_utc() and
+        u.role != "deactivated_admin"
+      )
     |> Repo.preload([:user])
   end
 
