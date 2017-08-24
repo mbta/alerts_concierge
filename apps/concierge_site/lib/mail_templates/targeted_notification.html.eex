@@ -9,5 +9,25 @@
     <div class="email-contents">
       <p><%= body %></p>
     </div>
+    <center>
+      <div class="footer">
+        <div class="footer-copyright">
+          &copy; Massachusetts Bay Transportation Authority, all rights reserved.
+        </div>
+        <table>
+          <tr>
+            <td>
+              <a class="footer-link" href="https://t.mbta.com/customer-support">Feedback</a>
+            </td>
+            <td class="footer-link-separator">
+              <div class="footer-link-separator-bullet" />
+            </td>
+            <td>
+              <a class="footer-link" href="#">Edit Your Subscriptions</a>
+            </td>
+          </tr>
+        </table>
+      </div>
+    </center>
   </body>
 </html>
