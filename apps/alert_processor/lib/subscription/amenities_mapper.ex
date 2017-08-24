@@ -20,6 +20,10 @@ defmodule AlertProcessor.Subscription.AmenitiesMapper do
   2. It regenerates the informed entities for that subscription from the new data
   """
   def build_subscription_update_transaction(subscription, subscription_infos, originator) do
+    origin =
+      if subscription.user_id != User.wrap_id(originator).id do
+        "admin:update-subscription"
+      end
     [{sub_changes, informed_entities}] = subscription_infos
     params =
       sub_changes
@@ -51,7 +55,7 @@ defmodule AlertProcessor.Subscription.AmenitiesMapper do
     end)
     |> Multi.run(:subscription, fn _ ->
       changeset = Subscription.update_changeset(subscription, params)
-      PaperTrail.update(changeset, originator: User.wrap_id(originator), meta: %{owner: subscription.user_id})
+      PaperTrail.update(changeset, originator: User.wrap_id(originator), meta: %{owner: subscription.user_id}, origin: origin)
     end)
   end
 

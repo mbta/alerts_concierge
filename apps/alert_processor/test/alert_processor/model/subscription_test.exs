@@ -361,6 +361,30 @@ defmodule AlertProcessor.Model.SubscriptionTest do
       assert {:error, changeset} = Subscription.update_subscription(subscription, %{"alert_priority_type" => :super_high}, user.id)
       refute changeset.valid?
     end
+
+    test "initiated by admin" do
+      admin_user = insert(:user, role: "application_administration")
+      user = insert(:user)
+
+      subscription =
+        subscription_factory()
+        |> bus_subscription()
+        |> Map.merge(%{user_id: user.id})
+        |> insert()
+
+      assert {:ok, subscription} = Subscription.update_subscription(subscription, %{"alert_priority_type" => :low}, admin_user.id)
+      assert subscription.alert_priority_type == :low
+      assert %{
+        item_id: item_id,
+        item_type: "Subscription",
+        origin: "admin:update-subscription",
+        meta: %{
+          "owner" => owner_id,
+        }
+      } = PaperTrail.get_version(subscription)
+      assert item_id == subscription.id
+      assert owner_id == user.id
+    end
   end
 
   describe "delete_subscription" do
@@ -374,6 +398,30 @@ defmodule AlertProcessor.Model.SubscriptionTest do
 
       assert {:ok, subscription} = Subscription.delete_subscription(subscription, user.id)
       assert nil == Repo.get(Subscription, subscription.id)
+    end
+
+    test "initiated by admin" do
+      admin_user = insert(:user, role: "application_administration")
+      user = insert(:user)
+
+      subscription =
+        subscription_factory()
+        |> bus_subscription()
+        |> Map.merge(%{user_id: user.id})
+        |> insert()
+
+      assert {:ok, subscription} = Subscription.delete_subscription(subscription, admin_user.id)
+      assert nil == Repo.get(Subscription, subscription.id)
+      assert %{
+        item_id: item_id,
+        item_type: "Subscription",
+        origin: "admin:delete-subscription",
+        meta: %{
+          "owner" => owner_id,
+        }
+      } = PaperTrail.get_version(subscription)
+      assert item_id == subscription.id
+      assert owner_id == user.id
     end
   end
 
@@ -424,6 +472,16 @@ defmodule AlertProcessor.Model.SubscriptionTest do
         alert_priority_type: :low,
         type: :subway
       } = subscription
+      assert %{
+        item_id: item_id,
+        item_type: "Subscription",
+        origin: "admin:create-full-mode-subscription",
+        meta: %{
+          "owner" => owner_id,
+        }
+      } = PaperTrail.get_version(subscription)
+      assert item_id == subscription.id
+      assert owner_id == user.id
     end
 
     test "does not create new if already exists" do
@@ -443,6 +501,16 @@ defmodule AlertProcessor.Model.SubscriptionTest do
       Subscription.create_full_mode_subscriptions(user, %{"bus" => "false", "commuter_rail" => "false", "ferry" => "false", "subway" => "false"})
       assert Repo.one(from s in Subscription, where: s.user_id == ^user.id, where: s.type == "bus", select: count(s.id)) == 0
       assert Repo.get(Subscription, subscription.id) == nil
+      assert %{
+        item_id: item_id,
+        item_type: "Subscription",
+        origin: "admin:delete-full-mode-subscription",
+        meta: %{
+          "owner" => owner_id
+        }
+      } = PaperTrail.get_version(subscription)
+      assert item_id == subscription.id
+      assert owner_id == user.id
     end
 
     test "does not allow other roles to create subscriptions" do

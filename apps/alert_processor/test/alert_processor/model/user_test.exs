@@ -71,6 +71,14 @@ defmodule AlertProcessor.Model.UserTest do
       admin_user = insert(:user, role: "application_administration")
       assert {:ok, user} = User.create_admin_account(@valid_admin_account_attrs, admin_user)
       assert user.id != nil
+      assert %{
+        item_id: item_id,
+        item_type: "User",
+        origin: "admin:create-admin-account",
+        originator_id: originator_id,
+      } = PaperTrail.get_version(user)
+      assert item_id == user.id
+      assert originator_id == admin_user.id
     end
 
     test "does not create new account" do
@@ -185,6 +193,21 @@ defmodule AlertProcessor.Model.UserTest do
       assert {:error, changeset} = User.update_account(user, %{"amber_alert_opt_in" => "no way!"}, user.id)
       refute changeset.valid?
     end
+
+    test "performed by admin" do
+      admin_user = insert(:user, role: "application_administration")
+      user = insert(:user)
+      assert {:ok, user} = User.update_account(user, %{"amber_alert_opt_in" => "true"}, admin_user.id)
+      assert user.amber_alert_opt_in
+      assert %{
+        item_id: item_id,
+        item_type: "User",
+        origin: "admin:update-subscriber-account",
+        originator_id: originator_id
+      } = PaperTrail.get_version(user)
+      assert item_id == user.id
+      assert originator_id == admin_user.id
+    end
   end
 
   describe "disable_account" do
@@ -193,6 +216,28 @@ defmodule AlertProcessor.Model.UserTest do
       assert {:ok, user} = User.disable_account(user, user.id)
       assert DateTime.compare(user.vacation_end, DateTime.from_naive!(~N[9999-12-25 23:59:59], "Etc/UTC")) == :eq
       assert user.encrypted_password == ""
+    end
+
+    test "performed by admin" do
+      admin_user = insert(:user, role: "application_administration")
+      user = insert(:user)
+      assert {:ok, user} = User.disable_account(user, admin_user.id)
+      assert DateTime.compare(user.vacation_end, DateTime.from_naive!(~N[9999-12-25 23:59:59], "Etc/UTC")) == :eq
+      assert user.encrypted_password == ""
+      assert %{
+        item_id: item_id,
+        item_type: "User",
+        origin: "admin:deactivate-subscriber-account",
+        originator_id: originator_id,
+        meta: %{
+          "subscriber_email" => subscriber_email,
+          "subscriber_id" => subscriber_id
+        }
+      } = PaperTrail.get_version(user)
+      assert item_id == user.id
+      assert originator_id == admin_user.id
+      assert subscriber_email == user.email
+      assert subscriber_id == user.id
     end
   end
 
@@ -208,6 +253,28 @@ defmodule AlertProcessor.Model.UserTest do
       user = insert(:user)
       assert {:error, changeset} = User.update_password(user, %{"password" => "Password1", "password_confirmation" => "Garbage"}, user.id)
       refute changeset.valid?
+    end
+
+    test "performed by admin" do
+      admin_user = insert(:user, role: "application_administration")
+      user = insert(:user)
+      current_password = user.encrypted_password
+      assert {:ok, user} = User.update_password(user, %{"password" => "Password1", "password_confirmation" => "Password1"}, admin_user.id)
+      assert current_password != user.encrypted_password
+      assert %{
+        item_id: item_id,
+        item_type: "User",
+        origin: "admin:update-subscriber-password",
+        originator_id: originator_id,
+        meta: %{
+          "subscriber_email" => subscriber_email,
+          "subscriber_id" => subscriber_id
+        }
+      } = PaperTrail.get_version(user)
+      assert item_id == user.id
+      assert originator_id == admin_user.id
+      assert subscriber_email == user.email
+      assert subscriber_id == user.id
     end
   end
 
@@ -248,6 +315,30 @@ defmodule AlertProcessor.Model.UserTest do
       {:error, changeset} = User.update_vacation(user, %{"vacation_start" => "2017-09-01T00:00:00+00:00", "vacation_end" => "2015-09-01T00:00:00+00:00"}, user.id)
       refute changeset.valid?
     end
+
+    test "performed by admin" do
+      admin_user = insert(:user, role: "application_administration")
+      user = insert(:user)
+      assert user.vacation_start == nil
+      assert user.vacation_end == nil
+      {:ok, user} = User.update_vacation(user, %{"vacation_start" => "2017-09-01T00:00:00+00:00", "vacation_end" => "2035-09-01T00:00:00+00:00"}, admin_user.id)
+      assert DateTime.compare(user.vacation_start, DateTime.from_naive!(~N[2017-09-01 00:00:00], "Etc/UTC")) == :eq
+      assert DateTime.compare(user.vacation_end, DateTime.from_naive!(~N[2035-09-01 00:00:00], "Etc/UTC")) == :eq
+      assert %{
+        item_id: item_id,
+        item_type: "User",
+        origin: "admin:update-subscriber-vacation",
+        originator_id: originator_id,
+        meta: %{
+          "subscriber_email" => subscriber_email,
+          "subscriber_id" => subscriber_id
+        }
+      } = PaperTrail.get_version(user)
+      assert item_id == user.id
+      assert originator_id == admin_user.id
+      assert subscriber_email == user.email
+      assert subscriber_id == user.id
+    end
   end
 
   describe "update_vacation_changeset" do
@@ -275,6 +366,28 @@ defmodule AlertProcessor.Model.UserTest do
       {:ok, user} = User.remove_vacation(user, user.id)
       assert user.vacation_start == nil
       assert user.vacation_end == nil
+    end
+
+    test "performed by admin" do
+      admin_user = insert(:user, role: "application_administration")
+      user = insert(:user, vacation_start: ~N[2017-07-01 00:00:00], vacation_end: ~N[2099-07-01 00:00:00])
+      {:ok, user} = User.remove_vacation(user, admin_user.id)
+      assert user.vacation_start == nil
+      assert user.vacation_end == nil
+      assert %{
+        item_id: item_id,
+        item_type: "User",
+        origin: "admin:remove-subscriber-vacation",
+        originator_id: originator_id,
+        meta: %{
+          "subscriber_email" => subscriber_email,
+          "subscriber_id" => subscriber_id
+        }
+      } = PaperTrail.get_version(user)
+      assert item_id == user.id
+      assert originator_id == admin_user.id
+      assert subscriber_email == user.email
+      assert subscriber_id == user.id
     end
   end
 
@@ -323,6 +436,14 @@ defmodule AlertProcessor.Model.UserTest do
       user = insert(:user, role: "application_administration")
 
       assert {:ok, %User{role: "deactivated_admin"}} = User.deactivate_admin(user, admin_user)
+      assert %{
+        item_id: item_id,
+        item_type: "User",
+        origin: "admin:deactivate-admin",
+        originator_id: originator_id
+      } = PaperTrail.get_version(user)
+      assert item_id == user.id
+      assert originator_id == admin_user.id
     end
   end
 
@@ -333,6 +454,14 @@ defmodule AlertProcessor.Model.UserTest do
       params = %{"role" => "customer_support"}
 
       assert {:ok, %User{role: "customer_support"}} = User.activate_admin(user, params, admin_user)
+      assert %{
+        item_id: item_id,
+        item_type: "User",
+        origin: "admin:change-admin-role",
+        originator_id: originator_id
+      } = PaperTrail.get_version(user)
+      assert item_id == user.id
+      assert originator_id == admin_user.id
     end
 
     test "returns an invalid changeset if passed empty role param" do
@@ -477,6 +606,42 @@ defmodule AlertProcessor.Model.UserTest do
         item_id: item_id,
         item_type: "User",
         origin: "admin:view-subscriber",
+        meta: %{
+          "subscriber_email" => subscriber_email,
+          "subscriber_id" => subscriber_id
+        }
+      } = PaperTrail.get_version(admin_user)
+      assert item_id == admin_user.id
+      assert subscriber_email == subscriber.email
+      assert subscriber_id == subscriber.id
+    end
+
+    test "message_subscriber" do
+      admin_user = insert(:user, role: "application_administration")
+      subscriber = insert(:user)
+      assert {:ok, _} = User.log_admin_action(:message_subscriber, admin_user, subscriber)
+      assert %{
+        item_id: item_id,
+        item_type: "User",
+        origin: "admin:message-subscriber",
+        meta: %{
+          "subscriber_email" => subscriber_email,
+          "subscriber_id" => subscriber_id
+        }
+      } = PaperTrail.get_version(admin_user)
+      assert item_id == admin_user.id
+      assert subscriber_email == subscriber.email
+      assert subscriber_id == subscriber.id
+    end
+
+    test "impersonate_subscriber" do
+      admin_user = insert(:user, role: "application_administration")
+      subscriber = insert(:user)
+      assert {:ok, _} = User.log_admin_action(:impersonate_subscriber, admin_user, subscriber)
+      assert %{
+        item_id: item_id,
+        item_type: "User",
+        origin: "admin:impersonate-subscriber",
         meta: %{
           "subscriber_email" => subscriber_email,
           "subscriber_id" => subscriber_id

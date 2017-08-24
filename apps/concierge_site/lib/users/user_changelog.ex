@@ -28,7 +28,7 @@ defmodule ConciergeSite.UserChangelog do
       on: v.item_id == s.id and v.item_type == "Subscription",
       where: s.user_id == ^user_id,
       or_where: fragment("?->>'owner' = ?", v.meta, ^user_id),
-      or_where: v.item_id == ^user_id and is_nil(v.origin),
+      or_where: v.item_id == ^user_id,
       order_by: [asc: v.inserted_at]
     )
   end
@@ -110,7 +110,7 @@ defmodule ConciergeSite.UserChangelog do
     item_id: item_id,
     item_type: "User"
     }, acc, originating_user_email_map) do
-      old_version = Map.get(acc, item_id)
+      old_version = Map.get(acc, item_id, %{})
       changed_keys = Map.keys(item_changes)
       message =
         changed_keys

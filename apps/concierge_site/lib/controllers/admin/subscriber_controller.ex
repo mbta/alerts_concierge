@@ -37,10 +37,10 @@ defmodule ConciergeSite.Admin.SubscriberController do
     render conn, "target_message.html", subscriber: subscriber
   end
 
-  def send_message(conn, %{"subscriber_id" => subscriber_id, "targeted_message" => message_params}, _user, _claims) do
-    subscriber_id
-    |> User.find_by_id()
-    |> TargetedNotification.send_targeted_notification(message_params)
+  def send_message(conn, %{"subscriber_id" => subscriber_id, "targeted_message" => message_params}, user, _claims) do
+    subscriber = User.find_by_id(subscriber_id)
+    User.log_admin_action(:message_subscriber, user, subscriber)
+    TargetedNotification.send_targeted_notification(subscriber, message_params)
 
     redirect(conn, to: admin_subscriber_path(conn, :show, subscriber_id))
   end

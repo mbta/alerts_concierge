@@ -8,6 +8,7 @@ defmodule ConciergeSite.Admin.ImpersonateSessionController do
     user = Repo.get!(User, user_id)
 
     if ImpersonateSessionPolicy.can?(admin, :impersonate_user, user) do
+      User.log_admin_action(:impersonate_subscriber, admin, user)
       conn
       |> Guardian.Plug.sign_out()
       |> Guardian.Plug.sign_in(user, :access, perms: %{default: Guardian.Permissions.max}, imp: admin.id)

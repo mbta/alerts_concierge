@@ -17,8 +17,8 @@ defmodule AlertProcessor.Model.Subscription do
     relevant_days: [relevant_day],
     start_time: Time.t,
     end_time: Time.t,
-    origin: String.t,
-    destination: String.t,
+    origin: String.t | nil,
+    destination: String.t | nil,
     type: subscription_type
   }
 
@@ -96,15 +96,24 @@ defmodule AlertProcessor.Model.Subscription do
   end
 
   def update_subscription(struct, params, originator) do
+    origin =
+      if struct.user_id != User.wrap_id(originator).id do
+        "admin:update-subscription"
+      end
     struct
     |> update_changeset(params)
-    |> PaperTrail.update(originator: User.wrap_id(originator), meta: %{owner: struct.user_id})
+    |> PaperTrail.update(originator: User.wrap_id(originator), meta: %{owner: struct.user_id}, origin: origin)
     |> normalize_papertrail_result()
   end
 
   def delete_subscription(struct, originator) do
+    originator = User.wrap_id(originator)
+    origin =
+      if struct.user_id != originator.id do
+        "admin:delete-subscription"
+      end
     struct
-    |> PaperTrail.delete(originator: User.wrap_id(originator), meta: %{owner: struct.user_id})
+    |> PaperTrail.delete(originator: originator, meta: %{owner: struct.user_id}, origin: origin)
     |> normalize_papertrail_result()
   end
 
@@ -134,7 +143,7 @@ defmodule AlertProcessor.Model.Subscription do
 
     sub_version_changeset = Ecto.Changeset.cast(
       sub_version,
-      %{meta: %{informed_entity_version_ids: informed_entity_version_ids}},
+      %{meta: Map.merge(sub_version.meta, %{informed_entity_version_ids: informed_entity_version_ids})},
       [:meta]
     )
 
@@ -390,9 +399,9 @@ defmodule AlertProcessor.Model.Subscription do
                   end_time: ~T[23:59:59],
                   alert_priority_type: :low,
                   type: type})
-                |> PaperTrail.insert(meta: %{owner: user.id})
+                |> PaperTrail.insert(meta: %{owner: user.id}, originator: user, origin: "admin:create-full-mode-subscription")
               type_val == "false" && subscription != nil ->
-                PaperTrail.delete(subscription, meta: %{owner: user.id})
+                PaperTrail.delete(subscription, meta: %{owner: user.id}, originator: user, origin: "admin:delete-full-mode-subscription")
               true -> {:ok, subscription}
             end
           end)

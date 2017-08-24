@@ -82,10 +82,107 @@ defmodule ConciergeSite.Admin.AdminUserViewTest do
   end
 
   describe "display_admin_log_action/1" do
-    test "returns correponding admin log action from paper trail" do
+    test "admin:view-subscriber" do
       action = AdminUserView.display_admin_log_action(%{origin: "admin:view-subscriber"})
 
       assert action == "View Subscriber"
+    end
+
+    test "admin:message-subscriber" do
+      action = AdminUserView.display_admin_log_action(%{origin: "admin:message-subscriber"})
+
+      assert action == "Message Subscriber"
+    end
+
+    test "admin:impersonate-subscriber" do
+      action = AdminUserView.display_admin_log_action(%{origin: "admin:impersonate-subscriber"})
+
+      assert action == "Logged In As Subscriber"
+    end
+
+    test "admin:create-admin-account" do
+      action = AdminUserView.display_admin_log_action(%{origin: "admin:create-admin-account"})
+
+      assert action == "Create Admin Account"
+    end
+
+    test "admin:deactivate-subscriber-account" do
+      action = AdminUserView.display_admin_log_action(%{origin: "admin:deactivate-subscriber-account"})
+
+      assert action == "Deactivate Subscriber Account"
+    end
+
+    test "admin:deactivate-admin" do
+      action = AdminUserView.display_admin_log_action(%{origin: "admin:deactivate-admin"})
+
+      assert action == "Deactivate Admin Account"
+    end
+
+    test "admin:change-admin-role" do
+      action = AdminUserView.display_admin_log_action(%{origin: "admin:change-admin-role"})
+
+      assert action == "Change Admin Role"
+    end
+
+    test "admin:create-subscription" do
+      action = AdminUserView.display_admin_log_action(%{origin: "admin:create-subscription"})
+
+      assert action == "Create Subscription"
+    end
+
+    test "admin:update-subscription" do
+      action = AdminUserView.display_admin_log_action(%{origin: "admin:update-subscription"})
+
+      assert action == "Update Subscription"
+    end
+
+    test "admin:delete-subscription" do
+      action = AdminUserView.display_admin_log_action(%{origin: "admin:delete-subscription"})
+
+      assert action == "Delete Subscription"
+    end
+
+    test "admin:update-subscriber-password" do
+      action = AdminUserView.display_admin_log_action(%{origin: "admin:update-subscriber-password"})
+
+      assert action == "Update Subscriber Password"
+    end
+
+    test "admin:update-subscriber-account" do
+      action = AdminUserView.display_admin_log_action(%{origin: "admin:update-subscriber-account"})
+
+      assert action == "Update Subscriber Account"
+    end
+
+    test "admin:create-full-mode-subscription" do
+      action = AdminUserView.display_admin_log_action(%{origin: "admin:create-full-mode-subscription"})
+
+      assert action == "Create Full Mode Subscription"
+    end
+
+    test "admin:delete-full-mode-subscription" do
+      action = AdminUserView.display_admin_log_action(%{origin: "admin:delete-full-mode-subscription"})
+
+      assert action == "Delete Full Mode Subscription"
+    end
+
+    test "admin:update-subscriber-vacation" do
+      action = AdminUserView.display_admin_log_action(%{origin: "admin:update-subscriber-vacation"})
+
+      assert action == "Update Subscriber Vacation"
+    end
+
+    test "admin:remove-subscriber-vacation" do
+      action = AdminUserView.display_admin_log_action(%{origin: "admin:remove-subscriber-vacation"})
+
+      assert action == "Remove Subscriber Vacation"
+    end
+
+    test "unknown or nil" do
+      action1 = AdminUserView.display_admin_log_action(%{origin: nil})
+      action2 = AdminUserView.display_admin_log_action(%{origin: "garbage action"})
+      assert action1 == "Unknown Action"
+      assert action2 == "Unknown Action"
     end
   end
 
@@ -98,11 +195,43 @@ defmodule ConciergeSite.Admin.AdminUserViewTest do
     end
   end
 
-  describe "admin_log_subscriber_email/1" do
+  describe "admin_log_target/1" do
     test "returns the account email in admin log" do
-      email = AdminUserView.admin_log_subscriber_email(%{meta: %{"subscriber_email" => "test@example.com"}})
+      email = AdminUserView.admin_log_target(%{item_id: "9999", meta: %{"subscriber_email" => "test@example.com"}})
 
       assert email == "test@example.com"
+    end
+
+    test "returns owner if set" do
+      owner = AdminUserView.admin_log_target(%{item_id: "9999", meta: %{"owner" => "1234"}})
+
+      assert owner == "1234"
+    end
+
+    test "returns item id if neither are set" do
+      item_id = AdminUserView.admin_log_target(%{item_id: "9999", meta: nil})
+
+      assert item_id == "9999"
+    end
+  end
+
+  describe "admin_log_target_url" do
+    test "returns the link to subscriber page if subscriber id is set" do
+      link = AdminUserView.admin_log_target_url(%{item_id: "9999", meta: %{"subscriber_id" => "1234"}})
+
+      assert link == "/admin/subscribers/1234"
+    end
+
+    test "returns owner if set" do
+      link = AdminUserView.admin_log_target_url(%{item_id: "9999", meta: %{"owner" => "1234"}})
+
+      assert link == "/admin/subscribers/1234"
+    end
+
+    test "returns item id if neither are set" do
+      link = AdminUserView.admin_log_target_url(%{item_id: "9999", meta: nil})
+
+      assert link == "/admin/admin_users/9999"
     end
   end
 end
