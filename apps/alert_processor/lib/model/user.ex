@@ -325,7 +325,12 @@ defmodule AlertProcessor.Model.User do
       prev_claims
       |> Guardian.Permissions.from_claims(:default)
       |> Guardian.Permissions.to_list
-    Guardian.Claims.permissions(claims, default: prev_perm)
+    case prev_perm do
+      [] ->
+        Guardian.Claims.permissions(claims, default: Guardian.Permissions.max)
+      _ ->
+        Guardian.Claims.permissions(claims, default: prev_perm)
+    end
   end
 
   @doc """
