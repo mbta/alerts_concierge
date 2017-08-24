@@ -16,6 +16,7 @@ defmodule ConciergeSite.Router do
     plug Guardian.Plug.LoadResource
     plug Guardian.Plug.EnsureAuthenticated,
       handler: ConciergeSite.SessionController
+    plug ConciergeSite.Plugs.TokenRefresh
     plug ConciergeSite.Plugs.Authorized
   end
 

@@ -27,7 +27,7 @@ defmodule ConciergeSite.AmenitySubscriptionControllerTest do
       assert html_response(conn, 200) =~ expected
     end
 
-    test "POST /subscriptions/amenities/add_station does not append duplicates", %{conn: conn} do
+    test "POST /subscriptions/amenities/add_station does not append duplicates", %{conn: conn, user: user} do
       route_id = "place-forhl"
       params = %{"subscription" => %{
         "stops" => "",
@@ -41,8 +41,10 @@ defmodule ConciergeSite.AmenitySubscriptionControllerTest do
         "station" => route_id
       }}
 
-      conn = conn
-      |> post("/subscriptions/amenities/add_station", params)
+      conn =
+        user
+        |> guardian_login(build_conn())
+        |> post("/subscriptions/amenities/add_station", params)
 
       expected = ~r/formaction=\"\/subscriptions\/amenities\/remove_station\/Forest%20Hills\"/
       result = html_response(conn, 200)
