@@ -37,6 +37,9 @@ release :alert_processor do
   set applications: [
     :alert_processor
   ]
+  set commands: [
+    "migrate": "rel/commands/migrate.sh"
+  ]
   plugin Releases.Plugin.LinkConfig
 end
 
