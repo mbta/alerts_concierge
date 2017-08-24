@@ -5,7 +5,7 @@ defmodule AlertProcessor.AlertParser do
   """
   require Logger
   alias AlertProcessor.{AlertCache, AlertsClient, ApiClient, Helpers.StringHelper, HoldingQueue, Parser, ServiceInfoCache, SubscriptionFilterEngine}
-  alias AlertProcessor.Model.{Alert, InformedEntity, Notification}
+  alias AlertProcessor.Model.{Alert, InformedEntity, Notification, SavedAlert}
 
   @behaviour Parser
 
@@ -23,6 +23,7 @@ defmodule AlertProcessor.AlertParser do
         |> parse_alerts()
         |> AlertCache.update_cache()
 
+      SavedAlert.save!(alerts)
       HoldingQueue.remove_notifications(alert_ids_to_clear_notifications)
       Enum.map(alerts_needing_notifications, &SubscriptionFilterEngine.process_alert/1)
     end
