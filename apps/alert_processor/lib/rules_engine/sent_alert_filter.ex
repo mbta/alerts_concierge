@@ -3,28 +3,24 @@ defmodule AlertProcessor.SentAlertFilter do
   Filter users to receive alert based on having previously received alert
   """
 
-  alias AlertProcessor.Model.{Alert, Subscription, User}
-  import Ecto.Query
+  alias AlertProcessor.Model.{Alert, Notification, Subscription}
 
   @doc """
-  Takes a single alert and returns a ecto queryable representing
-  the subscription ids for users that have not received any notifications
-  for the alert
-  Note: We will use updated_at in lieu of last_push_notification until the API supports that field
+  Takes a single alert, a list of subscriptions, and a list of notifications. Returns the list of subscriptions
+  that have not already recieved a notification for the alert, or that have already recieved a notification
+  but with an older last_push_notification
   """
-  @spec filter(Alert.t) :: {:ok, Ecto.Queryable.t, Alert.t}
-  def filter(%Alert{id: alert_id, last_push_notification: lpn} = alert) do
-    query = from s in Subscription,
-      join: u in User,
-      on: s.user_id == u.id,
-      where: fragment(
-        "? not in (select n.user_id from notifications n where n.status = 'sent' and n.alert_id = ? and n.last_push_notification = ?)",
-        u.id,
-        ^alert_id,
-        ^lpn
-      ),
-      distinct: true
+  @spec filter({Alert.t, [Subscription.t], [Notification.t]}) :: {:ok, [Subscription.t], Alert.t}
+  def filter({%Alert{id: alert_id, last_push_notification: lpn} = alert, subscriptions, notifications}) do
+    notifications_to_not_resend = Enum.filter(notifications, fn(notification) ->
+      alert_id == notification.alert_id &&
+      (notification.status == :sent && lpn == notification.last_push_notification)
+    end)
 
-    {:ok, query, alert}
+    matching_subscriptions = Enum.reject(subscriptions, fn(sub) ->
+      Enum.any?(notifications_to_not_resend, &(&1.user_id == sub.user.id))
+    end)
+
+    {:ok, matching_subscriptions, alert}
   end
 end

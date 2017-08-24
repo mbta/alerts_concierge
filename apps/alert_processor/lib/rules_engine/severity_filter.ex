@@ -16,13 +16,13 @@ defmodule AlertProcessor.SeverityFilter do
   an alert to pass through to the next filter.
   """
   @spec filter({:ok, Ecto.Queryable.t, Alert.t}) :: {:ok, Ecto.Queryable.t, Alert.t}
-  def filter({:ok, previous_query, %Alert{} = alert}) do
+  def filter({:ok, subscriptions, %Alert{} = alert}) do
     alert_severity_value = Alert.severity_value(alert)
-    query = from s in subquery(previous_query),
-      where: s.alert_priority_type == "low" and ^(alert_severity_value >= Subscription.severity_value(:low)),
-      or_where: s.alert_priority_type == "medium" and ^(alert_severity_value >= Subscription.severity_value(:medium)),
-      or_where: s.alert_priority_type == "high" and ^(alert_severity_value >= Subscription.severity_value(:high))
 
-    {:ok, query, alert}
+    matching_subscriptions = Enum.filter(subscriptions, fn(sub) ->
+      Subscription.severity_value(sub.alert_priority_type) <= alert_severity_value
+    end)
+
+    {:ok, matching_subscriptions, alert}
   end
 end

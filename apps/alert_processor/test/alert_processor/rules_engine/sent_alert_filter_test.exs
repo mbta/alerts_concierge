@@ -1,18 +1,17 @@
 defmodule AlertProcessor.SentAlertFilterTest do
   use AlertProcessor.DataCase
-  alias AlertProcessor.{SentAlertFilter, Model, QueryHelper}
+  alias AlertProcessor.{SentAlertFilter, Model}
   alias Model.{Alert, Notification}
   import AlertProcessor.Factory
 
-  @alert %Alert{id: "123"}
+  @alert %Alert{id: "123", last_push_notification: nil}
 
-  describe "filter/1" do
+  describe "filter/2" do
     test "returns all subscriptions that have not received the alert" do
-      user = insert(:user)
-      sub1 = insert(:subscription, user: user)
-      other_notification_user = insert(:user)
-      sub2 = insert(:subscription, user: other_notification_user)
       notified_user = insert(:user)
+      sub1 = insert(:subscription, user: notified_user) |> Repo.preload(:user)
+      other_notification_user = insert(:user)
+      sub2 = insert(:subscription, user: other_notification_user) |> Repo.preload(:user)
 
       notification = %Notification{
         alert_id: "123",
@@ -21,7 +20,8 @@ defmodule AlertProcessor.SentAlertFilterTest do
         header: "You are being notified",
         service_effect: "test",
         description: "test",
-        status: :sent
+        status: :sent,
+        last_push_notification: nil
       }
 
       other_notification = %Notification{
@@ -31,19 +31,19 @@ defmodule AlertProcessor.SentAlertFilterTest do
         header: "You have been notified",
         service_effect: "test",
         description: "test",
-        status: :sent
+        status: :sent,
+        last_push_notification: nil
       }
 
-      Repo.insert(Notification.create_changeset(notification))
-      Repo.insert(Notification.create_changeset(other_notification))
+      n1 = Repo.insert!(Notification.create_changeset(notification))
+      n2 = Repo.insert!(Notification.create_changeset(other_notification))
 
-      assert {:ok, query, @alert} = SentAlertFilter.filter(@alert)
-      assert MapSet.equal?(MapSet.new([sub1.id, sub2.id]), MapSet.new(QueryHelper.execute_query(query)))
+      assert {:ok, [sub2], @alert} ==
+        SentAlertFilter.filter({@alert, [sub1, sub2], [n1, n2]})
     end
 
     test "returns empty list if no match" do
-      assert {:ok, query, @alert} = SentAlertFilter.filter(@alert)
-      assert [] == QueryHelper.execute_query(query)
+      assert {:ok, [], @alert} = SentAlertFilter.filter({@alert, [], []})
     end
 
     test "returns the subscription if notification failed" do
@@ -62,13 +62,13 @@ defmodule AlertProcessor.SentAlertFilterTest do
 
       Repo.insert(Notification.create_changeset(notification))
 
-      assert {:ok, query, @alert} = SentAlertFilter.filter(@alert)
-      assert [subscription.id] == QueryHelper.execute_query(query)
+      assert {:ok, [subscription], @alert} ==
+        SentAlertFilter.filter({@alert, [subscription], [notification]})
     end
 
     test "returns subscriptions that have received the alert if the last_push_notification changed" do
       user = insert(:user)
-      sub1 = insert(:subscription, user: user)
+      sub1 = insert(:subscription, user: user) |> Repo.preload(:user)
       now = DateTime.utc_now
       later = now |> Calendar.DateTime.add!(1800)
       alert = %Alert{id: "123", last_push_notification: now}
@@ -85,11 +85,11 @@ defmodule AlertProcessor.SentAlertFilterTest do
       }
       Repo.insert(Notification.create_changeset(notification))
 
-      assert {:ok, query, _alert} = SentAlertFilter.filter(alert)
-      assert [] == QueryHelper.execute_query(query)
+      assert {:ok, [], alert} ==
+        SentAlertFilter.filter({alert, [sub1], [notification]})
 
-      assert {:ok, query2, _alert2} = SentAlertFilter.filter(updated_alert)
-      assert [sub1.id] == QueryHelper.execute_query(query2)
+      assert {:ok, [sub1], updated_alert} ==
+        SentAlertFilter.filter({updated_alert, [sub1], [notification]})
     end
   end
 end

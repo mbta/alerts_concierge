@@ -14,20 +14,23 @@ defmodule AlertProcessor.DigestBuilder do
   """
   @spec build_digests({[Alert.t], DigestDateGroup.t}) :: [Digest.t]
   def build_digests({alerts, digest_date_group}) do
+    subs =
+      Subscription
+      |> Repo.all()
+      |> Repo.preload(:user)
+      |> Repo.preload(:informed_entities)
+
     alerts
     |> Enum.map(fn(alert) ->
-      {fetch_users(alert), alert}
+      {fetch_users(alert, subs), alert}
     end)
     |> sort_by_user(digest_date_group)
   end
 
-  defp fetch_users(alert) do
-    q = from s in Subscription, select: s
-    {:ok, query, ^alert} = InformedEntityFilter.filter({:ok, q, alert})
-    query
-    |> Repo.all()
-    |> Repo.preload(:user)
-    |> Enum.map(&(&1.user))
+  defp fetch_users(alert, subs) do
+    {:ok, subscriptions, ^alert} = InformedEntityFilter.filter({:ok, subs, alert})
+
+    Enum.map(subscriptions, &(&1.user))
   end
 
   defp sort_by_user(data, digest_date_group) do

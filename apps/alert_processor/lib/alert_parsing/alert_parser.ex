@@ -25,7 +25,7 @@ defmodule AlertProcessor.AlertParser do
 
       SavedAlert.save!(alerts)
       HoldingQueue.remove_notifications(alert_ids_to_clear_notifications)
-      Enum.map(alerts_needing_notifications, &SubscriptionFilterEngine.process_alert/1)
+      SubscriptionFilterEngine.process_alerts(alerts_needing_notifications)
     end
   end
 
