@@ -17,7 +17,7 @@ defmodule ConciergeSite.Plugs.TokenRefresh do
            case Guardian.refresh!(token, claims, %{ttl: {60, :minutes}}) do
              {:ok, new_token, new_claims} ->
                current_user = current_resource(conn)
-               new_claims = claims_with_permission(new_claims, current_user)
+               new_claims = claims_with_permission(claims, new_claims, current_user)
                key = Map.get(new_claims, :key, :default)
               conn
               |> configure_session(renew: true)
@@ -33,13 +33,14 @@ defmodule ConciergeSite.Plugs.TokenRefresh do
     end
   end
 
-  defp claims_with_permission(claims, %User{role: "customer_support"}) do
+  defp claims_with_permission(_, claims, %User{role: "customer_support"}) do
     Guardian.Claims.permissions(claims, admin: [:customer_support], default: Guardian.Permissions.max)
   end
-  defp claims_with_permission(claims, %User{role: "application_administration"}) do
+  defp claims_with_permission(_, claims, %User{role: "application_administration"}) do
     Guardian.Claims.permissions(claims, admin: [:customer_support, :application_administration], default: Guardian.Permissions.max)
   end
-  defp claims_with_permission(claims, _) do
-    Guardian.Claims.permissions(claims, default: Guardian.Permissions.max)
+  defp claims_with_permission(prev_claims, claims, _) do
+    prev_perm = Guardian.Permissions.from_claims(prev_claims, :default) |> Guardian.Permissions.to_list
+    Guardian.Claims.permissions(claims, default: prev_perm)
   end
 end
