@@ -11,7 +11,7 @@ defmodule AlertProcessor.ReleaseTasks do
     :ecto
   ]
 
-  def migrate! do
+  def migrate do
     Enum.each(@start_apps, &Application.ensure_all_started/1)
     Migrator.run(Repo, migrations_path(:alert_processor), :up, all: true)
   end
