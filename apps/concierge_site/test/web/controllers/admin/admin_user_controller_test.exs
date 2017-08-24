@@ -25,6 +25,28 @@ defmodule ConciergeSite.Admin.AdminUserControllerTest do
       assert html_response(conn, 200) =~ admin.email
     end
 
+    test "GET /admin/admin_users/:id with activity log", %{conn: conn, user: user} do
+      user1 = insert(:user)
+      user2 = insert(:user)
+      admin = insert(:user, role: "application_administration")
+      User.log_admin_action(:view_subscriber, admin, user1)
+      User.log_admin_action(:message_subscriber, admin, user1)
+      User.log_admin_action(:view_subscriber, admin, user2)
+      User.log_admin_action(:impersonate_subscriber, admin, user2)
+
+      conn =
+        user
+        |> guardian_login(conn, :token, @application_admin_token_params)
+        |> get(admin_admin_user_path(conn, :show, admin))
+
+      assert html_response(conn, 200) =~ admin.email
+      assert html_response(conn, 200) =~ "View Subscriber"
+      assert html_response(conn, 200) =~ "Message Subscriber"
+      assert html_response(conn, 200) =~ "Logged In As Subscriber"
+      assert html_response(conn, 200) =~ user1.email
+      assert html_response(conn, 200) =~ user2.email
+    end
+
     test "GET /admin/admin_users/new", %{conn: conn, user: user} do
       conn =
         user

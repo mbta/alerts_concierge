@@ -73,7 +73,7 @@ defmodule AlertProcessor.Model.User do
     |> validate_required([:role])
     |> validate_inclusion(:role, @admin_roles)
     |> create_account_changeset(params)
-    |> PaperTrail.insert(originator: wrap_id(originator))
+    |> PaperTrail.insert(originator: wrap_id(originator), origin: "admin:create-admin-account")
     |> normalize_papertrail_result()
   end
 
@@ -99,9 +99,13 @@ defmodule AlertProcessor.Model.User do
   end
 
   def update_account(struct, params, originator) do
+    origin =
+      if struct.id != wrap_id(originator).id do
+        "admin:update-subscriber-account"
+      end
     struct
     |> update_account_changeset(params)
-    |> PaperTrail.update(originator: wrap_id(originator))
+    |> PaperTrail.update(originator: wrap_id(originator), origin: origin, meta: %{subscriber_id: struct.id, subscriber_email: struct.email})
     |> normalize_papertrail_result()
   end
 
@@ -115,9 +119,13 @@ defmodule AlertProcessor.Model.User do
   end
 
   def disable_account(struct, originator) do
+    origin =
+      if struct.id != wrap_id(originator).id do
+        "admin:deactivate-subscriber-account"
+      end
     struct
     |> disable_account_changeset()
-    |> PaperTrail.update(originator: wrap_id(originator))
+    |> PaperTrail.update(originator: wrap_id(originator), origin: origin, meta: %{subscriber_id: struct.id, subscriber_email: struct.email})
     |> normalize_papertrail_result()
   end
 
@@ -131,7 +139,7 @@ defmodule AlertProcessor.Model.User do
   def deactivate_admin(struct, originator) do
     struct
     |> deactivate_admin_changeset()
-    |> PaperTrail.update(originator: wrap_id(originator))
+    |> PaperTrail.update(originator: wrap_id(originator), origin: "admin:deactivate-admin")
     |> normalize_papertrail_result()
   end
 
@@ -142,7 +150,7 @@ defmodule AlertProcessor.Model.User do
   def activate_admin(struct, params, originator) do
     struct
     |> activate_admin_changeset(params)
-    |> PaperTrail.update(originator: wrap_id(originator))
+    |> PaperTrail.update(originator: wrap_id(originator), origin: "admin:change-admin-role")
     |> normalize_papertrail_result()
   end
 
@@ -175,9 +183,13 @@ defmodule AlertProcessor.Model.User do
   end
 
   def update_password(user, params, originator) do
+    origin =
+      if user.id != wrap_id(originator).id do
+        "admin:update-subscriber-password"
+      end
     user
     |> update_password_changeset(params)
-    |> PaperTrail.update(originator: wrap_id(originator))
+    |> PaperTrail.update(originator: wrap_id(originator), origin: origin, meta: %{subscriber_id: user.id, subscriber_email: user.email})
     |> normalize_papertrail_result()
   end
 
@@ -195,16 +207,24 @@ defmodule AlertProcessor.Model.User do
   end
 
   def update_vacation(user, params, originator) do
+    origin =
+      if user.id != wrap_id(originator).id do
+        "admin:update-subscriber-vacation"
+      end
     user
     |> update_vacation_changeset(params)
-    |> PaperTrail.update(originator: wrap_id(originator))
+    |> PaperTrail.update(originator: wrap_id(originator), origin: origin, meta: %{subscriber_id: user.id, subscriber_email: user.email})
     |> normalize_papertrail_result()
   end
 
   def remove_vacation(user, originator) do
+    origin =
+      if user.id != wrap_id(originator).id do
+        "admin:remove-subscriber-vacation"
+      end
     user
     |> remove_vacation_changeset()
-    |> PaperTrail.update(originator: wrap_id(originator))
+    |> PaperTrail.update(originator: wrap_id(originator), origin: origin, meta: %{subscriber_id: user.id, subscriber_email: user.email})
     |> normalize_papertrail_result()
   end
 
@@ -393,6 +413,18 @@ defmodule AlertProcessor.Model.User do
     |> PaperTrail.update(originator: wrap_id(admin_user), origin: "admin:view-subscriber", meta: %{subscriber_id: user.id, subscriber_email: user.email})
     |> normalize_papertrail_result()
   end
+  def log_admin_action(:message_subscriber, admin_user, user) do
+    admin_user
+    |> Ecto.Changeset.change()
+    |> PaperTrail.update(originator: wrap_id(admin_user), origin: "admin:message-subscriber", meta: %{subscriber_id: user.id, subscriber_email: user.email})
+    |> normalize_papertrail_result()
+  end
+  def log_admin_action(:impersonate_subscriber, admin_user, user) do
+    admin_user
+    |> Ecto.Changeset.change()
+    |> PaperTrail.update(originator: wrap_id(admin_user), origin: "admin:impersonate-subscriber", meta: %{subscriber_id: user.id, subscriber_email: user.email})
+    |> normalize_papertrail_result()
+  end
 
   @doc """
   fetch actions logged by admin user using papertrail.
@@ -401,7 +433,7 @@ defmodule AlertProcessor.Model.User do
     Repo.all(
       from v in PaperTrail.Version,
       where: v.originator_id == ^admin_user_id,
-      select: [:item_type, :event, :item_changes, :origin, :inserted_at, :meta],
+      where: ilike(v.origin, "admin:%"),
       order_by: [desc: v.inserted_at]
     )
   end
