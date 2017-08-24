@@ -37,15 +37,11 @@
       </nav>
       <div class="bg-faded">
         <div class="container breadcrumb">
-          <a class="breadcrumb-item" href="/">Home</a>
-          <span>></span>
-          <a class="breadcrumb-item" href="/my-subscriptions">T-Alerts</a>
-          <%= if is_admin?(@current_user) do %>
+          <a href="/my-subscriptions">T-Alerts</a>
             <%= for breadcrumb <- breadcrumbs(@conn) do %>
               <span>></span>
               <a class="breadcrumb-item" href="<%= breadcrumb.path %>"><%= breadcrumb.title %></a>
             <% end %>
-          <% end %>
         </div>
       </div>
       <%= impersonation_banner(@conn, @current_user) %>

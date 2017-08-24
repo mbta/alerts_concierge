@@ -12,16 +12,27 @@ defmodule ConciergeSite.LayoutView do
 
   def breadcrumbs(conn) do
     case conn.path_info do
-      ["admin", path, _endpoint, sub_endpoint] ->
-        [%{title: breadcrumb_title_parse(path), path: "/admin/#{path}"},
-        %{title: breadcrumb_title_parse(sub_endpoint), path: conn.request_path}]
-      ["admin", "subscribers", _endpoint] ->
-        [
-          %{title: "Subscribers", path: "/admin/subscribers"},
-          %{title: conn.assigns[:subscriber].email, path: conn.request_path}
-        ]
+      ["admin", path, endpoint, sub_endpoint] ->
+        if path == "admin_users" do
+          [
+            %{title: breadcrumb_title_parse(path), path: "/admin/#{path}"},
+            %{title: conn.assigns[:admin_user].email, path: "/admin/#{path}/#{endpoint}"},
+            %{title: breadcrumb_title_parse(sub_endpoint), path: conn.request_path}
+          ]
+        else
+          [
+            %{title: breadcrumb_title_parse(path), path: "/admin/#{path}"},
+            %{title: conn.assigns[:subscriber].email, path: "/admin/#{path}/#{endpoint}"},
+            %{title: breadcrumb_title_parse(sub_endpoint), path: conn.request_path}
+          ]
+        end
       ["admin", path, endpoint] ->
         cond do
+          conn.assigns[:subscriber] ->
+            [
+              %{title: "Subscribers", path: "/admin/subscribers"},
+              %{title: conn.assigns[:subscriber].email, path: conn.request_path}
+            ]
           conn.assigns[:admin_user] ->
             [
               %{title: breadcrumb_title_parse(path), path: "/admin/#{path}"},
@@ -29,7 +40,7 @@ defmodule ConciergeSite.LayoutView do
             ]
           path == "my-account" ->
             [
-              %{title: breadcrumb_title_parse(path), path: "/admin/#{path}"}
+              %{title: "Admin Account", path: "/admin/#{path}"}
             ]
           true ->
             [
@@ -39,6 +50,45 @@ defmodule ConciergeSite.LayoutView do
         end
       ["admin", path] ->
         [%{title: breadcrumb_title_parse(path), path: conn.request_path}]
+      [path, endpoint, _, sub_endpoint] ->
+        cond do
+          sub_endpoint == "preferences" ->
+            [%{title: "New Subscriptions", path: "/#{path}/new"},
+            %{title: "Trip Type", path: "/#{path}/#{endpoint}/new"},
+            %{title: "Trip Info", path: "/#{path}/#{endpoint}/new/info?trip_type=one_way"},
+            %{title: "Preferences", path: conn.request_path}]
+          sub_endpoint == "edit" ->
+            [%{title: "Edit Subscriptions", path: "/my-subscriptions"}]
+          true ->
+            [%{title: "New Subscriptions", path: "/#{path}/new"},
+            %{title: "Trip Type", path: "/#{path}/#{endpoint}/new"},
+            %{title: "Trip Info", path: "/#{path}/#{endpoint}/new/info?trip_type=one_way"}]
+        end
+      [path, endpoint, sub_endpoint] ->
+        cond do
+          sub_endpoint == "confirm_delete" ->
+            [%{title: "Edit Subscriptions", path: "/my-subscriptions"},
+            %{title: "Confirm Delete Subscription", path: conn.request_path}]
+          sub_endpoint == "new" ->
+            [%{title: "New Subscriptions", path: "/#{path}/#{sub_endpoint}"},
+            %{title: "Trip Type", path: conn.request_path}]
+          endpoint == "vacation" ->
+            [%{title: breadcrumb_title_parse(path), path: "/#{path}/#{sub_endpoint}"},
+             %{title: breadcrumb_title_parse(endpoint), path: conn.request_path}]
+          true ->
+            [%{title: breadcrumb_title_parse(path), path: "/#{path}/edit"},
+            %{title: "Change Password", path: conn.request_path}]
+        end
+      [path, endpoint] ->
+        cond do
+          endpoint == "new" ->
+            [%{title: "New Subscriptions", path: conn.request_path}]
+          endpoint == "confirm_disable" ->
+            [%{title: breadcrumb_title_parse(path), path: "/#{path}/edit"},
+            %{title: breadcrumb_title_parse(endpoint), path: conn.request_path}]
+          true ->
+            [%{title: breadcrumb_title_parse(path), path: "/#{path}/edit"}]
+        end
       _ ->
         []
     end

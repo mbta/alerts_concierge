@@ -29,11 +29,14 @@ defmodule ConciergeSite.LayoutViewTest do
       assert LayoutView.breadcrumbs(conn) == [%{title: "Subscribers", path: "/admin/subscribers"}]
     end
 
-    test "returns an empty list for breadcrumb if not in admin path",
+    test "renders breadcrumbs for create new subscriptions path",
          %{conn: conn} do
-      conn = Map.put(conn, :path_info, ["my-subscriptions"])
+      conn =
+        conn
+        |> Map.put(:path_info, ["subscriptions", "new"])
+        |> Map.put(:request_path, "/subscriptions/new")
 
-      assert LayoutView.breadcrumbs(conn) == []
+      assert LayoutView.breadcrumbs(conn) == [%{title: "New Subscriptions", path: "/subscriptions/new"}]
     end
   end
 
