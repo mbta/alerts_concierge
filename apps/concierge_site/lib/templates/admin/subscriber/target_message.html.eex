@@ -16,7 +16,7 @@
         <label for="subscriber_email">Subscriber Email</label>
         <%= text_input f, :subscriber_email, class: "form-control", value: @subscriber.email, disabled: true %>
         <label for="subject">Subject</label>
-        <%= text_input f, :subject, class: "form-control", placeholder: "Test Message", required: true %>
+        <%= text_input f, :subject, class: "form-control", value: "MBTA Test Message", required: true %>
         <label for="email_body">Body Text</label>
         <%= textarea f, :email_body, class: "form-control email_body_container", value: "This is a test message sent from the MBTA. No response necessary.", required: true %>
       </div>

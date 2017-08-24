@@ -3,22 +3,22 @@
     &copy; Massachusetts Bay Transportation Authority, all rights reserved.
   </div>
 
-  <table class="footer-links">
+  <table>
     <tr>
-      <td >
+      <td>
         <a class="footer-link" href="<%= unsubscribe_url %>">Unsubscribe</a>
       </td>
       <td class="footer-link-separator">
         <div class="footer-link-separator-bullet" />
       </td>
-      <td class="footer-link">
-        <a href="https://t.mbta.com/customer-support">Feedback</a>
+      <td>
+        <a class="footer-link" href="https://t.mbta.com/customer-support">Feedback</a>
       </td>
       <td class="footer-link-separator">
         <div class="footer-link-separator-bullet" />
       </td>
-      <td class="footer-link">
-        <a href="#">Edit Your Subscriptions</a>
+      <td>
+        <a class="footer-link" href="#">Edit Your Subscriptions</a>
       </td>
     </tr>
   </table>
