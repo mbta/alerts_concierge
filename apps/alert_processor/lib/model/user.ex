@@ -311,6 +311,21 @@ defmodule AlertProcessor.Model.User do
   defp authorize_admin({:error, result}), do: {:error, result}
 
   @doc """
+  Adds permission to the user's claims based on the user's role, else
+  based on the previous claims
+  """
+  def claims_with_permission(_, claims, %__MODULE__{role: "customer_support"}) do
+    Guardian.Claims.permissions(claims, admin: [:customer_support], default: Guardian.Permissions.max)
+  end
+  def claims_with_permission(_, claims, %__MODULE__{role: "application_administration"}) do
+    Guardian.Claims.permissions(claims, admin: @active_admin_roles, default: Guardian.Permissions.max)
+  end
+  def claims_with_permission(prev_claims, claims, _) do
+    prev_perm = Guardian.Permissions.from_claims(prev_claims, :default) |> Guardian.Permissions.to_list
+    Guardian.Claims.permissions(claims, default: prev_perm)
+  end
+
+  @doc """
   Returns user ids based on a list of phone numbers
   """
   def ids_by_phone_numbers(phone_numbers) do
