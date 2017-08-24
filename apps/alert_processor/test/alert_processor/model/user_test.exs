@@ -2,6 +2,7 @@ defmodule AlertProcessor.Model.UserTest do
   use AlertProcessor.DataCase
   import AlertProcessor.Factory
   alias AlertProcessor.Model.User
+  alias ConciergeSite.Auth.Token
 
   @valid_attrs %{email: "email@test.com", role: "user", password: "password1"}
   @valid_account_attrs %{
@@ -125,6 +126,33 @@ defmodule AlertProcessor.Model.UserTest do
 
     test "does not authenticate if user doesn't exist" do
       assert {:error, _} = User.authenticate(%{"email" => "nope@invalid.com", "password" => @password})
+    end
+  end
+
+  describe "claims_with_permission/3" do
+    test "encodes the admin user's claims with permission" do
+      admin_user = insert(:user, role: "application_administration")
+      {:ok, token, _} = Token.issue(admin_user)
+      {:ok, claims} = Guardian.decode_and_verify(token)
+      new_claims =
+        claims
+        |> User.claims_with_permission(claims, admin_user)
+        |> Guardian.Permissions.from_claims()
+        |> Guardian.Permissions.to_list()
+      assert [:reset_password, :unsubscribe, :disable_account, :full_permissions] == new_claims
+    end
+
+    test "encodes the user's claims with previous permission" do
+      user = insert(:user)
+      {:ok, token, _} = Token.issue(user, [:disable_account])
+      {:ok, prev_claims} = Guardian.decode_and_verify(token)
+      {:ok, _, refreshed_claims} = Guardian.refresh!(token, prev_claims, %{ttl: {60, :minutes}})
+      new_claims =
+        prev_claims
+        |> User.claims_with_permission(refreshed_claims, user)
+        |> Guardian.Permissions.from_claims()
+        |> Guardian.Permissions.to_list()
+      assert [:disable_account] == new_claims
     end
   end
 
