@@ -36,6 +36,7 @@ defmodule ConciergeSite.Router do
     pipe_through :browser
 
     get "/", PageController, :index
+    get "/intro", AccountController, :intro
     resources "/account", AccountController, only: [:new, :create]
     resources "/login", SessionController, only: [:new, :create, :delete], singleton: true
     get "/reset-password/sent", PasswordResetController, :sent

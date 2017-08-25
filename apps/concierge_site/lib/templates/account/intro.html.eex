@@ -1,0 +1,19 @@
+<h1>T-Alerts</h1>
+<div class="login-container">
+  <h2 class="login-header">Welcome</h2>
+  <p>
+    As a T-Alerts subscriber you'll receive breaking news about services you use
+    most and weekly digests about upcoming changes.
+  </p>
+  <p>
+    To get started, tell us about the trips you take most often. As soon as we
+    know something unexpected may affect your trip we will send you a notification.
+    Weekly digests will include upcoming changes that affect those trips, and other
+    changes that may affect you.
+  </p>
+  <hr class="account-creation-divider">
+  <div class="account-creation-footer">
+    <p><%= link("Get Started", to: account_path(@conn, :new), class: "btn btn-primary") %></p>
+    <p>Already have an account?  <%= link("Sign in.", to: session_path(@conn, :new)) %><p>
+  </div>
+</div>
