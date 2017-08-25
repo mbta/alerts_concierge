@@ -138,7 +138,7 @@ defmodule AlertProcessor.ApiClient do
   @spec subway_schedules_union(String.t, String.t) :: {:ok, map, map} | {:error, String.t}
   def subway_schedules_union(origin, destination) do
     # credo:disable-for-lines:3 Credo.Check.Readability.SpaceAfterCommas
-    routes = "Red,Blue,Orange,Green-B,Green-C,Green-D,Green-E"
+    routes = "Red,Blue,Orange,Green-B,Green-C,Green-D,Green-E,Mattapan"
     response = get(
       "/schedules/?filter[route]=#{routes}&filter[stop]=#{origin},#{destination}&fields[stop]=parent_station&fields[schedule]=&include=stop"
     )

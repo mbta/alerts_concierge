@@ -24,54 +24,79 @@ defmodule ConciergeSite.Subscriptions.SubwayParamsTest do
     end
 
     test "it returns error messages when the departure end is before departure start" do
-      params = %{
-        "departure_start" => "08:45 AM",
-        "departure_end" => "08:15 AM",
-        "origin" => "place-brntn",
-        "destination" => "place-qamnl",
-        "saturday" => "false",
-        "sunday" => "false",
-        "weekday" => "true",
-        "trip_type" => "one_way",
-      }
+      use_cassette "subway_schedules", custom: true, clear_mock: true, match_requests_on: [:query] do
+        params = %{
+          "departure_start" => "08:45 AM",
+          "departure_end" => "08:15 AM",
+          "origin" => "place-brntn",
+          "destination" => "place-qamnl",
+          "saturday" => "false",
+          "sunday" => "false",
+          "weekday" => "true",
+          "trip_type" => "one_way",
+        }
 
-      {:error, message} = SubwayParams.validate_info_params(params)
-      assert IO.iodata_to_binary(message) == "Please correct the following errors to proceed: Start time on departure trip cannot be same as or later than end time. End of service day is 03:00AM."
+        {:error, message} = SubwayParams.validate_info_params(params)
+        assert IO.iodata_to_binary(message) == "Please correct the following errors to proceed: Start time on departure trip cannot be same as or later than end time. End of service day is 03:00AM."
+      end
     end
 
     test "it returns error messages when the return end is before return start" do
-      params = %{
-        "departure_start" => "08:45 AM",
-        "departure_end" => "09:15 AM",
-        "return_start" => "10:45 AM",
-        "return_end" => "09:45 AM",
-        "origin" => "place-brntn",
-        "destination" => "place-qamnl",
-        "saturday" => "false",
-        "sunday" => "false",
-        "weekday" => "true",
-        "trip_type" => "round_trip",
-      }
+      use_cassette "subway_schedules", custom: true, clear_mock: true, match_requests_on: [:query] do
+        params = %{
+          "departure_start" => "08:45 AM",
+          "departure_end" => "09:15 AM",
+          "return_start" => "10:45 AM",
+          "return_end" => "09:45 AM",
+          "origin" => "place-brntn",
+          "destination" => "place-qamnl",
+          "saturday" => "false",
+          "sunday" => "false",
+          "weekday" => "true",
+          "trip_type" => "round_trip",
+        }
 
-      {:error, message} = SubwayParams.validate_info_params(params)
-      assert IO.iodata_to_binary(message) == "Please correct the following errors to proceed: Start time on return trip cannot be same as or later than end time. End of service day is 03:00AM."
+        {:error, message} = SubwayParams.validate_info_params(params)
+        assert IO.iodata_to_binary(message) == "Please correct the following errors to proceed: Start time on return trip cannot be same as or later than end time. End of service day is 03:00AM."
+      end
+    end
+
+    test "it returns ok when the timeframe is within valid service time range for mattapan" do
+      use_cassette "subway_schedules", custom: true, clear_mock: true, match_requests_on: [:query] do
+        params = %{
+          "departure_start" => "08:45 AM",
+          "departure_end" => "09:15 AM",
+          "return_start" => "11:45 PM",
+          "return_end" => "02:45 AM",
+          "origin" => "place-asmnl",
+          "destination" => "place-capst",
+          "saturday" => "false",
+          "sunday" => "false",
+          "weekday" => "true",
+          "trip_type" => "round_trip",
+        }
+
+        assert SubwayParams.validate_info_params(params) == :ok
+      end
     end
 
     test "it returns ok when the timeframe is within valid service time range" do
-      params = %{
-        "departure_start" => "08:45 AM",
-        "departure_end" => "09:15 AM",
-        "return_start" => "11:45 PM",
-        "return_end" => "02:45 AM",
-        "origin" => "place-brntn",
-        "destination" => "place-qamnl",
-        "saturday" => "false",
-        "sunday" => "false",
-        "weekday" => "true",
-        "trip_type" => "round_trip",
-      }
+      use_cassette "subway_schedules", custom: true, clear_mock: true, match_requests_on: [:query] do
+        params = %{
+          "departure_start" => "08:45 AM",
+          "departure_end" => "09:15 AM",
+          "return_start" => "11:45 PM",
+          "return_end" => "02:45 AM",
+          "origin" => "place-brntn",
+          "destination" => "place-qamnl",
+          "saturday" => "false",
+          "sunday" => "false",
+          "weekday" => "true",
+          "trip_type" => "round_trip",
+        }
 
-      assert SubwayParams.validate_info_params(params) == :ok
+        assert SubwayParams.validate_info_params(params) == :ok
+      end
     end
 
     test "it returns ok when origin and destination are on the same line" do
