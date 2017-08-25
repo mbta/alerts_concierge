@@ -154,6 +154,15 @@ defmodule AlertProcessor.Model.UserTest do
         |> Guardian.Permissions.to_list()
       assert [:disable_account] == new_claims
     end
+
+    test "replaces empty permissions with default permissions" do
+      user = insert(:user)
+      {:ok, token, _} = Token.issue(user)
+      {:ok, prev_claims} = Guardian.decode_and_verify(token)
+      {:ok, _, refreshed_claims} = Guardian.refresh!(token, prev_claims, %{ttl: {60, :minutes}})
+      %{"pem" => %{"default" => permission_number}} = User.claims_with_permission(Map.put(prev_claims, "pem", %{}), refreshed_claims, user)
+      assert Guardian.Permissions.max == permission_number
+    end
   end
 
   describe "create_account_changeset" do
