@@ -2,6 +2,11 @@ defmodule ConciergeSite.AccountControllerTest do
   use ConciergeSite.ConnCase
   use Bamboo.Test
 
+  test "GET /intro", %{conn: conn} do
+    conn = get(conn, "/intro")
+    assert html_response(conn, 200) =~ "Get Started"
+  end
+
   describe "valid params" do
     test "creates user", %{conn: conn} do
       params = %{"user" => %{
