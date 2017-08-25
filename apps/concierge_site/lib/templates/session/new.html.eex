@@ -26,7 +26,7 @@
     </div>
     <div class="login-footer">
       <%= submit "Sign In", class: "btn btn-primary btn-login" %>
-      <p>Don't have an existing account? <%= link("Create one", to: account_path(@conn, :new)) %></p>
+      <p>Don't have an existing account? <%= link("Create one", to: account_path(@conn, :intro)) %></p>
     </div>
   <% end %>
 </div>

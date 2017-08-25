@@ -22,6 +22,10 @@ defmodule ConciergeSite.AccountController do
     end
   end
 
+  def intro(conn, _params) do
+    render conn, "intro.html"
+  end
+
   defp errors(changeset) do
     Enum.map(changeset.errors, fn({field, _}) ->
       field
