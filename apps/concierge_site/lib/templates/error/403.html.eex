@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <title>T-Alerts</title>
+    <link rel="stylesheet" href="/css/app.css">
+  </head>
+
+  <body class="no-js">
+    <div class="container page-content">
+      <div class="error-page">
+        <h1><strong>403</strong></h1>
+        <p>Your stop requires admin permission. This page is forbidden.</p>
+        <p><a href="/">Return to the homepage.</a></p>
+        <div class="error-image">
+          <img src="https://d3044s2alrsxog.cloudfront.net/images/error-bus-80a0fbdd62ccc62e7fc109d843afc555.gif?vsn=d">    
+        </div>
+      </div>
+    </div>
+    <footer class="footer">
+      <p>&copy; Massachusetts Bay Transportation Authority, all rights reserved.</p>
+    </footer>
+  </body>
+</html>

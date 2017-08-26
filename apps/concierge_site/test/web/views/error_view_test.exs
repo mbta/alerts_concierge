@@ -5,8 +5,13 @@ defmodule ConciergeSite.ErrorViewTest do
   import Phoenix.View
 
   test "renders 404.html" do
-    assert render_to_string(ConciergeSite.ErrorView, "404.html", []) ==
-           "Page not found"
+    assert render_to_string(ConciergeSite.ErrorView, "404.html", []) =~
+           "Your stop cannot be found. This page is no longer in service."
+  end
+
+  test "renders 403.html" do
+    assert render_to_string(ConciergeSite.ErrorView, "403.html", []) =~
+           "Your stop requires admin permission. This page is forbidden."
   end
 
   test "render 500.html" do
