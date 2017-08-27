@@ -139,7 +139,7 @@ defmodule ConciergeSite.Admin.SubscriberControllerTest do
         |> guardian_login(conn)
         |> get(admin_subscriber_path(conn, :index))
 
-      assert html_response(conn, 403) =~ "Forbidden"
+      assert html_response(conn, 403) =~ "Your stop requires admin permission. This page is forbidden."
     end
 
     test "GET /admin/subscribers/:id/new_message", %{conn: conn} do
@@ -150,7 +150,7 @@ defmodule ConciergeSite.Admin.SubscriberControllerTest do
         |> guardian_login(conn)
         |> get(admin_subscriber_subscriber_path(conn, :new_message, subscriber))
 
-      assert html_response(conn, 403) =~ "Forbidden"
+      assert html_response(conn, 403) =~ "Your stop requires admin permission. This page is forbidden."
     end
 
     test "POST /admin/subscribers/:id/new_message", %{conn: conn} do
@@ -168,7 +168,7 @@ defmodule ConciergeSite.Admin.SubscriberControllerTest do
         |> guardian_login(conn)
 
       conn = post(conn, admin_subscriber_subscriber_path(conn, :send_message, subscriber, message_params))
-      assert html_response(conn, 403) =~ "Forbidden"
+      assert html_response(conn, 403) =~ "Your stop requires admin permission. This page is forbidden."
     end
   end
 

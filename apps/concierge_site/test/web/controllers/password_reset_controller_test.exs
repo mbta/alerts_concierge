@@ -63,7 +63,8 @@ defmodule ConciergeSite.PasswordResetControllerTest do
     response = assert_error_sent 404, fn ->
       get(conn, password_reset_path(conn, :edit, password_reset))
     end
-    assert {404, _, "Page not found"} = response
+    assert {404, _, html_response} = response
+    assert html_response =~ "Your stop cannot be found. This page is no longer in service."
   end
 
   test "GET /reset-password/:id/edit with an expired password reset", %{conn: conn}  do
@@ -72,7 +73,8 @@ defmodule ConciergeSite.PasswordResetControllerTest do
     response = assert_error_sent 404, fn ->
       get(conn, password_reset_path(conn, :edit, password_reset))
     end
-    assert {404, _, "Page not found"} = response
+    assert {404, _, html_response} = response
+    assert html_response =~ "Your stop cannot be found. This page is no longer in service."
   end
 
   test "GET /reset-password/:id/edit with a redeemed password reset", %{conn: conn}  do
@@ -81,7 +83,8 @@ defmodule ConciergeSite.PasswordResetControllerTest do
     response = assert_error_sent 404, fn ->
       get(conn, password_reset_path(conn, :edit, password_reset))
     end
-    assert {404, _, "Page not found"} = response
+    assert {404, _, html_response} = response
+    assert html_response =~ "Your stop cannot be found. This page is no longer in service."
   end
 
   test "PATCH /reset-password/:id/ with a redeemable Password Reset and a regular user", %{conn: conn} do
@@ -134,7 +137,8 @@ defmodule ConciergeSite.PasswordResetControllerTest do
     response = assert_error_sent 404, fn ->
       patch(conn, password_reset_path(conn, :update, password_reset), params)
     end
-    assert {404, _, "Page not found"} = response
+    assert {404, _, html_response} = response
+    assert html_response =~ "Your stop cannot be found. This page is no longer in service."
   end
 
   test "PATCH /reset-password/:id with a redeemable Password Reset but an invalid password", %{conn: conn} do
@@ -168,7 +172,8 @@ defmodule ConciergeSite.PasswordResetControllerTest do
     response = assert_error_sent 404, fn ->
       patch(conn, password_reset_path(conn, :update, password_reset), params)
     end
-    assert {404, _, "Page not found"} = response
+    assert {404, _, html_response} = response
+    assert html_response =~ "Your stop cannot be found. This page is no longer in service."
 
     updated_user = Repo.get(User, user.id)
     assert updated_user.encrypted_password == @encrypted_password
@@ -186,7 +191,8 @@ defmodule ConciergeSite.PasswordResetControllerTest do
     response = assert_error_sent 404, fn ->
       patch(conn, password_reset_path(conn, :update, password_reset), params)
     end
-    assert {404, _, "Page not found"} = response
+    assert {404, _, html_response} = response
+    assert html_response =~ "Your stop cannot be found. This page is no longer in service."
 
     updated_user = Repo.get(User, user.id)
     assert updated_user.encrypted_password == @encrypted_password

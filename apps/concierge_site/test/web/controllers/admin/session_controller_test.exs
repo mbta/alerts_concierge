@@ -57,7 +57,7 @@ defmodule ConciergeSite.Admin.SessionControllerTest do
     }}
 
     conn = post(conn, admin_session_path(conn, :create), params)
-    assert html_response(conn, 403) =~ "Forbidden"
+    assert html_response(conn, 403) =~ "Your stop requires admin permission. This page is forbidden."
   end
 
   test "DELETE /login", %{conn: conn} do
