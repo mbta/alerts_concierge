@@ -13,14 +13,12 @@ defmodule AlertProcessor.SeverityFilter do
   which have a matching subscription based on severity and
   an alert to pass through to the next filter.
   """
-  @spec filter({:ok, Ecto.Queryable.t, Alert.t}) :: {:ok, Ecto.Queryable.t, Alert.t}
-  def filter({:ok, subscriptions, %Alert{} = alert}) do
+  @spec filter([Subscription.t], Keyword.t) :: [Subscription.t]
+  def filter(subscriptions, [alert: alert]) do
     alert_severity_value = Alert.severity_value(alert)
 
-    matching_subscriptions = Enum.filter(subscriptions, fn(sub) ->
+    Enum.filter(subscriptions, fn(sub) ->
       Subscription.severity_value(sub.alert_priority_type) <= alert_severity_value
     end)
-
-    {:ok, matching_subscriptions, alert}
   end
 end

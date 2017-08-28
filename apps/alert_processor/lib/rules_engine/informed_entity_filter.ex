@@ -14,8 +14,8 @@ defmodule AlertProcessor.InformedEntityFilter do
   an alert to pass through to the next filter. Otherwise the flow is
   shortcircuited if the user id list provided is missing or empty.
   """
-  @spec filter({:ok, [Subscription.t], Alert.t}) :: {:ok, [Subscription.t], Alert.t}
-  def filter({:ok, subscriptions, %Alert{informed_entities: informed_entities} = alert}) do
+  @spec filter([Subscription.t], Keyword.t) :: [Subscription.t]
+  def filter(subscriptions, [alert: %Alert{informed_entities: informed_entities}]) do
     normal_subscriptions = Enum.filter(subscriptions, fn(sub) ->
       alert_ies = Enum.map(
         informed_entities,
@@ -35,12 +35,9 @@ defmodule AlertProcessor.InformedEntityFilter do
 
     admin_subscriptions = admin_subscriptions(subscriptions, informed_entities)
 
-    matching_subscriptions =
-      normal_subscriptions
-      |> Kernel.++(admin_subscriptions)
-      |> Enum.uniq()
-
-    {:ok, matching_subscriptions, alert}
+    normal_subscriptions
+    |> Kernel.++(admin_subscriptions)
+    |> Enum.uniq()
   end
 
   defp admin_subscriptions(subscriptions, informed_entities) do

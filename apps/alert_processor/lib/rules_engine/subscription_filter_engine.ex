@@ -35,11 +35,11 @@ defmodule AlertProcessor.SubscriptionFilterEngine do
   """
   @spec process_alert(Alert.t, [Subscription.t], [Notification.t]) :: {:ok, [Notification.t]} | :error
   def process_alert(alert, subscriptions, notifications) do
-    {alert, subscriptions, notifications}
-      |> SentAlertFilter.filter()
-      |> InformedEntityFilter.filter()
-      |> SeverityFilter.filter()
-      |> ActivePeriodFilter.filter()
-      |> Scheduler.schedule_notifications()
+    subscriptions
+    |> SentAlertFilter.filter(alert: alert, notifications: notifications)
+    |> InformedEntityFilter.filter(alert: alert)
+    |> SeverityFilter.filter(alert: alert)
+    |> ActivePeriodFilter.filter(alert: alert)
+    |> Scheduler.schedule_notifications(alert)
   end
 end

@@ -97,31 +97,31 @@ defmodule AlertProcessor.InformedEntityFilterTest do
   end
 
   test "filter returns :ok empty list if subscription list passed is empty" do
-    assert {:ok, [], @alert1} == InformedEntityFilter.filter({:ok, [], @alert1})
+    assert [] == InformedEntityFilter.filter([], alert: @alert1)
   end
 
   test "returns subscription id if informed entity matches subscription", %{sub4: sub4, all_subscriptions: all_subscriptions} do
-    assert {:ok, [sub4], @alert2} == InformedEntityFilter.filter({:ok, all_subscriptions, @alert2})
+    assert [sub4] == InformedEntityFilter.filter(all_subscriptions, alert: @alert2)
   end
 
   test "does not return subscription id if subscription not included in previous ids list", %{sub2: sub2} do
-    assert {:ok, [sub2], @alert1} == InformedEntityFilter.filter({:ok, [sub2], @alert1})
+    assert [sub2] == InformedEntityFilter.filter([sub2], alert: @alert1)
   end
 
   test "returns multiple subscriptions for same user if both match the alert", %{sub1: sub1, sub4: sub4} do
-    assert {:ok, [sub1, sub4], @alert1} == InformedEntityFilter.filter({:ok, [sub1, sub4], @alert1})
+    assert [sub1, sub4] == InformedEntityFilter.filter([sub1, sub4], alert: @alert1)
   end
 
   test "does not return subscriptions that only partially match alert informed entity", %{sub3: sub3, all_subscriptions: all_subscriptions} do
-    assert {:ok, [sub3], @alert4} == InformedEntityFilter.filter({:ok, all_subscriptions, @alert4})
+    assert [sub3] == InformedEntityFilter.filter(all_subscriptions, alert: @alert4)
   end
 
   test "returns empty list if no matches", %{all_subscriptions: all_subscriptions} do
-    assert {:ok, [], @alert3} == InformedEntityFilter.filter({:ok, all_subscriptions, @alert3})
+    assert [] == InformedEntityFilter.filter(all_subscriptions, alert: @alert3)
   end
 
   test "matches facility alerts", %{sub5: sub5, all_subscriptions: all_subscriptions} do
-    assert {:ok, [sub5], @alert5} == InformedEntityFilter.filter({:ok, all_subscriptions, @alert5})
+    assert [sub5] == InformedEntityFilter.filter(all_subscriptions, alert: @alert5)
   end
 
   test "matches admin mode subscription", %{sub1: sub1, sub2: sub2} do
@@ -131,7 +131,7 @@ defmodule AlertProcessor.InformedEntityFilterTest do
       |> insert(type: :bus, user: user)
       |> Repo.preload(:user)
       |> Repo.preload(:informed_entities)
-    assert {:ok, [admin_sub], @alert4} == InformedEntityFilter.filter({:ok, [admin_sub, sub1, sub2], @alert4})
+    assert [admin_sub] == InformedEntityFilter.filter([admin_sub, sub1, sub2], alert: @alert4)
   end
 
   test "doesnt match non application admin mode subscription", %{sub1: sub1, sub2: sub2} do
@@ -141,6 +141,6 @@ defmodule AlertProcessor.InformedEntityFilterTest do
       |> insert(type: :bus, user: user)
       |> Repo.preload(:user)
       |> Repo.preload(:informed_entities)
-    assert {:ok, [], @alert4} == InformedEntityFilter.filter({:ok, [admin_sub, sub1, sub2], @alert4})
+    assert [] == InformedEntityFilter.filter([admin_sub, sub1, sub2], alert: @alert4)
   end
 end

@@ -38,12 +38,12 @@ defmodule AlertProcessor.SentAlertFilterTest do
       n1 = Repo.insert!(Notification.create_changeset(notification))
       n2 = Repo.insert!(Notification.create_changeset(other_notification))
 
-      assert {:ok, [sub2], @alert} ==
-        SentAlertFilter.filter({@alert, [sub1, sub2], [n1, n2]})
+      assert [sub2] ==
+        SentAlertFilter.filter([sub1, sub2], alert: @alert, notifications: [n1, n2])
     end
 
     test "returns empty list if no match" do
-      assert {:ok, [], @alert} = SentAlertFilter.filter({@alert, [], []})
+      assert [] = SentAlertFilter.filter([], alert: @alert, notifications: [])
     end
 
     test "returns the subscription if notification failed" do
@@ -62,8 +62,8 @@ defmodule AlertProcessor.SentAlertFilterTest do
 
       Repo.insert(Notification.create_changeset(notification))
 
-      assert {:ok, [subscription], @alert} ==
-        SentAlertFilter.filter({@alert, [subscription], [notification]})
+      assert [subscription] ==
+        SentAlertFilter.filter([subscription], alert: @alert, notifications: [notification])
     end
 
     test "returns subscriptions that have received the alert if the last_push_notification changed" do
@@ -85,11 +85,11 @@ defmodule AlertProcessor.SentAlertFilterTest do
       }
       Repo.insert(Notification.create_changeset(notification))
 
-      assert {:ok, [], alert} ==
-        SentAlertFilter.filter({alert, [sub1], [notification]})
+      assert [] ==
+        SentAlertFilter.filter([sub1], alert: alert, notifications: [notification])
 
-      assert {:ok, [sub1], updated_alert} ==
-        SentAlertFilter.filter({updated_alert, [sub1], [notification]})
+      assert [sub1] ==
+        SentAlertFilter.filter([sub1], alert: updated_alert, notifications: [notification])
     end
   end
 end

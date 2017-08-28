@@ -27,9 +27,9 @@ defmodule AlertProcessor.DigestBuilder do
   end
 
   defp fetch_users(alert, subs) do
-    {:ok, subscriptions, ^alert} = InformedEntityFilter.filter({:ok, subs, alert})
-
-    Enum.map(subscriptions, &(&1.user))
+    subs
+    |> InformedEntityFilter.filter(alert: alert)
+    |> Enum.map(&(&1.user))
   end
 
   defp sort_by_user(data, digest_date_group) do

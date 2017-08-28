@@ -61,48 +61,45 @@ defmodule AlertProcessor.ActivePeriodFilterTest do
       subscription = :subscription |> build() |> weekday_subscription |> insert
       sunday_subscription = :subscription |> build() |> sunday_subscription |> insert
 
-      assert {:ok, [subscription], alert1} ==
-        ActivePeriodFilter.filter({:ok, [subscription, sunday_subscription], alert1})
+      assert [subscription] ==
+        ActivePeriodFilter.filter([subscription, sunday_subscription], alert: alert1)
     end
 
     test "matches if active period falls completely between subscription timeframe", %{alert2: alert2} do
       subscription = :subscription |> build() |> weekday_subscription |> insert
       sunday_subscription = :subscription |> build() |> sunday_subscription |> insert
 
-      assert {:ok, [subscription], alert2} ==
-        ActivePeriodFilter.filter({:ok, [subscription, sunday_subscription], alert2})
+      assert [subscription] == ActivePeriodFilter.filter([subscription, sunday_subscription], alert: alert2)
     end
 
     test "does not match if active period is completely outside of subscription timeframe", %{alert3: alert3} do
       subscription = :subscription |> build() |> sunday_subscription |> insert
       weekday_subscription = :subscription |> build() |> weekday_subscription |> insert
 
-      assert {:ok, [], alert3} ==
-        ActivePeriodFilter.filter({:ok, [subscription, weekday_subscription], alert3})
+      assert [] == ActivePeriodFilter.filter([subscription, weekday_subscription], alert: alert3)
     end
 
     test "matches if one active period matches subscription timeframe and one does not", %{alert4: alert4} do
       subscription = :subscription |> build() |> weekday_subscription |> insert
       sunday_subscription = :subscription |> build() |> sunday_subscription |> insert
 
-      assert {:ok, [subscription], alert4} ==
-        ActivePeriodFilter.filter({:ok, [subscription, sunday_subscription], alert4})
+      assert [subscription] == ActivePeriodFilter.filter([subscription, sunday_subscription], alert: alert4)
     end
 
     test "matches multiday active period", %{alert5: alert5} do
       subscription = :subscription |> build() |> weekday_subscription |> insert
       sunday_subscription = :subscription |> build() |> sunday_subscription |> insert
 
-      assert {:ok, [subscription], alert5} ==
-        ActivePeriodFilter.filter({:ok, [subscription, sunday_subscription], alert5})
+      assert [subscription] ==
+        ActivePeriodFilter.filter([subscription, sunday_subscription], alert: alert5)
     end
 
     test "matches multiday active period more than 1 day difference", %{alert6: alert6} do
       subscription = :subscription |> build() |> weekday_subscription |> insert
       sunday_subscription = :subscription |> build() |> sunday_subscription |> insert
 
-      assert {:ok, [sunday_subscription], alert6} ==
-        ActivePeriodFilter.filter({:ok, [subscription, sunday_subscription], alert6})
+      assert [sunday_subscription] ==
+        ActivePeriodFilter.filter([subscription, sunday_subscription], alert: alert6)
     end
   end
 
@@ -112,8 +109,8 @@ defmodule AlertProcessor.ActivePeriodFilterTest do
       saturday_subscription = :subscription |> build() |> saturday_subscription |> insert
       sunday_subscription = :subscription |> build() |> sunday_subscription |> insert
 
-      assert {:ok, [weekday_subscription, saturday_subscription, sunday_subscription], alert7} ==
-        ActivePeriodFilter.filter({:ok, [weekday_subscription, saturday_subscription, sunday_subscription], alert7})
+      assert [weekday_subscription, saturday_subscription, sunday_subscription] ==
+        ActivePeriodFilter.filter([weekday_subscription, saturday_subscription, sunday_subscription], alert: alert7)
     end
   end
 end
