@@ -31,8 +31,8 @@ defmodule ConciergeSite.CommuterRailSubscriptionControllerTest do
       conn = post(conn, "/subscriptions/commuter_rail/new/train", params)
 
       assert html_response(conn, 200) =~ "Choose your trains"
-      assert html_response(conn, 200) =~ "Departs Rowley"
-      refute html_response(conn, 200) =~ "Departs Newburyport"
+      assert html_response(conn, 200) =~ "Rowley"
+      refute html_response(conn, 200) =~ "Train 160 | Newburyport 7:55am"
     end
 
     test "POST /subscriptions/commuter_rail/new/train round_trip", %{conn: conn} do
@@ -48,8 +48,8 @@ defmodule ConciergeSite.CommuterRailSubscriptionControllerTest do
       conn = post(conn, "/subscriptions/commuter_rail/new/train", params)
 
       assert html_response(conn, 200) =~ "Choose your trains"
-      assert html_response(conn, 200) =~ "Departs Rowley"
-      assert html_response(conn, 200) =~ "Departs Newburyport"
+      assert html_response(conn, 200) =~ "Train 155 | Rowley 8:32am"
+      assert html_response(conn, 200) =~ "Train 160 | Newburyport 7:55am"
     end
 
     test "POST /subscriptions/commuter_rail/new/preferences", %{conn: conn} do
