@@ -84,10 +84,10 @@ export default function($) {
 
   function setCommuterRailDefaults() {
     props.defaultSouthTrackDestination = props.allStations.find(
-      station => station.id == $("input[name='default-south-id']").val()
+      station => station.id == "place-sstat"
     );
     props.defaultNorthTrackDestination = props.allStations.find(
-      station => station.id == $("input[name='default-north-id']").val()
+      station => station.id == "place-north"
     );
   }
 
