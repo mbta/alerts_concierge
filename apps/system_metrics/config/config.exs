@@ -7,7 +7,7 @@ config :sasl,
 
 config :elixometer,
   reporter: ExometerDatadog.Reporter,
-  metric_prefix: "site",
+  metric_prefix: "concierge",
   env: Mix.env,
   update_frequency: 60_000
 
