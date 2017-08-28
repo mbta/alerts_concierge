@@ -82,7 +82,7 @@ defmodule ConciergeSite.FerrySubscriptionView do
       origin_name,
       " ",
       format_schedule_time(trip.departure_time),
-      content_tag(:i, "", class: "fa fa-long-arrow-right fa-arrow-icon"),
+      content_tag(:i, "", class: "fa fa-long-arrow-right trip-information-arrow"),
       destination_name,
       " ",
       format_schedule_time(trip.arrival_time)

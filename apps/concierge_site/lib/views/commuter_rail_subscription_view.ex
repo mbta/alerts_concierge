@@ -87,7 +87,7 @@ defmodule ConciergeSite.CommuterRailSubscriptionView do
       " ",
       format_schedule_time(trip.departure_time),
       "  ",
-      content_tag(:i, "", class: "fa fa-long-arrow-right fa-arrow-icon"),
+      content_tag(:i, "", class: "fa fa-long-arrow-right trip-information-arrow"),
       "  ",
       destination_name,
       " ",
