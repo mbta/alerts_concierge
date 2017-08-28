@@ -3,8 +3,6 @@ defmodule AlertProcessor.SeverityFilter do
   Filter users based on severity determined by a combination of
   severity provided in the alert and effect name.
   """
-
-  import Ecto.Query
   alias AlertProcessor.{Model.Alert, Model.Subscription}
 
   @doc """

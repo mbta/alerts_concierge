@@ -2,9 +2,7 @@ defmodule AlertProcessor.ActivePeriodFilter do
   @moduledoc """
   Filter subscriptions based on matching an active period in an alert
   """
-
-  import Ecto.Query
-  alias AlertProcessor.{Model, Repo, TimeFrameComparison}
+  alias AlertProcessor.{Model, TimeFrameComparison}
   alias Model.{Alert, Subscription}
 
   @doc """

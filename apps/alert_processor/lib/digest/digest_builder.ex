@@ -4,7 +4,6 @@ defmodule AlertProcessor.DigestBuilder do
   """
   alias AlertProcessor.{InformedEntityFilter, Model, Repo}
   alias Model.{Alert, Digest, DigestDateGroup, Subscription}
-  import Ecto.Query
 
   @doc """
   1. Takes a list of alerts
