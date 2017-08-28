@@ -1,4 +1,4 @@
-defmodule ConciergeSite.UserChangelog do
+defmodule ConciergeSite.SubscriberDetails do
   alias AlertProcessor.{Helpers.DateTimeHelper, Model.Notification, Model.Subscription, Model.User, Repo}
   alias ConciergeSite.TimeHelper
   import Ecto.Query
