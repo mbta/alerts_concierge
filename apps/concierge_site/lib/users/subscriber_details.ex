@@ -54,7 +54,7 @@ defmodule ConciergeSite.SubscriberDetails do
         end
         {date, time} = date_and_time_values(inserted_at)
         originator = originating_user_email_map[id] || "Unknown"
-      {[{date, time, originator <> " created " <> rest}], Map.put(acc, item_id, item_changes)}
+      {[{date, time, [originator, " created ", rest]}], Map.put(acc, item_id, item_changes)}
   end
   defp changelog_item(%{
     inserted_at: inserted_at,
@@ -80,7 +80,7 @@ defmodule ConciergeSite.SubscriberDetails do
         |> Enum.join(", ")
         {date, time} = date_and_time_values(inserted_at)
         originator = originating_user_email_map[id] || "Unknown"
-      {[{date, time, originator <> " updated " <> message <> " for subscription " <> item_id}], Map.put(acc, item_id, Map.merge(old_version, item_changes))}
+      {[{date, time, [originator, " updated ", message, " for subscription ", item_id]}], Map.put(acc, item_id, Map.merge(old_version, item_changes))}
   end
   defp changelog_item(%{
     inserted_at: inserted_at,
@@ -100,7 +100,7 @@ defmodule ConciergeSite.SubscriberDetails do
         end
         {date, time} = date_and_time_values(inserted_at)
         originator = originating_user_email_map[id] || "Unknown"
-      {[{date, time, originator <> " deleted " <> rest}], Map.delete(acc, item_id)}
+      {[{date, time, [originator, " deleted ", rest]}], Map.delete(acc, item_id)}
   end
   defp changelog_item(%{
     inserted_at: inserted_at,
@@ -137,7 +137,7 @@ defmodule ConciergeSite.SubscriberDetails do
       new_state = Map.merge(old_version, item_changes)
       {date, time} = date_and_time_values(inserted_at)
       originator = originating_user_email_map[id] || "Unknown"
-      {[{date, time, originator <> " updated " <> message}], Map.put(acc, item_id, new_state)}
+      {[{date, time, [originator, " updated ", message]}], Map.put(acc, item_id, new_state)}
   end
   defp changelog_item(%{
     inserted_at: inserted_at,
@@ -148,7 +148,7 @@ defmodule ConciergeSite.SubscriberDetails do
     }, acc, originating_user_email_map) when is_binary(trip) do
       {date, time} = date_and_time_values(inserted_at)
       originator = originating_user_email_map[id] || "Unknown"
-      {[{date, time, originator <> " added trip " <> trip <> " to subscription " <> subscription_id}], acc}
+      {[{date, time, [originator, " added trip ", trip, " to subscription ", subscription_id]}], acc}
   end
   defp changelog_item(%{
     inserted_at: inserted_at,
@@ -159,7 +159,7 @@ defmodule ConciergeSite.SubscriberDetails do
     }, acc, originating_user_email_map) when is_binary(stop) do
       {date, time} = date_and_time_values(inserted_at)
       originator = originating_user_email_map[id] || "Unknown"
-      {[{date, time, originator <> " added stop " <> stop <> " to subscription " <> subscription_id}], acc}
+      {[{date, time, [originator, " added stop ", stop, " to subscription ", subscription_id]}], acc}
   end
   defp changelog_item(%{
     inserted_at: inserted_at,
@@ -170,7 +170,7 @@ defmodule ConciergeSite.SubscriberDetails do
     }, acc, originating_user_email_map) when is_binary(trip) do
       {date, time} = date_and_time_values(inserted_at)
       originator = originating_user_email_map[id] || "Unknown"
-      {[{date, time, originator <> " removed trip " <> trip <> " from subscription " <> subscription_id}], acc}
+      {[{date, time, [originator, " removed trip ", trip, " from subscription ", subscription_id]}], acc}
   end
   defp changelog_item(%{
     inserted_at: inserted_at,
@@ -181,7 +181,7 @@ defmodule ConciergeSite.SubscriberDetails do
     }, acc, originating_user_email_map) when is_binary(stop) do
       {date, time} = date_and_time_values(inserted_at)
       originator = originating_user_email_map[id] || "Unknown"
-      {[{date, time, originator <> " removed stop " <> stop <> " from subscription " <> subscription_id}], acc}
+      {[{date, time, [originator, " removed stop ", stop, " from subscription ", subscription_id]}], acc}
   end
   defp changelog_item(%{item_type: "InformedEntity"}, acc, _) do
     {[], acc}
