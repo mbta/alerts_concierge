@@ -1,14 +1,6 @@
 defmodule ConciergeSite.ErrorView do
   use ConciergeSite.Web, :view
 
-  # def render("403.html", _assigns) do
-  #   "Forbidden"
-  # end
-
-  # def render("404.html", _assigns) do
-  #   "Page not found"
-  # end
-
   def render("500.html", _assigns) do
     "Internal server error"
   end

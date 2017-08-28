@@ -18,7 +18,7 @@
         <p>Your stop cannot be found. This page is no longer in service.</p>
         <p><a href="/">Return to the homepage.</a></p>
         <div class="error-image">
-          <img src="https://d3044s2alrsxog.cloudfront.net/images/error-bus-80a0fbdd62ccc62e7fc109d843afc555.gif?vsn=d">
+          <%= img_tag(static_url(@conn, "/images/error-bus.gif")) %>
         </div>
       </div>
     </div>
