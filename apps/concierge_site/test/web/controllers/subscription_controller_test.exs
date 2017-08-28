@@ -167,7 +167,8 @@ defmodule ConciergeSite.SubscriptionControllerTest do
       response = assert_error_sent 404, fn ->
         get(conn, subscription_path(conn, :confirm_delete, subscription))
       end
-      assert {404, _, "Page not found"} = response
+      assert {404, _, html_response} = response
+      assert html_response =~ "Your stop cannot be found. This page is no longer in service."
     end
 
     test "DELETE /subscriptions/:id with a user who owns the subscription", %{conn: conn} do
@@ -199,7 +200,8 @@ defmodule ConciergeSite.SubscriptionControllerTest do
       response = assert_error_sent 404, fn ->
         delete(conn, subscription_path(conn, :delete, subscription))
       end
-      assert {404, _, "Page not found"} = response
+      assert {404, _, html_response} = response
+      assert html_response =~ "Your stop cannot be found. This page is no longer in service."
 
       informed_entity_count = Repo.one(from i in InformedEntity, select: count("*"))
       subscription_count = Repo.one(from s in Subscription, select: count("*"))

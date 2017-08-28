@@ -141,7 +141,7 @@ defmodule ConciergeSite.Admin.AdminUserControllerTest do
         |> guardian_login(conn, :token, @customer_support_token_params)
         |> get(admin_admin_user_path(conn, :index))
 
-      assert html_response(conn, 403) =~ "Forbidden"
+      assert html_response(conn, 403) =~ "Your stop requires admin permission. This page is forbidden."
     end
 
 
@@ -153,7 +153,7 @@ defmodule ConciergeSite.Admin.AdminUserControllerTest do
         |> guardian_login(conn, :token, @customer_support_token_params)
         |> get(admin_admin_user_path(conn, :show, admin))
 
-      assert html_response(conn, 403) =~ "Forbidden"
+      assert html_response(conn, 403) =~ "Your stop requires admin permission. This page is forbidden."
     end
 
     test "GET /admin/admin_users/new", %{conn: conn, user: user} do
@@ -162,7 +162,7 @@ defmodule ConciergeSite.Admin.AdminUserControllerTest do
         |> guardian_login(conn, :token, @customer_support_token_params)
         |> get(admin_admin_user_path(conn, :new))
 
-      assert html_response(conn, 403) =~ "Forbidden"
+      assert html_response(conn, 403) =~ "Your stop requires admin permission. This page is forbidden."
     end
 
     test "PATCH /admin/admin_users/:id/deactivate", %{conn: conn, user: user} do
@@ -175,7 +175,7 @@ defmodule ConciergeSite.Admin.AdminUserControllerTest do
 
       admin = User.admin_one!(admin.id)
 
-      assert html_response(conn, 403) =~ "Forbidden"
+      assert html_response(conn, 403) =~ "Your stop requires admin permission. This page is forbidden."
       assert admin.role == "application_administration"
     end
 
@@ -189,7 +189,7 @@ defmodule ConciergeSite.Admin.AdminUserControllerTest do
 
       admin = User.admin_one!(admin.id)
 
-      assert html_response(conn, 403) =~ "Forbidden"
+      assert html_response(conn, 403) =~ "Your stop requires admin permission. This page is forbidden."
       assert admin.role == "deactivated_admin"
     end
 
@@ -203,7 +203,7 @@ defmodule ConciergeSite.Admin.AdminUserControllerTest do
 
       admin = User.admin_one!(admin.id)
 
-      assert html_response(conn, 403) =~ "Forbidden"
+      assert html_response(conn, 403) =~ "Your stop requires admin permission. This page is forbidden."
       assert admin.role == "customer_support"
     end
 
@@ -215,7 +215,7 @@ defmodule ConciergeSite.Admin.AdminUserControllerTest do
         |> guardian_login(conn, :token, @customer_support_token_params)
         |> get(admin_admin_user_path(conn, :confirm_role_change, admin))
 
-      assert html_response(conn, 403) =~ "Forbidden"
+      assert html_response(conn, 403) =~ "Your stop requires admin permission. This page is forbidden."
     end
 
     test "GET /admin/admin_users/:id/confirm_activate", %{conn: conn, user: user} do
@@ -226,7 +226,7 @@ defmodule ConciergeSite.Admin.AdminUserControllerTest do
         |> guardian_login(conn, :token, @customer_support_token_params)
         |> get(admin_admin_user_path(conn, :confirm_activate, admin))
 
-      assert html_response(conn, 403) =~ "Forbidden"
+      assert html_response(conn, 403) =~ "Your stop requires admin permission. This page is forbidden."
     end
 
     test "GET /admin/admin_users/:id/confirm_deactivate", %{conn: conn, user: user} do
@@ -237,7 +237,7 @@ defmodule ConciergeSite.Admin.AdminUserControllerTest do
         |> guardian_login(conn, :token, @customer_support_token_params)
         |> get(admin_admin_user_path(conn, :confirm_deactivate, admin))
 
-      assert html_response(conn, 403) =~ "Forbidden"
+      assert html_response(conn, 403) =~ "Your stop requires admin permission. This page is forbidden."
     end
   end
 
@@ -250,7 +250,7 @@ defmodule ConciergeSite.Admin.AdminUserControllerTest do
         |> guardian_login(conn, :token, @customer_support_token_params)
         |> get(admin_admin_user_path(conn, :index))
 
-      assert html_response(conn, 403) =~ "Forbidden"
+      assert html_response(conn, 403) =~ "Your stop requires admin permission. This page is forbidden."
     end
 
     test "GET /admin/admin_users/:id", %{conn: conn, user: user} do
@@ -261,7 +261,7 @@ defmodule ConciergeSite.Admin.AdminUserControllerTest do
         |> guardian_login(conn, :token, @customer_support_token_params)
         |> get(admin_admin_user_path(conn, :show, admin))
 
-      assert html_response(conn, 403) =~ "Forbidden"
+      assert html_response(conn, 403) =~ "Your stop requires admin permission. This page is forbidden."
     end
 
     test "PATCH /admin/admin_users/:id/deactivate", %{conn: conn, user: user} do
@@ -274,7 +274,7 @@ defmodule ConciergeSite.Admin.AdminUserControllerTest do
 
       admin = User.admin_one!(admin.id)
 
-      assert html_response(conn, 403) =~ "Forbidden"
+      assert html_response(conn, 403) =~ "Your stop requires admin permission. This page is forbidden."
       assert admin.role == "application_administration"
     end
 
@@ -288,7 +288,7 @@ defmodule ConciergeSite.Admin.AdminUserControllerTest do
 
       admin = User.admin_one!(admin.id)
 
-      assert html_response(conn, 403) =~ "Forbidden"
+      assert html_response(conn, 403) =~ "Your stop requires admin permission. This page is forbidden."
       assert admin.role == "deactivated_admin"
     end
 
@@ -300,7 +300,7 @@ defmodule ConciergeSite.Admin.AdminUserControllerTest do
         |> guardian_login(conn, :token, @customer_support_token_params)
         |> get(admin_admin_user_path(conn, :confirm_role_change, admin))
 
-      assert html_response(conn, 403) =~ "Forbidden"
+      assert html_response(conn, 403) =~ "Your stop requires admin permission. This page is forbidden."
     end
 
     test "GET /admin/admin_users/:id/confirm_activate", %{conn: conn, user: user} do
@@ -311,7 +311,7 @@ defmodule ConciergeSite.Admin.AdminUserControllerTest do
         |> guardian_login(conn, :token, @customer_support_token_params)
         |> get(admin_admin_user_path(conn, :confirm_activate, admin))
 
-      assert html_response(conn, 403) =~ "Forbidden"
+      assert html_response(conn, 403) =~ "Your stop requires admin permission. This page is forbidden."
     end
 
     test "GET /admin/admin_users/:id/confirm_deactivate", %{conn: conn, user: user} do
@@ -322,7 +322,7 @@ defmodule ConciergeSite.Admin.AdminUserControllerTest do
         |> guardian_login(conn, :token, @customer_support_token_params)
         |> get(admin_admin_user_path(conn, :confirm_deactivate, admin))
 
-      assert html_response(conn, 403) =~ "Forbidden"
+      assert html_response(conn, 403) =~ "Your stop requires admin permission. This page is forbidden."
     end
   end
 
@@ -335,7 +335,7 @@ defmodule ConciergeSite.Admin.AdminUserControllerTest do
         |> guardian_login(conn)
         |> get(admin_admin_user_path(conn, :index))
 
-      assert html_response(conn, 403) =~ "Forbidden"
+      assert html_response(conn, 403) =~ "Your stop requires admin permission. This page is forbidden."
     end
 
     test "GET /admin/admin_users/:id", %{conn: conn, user: user} do
@@ -346,7 +346,7 @@ defmodule ConciergeSite.Admin.AdminUserControllerTest do
         |> guardian_login(conn)
         |> get(admin_admin_user_path(conn, :show, admin))
 
-      assert html_response(conn, 403) =~ "Forbidden"
+      assert html_response(conn, 403) =~ "Your stop requires admin permission. This page is forbidden."
     end
 
     test "GET /admin/admin_users/new", %{conn: conn, user: user} do
@@ -355,7 +355,7 @@ defmodule ConciergeSite.Admin.AdminUserControllerTest do
         |> guardian_login(conn)
         |> get(admin_admin_user_path(conn, :new))
 
-      assert html_response(conn, 403) =~ "Forbidden"
+      assert html_response(conn, 403) =~ "Your stop requires admin permission. This page is forbidden."
     end
 
     test "PATCH /admin/admin_users/:id/deactivate", %{conn: conn, user: user} do
@@ -368,7 +368,7 @@ defmodule ConciergeSite.Admin.AdminUserControllerTest do
 
       admin = User.admin_one!(admin.id)
 
-      assert html_response(conn, 403) =~ "Forbidden"
+      assert html_response(conn, 403) =~ "Your stop requires admin permission. This page is forbidden."
       assert admin.role == "application_administration"
     end
 
@@ -382,7 +382,7 @@ defmodule ConciergeSite.Admin.AdminUserControllerTest do
 
       admin = User.admin_one!(admin.id)
 
-      assert html_response(conn, 403) =~ "Forbidden"
+      assert html_response(conn, 403) =~ "Your stop requires admin permission. This page is forbidden."
       assert admin.role == "deactivated_admin"
     end
 
@@ -394,7 +394,7 @@ defmodule ConciergeSite.Admin.AdminUserControllerTest do
         |> guardian_login(conn)
         |> get(admin_admin_user_path(conn, :confirm_role_change, admin))
 
-      assert html_response(conn, 403) =~ "Forbidden"
+      assert html_response(conn, 403) =~ "Your stop requires admin permission. This page is forbidden."
     end
 
     test "GET /admin/admin_users/:id/confirm_activate", %{conn: conn, user: user} do
@@ -405,7 +405,7 @@ defmodule ConciergeSite.Admin.AdminUserControllerTest do
         |> guardian_login(conn)
         |> get(admin_admin_user_path(conn, :confirm_activate, admin))
 
-      assert html_response(conn, 403) =~ "Forbidden"
+      assert html_response(conn, 403) =~ "Your stop requires admin permission. This page is forbidden."
     end
 
     test "GET /admin/admin_users/:id/confirm_deactivate", %{conn: conn, user: user} do
@@ -416,7 +416,7 @@ defmodule ConciergeSite.Admin.AdminUserControllerTest do
         |> guardian_login(conn)
         |> get(admin_admin_user_path(conn, :confirm_deactivate, admin))
 
-      assert html_response(conn, 403) =~ "Forbidden"
+      assert html_response(conn, 403) =~ "Your stop requires admin permission. This page is forbidden."
     end
   end
 

@@ -31,7 +31,7 @@ defmodule Admin.ImpersonateSessionControllerTest do
         |> post(admin_impersonate_session_path(conn, :create, params))
 
       assert user == Guardian.Plug.current_resource(conn)
-      assert html_response(conn, 403) =~ "Forbidden"
+      assert html_response(conn, 403) =~ "Your stop requires admin permission. This page is forbidden."
     end
   end
 

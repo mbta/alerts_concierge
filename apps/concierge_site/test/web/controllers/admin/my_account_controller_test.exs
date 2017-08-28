@@ -82,7 +82,7 @@ defmodule ConciergeSite.Admin.MyAccountControllerTest do
         |> guardian_login(conn)
         |> get(admin_my_account_path(conn, :edit))
 
-      assert html_response(conn, 403) =~ "Forbidden"
+      assert html_response(conn, 403) =~ "Your stop requires admin permission. This page is forbidden."
     end
 
     test "PATCH /admin/my-account", %{conn: conn, user: user} do
@@ -104,7 +104,7 @@ defmodule ConciergeSite.Admin.MyAccountControllerTest do
         |> guardian_login(conn)
         |> patch(admin_my_account_path(conn, :update, params))
 
-      assert html_response(conn, 403) =~ "Forbidden"
+      assert html_response(conn, 403) =~ "Your stop requires admin permission. This page is forbidden."
     end
   end
 

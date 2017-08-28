@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <title>T-Alerts</title>
+    <link rel="stylesheet" href="/css/app.css">
+  </head>
+
+  <body class="no-js">
+    <div class="container page-content">
+      <div class="error-page">
+        <h1><strong>404</strong></h1>
+        <p>Your stop cannot be found. This page is no longer in service.</p>
+        <p><a href="/">Return to the homepage.</a></p>
+        <div class="error-image">
+          <%= img_tag(static_url(@conn, "/images/error-bus.gif")) %>
+        </div>
+      </div>
+    </div>
+    <footer class="footer">
+      <p>&copy; Massachusetts Bay Transportation Authority, all rights reserved.</p>
+    </footer>
+  </body>
+</html>
