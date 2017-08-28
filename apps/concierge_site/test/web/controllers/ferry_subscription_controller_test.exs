@@ -31,8 +31,7 @@ defmodule ConciergeSite.FerrySubscriptionControllerTest do
       conn = post(conn, "/subscriptions/ferry/new/ferry", params)
 
       assert html_response(conn, 200) =~ "Choose your ferries"
-      assert html_response(conn, 200) =~ "10:15am from Charlestown Navy Yard, arrives at Long Wharf, Boston at 10:25am"
-      refute html_response(conn, 200) =~ "from Long Wharf"
+      assert html_response(conn, 200) =~ "Charlestown Navy Yard 10:15am"
     end
 
     test "POST /subscriptions/ferry/new/ferry round_trip", %{conn: conn} do
@@ -48,8 +47,8 @@ defmodule ConciergeSite.FerrySubscriptionControllerTest do
       conn = post(conn, "/subscriptions/ferry/new/ferry", params)
 
       assert html_response(conn, 200) =~ "Choose your ferries"
-      assert html_response(conn, 200) =~ "8:45am from Charlestown Navy Yard, arrives at Long Wharf, Boston at 8:55am"
-      assert html_response(conn, 200) =~ "4:00pm from Long Wharf, Boston, arrives at Charlestown Navy Yard at 4:10pm"
+      assert html_response(conn, 200) =~ "Charlestown Navy Yard 8:45am"
+      assert html_response(conn, 200) =~ "Long Wharf, Boston 4:00pm"
     end
 
     test "POST /subscriptions/ferry/new/preferences", %{conn: conn} do

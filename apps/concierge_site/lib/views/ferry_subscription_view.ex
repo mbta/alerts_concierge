@@ -79,12 +79,12 @@ defmodule ConciergeSite.FerrySubscriptionView do
     {destination_name, _} = trip.destination
 
     [
-      format_schedule_time(trip.departure_time),
-      " from ",
       origin_name,
-      ", arrives at ",
+      " ",
+      format_schedule_time(trip.departure_time),
+      content_tag(:i, "", class: "fa fa-long-arrow-right fa-arrow-icon"),
       destination_name,
-      " at ",
+      " ",
       format_schedule_time(trip.arrival_time)
     ]
   end
