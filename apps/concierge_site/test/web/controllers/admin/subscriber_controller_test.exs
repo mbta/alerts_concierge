@@ -106,8 +106,8 @@ defmodule ConciergeSite.Admin.SubscriberControllerTest do
       assert html_response(conn, 200) =~ subscriber.email
       refute html_response(conn, 200) =~ "No Subscriptions"
       assert html_response(conn, 200) =~ "No Notification"
-      assert html_response(conn, 200) =~ "Origin: #{subscription.origin}"
-      assert html_response(conn, 200) =~ "Destination: #{subscription.destination}"
+      assert html_response(conn, 200) =~ subscription.origin
+      assert html_response(conn, 200) =~ subscription.destination
     end
 
     test "GET /admin/subscribers/:id/new_message", %{conn: conn, subscriber1: subscriber1} do

@@ -89,6 +89,15 @@ defmodule AlertProcessor.Helpers.DateTimeHelper do
     end
   end
 
+  @spec format_date(NaiveDateTime.t, String.t) :: any
+  def format_date(datetime, timezone \\ "America/New_York") do
+    with {:ok, utc_datetime} <- DateTime.from_naive(datetime, "Etc/UTC"),
+         {:ok, local_datetime} <- DT.shift_zone(utc_datetime, timezone),
+         {:ok, output} = Strftime.strftime(local_datetime, "%m-%d-%Y") do
+      output
+    end
+  end
+
   @doc """
   Takes 4 arguments:
   1. The interval length in seconds (1 week)

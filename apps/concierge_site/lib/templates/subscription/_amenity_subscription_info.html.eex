@@ -2,16 +2,25 @@
   <div class="amenity-subscriptions">
     <%= for subscription <- @subscriptions do %>
       <h6><%= route_header(subscription) %></h6>
-      <%= link(to: amenity_subscription_path(@conn, :edit, subscription), class: "subscription-link") do %>
-        <div class="subscription">
+      <%= if @render_links do %>
+        <%= link(to: amenity_subscription_path(@conn, :edit, subscription), class: "subscription-link") do %>
+          <div class="subscription">
+            <div class="subscription-icon-container amenity">
+              <%= img_tag(static_url(@conn, "/images/m-b-t-a.svg"), class: "subscription-icon amenity") %>
+            </div>
+            <%= subscription_info(subscription) %>
+            <div class="subscription-edit-link">
+              <i class="fa fa-chevron-right" aria-hidden="true"></i>
+            </div>
+          </div>
+        <% end %>
+      <% else %>
+         <div class="subscription">
           <div class="subscription-icon-container amenity">
             <%= img_tag(static_url(@conn, "/images/m-b-t-a.svg"), class: "subscription-icon amenity") %>
           </div>
           <%= subscription_info(subscription) %>
-          <div class="subscription-edit-link">
-            <i class="fa fa-chevron-right" aria-hidden="true"></i>
-          </div>
-        </div>
+         </div>
       <% end %>
     <% end %>
   </div>

@@ -9,11 +9,6 @@
 <%= render "_vacation_banner.html", conn: @conn, vacation_start: @vacation_start, vacation_end: @vacation_end %>
 
 <div class="my-subscriptions-container">
-  <% customer_subscription_map = sorted_subscriptions(@subscriptions) %>
-  <%= render "_subway_subscription_info.html", conn: @conn, subscriptions: customer_subscription_map[:subway] %>
-  <%= render "_commuter_rail_subscription_info.html", conn: @conn, subscriptions: customer_subscription_map[:commuter_rail], departure_time_map: @departure_time_map %>
-  <%= render "_bus_subscription_info.html", conn: @conn, subscriptions: customer_subscription_map[:bus] %>
-  <%= render "_ferry_subscription_info.html", conn: @conn, subscriptions: customer_subscription_map[:ferry], departure_time_map: @departure_time_map %>
-  <%= render "_amenity_subscription_info.html", conn: @conn, subscriptions: customer_subscription_map[:amenity] %>
+  <%= render "_subscriptions.html", conn: @conn, subscriptions: @subscriptions, departure_time_map: @departure_time_map, render_links: true %>
   <%= link("Create a new subscription", to: subscription_path(@conn, :new), class: "btn btn-primary btn-create-new-sub") %>
 </div>

@@ -1,6 +1,6 @@
 defmodule ConciergeSite.UserChangelog do
-  alias AlertProcessor.{Model.Subscription, Model.User, Repo}
-  alias Calendar.Strftime
+  alias AlertProcessor.{Helpers.DateTimeHelper, Model.Notification, Model.Subscription, Model.User, Repo}
+  alias ConciergeSite.TimeHelper
   import Ecto.Query
 
   def changelog(user_id) do
@@ -18,7 +18,10 @@ defmodule ConciergeSite.UserChangelog do
       |> Enum.flat_map_reduce(%{}, fn(change, acc) ->
            changelog_item(change, acc, originating_user_email_map)
          end)
+
     changelog
+    |> Enum.group_by(fn({date, _, _}) -> date end, fn({_, time, change}) -> {time, change} end)
+    |> Enum.to_list()
   end
 
   defp account_changes_by_user_id(user_id) do
@@ -49,7 +52,9 @@ defmodule ConciergeSite.UserChangelog do
           %{"type" => "ferry", "origin" => origin, "destination" => destination} -> "ferry subscription " <> item_id <> " between " <> origin <> " and " <> destination
           %{"type" => "bus"} -> "bus subscription " <> item_id
         end
-      {[originating_user_email_map[id] <> " created " <> rest <> " on " <> Strftime.strftime!(inserted_at, "%F %T")], Map.put(acc, item_id, item_changes)}
+        {date, time} = date_and_time_values(inserted_at)
+        originator = originating_user_email_map[id] || "Unknown"
+      {[{date, time, originator <> " created " <> rest}], Map.put(acc, item_id, item_changes)}
   end
   defp changelog_item(%{
     inserted_at: inserted_at,
@@ -73,7 +78,9 @@ defmodule ConciergeSite.UserChangelog do
             end
           end)
         |> Enum.join(", ")
-      {[originating_user_email_map[id] <> " updated " <> message <> " for subscription " <> item_id <> " on " <> Strftime.strftime!(inserted_at, "%F %T")], Map.put(acc, item_id, Map.merge(old_version, item_changes))}
+        {date, time} = date_and_time_values(inserted_at)
+        originator = originating_user_email_map[id] || "Unknown"
+      {[{date, time, originator <> " updated " <> message <> " for subscription " <> item_id}], Map.put(acc, item_id, Map.merge(old_version, item_changes))}
   end
   defp changelog_item(%{
     inserted_at: inserted_at,
@@ -91,7 +98,9 @@ defmodule ConciergeSite.UserChangelog do
           %{"type" => "ferry", "origin" => origin, "destination" => destination} -> "ferry subscription " <> item_id <> " between" <> origin <> " and " <> destination
           %{"type" => "bus"} -> "bus subscription " <> item_id
         end
-      {[originating_user_email_map[id] <> " deleted " <> rest <> " on " <> Strftime.strftime!(inserted_at, "%F %T")], Map.delete(acc, item_id)}
+        {date, time} = date_and_time_values(inserted_at)
+        originator = originating_user_email_map[id] || "Unknown"
+      {[{date, time, originator <> " deleted " <> rest}], Map.delete(acc, item_id)}
   end
   defp changelog_item(%{
     inserted_at: inserted_at,
@@ -100,7 +109,8 @@ defmodule ConciergeSite.UserChangelog do
     item_id: item_id,
     item_type: "User"
     }, acc, _) do
-      {["Account created on " <> Strftime.strftime!(inserted_at, "%F %T")], Map.put(acc, item_id, item_changes)}
+      {date, time} = date_and_time_values(inserted_at)
+      {[{date, time, "Account created"}], Map.put(acc, item_id, item_changes)}
   end
   defp changelog_item(%{
     inserted_at: inserted_at,
@@ -125,7 +135,9 @@ defmodule ConciergeSite.UserChangelog do
           end)
         |> Enum.join(", ")
       new_state = Map.merge(old_version, item_changes)
-      {[originating_user_email_map[id] <> " updated " <> message <> " on " <> Strftime.strftime!(inserted_at, "%F %T")], Map.put(acc, item_id, new_state)}
+      {date, time} = date_and_time_values(inserted_at)
+      originator = originating_user_email_map[id] || "Unknown"
+      {[{date, time, originator <> " updated " <> message}], Map.put(acc, item_id, new_state)}
   end
   defp changelog_item(%{
     inserted_at: inserted_at,
@@ -134,7 +146,9 @@ defmodule ConciergeSite.UserChangelog do
     item_changes: %{"trip" => trip, "subscription_id" => subscription_id},
     item_type: "InformedEntity"
     }, acc, originating_user_email_map) when is_binary(trip) do
-      {[originating_user_email_map[id] <> " added trip " <> trip <> " to subscription " <> subscription_id <> " on " <> Strftime.strftime!(inserted_at, "%F %T")], acc}
+      {date, time} = date_and_time_values(inserted_at)
+      originator = originating_user_email_map[id] || "Unknown"
+      {[{date, time, originator <> " added trip " <> trip <> " to subscription " <> subscription_id}], acc}
   end
   defp changelog_item(%{
     inserted_at: inserted_at,
@@ -143,7 +157,9 @@ defmodule ConciergeSite.UserChangelog do
     item_changes: %{"stop" => stop, "subscription_id" => subscription_id},
     item_type: "InformedEntity"
     }, acc, originating_user_email_map) when is_binary(stop) do
-      {[originating_user_email_map[id] <> " added stop " <> stop <> " to subscription " <> subscription_id <> " on " <> Strftime.strftime!(inserted_at, "%F %T")], acc}
+      {date, time} = date_and_time_values(inserted_at)
+      originator = originating_user_email_map[id] || "Unknown"
+      {[{date, time, originator <> " added stop " <> stop <> " to subscription " <> subscription_id}], acc}
   end
   defp changelog_item(%{
     inserted_at: inserted_at,
@@ -152,7 +168,9 @@ defmodule ConciergeSite.UserChangelog do
     item_changes: %{"trip" => trip, "subscription_id" => subscription_id},
     item_type: "InformedEntity"
     }, acc, originating_user_email_map) when is_binary(trip) do
-      {[originating_user_email_map[id] <> " removed trip " <> trip <> " from subscription " <> subscription_id <> " on " <> Strftime.strftime!(inserted_at, "%F %T")], acc}
+      {date, time} = date_and_time_values(inserted_at)
+      originator = originating_user_email_map[id] || "Unknown"
+      {[{date, time, originator <> " removed trip " <> trip <> " from subscription " <> subscription_id}], acc}
   end
   defp changelog_item(%{
     inserted_at: inserted_at,
@@ -161,9 +179,44 @@ defmodule ConciergeSite.UserChangelog do
     item_changes: %{"stop" => stop, "subscription_id" => subscription_id},
     item_type: "InformedEntity"
     }, acc, originating_user_email_map) when is_binary(stop) do
-      {[originating_user_email_map[id] <> " removed stop " <> stop <> " from subscription " <> subscription_id <> " on " <> Strftime.strftime!(inserted_at, "%F %T")], acc}
+      {date, time} = date_and_time_values(inserted_at)
+      originator = originating_user_email_map[id] || "Unknown"
+      {[{date, time, originator <> " removed stop " <> stop <> " from subscription " <> subscription_id}], acc}
   end
   defp changelog_item(%{item_type: "InformedEntity"}, acc, _) do
     {[], acc}
+  end
+
+  def notification_timeline(user) do
+    user
+    |> Notification.sent_to_user()
+    |> Enum.map(fn(%Notification{service_effect: service_effect, header: header, description: description, inserted_at: inserted_at} = notification) ->
+         {date, time} = date_and_time_values(inserted_at)
+         {date, time, [
+           notification_type(notification),
+           " sent to: ",
+           notification_contact(notification),
+           " -- ",
+           service_effect,
+           " ",
+           header,
+           " ",
+           description
+          ]}
+       end)
+    |> Enum.group_by(fn({date, _, _}) -> date end, fn({_, time, message}) -> {time, message} end)
+    |> Enum.to_list()
+  end
+
+  defp notification_type(%Notification{phone_number: nil}), do: "Email"
+  defp notification_type(%Notification{}), do: "SMS"
+
+  defp notification_contact(%Notification{phone_number: nil, email: email}), do: email
+  defp notification_contact(%Notification{phone_number: phone_number}), do: phone_number
+
+  defp date_and_time_values(inserted_at) do
+    date = DateTimeHelper.format_date(inserted_at)
+    time = inserted_at |> NaiveDateTime.to_time() |> TimeHelper.format_time()
+    {date, time}
   end
 end
