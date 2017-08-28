@@ -115,7 +115,7 @@ defmodule ConciergeSite.FerrySubscriptionControllerTest do
         "trip_type" => "one_way"
       }}
 
-      use_cassette "ferry_create", custom: false, clear_mock: true, match_requests_on: [:query] do
+      use_cassette "ferry_create", clear_mock: true do
         conn = post(conn, "/subscriptions/ferry", params)
 
         subscriptions = Repo.all(Subscription)
