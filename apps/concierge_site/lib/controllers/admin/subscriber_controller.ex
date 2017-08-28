@@ -1,9 +1,9 @@
 defmodule ConciergeSite.Admin.SubscriberController do
   use ConciergeSite.Web, :controller
   use Guardian.Phoenix.Controller
-  alias AlertProcessor.Model.{Notification, Subscription, User}
+  alias AlertProcessor.Model.{Subscription, User}
   alias AlertProcessor.Subscription.DisplayInfo
-  alias ConciergeSite.{TargetedNotification, UserChangelog}
+  alias ConciergeSite.{TargetedNotification, SubscriberDetails}
 
   def index(conn, params, _user, _claims) do
     page = Map.get(params, "page", 1)
@@ -19,9 +19,9 @@ defmodule ConciergeSite.Admin.SubscriberController do
 
   def show(conn, %{"id" => subscriber_id}, user, _claims) do
     subscriber = User.find_by_id(subscriber_id)
-    notifications = Notification.sent_to_user(subscriber)
+    notifications = SubscriberDetails.notification_timeline(subscriber)
     subscriptions = Subscription.for_user(subscriber)
-    account_changelog = UserChangelog.changelog(subscriber_id)
+    account_changelog = SubscriberDetails.changelog(subscriber_id)
     {:ok, departure_time_map} = DisplayInfo.departure_times_for_subscriptions(subscriptions)
     User.log_admin_action(:view_subscriber, user, subscriber)
     render conn, "show.html",

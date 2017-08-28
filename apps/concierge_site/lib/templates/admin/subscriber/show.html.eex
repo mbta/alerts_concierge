@@ -37,55 +37,18 @@
       <%= if @notifications == [] do %>
         <p>No Notifications</p>
       <% else %>
-        <div class="admin-table">
-          <div class="admin-table-header">
-            <div class="admin-table-column">Notification Contents</div>
-            <div class="admin-table-column">Type</div>
-            <div class="admin-table-column">Sent At</div>
-          </div>
-          <div class="admin-table-body">
-            <%= for notification <- @notifications do %>
-              <div class="admin-table-row">
-                <div class="admin-table-cell"><%= notification_info(notification) %></div>
-                <div class="admin-table-cell"><%= notification_type(notification) %></div>
-                <div class="admin-table-cell"><%= notification_timestamp(notification) %></div>
-              </div>
-            <% end %>
-          </div>
-        </div>
+        <%= render ConciergeSite.Admin.SharedView, "timeline.html", timeline: @notifications %>
       <% end %>
       <h2>Current Subscriptions</h2>
       <%= if @subscriptions == [] do %>
         <p>No Subscriptions</p>
       <% else %>
-        <div class="admin-table">
-          <div class="admin-table-header">
-            <div class="admin-table-column">Subscription Info</div>
-            <div class="admin-table-column">Entities</div>
-          </div>
-          <div class="admin-table-body">
-            <%= for subscription <- @subscriptions do %>
-              <div class="admin-table-row">
-                <div class="admin-table-cell"><%= subscription_info(subscription) %></div>
-                <div class="admin-table-cell"><%= entity_info(subscription, @departure_time_map) %></div>
-              </div>
-            <% end %>
-          </div>
+        <div class="subscriber-subscriptions">
+          <%= render ConciergeSite.SubscriptionView, "_subscriptions.html", conn: @conn, subscriptions: @subscriptions, departure_time_map: @departure_time_map, render_links: false %>
         </div>
       <% end %>
       <h2>Account Activity</h2>
-      <div class="admin-table">
-        <div class="admin-table-header">
-          <div class="admin-table-column"></div>
-        </div>
-        <div class="admin-table-body">
-          <%= for account_change <- @account_changelog do %>
-            <div class="admin-table-row">
-              <div class="admin-table-cell"><%= account_change %></div>
-            </div>
-          <% end %>
-        </div>
-      </div>
+      <%= render ConciergeSite.Admin.SharedView, "timeline.html", timeline: @account_changelog %>
     </div>
   </div>
 </div>
