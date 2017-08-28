@@ -12,6 +12,9 @@
   </p>
 
   <%= form_for @conn, commuter_rail_subscription_path(@conn, :train), [class: "trip-info-form commuter-rail", as: :subscription], fn f -> %>
+    <input type="hidden" name="default-south-id" value="place-sstat">
+    <input type="hidden" name="default-north-id" value="place-north">
+    <input type="hidden" name="mode" value="commuter-rail">
     <div class="form-group select-station">
       <label for="origin" class="station-input-label form-label">Origin</label>
       <%= select f,
