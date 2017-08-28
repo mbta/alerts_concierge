@@ -5,7 +5,7 @@ defmodule ConciergeSite.CommuterRailSubscriptionView do
            do_hidden_form_inputs: 2, formatted_day: 1]
   import ConciergeSite.TimeHelper,
     only: [travel_time_options: 0]
-  alias AlertProcessor.Model.{Route, Trip}
+  alias AlertProcessor.Model.Trip
 
   @type trip_type :: :one_way | :round_trip
   @type step :: :trip_type | :trip_info | :train | :preferences
@@ -80,16 +80,17 @@ defmodule ConciergeSite.CommuterRailSubscriptionView do
     {destination_name, _} = trip.destination
 
     [
-      Route.name(trip.route),
-      " ",
+      "Train ",
       trip.trip_number,
-      " | Departs ",
+      " | ",
       origin_name,
-      " at ",
+      " ",
       format_schedule_time(trip.departure_time),
-      ", arrives at ",
+      "  ",
+      content_tag(:i, "", class: "fa fa-long-arrow-right fa-arrow-icon"),
+      "  ",
       destination_name,
-      " at ",
+      " ",
       format_schedule_time(trip.arrival_time)
     ]
   end
