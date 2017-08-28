@@ -93,7 +93,7 @@ defmodule AlertProcessor.Helpers.DateTimeHelper do
   def format_date(datetime, timezone \\ "America/New_York") do
     with {:ok, utc_datetime} <- DateTime.from_naive(datetime, "Etc/UTC"),
          {:ok, local_datetime} <- DT.shift_zone(utc_datetime, timezone),
-         {:ok, output} = Strftime.strftime(local_datetime, "%m-%d-%Y") do
+         {:ok, output} <- Strftime.strftime(local_datetime, "%m-%d-%Y") do
       output
     end
   end
