@@ -1,7 +1,7 @@
 <%= unless Enum.empty?(@subscriptions) do %>
   <div class="amenity-subscriptions">
-    <h6>Station Amenities</h6>
     <%= for subscription <- @subscriptions do %>
+      <h6><%= route_header(subscription) %></h6>
       <%= link(to: amenity_subscription_path(@conn, :edit, subscription), class: "subscription-link") do %>
         <div class="subscription">
           <div class="subscription-icon-container amenity">
