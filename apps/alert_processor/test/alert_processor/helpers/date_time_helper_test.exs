@@ -78,4 +78,14 @@ defmodule AlertProcessor.Helpers.DateTimeHelperTest do
       assert DTH.future(@thursday) == {monday_start, far_in_future}
     end
   end
+
+  describe "format_date" do
+    test "returns date in m-d-Y format in provided timezone" do
+      assert DTH.format_date(~N[2017-08-28 12:00:00], "America/New_York") == "08-28-2017"
+    end
+
+    test "returns date in m-d-Y format defaulting to Amerca/New_York" do
+      assert DTH.format_date(~N[2017-08-28 12:00:00]) == "08-28-2017"
+    end
+  end
 end
