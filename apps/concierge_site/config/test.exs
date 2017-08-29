@@ -13,5 +13,3 @@ config :guardian, Guardian, secret_key: "top_secret_key"
 
 config :concierge_site, ConciergeSite.Dissemination.Mailer,
   adapter: Bamboo.TestAdapter
-
-config :concierge_site, asset_url: "https://example.com/assets"

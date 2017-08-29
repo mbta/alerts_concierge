@@ -13,7 +13,7 @@ defmodule ConcerigeSite.Helpers.MailHelperTest do
 
   describe "Logo function" do
     test "mbta_logo/0 returns URL of MBTA Logo" do
-      assert MailHelper.mbta_logo() == "https://example.com/assets/icons/t-logo@2x.png"
+      assert MailHelper.mbta_logo() =~ "/images/icons/t-logo@2x.png"
     end
   end
 
@@ -28,47 +28,47 @@ defmodule ConcerigeSite.Helpers.MailHelperTest do
       green_d_alert = Map.merge(@alert, %{informed_entities: [%InformedEntity{route_type: 0, route: "Green-D"}]})
       green_e_alert = Map.merge(@alert, %{informed_entities: [%InformedEntity{route_type: 0, route: "Green-E"}]})
 
-      red = "https://example.com/assets/icons/icn_red-line.png"
-      blue = "https://example.com/assets/icons/icn_blue-line.png"
-      orange = "https://example.com/assets/icons/icn_orange-line.png"
-      green = "https://example.com/assets/icons/icn_green-line.png"
+      red = "/images/icons/icn_red-line.png"
+      blue = "/images/icons/icn_blue-line.png"
+      orange = "/images/icons/icn_orange-line.png"
+      green = "/images/icons/icn_green-line.png"
 
-      assert MailHelper.logo_for_alert(red_alert) == red
-      assert MailHelper.logo_for_alert(blue_alert) == blue
-      assert MailHelper.logo_for_alert(orange_alert) == orange
-      assert MailHelper.logo_for_alert(mattapan_alert) == red
-      assert MailHelper.logo_for_alert(green_b_alert) == green
-      assert MailHelper.logo_for_alert(green_c_alert) == green
-      assert MailHelper.logo_for_alert(green_d_alert) == green
-      assert MailHelper.logo_for_alert(green_e_alert) == green
+      assert MailHelper.logo_for_alert(red_alert) =~ red
+      assert MailHelper.logo_for_alert(blue_alert) =~ blue
+      assert MailHelper.logo_for_alert(orange_alert) =~ orange
+      assert MailHelper.logo_for_alert(mattapan_alert) =~ red
+      assert MailHelper.logo_for_alert(green_b_alert) =~ green
+      assert MailHelper.logo_for_alert(green_c_alert) =~ green
+      assert MailHelper.logo_for_alert(green_d_alert) =~ green
+      assert MailHelper.logo_for_alert(green_e_alert) =~ green
     end
 
     test "logo_for_alert/1 returns commuter rail" do
       alert = Map.merge(@alert, %{informed_entities: [%InformedEntity{route_type: 2}]})
-      commuter_rail = "https://example.com/assets/icons/icn_commuter.png"
+      commuter_rail = "images/icons/icn_commuter.png"
 
-      assert MailHelper.logo_for_alert(alert) == commuter_rail
+      assert MailHelper.logo_for_alert(alert) =~ commuter_rail
     end
 
     test "logo_for_alert/1 return bus" do
       alert = Map.merge(@alert, %{informed_entities: [%InformedEntity{route_type: 3}]})
-      bus = "https://example.com/assets/icons/icn_bus.png"
+      bus = "images/icons/icn_bus.png"
 
-      assert MailHelper.logo_for_alert(alert) == bus
+      assert MailHelper.logo_for_alert(alert) =~ bus
     end
 
     test "logo_for_alert/1 return ferry" do
       alert = Map.merge(@alert, %{informed_entities: [%InformedEntity{route_type: 4}]})
-      ferry = "https://example.com/assets/icons/icn_ferry.png"
+      ferry = "images/icons/icn_ferry.png"
 
-      assert MailHelper.logo_for_alert(alert) == ferry
+      assert MailHelper.logo_for_alert(alert) =~ ferry
     end
 
     test "logo_for_alert/1 return facility" do
       alert = Map.merge(@alert, %{informed_entities: [%InformedEntity{facility_type: :elevator}]})
-      facility = "https://example.com/assets/icons/icn_facility.png"
+      facility = "images/icons/icn_facility.png"
 
-      assert MailHelper.logo_for_alert(alert) == facility
+      assert MailHelper.logo_for_alert(alert) =~ facility
     end
   end
 
