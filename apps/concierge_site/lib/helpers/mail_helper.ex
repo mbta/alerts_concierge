@@ -64,29 +64,33 @@ defmodule ConciergeSite.Helpers.MailHelper do
   defp logo_for_route_type(%InformedEntity{facility_type: ft}) when not is_nil(ft),
     do: Helpers.static_url(ConciergeSite.Endpoint, "/images/icons/icn_facility.png")
 
-  defp logo_for_subway(route) do
-    case route do
-      "Red" ->
-        Helpers.static_url(ConciergeSite.Endpoint, "/images/icons/icn_red-line.png")
-      "Mattapan" ->
-        Helpers.static_url(ConciergeSite.Endpoint, "/images/icons/icn_red-line.png")
-      "Orange" ->
-        Helpers.static_url(ConciergeSite.Endpoint, "/images/icons/icn_orange-line.png")
-      "Blue" ->
-        Helpers.static_url(ConciergeSite.Endpoint, "/images/icons/icn_blue-line.png")
-      "Green-B" ->
-        Helpers.static_url(ConciergeSite.Endpoint, "/images/icons/icn_green-line.png")
-      "Green-C" ->
-        Helpers.static_url(ConciergeSite.Endpoint, "/images/icons/icn_green-line.png")
-      "Green-D" ->
-        Helpers.static_url(ConciergeSite.Endpoint, "/images/icons/icn_green-line.png")
-      "Green-E" ->
-        Helpers.static_url(ConciergeSite.Endpoint, "/images/icons/icn_green-line.png")
-      nil ->
-        Helpers.static_url(ConciergeSite.Endpoint, "/images/icons/t-logo@2x.png")
-    end
-  end
+  defp logo_for_subway("Red"),
+    do: Helpers.static_url(ConciergeSite.Endpoint, "/images/icons/icn_red-line.png")
 
+  defp logo_for_subway("Mattapan"),
+    do: Helpers.static_url(ConciergeSite.Endpoint, "/images/icons/icn_red-line.png")
+
+  defp logo_for_subway("Orange"),
+    do: Helpers.static_url(ConciergeSite.Endpoint, "/images/icons/icn_orange-line.png")
+
+  defp logo_for_subway("Blue"),
+    do: Helpers.static_url(ConciergeSite.Endpoint, "/images/icons/icn_blue-line.png")
+
+  defp logo_for_subway("Green-B"),
+    do: Helpers.static_url(ConciergeSite.Endpoint, "/images/icons/icn_green-line.png")
+
+  defp logo_for_subway("Green-C"),
+    do: Helpers.static_url(ConciergeSite.Endpoint, "/images/icons/icn_green-line.png")
+
+  defp logo_for_subway("Green-D"),
+    do: Helpers.static_url(ConciergeSite.Endpoint, "/images/icons/icn_green-line.png")
+
+  defp logo_for_subway("Green-E"),
+    do: Helpers.static_url(ConciergeSite.Endpoint, "/images/icons/icn_green-line.png")
+
+  defp logo_for_subway(nil),
+    do: Helpers.static_url(ConciergeSite.Endpoint, "/images/icons/t-logo@2x.png")
+      
   @spec alt_text_for_route_type(InformedEntity.t) :: iodata
   defp alt_text_for_route_type(%InformedEntity{route_type: 0, route: r}), do: alt_text_for_subway(r)
   defp alt_text_for_route_type(%InformedEntity{route_type: 1, route: r}), do: alt_text_for_subway(r)
