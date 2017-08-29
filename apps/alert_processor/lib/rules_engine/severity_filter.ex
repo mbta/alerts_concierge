@@ -3,8 +3,6 @@ defmodule AlertProcessor.SeverityFilter do
   Filter users based on severity determined by a combination of
   severity provided in the alert and effect name.
   """
-
-  import Ecto.Query
   alias AlertProcessor.{Model.Alert, Model.Subscription}
 
   @doc """
@@ -15,14 +13,12 @@ defmodule AlertProcessor.SeverityFilter do
   which have a matching subscription based on severity and
   an alert to pass through to the next filter.
   """
-  @spec filter({:ok, Ecto.Queryable.t, Alert.t}) :: {:ok, Ecto.Queryable.t, Alert.t}
-  def filter({:ok, previous_query, %Alert{} = alert}) do
+  @spec filter([Subscription.t], Keyword.t) :: [Subscription.t]
+  def filter(subscriptions, [alert: alert]) do
     alert_severity_value = Alert.severity_value(alert)
-    query = from s in subquery(previous_query),
-      where: s.alert_priority_type == "low" and ^(alert_severity_value >= Subscription.severity_value(:low)),
-      or_where: s.alert_priority_type == "medium" and ^(alert_severity_value >= Subscription.severity_value(:medium)),
-      or_where: s.alert_priority_type == "high" and ^(alert_severity_value >= Subscription.severity_value(:high))
 
-    {:ok, query, alert}
+    Enum.filter(subscriptions, fn(sub) ->
+      Subscription.severity_value(sub.alert_priority_type) <= alert_severity_value
+    end)
   end
 end

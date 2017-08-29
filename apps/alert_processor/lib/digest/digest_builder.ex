@@ -4,7 +4,6 @@ defmodule AlertProcessor.DigestBuilder do
   """
   alias AlertProcessor.{InformedEntityFilter, Model, Repo}
   alias Model.{Alert, Digest, DigestDateGroup, Subscription}
-  import Ecto.Query
 
   @doc """
   1. Takes a list of alerts
@@ -14,19 +13,22 @@ defmodule AlertProcessor.DigestBuilder do
   """
   @spec build_digests({[Alert.t], DigestDateGroup.t}) :: [Digest.t]
   def build_digests({alerts, digest_date_group}) do
+    subs =
+      Subscription
+      |> Repo.all()
+      |> Repo.preload(:user)
+      |> Repo.preload(:informed_entities)
+
     alerts
     |> Enum.map(fn(alert) ->
-      {fetch_users(alert), alert}
+      {fetch_users(alert, subs), alert}
     end)
     |> sort_by_user(digest_date_group)
   end
 
-  defp fetch_users(alert) do
-    q = from s in Subscription, select: s
-    {:ok, query, ^alert} = InformedEntityFilter.filter({:ok, q, alert})
-    query
-    |> Repo.all()
-    |> Repo.preload(:user)
+  defp fetch_users(alert, subs) do
+    subs
+    |> InformedEntityFilter.filter(alert: alert)
     |> Enum.map(&(&1.user))
   end
 

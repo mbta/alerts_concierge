@@ -17,7 +17,7 @@ defmodule AlertProcessor.AlertParserTest do
     :subscription
     |> build(user: user, alert_priority_type: :low, informed_entities: [%InformedEntity{route_type: 3, route: "16"}])
     |> weekday_subscription
-    |> insert
+    |> PaperTrail.insert
     use_cassette "old_alerts", custom: true, clear_mock: true, match_requests_on: [:query] do
       assert [{:ok, _} | _t] = AlertParser.process_alerts
       assert length(Repo.all(SavedAlert)) > 0
@@ -32,30 +32,28 @@ defmodule AlertProcessor.AlertParserTest do
     :subscription
     |> build(user: user1, alert_priority_type: :low, informed_entities: [%InformedEntity{route_type: 3, route: "16"}])
     |> weekday_subscription
-    |> insert
+    |> PaperTrail.insert
     user2 = insert(:user, phone_number: nil)
     :subscription
     |> build(user: user2, alert_priority_type: :high, informed_entities: [%InformedEntity{route_type: 3, route: "16"}])
     |> weekday_subscription
-    |> insert
+    |> PaperTrail.insert
     user3 = insert(:user, phone_number: nil)
     :subscription
     |> build(user: user3, alert_priority_type: :low, informed_entities: [%InformedEntity{route_type: 3, route: "1"}])
     |> weekday_subscription
-    |> insert
+    |> PaperTrail.insert
     user4 = insert(:user, phone_number: nil)
     :subscription
     |> build(user: user4, alert_priority_type: :low, informed_entities: [%InformedEntity{route_type: 3, route: "16"}])
     |> weekday_subscription
-    |> insert
+    |> PaperTrail.insert
     insert(:notification, alert_id: "113724", last_push_notification: ~N[2017-06-23 12:51:02], user: user4, email: user4.email, phone_number: user4.phone_number, status: "sent", send_after: ~N[2017-04-25 10:00:00])
 
     use_cassette "route_16_minor_delay", custom: true, clear_mock: true, match_requests_on: [:query] do
-      assert [{:ok, [%{
-        service_effect: "Route 16 delay",
-        header: "Route 16 experiencing delays due to fire",
-        description: nil
-      }]} | _t] = AlertParser.process_alerts
+      [ok: [notification | _t]] = AlertParser.process_alerts
+      assert notification.header == "Route 16 experiencing delays due to fire"
+      assert notification.service_effect == "Route 16 delay"
     end
   end
 
@@ -64,7 +62,7 @@ defmodule AlertProcessor.AlertParserTest do
     :subscription
     |> build(user: user1, alert_priority_type: :low, informed_entities: [%InformedEntity{stop: "place-chncl", facility_type: :elevator}])
     |> weekday_subscription
-    |> insert
+    |> PaperTrail.insert
 
     use_cassette "facilities_alerts", custom: true, clear_mock: true, match_requests_on: [:query] do
       result = AlertParser.process_alerts

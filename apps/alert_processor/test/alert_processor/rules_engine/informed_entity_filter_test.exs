@@ -1,6 +1,6 @@
 defmodule AlertProcessor.InformedEntityFilterTest do
   use AlertProcessor.DataCase
-  alias AlertProcessor.{InformedEntityFilter, Model, QueryHelper}
+  alias AlertProcessor.{InformedEntityFilter, Model}
   alias Model.{Alert, InformedEntity, Subscription}
   import AlertProcessor.Factory
 
@@ -87,56 +87,60 @@ defmodule AlertProcessor.InformedEntityFilterTest do
     InformedEntity |> struct(@ie2) |> Map.merge(%{subscription_id: sub4.id}) |> insert
     InformedEntity |> struct(@ie5) |> Map.merge(%{subscription_id: sub5.id}) |> insert
 
-    {:ok, sub1: sub1, sub2: sub2, sub3: sub3, sub4: sub4, sub5: sub5, user1: user1, user2: user2, all_subscription_ids: [sub1.id, sub2.id, sub3.id, sub4.id, sub5.id]}
+    [sub1, sub2, sub3, sub4, sub5] = Subscription
+      |> Repo.all()
+      |> Repo.preload(:informed_entities)
+      |> Repo.preload(:user)
+
+    {:ok, sub1: sub1, sub2: sub2, sub3: sub3, sub4: sub4, sub5: sub5,
+     user1: user1, user2: user2, all_subscriptions: [sub1, sub2, sub3, sub4, sub5]}
   end
 
-  test "filter returns :ok empty list if subscription id list passed is empty" do
-    assert {:ok, query, @alert1} = InformedEntityFilter.filter({:ok, QueryHelper.generate_query(Subscription, []), @alert1})
-    assert [] == QueryHelper.execute_query(query)
+  test "filter returns :ok empty list if subscription list passed is empty" do
+    assert [] == InformedEntityFilter.filter([], alert: @alert1)
   end
 
-  test "returns subscription id if informed entity matches subscription", %{sub4: sub4, all_subscription_ids: all_subscription_ids} do
-    assert {:ok, query, @alert2} = InformedEntityFilter.filter({:ok, QueryHelper.generate_query(Subscription, all_subscription_ids), @alert2})
-    assert [sub4.id] == QueryHelper.execute_query(query)
+  test "returns subscription id if informed entity matches subscription", %{sub4: sub4, all_subscriptions: all_subscriptions} do
+    assert [sub4] == InformedEntityFilter.filter(all_subscriptions, alert: @alert2)
   end
 
   test "does not return subscription id if subscription not included in previous ids list", %{sub2: sub2} do
-    assert {:ok, query, @alert1} = InformedEntityFilter.filter({:ok, QueryHelper.generate_query(Subscription, [sub2.id]), @alert1})
-    assert [sub2.id] == QueryHelper.execute_query(query)
+    assert [sub2] == InformedEntityFilter.filter([sub2], alert: @alert1)
   end
 
   test "returns multiple subscriptions for same user if both match the alert", %{sub1: sub1, sub4: sub4} do
-    {:ok, query, @alert1} = InformedEntityFilter.filter({:ok, QueryHelper.generate_query(Subscription, [sub1.id, sub4.id]), @alert1})
-    subscription_ids = QueryHelper.execute_query(query)
-    assert MapSet.new(subscription_ids) == MapSet.new([sub1.id, sub4.id])
+    assert [sub1, sub4] == InformedEntityFilter.filter([sub1, sub4], alert: @alert1)
   end
 
-  test "does not return subscriptions that only partially match alert informed entity", %{sub3: sub3, all_subscription_ids: all_subscription_ids} do
-    assert {:ok, query, @alert4} = InformedEntityFilter.filter({:ok, QueryHelper.generate_query(Subscription, all_subscription_ids), @alert4})
-    assert [sub3.id] == QueryHelper.execute_query(query)
+  test "does not return subscriptions that only partially match alert informed entity", %{sub3: sub3, all_subscriptions: all_subscriptions} do
+    assert [sub3] == InformedEntityFilter.filter(all_subscriptions, alert: @alert4)
   end
 
-  test "returns empty list if no matches", %{all_subscription_ids: all_subscription_ids} do
-    assert {:ok, query, @alert3} = InformedEntityFilter.filter({:ok, QueryHelper.generate_query(Subscription, all_subscription_ids), @alert3})
-    assert [] == QueryHelper.execute_query(query)
+  test "returns empty list if no matches", %{all_subscriptions: all_subscriptions} do
+    assert [] == InformedEntityFilter.filter(all_subscriptions, alert: @alert3)
   end
 
-  test "matches facility alerts", %{sub5: sub5, all_subscription_ids: all_subscription_ids} do
-    assert {:ok, query, @alert5} = InformedEntityFilter.filter({:ok, QueryHelper.generate_query(Subscription, all_subscription_ids), @alert5})
-    assert [sub5.id] == QueryHelper.execute_query(query)
+  test "matches facility alerts", %{sub5: sub5, all_subscriptions: all_subscriptions} do
+    assert [sub5] == InformedEntityFilter.filter(all_subscriptions, alert: @alert5)
   end
 
   test "matches admin mode subscription", %{sub1: sub1, sub2: sub2} do
     user = insert(:user, role: "application_administration")
-    admin_sub = insert(:admin_subscription, type: :bus, user: user)
-    assert {:ok, query, @alert4} = InformedEntityFilter.filter({:ok, QueryHelper.generate_query(Subscription, [admin_sub.id, sub1.id, sub2.id]), @alert4})
-    assert [admin_sub.id] == QueryHelper.execute_query(query)
+    admin_sub =
+      :admin_subscription
+      |> insert(type: :bus, user: user)
+      |> Repo.preload(:user)
+      |> Repo.preload(:informed_entities)
+    assert [admin_sub] == InformedEntityFilter.filter([admin_sub, sub1, sub2], alert: @alert4)
   end
 
   test "doesnt match non application admin mode subscription", %{sub1: sub1, sub2: sub2} do
     user = insert(:user, role: "customer_support")
-    admin_sub = insert(:admin_subscription, type: :bus, user: user)
-    assert {:ok, query, @alert4} = InformedEntityFilter.filter({:ok, QueryHelper.generate_query(Subscription, [admin_sub.id, sub1.id, sub2.id]), @alert4})
-    assert [] == QueryHelper.execute_query(query)
+    admin_sub =
+      :admin_subscription
+      |> insert(type: :bus, user: user)
+      |> Repo.preload(:user)
+      |> Repo.preload(:informed_entities)
+    assert [] == InformedEntityFilter.filter([admin_sub, sub1, sub2], alert: @alert4)
   end
 end

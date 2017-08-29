@@ -11,7 +11,8 @@ defmodule AlertProcessor.SubscriptionFilterEngineTest do
       header: "This is a test message",
       id: "1",
       informed_entities: [%InformedEntity{route_type: 1}],
-      severity: :minor
+      severity: :minor,
+      last_push_notification: start_time
     }
     {:ok, alert: alert}
   end
@@ -20,24 +21,27 @@ defmodule AlertProcessor.SubscriptionFilterEngineTest do
     user = insert(:user, phone_number: nil)
     user2 = insert(:user, phone_number: nil)
 
-    :subscription
+    s1 = :subscription
     |> build(user: user, alert_priority_type: :low, informed_entities: [%InformedEntity{route_type: 1}])
     |> weekday_subscription
     |> insert
-    :subscription
+    s2 = :subscription
     |> build(user: user, alert_priority_type: :high, informed_entities: [%InformedEntity{route_type: 4}])
     |> weekday_subscription
     |> insert
-    :subscription
+    s3 = :subscription
     |> build(user: user2, alert_priority_type: :low, informed_entities: [%InformedEntity{route_type: 3}])
     |> weekday_subscription
     |> insert
-    :subscription
+    s4 = :subscription
     |> build(user: user2, alert_priority_type: :high, informed_entities: [%InformedEntity{route_type: 2}])
     |> weekday_subscription
     |> sunday_subscription
     |> insert
-    assert {:ok, [%Notification{email: email}]} = SubscriptionFilterEngine.process_alert(alert)
+
+    result = SubscriptionFilterEngine.process_alert(alert, [s1, s2, s3, s4], [])
+
+    assert {:ok, [%Notification{email: email}]} = result
     assert email == user.email
   end
 end

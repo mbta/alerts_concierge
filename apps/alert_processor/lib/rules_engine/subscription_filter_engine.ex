@@ -3,24 +3,43 @@ defmodule AlertProcessor.SubscriptionFilterEngine do
   Entry point for susbcription engine to filter users to alert users
   with relevant subscriptions to alert provided.
   """
-  alias AlertProcessor.{Model.Alert, Model.Notification}
-  alias AlertProcessor.{ActivePeriodFilter, InformedEntityFilter, Repo, Scheduler, SentAlertFilter, SeverityFilter}
+  alias AlertProcessor.{ActivePeriodFilter, InformedEntityFilter, Model,
+    Repo, Scheduler, SentAlertFilter, SeverityFilter}
+  alias Model.{Alert, Notification, Subscription}
   import Ecto.Query
 
+  def process_alerts(alerts) do
+    subscriptions =
+      Subscription
+      |> Repo.all()
+      |> Repo.preload(:user)
+      |> Repo.preload(:informed_entities)
+
+    user_ids = Enum.map(subscriptions, &(&1.user.id))
+    alert_ids = Enum.map(alerts, &(&1.id))
+
+    notification_query = from n in Notification,
+      where: n.user_id in ^user_ids,
+      where: n.alert_id in ^alert_ids,
+      select: n
+
+    notifications = Repo.all(notification_query)
+
+    for alert <- alerts do
+      __MODULE__.process_alert(alert, subscriptions, notifications)
+    end
+  end
   @doc """
   process_alert/1 receives an alert and applies relevant filters to send alerts
   to the correct users based on the alert.
   """
-  @spec process_alert(Alert.t) :: {:ok, [Notification.t]}
-  def process_alert(alert) do
-    {:ok, query, ^alert} =
-      alert
-      |> SentAlertFilter.filter
-      |> InformedEntityFilter.filter
-      |> SeverityFilter.filter
-      |> ActivePeriodFilter.filter
-
-    subscription_ids = Repo.all(from s in subquery(query), distinct: true, select: s.id)
-    Scheduler.schedule_notifications({:ok, subscription_ids, alert})
+  @spec process_alert(Alert.t, [Subscription.t], [Notification.t]) :: {:ok, [Notification.t]} | :error
+  def process_alert(alert, subscriptions, notifications) do
+    subscriptions
+    |> SentAlertFilter.filter(alert: alert, notifications: notifications)
+    |> InformedEntityFilter.filter(alert: alert)
+    |> SeverityFilter.filter(alert: alert)
+    |> ActivePeriodFilter.filter(alert: alert)
+    |> Scheduler.schedule_notifications(alert)
   end
 end
