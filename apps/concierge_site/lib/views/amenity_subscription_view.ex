@@ -42,6 +42,7 @@ defmodule ConciergeSite.AmenitySubscriptionView do
 
   defp pretty_station_count(subscription) do
     case count = number_of_stations(subscription) do
+      0 -> ""
       1 -> "#{count} station + "
       _ -> "#{count} stations + "
     end

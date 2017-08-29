@@ -53,5 +53,19 @@ defmodule ConciergeSite.AmenitySubscriptionViewTest do
 
       assert result == "2 stations + Green Line on Saturdays, Weekdays"
     end
+
+    test "it omits text about stations if there are none" do
+      subscription = %Subscription{
+        informed_entities: [%InformedEntity{facility_type: :elevator, route: "Green"}],
+        relevant_days: [:saturday]
+      }
+
+      result =
+        subscription
+        |> AmenitySubscriptionView.amenity_schedule()
+        |> IO.iodata_to_binary
+
+      assert result == "Green Line on Saturdays"  
+    end
   end
 end
