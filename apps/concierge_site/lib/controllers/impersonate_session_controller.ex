@@ -13,7 +13,7 @@ defmodule ConciergeSite.ImpersonateSessionController do
     if User.is_admin?(admin_user) do
       conn
         |> put_flash(:info, "Successfully signed out of account for user #{user.email}.")
-        |> SignInHelper.sign_in(admin_user, redirect: :default)
+        |> SignInHelper.sign_in(admin_user, redirect: :admin_default)
     else
       render_unauthorized(conn)
     end

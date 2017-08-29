@@ -13,7 +13,7 @@ defmodule ConciergeSite.Admin.SessionController do
   def create(conn, %{"user" => login_params}) do
     case User.authenticate_admin(login_params) do
       {:ok, user} ->
-        SignInHelper.sign_in(conn, user, redirect: :default)
+        SignInHelper.sign_in(conn, user, redirect: :admin_default)
       :deactivated ->
         changeset = User.login_changeset(%User{})
         conn
