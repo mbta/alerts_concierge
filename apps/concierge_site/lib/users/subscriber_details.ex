@@ -197,11 +197,11 @@ defmodule ConciergeSite.SubscriberDetails do
            " sent to: ",
            notification_contact(notification),
            " -- ",
-           service_effect,
+           to_string(service_effect),
            " ",
-           header,
+           to_string(header),
            " ",
-           description
+           to_string(description)
           ]}
        end)
     |> Enum.group_by(fn({date, _, _}) -> date end, fn({_, time, message}) -> {time, message} end)
