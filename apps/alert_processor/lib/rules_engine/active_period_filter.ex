@@ -13,6 +13,12 @@ defmodule AlertProcessor.ActivePeriodFilter do
   """
   @spec filter([Subscription.t], Keyword.t) :: [Subscription.t]
   def filter(subscriptions, [alert: alert]) do
+    SystemMetrics.Tracer.trace(fn() ->
+      do_filter(subscriptions, alert)
+    end, "active_period_filter")
+  end
+
+  defp do_filter(subscriptions, alert) do
     subscription_timeframe_maps = for x <- subscriptions, into: %{} do
       {x.id, Subscription.timeframe_map(x)}
     end
