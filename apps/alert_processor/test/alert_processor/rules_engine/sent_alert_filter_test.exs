@@ -4,7 +4,9 @@ defmodule AlertProcessor.SentAlertFilterTest do
   alias Model.{Alert, Notification}
   import AlertProcessor.Factory
 
-  @alert %Alert{id: "123", last_push_notification: nil}
+  @now DateTime.utc_now
+  @later Calendar.DateTime.add!(@now, 1800)
+  @alert %Alert{id: "123", last_push_notification: @now}
 
   describe "filter/2" do
     test "returns all subscriptions that have not received the alert" do
@@ -21,7 +23,7 @@ defmodule AlertProcessor.SentAlertFilterTest do
         service_effect: "test",
         description: "test",
         status: :sent,
-        last_push_notification: nil
+        last_push_notification: @later
       }
 
       other_notification = %Notification{
@@ -32,7 +34,7 @@ defmodule AlertProcessor.SentAlertFilterTest do
         service_effect: "test",
         description: "test",
         status: :sent,
-        last_push_notification: nil
+        last_push_notification: @later
       }
 
       n1 = Repo.insert!(Notification.create_changeset(notification))
@@ -69,10 +71,8 @@ defmodule AlertProcessor.SentAlertFilterTest do
     test "returns subscriptions that have received the alert if the last_push_notification changed" do
       user = insert(:user)
       sub1 = insert(:subscription, user: user) |> Repo.preload(:user)
-      now = DateTime.utc_now
-      later = now |> Calendar.DateTime.add!(1800)
-      alert = %Alert{id: "123", last_push_notification: now}
-      updated_alert = %Alert{id: "123", last_push_notification: later}
+      alert = %Alert{id: "123", last_push_notification: @now}
+      updated_alert = %Alert{id: "123", last_push_notification: @later}
       notification = %Notification{
         alert_id: "123",
         user_id: user.id,
@@ -81,7 +81,7 @@ defmodule AlertProcessor.SentAlertFilterTest do
         service_effect: "test",
         description: "test",
         status: :sent,
-        last_push_notification: now
+        last_push_notification: @now
       }
       Repo.insert(Notification.create_changeset(notification))
 

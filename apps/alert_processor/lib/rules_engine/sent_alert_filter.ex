@@ -13,11 +13,15 @@ defmodule AlertProcessor.SentAlertFilter do
   def filter(subscriptions, alert: %Alert{id: alert_id, last_push_notification: lpn}, notifications: notifications) do
     notifications_to_not_resend = Enum.filter(notifications, fn(notification) ->
       alert_id == notification.alert_id &&
-      (notification.status == :sent && lpn == notification.last_push_notification)
+      (notification.status == :sent && same?(lpn, notification.last_push_notification))
     end)
 
     Enum.reject(subscriptions, fn(sub) ->
       Enum.any?(notifications_to_not_resend, &(&1.user_id == sub.user.id))
     end)
+  end
+
+  defp same?(lpn, notification_lpn) do
+    DateTime.compare(lpn, notification_lpn) != :gt
   end
 end
