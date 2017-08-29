@@ -2,6 +2,7 @@ defmodule ConciergeSite.Router do
   use ConciergeSite.Web, :router
 
   pipeline :browser do
+    plug SystemMetrics.Plug
     plug :accepts, ["html"]
     plug :fetch_session
     plug :fetch_flash
