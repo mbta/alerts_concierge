@@ -4,6 +4,7 @@ defmodule ConciergeSite.SubscriberDetailsTest do
   alias AlertProcessor.Model.{Subscription, User}
   alias AlertProcessor.Subscription.{AmenitiesMapper, CommuterRailMapper}
   alias ConciergeSite.SubscriberDetails
+  import AlertProcessor.Factory
 
   setup do
     {:ok, user} = User.create_account(%{"email" => "test_email@whatever.com", "password" => "Password1", "password_confirmation" => "Password1"})
@@ -88,6 +89,22 @@ defmodule ConciergeSite.SubscriberDetailsTest do
       {:ok, _} = Subscription.delete_subscription(subscription, user.id)
       changelog = user.id |> SubscriberDetails.changelog() |> changelog_to_binary()
       assert changelog =~ "#{user.email} deleted commuter_rail subscription #{subscription.id} between #{subscription.origin} and #{subscription.destination}"
+    end
+  end
+
+  describe "notification_timeline" do
+    test "works for notificaiton with description" do
+      user = insert(:user)
+      notification = insert(:notification, user: user, alert_id: "123", status: :sent, email: user.email)
+      changelog = user |> SubscriberDetails.notification_timeline() |> changelog_to_binary()
+      assert changelog =~ "Email sent to: #{user.email} -- #{notification.service_effect} #{notification.header} #{notification.description}"
+    end
+
+    test "works for notification without description" do
+      user = insert(:user)
+      notification = insert(:notification, user: user, alert_id: "123", status: :sent, email: user.email, description: nil)
+      changelog = user |> SubscriberDetails.notification_timeline() |> changelog_to_binary()
+      assert changelog =~ "Email sent to: #{user.email} -- #{notification.service_effect} #{notification.header} "
     end
   end
 
