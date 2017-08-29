@@ -28,7 +28,7 @@ defmodule ConciergeSite.PasswordResetControllerTest do
   end
 
   test "POST /reset-password/ with a valid but unknown email", %{conn: conn}  do
-    email = "test@example.com"
+    email = "test+123@example.com"
     params = %{"password_reset" => %{"email" => email}}
     conn = post(conn, password_reset_path(conn, :create), params)
 

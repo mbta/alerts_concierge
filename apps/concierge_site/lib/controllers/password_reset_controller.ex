@@ -8,8 +8,6 @@ defmodule ConciergeSite.PasswordResetController do
   alias ConciergeSite.SignInHelper
   alias Ecto.Multi
 
-  @email_regex ~r/^([a-zA-Z0-9_\-\.]+)@([a-zA-Z0-9_\-\.]+)\.([a-zA-Z]{2,5})$/
-
   def new(conn, _params) do
     changeset = PasswordReset.create_changeset(%PasswordReset{})
     render conn, "new.html", changeset: changeset
@@ -94,7 +92,7 @@ defmodule ConciergeSite.PasswordResetController do
   end
 
   defp handle_unknown_email(conn, changeset, email) do
-    if String.match?(email, @email_regex) do
+    if String.match?(email, ~r/@/) do
       Email.unknown_password_reset_email(email)
       |> Mailer.deliver_later
 
