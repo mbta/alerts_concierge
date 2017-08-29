@@ -10,8 +10,12 @@
     </div>
     <div class="admin-user-detail-info">
       <label for="role" class="admin-user-label">ROLE:</label>
-      <%= link to: admin_admin_user_path(@conn, :confirm_role_change, @admin_user) do %>
-        <%= display_role(@admin_user) %> <i class="fa fa-angle-down"></i>
+      <%= if @admin_user.role == "deactivated_admin" do %>
+        <div>Deactivated Admin</div>
+      <% else %>
+        <%= link to: admin_admin_user_path(@conn, :confirm_role_change, @admin_user) do %>
+          <%= display_role(@admin_user) %> <i class="fa fa-angle-down"></i>
+        <% end %>
       <% end %>
     </div>
     <div class="admin-user-detail-buttons">
