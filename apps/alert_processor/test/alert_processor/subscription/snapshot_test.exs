@@ -42,10 +42,11 @@ defmodule AlertProcessor.Subscription.SnapshotTest do
       Repo.update!(future_changeset)
       Repo.update!(user_changeset)
 
-      [snapshot] = Snapshot.get_snapshots_by_datetime(subscriber, date)
+      [subscription] = Snapshot.get_snapshots_by_datetime(subscriber, date)
 
-      assert snapshot.subscription["relevant_days"] == ["saturday"]
-      assert snapshot.user["email"] == subscriber.email
+      assert %Subscription{} = subscription
+      assert subscription.relevant_days == ["saturday"]
+      assert subscription.user.email == subscriber.email
     end
 
     test "fetches correct informed_entities for version" do
@@ -65,15 +66,17 @@ defmodule AlertProcessor.Subscription.SnapshotTest do
       multi = Mapper.build_subscription_transaction([info], user, user.id)
       Subscription.set_versioned_subscription(multi)
 
-      [snapshot] = Snapshot.get_snapshots_by_datetime(user, future_date)
+      [subscription] = Snapshot.get_snapshots_by_datetime(user, future_date)
 
+<<<<<<< HEAD
       [%{id: sub_id, informed_entities: [%{id: ie1_id}, %{id: ie2_id}, %{id: ie3_id}]}] =
         Subscription |> Repo.all() |> Repo.preload(:informed_entities)
+=======
+      [%{informed_entities: [%{id: ie1_id}, %{id: ie2_id}, %{id: ie3_id}]}] =
+        Repo.all(Subscription) |> Repo.preload(:informed_entities)
+>>>>>>> make snapshot a Subscription
 
-      assert %{
-        subscription: %{"id" => ^sub_id},
-        informed_entities: [%{"id" => ^ie3_id}, %{"id" => ^ie2_id}, %{"id" => ^ie1_id}]
-      } = snapshot
+      assert MapSet.new([ie1_id, ie2_id, ie3_id]) == MapSet.new(Enum.map(subscription.informed_entities, &(&1.id)))
     end
 
     test "fetches informed_entities for correct version when multiple exist" do

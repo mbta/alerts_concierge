@@ -35,7 +35,7 @@
       <%= for snapshot <- @snapshots do %>
         <div class="admin-table-row">
           <div class="admin-table-cell">
-            <%= snapshot["id"] %>
+            <%= snapshot.id %>
           </div>
         </div>
       <% end %>

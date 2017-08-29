@@ -3,7 +3,8 @@ defmodule AlertProcessor.Subscription.Snapshot do
   Manages snapshots of a subscripton and its informed_entities
   at a specific point in time
   """
-  alias AlertProcessor.{Model.Subscription, Repo}
+  alias AlertProcessor.{Model, Repo}
+  alias Model.{InformedEntity, Subscription, User}
   import Ecto.Query
 
   def get_snapshots_by_datetime(user, datetime) do
@@ -33,6 +34,31 @@ defmodule AlertProcessor.Subscription.Snapshot do
           }
         end)
     |> Map.merge(%{user: user_version})
+    |> serialize()
+  end
+
+  defp serialize(snapshot) do
+    user = to_struct(User, snapshot.user)
+    informed_entities = Enum.map(snapshot.informed_entities, fn(ie) ->
+      to_struct(InformedEntity, ie)
+    end)
+    subscription =
+      Subscription
+      |> to_struct(snapshot.subscription)
+      |> Map.merge(%{
+        user: user,
+        informed_entities: informed_entities
+      })
+  end
+
+  def to_struct(kind, attrs) do
+    struct = struct(kind)
+    Enum.reduce Map.to_list(struct), struct, fn {k, _}, acc ->
+      case Map.fetch(attrs, Atom.to_string(k)) do
+        {:ok, v} -> %{acc | k => v}
+        :error -> acc
+      end
+    end
   end
 
   defp get_informed_entities(nil), do: []
