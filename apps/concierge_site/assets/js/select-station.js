@@ -20,6 +20,11 @@ export default function($) {
     props.allRoutes = generateRouteList(className, $);
     props.allStations = generateStationList(className, $);
     props.validStationNames = props.allStations.map(station => station.name);
+
+    if (isCommuterRailSubscription()) {
+      setCommuterRailDefaults();
+    }
+
     attachSuggestionInputs();
     validateInputs();
   }
@@ -77,6 +82,15 @@ export default function($) {
     }
   }
 
+  function setCommuterRailDefaults() {
+    props.defaultSouthTrackDestination = props.allStations.find(
+      station => station.id == "place-sstat"
+    );
+    props.defaultNorthTrackDestination = props.allStations.find(
+      station => station.id == "place-north"
+    );
+  }
+
   function assignSuggestion(event) {
     const originDestination = event.data.originDestination;
     const stationName = $(".station-name", $(this)).text();
@@ -86,7 +100,7 @@ export default function($) {
     $stationInput.attr("data-valid", true);
     $stationInput.attr("data-station-id", $(this).attr("data-station-id"));
     setSelectedStation(originDestination, stationName, $(this).attr("data-lines"));
-      unmountStationSuggestions(`.${originDestination}-station-suggestion`, $);
+    unmountStationSuggestions(`.${originDestination}-station-suggestion`, $);
     }
 
   function pickFirstSuggestion(event) {
@@ -281,6 +295,53 @@ export default function($) {
       selectedName: stationName,
       selectedLines: lines
     };
+
+    if (shouldSetDefaultDestination(originDestination, stationName, state.destination)) {
+      let station;
+      if (anyLinesOnSouthTrack(lines.split(","))) {
+        station = props.defaultSouthTrackDestination;
+      } else if (anyLinesOnNorthTrack(lines.split(","))) {
+        station = props.defaultNorthTrackDestination;
+      }
+
+      setDefaultDestination(station);
+    }
+  }
+
+  function setDefaultDestination(station) {
+    const $destinationStationInput = $(`.${subscriptionSelectClass("destination")}`);
+
+    $destinationStationInput.val(station.name);
+    $destinationStationInput.attr("data-valid", true);
+    $destinationStationInput.attr("data-station-id", station.id);
+    setSelectedStation("destination", station.name, station.allLineNames.join(","));
+  }
+
+  function shouldSetDefaultDestination(originDestination, stationName,  destination) {
+    return isCommuterRailSubscription() &&
+      !isDefaultCommuterRailDestination(stationName) &&
+      originDestination == "origin" &&
+      !destination.selectedLines &&
+      !destination.selectedName
+  }
+
+  function isCommuterRailSubscription() {
+    return $("input[name='mode']").val() == "commuter-rail";
+  }
+
+  function anyLinesOnNorthTrack(lines) {
+    return lines.some(line => props.defaultNorthTrackDestination.allLineNames.includes(line));
+  }
+
+  function anyLinesOnSouthTrack(lines) {
+    return lines.some(line => props.defaultSouthTrackDestination.allLineNames.includes(line));
+  }
+
+  function isDefaultCommuterRailDestination(stationName) {
+    return [
+      props.defaultSouthTrackDestination.name,
+      props.defaultNorthTrackDestination.name
+    ].includes(stationName);
   }
 
   function clearSelectedStation(originDestination) {

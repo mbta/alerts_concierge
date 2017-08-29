@@ -1,6 +1,7 @@
 import 'jsdom-global/register';
 import jsdom from 'mocha-jsdom';
 import { assert } from 'chai';
+import { simulateKeyUp } from './utils';
 import selectStation from '../js/select-station';
 
 describe("selectStation", function() {
@@ -188,25 +189,25 @@ describe("selectStation", function() {
     describe("station input losing focus", () => {
       it("populates the origin input field with the first suggestion", () => {
         const $originInput = $("input.subscription-select-origin");
-        $originInput.val("Park");
+        $originInput.val("brain");
         const $suggestionContainer = $("input.subscription-select-origin + .suggestion-container");
 
         $originInput.focus();
         simulateKeyUp($originInput[0])
         $("input.subscription-select-destination").focus()
 
-        assert.equal($originInput.val(), "Park Street");
+        assert.equal($originInput.val(), "Braintree");
       });
 
       it("updates the data-station-id attribute of the origin input", () => {
         const $originInput = $("input.subscription-select-origin");
 
-        $originInput.val("Park");
+        $originInput.val("brain");
         $originInput.focus();
         simulateKeyUp($originInput[0]);
         $("input.subscription-select-destination").focus();
 
-        assert.equal($originInput.attr("data-station-id"), "place-pktrm");
+        assert.equal($originInput.attr("data-station-id"), "place-brntn");
       });
 
       it("populates the destination field with the first suggestion", () => {
@@ -425,88 +426,6 @@ describe("selectStation", function() {
       `
   });
 
-  describe("commuter rail", () => {
-    beforeEach(function() {
-      $("body").append(commuterRailTripInfoPageHtml);
-      selectStation($);
-    });
-
-    it("starts with no value selected and data-valid false", () => {
-      const $originInput = $("input.subscription-select-origin");
-      const $destinationInput = $("input.subscription-select-destination");
-
-      assert.equal($originInput.val(), "");
-      assert.equal("false", $originInput.attr("data-valid"));
-      assert.equal($destinationInput.val(), "");
-      assert.equal("false", $destinationInput.attr("data-valid"));
-    });
-
-    it("displays line along with icon", () => {
-      const $originInput = $("input.subscription-select-origin");
-      $originInput.val("Chels");
-      const $suggestionContainer = $("input.subscription-select-origin + .suggestion-container");
-
-      simulateKeyUp($originInput[0])
-
-      const $suggestions = $(".origin-station-suggestion")
-      const chelseaSuggestion = $(".line-name", $suggestions).text();
-
-      assert.include(chelseaSuggestion, "Newburyport/Rockport Line");
-    });
-
-    it("displays Multiple Lines along with icon when stop is a part of multiple lines", () => {
-      const $originInput = $("input.subscription-select-origin");
-      $originInput.val("North");
-      const $suggestionContainer = $("input.subscription-select-origin + .suggestion-container");
-
-      simulateKeyUp($originInput[0])
-
-      const $suggestions = $(".origin-station-suggestion")
-      const northStationSuggestion = $(".line-name", $suggestions).text();
-
-      assert.include(northStationSuggestion, "Multiple Lines");
-    });
-
-    const commuterRailTripInfoPageHtml = `
-      <div class="subscription-step enter-trip-info">
-        <form class="trip-info-form commuter-rail">
-          <div class="form-group select-station">
-            <label for="origin" class="station-input-label form-label">Origin</label>
-            <select class="subscription-select-origin no-js" id="subscription_origin" name="subscription[origin]">
-              <option value="">Select a station</option>
-              <optgroup label="Newburyport/Rockport Line">
-                <option value="Lynn">Lynn</option>
-                <option value="Chelsea">Chelsea</option>
-                <option value="place-north">North Station</option>
-              </optgroup>
-              <optgroup label="Haverhill Line">
-                <option value="Wyoming Hill">Wyoming Hill</option
-                <option value="place-mlmnl">Malden Center</option>
-                <option value="place-north">North Station</option>
-              </optgroup>
-            </select>
-          </div>
-          <div class="form-group select-station">
-            <label for="destination" class="station-input-label form-label">Destination</label>
-            <select class="subscription-select-destination no-js" id="subscription_destination" name="subscription[destination]">
-              <option value="">Select a station</option>
-              <optgroup label="Newburyport/Rockport Line">
-                <option value="Lynn">Lynn</option>
-                <option value="Chelsea">Chelsea</option>
-                <option value="place-north">North Station</option>
-              </optgroup>
-              <optgroup label="Haverhill Line">
-                <option value="Wyoming Hill">Wyoming Hill</option
-                <option value="place-mlmnl">Malden Center</option>
-                <option value="place-north">North Station</option>
-              </optgroup>
-            </select>
-          </div>
-        </form>
-      </div>
-      `
-  });
-
   describe("ferry", () => {
     beforeEach(function() {
       $("body").append(ferryTripInfoPageHtml);
@@ -590,66 +509,4 @@ describe("selectStation", function() {
       </div>
       `
   });
-
-  describe("commuter rail prefilled", () => {
-    beforeEach(function() {
-      $("body").append(commuterRailTripInfoPageHtml);
-      selectStation($);
-    });
-
-    it("has preselected stations if origin and destination are passed to page when loading", () => {
-      const $originInput = $("input.subscription-select-origin");
-      const $destinationInput = $("input.subscription-select-destination");
-
-      assert.equal($originInput.val(), "Lynn");
-      assert.equal("true", $originInput.attr("data-valid"));
-      assert.equal($destinationInput.val(), "North Station");
-      assert.equal("true", $destinationInput.attr("data-valid"));
-    });
-
-    const commuterRailTripInfoPageHtml = `
-      <div class="subscription-step enter-trip-info">
-        <form class="trip-info-form commuter-rail">
-          <div class="form-group select-station">
-            <label for="origin" class="station-input-label form-label">Origin</label>
-            <select class="subscription-select-origin no-js" id="subscription_origin" name="subscription[origin]">
-              <option value="">Select a station</option>
-              <optgroup label="Newburyport/Rockport Line">
-                <option selected="selected" value="Lynn">Lynn</option>
-                <option value="Chelsea">Chelsea</option>
-                <option value="place-north">North Station</option>
-              </optgroup>
-              <optgroup label="Haverhill Line">
-                <option value="Wyoming Hill">Wyoming Hill</option
-                <option value="place-mlmnl">Malden Center</option>
-                <option value="place-north">North Station</option>
-              </optgroup>
-            </select>
-          </div>
-          <div class="form-group select-station">
-            <label for="destination" class="station-input-label form-label">Destination</label>
-            <select class="subscription-select-destination no-js" id="subscription_destination" name="subscription[destination]">
-              <option value="">Select a station</option>
-              <optgroup label="Newburyport/Rockport Line">
-                <option value="Lynn">Lynn</option>
-                <option value="Chelsea">Chelsea</option>
-                <option selected="selected" value="place-north">North Station</option>
-              </optgroup>
-              <optgroup label="Haverhill Line">
-                <option value="Wyoming Hill">Wyoming Hill</option
-                <option value="place-mlmnl">Malden Center</option>
-                <option value="place-north">North Station</option>
-              </optgroup>
-            </select>
-          </div>
-        </form>
-      </div>
-      `
-  });
-
-  function simulateKeyUp(target) {
-    const event = document.createEvent("HTMLEvents");
-    event.initEvent("keyup", true, true);
-    target.dispatchEvent(event);
-  }
 });
