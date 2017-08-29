@@ -36,7 +36,7 @@ defmodule ConciergeSite.SessionControllerTest do
     }}
 
     conn = post(conn, "/login", params)
-    assert html_response(conn, 302) =~ "/admin/subscribers"
+    assert html_response(conn, 302) =~ "/my-subscriptions"
   end
 
   test "POST /login when the user's account is disabled", %{conn: conn} do

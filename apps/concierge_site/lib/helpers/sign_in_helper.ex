@@ -11,9 +11,12 @@ defmodule ConciergeSite.SignInHelper do
 
   @doc """
   Signs in a user with Guardian and redirects based on the user's role and the
-  route specified in options. Valid redirect options are :my_account and
-  :default. By default admin users are redirected to the list of subscribers,
-  and regular users are redirected to my subscriptions.
+  route specified in options. Valid redirect options are :my_account, :default,
+  and :admin_default. When logging in via /admin/login/new
+  users are redirected to the list of subscribers,
+  and when logging in via /login/new users are redirected to my subscriptions.
+  When resetting password, admin users are redirected to admin my-account page
+  and normal users are redirected to the base my-account page.
   """
   @spec sign_in(Plug.Conn.t, User.t, [redirect: atom]) :: Plug.Conn.t
   def sign_in(conn, user, opts) do
@@ -42,12 +45,12 @@ defmodule ConciergeSite.SignInHelper do
       perms: %{default: Guardian.Permissions.max})
   end
 
-  defp redirect_path(user, :default) do
-    if User.is_admin?(user) do
-      admin_subscriber_path(@endpoint, :index)
-    else
-      subscription_path(@endpoint, :index)
-    end
+  defp redirect_path(_user, :admin_default) do
+    admin_subscriber_path(@endpoint, :index)
+  end
+
+  defp redirect_path(_user, :default) do
+    subscription_path(@endpoint, :index)
   end
 
   defp redirect_path(user, :my_account) do
