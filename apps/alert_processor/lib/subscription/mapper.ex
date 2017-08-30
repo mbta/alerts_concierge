@@ -217,7 +217,7 @@ defmodule AlertProcessor.Subscription.Mapper do
   def build_update_subscription_transaction(subscription, %{"trips" => trips} = params, originator) do
     origin =
       if subscription.user_id != User.wrap_id(originator).id do
-        "admin:create-subscription"
+        "admin:update-subscription"
       end
 
     subscription_changeset = Subscription.create_changeset(subscription, params)

@@ -6,17 +6,17 @@ defmodule AlertProcessor.Model.Notification do
   alias AlertProcessor.Model.{Alert, User}
 
   @type t :: %__MODULE__{
-    alert_id: String.t,
-    user: User.t,
-    send_after: DateTime.t,
-    service_effect: String.t,
+    alert_id: String.t | nil,
+    user_id: String.t | nil,
+    send_after: DateTime.t | nil,
+    service_effect: String.t | nil,
     description: String.t | nil,
     header: String.t,
     phone_number: String.t | nil,
-    email: String.t,
+    email: String.t | nil,
     status: atom,
-    last_push_notification: DateTime.t,
-    alert: Alert.t
+    last_push_notification: DateTime.t | nil,
+    alert: Alert.t | nil
  }
 
   use Ecto.Schema

@@ -4,11 +4,11 @@ defmodule ConciergeSite.AuthorizationHelper do
   """
 
   import Plug.Conn, only: [put_status: 2]
-  import Phoenix.Controller, only: [render: 3]
+  import Phoenix.Controller, only: [render: 4]
 
   def render_unauthorized(conn) do
     conn
     |> put_status(403)
-    |> render(ConciergeSite.ErrorView, "403.html")
+    |> render(ConciergeSite.ErrorView, "403.html", %{})
   end
 end

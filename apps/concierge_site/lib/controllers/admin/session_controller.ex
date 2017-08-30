@@ -22,7 +22,7 @@ defmodule ConciergeSite.Admin.SessionController do
       :unauthorized ->
         conn
         |> put_status(403)
-        |> render(ConciergeSite.ErrorView, "403.html")
+        |> render(ConciergeSite.ErrorView, "403.html", %{})
       {:error, changeset} ->
         conn
         |> put_flash(:error, "Sorry, your login information was incorrect. Please try again.")
