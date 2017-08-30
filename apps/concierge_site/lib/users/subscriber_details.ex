@@ -102,6 +102,12 @@ defmodule ConciergeSite.SubscriberDetails do
         originator = originating_user_email_map[id] || "Unknown"
       {[{date, time, [originator, " deleted ", rest]}], Map.delete(acc, item_id)}
   end
+  defp changelog_item(%{item_type: "User", origin: "admin:view-subscriber"}, acc, _) do
+    {[], acc}
+  end
+  defp changelog_item(%{item_type: "User", origin: "admin:impersonate-subscriber"}, acc, _) do
+    {[], acc}
+  end
   defp changelog_item(%{
     inserted_at: inserted_at,
     event: "insert",
