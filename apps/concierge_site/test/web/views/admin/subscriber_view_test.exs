@@ -48,7 +48,7 @@ defmodule ConciergeSite.Admin.SubscriberViewTest do
     test "returns timeframe text" do
       user = build(:user, vacation_start: DateTime.from_naive!(~N[2017-08-01 12:00:00], "Etc/UTC"), vacation_end: DateTime.from_naive!(~N[2100-08-01 12:00:00], "Etc/UTC"))
       timeframe_text = SubscriberView.vacation_period(user)
-      assert "Tue Aug  1 12:00:00 2017 until Sun Aug  1 12:00:00 2100" = IO.iodata_to_binary(timeframe_text)
+      assert "08-01-2017 until 08-01-2100" = IO.iodata_to_binary(timeframe_text)
     end
   end
 end

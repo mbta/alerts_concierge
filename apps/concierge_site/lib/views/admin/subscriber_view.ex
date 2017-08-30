@@ -28,9 +28,9 @@ defmodule ConciergeSite.Admin.SubscriberView do
       "N/A"
     else
       [
-        Strftime.strftime!(vacation_start, "%c"),
+        Strftime.strftime!(vacation_start, "%m-%d-%Y"),
         " until ",
-        Strftime.strftime!(vacation_end, "%c")
+        Strftime.strftime!(vacation_end, "%m-%d-%Y")
       ]
     end
   end
