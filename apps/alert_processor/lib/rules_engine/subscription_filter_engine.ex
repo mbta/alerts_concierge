@@ -26,7 +26,9 @@ defmodule AlertProcessor.SubscriptionFilterEngine do
     notifications = Repo.all(notification_query)
 
     for alert <- alerts do
-      __MODULE__.process_alert(alert, subscriptions, notifications)
+      SystemMetrics.Tracer.trace(fn() ->
+        process_alert(alert, subscriptions, notifications)
+      end, "single_alert_processing")
     end
   end
   @doc """

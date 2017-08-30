@@ -10,7 +10,13 @@ defmodule AlertProcessor.SentAlertFilter do
   but with an older last_push_notification
   """
   @spec filter([Subscription.t], Keyword.t) :: [Subscription.t]
-  def filter(subscriptions, alert: %Alert{id: alert_id, last_push_notification: lpn}, notifications: notifications) do
+  def filter(subscriptions, alert: alert, notifications: notifications) do
+    SystemMetrics.Tracer.trace(fn() ->
+      do_filter(subscriptions, alert, notifications)
+    end, "sent_alert_filter")
+  end
+
+  defp do_filter(subscriptions, %Alert{id: alert_id, last_push_notification: lpn}, notifications) do
     notifications_to_not_resend = Enum.filter(notifications, fn(notification) ->
       alert_id == notification.alert_id &&
       (notification.status == :sent && same?(lpn, notification.last_push_notification))

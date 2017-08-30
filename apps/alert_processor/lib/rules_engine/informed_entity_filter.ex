@@ -15,7 +15,13 @@ defmodule AlertProcessor.InformedEntityFilter do
   shortcircuited if the user id list provided is missing or empty.
   """
   @spec filter([Subscription.t], Keyword.t) :: [Subscription.t]
-  def filter(subscriptions, [alert: %Alert{informed_entities: informed_entities}]) do
+  def filter(subscriptions, [alert: alert]) do
+    SystemMetrics.Tracer.trace(fn() ->
+      do_filter(subscriptions, alert)
+    end, "informed_entity_filter")
+  end
+
+  defp do_filter(subscriptions, %Alert{informed_entities: informed_entities}) do
     normal_subscriptions = Enum.filter(subscriptions, fn(sub) ->
       alert_ies = Enum.map(
         informed_entities,

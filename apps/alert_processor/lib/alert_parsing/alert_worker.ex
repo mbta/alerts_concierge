@@ -25,7 +25,9 @@ defmodule AlertProcessor.AlertWorker do
   Process alerts and then reschedule next time to process.
   """
   def handle_info(:work, _) do
-    @alert_parser.process_alerts()
+    SystemMetrics.Tracer.trace(fn() ->
+      @alert_parser.process_alerts()
+    end, "alert_processing")
     schedule_work()
     {:noreply, nil}
   end

@@ -77,6 +77,7 @@ defmodule AlertProcessor.Mixfile do
       {:postgrex, ">= 0.0.0"},
       {:scrivener_ecto, "~> 1.0"},
       {:sweet_xml, "~> 0.6"},
+      {:system_metrics, in_umbrella: true},
       {:edeliver, "1.4.3"}
     ]
   end

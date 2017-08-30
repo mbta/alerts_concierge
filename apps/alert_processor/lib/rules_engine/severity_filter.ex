@@ -15,6 +15,12 @@ defmodule AlertProcessor.SeverityFilter do
   """
   @spec filter([Subscription.t], Keyword.t) :: [Subscription.t]
   def filter(subscriptions, [alert: alert]) do
+    SystemMetrics.Tracer.trace(fn() ->
+      do_filter(subscriptions, alert)
+    end, "severity_filter")
+  end
+
+  defp do_filter(subscriptions, alert) do
     alert_severity_value = Alert.severity_value(alert)
 
     Enum.filter(subscriptions, fn(sub) ->

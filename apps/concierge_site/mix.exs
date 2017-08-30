@@ -25,7 +25,6 @@ defmodule ConciergeSite.Mixfile do
   def application do
     [mod: {ConciergeSite, []},
      extra_applications: [
-       :system_metrics,
        :elixir_make,
        :ex2ms,
        :public_key,
