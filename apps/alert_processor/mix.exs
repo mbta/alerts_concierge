@@ -24,7 +24,6 @@ defmodule AlertProcessor.Mixfile do
   def application do
     [mod: {AlertProcessor, []},
       extra_applications: [
-        :system_metrics,
         :elixir_make,
         :ex2ms,
         :plug,

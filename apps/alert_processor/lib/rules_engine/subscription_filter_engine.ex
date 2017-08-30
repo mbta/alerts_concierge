@@ -27,7 +27,7 @@ defmodule AlertProcessor.SubscriptionFilterEngine do
 
     for alert <- alerts do
       SystemMetrics.Tracer.trace(fn() ->
-        __MODULE__.process_alert(alert, subscriptions, notifications)
+        process_alert(alert, subscriptions, notifications)
       end, "single_alert_processing")
     end
   end
