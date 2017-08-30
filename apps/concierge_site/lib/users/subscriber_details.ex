@@ -1,4 +1,8 @@
 defmodule ConciergeSite.SubscriberDetails do
+  @moduledoc """
+  Module for displaying subscriber informaiton in admin
+  subscriber details view.
+  """
   alias AlertProcessor.{Helpers.DateTimeHelper, Model.Notification, Model.Subscription, Model.User, Repo}
   alias ConciergeSite.TimeHelper
   import Ecto.Query
@@ -10,7 +14,8 @@ defmodule ConciergeSite.SubscriberDetails do
       |> Enum.flat_map(fn(%{originator_id: originator_id}) ->
            (originator_id && [originator_id]) || []
          end)
-    originating_user_email_map = Repo.all(from u in User, where: u.id in ^originating_user_ids, select: {u.id, u.email}) |> Map.new
+    originating_user_email_pairs = Repo.all(from u in User, where: u.id in ^originating_user_ids, select: [:id, :email])
+    originating_user_email_map = Map.new(originating_user_email_pairs, & {&1.id, &1.email})
 
     {changelog, _} =
       user_id

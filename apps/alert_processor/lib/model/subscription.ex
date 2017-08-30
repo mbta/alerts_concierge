@@ -216,8 +216,9 @@ defmodule AlertProcessor.Model.Subscription do
   end
 
   def user_amenity(user) do
-    amenity_query(user.id)
-    |> Repo.one
+    user.id
+    |> amenity_query()
+    |> Repo.one()
   end
 
   @doc """

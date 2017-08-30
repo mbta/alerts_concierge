@@ -23,8 +23,9 @@ defmodule ConciergeSite.PasswordResetController do
     )
     case Repo.insert(changeset) do
       {:ok, password_reset} ->
-        Email.password_reset_email(user, password_reset)
-        |> Mailer.deliver_later
+        user
+        |> Email.password_reset_email(password_reset)
+        |> Mailer.deliver_later()
 
         redirect(conn, to: password_reset_path(conn, :sent, %{email: email}))
       {:error, changeset} ->
@@ -86,15 +87,16 @@ defmodule ConciergeSite.PasswordResetController do
       where: p.id == ^id and
         is_nil(p.redeemed_at) and
         p.expired_at > ^DateTime.now_utc() and
-        u.role != "deactivated_admin"
-      )
-    |> Repo.preload([:user])
+        u.role != "deactivated_admin",
+      preload: [:user]
+    )
   end
 
   defp handle_unknown_email(conn, changeset, email) do
     if String.match?(email, ~r/@/) do
-      Email.unknown_password_reset_email(email)
-      |> Mailer.deliver_later
+      email
+      |> Email.unknown_password_reset_email()
+      |> Mailer.deliver_later()
 
       redirect(conn, to: password_reset_path(conn, :sent, %{email: email}))
     else
@@ -105,7 +107,8 @@ defmodule ConciergeSite.PasswordResetController do
   end
 
   defp password_reset_errors(changeset) do
-    Enum.map(changeset.errors, fn ({_, {error, _}}) -> error end)
+    changeset.errors
+    |> Enum.map(fn ({_, {error, _}}) -> error end)
     |> Enum.join(",")
   end
 end

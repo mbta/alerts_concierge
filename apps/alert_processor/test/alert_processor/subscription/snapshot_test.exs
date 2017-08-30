@@ -64,7 +64,7 @@ defmodule AlertProcessor.Subscription.SnapshotTest do
       [snapshot] = Snapshot.get_snapshots_by_datetime(user, future_date)
 
       [%{id: sub_id, informed_entities: [%{id: ie1_id}, %{id: ie2_id}, %{id: ie3_id}]}] =
-        Repo.all(Subscription) |> Repo.preload(:informed_entities)
+        Subscription |> Repo.all() |> Repo.preload(:informed_entities)
 
       assert %{
         subscription: %{"id" => ^sub_id},
@@ -116,7 +116,7 @@ defmodule AlertProcessor.Subscription.SnapshotTest do
       end)
 
       # Set update versions to future date
-      subs = Repo.all(Subscription) |> Repo.preload(:informed_entities)
+      subs = Subscription |> Repo.all() |> Repo.preload(:informed_entities)
 
       Enum.each(subs, fn(sub) ->
         sub_version = PaperTrail.get_version(sub)
