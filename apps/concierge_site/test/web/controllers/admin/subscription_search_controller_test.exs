@@ -1,7 +1,7 @@
 defmodule ConciergeSite.Admin.SubscriptionSearchControllerTest do
   use ConciergeSite.ConnCase
 
-  alias AlertProcessor.{Model.Subscription, Repo}
+  alias AlertProcessor.{Model.Subscription, Model.SavedAlert, Repo}
 
   setup do
     subscriber = insert(:user, email: "this@email.com", phone_number: "5551231234")
@@ -39,6 +39,14 @@ defmodule ConciergeSite.Admin.SubscriptionSearchControllerTest do
         updated_at: future_date
       }, subscriber.id)
 
+      alert_attrs = %{
+        alert_id: "70d2b710-5a86-40e3-a5b4-ebd14e7866fc",
+        last_modified: DateTime.utc_now(),
+        data: %{}
+      }
+      alert_changeset = SavedAlert.create_changeset(%SavedAlert{}, alert_attrs)
+      PaperTrail.insert!(alert_changeset)
+
       # update papertrail version dates
       [insert_version, update_version] = PaperTrail.get_versions(inserted_sub)
       insert_changeset = Ecto.Changeset.cast(insert_version, %{inserted_at: date}, [:inserted_at])
@@ -51,7 +59,7 @@ defmodule ConciergeSite.Admin.SubscriptionSearchControllerTest do
         "search" => %{
           "alert_id" => "70d2b710-5a86-40e3-a5b4-ebd14e7866fc",
           "alert_date" => %{
-            "year" => "2017",
+            "year" => "2018",
             "month" => "07",
             "day" => "11",
             "hour" => "11",
@@ -62,10 +70,6 @@ defmodule ConciergeSite.Admin.SubscriptionSearchControllerTest do
 
       conn = post(conn, admin_subscription_search_path(conn, :create, subscriber.id), params)
       assert html_response(conn, 200)
-
-      # TODO: Need to update this once we know what is actually rendered for each sub
-      # response = html_response(conn, 200)
-      # assert response =~ inserted_sub.id
     end
   end
 

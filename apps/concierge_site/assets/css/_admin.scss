@@ -333,3 +333,34 @@
   text-align: right;
   flex-basis: 20%;
 }
+
+.fa-check-circle {
+  color: $brand-success;
+}
+
+.diagnostic-subscription-info {
+  width: 100%;
+  border-bottom: 1px solid $pale-grey;
+}
+
+.diagnostic-result {
+  padding: 0 0.25rem;
+}
+
+.diagnostic-result-entity {
+  margin-top: 0.25rem;
+  padding: 0.125rem 0.5rem;
+}
+
+.diagnostic-title {
+  display: block;
+}
+
+.diagnostic-alert {
+  padding: none;
+  margin: 0;
+}
+
+.diagnostic-alert.id {
+  font-weight: bold;
+}

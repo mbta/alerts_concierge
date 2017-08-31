@@ -158,6 +158,7 @@ defmodule AlertProcessor.Model.Alert do
       end)
     end
   end
+  defp timeframe_map(%{start: _}), do: true
 
   @spec route_string(integer) :: String.t
   defp route_string(route_type) do

@@ -150,13 +150,17 @@ defmodule AlertProcessor.AlertParser do
      %{stop: stop}
   end
 
-  defp parse_severity(7), do: :severe
-  defp parse_severity(5), do: :moderate
-  defp parse_severity(3), do: :minor
-  defp parse_severity(_), do: :minor
+  def parse_severity(severity), do: do_parse_severity(severity)
 
-  defp parse_translation(nil), do: nil
-  defp parse_translation(translations) do
+  defp do_parse_severity(7), do: :severe
+  defp do_parse_severity(5), do: :moderate
+  defp do_parse_severity(3), do: :minor
+  defp do_parse_severity(_), do: :minor
+
+  def parse_translation(translations), do: do_parse_translation(translations)
+
+  defp do_parse_translation(nil), do: nil
+  defp do_parse_translation(translations) do
     case Enum.find(translations, &(&1["translation"]["language"] == "en")) do
       %{"translation" => %{"language" => "en", "text" => text}} -> text
       _ -> nil
