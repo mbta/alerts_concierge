@@ -26,15 +26,7 @@ defmodule SystemMetrics.Mixfile do
        :lager,
        :logger,
        :elixometer,
-       :exometer_datadog,
-       :amqp,
-       :amqp_client,
-       :edown,
-       :exometer,
-       :folsom,
-       :parse_trans,
-       :exometer_collectd,
-       :jiffy
+       :exometer_datadog
      ]
     ]
   end
