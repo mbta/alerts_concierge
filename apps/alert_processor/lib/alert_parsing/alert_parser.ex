@@ -134,10 +134,9 @@ defmodule AlertProcessor.AlertParser do
        _ -> %{}
      end
   end
-  defp parse_trip(trip, _ie) do
-    case trip do
-      %{"trip_id" => trip} -> %{trip: trip}
-      %{"trip_id" => trip, "direction_id" => direction_id} -> %{trip: trip, direction_id: direction_id}
+  defp parse_trip(%{"trip_id" => trip_id}, _ie) do
+    case ServiceInfoCache.get_trip_name(trip_id) do
+      {:ok, trip_name} -> %{trip: trip_name}
       _ -> %{}
     end
   end

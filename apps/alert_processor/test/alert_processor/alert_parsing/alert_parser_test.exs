@@ -71,4 +71,20 @@ defmodule AlertProcessor.AlertParserTest do
       assert notification.description == "If exiting, exit the train at Tufts Medical Center and switch to an Oak Grove-bound train. Exit at Chinatown using Chinatown Elevator 876. If boarding, take the Silver Line to Tufts Medical Center. Alternatively, if you are able, follow Washington Street for one-quarter of a mile to Downtown Crossing Elevator 892 (corner of Winter and Washington Streets)."
     end
   end
+
+  test "correctly parses and matches trips" do
+    user = insert(:user)
+
+    subscription_factory()
+    |> Map.put(:informed_entities, [%InformedEntity{trip: "775"}])
+    |> Map.merge(%{type: :commuter_rail, user: user, relevant_days: [:weekday], start_time: ~T[00:00:00], end_time: ~T[23:59:59]})
+    |> insert()
+
+    use_cassette "trip_alerts", custom: true, clear_mock: true, match_requests_on: [:query] do
+      result = AlertParser.process_alerts()
+      [notification] = Enum.reduce(result, [], fn({:ok, x}, acc) -> acc ++ x end)
+      assert notification.header == "Fairmount Line Train 775 (5:00 pm from South Station) cancelled today due to congestion"
+      assert notification.email == user.email
+    end
+  end
 end
