@@ -1,6 +1,6 @@
 /* Client-specific Styles */
 #outlook a { padding:0; } /* Force Outlook to provide a "view in browser" button. */
-body { width:800px !important; }
+body { max-width: 800px !important; }
 .ReadMsgBody { width:100%; }
 .ExternalClass { width:100%; } /* Force Hotmail to display emails at full width */
 body { -webkit-text-size-adjust:none; } /* Prevent Webkit platforms from changing default text sizes. */
@@ -8,7 +8,7 @@ body { -webkit-text-size-adjust:none; } /* Prevent Webkit platforms from changin
 
 /* Reset Styles */
 body {
-  margin: 0;
+  margin: 0 auto;
   padding: 0;
 }
 
@@ -46,7 +46,6 @@ a:hover { text-decoration: none; color: #67a0d1; }
 
 body {
   font-family: Arial, Helvetica Neue, Helvetica, sans-serif;
-  width: 600px;
   padding: 0px 10px;
   overflow-y: scroll;
 }
