@@ -90,6 +90,30 @@ defmodule ConciergeSite.SubscriberDetailsTest do
       changelog = user.id |> SubscriberDetails.changelog() |> changelog_to_binary()
       assert changelog =~ "#{user.email} deleted commuter_rail subscription #{subscription.id} between #{subscription.origin} and #{subscription.destination}"
     end
+
+    test "does not show admin:view-subscriber" do
+      user = insert(:user)
+      admin_user = insert(:user, role: "application_administration")
+      User.log_admin_action(:view_subscriber, admin_user, user)
+      changelog = user.id |> SubscriberDetails.changelog()
+      assert changelog == []
+    end
+
+    test "does not show admin:message-subscriber" do
+      user = insert(:user)
+      admin_user = insert(:user, role: "application_administration")
+      User.log_admin_action(:view_subscriber, admin_user, user)
+      changelog = user.id |> SubscriberDetails.changelog()
+      assert changelog == []
+    end
+
+    test "does not show admin:impersonate-subscriber" do
+      user = insert(:user)
+      admin_user = insert(:user, role: "application_administration")
+      User.log_admin_action(:view_subscriber, admin_user, user)
+      changelog = user.id |> SubscriberDetails.changelog()
+      assert changelog == []
+    end
   end
 
   describe "notification_timeline" do

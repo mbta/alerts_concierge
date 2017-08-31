@@ -105,6 +105,9 @@ defmodule ConciergeSite.SubscriberDetails do
   defp changelog_item(%{item_type: "User", origin: "admin:view-subscriber"}, acc, _) do
     {[], acc}
   end
+  defp changelog_item(%{item_type: "User", origin: "admin:message-subscriber"}, acc, _) do
+    {[], acc}
+  end
   defp changelog_item(%{item_type: "User", origin: "admin:impersonate-subscriber"}, acc, _) do
     {[], acc}
   end
