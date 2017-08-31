@@ -30,6 +30,12 @@ defmodule AlertProcessor.InformedEntityFilterTest do
     facility: :escalator
   }
 
+  @ie6 %{
+    trip: "775",
+    route_type: 2,
+    route: "CR-Fairmount"
+  }
+
   @alert1 %Alert{
     id: "1",
     header: "test1",
@@ -71,6 +77,14 @@ defmodule AlertProcessor.InformedEntityFilterTest do
     ]
   }
 
+  @alert6 %Alert{
+    id: "6",
+    header: "test6",
+    informed_entities: [
+      @ie6
+    ]
+  }
+
   setup do
     user1 = insert(:user)
     user2 = insert(:user)
@@ -81,19 +95,21 @@ defmodule AlertProcessor.InformedEntityFilterTest do
     sub3 = insert(:subscription, user: user3)
     sub4 = insert(:subscription, user: user1)
     sub5 = insert(:subscription, user: user4)
+    sub6 = insert(:subscription, user: user1)
     InformedEntity |> struct(@ie1) |> Map.merge(%{subscription_id: sub1.id}) |> insert
     InformedEntity |> struct(@ie1) |> Map.merge(%{subscription_id: sub2.id}) |> insert
     InformedEntity |> struct(@ie4) |> Map.merge(%{subscription_id: sub3.id}) |> insert
     InformedEntity |> struct(@ie2) |> Map.merge(%{subscription_id: sub4.id}) |> insert
     InformedEntity |> struct(@ie5) |> Map.merge(%{subscription_id: sub5.id}) |> insert
+    InformedEntity |> struct(%{trip: "775", subscription_id: sub6.id}) |> insert
 
-    [sub1, sub2, sub3, sub4, sub5] = Subscription
+    [sub1, sub2, sub3, sub4, sub5, sub6] = Subscription
       |> Repo.all()
       |> Repo.preload(:informed_entities)
       |> Repo.preload(:user)
 
-    {:ok, sub1: sub1, sub2: sub2, sub3: sub3, sub4: sub4, sub5: sub5,
-     user1: user1, user2: user2, all_subscriptions: [sub1, sub2, sub3, sub4, sub5]}
+    {:ok, sub1: sub1, sub2: sub2, sub3: sub3, sub4: sub4, sub5: sub5, sub6: sub6,
+     user1: user1, user2: user2, all_subscriptions: [sub1, sub2, sub3, sub4, sub5, sub6]}
   end
 
   test "filter returns :ok empty list if subscription list passed is empty" do
@@ -142,5 +158,9 @@ defmodule AlertProcessor.InformedEntityFilterTest do
       |> Repo.preload(:user)
       |> Repo.preload(:informed_entities)
     assert [] == InformedEntityFilter.filter([admin_sub, sub1, sub2], alert: @alert4)
+  end
+
+  test "matches trips", %{sub6: sub6, all_subscriptions: all_subscriptions} do
+    assert [sub6] == InformedEntityFilter.filter(all_subscriptions, alert: @alert6)
   end
 end

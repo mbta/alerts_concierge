@@ -195,4 +195,11 @@ defmodule AlertProcessor.ServiceInfoCacheTest do
 
     end
   end
+
+  test "get_trip_name" do
+    use_cassette "service_info", custom: true, clear_mock: true, match_requests_on: [:query] do
+      {:ok, pid} = ServiceInfoCache.start_link([name: :service_info_cache_test_get_trip_name])
+      assert {:ok, "1803"} = ServiceInfoCache.get_trip_name(pid, "CR-Saturday-Spring-17-1803")
+    end
+  end
 end

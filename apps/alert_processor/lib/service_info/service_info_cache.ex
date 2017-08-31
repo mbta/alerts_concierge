@@ -9,7 +9,7 @@ defmodule AlertProcessor.ServiceInfoCache do
   alias AlertProcessor.{ApiClient, Model.Route}
 
   @service_types [:bus, :commuter_rail, :ferry, :subway]
-  @info_types [:parent_stop_info, :subway_full_routes, :ferry_general_ids]
+  @info_types [:parent_stop_info, :subway_full_routes, :ferry_general_ids, :commuter_rail_trip_ids]
 
   @doc false
   def start_link(opts \\ [name: __MODULE__]) do
@@ -69,6 +69,10 @@ defmodule AlertProcessor.ServiceInfoCache do
 
   def get_generalized_trip_id(name \\ __MODULE__, trip_id) do
     GenServer.call(name, {:get_generalized_trip_id, trip_id})
+  end
+
+  def get_trip_name(name \\ __MODULE__, trip_id) do
+    GenServer.call(name, {:get_trip_name, trip_id})
   end
 
   @doc """
@@ -148,6 +152,11 @@ defmodule AlertProcessor.ServiceInfoCache do
     {:reply, {:ok, generalized_trip_id}, state}
   end
 
+  def handle_call({:get_trip_name, trip_id}, _from, %{commuter_rail_trip_ids: commuter_rail_trip_ids} = state) do
+    trip_name = Map.get(commuter_rail_trip_ids, trip_id)
+    {:reply, {:ok, trip_name}, state}
+  end
+
   defp parse_headsign(relevant_routes, direction_id) do
     case relevant_routes do
       [%Route{route_id: "Green-" <> _} | _t] ->
@@ -222,6 +231,16 @@ defmodule AlertProcessor.ServiceInfoCache do
       %{"relationships" => %{"stop" => %{"data" => %{"id" => origin_id}}}, "attributes" => %{"departure_time" => departure_timestamp}} = departure_schedule
       departure_time = departure_timestamp |> NaiveDateTime.from_iso8601!() |> NaiveDateTime.to_time()
       {trip_id, map_generalized_trip_id(trip_id, trip_info_map, %{origin_id: origin_id, departure_time: departure_time})}
+    end
+  end
+  defp fetch_service_info(:commuter_rail_trip_ids) do
+    {:ok, routes} = ApiClient.routes([2])
+    route_ids = Enum.map(routes, & &1["id"])
+    {:ok, trips, _} = ApiClient.trips_with_service_info(route_ids)
+
+    for trip <- trips, into: %{} do
+      %{"attributes" => %{"name" => name}, "id" => trip_id} = trip
+      {trip_id, name}
     end
   end
 

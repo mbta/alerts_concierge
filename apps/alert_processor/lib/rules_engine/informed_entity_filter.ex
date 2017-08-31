@@ -34,7 +34,7 @@ defmodule AlertProcessor.InformedEntityFilter do
       |> Enum.map(
         fn(sub_ie) ->
           ie = Map.take(sub_ie, InformedEntity.queryable_fields)
-          Enum.any?(alert_ies, &(&1 == ie))
+          Enum.any?(alert_ies, & entity_match?(&1, ie))
         end)
       |> Enum.any?
     end)
@@ -44,6 +44,13 @@ defmodule AlertProcessor.InformedEntityFilter do
     normal_subscriptions
     |> Kernel.++(admin_subscriptions)
     |> Enum.uniq()
+  end
+
+  defp entity_match?(%{trip: trip_id}, %{trip: subscription_trip_id}) when not is_nil(trip_id) do
+    trip_id == subscription_trip_id
+  end
+  defp entity_match?(alert_ie, subscription_ie) do
+    alert_ie == subscription_ie
   end
 
   defp admin_subscriptions(subscriptions, informed_entities) do
