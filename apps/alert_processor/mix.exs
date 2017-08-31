@@ -3,7 +3,7 @@ defmodule AlertProcessor.Mixfile do
 
   def project do
     [app: :alert_processor,
-     version: "0.0.34",
+     version: "0.0.36",
      build_path: "../../_build",
      config_path: "../../config/config.exs",
      deps_path: "../../deps",
@@ -24,6 +24,7 @@ defmodule AlertProcessor.Mixfile do
   def application do
     [mod: {AlertProcessor, []},
       extra_applications: [
+        :system_metrics,
         :elixir_make,
         :ex2ms,
         :plug,
@@ -62,7 +63,7 @@ defmodule AlertProcessor.Mixfile do
       {:comeonin, "~> 3.0"},
       {:cowboy, "~> 1.0"},
       {:dialyxir, "~> 0.5.0", only: [:dev]},
-      {:ecto, "~> 2.1"},
+      {:ecto, "~> 2.1.0"},
       {:excoveralls, "~> 0.5", only: [:dev, :test]},
       {:ex_aws, git: "https://github.com/bfauble/ex_aws", ref: "f64f2cb026171dc6def03102ccae31906797deb0"},
       {:ex_machina, "~> 2.0", only: :test},
