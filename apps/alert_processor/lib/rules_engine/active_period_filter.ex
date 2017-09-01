@@ -19,14 +19,11 @@ defmodule AlertProcessor.ActivePeriodFilter do
   end
 
   defp do_filter(subscriptions, alert) do
-    subscription_timeframe_maps = for x <- subscriptions, into: %{} do
-      {x.id, Subscription.timeframe_map(x)}
-    end
     active_period_timeframe_maps = Alert.timeframe_maps(alert)
 
     for sub <- subscriptions,
-      active_period_timeframe_map <- active_period_timeframe_maps,
-      TimeFrameComparison.match?(active_period_timeframe_map,  Map.get(subscription_timeframe_maps, sub.id)) do
+      sub_map = Subscription.timeframe_map(sub),
+      Enum.any?(active_period_timeframe_maps, &TimeFrameComparison.match?(&1, sub_map)) do
       sub
     end
   end

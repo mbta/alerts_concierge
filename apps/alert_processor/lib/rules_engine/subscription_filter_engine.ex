@@ -42,6 +42,7 @@ defmodule AlertProcessor.SubscriptionFilterEngine do
     |> InformedEntityFilter.filter(alert: alert)
     |> SeverityFilter.filter(alert: alert)
     |> ActivePeriodFilter.filter(alert: alert)
+    |> Enum.uniq_by(& &1.user_id)
     |> Scheduler.schedule_notifications(alert)
   end
 end

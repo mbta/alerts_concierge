@@ -53,7 +53,14 @@ defmodule AlertProcessor.ActivePeriodFilterTest do
       ]
     }
 
-    {:ok, alert1: alert1, alert2: alert2, alert3: alert3, alert4: alert4, alert5: alert5, alert6: alert6, alert7: alert7}
+    alert8 = %Alert{
+      active_period: [
+        %{start: datetime_from_native(~N[2017-04-26 09:00:00]), end: datetime_from_native(~N[2017-04-26 19:00:00])},
+        %{start: datetime_from_native(~N[2017-04-27 09:00:00]), end: datetime_from_native(~N[2017-04-27 19:00:00])}
+      ]
+    }
+
+    {:ok, alert1: alert1, alert2: alert2, alert3: alert3, alert4: alert4, alert5: alert5, alert6: alert6, alert7: alert7, alert8: alert8}
   end
 
   describe "active period with end date" do
@@ -100,6 +107,14 @@ defmodule AlertProcessor.ActivePeriodFilterTest do
 
       assert [sunday_subscription] ==
         ActivePeriodFilter.filter([subscription, sunday_subscription], alert: alert6)
+    end
+
+    test "matches mutliple active periods but only returns subscription once", %{alert8: alert8} do
+      user = insert(:user)
+      subscription = :subscription |> build(user: user) |> weekday_subscription |> insert
+
+      assert [subscription] ==
+        ActivePeriodFilter.filter([subscription], alert: alert8)
     end
   end
 
