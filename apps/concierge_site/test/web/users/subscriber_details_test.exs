@@ -114,6 +114,13 @@ defmodule ConciergeSite.SubscriberDetailsTest do
       changelog = user.id |> SubscriberDetails.changelog()
       assert changelog == []
     end
+
+    test "does not show updates to subscriber account with no changes" do
+      user = insert(:user)
+      User.update_account(user, %{}, user.id)
+      changelog = user.id |> SubscriberDetails.changelog()
+      assert changelog == []
+    end
   end
 
   describe "notification_timeline" do
