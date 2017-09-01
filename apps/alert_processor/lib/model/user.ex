@@ -417,6 +417,9 @@ defmodule AlertProcessor.Model.User do
   def is_app_admin?(%__MODULE__{role: "application_administration"}), do: true
   def is_app_admin?(%__MODULE__{}), do: false
 
+  def is_disabled?(%__MODULE__{encrypted_password: ""}), do: true
+  def is_disabled?(%__MODULE__{}), do: false
+
   @doc """
   return one user based on id
   """

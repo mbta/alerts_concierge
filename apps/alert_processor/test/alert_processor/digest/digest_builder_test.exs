@@ -96,4 +96,23 @@ defmodule AlertProcessor.DigestBuilderTest do
 
     assert digests == expected
   end
+
+  test "build_digest/1 does not build digests for disabled users" do
+    active_user = insert(:user)
+    disabled_user = insert(:user, encrypted_password: "")
+
+    sub1 = insert(:subscription, user: active_user)
+    sub2 = insert(:subscription, user: disabled_user)
+    InformedEntity
+    |> struct(@ie1)
+    |> Map.merge(%{subscription_id: sub1.id})
+    |> insert
+    InformedEntity
+    |> struct(@ie2)
+    |> Map.merge(%{subscription_id: sub2.id})
+    |> insert
+
+    digests = DigestBuilder.build_digests({[@alert1, @alert2], @ddg})
+    assert digests == [%Digest{user: active_user, alerts: [@alert1], digest_date_group: @ddg}]
+  end
 end

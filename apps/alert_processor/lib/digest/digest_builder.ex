@@ -3,7 +3,7 @@ defmodule AlertProcessor.DigestBuilder do
   Generates digests for all users/alerts in the system
   """
   alias AlertProcessor.{InformedEntityFilter, Model, Repo}
-  alias Model.{Alert, Digest, DigestDateGroup, Subscription}
+  alias Model.{Alert, Digest, DigestDateGroup, User, Subscription}
 
   @doc """
   1. Takes a list of alerts
@@ -21,15 +21,16 @@ defmodule AlertProcessor.DigestBuilder do
 
     alerts
     |> Enum.map(fn(alert) ->
-      {fetch_users(alert, subs), alert}
+      {fetch_active_users(alert, subs), alert}
     end)
     |> sort_by_user(digest_date_group)
   end
 
-  defp fetch_users(alert, subs) do
+  defp fetch_active_users(alert, subs) do
     subs
     |> InformedEntityFilter.filter(alert: alert)
     |> Enum.map(&(&1.user))
+    |> Enum.filter(&(!User.is_disabled?(&1)))
   end
 
   defp sort_by_user(data, digest_date_group) do
