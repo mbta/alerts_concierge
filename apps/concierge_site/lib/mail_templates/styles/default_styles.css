@@ -8,7 +8,7 @@ p {
 
 .footer {
   background-color: #092e4d;
-  height: 8rem;
+  padding-bottom: 1rem;
   width: 100%;
   overflow: hidden;
 }
@@ -22,7 +22,7 @@ p {
 }
 
 .footer-link {
-  font-size: 15px;
+  font-size: .75rem;
   line-height: 1.6;
   text-align: center;
   color: #67a0d1;
@@ -39,4 +39,8 @@ p {
   width: 5px;
   border-radius: 100%;
   background-color: #ffffff;
+}
+
+.footer-links {
+  margin-top: 1rem;
 }
