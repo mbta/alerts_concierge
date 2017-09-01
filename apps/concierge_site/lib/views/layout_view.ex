@@ -55,34 +55,43 @@ defmodule ConciergeSite.LayoutView do
   def breadcrumbs(%Plug.Conn{path_info: ["admin", path]} = conn) do
     [%{title: breadcrumb_title_parse(path), path: conn.request_path}]
   end
-  def breadcrumbs(%Plug.Conn{path_info: [path, endpoint, _, "preferences"]} = conn) do
-    [
-      %{title: "New Subscriptions", path: "/#{path}/new"},
-      %{title: "Trip Type", path: "/#{path}/#{endpoint}/new"},
-      %{title: "Trip Info", path: "/#{path}/#{endpoint}/new/info?trip_type=one_way"},
-      %{title: "Preferences", path: conn.request_path}
-    ]
-  end
-  def breadcrumbs(%Plug.Conn{path_info: [_path, _endpoint, _, "edit"]}) do
-    [%{title: "Edit Subscriptions", path: "/my-subscriptions"}]
-  end
-  def breadcrumbs(%Plug.Conn{path_info: [path, endpoint, _, _]}) do
-    [
-      %{title: "New Subscriptions", path: "/#{path}/new"},
-      %{title: "Trip Type", path: "/#{path}/#{endpoint}/new"},
-      %{title: "Trip Info", path: "/#{path}/#{endpoint}/new/info?trip_type=one_way"}
-    ]
+  def breadcrumbs(%Plug.Conn{path_info: [_path, _endpoint, _, "edit"]} = conn) do
+    [%{title: "Edit Subscriptions", path: subscription_path(conn, :index)}]
   end
   def breadcrumbs(%Plug.Conn{path_info: [_path, _endpoint, "confirm_delete"]} = conn) do
     [
-      %{title: "Edit Subscriptions", path: "/my-subscriptions"},
+      %{title: "Edit Subscriptions", path: subscription_path(conn, :index)},
       %{title: "Confirm Delete Subscription", path: conn.request_path}
     ]
   end
-  def breadcrumbs(%Plug.Conn{path_info: [path, _endpoint, "new"]} = conn) do
+  def breadcrumbs(%Plug.Conn{path_info: ["subscriptions", _endpoint, "new"]} = conn) do
     [
-      %{title: "New Subscriptions", path: "/#{path}/new"},
+      %{title: "New Subscriptions", path: subscription_path(conn, :new)},
       %{title: "Trip Type", path: conn.request_path}
+    ]
+  end
+  def breadcrumbs(%Plug.Conn{path_info: ["subscriptions", _endpoint, _, "info"]} = conn) do
+    [
+      %{title: "New Subscriptions", path: subscription_path(conn, :new)},
+      %{title: "Trip Info", path: conn.request_path}
+    ]
+  end
+  def breadcrumbs(%Plug.Conn{path_info: ["subscriptions", _endpoint, _, "train"]} = conn) do
+    [
+      %{title: "New Subscriptions", path: subscription_path(conn, :new)},
+      %{title: "Trains", path: conn.request_path}
+    ]
+  end
+  def breadcrumbs(%Plug.Conn{path_info: ["subscriptions", _endpoint, _, "ferry"]} = conn) do
+    [
+      %{title: "New Subscriptions", path: subscription_path(conn, :new)},
+      %{title: "Ferries", path: conn.request_path}
+    ]
+  end
+  def breadcrumbs(%Plug.Conn{path_info: ["subscriptions", _endpoint, _, "preferences"]} = conn) do
+    [
+      %{title: "New Subscriptions", path: subscription_path(conn, :new)},
+      %{title: "Preferences", path: conn.request_path}
     ]
   end
   def breadcrumbs(%Plug.Conn{path_info: [path, "vacation", sub_endpoint]} = conn) do
