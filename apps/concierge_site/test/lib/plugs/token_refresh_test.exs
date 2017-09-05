@@ -16,6 +16,16 @@ defmodule ConciergeSite.Plugs.TokenRefreshTest do
     refute get_session(refreshed_conn, "guardian_default") == get_session(conn, "guardian_default")
   end
 
+  test "it does not immediately expire the old token", %{conn: conn} do
+    user = insert(:user)
+    {:ok, token, _} = Token.issue(user)
+    conn = init_test_session(%{conn | params: %{"token" => token}}, %{})
+    conn = TokenLogin.call(conn, %{})
+    TokenRefresh.call(conn, %{})
+
+    assert {:ok, _claims} = Guardian.decode_and_verify(token)
+  end
+
   test "it does nothing if there is no session", %{conn: conn} do
     user = insert(:user)
     {:ok, token, _} = Token.issue(user)

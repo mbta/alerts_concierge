@@ -13,8 +13,8 @@ defmodule ConciergeSite.Plugs.TokenRefresh do
 
   def call(conn, _) do
     with token <- get_session(conn, "guardian_default"),
-         {:ok, claims} <- Guardian.decode_and_verify(token),
-         {:ok, new_token, new_claims} <- Guardian.refresh!(token, claims, %{ttl: {60, :minutes}}) do
+         {:ok, %{"typ" => typ} = claims} <- Guardian.decode_and_verify(token),
+         {:ok, new_token, new_claims} <- Guardian.exchange(token, typ, typ) do
       current_user = current_resource(conn)
       new_claims = claims_with_permission(claims, new_claims, current_user)
       key = Map.get(new_claims, :key, :default)
