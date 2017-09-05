@@ -30,7 +30,7 @@ defmodule AlertProcessor.DigestBuilder do
     subs
     |> InformedEntityFilter.filter(alert: alert)
     |> Enum.map(&(&1.user))
-    |> Enum.filter(&(!User.is_disabled?(&1)))
+    |> Enum.reject(&(User.is_account_disabled?(&1)))
   end
 
   defp sort_by_user(data, digest_date_group) do
