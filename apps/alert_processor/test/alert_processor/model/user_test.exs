@@ -634,17 +634,17 @@ defmodule AlertProcessor.Model.UserTest do
     end
   end
 
-  describe "is_disabled?/1" do
+  describe "is_account_disabled?/1" do
     test "returns true if the user has a blank encrypted password" do
       disabled_user = build(:user, encrypted_password: "")
 
-      assert User.is_disabled?(disabled_user) == true
+      assert User.is_account_disabled?(disabled_user) == true
     end
 
     test "returns false for an active user" do
       user = build(:user)
 
-      assert User.is_disabled?(user) == false
+      assert User.is_account_disabled?(user) == false
     end
   end
 
