@@ -111,6 +111,9 @@ defmodule ConciergeSite.SubscriberDetails do
   defp changelog_item(%{item_type: "User", origin: "admin:impersonate-subscriber"}, acc, _) do
     {[], acc}
   end
+  defp changelog_item(%{item_type: "User", item_changes: item_changes, event: "update"}, acc, _) when item_changes == %{} do
+    {[], acc}
+  end
   defp changelog_item(%{
     inserted_at: inserted_at,
     event: "insert",
