@@ -13,8 +13,9 @@ defmodule ConciergeSite.Plugs.TokenRefresh do
 
   def call(conn, _) do
     with token <- get_session(conn, "guardian_default"),
-         {:ok, %{"typ" => typ} = claims} <- Guardian.decode_and_verify(token),
-         {:ok, new_token, new_claims} <- Guardian.exchange(token, typ, typ) do
+         {:ok, claims} <- Guardian.decode_and_verify(token),
+         true <- token_expires_within_five_minutes?(claims),
+         {:ok, new_token, new_claims} <- Guardian.refresh!(token, claims, %{ttl: {60, :minutes}}) do
       current_user = current_resource(conn)
       new_claims = claims_with_permission(claims, new_claims, current_user)
       key = Map.get(new_claims, :key, :default)
@@ -28,5 +29,11 @@ defmodule ConciergeSite.Plugs.TokenRefresh do
     else
       _ -> conn
     end
+  end
+
+  defp token_expires_within_five_minutes?(%{"exp" => exp}) do
+    now = DateTime.utc_now() |> DateTime.to_unix()
+    five_minutes_from_now = 300 + now
+    exp > now and exp < five_minutes_from_now
   end
 end
