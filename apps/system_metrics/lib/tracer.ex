@@ -1,4 +1,8 @@
 defmodule SystemMetrics.Tracer do
+  @moduledoc """
+  module used for monitoring times taken
+  for certain function calls to complete.
+  """
   @meter Application.get_env(:system_metrics, :meter)
 
   def trace(operation, label) do

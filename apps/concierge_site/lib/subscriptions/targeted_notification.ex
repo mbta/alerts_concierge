@@ -14,7 +14,8 @@ defmodule ConciergeSite.TargetedNotification do
   end
 
   defp send_email(email, subject, body) do
-    Email.targeted_notification_email(email, subject, body)
+    email
+    |> Email.targeted_notification_email(subject, body)
     |> Mailer.deliver_later
   end
 

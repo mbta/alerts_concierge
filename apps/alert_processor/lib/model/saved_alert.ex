@@ -1,13 +1,14 @@
 defmodule AlertProcessor.Model.SavedAlert do
+  @moduledoc false
   use Ecto.Schema
   import Ecto.Changeset
   import Ecto.Query
   alias AlertProcessor.Repo
 
   @type t :: %__MODULE__{
-    id: String.t,
-    last_modified: DateTime.t,
-    data: map
+    id: String.t | nil,
+    last_modified: DateTime.t | nil,
+    data: map | nil
   }
 
   @primary_key {:id, :binary_id, autogenerate: true}

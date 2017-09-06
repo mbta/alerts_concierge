@@ -86,8 +86,8 @@ defmodule AlertProcessor.SavedAlertTest do
       end
     end
 
-    @alert1 %{"id" => "1", "last_modified_timestamp" => 1503619200}
-    @alert2 %{"id" => "2", "last_modified_timestamp" => 1503619200}
+    @alert1 %{"id" => "1", "last_modified_timestamp" => 1_503_619_200}
+    @alert2 %{"id" => "2", "last_modified_timestamp" => 1_503_619_200}
 
     @alerts [
       @alert1,
@@ -102,7 +102,7 @@ defmodule AlertProcessor.SavedAlertTest do
       test "updates alerts with last_modified changed" do
         [saved_alert, _] = SavedAlert.save!(@alerts)
 
-        updated = %{"id" => "1", "last_modified_timestamp" => 2000000000}
+        updated = %{"id" => "1", "last_modified_timestamp" => 2_000_000_000}
         alerts = [updated]
 
         assert [updated_alert] = SavedAlert.save!(alerts)

@@ -13,13 +13,13 @@ defmodule AlertProcessor.Model.Subscription do
   @type relevant_day :: :weekday | :saturday | :sunday
   @type t :: %__MODULE__{
     alert_priority_type: atom,
-    user_id: String.t,
-    relevant_days: [relevant_day],
-    start_time: Time.t,
-    end_time: Time.t,
+    user_id: String.t | nil,
+    relevant_days: [relevant_day] | nil,
+    start_time: Time.t | nil,
+    end_time: Time.t | nil,
     origin: String.t | nil,
     destination: String.t | nil,
-    type: subscription_type
+    type: subscription_type | nil
   }
 
   @alert_priority_type_values %{
@@ -216,8 +216,9 @@ defmodule AlertProcessor.Model.Subscription do
   end
 
   def user_amenity(user) do
-    amenity_query(user.id)
-    |> Repo.one
+    user.id
+    |> amenity_query()
+    |> Repo.one()
   end
 
   @doc """

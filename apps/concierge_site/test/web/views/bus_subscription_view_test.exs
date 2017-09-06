@@ -82,7 +82,7 @@ defmodule ConciergeSite.BusSubscriptionViewTest do
         |> bus_subscription()
         |> Map.put(:informed_entities, bus_subscription_entities())
 
-      assert "Route 57A outbound" == BusSubscriptionView.route_name(subscription) |> IO.iodata_to_binary()
+      assert "Route 57A outbound" == subscription |> BusSubscriptionView.route_name() |> IO.iodata_to_binary()
     end
   end
 end

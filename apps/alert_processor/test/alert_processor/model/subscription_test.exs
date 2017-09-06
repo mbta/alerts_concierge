@@ -316,7 +316,7 @@ defmodule AlertProcessor.Model.SubscriptionTest do
       multi = Mapper.build_subscription_transaction([info], user, user.id)
       Subscription.set_versioned_subscription(multi)
 
-      assert [sub|_] = Repo.all(Subscription) |> Repo.preload(:informed_entities)
+      assert [sub|_] = Subscription |> Repo.all() |> Repo.preload(:informed_entities)
       refute length(sub.informed_entities) == 0
     end
 
@@ -326,7 +326,7 @@ defmodule AlertProcessor.Model.SubscriptionTest do
       multi = Mapper.build_subscription_transaction([info], user, user.id)
       Subscription.set_versioned_subscription(multi)
 
-      [sub|_] = Repo.all(Subscription) |> Repo.preload(:informed_entities)
+      [sub|_] = Subscription |> Repo.all() |> Repo.preload(:informed_entities)
       sub_version = PaperTrail.get_version(sub)
       informed_entity_version_ids = Enum.map(sub.informed_entities, fn(ie) ->
         PaperTrail.get_version(ie).id

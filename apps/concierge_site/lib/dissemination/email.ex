@@ -1,4 +1,5 @@
 defmodule ConciergeSite.Dissemination.Email do
+  @moduledoc false
   use Bamboo.Phoenix, view: ConciergeSite.EmailView
   alias AlertProcessor.Helpers.ConfigHelper
   alias ConciergeSite.Helpers.MailHelper

@@ -1,4 +1,5 @@
 defmodule ConciergeSite.ImpersonateSessionPolicy do
+  @moduledoc false
   alias AlertProcessor.Model.User
 
   def can?(admin, :impersonate_user, user) do

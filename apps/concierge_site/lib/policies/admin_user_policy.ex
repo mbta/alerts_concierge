@@ -1,4 +1,5 @@
 defmodule ConciergeSite.AdminUserPolicy do
+  @moduledoc false
   alias AlertProcessor.Model.User
 
   @application_admin_only_actions ~w(

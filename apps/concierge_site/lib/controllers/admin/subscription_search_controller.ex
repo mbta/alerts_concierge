@@ -14,14 +14,10 @@ defmodule ConciergeSite.Admin.SubscriptionSearchController do
         conn
         |> put_flash(:error, "That user does not exist")
         |> redirect(to: "/admin_users")
-      {:error, :invalid_params, user} ->
-        conn
-        |> put_flash(:error, "Please provide a valid alert id and date")
-        |> render(conn, :new, user: user, snapshots: [])
       {:error, user} ->
         conn
         |> put_flash(:error, "There was an error with the search, please try again")
-        |> render(conn, :new, user: user, snapshots: [])
+        |> render(:new, user: user, snapshots: [])
       false ->
         handle_unauthorized(conn)
     end
@@ -63,6 +59,6 @@ defmodule ConciergeSite.Admin.SubscriptionSearchController do
   defp handle_unauthorized(conn) do
     conn
     |> put_status(403)
-    |> render(ConciergeSite.ErrorView, "403.html")
+    |> render(ConciergeSite.ErrorView, "403.html", %{})
   end
 end

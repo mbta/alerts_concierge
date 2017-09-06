@@ -1,4 +1,5 @@
 defmodule ConciergeSite.Subscriptions.AmenitiesParams do
+  @moduledoc false
   import ConciergeSite.Subscriptions.ParamsValidator
 
   @spec validate_info_params(map) :: :ok | {:error, String.t}
