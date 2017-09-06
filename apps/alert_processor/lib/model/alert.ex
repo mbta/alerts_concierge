@@ -122,7 +122,7 @@ defmodule AlertProcessor.Model.Alert do
         severe: 3
       },
       "Track Change" => %{
-        minor: 3
+        minor: 1
       }
     },
     "Bus" => %{
