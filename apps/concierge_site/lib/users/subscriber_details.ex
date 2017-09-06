@@ -133,6 +133,34 @@ defmodule ConciergeSite.SubscriberDetails do
     inserted_at: inserted_at,
     event: "update",
     originator_id: id,
+    item_changes: %{"encrypted_password" => ""} = item_changes,
+    item_id: item_id,
+    item_type: "User"
+    }, acc, originating_user_email_map) do
+      old_version = Map.get(acc, item_id, %{})
+      new_state = Map.merge(old_version, item_changes)
+      {date, time} = date_and_time_values(inserted_at)
+      originator = originating_user_email_map[id] || "Unknown"
+      {[{date, time, [originator, " disabled their account"]}], Map.put(acc, item_id, new_state)}
+  end
+  defp changelog_item(%{
+    inserted_at: inserted_at,
+    event: "update",
+    originator_id: id,
+    item_changes: %{"encrypted_password" => _} = item_changes,
+    item_id: item_id,
+    item_type: "User"
+    }, acc, originating_user_email_map) do
+      old_version = Map.get(acc, item_id, %{})
+      new_state = Map.merge(old_version, item_changes)
+      {date, time} = date_and_time_values(inserted_at)
+      originator = originating_user_email_map[id] || "Unknown"
+      {[{date, time, [originator, " updated their password"]}], Map.put(acc, item_id, new_state)}
+  end
+  defp changelog_item(%{
+    inserted_at: inserted_at,
+    event: "update",
+    originator_id: id,
     item_changes: item_changes,
     item_id: item_id,
     item_type: "User"
