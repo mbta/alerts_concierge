@@ -6,7 +6,7 @@
   <label class="priority-radio-option">
     <%= radio_button @form, :alert_priority_type, "high", checked: (@checked == :high) %>
     <div>
-      <div>High-priority alerts only: </div>
+      <div>High-priority alerts only:</div>
       <div class="form-sub-label">
         Includes severe delays, shuttle buses, and suspension of service
       </div>
