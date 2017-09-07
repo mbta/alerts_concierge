@@ -27,7 +27,7 @@ defmodule AlertProcessor.DigestManager do
   def handle_info(:send_digests, interval) do
     AlertCache.get_alerts()
     |> DigestDateHelper.calculate_date_groups()
-    |> DigestBuilder.build_digests()
+    |> DigestBuilder.build_digests(@digest_interval)
     |> Enum.map(&DigestMessage.from_digest/1)
     |> DigestDispatcher.send_emails()
     Process.send_after(self(), :send_digests, interval * 1000)
