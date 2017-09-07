@@ -38,6 +38,18 @@ defmodule ConciergeSite.SubscriberDetailsTest do
       changelog = user.id |> SubscriberDetails.changelog() |> changelog_to_binary()
       assert changelog =~ "#{user.email} updated do_not_disturb_end from 07:00:00 to N/A, do_not_disturb_start from 22:00:00 to N/A, phone_number from N/A to 5551231234"
     end
+
+    test "maps updating password", %{user: user} do
+      User.update_password(user, %{"password" => "newp4assword1", "password_confirmation" => "newp4assword1"}, user)
+      changelog = user.id |> SubscriberDetails.changelog() |> changelog_to_binary()
+      assert changelog =~ "#{user.email} updated their password"
+    end
+
+    test "maps disabling account", %{user: user} do
+      User.disable_account(user, user)
+      changelog = user.id |> SubscriberDetails.changelog() |> changelog_to_binary()
+      assert changelog =~ "#{user.email} disabled their account"
+    end
   end
 
   describe "subscription" do
