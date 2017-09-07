@@ -634,20 +634,6 @@ defmodule AlertProcessor.Model.UserTest do
     end
   end
 
-  describe "is_account_disabled?/1" do
-    test "returns true if the user has a blank encrypted password" do
-      disabled_user = build(:user, encrypted_password: "")
-
-      assert User.is_account_disabled?(disabled_user) == true
-    end
-
-    test "returns false for an active user" do
-      user = build(:user)
-
-      assert User.is_account_disabled?(user) == false
-    end
-  end
-
   describe "log_admin_action" do
     test "view_subscriber" do
       admin_user = insert(:user, role: "application_administration")

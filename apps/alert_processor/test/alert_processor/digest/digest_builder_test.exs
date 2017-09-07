@@ -5,6 +5,7 @@ defmodule AlertProcessor.DigestBuilderTest do
 
   alias AlertProcessor.{DigestBuilder, Model}
   alias Model.{Alert, Digest, DigestDateGroup, InformedEntity}
+  alias Calendar.DateTime, as: DT
 
   @ddg %DigestDateGroup{}
 
@@ -37,6 +38,8 @@ defmodule AlertProcessor.DigestBuilderTest do
     ]
   }
 
+  @digest_interval 604_800
+
   setup_all do
     {:ok, _} = Application.ensure_all_started(:alert_processor)
     :ok
@@ -56,7 +59,7 @@ defmodule AlertProcessor.DigestBuilderTest do
     |> Map.merge(%{subscription_id: sub2.id})
     |> insert
 
-    digests = DigestBuilder.build_digests({[@alert1, @alert2], @ddg})
+    digests = DigestBuilder.build_digests({[@alert1, @alert2], @ddg}, @digest_interval)
     expected = [%Digest{user: user1, alerts: [@alert1], digest_date_group: @ddg},
                 %Digest{user: user2, alerts: [@alert2, @alert1], digest_date_group: @ddg}]
 
@@ -72,7 +75,7 @@ defmodule AlertProcessor.DigestBuilderTest do
     |> Map.merge(%{subscription_id: sub.id})
     |> insert
 
-    digests = DigestBuilder.build_digests({[@alert2], @ddg})
+    digests = DigestBuilder.build_digests({[@alert2], @ddg}, @digest_interval)
     assert digests == [%Digest{user: user, alerts: [@alert2], digest_date_group: @ddg}]
   end
 
@@ -90,19 +93,30 @@ defmodule AlertProcessor.DigestBuilderTest do
     |> Map.merge(%{subscription_id: sub2.id})
     |> insert
 
-    digests = DigestBuilder.build_digests({[@alert1, @alert1, @alert2], @ddg})
+    digests = DigestBuilder.build_digests({[@alert1, @alert1, @alert2], @ddg}, @digest_interval)
     expected = [%Digest{user: user1, alerts: [@alert1], digest_date_group: @ddg},
                 %Digest{user: user2, alerts: [@alert2, @alert1], digest_date_group: @ddg}]
 
     assert digests == expected
   end
 
-  test "build_digest/1 does not build digests for disabled users" do
-    active_user = insert(:user)
-    disabled_user = insert(:user, encrypted_password: "")
+  test "build_digest/1 builds digests for users whose vacations end less than one week from now" do
+    now = DateTime.utc_now()
+    yesterday = DT.subtract!(now, 86_400)
+    six_days_from_now = DT.add!(now, 518_400)
+    two_weeks_from_now = DT.add!(now, 1_209_600)
+    short_vacation_user = insert(:user,
+      vacation_start: yesterday,
+      vacation_end: six_days_from_now
+    )
 
-    sub1 = insert(:subscription, user: active_user)
-    sub2 = insert(:subscription, user: disabled_user)
+    long_vacation_user = insert(:user,
+      vacation_start: yesterday,
+      vacation_end: two_weeks_from_now
+    )
+
+    sub1 = insert(:subscription, user: short_vacation_user)
+    sub2 = insert(:subscription, user: long_vacation_user)
     InformedEntity
     |> struct(@ie1)
     |> Map.merge(%{subscription_id: sub1.id})
@@ -112,7 +126,7 @@ defmodule AlertProcessor.DigestBuilderTest do
     |> Map.merge(%{subscription_id: sub2.id})
     |> insert
 
-    digests = DigestBuilder.build_digests({[@alert1, @alert2], @ddg})
-    assert digests == [%Digest{user: active_user, alerts: [@alert1], digest_date_group: @ddg}]
+    digests = DigestBuilder.build_digests({[@alert1, @alert2], @ddg}, @digest_interval)
+    assert digests == [%Digest{user: short_vacation_user, alerts: [@alert1], digest_date_group: @ddg}]
   end
 end

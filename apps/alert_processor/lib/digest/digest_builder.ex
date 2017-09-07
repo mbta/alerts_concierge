@@ -3,7 +3,7 @@ defmodule AlertProcessor.DigestBuilder do
   Generates digests for all users/alerts in the system
   """
   alias AlertProcessor.{InformedEntityFilter, Model, Repo}
-  alias Model.{Alert, Digest, DigestDateGroup, User, Subscription}
+  alias Model.{Alert, Digest, DigestDateGroup, Subscription}
 
   @doc """
   1. Takes a list of alerts
@@ -11,8 +11,8 @@ defmodule AlertProcessor.DigestBuilder do
   3. Returns a list of Digest structs:
      [%Digest{user: user, alerts: [Alert]}]
   """
-  @spec build_digests({[Alert.t], DigestDateGroup.t}) :: [Digest.t]
-  def build_digests({alerts, digest_date_group}) do
+  @spec build_digests({[Alert.t], DigestDateGroup.t}, integer) :: [Digest.t]
+  def build_digests({alerts, digest_date_group}, digest_interval) do
     subs =
       Subscription
       |> Repo.all()
@@ -21,16 +21,19 @@ defmodule AlertProcessor.DigestBuilder do
 
     alerts
     |> Enum.map(fn(alert) ->
-      {fetch_active_users(alert, subs), alert}
+      {fetch_active_users(alert, subs, digest_interval), alert}
     end)
     |> sort_by_user(digest_date_group)
   end
 
-  defp fetch_active_users(alert, subs) do
+  defp fetch_active_users(alert, subs, digest_interval) do
+    next_digest_sent_at = (DateTime.utc_now() |> DateTime.to_unix()) + digest_interval
     subs
     |> InformedEntityFilter.filter(alert: alert)
     |> Enum.map(&(&1.user))
-    |> Enum.reject(&(User.is_account_disabled?(&1)))
+    |> Enum.filter(fn user ->
+      is_nil(user.vacation_end) or DateTime.to_unix(user.vacation_end) < next_digest_sent_at
+    end)
   end
 
   defp sort_by_user(data, digest_date_group) do
