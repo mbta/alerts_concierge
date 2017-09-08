@@ -126,21 +126,49 @@ defmodule AlertProcessor.Subscription.Mapper do
   def map_stops([{sub1, ie1}, {sub2, ie2}], %{"origin" => origin, "destination" => destination}, routes) do
     stop_entities = map_stops_in_range(routes, origin, destination)
 
+    stop_entities_1 =
+      Enum.flat_map(stop_entities, fn(stop_entity) ->
+        [stop_entity, %{stop_entity | direction_id: 0}]
+      end)
+
+    stop_entities_2 =
+      Enum.flat_map(stop_entities, fn(stop_entity) ->
+        [stop_entity, %{stop_entity | direction_id: 1}]
+      end)
+
     {:ok, {origin_name, ^origin}} = ServiceInfoCache.get_stop(origin)
     {:ok, {destination_name, ^destination}} = ServiceInfoCache.get_stop(destination)
 
     [
       {
         Map.merge(sub1, %{origin: origin_name, destination: destination_name}),
-        ie1 ++ stop_entities
+        ie1 ++ stop_entities_1
       }, {
         Map.merge(sub2, %{origin: destination_name, destination: origin_name}),
-        ie2 ++ stop_entities
+        ie2 ++ stop_entities_2
       }
     ]
   end
-  def map_stops([{subscription, informed_entities}], %{"origin" => origin, "destination" => destination}, routes) do
-    stop_entities = map_stops_in_range(routes, origin, destination)
+  def map_stops([{subscription, informed_entities}], %{"origin" => origin, "destination" => destination} = params, routes) do
+    [%Route{stop_list: stop_list} | _] = routes
+    direction_ids =
+      case params do
+        %{"roaming" => "true"} ->
+          [0, 1]
+        _ ->
+          case stop_list
+            |> Enum.filter(fn({_name, id}) -> Enum.member?([origin, destination], id) end)
+            |> Enum.map(fn({_name, id}) -> id end) do
+            [^origin, ^destination] -> [1]
+            [^destination, ^origin] -> [0]
+          end
+      end
+
+    stop_entities =
+      Enum.flat_map(map_stops_in_range(routes, origin, destination), fn(stop_entity) ->
+        direction_entities = Enum.map(direction_ids, & %{stop_entity | direction_id: &1})
+        [stop_entity | direction_entities]
+      end)
 
     {:ok, {origin_name, ^origin}} = ServiceInfoCache.get_stop(origin)
     {:ok, {destination_name, ^destination}} = ServiceInfoCache.get_stop(destination)
