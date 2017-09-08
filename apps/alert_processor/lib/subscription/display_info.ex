@@ -42,8 +42,10 @@ defmodule AlertProcessor.Subscription.DisplayInfo do
   defp fetch_schedule_info(stops, relevant_days, selected_date) do
     Enum.reduce(relevant_days, {[], []}, fn(relevant_day, {previous_schedules, previous_trips}) ->
       relevant_date = selected_date || DateTimeHelper.determine_date(relevant_day, Date.utc_today())
-      {:ok, schedules, trips} = ApiClient.schedules_for_stops(stops, relevant_date)
-      {previous_schedules ++ schedules, previous_trips ++ trips}
+      case ApiClient.schedules_for_stops(stops, relevant_date) do
+        {:ok, schedules, trips} -> {previous_schedules ++ schedules, previous_trips ++ trips}
+        {:error, %HTTPoison.Error{}} -> {previous_schedules, previous_trips}
+      end
     end)
   end
 
