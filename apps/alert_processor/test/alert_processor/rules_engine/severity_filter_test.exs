@@ -26,7 +26,7 @@ defmodule AlertProcessor.SeverityFilterTest do
     sub2 = insert(:subscription, alert_priority_type: :medium, informed_entities: [%InformedEntity{route_type: 1, route: "Red"}])
     sub3 = insert(:subscription, alert_priority_type: :high, informed_entities: [%InformedEntity{route_type: 1, route: "Red"}])
 
-    assert [] == SeverityFilter.filter([sub1, sub2, sub3], alert: alert)
+    assert [sub1, sub2] == SeverityFilter.filter([sub1, sub2, sub3], alert: alert)
   end
 
   test "will send systemwide alerts" do
@@ -42,7 +42,7 @@ defmodule AlertProcessor.SeverityFilterTest do
     sub2 = insert(:subscription, alert_priority_type: :medium, informed_entities: [%InformedEntity{route_type: 1, route: "Red"}])
     sub3 = insert(:subscription, alert_priority_type: :high, informed_entities: [%InformedEntity{route_type: 1, route: "Red"}])
 
-    assert [] == SeverityFilter.filter([sub1, sub2, sub3], alert: alert)
+    assert [sub1, sub2] == SeverityFilter.filter([sub1, sub2, sub3], alert: alert)
   end
 
   test "will send facility alerts regardless of severity" do
@@ -59,5 +59,14 @@ defmodule AlertProcessor.SeverityFilterTest do
     sub = insert(:subscription, alert_priority_type: :high, informed_entities: [%InformedEntity{route_type: 1, route: "Red"}])
 
     assert [sub] == SeverityFilter.filter([sub], alert: alert)
+  end
+
+  test "will default to alert severity value if effect name does not have specific remapping" do
+    alert = %Alert{informed_entities: [%InformedEntity{route_type: 1, route: "Red"}], severity: :moderate, effect_name: "Random Effect"}
+    sub1 = insert(:subscription, alert_priority_type: :low, informed_entities: [%InformedEntity{route_type: 1, route: "Red"}])
+    sub2 = insert(:subscription, alert_priority_type: :medium, informed_entities: [%InformedEntity{route_type: 1, route: "Red"}])
+    sub3 = insert(:subscription, alert_priority_type: :high, informed_entities: [%InformedEntity{route_type: 1, route: "Red"}])
+
+    assert [sub1, sub2] == SeverityFilter.filter([sub1, sub2, sub3], alert: alert)
   end
 end

@@ -43,212 +43,50 @@ defmodule AlertProcessor.Model.Alert do
 
   @severity_map %{
     "Subway" => %{
-      "Delay" => %{
-        minor: 1,
-        moderate: 2,
-        severe: 3
-      },
-      "Extra Service" => %{
-        moderate: 3,
-        severe: 3
-      },
-      "Schedule Change" => %{
-        minor: 3,
-        moderate: 3,
-        severe: 3
-      },
-      "Service Change" => %{
-        minor: 1,
-        moderate: 2,
-        severe: 3
-      },
-      "Shuttle" => %{
-        minor: 3,
-        moderate: 3,
-        severe: 3
-      },
-      "Station Closure" => %{
-        minor: 3,
-        moderate: 3,
-        severe: 3
-      },
-      "Station Issue" => %{
-        minor: 1,
-        moderate: 2,
-        severe: 3
-      },
-      "Suspension" => %{
-        minor: 3,
-        moderate: 3,
-        severe: 3
-      }
+      "Extra Service" => 2,
+      "Schedule Change" => 3,
+      "Shuttle" => 3,
+      "Station Closure" => 3,
+      "Suspension" => 3
     },
     "Commuter Rail" => %{
-      "Cancellation" => %{
-        minor: 3,
-        moderate: 3,
-        severe: 3
-      },
-      "Delay" => %{
-        moderate: 3,
-        severe: 3
-      },
-      "Extra Service" => %{
-        severe: 3
-      },
-      "Schedule Change" => %{
-        minor: 3,
-        moderate: 3,
-        severe: 3
-      },
-      "Service Change" => %{
-        minor: 1,
-        moderate: 2,
-        severe: 3
-      },
-      "Shuttle" => %{
-        minor: 3,
-        moderate: 3,
-        severe: 3
-      },
-      "Station Closure" => %{
-        minor: 3,
-        moderate: 3,
-        severe: 3
-      },
-      "Suspension" => %{
-        minor: 3,
-        moderate: 3,
-        severe: 3
-      },
-      "Track Change" => %{
-        minor: 1
-      }
+      "Cancellation" => 3,
+      "Delay" => 2,
+      "Extra Service" => 1,
+      "Schedule Change" => 3,
+      "Shuttle" => 3,
+      "Station Closure" => 3,
+      "Suspension" => 3,
+      "Track Change" => 1
     },
     "Bus" => %{
-      "Delay" => %{
-        minor: 1,
-        moderate: 2,
-        severe: 3
-      },
-      "Detour" => %{
-        minor: 3,
-        moderate: 3,
-        severe: 3
-      },
-      "Extra Service" => %{
-        severe: 3
-      },
-      "Schedule Change" => %{
-        minor: 3,
-        moderate: 3,
-        severe: 3
-      },
-      "Service Change" => %{
-        minor: 1,
-        moderate: 2,
-        severe: 3
-      },
-      "Snow Route" => %{
-        minor: 3,
-        moderate: 3,
-        severe: 3
-      },
-      "Stop Closure" => %{
-        moderate: 3,
-        severe: 3
-      },
-      "Stop Move" => %{
-        severe: 3
-      },
-      "Suspension" => %{
-        minor: 3,
-        moderate: 3,
-        severe: 3
-      }
+      "Detour" => 3,
+      "Extra Service" => 1,
+      "Schedule Change" => 3,
+      "Snow Route" => 3,
+      "Stop Closure" => 2,
+      "Stop Move" => 1,
+      "Suspension" => 3
     },
     "Ferry" => %{
-      "Cancellation" => %{
-        minor: 3,
-        moderate: 3,
-        severe: 3
-      },
-      "Delay" => %{
-        moderate: 3,
-        severe: 3
-      },
-      "Dock Closure" => %{
-        minor: 3,
-        moderate: 3,
-        severe: 3
-      },
-      "Dock Issue" => %{
-        minor: 1,
-        moderate: 2,
-        severe: 3
-      },
-      "Extra Service" => %{
-        moderate: 3,
-        severe: 3
-      },
-      "Schedule Change" => %{
-        minor: 3,
-        moderate: 3,
-        severe: 3
-      },
-      "Service Change" => %{
-        minor: 1,
-        moderate: 2,
-        severe: 3
-      },
-      "Shuttle" => %{
-        minor: 3,
-        moderate: 3,
-        severe: 3
-      },
-      "Suspension" => %{
-        minor: 3,
-        moderate: 3,
-        severe: 3
-      },
+      "Cancellation" => 3,
+      "Delay" => 2,
+      "Dock Closure" => 3,
+      "Extra Service" => 2,
+      "Schedule Change" => 2,
+      "Shuttle" => 3,
+      "Suspension" => 3,
     },
     "Systemwide" => %{
-      "Delay" => %{
-        minor: 3,
-        moderate: 3,
-        severe: 3
-      },
-      "Extra Service" => %{
-        moderate: 3,
-        severe: 3
-      },
-      "Policy Change" => %{
-        minor: 3,
-        moderate: 3,
-        severe: 3
-      },
-      "Service Change" => %{
-        minor: 3,
-        moderate: 3,
-        severe: 3
-      },
-      "Suspension" => %{
-        minor: 3,
-        moderate: 3,
-        severe: 3
-      },
-      "Amber Alert" => %{
-        minor: 3,
-        moderate: 3,
-        severe: 3
-      }
+      "Delay" => 3,
+      "Extra Service" => 2,
+      "Policy Change" => 3,
+      "Service Change" => 3,
+      "Suspension" => 3,
+      "Amber Alert" => 3
     },
     "Facility" => %{
-      "Access Issue" => %{
-        minor: 3,
-        moderate: 3,
-        severe: 3
-      }
+      "Access Issue" => 3
     }
   }
 
@@ -328,6 +166,10 @@ defmodule AlertProcessor.Model.Alert do
 
   @spec priority_value(String.t, String.t, atom) :: integer
   defp priority_value(route_type, effect_name, severity) do
-    @severity_map[route_type][effect_name][severity] || 0
+    @severity_map[route_type][effect_name] || default_severity_value(severity)
   end
+
+  defp default_severity_value(:minor), do: 1
+  defp default_severity_value(:moderate), do: 2
+  defp default_severity_value(:severe), do: 3
 end
