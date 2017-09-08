@@ -13,7 +13,7 @@ defmodule ConciergeSite.ConfirmationMessageTest do
       email = Email.confirmation_email(user)
       refute_received :publish
       assert_delivered_with(to: [{nil, "test@test.com"}])
-      assert email.html_body =~ "Congratulations, you have successfully subscribed to receive MBTA email alerts"
+      assert email.html_body =~ "Congratulations, you have successfully subscribed to receive MBTA alerts"
     end
 
     test "sends SMS and email to user with phone number" do
