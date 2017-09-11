@@ -89,8 +89,8 @@ defmodule ConciergeSite.Helpers.MailHelper do
     do: Helpers.static_url(ConciergeSite.Endpoint, "/images/icons/icn_green-line.png")
 
   defp logo_for_subway(nil),
-    do: Helpers.static_url(ConciergeSite.Endpoint, "/images/icons/t-logo@2x.png")
-      
+    do: Helpers.static_url(ConciergeSite.Endpoint, "/images/icons/icn_facility.png")
+
   @spec alt_text_for_route_type(InformedEntity.t) :: iodata
   defp alt_text_for_route_type(%InformedEntity{route_type: 0, route: r}), do: alt_text_for_subway(r)
   defp alt_text_for_route_type(%InformedEntity{route_type: 1, route: r}), do: alt_text_for_subway(r)
