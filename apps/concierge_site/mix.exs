@@ -3,7 +3,7 @@ defmodule ConciergeSite.Mixfile do
 
   def project do
     [app: :concierge_site,
-     version: "0.0.38",
+     version: "0.0.39",
      build_path: "../../_build",
      config_path: "../../config/config.exs",
      deps_path: "../../deps",
