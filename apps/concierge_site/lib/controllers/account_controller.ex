@@ -15,6 +15,7 @@ defmodule ConciergeSite.AccountController do
   def create(conn, %{"user" => user_params}) do
     case User.create_account(user_params) do
       {:ok, user} ->
+        User.opt_in_phone_number(user)
         ConfirmationMessage.send_confirmation(user)
         SignInHelper.sign_in(conn, user, redirect: :default)
       {:error, changeset} ->

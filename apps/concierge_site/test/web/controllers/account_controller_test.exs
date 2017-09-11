@@ -21,6 +21,7 @@ defmodule ConciergeSite.AccountControllerTest do
 
       conn = post(conn, "/account", params)
       assert html_response(conn, 302) =~ "/my-subscriptions"
+      assert_received :opt_in_phone_number
     end
 
     test "sends account confirmation sms", %{conn: conn} do
@@ -52,6 +53,7 @@ defmodule ConciergeSite.AccountControllerTest do
       post(conn, "/account", params)
 
       assert_delivered_with(to: [{nil, "test@email.com"}])
+      refute_received :opt_in_phone_number
     end
   end
 
