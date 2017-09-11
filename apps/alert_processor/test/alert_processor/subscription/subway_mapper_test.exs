@@ -117,24 +117,39 @@ defmodule AlertProcessor.Subscription.SubwayMapperTest do
       {:ok, [{_sub, informed_entities}]} = SubwayMapper.map_subscriptions(@one_way_params)
       davis_station_count =
         Enum.count(informed_entities, fn(informed_entity) ->
-          match?(%InformedEntity{route: "Red", route_type: 1, stop: "place-davis"}, informed_entity)
+          match?(%InformedEntity{route: "Red", route_type: 1, stop: "place-davis", direction_id: nil}, informed_entity)
         end)
       assert davis_station_count == 1
       porter_station_count =
         Enum.count(informed_entities, fn(informed_entity) ->
-          match?(%InformedEntity{route: "Red", route_type: 1, stop: "place-portr"}, informed_entity)
+          match?(%InformedEntity{route: "Red", route_type: 1, stop: "place-portr", direction_id: nil}, informed_entity)
         end)
       assert porter_station_count == 1
       harvard_station_count =
         Enum.count(informed_entities, fn(informed_entity) ->
-          match?(%InformedEntity{route: "Red", route_type: 1, stop: "place-harsq"}, informed_entity)
+          match?(%InformedEntity{route: "Red", route_type: 1, stop: "place-harsq", direction_id: nil}, informed_entity)
         end)
       assert harvard_station_count == 1
+      davis_station_with_direction_count =
+        Enum.count(informed_entities, fn(informed_entity) ->
+          match?(%InformedEntity{route: "Red", route_type: 1, stop: "place-davis", direction_id: nil}, informed_entity)
+        end)
+      assert davis_station_with_direction_count == 1
+      porter_station_with_direction_count =
+        Enum.count(informed_entities, fn(informed_entity) ->
+          match?(%InformedEntity{route: "Red", route_type: 1, stop: "place-portr", direction_id: nil}, informed_entity)
+        end)
+      assert porter_station_with_direction_count == 1
+      harvard_station_with_direction_count =
+        Enum.count(informed_entities, fn(informed_entity) ->
+          match?(%InformedEntity{route: "Red", route_type: 1, stop: "place-harsq", direction_id: nil}, informed_entity)
+        end)
+      assert harvard_station_with_direction_count == 1
       total_station_count =
         Enum.count(informed_entities, fn(informed_entity) ->
           InformedEntity.entity_type(informed_entity) == :stop
         end)
-      assert total_station_count == 3
+      assert total_station_count == 6
     end
   end
 
@@ -225,44 +240,74 @@ defmodule AlertProcessor.Subscription.SubwayMapperTest do
       {:ok, [{_sub1, ie1}, {_sub2, ie2}]} = SubwayMapper.map_subscriptions(@round_trip_params)
       davis_station_count =
         Enum.count(ie1, fn(informed_entity) ->
-          match?(%InformedEntity{route: "Red", route_type: 1, stop: "place-davis"}, informed_entity)
+          match?(%InformedEntity{route: "Red", route_type: 1, stop: "place-davis", direction_id: nil}, informed_entity)
         end)
       assert davis_station_count == 1
       porter_station_count =
         Enum.count(ie1, fn(informed_entity) ->
-          match?(%InformedEntity{route: "Red", route_type: 1, stop: "place-portr"}, informed_entity)
+          match?(%InformedEntity{route: "Red", route_type: 1, stop: "place-portr", direction_id: nil}, informed_entity)
         end)
       assert porter_station_count == 1
       harvard_station_count =
         Enum.count(ie1, fn(informed_entity) ->
-          match?(%InformedEntity{route: "Red", route_type: 1, stop: "place-harsq"}, informed_entity)
+          match?(%InformedEntity{route: "Red", route_type: 1, stop: "place-harsq", direction_id: nil}, informed_entity)
         end)
       assert harvard_station_count == 1
+      davis_station_with_direction_count =
+        Enum.count(ie1, fn(informed_entity) ->
+          match?(%InformedEntity{route: "Red", route_type: 1, stop: "place-davis", direction_id: 0}, informed_entity)
+        end)
+      assert davis_station_with_direction_count == 1
+      porter_station_with_direction_count =
+        Enum.count(ie1, fn(informed_entity) ->
+          match?(%InformedEntity{route: "Red", route_type: 1, stop: "place-portr", direction_id: 0}, informed_entity)
+        end)
+      assert porter_station_with_direction_count == 1
+      harvard_station_with_direction_count =
+        Enum.count(ie1, fn(informed_entity) ->
+          match?(%InformedEntity{route: "Red", route_type: 1, stop: "place-harsq", direction_id: 0}, informed_entity)
+        end)
+      assert harvard_station_with_direction_count == 1
       total_station_count =
         Enum.count(ie1, fn(informed_entity) ->
           InformedEntity.entity_type(informed_entity) == :stop
         end)
-      assert total_station_count == 3
+      assert total_station_count == 6
       davis_station_count =
         Enum.count(ie2, fn(informed_entity) ->
-          match?(%InformedEntity{route: "Red", route_type: 1, stop: "place-davis"}, informed_entity)
+          match?(%InformedEntity{route: "Red", route_type: 1, stop: "place-davis", direction_id: nil}, informed_entity)
         end)
       assert davis_station_count == 1
       porter_station_count =
         Enum.count(ie2, fn(informed_entity) ->
-          match?(%InformedEntity{route: "Red", route_type: 1, stop: "place-portr"}, informed_entity)
+          match?(%InformedEntity{route: "Red", route_type: 1, stop: "place-portr", direction_id: nil}, informed_entity)
         end)
       assert porter_station_count == 1
       harvard_station_count =
         Enum.count(ie2, fn(informed_entity) ->
-          match?(%InformedEntity{route: "Red", route_type: 1, stop: "place-harsq"}, informed_entity)
+          match?(%InformedEntity{route: "Red", route_type: 1, stop: "place-harsq", direction_id: nil}, informed_entity)
         end)
       assert harvard_station_count == 1
+      davis_station_with_direction_count =
+        Enum.count(ie2, fn(informed_entity) ->
+          match?(%InformedEntity{route: "Red", route_type: 1, stop: "place-davis", direction_id: 1}, informed_entity)
+        end)
+      assert davis_station_with_direction_count == 1
+      porter_station_with_direction_count =
+        Enum.count(ie2, fn(informed_entity) ->
+          match?(%InformedEntity{route: "Red", route_type: 1, stop: "place-portr", direction_id: 1}, informed_entity)
+        end)
+      assert porter_station_with_direction_count == 1
+      harvard_station_with_direction_count =
+        Enum.count(ie2, fn(informed_entity) ->
+          match?(%InformedEntity{route: "Red", route_type: 1, stop: "place-harsq", direction_id: 1}, informed_entity)
+        end)
+      assert harvard_station_with_direction_count == 1
       total_station_count =
         Enum.count(ie2, fn(informed_entity) ->
           InformedEntity.entity_type(informed_entity) == :stop
         end)
-      assert total_station_count == 3
+      assert total_station_count == 6
     end
   end
 
@@ -326,24 +371,39 @@ defmodule AlertProcessor.Subscription.SubwayMapperTest do
       {:ok, [{_sub, informed_entities}]} = SubwayMapper.map_subscriptions(@green_line_one_way_params)
       north_station_count =
         Enum.count(informed_entities, fn(informed_entity) ->
-          match?(%InformedEntity{route: "Green-" <> _, route_type: 0, stop: "place-north"}, informed_entity)
+          match?(%InformedEntity{route: "Green-" <> _, route_type: 0, stop: "place-north", direction_id: nil}, informed_entity)
         end)
       assert north_station_count == 3
       kenmore_station_count =
         Enum.count(informed_entities, fn(informed_entity) ->
-          match?(%InformedEntity{route: "Green-" <> _, route_type: 0, stop: "place-kencl"}, informed_entity)
+          match?(%InformedEntity{route: "Green-" <> _, route_type: 0, stop: "place-kencl", direction_id: nil}, informed_entity)
         end)
       assert kenmore_station_count == 3
       arlington_station_count =
         Enum.count(informed_entities, fn(informed_entity) ->
-          match?(%InformedEntity{route: "Green-" <> _, route_type: 0, stop: "place-armnl"}, informed_entity)
+          match?(%InformedEntity{route: "Green-" <> _, route_type: 0, stop: "place-armnl", direction_id: nil}, informed_entity)
         end)
       assert arlington_station_count == 3
+      north_station_with_direction_count =
+        Enum.count(informed_entities, fn(informed_entity) ->
+          match?(%InformedEntity{route: "Green-" <> _, route_type: 0, stop: "place-north", direction_id: 0}, informed_entity)
+        end)
+      assert north_station_with_direction_count == 3
+      kenmore_station_with_direction_count =
+        Enum.count(informed_entities, fn(informed_entity) ->
+          match?(%InformedEntity{route: "Green-" <> _, route_type: 0, stop: "place-kencl", direction_id: 0}, informed_entity)
+        end)
+      assert kenmore_station_with_direction_count == 3
+      arlington_station_with_direction_count =
+        Enum.count(informed_entities, fn(informed_entity) ->
+          match?(%InformedEntity{route: "Green-" <> _, route_type: 0, stop: "place-armnl", direction_id: 0}, informed_entity)
+        end)
+      assert arlington_station_with_direction_count == 3
       total_station_count =
         Enum.count(informed_entities, fn(informed_entity) ->
           InformedEntity.entity_type(informed_entity) == :stop
         end)
-      assert total_station_count == 27
+      assert total_station_count == 54
     end
   end
 
@@ -407,34 +467,84 @@ defmodule AlertProcessor.Subscription.SubwayMapperTest do
       {:ok, [{_sub, informed_entities}]} = SubwayMapper.map_subscriptions(@roaming_params)
       davis_station_count =
         Enum.count(informed_entities, fn(informed_entity) ->
-          match?(%InformedEntity{route: "Red", route_type: 1, stop: "place-davis"}, informed_entity)
+          match?(%InformedEntity{route: "Red", route_type: 1, stop: "place-davis", direction_id: nil}, informed_entity)
         end)
       assert davis_station_count == 1
       davis_station_count =
         Enum.count(informed_entities, fn(informed_entity) ->
-          match?(%InformedEntity{route: "Red", route_type: 1, stop: "place-portr"}, informed_entity)
+          match?(%InformedEntity{route: "Red", route_type: 1, stop: "place-portr", direction_id: nil}, informed_entity)
         end)
       assert davis_station_count == 1
       harvard_station_count =
         Enum.count(informed_entities, fn(informed_entity) ->
-          match?(%InformedEntity{route: "Red", route_type: 1, stop: "place-harsq"}, informed_entity)
+          match?(%InformedEntity{route: "Red", route_type: 1, stop: "place-harsq", direction_id: nil}, informed_entity)
         end)
       assert harvard_station_count == 1
       alewife_station_count =
         Enum.count(informed_entities, fn(informed_entity) ->
-          match?(%InformedEntity{route: "Red", route_type: 1, stop: "place-alfcl"}, informed_entity)
+          match?(%InformedEntity{route: "Red", route_type: 1, stop: "place-alfcl", direction_id: nil}, informed_entity)
         end)
       assert alewife_station_count == 0
       central_station_count =
         Enum.count(informed_entities, fn(informed_entity) ->
-          match?(%InformedEntity{route: "Red", route_type: 1, stop: "place-censq"}, informed_entity)
+          match?(%InformedEntity{route: "Red", route_type: 1, stop: "place-censq", direction_id: nil}, informed_entity)
         end)
       assert central_station_count == 0
+      davis_station_0_count =
+        Enum.count(informed_entities, fn(informed_entity) ->
+          match?(%InformedEntity{route: "Red", route_type: 1, stop: "place-davis", direction_id: 0}, informed_entity)
+        end)
+      assert davis_station_0_count == 1
+      davis_station_0_count =
+        Enum.count(informed_entities, fn(informed_entity) ->
+          match?(%InformedEntity{route: "Red", route_type: 1, stop: "place-portr", direction_id: 0}, informed_entity)
+        end)
+      assert davis_station_0_count == 1
+      harvard_station_0_count =
+        Enum.count(informed_entities, fn(informed_entity) ->
+          match?(%InformedEntity{route: "Red", route_type: 1, stop: "place-harsq", direction_id: 0}, informed_entity)
+        end)
+      assert harvard_station_0_count == 1
+      alewife_station_0_count =
+        Enum.count(informed_entities, fn(informed_entity) ->
+          match?(%InformedEntity{route: "Red", route_type: 1, stop: "place-alfcl", direction_id: 0}, informed_entity)
+        end)
+      assert alewife_station_0_count == 0
+      central_station_0_count =
+        Enum.count(informed_entities, fn(informed_entity) ->
+          match?(%InformedEntity{route: "Red", route_type: 1, stop: "place-censq", direction_id: 0}, informed_entity)
+        end)
+      assert central_station_0_count == 0
+      davis_station_1_count =
+      Enum.count(informed_entities, fn(informed_entity) ->
+        match?(%InformedEntity{route: "Red", route_type: 1, stop: "place-davis", direction_id: 1}, informed_entity)
+      end)
+    assert davis_station_1_count == 1
+    davis_station_1_count =
+      Enum.count(informed_entities, fn(informed_entity) ->
+        match?(%InformedEntity{route: "Red", route_type: 1, stop: "place-portr", direction_id: 1}, informed_entity)
+      end)
+    assert davis_station_1_count == 1
+    harvard_station_1_count =
+      Enum.count(informed_entities, fn(informed_entity) ->
+        match?(%InformedEntity{route: "Red", route_type: 1, stop: "place-harsq", direction_id: 1}, informed_entity)
+      end)
+    assert harvard_station_1_count == 1
+    alewife_station_1_count =
+      Enum.count(informed_entities, fn(informed_entity) ->
+        match?(%InformedEntity{route: "Red", route_type: 1, stop: "place-alfcl", direction_id: 1}, informed_entity)
+      end)
+    assert alewife_station_1_count == 0
+    central_station_1_count =
+      Enum.count(informed_entities, fn(informed_entity) ->
+        match?(%InformedEntity{route: "Red", route_type: 1, stop: "place-censq", direction_id: 1}, informed_entity)
+      end)
+    assert central_station_1_count == 0
       total_station_count =
         Enum.count(informed_entities, fn(informed_entity) ->
           InformedEntity.entity_type(informed_entity) == :stop
         end)
-      assert total_station_count == 3
+      assert total_station_count == 9
     end
   end
 
@@ -459,8 +569,8 @@ defmodule AlertProcessor.Subscription.SubwayMapperTest do
 
       assert {{:subscription, 0}, {:run, function1}} = List.first(result)
       assert {{:informed_entity, 0, 0}, {:run, _}} = Enum.at(result, 1)
-      assert {{:subscription, 1}, {:run, function2}} = Enum.at(result, 8)
-      assert {{:informed_entity, 1, 0}, {:run, _}} = Enum.at(result, 9)
+      assert {{:subscription, 1}, {:run, function2}} = Enum.at(result, 11)
+      assert {{:informed_entity, 1, 0}, {:run, _}} = Enum.at(result, 12)
       {:ok, %{model: subscription1}} = function1.(nil)
       {:ok, %{model: subscription2}} = function2.(nil)
       assert subscription1.id != nil
