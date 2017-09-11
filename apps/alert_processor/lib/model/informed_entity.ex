@@ -9,13 +9,13 @@ defmodule AlertProcessor.Model.InformedEntity do
   @type facility_type :: :elevator | :escalator
 
   @type t :: %__MODULE__{
-    direction_id: integer,
-    facility_type: facility_type,
-    route: String.t,
-    route_type: integer,
+    direction_id: integer | nil,
+    facility_type: facility_type | nil,
+    route: String.t | nil,
+    route_type: integer | nil,
     subscription_id: String.t,
-    stop: String.t,
-    trip: String.t
+    stop: String.t | nil,
+    trip: String.t | nil
   }
 
   use Ecto.Schema
