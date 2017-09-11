@@ -12,4 +12,5 @@ config :logger, level: :warn
 config :guardian, Guardian, secret_key: "top_secret_key"
 
 config :concierge_site, ConciergeSite.Dissemination.Mailer,
-  adapter: Bamboo.TestAdapter
+  adapter: Bamboo.TestAdapter,
+  deliver_later_strategy: Bamboo.ImmediateDeliveryStrategy
