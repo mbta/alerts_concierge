@@ -5,6 +5,7 @@ defmodule AlertProcessor.Dispatcher do
 
   @mailer Application.get_env(:alert_processor, :mailer)
   alias AlertProcessor.{Aws.AwsClient, Model.Notification, NotificationSmser}
+  require Logger
 
   @doc """
   send_notification/1 receives a map of user information and notification to
@@ -22,9 +23,12 @@ defmodule AlertProcessor.Dispatcher do
     {:ok, email}
   end
   def send_notification(%Notification{phone_number: phone_number} = notification) when not is_nil(phone_number) do
-    notification
-    |> NotificationSmser.notification_sms()
-    |> AwsClient.request()
+    result =
+      notification
+      |> NotificationSmser.notification_sms()
+      |> AwsClient.request()
+    Logger.info(fn -> "SMS notification result: #{inspect(result)}" end)
+    result
   end
   def send_notification(_) do
     {:error, "invalid or missing params"}

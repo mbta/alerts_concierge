@@ -22,7 +22,8 @@ config :concierge_site, temp_state_key: {:system, "TEMP_STATE_KEY", "top_secret_
 
 # Bamboo config for emails
 config :concierge_site, ConciergeSite.Dissemination.Mailer,
-  adapter: Bamboo.LocalAdapter
+  adapter: Bamboo.LocalAdapter,
+  deliver_later_strategy: ConciergeSite.Dissemination.DeliverLaterStrategy
 
 config :concierge_site, send_from_email: {:system, "SENDER_EMAIL_ADDRESS", "developer@mbta.com"}
 

@@ -4,7 +4,7 @@ defmodule ConciergeSite.Dissemination.MailerInterface do
   and dispatches to correct mailer
   """
   use GenServer
-
+  require Logger
   alias ConciergeSite.Dissemination.{DigestEmail, NotificationEmail, Mailer}
 
   @lookup_tuple {:via, Registry, {:mailer_process_registry, :mailer}}
@@ -22,6 +22,7 @@ defmodule ConciergeSite.Dissemination.MailerInterface do
       notification
       |> NotificationEmail.notification_email()
       |> Mailer.deliver_later()
+    Logger.info(fn -> "Notification Email result: #{inspect(response)}" end)
     {:reply, response, nil}
   end
 
@@ -30,6 +31,7 @@ defmodule ConciergeSite.Dissemination.MailerInterface do
       digest_message
       |> DigestEmail.digest_email()
       |> Mailer.deliver_later()
+    Logger.info(fn -> "Digest Email result: #{inspect(response)}" end)
     {:reply, response, nil}
   end
 end
