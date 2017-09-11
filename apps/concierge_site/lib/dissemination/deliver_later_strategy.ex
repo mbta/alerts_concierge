@@ -5,7 +5,7 @@ defmodule ConciergeSite.Dissemination.DeliverLaterStrategy do
   def deliver_later(adapter, email, config) do
     Task.async(fn ->
       result = adapter.deliver(email, config)
-      Logger.info(inspect(result))
+      Logger.info(fn -> "Email result: #{inspect(result)}" end)
       result
     end)
   end

@@ -27,7 +27,7 @@ defmodule AlertProcessor.Dispatcher do
       notification
       |> NotificationSmser.notification_sms()
       |> AwsClient.request()
-    Logger.info(inspect(result))
+    Logger.info(fn -> "SMS notification result: #{inspect(result)}" end)
     result
   end
   def send_notification(_) do
