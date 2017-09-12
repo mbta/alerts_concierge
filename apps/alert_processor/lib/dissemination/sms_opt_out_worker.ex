@@ -6,6 +6,7 @@ defmodule AlertProcessor.SmsOptOutWorker do
   sending alerts.
   """
   use GenServer
+  require Logger
   alias AlertProcessor.Aws.AwsClient
   alias AlertProcessor.Model.User
   alias AlertProcessor.HoldingQueue
@@ -81,8 +82,11 @@ defmodule AlertProcessor.SmsOptOutWorker do
   @spec get_new_opted_out_numbers([phone_number], [phone_number]) :: {:ok, [phone_number]} | :error
   defp get_new_opted_out_numbers(current_state, opted_out_phone_numbers) do
     case opted_out_phone_numbers -- current_state do
-      [] -> :error
-      new_opted_out_numbers -> {:ok, new_opted_out_numbers}
+      [] ->
+        :error
+      new_opted_out_numbers ->
+        Logger.info("New opted out numbers: #{inspect(new_opted_out_numbers)}")
+        {:ok, new_opted_out_numbers}
     end
   end
 

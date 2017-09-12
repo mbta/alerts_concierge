@@ -61,10 +61,16 @@ defmodule AlertProcessor.Model.User do
   end
 
   def create_account(params) do
-    %__MODULE__{}
-    |> create_account_changeset(params)
-    |> PaperTrail.insert()
-    |> normalize_papertrail_result()
+    case %__MODULE__{}
+      |> create_account_changeset(params)
+      |> PaperTrail.insert()
+      |> normalize_papertrail_result() do
+        {:ok, user} ->
+          opt_in_phone_number(user)
+          {:ok, user}
+        result ->
+          result
+    end
   end
 
   def create_admin_account(params, originator) do
