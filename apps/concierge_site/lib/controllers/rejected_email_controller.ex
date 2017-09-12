@@ -2,6 +2,7 @@ defmodule ConciergeSite.RejectedEmailController do
   use ConciergeSite.Web, :controller
 
   alias AlertProcessor.Model.User
+  require Logger
 
   def handle_rejected_email(conn, params) do
     do_handle_rejected_email(conn, params)
@@ -25,6 +26,7 @@ defmodule ConciergeSite.RejectedEmailController do
       case User.for_email(user_data["emailAddress"]) do
         nil -> :ok
         user ->
+          Logger.info(fn -> "Rejected Email: #{inspect(user)} #{inspect(user_data)}" end)
           User.clear_holding_queue_for_user_id(user.id)
           User.put_user_on_indefinite_vacation(user)
       end
