@@ -4,6 +4,7 @@ defmodule AlertProcessor.DigestManager do
   alias AlertProcessor.{AlertCache, DigestBuilder,
     Model.DigestMessage, DigestDateHelper, DigestDispatcher, Helpers}
   alias Helpers.DateTimeHelper
+  require Logger
 
   @digest_interval 604_800 # 1 Week in seconds
   @digest_day 4
@@ -25,11 +26,13 @@ defmodule AlertProcessor.DigestManager do
   end
 
   def handle_info(:send_digests, interval) do
+    Logger.info("Begin processing digests")
     AlertCache.get_alerts()
     |> DigestDateHelper.calculate_date_groups()
     |> DigestBuilder.build_digests(@digest_interval)
     |> Enum.map(&DigestMessage.from_digest/1)
     |> DigestDispatcher.send_emails()
+    Logger.info("End processing digests")
     Process.send_after(self(), :send_digests, interval * 1000)
     {:noreply, interval}
   end
