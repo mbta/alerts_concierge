@@ -7,6 +7,7 @@ defmodule AlertProcessor.ServiceInfoCache do
   use GenServer
   alias AlertProcessor.Helpers.{ConfigHelper, StringHelper}
   alias AlertProcessor.{ApiClient, Model.Route}
+  require Logger
 
   @service_types [:bus, :commuter_rail, :ferry, :subway]
   @info_types [:parent_stop_info, :subway_full_routes, :ferry_general_ids, :commuter_rail_trip_ids]
@@ -80,7 +81,9 @@ defmodule AlertProcessor.ServiceInfoCache do
   """
   def handle_info(:work, _) do
     schedule_work()
-    {:noreply, fetch_and_cache_service_info()}
+    service_info_cache = fetch_and_cache_service_info()
+    Logger.info("Service info cache refreshed")
+    {:noreply, service_info_cache}
   end
 
   def handle_call(:get_subway_info, _from, %{routes: route_state} = state) do
