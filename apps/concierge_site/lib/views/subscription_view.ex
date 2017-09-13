@@ -67,6 +67,24 @@ defmodule ConciergeSite.SubscriptionView do
       ]
     end
   end
+  defp do_subscription_info(subscription, additional_info) when additional_info == %{} do
+    content_tag :div, class: "subscription-info" do
+      [
+        content_tag :div, class: "subscription-route" do
+          route_header(subscription)
+        end,
+        content_tag :div, class: "subscription-details" do
+          [
+            relevant_days(subscription),
+            " from ",
+            TimeHelper.format_time(subscription.start_time),
+            " to ",
+            TimeHelper.format_time(subscription.end_time)
+          ]
+        end
+      ]
+    end
+  end
   defp do_subscription_info(subscription, additional_info) do
     content_tag :div, class: "subscription-info" do
       [
