@@ -1,6 +1,8 @@
 defmodule ConciergeSite.SubscriptionViewTest do
   use ExUnit.Case
+  use ConciergeSite.ConnCase
   alias ConciergeSite.SubscriptionView
+  alias AlertProcessor.Repo
   alias AlertProcessor.Model.{InformedEntity, Route, Subscription}
   import AlertProcessor.Factory
 
@@ -78,7 +80,7 @@ defmodule ConciergeSite.SubscriptionViewTest do
       vacation_start = DateTime.utc_now()
       vacation_end = DateTime.from_naive!(~N[9999-12-25 23:59:59], "Etc/UTC")
       banner_content = SubscriptionView.vacation_banner_content(vacation_start, vacation_end)
-      
+
       assert banner_content == "Your alerts have been paused."
     end
 
@@ -104,5 +106,57 @@ defmodule ConciergeSite.SubscriptionViewTest do
       refute SubscriptionView.on_vacation?(nil, ~N[2035-07-01 00:00:00])
       refute SubscriptionView.on_vacation?(~N[2035-07-01 00:00:00], nil)
     end
+  end
+
+  test "renders index template when the departure_time_map is empty", %{conn: conn} do
+    user = insert(:user)
+    {:ok, commuter_rail} =
+      :subscription
+      |> build(user: user)
+      |> weekday_subscription()
+      |> commuter_rail_subscription()
+      |> Repo.preload(:informed_entities)
+      |> Ecto.Changeset.change()
+      |> Ecto.Changeset.put_assoc(:informed_entities, commuter_rail_subscription_entities())
+      |> Repo.insert()
+
+    {:ok, ferry} =
+      :subscription
+      |> build(user: user)
+      |> weekday_subscription()
+      |> ferry_subscription()
+      |> Repo.preload(:informed_entities)
+      |> Ecto.Changeset.change()
+      |> Ecto.Changeset.put_assoc(:informed_entities, ferry_subscription_entities())
+      |> Repo.insert()
+
+    subscriptions = [commuter_rail, ferry]
+
+    conn = Map.merge(conn, %{private: %{
+        phoenix_flash: %{"info" => "Subscription deleted"},
+        phoenix_endpoint: ConciergeSite.Endpoint
+      }
+    })
+
+    assigns = [
+      conn: conn,
+      departure_time_map: %{},
+      subscriptions: subscriptions,
+      vacation_start: nil,
+      vacation_end: nil
+    ]
+
+    rendered = ConciergeSite.SubscriptionView.render("index.html", assigns)
+    binary = Phoenix.HTML.safe_to_string(rendered)
+
+    assert binary =~ "Commuter Rail"
+    assert binary =~ "Anderson/Woburn"
+    assert binary =~ "North Station"
+    assert binary =~ "Weekdays from 10:00am to  2:00pm"
+
+    assert binary =~ "Ferry"
+    assert binary =~ "Long Wharf, Boston"
+    assert binary =~ "Charlestown Navy Yard"
+    assert binary =~ "Weekdays from 10:00am to  2:00pm"
   end
 end
