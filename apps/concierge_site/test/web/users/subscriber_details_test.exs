@@ -50,6 +50,24 @@ defmodule ConciergeSite.SubscriberDetailsTest do
       changelog = user.id |> SubscriberDetails.changelog() |> changelog_to_binary()
       assert changelog =~ "#{user.email} disabled their account"
     end
+
+    test "maps sms opt out", %{user: user} do
+      User.put_users_on_indefinite_vacation([user.id])
+      changelog = user.id |> SubscriberDetails.changelog() |> changelog_to_binary()
+      assert changelog =~ "Account put in indefinite vacation mode due to sms opt out."
+    end
+
+    test "email unsubscribe", %{user: user} do
+      User.put_user_on_indefinite_vacation(user, "email-unsubscribe")
+      changelog = user.id |> SubscriberDetails.changelog() |> changelog_to_binary()
+      assert changelog =~ "Account put in indefinite vacation mode due to email unsubscribe."
+    end
+
+    test "email complaint received", %{user: user} do
+      User.put_user_on_indefinite_vacation(user, "email-complaint-received")
+      changelog = user.id |> SubscriberDetails.changelog() |> changelog_to_binary()
+      assert changelog =~ "Account put in indefinite vacation mode due to email complaint received."
+    end
   end
 
   describe "subscription" do

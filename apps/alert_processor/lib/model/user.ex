@@ -346,7 +346,7 @@ defmodule AlertProcessor.Model.User do
   @doc """
   Takes a list of user ids and puts on vacation mode ending in the year 9999
   """
-  def put_users_on_indefinite_vacation(user_ids) do
+  def put_users_on_indefinite_vacation(user_ids, origin \\ "sms-opt-out") do
     user_ids
     |> Enum.with_index()
     |> Enum.reduce(Multi.new(), fn({user_id, index}, acc) ->
@@ -354,7 +354,7 @@ defmodule AlertProcessor.Model.User do
             __MODULE__
             |> Repo.get(user_id)
             |> update_vacation_changeset(%{vacation_start: DateTime.utc_now(), vacation_end: DateTime.from_naive!(~N[9999-12-25 23:59:59], "Etc/UTC")})
-            |> PaperTrail.update()
+            |> PaperTrail.update(origin: origin)
           end)
         end)
     |> Repo.transaction()
@@ -364,11 +364,11 @@ defmodule AlertProcessor.Model.User do
   @doc """
   take a user and put into vacation mode ending in the year 9999
   """
-  @spec put_user_on_indefinite_vacation(__MODULE__.t) :: {:ok, __MODULE__.t} | {:error, Ecto.Changeset.t}
-  def put_user_on_indefinite_vacation(user) do
+  @spec put_user_on_indefinite_vacation(__MODULE__.t, String.t) :: {:ok, __MODULE__.t} | {:error, Ecto.Changeset.t}
+  def put_user_on_indefinite_vacation(user, origin) do
     user
     |> update_vacation_changeset(%{vacation_start: DateTime.utc_now(), vacation_end: DateTime.from_naive!(~N[9999-12-25 23:59:59], "Etc/UTC")})
-    |> PaperTrail.update()
+    |> PaperTrail.update(origin: origin)
     |> normalize_papertrail_result()
   end
 

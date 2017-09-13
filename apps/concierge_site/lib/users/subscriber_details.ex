@@ -116,6 +116,24 @@ defmodule ConciergeSite.SubscriberDetails do
   defp changelog_item(%{item_type: "User", origin: "admin:impersonate-subscriber"}, acc, _) do
     {[], acc}
   end
+  defp changelog_item(%{item_type: "User", item_changes: item_changes, item_id: item_id, inserted_at: inserted_at, event: "update", origin: "sms-opt-out"}, acc, _) do
+    old_version = Map.get(acc, item_id, %{})
+    new_state = Map.merge(old_version, item_changes)
+    {date, time} = date_and_time_values(inserted_at)
+    {[{date, time, "Account put in indefinite vacation mode due to sms opt out."}], Map.put(acc, item_id, new_state)}
+  end
+  defp changelog_item(%{item_type: "User", item_changes: item_changes, item_id: item_id, inserted_at: inserted_at, event: "update", origin: "email-unsubscribe"}, acc, _) do
+    old_version = Map.get(acc, item_id, %{})
+    new_state = Map.merge(old_version, item_changes)
+    {date, time} = date_and_time_values(inserted_at)
+    {[{date, time, "Account put in indefinite vacation mode due to email unsubscribe."}], Map.put(acc, item_id, new_state)}
+  end
+  defp changelog_item(%{item_type: "User", item_changes: item_changes, item_id: item_id, inserted_at: inserted_at, event: "update", origin: "email-complaint-received"}, acc, _) do
+    old_version = Map.get(acc, item_id, %{})
+    new_state = Map.merge(old_version, item_changes)
+    {date, time} = date_and_time_values(inserted_at)
+    {[{date, time, "Account put in indefinite vacation mode due to email complaint received."}], Map.put(acc, item_id, new_state)}
+  end
   defp changelog_item(%{item_type: "User", item_changes: item_changes, event: "update"}, acc, _) when item_changes == %{} do
     {[], acc}
   end
