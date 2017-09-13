@@ -346,7 +346,7 @@ defmodule AlertProcessor.Model.User do
   @doc """
   Takes a list of user ids and puts on vacation mode ending in the year 9999
   """
-  def put_users_on_indefinite_vacation(user_ids, origin \\ "sms-opt-out") do
+  def put_users_on_indefinite_vacation(user_ids, origin \\ "unknown") do
     user_ids
     |> Enum.with_index()
     |> Enum.reduce(Multi.new(), fn({user_id, index}, acc) ->

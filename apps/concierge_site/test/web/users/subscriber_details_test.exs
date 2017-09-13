@@ -52,7 +52,7 @@ defmodule ConciergeSite.SubscriberDetailsTest do
     end
 
     test "maps sms opt out", %{user: user} do
-      User.put_users_on_indefinite_vacation([user.id])
+      User.put_users_on_indefinite_vacation([user.id], "sms-opt-out")
       changelog = user.id |> SubscriberDetails.changelog() |> changelog_to_binary()
       assert changelog =~ "Account put in indefinite vacation mode due to sms opt out."
     end
