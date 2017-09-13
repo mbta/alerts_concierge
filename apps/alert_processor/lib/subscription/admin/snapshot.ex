@@ -10,14 +10,18 @@ defmodule AlertProcessor.Subscription.Snapshot do
   import Ecto.Query
 
   def get_snapshots_by_datetime(user, datetime) do
-    user_version = get_user_version(user, datetime)
-
     query = from s in Subscription,
-      where: s.user_id == ^user.id
+    where: s.user_id == ^user.id
 
-    query
-    |> Repo.all
-    |> Enum.map(&(build_snapshot_for_datetime(&1, user_version, datetime)))
+    with {:ok, user_version} <- get_user_version(user, datetime) do
+      result =
+        query
+        |> Repo.all
+        |> Enum.map(&(build_snapshot_for_datetime(&1, user_version, datetime)))
+      {:ok, result}
+    else
+      _ -> :error
+    end
   end
 
   defp build_snapshot_for_datetime(sub, user_version, datetime) do
@@ -123,14 +127,21 @@ defmodule AlertProcessor.Subscription.Snapshot do
   end
 
   defp get_user_version(user, datetime) do
-    user
-    |> PaperTrail.get_versions()
-    |> Enum.reject(fn(version) ->
-      version_time = DateTime.from_naive!(version.inserted_at, "Etc/UTC")
-      DateTime.compare(version_time, datetime) == :gt
-    end)
-    |> Enum.reduce(%{}, fn(%{item_changes: changes}, acc) ->
-      Map.merge(acc, changes)
-    end)
+    result =
+      user
+      |> PaperTrail.get_versions()
+      |> Enum.reject(fn(version) ->
+        version_time = DateTime.from_naive!(version.inserted_at, "Etc/UTC")
+        DateTime.compare(version_time, datetime) == :gt
+      end)
+      |> Enum.reduce(%{}, fn(%{item_changes: changes}, acc) ->
+        Map.merge(acc, changes)
+      end)
+
+    if result == %{} do
+      :error
+    else
+      {:ok, result}
+    end
   end
 end

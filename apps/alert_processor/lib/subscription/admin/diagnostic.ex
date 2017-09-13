@@ -17,11 +17,13 @@ defmodule AlertProcessor.Subscription.Diagnostic do
 
     with {:ok, datetime} <- Calendar.DateTime.from_erl(erl_param, "America/New_York"),
       notifications <- get_notifications(user.id, alert_id),
-      snapshots <- Snapshot.get_snapshots_by_datetime(user, datetime),
-      {:ok, alert} <- get_alert_version(alert_id, datetime) do
+      {:ok, snapshots} <- Snapshot.get_snapshots_by_datetime(user, datetime),
+      {:ok, alert} <- get_alert(alert_id),
+      {:ok, alert_versions} <- get_alert_versions(alert, datetime),
+      {:ok, alert_snapshot} <- serialize_alert_versions(alert_versions) do
         result = snapshots
         |> Enum.map(fn(snap) ->
-          build_diagnosis(alert, notifications, [snap])
+          build_diagnosis(alert_snapshot, notifications, [snap])
         end)
         {:ok, result}
     else
@@ -30,15 +32,32 @@ defmodule AlertProcessor.Subscription.Diagnostic do
     end
   end
 
-  defp get_alert_version(alert_id, datetime) do
-    alert =
-      SavedAlert
-      |> Repo.get_by(alert_id: alert_id)
+  defp get_alert(alert_id) do
+    case Repo.get_by(SavedAlert, alert_id: alert_id) do
+      %SavedAlert{} = alert -> {:ok, alert}
+      _ -> {:error, :no_alert}
+    end
+  end
+
+  defp get_alert_versions(alert, datetime) do
+    result =
+      alert
       |> PaperTrail.get_versions()
       |> Enum.reject(fn(version) ->
         version_time = DateTime.from_naive!(version.inserted_at, "Etc/UTC")
         DateTime.compare(version_time, datetime) == :gt
       end)
+
+    if result == [] do
+      {:error, :no_versions}
+    else
+      {:ok, result}
+    end
+  end
+
+  defp serialize_alert_versions(alert_versions) do
+    snapshot =
+      alert_versions
       |> Enum.reduce(%{}, fn(%{item_changes: changes}, acc) ->
         Map.merge(acc, changes["data"])
       end)
@@ -46,7 +65,7 @@ defmodule AlertProcessor.Subscription.Diagnostic do
       |> serialize_active_periods()
       |> serialize_informed_entities()
 
-    {:ok, StructHelper.to_struct(Alert, alert)}
+    {:ok, StructHelper.to_struct(Alert, snapshot)}
   end
 
   defp serialize_alert(alert) do

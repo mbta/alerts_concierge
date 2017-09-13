@@ -337,39 +337,35 @@ defmodule AlertProcessor.Subscription.DiagnosticTest do
       assert result.passes_do_not_disturb? == true
     end
 
-    # test "with no valid id", %{user: user} do
-    #   params = %{
-    #     "alert_date" => %{
-    #       "year" => "2020",
-    #       "month" => "01",
-    #       "day" => "01",
-    #       "hour" => "1",
-    #       "minute" => "1"
-    #     },
-    #     "alert_id" => "1111111"
-    #   }
+    test "with no valid id", %{user: user} do
+      params = %{
+        "alert_date" => %{
+          "year" => "2020",
+          "month" => "01",
+          "day" => "01",
+          "hour" => "1",
+          "minute" => "1"
+        },
+        "alert_id" => "1111111"
+      }
 
-    #   lpn = DateTime.from_unix!(@lpn_unix)
+      assert Diagnostic.diagnose_alert(user, params) == {:error, user}
+    end
 
-    #   x = Diagnostic.diagnose_alert(user, params)
-    # end
+    test "with no versions (old datetime)", %{user: user, alert: alert} do
+      params = %{
+        "alert_date" => %{
+          "year" => "2000",
+          "month" => "01",
+          "day" => "01",
+          "hour" => "1",
+          "minute" => "1"
+        },
+        "alert_id" => alert.alert_id
+      }
 
-    # test "with no versions (old datetime)", %{user: user, alert: alert} do
-    #   params = %{
-    #     "alert_date" => %{
-    #       "year" => "2020",
-    #       "month" => "01",
-    #       "day" => "01",
-    #       "hour" => "1",
-    #       "minute" => "1"
-    #     },
-    #     "alert_id" => alert.id
-    #   }
-
-    #   lpn = DateTime.from_unix!(@lpn_unix)
-
-    #   x = Diagnostic.diagnose_alert(user, params)
-    # end
+      assert Diagnostic.diagnose_alert(user, params) == {:error, user}
+    end
   end
 
   describe "diagnose_alert/2 informed entities" do

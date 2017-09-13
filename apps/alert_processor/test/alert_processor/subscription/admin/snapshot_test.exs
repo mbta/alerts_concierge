@@ -43,7 +43,7 @@ defmodule AlertProcessor.Subscription.SnapshotTest do
       Repo.update!(future_changeset)
       Repo.update!(user_changeset)
 
-      [subscription] = Snapshot.get_snapshots_by_datetime(subscriber, date)
+      {:ok, [subscription]} = Snapshot.get_snapshots_by_datetime(subscriber, date)
 
       assert %Subscription{} = subscription
       assert subscription.relevant_days == [:saturday]
@@ -67,7 +67,7 @@ defmodule AlertProcessor.Subscription.SnapshotTest do
       multi = Mapper.build_subscription_transaction([info], user, user.id)
       Subscription.set_versioned_subscription(multi)
 
-      [subscription] = Snapshot.get_snapshots_by_datetime(user, future_date)
+      {:ok, [subscription]} = Snapshot.get_snapshots_by_datetime(user, future_date)
 
       [%{informed_entities: [%{id: ie1_id}, %{id: ie2_id}, %{id: ie3_id}]}] =
         Subscription |> Repo.all() |> Repo.preload(:informed_entities)
