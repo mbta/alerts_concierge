@@ -42,7 +42,7 @@ config :concierge_site, ConciergeSite.Dissemination.Mailer,
   port: 25,
   tls: :always, # can be `:always` or `:never`
   ssl: false, # can be `true`
-  retries: 1,
+  retries: 3,
   username: "${SMTP_USERNAME}",
   password: "${SMTP_PASSWORD}"
 
