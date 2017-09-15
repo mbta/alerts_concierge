@@ -39,7 +39,7 @@ config :alert_processor, database_url: {:system, "DATABASE_URL_DEV", "postgresql
 # Config for Rate Limiter. Scale: time period in ms. Limit: # of requests per time period. Send Rate: ms delay between send
 config :alert_processor,
   rate_limit_scale: {:system, "RATE_LIMIT_SCALE", "3600000"},
-  rate_limit: {:system, "RATE_LIMIT", "100"},
+  rate_limit: {:system, "RATE_LIMIT", "30"},
   send_rate: {:system, "SEND_RATE", "100"}
 
 # Import environment specific config. This must remain at the bottom
