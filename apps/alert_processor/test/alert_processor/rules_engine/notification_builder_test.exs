@@ -103,6 +103,7 @@ defmodule AlertProcessor.NotificationBuilderTest do
 
     [notification] = NotificationBuilder.build_notifications(sub, alert, time.now)
     assert DT.same_time?(notification.send_after, time.one_day_from_now)
+    assert %DateTime{time_zone: "Etc/UTC"} = notification.send_after
   end
 
   test "do not send notification if send_time -> active_period end is inside blackout period", %{time: time} do
@@ -190,7 +191,8 @@ defmodule AlertProcessor.NotificationBuilderTest do
     }
 
     [notification] = NotificationBuilder.build_notifications(sub, alert, today_5am)
-    assert notification.send_after == today_8am
+    assert DT.same_time?(notification.send_after, today_8am)
+    assert %DateTime{time_zone: "Etc/UTC"} = notification.send_after
   end
 
   test """
@@ -222,6 +224,7 @@ defmodule AlertProcessor.NotificationBuilderTest do
     }
 
     [notification] = NotificationBuilder.build_notifications(sub, alert, today_10pm)
-    assert notification.send_after == tomorrow_8am
+    assert DT.same_time?(notification.send_after, tomorrow_8am)
+    assert %DateTime{time_zone: "Etc/UTC"} = notification.send_after
   end
 end
