@@ -42,6 +42,7 @@ defmodule ConciergeSite.Router do
     resources "/login", SessionController, only: [:new, :create, :delete], singleton: true
     get "/reset-password/sent", PasswordResetController, :sent
     resources "/reset-password", PasswordResetController, only: [:new, :create, :edit, :update]
+    post "/unsubscribe", UnsubscribeController, :unsubscribe_confirmed
     get "/unsubscribe/:token", UnsubscribeController, :unsubscribe
     post "/rejected_email", RejectedEmailController, :handle_rejected_email
   end

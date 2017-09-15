@@ -8,11 +8,25 @@ defmodule ConciergeSite.UnsubscribeController do
     with {:ok, claims} <- Guardian.decode_and_verify(params["token"]),
       default_permissions <- Guardian.Permissions.from_claims(claims, :default),
       true <- Guardian.Permissions.any?(default_permissions, [:unsubscribe], :default),
+      {:ok, _user} <- Guardian.serializer.from_token(claims["sub"]) do
+        render(conn, "unsubscribe.html", token: params["token"])
+    else
+        _ ->
+        conn
+        |> put_flash(:error, "Invalid token")
+        |> redirect(to: "/")
+    end
+  end
+
+  def unsubscribe_confirmed(conn, params, _user, _claims) do
+    with {:ok, claims} <- Guardian.decode_and_verify(params["unsubscribe"]["token"]),
+      default_permissions <- Guardian.Permissions.from_claims(claims, :default),
+      true <- Guardian.Permissions.any?(default_permissions, [:unsubscribe], :default),
       {:ok, user} <- Guardian.serializer.from_token(claims["sub"]),
       :ok <- User.clear_holding_queue_for_user_id(user.id),
       {:ok, _user} <- User.put_user_on_indefinite_vacation(user, "email-unsubscribe") do
       Logger.info(fn -> "User Unsubscribed: #{inspect(user)}" end)
-      render(conn, "unsubscribe.html")
+      render(conn, "unsubscribe_confirmed.html")
     else
       _ ->
         conn

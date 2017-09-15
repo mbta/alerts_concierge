@@ -4,10 +4,18 @@ defmodule ConciergeSite.UnsubscribeControllerTest do
   alias AlertProcessor.{Model.User, Repo}
 
   describe "valid token" do
-    test "it puts user into vacation mode", %{conn: conn} do
+    test "it prompts user to confirm ubsubscribing", %{conn: conn} do
       user = insert(:user)
       {:ok, token, _claims} = Token.issue(user, [:unsubscribe])
       conn = get(conn, unsubscribe_path(conn, :unsubscribe, token))
+
+      assert html_response(conn, 200) =~ "Unsubscribe?"
+    end
+
+    test "it puts user into indefinite vacation mode", %{conn: conn} do
+      user = insert(:user)
+      {:ok, token, _claims} = Token.issue(user, [:unsubscribe])
+      conn = post(conn, unsubscribe_path(conn, :unsubscribe_confirmed, %{unsubscribe: %{token: token}}))
       updated_user = Repo.get(User, user.id)
 
       assert html_response(conn, 200) =~ "You have been unsubscribed"
@@ -22,10 +30,22 @@ defmodule ConciergeSite.UnsubscribeControllerTest do
       assert html_response(conn, 302) =~ "/"
     end
 
+    test "does not allow user to post without token", %{conn: conn} do
+      conn = post(conn, unsubscribe_path(conn, :unsubscribe_confirmed, %{unsubscribe: %{token: "not_a_token"}}))
+      assert html_response(conn, 302) =~ "/"
+    end
+
     test "requires valid permissions for route", %{conn: conn} do
       user = insert(:user)
       {:ok, token, _claims} = Token.issue(user, [:reset_password])
       conn = get(conn, unsubscribe_path(conn, :unsubscribe, token))
+      assert html_response(conn, 302) =~ "/"
+    end
+
+    test "requires valid permissions to post to route", %{conn: conn} do
+      user = insert(:user)
+      {:ok, token, _claims} = Token.issue(user, [:reset_password])
+      conn = post(conn, unsubscribe_path(conn, :unsubscribe_confirmed, %{unsubscribe: %{token: token}}))
       assert html_response(conn, 302) =~ "/"
     end
   end
