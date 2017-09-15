@@ -163,7 +163,10 @@ defmodule AlertProcessor.NotificationBuilder do
   defp time_to_datetime(time, datetime) do
     erl_time = T.to_erl(time)
     erl_date = DT.to_date(datetime)
-    DT.from_date_and_time_and_zone!(erl_date, erl_time, "America/New_York")
+
+    erl_date
+    |> DT.from_date_and_time_and_zone!(erl_time, "America/New_York")
+    |> DT.shift_zone!("Etc/UTC")
   end
 
   defp before_or_equal(first_dt, second_dt) do
