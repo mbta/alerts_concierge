@@ -1,4 +1,4 @@
-defmodule AlertProcessor.StructHelper do
+defmodule AlertProcessor.Helpers.StructHelper do
   def to_struct(kind, attrs) do
     struct = struct(kind)
     Enum.reduce Map.to_list(struct), struct, fn {k, _}, acc ->

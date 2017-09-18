@@ -3,8 +3,9 @@ defmodule AlertProcessor.Subscription.Snapshot do
   Manages snapshots of a subscripton and its informed_entities
   at a specific point in time
   """
-  alias AlertProcessor.{Model, Repo, StructHelper}
-  alias Model.{InformedEntity, Subscription, User}
+  alias AlertProcessor.{AlertParser, Helpers.StringHelper, Model,
+    Repo, Helpers.StructHelper, Subscription.DiagnosticQuery}
+  alias Model.{Alert, InformedEntity, Subscription, User}
   alias Calendar.Time.Parse, as: TParse
   alias Calendar.DateTime.Parse, as: DTParse
   import Ecto.Query
@@ -13,7 +14,7 @@ defmodule AlertProcessor.Subscription.Snapshot do
     query = from s in Subscription,
     where: s.user_id == ^user.id
 
-    with {:ok, user_version} <- get_user_version(user, datetime) do
+    with {:ok, user_version} <- DiagnosticQuery.get_user_version(user, datetime) do
       result =
         query
         |> Repo.all
@@ -36,11 +37,57 @@ defmodule AlertProcessor.Subscription.Snapshot do
           %{subscription: sub}) ->
           %{
             subscription: Map.merge(sub, changes),
-            informed_entities: get_informed_entities(meta["informed_entity_version_ids"])
+            informed_entities: DiagnosticQuery.get_informed_entities(meta["informed_entity_version_ids"])
           }
         end)
     |> Map.merge(%{user: user_version})
     |> serialize()
+  end
+
+  def serialize_alert_versions(alert_versions) do
+    snapshot =
+      alert_versions
+      |> Enum.reduce(%{}, fn(%{item_changes: changes}, acc) ->
+        Map.merge(acc, changes["data"])
+      end)
+      |> serialize_alert()
+      |> serialize_active_periods()
+      |> serialize_informed_entities()
+
+    {:ok, StructHelper.to_struct(Alert, snapshot)}
+  end
+
+  defp serialize_alert(alert) do
+    Map.merge(alert, %{
+      "effect_name" => StringHelper.split_capitalize(alert["effect_detail"], "_"),
+      "header" => AlertParser.parse_translation(alert["header_text"]),
+      "severity" => AlertParser.parse_severity(alert["severity"]),
+      "last_push_notification" => DateTime.from_unix!(alert["last_push_notification_timestamp"]),
+      "service_effect" => AlertParser.parse_translation(alert["service_effect_text"]),
+      "description" => AlertParser.parse_translation(alert["description_text"]),
+      "timeframe" => AlertParser.parse_translation(alert["timeframe_text"]),
+      "recurrence" => AlertParser.parse_translation(alert["recurrence_text"])
+    })
+  end
+
+  defp serialize_active_periods(alert) do
+    active_periods = Enum.map(alert["active_period"], fn(ap) ->
+      serialize_active_period(ap)
+    end)
+    Map.put(alert, "active_period", active_periods)
+  end
+
+  def serialize_active_period(map) do
+    for {key, val} <- map, into: %{} do
+       {String.to_existing_atom(key), DateTime.from_unix!(val)}
+    end
+  end
+
+  defp serialize_informed_entities(alert) do
+    informed_entities = Enum.map(alert["informed_entity"], fn(ie) ->
+      StructHelper.to_struct(InformedEntity, ie)
+    end)
+    Map.put(alert, "informed_entities", informed_entities)
   end
 
   defp serialize(snapshot) do
@@ -114,34 +161,5 @@ defmodule AlertProcessor.Subscription.Snapshot do
     sub
     |> Map.put(:start_time, start_time)
     |> Map.put(:end_time, end_time)
-  end
-
-  defp get_informed_entities(nil), do: []
-  defp get_informed_entities(ids) do
-    query = from v in PaperTrail.Version,
-      where: v.id in ^ids
-
-    query
-    |> Repo.all()
-    |> Enum.map(&(&1.item_changes))
-  end
-
-  defp get_user_version(user, datetime) do
-    result =
-      user
-      |> PaperTrail.get_versions()
-      |> Enum.reject(fn(version) ->
-        version_time = DateTime.from_naive!(version.inserted_at, "Etc/UTC")
-        DateTime.compare(version_time, datetime) == :gt
-      end)
-      |> Enum.reduce(%{}, fn(%{item_changes: changes}, acc) ->
-        Map.merge(acc, changes)
-      end)
-
-    if result == %{} do
-      :error
-    else
-      {:ok, result}
-    end
   end
 end

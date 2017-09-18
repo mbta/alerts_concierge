@@ -25,27 +25,27 @@
     </div>
   </div>
   <div class="admin-table-body">
-    <%= if Enum.empty?(@snapshots) do %>
+    <%= if Enum.empty?(@diagnoses) do %>
       <div class="admin-table-row">
         <div class="admin-table-cell">
           No Results
         </div>
       </div>
     <% else %>
-      <%= alert_title(@snapshots) %>
-      <%= for snapshot <- @snapshots do %>
+      <%= alert_title(@diagnoses) %>
+      <%= for diagnosis <- @diagnoses do %>
         <div class="admin-table-row">
           <div>
             <div class="diagnostic-subscription-info">
-              <%= ConciergeSite.SubscriptionView.subscription_info(snapshot.subscription) %>
+              <%= ConciergeSite.SubscriptionView.subscription_info(diagnosis.subscription) %>
             </div>
             <div class="diagnostic-result">
-              <p><%= sent_alert_result(snapshot) %></p>
-              <p><%= severity_result(snapshot) %></p>
-              <p><%= active_period_result(snapshot) %></p>
-              <p><%= do_not_disturb_result(snapshot) %></p>
-              <p><%= vacation_result(snapshot) %></p>
-              <p><%= informed_entity_result(snapshot) %></p>
+              <p><%= sent_alert_result(diagnosis) %></p>
+              <p><%= severity_result(diagnosis) %></p>
+              <p><%= active_period_result(diagnosis) %></p>
+              <p><%= do_not_disturb_result(diagnosis) %></p>
+              <p><%= vacation_result(diagnosis) %></p>
+              <p><%= informed_entity_result(diagnosis) %></p>
             </div>
           </div>
         </div>
