@@ -17,8 +17,8 @@ defmodule AlertProcessor.Supervisor do
     SmsOptOutWorker
   }
 
-  @worker_pool_size Application.get_env(__MODULE__, :pool_size)
-  @worker_pool_overflow Application.get_env(__MODULE__, :overflow)
+  @worker_pool_size Application.get_env(:alert_processor, :pool_size)
+  @worker_pool_overflow Application.get_env(:alert_processor, :overflow)
 
   def start_link do
     Supervisor.start_link(__MODULE__, [])
