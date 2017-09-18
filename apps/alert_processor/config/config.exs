@@ -16,10 +16,6 @@ config :logger, :console,
   format: "$time $metadata[$level] $message\n",
   metadata: [:request_id]
 
-config :alert_processor, AlertProcessor,
-  pool_size: 2,
-  overflow: 1
-
 # Configure your database
 config :alert_processor, AlertProcessor.Repo,
   adapter: Ecto.Adapters.Postgres,
@@ -38,6 +34,8 @@ config :alert_processor, database_url: {:system, "DATABASE_URL_DEV", "postgresql
 
 # Config for Rate Limiter. Scale: time period in ms. Limit: # of requests per time period. Send Rate: ms delay between send
 config :alert_processor,
+  pool_size: 2,
+  overflow: 1,
   rate_limit_scale: {:system, "RATE_LIMIT_SCALE", "3600000"},
   rate_limit: {:system, "RATE_LIMIT", "30"},
   send_rate: {:system, "SEND_RATE", "100"}

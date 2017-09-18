@@ -39,7 +39,7 @@ config :logger, :logentries,
 config :concierge_site, ConciergeSite.Dissemination.Mailer,
   adapter: Bamboo.SMTPAdapter,
   server: "email-smtp.us-east-1.amazonaws.com",
-  port: 25,
+  port: 587,
   tls: :always, # can be `:always` or `:never`
   ssl: false, # can be `true`
   retries: 3,
