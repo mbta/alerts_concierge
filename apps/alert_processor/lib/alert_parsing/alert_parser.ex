@@ -150,11 +150,9 @@ defmodule AlertProcessor.AlertParser do
      %{stop: stop}
   end
 
-  def parse_severity(severity), do: do_parse_severity(severity)
-
-  defp do_parse_severity(sev) when sev >= 7, do: :severe
-  defp do_parse_severity(sev) when sev >= 5, do: :moderate
-  defp do_parse_severity(sev) when is_integer(sev), do: :minor
+  def parse_severity(sev) when sev >= 7, do: :severe
+  def parse_severity(sev) when sev >= 5, do: :moderate
+  def parse_severity(sev) when is_integer(sev), do: :minor
 
   def parse_translation(translations), do: do_parse_translation(translations)
 

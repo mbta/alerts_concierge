@@ -45,23 +45,13 @@ defmodule AlertProcessor.Subscription.Diagnostic do
   end
 
   defp alert_sent?(diagnostic, alert: alert, subscriptions: subscriptions, notifications: notifications) do
-    subs = SentAlertFilter.filter(subscriptions, alert: alert, notifications: notifications)
-
-    if subs == [] do
-      Map.put(diagnostic, :passed_sent_alert_filter?, false)
-    else
-      Map.put(diagnostic, :passed_sent_alert_filter?, true)
-    end
+    result = SentAlertFilter.filter(subscriptions, alert: alert, notifications: notifications) != []
+    Map.put(diagnostic, :passed_sent_alert_filter?, result)
   end
 
   defp matches_active_period?(diagnostic, alert: alert, subscriptions: subscriptions) do
-    subs = ActivePeriodFilter.filter(subscriptions, alert: alert)
-
-    if subs == [] do
-      Map.put(diagnostic, :passed_active_period_filter?, false)
-    else
-      Map.put(diagnostic, :passed_active_period_filter?, true)
-    end
+    result = ActivePeriodFilter.filter(subscriptions, alert: alert) != []
+    Map.put(diagnostic, :passed_active_period_filter?, result)
   end
 
   defp matches_informed_entities?(diagnostic, alert: alert, subscriptions: subscriptions) do
@@ -77,13 +67,8 @@ defmodule AlertProcessor.Subscription.Diagnostic do
   end
 
   defp matches_severity?(diagnostic, alert: alert, subscriptions: subscriptions) do
-    subs = SeverityFilter.filter(subscriptions, alert: alert)
-
-    if subs == [] do
-      Map.put(diagnostic, :passed_severity_filter?, false)
-    else
-      Map.put(diagnostic, :passed_severity_filter?, true)
-    end
+    result = SeverityFilter.filter(subscriptions, alert: alert) != []
+    Map.put(diagnostic, :passed_severity_filter?, result)
   end
 
   def match_informed_entities(%{subscription: %{informed_entities: ies}} = diagnostic, alert: alert) do
@@ -99,67 +84,43 @@ defmodule AlertProcessor.Subscription.Diagnostic do
   defp matches_any_direction?(diagnostic, alert: alert, informed_entities: ies) do
     alert_ies_directions = Enum.map(alert.informed_entities, &(&1.direction_id))
     ies_directions = Enum.map(ies, &(&1.direction_id))
-
-    if length(alert_ies_directions -- ies_directions) > length(alert_ies_directions) do
-      Map.put(diagnostic, :matches_any_direction?, true)
-    else
-      Map.put(diagnostic, :matches_any_direction?, false)
-    end
+    result = length(alert_ies_directions -- ies_directions) > length(alert_ies_directions)
+    Map.put(diagnostic, :matches_any_direction?, result)
   end
 
   defp matches_any_facility?(diagnostic, alert: alert, informed_entities: ies) do
     alert_ies_facilities = Enum.map(alert.informed_entities, &(&1.facility_type))
     ies_facilities = Enum.map(ies, &(&1.facility_type))
-
-    if length(alert_ies_facilities -- ies_facilities) > length(alert_ies_facilities) do
-      Map.put(diagnostic, :matches_any_facility?, true)
-    else
-      Map.put(diagnostic, :matches_any_facility?, false)
-    end
+    result = length(alert_ies_facilities -- ies_facilities) > length(alert_ies_facilities)
+    Map.put(diagnostic, :matches_any_facility?, result)
   end
 
   defp matches_any_route?(diagnostic, alert: alert, informed_entities: ies) do
     alert_ies_routes = Enum.map(alert.informed_entities, &(&1.route))
     ies_routes = Enum.map(ies, &(&1.route))
-
-    if length(alert_ies_routes -- ies_routes) > length(alert_ies_routes) do
-      Map.put(diagnostic, :matches_any_route?, true)
-    else
-      Map.put(diagnostic, :matches_any_route?, false)
-    end
+    result = length(alert_ies_routes -- ies_routes) > length(alert_ies_routes)
+    Map.put(diagnostic, :matches_any_route?, result)
   end
 
   defp matches_any_route_type?(diagnostic, alert: alert, informed_entities: ies) do
     alert_ies_route_types = Enum.map(alert.informed_entities, &(&1.route_type))
     ies_route_types = Enum.map(ies, &(&1.route_type))
-
-    if length(alert_ies_route_types -- ies_route_types) > length(alert_ies_route_types) do
-      Map.put(diagnostic, :matches_any_route_type?, true)
-    else
-      Map.put(diagnostic, :matches_any_route_type?, false)
-    end
+    result = length(alert_ies_route_types -- ies_route_types) > length(alert_ies_route_types)
+    Map.put(diagnostic, :matches_any_route_type?, result)
   end
 
   defp matches_any_stop?(diagnostic, alert: alert, informed_entities: ies) do
     alert_ies_stops = Enum.map(alert.informed_entities, &(&1.stop))
     ies_stops = Enum.map(ies, &(&1.stop))
-
-    if length(alert_ies_stops -- ies_stops) > length(alert_ies_stops) do
-      Map.put(diagnostic, :matches_any_stop?, true)
-    else
-      Map.put(diagnostic, :matches_any_stop?, false)
-    end
+    result = length(alert_ies_stops -- ies_stops) > length(alert_ies_stops)
+    Map.put(diagnostic, :matches_any_stop?, result)
   end
 
   defp matches_any_trip?(diagnostic, alert: alert, informed_entities: ies) do
     alert_ies_trips = Enum.map(alert.informed_entities, &(&1.trip))
     ies_trips = Enum.map(ies, &(&1.trip))
-
-    if length(alert_ies_trips -- ies_trips) > length(alert_ies_trips) do
-      Map.put(diagnostic, :matches_any_trip?, true)
-    else
-      Map.put(diagnostic, :matches_any_trip?, false)
-    end
+    result = length(alert_ies_trips -- ies_trips) > length(alert_ies_trips)
+    Map.put(diagnostic, :matches_any_trip?, result)
   end
 
   defp matches_vacation_period?(diagnostic, alert: alert, user: user) do
@@ -176,11 +137,7 @@ defmodule AlertProcessor.Subscription.Diagnostic do
       end
     end)
 
-    if result do
-      Map.put(diagnostic, :passes_vacation_period?, true)
-    else
-      Map.put(diagnostic, :passes_vacation_period?, false)
-    end
+    Map.put(diagnostic, :passes_vacation_period?, result)
   end
 
   defp matches_dnd_period?(diagnostic, alert: alert, user: user) do
@@ -197,10 +154,6 @@ defmodule AlertProcessor.Subscription.Diagnostic do
       end
     end)
 
-    if result do
-      Map.put(diagnostic, :passes_do_not_disturb?, true)
-    else
-      Map.put(diagnostic, :passes_do_not_disturb?, false)
-    end
+    Map.put(diagnostic, :passes_do_not_disturb?, result)
   end
 end
