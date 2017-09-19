@@ -8,7 +8,7 @@ defmodule AlertProcessor.Subscription.SnapshotTest do
 
   describe "get_snapshots_by_datetime/2" do
     test "returns latest version that existed on the given date" do
-      subscriber = insert(:user)
+      subscriber = build(:user) |> PaperTrail.insert!
       {:ok, future_date, _} = DateTime.from_iso8601("2118-01-01T01:01:01Z")
       {:ok, date, _} = DateTime.from_iso8601("2017-07-11T01:01:01Z")
       {:ok, past_date, _} = DateTime.from_iso8601("2017-01-11T01:01:01Z")
@@ -17,7 +17,8 @@ defmodule AlertProcessor.Subscription.SnapshotTest do
         user: subscriber,
         updated_at: past_date,
         inserted_at: past_date,
-        relevant_days: [:sunday]
+        relevant_days: [:sunday],
+        type: :bus
       )
       create_changeset = Subscription.create_changeset(%Subscription{}, sub_params)
       inserted_sub = PaperTrail.insert!(create_changeset)
@@ -30,18 +31,23 @@ defmodule AlertProcessor.Subscription.SnapshotTest do
         relevant_days: [:saturday, :sunday]
       }, subscriber.id)
 
+      user_version = PaperTrail.get_version(subscriber)
       [original_version, updated_version, future_version] = PaperTrail.get_versions(future_updated_sub)
       insert_changeset = Ecto.Changeset.cast(original_version, %{inserted_at: past_date}, [:inserted_at])
       update_changeset = Ecto.Changeset.cast(updated_version, %{inserted_at: date}, [:inserted_at])
       future_changeset = Ecto.Changeset.cast(future_version, %{inserted_at: future_date}, [:inserted_at])
+      user_changeset = Ecto.Changeset.cast(user_version, %{inserted_at: date}, [:inserted_at])
 
       Repo.update!(insert_changeset)
       Repo.update!(update_changeset)
       Repo.update!(future_changeset)
+      Repo.update!(user_changeset)
 
-      [snapshot] = Snapshot.get_snapshots_by_datetime(subscriber, date)
+      {:ok, [subscription]} = Snapshot.get_snapshots_by_datetime(subscriber, date)
 
-      assert snapshot.subscription["relevant_days"] ==  ["saturday"]
+      assert %Subscription{} = subscription
+      assert subscription.relevant_days == [:saturday]
+      assert subscription.user.email == subscriber.email
     end
 
     test "fetches correct informed_entities for version" do
@@ -56,20 +62,17 @@ defmodule AlertProcessor.Subscription.SnapshotTest do
         "trip_type" => "one_way"
       }
       {:ok, future_date, _} = DateTime.from_iso8601("2118-01-01T01:01:01Z")
-      user = insert(:user)
+      user = build(:user) |> PaperTrail.insert!
       {:ok, [info|_]} = BusMapper.map_subscription(params)
       multi = Mapper.build_subscription_transaction([info], user, user.id)
       Subscription.set_versioned_subscription(multi)
 
-      [snapshot] = Snapshot.get_snapshots_by_datetime(user, future_date)
+      {:ok, [subscription]} = Snapshot.get_snapshots_by_datetime(user, future_date)
 
-      [%{id: sub_id, informed_entities: [%{id: ie1_id}, %{id: ie2_id}, %{id: ie3_id}]}] =
+      [%{informed_entities: [%{id: ie1_id}, %{id: ie2_id}, %{id: ie3_id}]}] =
         Subscription |> Repo.all() |> Repo.preload(:informed_entities)
 
-      assert %{
-        subscription: %{"id" => ^sub_id},
-        informed_entities: [%{"id" => ^ie3_id}, %{"id" => ^ie2_id}, %{"id" => ^ie1_id}]
-      } = snapshot
+      assert MapSet.new([ie1_id, ie2_id, ie3_id]) == MapSet.new(Enum.map(subscription.informed_entities, &(&1.id)))
     end
 
     test "fetches informed_entities for correct version when multiple exist" do
@@ -77,7 +80,7 @@ defmodule AlertProcessor.Subscription.SnapshotTest do
       {:ok, future_date, _} = DateTime.from_iso8601("2108-01-01T01:01:01Z")
       {:ok, date, _} = DateTime.from_iso8601("2018-01-01T01:01:01Z")
 
-      user = insert(:user)
+      user = build(:user) |> PaperTrail.insert!
       sub_params = %{
         "origin" => "place-north",
         "destination" => "Anderson/ Woburn",

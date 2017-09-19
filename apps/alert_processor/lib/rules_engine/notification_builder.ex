@@ -23,7 +23,7 @@ defmodule AlertProcessor.NotificationBuilder do
   def build_notifications(%Subscription{user: user}, %Alert{active_period: ap} = alert, now) do
     Enum.reduce(ap, [], fn(active_period, result) ->
       case calculate_send_after(user, {active_period.start, active_period.end}, now) do
-        nil ->
+        {:error, _} ->
           result
         %DateTime{} = time ->
           notification = %Notification{
@@ -45,8 +45,8 @@ defmodule AlertProcessor.NotificationBuilder do
   end
 
   @spec calculate_send_after(User.t, {DateTime.t, DateTime.t | nil}, DateTime.t)
-  :: DateTime.t | nil
-  defp calculate_send_after(%User{
+  :: DateTime.t | {:error, atom}
+  def calculate_send_after(%User{
       vacation_start: vs,
       vacation_end: ve,
       do_not_disturb_start: dnd_start,
@@ -60,7 +60,7 @@ defmodule AlertProcessor.NotificationBuilder do
     do
       send_time
     else
-      _ -> nil
+      error -> error
     end
   end
 
@@ -69,7 +69,7 @@ defmodule AlertProcessor.NotificationBuilder do
   defp not_expired({_start_time, nil}, _now), do: :ok
   defp not_expired({_start_time, end_time}, now) do
     if DT.after?(now, end_time) do
-      :error
+      {:error, :expired}
     else
       :ok
     end
@@ -94,7 +94,7 @@ defmodule AlertProcessor.NotificationBuilder do
   end
   defp outside_vacation_dates({_start_time, end_time}, sending_time, vs, ve) do
     case in_vacation_period?(sending_time, end_time, vs, ve) do
-      true -> :error
+      true -> {:error, :vacation}
       false ->
         case DT.after?(sending_time, ve) do
           true -> {:ok, sending_time}
@@ -123,7 +123,7 @@ defmodule AlertProcessor.NotificationBuilder do
       {:check_send, adjusted_send_time} ->
         case end_time(adjusted_send_time, end_time) do
           true -> {:ok, adjusted_send_time}
-          false -> :error
+          false -> {:error, :do_not_disturb}
         end
     end
   end

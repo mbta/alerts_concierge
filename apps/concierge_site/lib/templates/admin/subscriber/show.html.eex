@@ -31,6 +31,7 @@
                    method: :post %>
       <% end %>
       <%= link "Send message", to: admin_subscriber_subscriber_path(@conn, :new_message, @subscriber.id), class: "btn btn-outline-primary admin-user-btn" %>
+      <%= link "Diagnostics", to: admin_subscription_search_path(@conn, :new, @subscriber.id), class: "btn btn-outline-primary admin-user-btn" %>
     </div>
     <div class="admin-info-contents">
     <h2>Received Notifications</h2>

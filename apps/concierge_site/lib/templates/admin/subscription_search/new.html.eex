@@ -3,12 +3,12 @@
 <div class="admin-subscription-search">
   <%= form_for @conn, admin_subscription_search_path(@conn, :create, @user.id), [as: :search], fn f -> %>
     <div class="form-group">
-      <%# label f, :alert_id, "Alert ID", class: "form-label" %>
+      <%= label f, :alert_id, "Alert ID", class: "form-label" %>
       <%= text_input f, :alert_id, class: "form-control", placeholder: "Enter Alert ID" %>
     </div>
 
     <div class="form-group">
-      <%# label f, :alert_date, "Alert date", class: "form-label" %>
+      <%= label f, :alert_date, "Alert date", class: "form-label" %>
       <%= datetime_select f, :alert_date, class: "form-control", placeholder: "Enter Alert Date" %>
     </div>
 
@@ -25,17 +25,28 @@
     </div>
   </div>
   <div class="admin-table-body">
-    <%= if Enum.empty?(@snapshots) do %>
+    <%= if Enum.empty?(@diagnoses) do %>
       <div class="admin-table-row">
         <div class="admin-table-cell">
           No Results
         </div>
       </div>
     <% else %>
-      <%= for snapshot <- @snapshots do %>
+      <%= alert_title(@diagnoses) %>
+      <%= for diagnosis <- @diagnoses do %>
         <div class="admin-table-row">
-          <div class="admin-table-cell">
-            <%= snapshot["id"] %>
+          <div>
+            <div class="diagnostic-subscription-info">
+              <%= ConciergeSite.SubscriptionView.subscription_info(diagnosis.subscription) %>
+            </div>
+            <div class="diagnostic-result">
+              <p><%= sent_alert_result(diagnosis) %></p>
+              <p><%= severity_result(diagnosis) %></p>
+              <p><%= active_period_result(diagnosis) %></p>
+              <p><%= do_not_disturb_result(diagnosis) %></p>
+              <p><%= vacation_result(diagnosis) %></p>
+              <p><%= informed_entity_result(diagnosis) %></p>
+            </div>
           </div>
         </div>
       <% end %>
