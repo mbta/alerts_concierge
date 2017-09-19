@@ -57,7 +57,8 @@ defmodule ConciergeSite.TimeHelper do
   Converts timestamp into integer value adjusting late night, after
   midnight values into higher than times before midnight.
   """
-  @spec normalized_time_value(Time.t) :: integer
+  @spec normalized_time_value(Time.t | nil) :: integer
+  def normalized_time_value(nil), do: 0
   def normalized_time_value(timestamp) do
     stv = DateTimeHelper.seconds_of_day(timestamp)
     if stv < 10_800 do
