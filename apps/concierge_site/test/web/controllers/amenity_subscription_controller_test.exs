@@ -1,7 +1,7 @@
 defmodule ConciergeSite.AmenitySubscriptionControllerTest do
   use ConciergeSite.ConnCase
   use ExVCR.Mock, adapter: ExVCR.Adapter.Hackney
-  alias AlertProcessor.{HoldingQueue, Model.Subscription, Repo}
+  alias AlertProcessor.{HoldingQueue, Model.Subscription, Model.InformedEntity, Repo}
 
   describe "authorized" do
     setup :login_user
@@ -106,17 +106,37 @@ defmodule ConciergeSite.AmenitySubscriptionControllerTest do
     end
 
     test "GET /subscriptions/amenities/:id/edit", %{conn: conn, user: user} do
-      subscription =
-        subscription_factory()
-        |> Map.put(:informed_entities, amenity_subscription_entities())
-        |> amenity_subscription()
-        |> weekday_subscription()
-        |> Map.merge(%{user: user})
-        |> insert()
+      amenity_subscription_entities =     [
+        %InformedEntity{route_type: 4, facility_type: :elevator, route: "Green"},
+        %InformedEntity{route_type: 4, facility_type: :elevator, stop: "place-nqncy"}
+      ]
+
+      sub = subscription_factory()
+      |> Map.put(:informed_entities, amenity_subscription_entities)
+      |> amenity_subscription()
+      |> weekday_subscription()
+      |> Map.merge(%{user: user})
+      |> insert()
 
       use_cassette "amenities_update", clear_mock: true  do
-        conn = get(conn, "/subscriptions/amenities/#{subscription.id}/edit")
-        assert html_response(conn, 200) =~ "Subscribe to station amenity alerts"
+        conn = get(conn, amenity_subscription_path(conn, :edit, sub.id))
+        result = html_response(conn, 200)
+
+        green_line_checked? = result =~ "<input checked=\"checked\" class=\"subscription-day-checkbox\" id=\"subscription_green\" name=\"subscription[routes][]\" type=\"checkbox\" value=\"green\">"
+        red_line_unchecked? = result =~ "<input class=\"subscription-day-checkbox\" id=\"subscription_red\" name=\"subscription[routes][]\" type=\"checkbox\" value=\"red\">"
+        elevator_checked? = result =~ "<input checked=\"checked\" class=\"subscription-day-checkbox\" id=\"subscription_elevator\" name=\"subscription[amenities][]\" type=\"checkbox\" value=\"elevator\">"
+        escalator_unchecked? = result =~ "<input class=\"subscription-day-checkbox\" id=\"subscription_escalator\" name=\"subscription[amenities][]\" type=\"checkbox\" value=\"escalator\">"
+        weekday_checked? = result =~ "<input checked=\"checked\" class=\"subscription-day-checkbox\" id=\"subscription_weekday\" name=\"subscription[relevant_days][]\" type=\"checkbox\" value=\"weekday\">"
+        sunday_unchecked? = result =~ "<input class=\"subscription-day-checkbox\" id=\"subscription_sunday\" name=\"subscription[relevant_days][]\" type=\"checkbox\" value=\"sunday\">"
+
+        assert result =~ "Subscribe to station amenity alerts"
+
+        assert green_line_checked?
+        assert red_line_unchecked?
+        assert elevator_checked?
+        assert escalator_unchecked?
+        assert weekday_checked?
+        assert sunday_unchecked?
       end
     end
 
