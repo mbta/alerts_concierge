@@ -1,7 +1,8 @@
 defmodule AlertProcessor.HoldingQueueTest do
-  use ExUnit.Case
+  use AlertProcessor.DataCase
 
-  alias AlertProcessor.{HoldingQueue, Model.Notification}
+  import AlertProcessor.Factory
+  alias AlertProcessor.{HoldingQueue, Model.Alert, Model.Notification}
 
   defp generate_date(x) do
     DateTime.from_unix!(System.system_time(:millisecond) + x, :millisecond)
@@ -81,15 +82,19 @@ defmodule AlertProcessor.HoldingQueueTest do
     assert HoldingQueue.pop(test) == :error
   end
 
-  test "Duplicate notifications are not enqueued", %{test: test} do
-    notification1 = %Notification{alert_id: "1", user_id: "1"}
-    notification2 = %Notification{alert_id: "1", user_id: "1"}
+  test "Duplicate notifications based on user_id + alert_id are not enqueued", %{test: test} do
+    user = insert(:user)
+    alert1 = %Alert{id: "1", active_period: [%{start: DateTime.from_naive!(~N[2017-12-25 12:00:00], "Etc/UTC"), end: DateTime.from_naive!(~N[2017-12-25 15:00:00], "Etc/UTC")}]}
+    alert2 = %Alert{id: "1", active_period: [%{start: DateTime.from_naive!(~N[2017-12-25 12:00:00], "Etc/UTC"), end: DateTime.from_naive!(~N[2017-12-25 16:00:00], "Etc/UTC")}]}
+    send_after = DateTime.from_naive!(~N[2017-12-25 12:00:00], "Etc/UTC")
+
+    notification1 = %Notification{alert_id: "1", user_id: user.id, user: user, alert: alert1, send_after: send_after}
+    notification2 = %Notification{alert_id: "1", user_id: user.id, user: user, alert: alert2, send_after: send_after}
     HoldingQueue.start_link([], [name: test])
     HoldingQueue.enqueue(test, notification1)
     HoldingQueue.enqueue(test, notification2)
 
     {:ok, notification} = HoldingQueue.pop(test)
-    assert notification == notification1
     assert notification == notification2
     assert :error = HoldingQueue.pop(test)
   end
