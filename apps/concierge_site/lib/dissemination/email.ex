@@ -74,18 +74,20 @@ defmodule ConciergeSite.Dissemination.Email do
     :def,
     :targeted_notification_html_email,
     Path.join(@template_dir, "targeted_notification.html.eex"),
-    [:subject, :body])
+    [:subject, :body, :manage_subscriptions_url])
   EEx.function_from_file(
     :def,
     :targeted_notification_text_email,
     Path.join(~w(#{System.cwd!} lib mail_templates targeted_notification.txt.eex)),
     [:body])
 
-  def targeted_notification_email(email, subject, body) do
+  def targeted_notification_email(user, subject, body) do
+    manage_subscriptions_url = MailHelper.manage_subscriptions_url(user)
+
     base_email()
-    |> to(email)
+    |> to(user.email)
     |> subject(subject)
-    |> html_body(targeted_notification_html_email(subject, body))
+    |> html_body(targeted_notification_html_email(subject, body, manage_subscriptions_url))
     |> text_body(targeted_notification_text_email(body))
   end
 
