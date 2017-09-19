@@ -159,4 +159,60 @@ defmodule ConciergeSite.SubscriptionViewTest do
     assert binary =~ "Charlestown Navy Yard"
     assert binary =~ "Weekdays from 10:00am to  2:00pm"
   end
+
+  test "renders index template when the departure_time_map is incomplete", %{conn: conn} do
+    user = insert(:user)
+    {:ok, commuter_rail} =
+      :subscription
+      |> build(user: user)
+      |> weekday_subscription()
+      |> commuter_rail_subscription()
+      |> Repo.preload(:informed_entities)
+      |> Ecto.Changeset.change()
+      |> Ecto.Changeset.put_assoc(:informed_entities, commuter_rail_subscription_entities())
+      |> Repo.insert()
+
+    {:ok, ferry} =
+      :subscription
+      |> build(user: user)
+      |> weekday_subscription()
+      |> ferry_subscription()
+      |> Repo.preload(:informed_entities)
+      |> Ecto.Changeset.change()
+      |> Ecto.Changeset.put_assoc(:informed_entities, ferry_subscription_entities())
+      |> Repo.insert()
+
+    subscriptions = [commuter_rail, ferry]
+
+    conn = Map.merge(conn, %{private: %{
+        phoenix_flash: %{"info" => "Subscription deleted"},
+        phoenix_endpoint: ConciergeSite.Endpoint
+      }
+    })
+
+    assigns = [
+      conn: conn,
+      departure_time_map: %{"221" => ~T[12:00:00], "Boat-F4-Boat-Long-17:15:00-weekday-0" => ~T[17:15:00]},
+      subscriptions: subscriptions,
+      vacation_start: nil,
+      vacation_end: nil
+    ]
+
+    rendered = ConciergeSite.SubscriptionView.render("index.html", assigns)
+    binary = Phoenix.HTML.safe_to_string(rendered)
+
+    assert binary =~ "Commuter Rail"
+    assert binary =~ "Anderson/Woburn"
+    assert binary =~ "North Station"
+    assert binary =~ "Train 331, Weekdays | Departs North Station"
+    refute binary =~ "Train 331, Weekdays | Departs North Station at"
+    assert binary =~ "Train 221, Weekdays | Departs North Station at 12:00pm"
+
+    assert binary =~ "Ferry"
+    assert binary =~ "Long Wharf, Boston"
+    assert binary =~ "Charlestown Navy Yard"
+    assert Regex.scan(~r/Weekdays \| Departs from Long Wharf, Boston/, binary) |> Enum.count == 2
+    assert Regex.scan(~r/pm, Weekdays \| Departs from Long Wharf, Boston/, binary) |> Enum.count == 1
+    assert binary =~ "5:15pm, Weekdays | Departs from Long Wharf, Boston"
+  end
 end

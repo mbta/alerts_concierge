@@ -141,6 +141,12 @@ defmodule ConciergeSite.SubscriptionView do
   end
   defp route_body(%{type: :commuter_rail, relevant_days: [relevant_days]} = subscription, departure_time_map) do
     for trip_entity <- get_trip_entities(subscription, departure_time_map) do
+      departure_time_iodata =
+        case departure_time_map[trip_entity.trip] do
+          nil -> ""
+          departure_time -> [" at ", departure_time |> Calendar.Strftime.strftime!("%l:%M%P") |> String.trim()]
+        end
+
       content_tag(:p, [
         "Train ",
         trip_entity.trip,
@@ -148,16 +154,20 @@ defmodule ConciergeSite.SubscriptionView do
         relevant_days |> to_string() |> String.capitalize(),
         "s | Departs ",
         subscription.origin,
-        " at ",
-        departure_time_map[trip_entity.trip] |> Calendar.Strftime.strftime!("%l:%M%P") |> String.trim()
+        departure_time_iodata
       ])
     end
   end
   defp route_body(%{type: :ferry, relevant_days: [relevant_days]} = subscription, departure_time_map) do
     for trip_entity <- get_trip_entities(subscription, departure_time_map) do
+      departure_time_iodata =
+        case departure_time_map[trip_entity.trip] do
+          nil -> ""
+          departure_time -> [departure_time |> Calendar.Strftime.strftime!("%l:%M%P") |> String.trim(), ", "]
+        end
+
       content_tag(:p, [
-        departure_time_map[trip_entity.trip] |> Calendar.Strftime.strftime!("%l:%M%P") |> String.trim(),
-        ", ",
+        departure_time_iodata,
         relevant_days |> to_string() |> String.capitalize(),
         "s | Departs from ",
         subscription.origin
@@ -168,7 +178,7 @@ defmodule ConciergeSite.SubscriptionView do
   defp get_trip_entities(subscription, departure_time_map) do
     subscription.informed_entities
     |> Enum.filter(& InformedEntity.entity_type(&1) == :trip)
-    |> Enum.sort_by(&TimeHelper.normalized_time_value(departure_time_map[&1.trip]))
+    |> Enum.sort_by(& TimeHelper.normalized_time_value(departure_time_map[&1.trip]))
   end
 
   defp timeframe(subscription) do
