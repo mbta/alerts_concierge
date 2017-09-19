@@ -18,7 +18,7 @@
         <div class="footer-link-separator-bullet" />
       </td>
       <td>
-        <a class="footer-link" href="#">Edit Your Subscriptions</a>
+        <a class="footer-link" href="<%= manage_subscriptions_url %>">Edit Your Subscriptions</a>
       </td>
     </tr>
   </table>

@@ -65,7 +65,7 @@
         </div>
       </div>
 
-      <%= ConciergeSite.Helpers.MailHelper.footer(unsubscribe_url) %>
+      <%= ConciergeSite.Helpers.MailHelper.footer(unsubscribe_url, manage_subscriptions_url) %>
     </center>
 	</body>
 </html>

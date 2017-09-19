@@ -139,7 +139,7 @@ defmodule AlertProcessor.Model.UserTest do
         |> User.claims_with_permission(claims, admin_user)
         |> Guardian.Permissions.from_claims()
         |> Guardian.Permissions.to_list()
-      assert [:reset_password, :unsubscribe, :disable_account, :full_permissions] == new_claims
+      assert [:reset_password, :unsubscribe, :disable_account, :full_permissions, :manage_subscriptions] == new_claims
     end
 
     test "encodes the user's claims with previous permission" do
