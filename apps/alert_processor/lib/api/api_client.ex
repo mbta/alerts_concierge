@@ -80,12 +80,12 @@ defmodule AlertProcessor.ApiClient do
   end
 
   @doc """
-  endpoint to fetch subway stops which includes parent station id
+  endpoint to fetch stops which includes parent station id
   """
-  @spec subway_parent_stops() :: {:ok, [map]} | {:error, String.t}
-  def subway_parent_stops do
+  @spec parent_stations() :: {:ok, [map]} | {:error, String.t}
+  def parent_stations do
     # credo:disable-for-next-line Credo.Check.Readability.SpaceAfterCommas
-    "/stops?filter[route_type]=0,1"
+    "/stops?filter[route_type]=0,1,2"
     |> get()
     |> parse_response()
   end
