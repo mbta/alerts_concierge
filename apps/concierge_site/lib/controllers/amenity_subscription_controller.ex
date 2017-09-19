@@ -155,7 +155,7 @@ defmodule ConciergeSite.AmenitySubscriptionController do
           acc
         else
           routes = MapSet.put(
-            acc.amenities,
+            acc.routes,
             String.downcase(ie.route)
           )
           Map.put(acc, :routes, routes)
