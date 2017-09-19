@@ -141,11 +141,7 @@ defmodule ConciergeSite.SubscriptionView do
   end
   defp route_body(%{type: :commuter_rail, relevant_days: [relevant_days]} = subscription, departure_time_map) do
     for trip_entity <- get_trip_entities(subscription, departure_time_map) do
-      departure_time_iodata =
-        case departure_time_map[trip_entity.trip] do
-          nil -> ""
-          departure_time -> [" at ", departure_time |> Calendar.Strftime.strftime!("%l:%M%P") |> String.trim()]
-        end
+      departure_time_iodata = departure_time_iodata(departure_time_map[trip_entity.trip], fn time -> [" at ", time] end)
 
       content_tag(:p, [
         "Train ",
@@ -160,11 +156,7 @@ defmodule ConciergeSite.SubscriptionView do
   end
   defp route_body(%{type: :ferry, relevant_days: [relevant_days]} = subscription, departure_time_map) do
     for trip_entity <- get_trip_entities(subscription, departure_time_map) do
-      departure_time_iodata =
-        case departure_time_map[trip_entity.trip] do
-          nil -> ""
-          departure_time -> [departure_time |> Calendar.Strftime.strftime!("%l:%M%P") |> String.trim(), ", "]
-        end
+      departure_time_iodata = departure_time_iodata(departure_time_map[trip_entity.trip], fn time -> [time, ", "] end)
 
       content_tag(:p, [
         departure_time_iodata,
@@ -173,6 +165,12 @@ defmodule ConciergeSite.SubscriptionView do
         subscription.origin
       ])
     end
+  end
+
+  defp departure_time_iodata(nil, _), do: ""
+  defp departure_time_iodata(time, iodata_fn) do
+    formatted_time = time |> Calendar.Strftime.strftime!("%l:%M%P") |> String.trim()
+    iodata_fn.(formatted_time)
   end
 
   defp get_trip_entities(subscription, departure_time_map) do
