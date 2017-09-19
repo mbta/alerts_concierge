@@ -14,7 +14,7 @@ defmodule ConciergeSite.Dissemination.NotificationEmail do
     :def,
     :html_email,
     Path.join(@template_dir, "notification.html.eex"),
-    [:notification, :unsubscribe_url])
+    [:notification, :unsubscribe_url, :manage_subscriptions_url])
   EEx.function_from_file(
     :def,
     :text_email,
@@ -25,12 +25,13 @@ defmodule ConciergeSite.Dissemination.NotificationEmail do
   @spec notification_email(Notification.t) :: Elixir.Bamboo.Email.t
   def notification_email(%Notification{user: user} = notification) do
     unsubscribe_url = MailHelper.unsubscribe_url(user)
+    manage_subscriptions_url = MailHelper.manage_subscriptions_url(user)
     notification_email_subject = email_subject(notification)
 
     base_email()
     |> to(user.email)
     |> subject(notification_email_subject)
-    |> html_body(html_email(notification, unsubscribe_url))
+    |> html_body(html_email(notification, unsubscribe_url, manage_subscriptions_url))
     |> text_body(text_email(notification, unsubscribe_url))
   end
 

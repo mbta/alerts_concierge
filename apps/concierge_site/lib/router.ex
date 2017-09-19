@@ -25,6 +25,10 @@ defmodule ConciergeSite.Router do
     plug Guardian.Plug.EnsurePermissions, handler: ConciergeSite.Auth.ErrorHandler, default: [:disable_account]
   end
 
+  pipeline :subscription_auth do
+    plug Guardian.Plug.EnsurePermissions, handler: ConciergeSite.Auth.ErrorHandler, default: [:manage_subscriptions]
+  end
+
   pipeline :full_auth do
     plug Guardian.Plug.EnsurePermissions, handler: ConciergeSite.Auth.ErrorHandler, default: [:full_permissions]
   end
@@ -56,18 +60,24 @@ defmodule ConciergeSite.Router do
 
   scope "/", ConciergeSite do
     pipe_through [:browser, :browser_auth, :full_auth]
-    get "/my-subscriptions", SubscriptionController, :index
+
     resources "/my-account", MyAccountController, only: [:edit, :update], singleton: true do
       resources "/password", PasswordController, only: [:edit, :update], singleton: true
       resources "/vacation", VacationController, only: [:edit, :update, :delete], singleton: true
     end
-    get "/subscriptions/:id/confirm_delete", SubscriptionController, :confirm_delete
-    resources "/subscriptions", SubscriptionController, only: [:new, :edit, :delete]
     resources "/impersonate_sessions", ImpersonateSessionController, only: [:delete], singleton: true
   end
 
+  scope "/", ConciergeSite do
+    pipe_through [:browser, :browser_auth, :subscription_auth]
+
+    get "/my-subscriptions", SubscriptionController, :index
+    get "/subscriptions/:id/confirm_delete", SubscriptionController, :confirm_delete
+    resources "/subscriptions", SubscriptionController, only: [:new, :edit, :delete]
+  end
+
   scope "/subscriptions", ConciergeSite do
-    pipe_through [:browser, :browser_auth, :full_auth]
+    pipe_through [:browser, :browser_auth, :subscription_auth]
     resources "/subway", SubwaySubscriptionController,
       only: [:new, :edit, :update, :create]
     get "/subway/new/info", SubwaySubscriptionController, :info

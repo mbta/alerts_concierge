@@ -15,7 +15,7 @@ defmodule ConciergeSite.Helpers.MailHelper do
     :def,
     :footer,
     Path.join(@template_dir, "_footer.html.eex"),
-    [:unsubscribe_url]
+    [:unsubscribe_url, :manage_subscriptions_url]
   )
 
   EEx.function_from_file(
@@ -125,5 +125,10 @@ defmodule ConciergeSite.Helpers.MailHelper do
 
   def reset_password_url(password_reset_id) do
     Helpers.password_reset_url(ConciergeSite.Endpoint, :edit, password_reset_id)
+  end
+
+  def manage_subscriptions_url(user) do
+    {:ok, token, _permissions} = Token.issue(user, [:manage_subscriptions])
+    Helpers.subscription_url(ConciergeSite.Endpoint, :index, token: token)
   end
 end

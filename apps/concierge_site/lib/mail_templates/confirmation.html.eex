@@ -14,7 +14,7 @@
       <p>If you did NOT request an account to receive MBTA alerts, click <a href="<%= disable_account_url %>">here</a> to disable the account.<p>
     </div>
     <center>
-      <%= ConciergeSite.Helpers.MailHelper.footer(unsubscribe_url) %>
+      <%= ConciergeSite.Helpers.MailHelper.footer(unsubscribe_url, manage_subscriptions_url) %>
     </center>
   </body>
 </html>

@@ -153,4 +153,13 @@ defmodule ConcerigeSite.Helpers.MailHelperTest do
       assert url =~ "reset-password/#{password_reset_id}/edit"
     end
   end
+
+  describe "manage_subscription_url" do
+    test "generates url with token" do
+      user = insert(:user)
+      url = MailHelper.manage_subscriptions_url(user)
+      assert url =~ "http"
+      assert url =~ ~r/my-subscriptions\?token=(.+)/
+    end
+  end
 end
