@@ -13,7 +13,7 @@ defmodule ConciergeSite.TargetedNotificationTest do
                   "subject" => "testing", "email_body" => "body of test email"}
       TargetedNotification.send_targeted_notification(subscriber, message)
 
-      email = Email.targeted_notification_email(subscriber.email, message["subject"], message["email_body"])
+      email = Email.targeted_notification_email(subscriber, message["subject"], message["email_body"])
       assert_delivered_with(to: [{nil, "test@test.com"}])
       assert email.html_body =~ "body of test email"
     end

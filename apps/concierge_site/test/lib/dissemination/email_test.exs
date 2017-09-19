@@ -40,7 +40,7 @@ defmodule ConciergeSite.Dissemination.EmailTest do
     subject = "Test Subject"
     body = "This is the body of the test email"
 
-    email = Email.targeted_notification_email(subscriber.email, subject, body)
+    email = Email.targeted_notification_email(subscriber, subject, body)
 
     assert email.to == subscriber.email
     assert email.subject == subject
