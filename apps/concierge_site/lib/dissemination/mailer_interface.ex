@@ -22,7 +22,7 @@ defmodule ConciergeSite.Dissemination.MailerInterface do
       notification
       |> NotificationEmail.notification_email()
       |> Mailer.deliver_later()
-    Logger.info(fn -> "Notification Email result: #{inspect(response)}" end)
+    Logger.info(fn -> "Notification Email result: #{inspect(response)}, alert_id: #{notification.alert_id}, user_id: #{notification.user.id}," end)
     {:reply, response, nil}
   end
 
@@ -31,7 +31,7 @@ defmodule ConciergeSite.Dissemination.MailerInterface do
       digest_message
       |> DigestEmail.digest_email()
       |> Mailer.deliver_later()
-    Logger.info(fn -> "Digest Email result: #{inspect(response)}" end)
+    Logger.info(fn -> "Digest Email result: #{inspect(response)}, user_id: #{digest_message.user.id}" end)
     {:reply, response, nil}
   end
 end
