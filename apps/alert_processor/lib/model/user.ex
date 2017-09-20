@@ -90,6 +90,7 @@ defmodule AlertProcessor.Model.User do
     params =
       case params do
         %{"sms_toggle" => "false"} -> Map.put(params, "phone_number", nil)
+        %{"sms_toggle" => "true"} -> Map.put(params, "phone_number", String.replace(params["phone_number"], ~r/\D/, ""))
         _ -> params
       end
     struct

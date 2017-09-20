@@ -4,6 +4,6 @@ use Mix.Config
 config :logger, :console, format: "[$level] $message\n"
 
 # Config for ExAws lib
-config :alert_processor, :ex_aws, ExAws
+config :alert_processor, :ex_aws, ExAws.Mock
 
 config :alert_processor, database_url: {:system, "DATABASE_URL_DEV"}
