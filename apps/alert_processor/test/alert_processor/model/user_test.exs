@@ -53,6 +53,11 @@ defmodule AlertProcessor.Model.UserTest do
       Repo.insert!(%User{email: "test@email.com", role: "user", encrypted_password: @disabled_password})
       assert {:error, :disabled} = User.authenticate(%{"email" => "test@email.com", "password" => @password})
     end
+
+    test "email is not case sensitive" do
+      Repo.insert!(%User{email: "test@email.com", role: "user", encrypted_password: @encrypted_password})
+      assert {:ok, _} = User.authenticate(%{"email" => "TEST@EMAIL.COM", "password" => @password})
+    end
   end
 
   describe "create_account" do
@@ -126,6 +131,11 @@ defmodule AlertProcessor.Model.UserTest do
 
     test "does not authenticate if user doesn't exist" do
       assert {:error, _} = User.authenticate(%{"email" => "nope@invalid.com", "password" => @password})
+    end
+
+    test "email is not case sensitive" do
+      Repo.insert!(%User{email: "test@email.com", role: "application_administration", encrypted_password: @encrypted_password})
+      assert {:ok, _} = User.authenticate_admin(%{"email" => "TEST@EMAIL.COM", "password" => @password})
     end
   end
 
