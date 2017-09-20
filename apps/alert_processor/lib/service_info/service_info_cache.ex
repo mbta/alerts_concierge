@@ -215,10 +215,14 @@ defmodule AlertProcessor.ServiceInfoCache do
   defp fetch_service_info(:ferry), do: do_fetch_service_info([4])
   defp fetch_service_info(:bus), do: do_fetch_service_info([3])
   defp fetch_service_info(:parent_stop_info) do
-    {:ok, subway_parent_stops} = ApiClient.subway_parent_stops()
-    for subway_stop <- subway_parent_stops, into: %{} do
-      %{"id" => id, "relationships" => %{"parent_station" => %{"data" => %{"id" => parent_station_id}}}} = subway_stop
-      {id, parent_station_id}
+    {:ok, parent_stations} = ApiClient.parent_stations()
+    for station <- parent_stations, into: %{} do
+      case station do
+        %{"id" => id, "relationships" => %{"parent_station" => %{"data" => nil}}} ->
+          {id, id}
+        %{"id" => id, "relationships" => %{"parent_station" => %{"data" => %{"id" => parent_station_id}}}} ->
+          {id, parent_station_id}
+      end
     end
   end
   defp fetch_service_info(:ferry_general_ids) do
