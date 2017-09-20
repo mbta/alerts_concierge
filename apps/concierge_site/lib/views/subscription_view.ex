@@ -62,7 +62,7 @@ defmodule ConciergeSite.SubscriptionView do
           "Station Amenities"
         end,
         content_tag :div, class: "subscription-details" do
-          route_body(subscription, nil)
+           route_body(subscription, nil)
         end
       ]
     end

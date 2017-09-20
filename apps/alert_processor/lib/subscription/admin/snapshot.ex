@@ -19,6 +19,7 @@ defmodule AlertProcessor.Subscription.Snapshot do
         query
         |> Repo.all
         |> Enum.map(&(build_snapshot_for_datetime(&1, user_version, datetime)))
+        |> Enum.reject(&(&1 == :error))
       {:ok, result}
     else
       _ -> :error
@@ -26,22 +27,50 @@ defmodule AlertProcessor.Subscription.Snapshot do
   end
 
   defp build_snapshot_for_datetime(sub, user_version, datetime) do
-    sub
+    with {:ok, versions} <- get_relevant_versions(sub, datetime),
+      {:ok, snapshot_data} <- get_snapshot_data(versions),
+      data_with_user <- Map.merge(snapshot_data, %{user: user_version}) do
+        serialize(data_with_user)
+    else
+      _ -> :error
+    end
+  end
+
+  defp get_relevant_versions(sub, datetime) do
+    versions = sub
     |> PaperTrail.get_versions()
     |> Enum.reject(fn(version) ->
       version_time = DateTime.from_naive!(version.inserted_at, "Etc/UTC")
       DateTime.compare(version_time, datetime) == :gt
     end)
-    |> Enum.reduce(%{subscription: %{}, informed_entities: []},
-        fn(%{item_changes: changes, meta: meta},
-          %{subscription: sub}) ->
+
+    if versions == [] do
+      :error
+    else
+      {:ok, versions}
+    end
+  end
+
+  defp get_snapshot_data(versions) do
+    result = Enum.reduce(versions, %{subscription: %{}, informed_entities: []},
+      fn(%{event: event, item_changes: changes, meta: meta},
+        %{subscription: sub}) ->
+        if event == "delete" do
+          %{subscription: %{}, informed_entities: []}
+        else
+          ies = DiagnosticQuery.get_informed_entities(meta["informed_entity_version_ids"])
           %{
             subscription: Map.merge(sub, changes),
-            informed_entities: DiagnosticQuery.get_informed_entities(meta["informed_entity_version_ids"])
+            informed_entities: serialize_informed_entities(ies)
           }
-        end)
-    |> Map.merge(%{user: user_version})
-    |> serialize()
+        end
+      end)
+
+    if result == %{subscription: %{}, informed_entities: []} do
+      :error
+    else
+      {:ok, result}
+    end
   end
 
   def serialize_alert_versions(alert_versions) do
@@ -52,7 +81,8 @@ defmodule AlertProcessor.Subscription.Snapshot do
       end)
       |> serialize_alert()
       |> serialize_active_periods()
-      |> serialize_informed_entities()
+
+    snapshot = Map.put(snapshot, "informed_entities", serialize_informed_entities(snapshot["informed_entity"]))
 
     {:ok, StructHelper.to_struct(Alert, snapshot)}
   end
@@ -83,21 +113,26 @@ defmodule AlertProcessor.Subscription.Snapshot do
     end
   end
 
-  defp serialize_informed_entities(alert) do
-    informed_entities = Enum.map(alert["informed_entity"], fn(ie) ->
-      StructHelper.to_struct(InformedEntity, ie)
+  defp serialize_informed_entities(nil), do: []
+  defp serialize_informed_entities(informed_entities) do
+   Enum.map(informed_entities, fn(ie) ->
+      InformedEntity
+      |> StructHelper.to_struct(ie)
+      |> set_facility_type()
     end)
-    Map.put(alert, "informed_entities", informed_entities)
   end
+
+  defp set_facility_type(%{facility_type: nil} = ie), do: ie
+  defp set_facility_type(%{facility_type: ft} = ie) do
+    Map.put(ie, :facility_type, String.to_existing_atom(ft))
+  end
+  defp set_facility_type(ie), do: ie
 
   defp serialize(snapshot) do
     user_params = snapshot.user
       |> set_dnd_times()
       |> set_vacation()
     user = StructHelper.to_struct(User, user_params)
-    informed_entities = Enum.map(snapshot.informed_entities, fn(ie) ->
-      StructHelper.to_struct(InformedEntity, ie)
-    end)
 
     Subscription
     |> StructHelper.to_struct(snapshot.subscription)
@@ -106,7 +141,7 @@ defmodule AlertProcessor.Subscription.Snapshot do
     |> set_relevant_days()
     |> Map.merge(%{
       user: user,
-      informed_entities: informed_entities,
+      informed_entities: snapshot.informed_entities,
       alert_priority_type: String.to_existing_atom(snapshot.subscription["alert_priority_type"])
     })
   end
@@ -153,13 +188,20 @@ defmodule AlertProcessor.Subscription.Snapshot do
     end)
     Map.put(sub, :relevant_days, days)
   end
-  defp set_types(sub), do: Map.put(sub, :type, String.to_existing_atom(Map.get(sub, :type)))
-  defp set_times(sub) do
-    start_time = Time.from_iso8601!(Map.get(sub, :start_time))
-    end_time = Time.from_iso8601!(Map.get(sub, :end_time))
 
-    sub
-    |> Map.put(:start_time, start_time)
-    |> Map.put(:end_time, end_time)
+  defp set_types(sub), do: Map.put(sub, :type, String.to_existing_atom(Map.get(sub, :type)))
+
+  defp set_times(%{start_time: start_time, end_time: end_time} = sub) do
+    sub = if is_nil(start_time) do
+      sub
+    else
+      Map.put(sub, :start_time, Time.from_iso8601!(start_time))
+    end
+
+    if is_nil(end_time) do
+      sub
+    else
+      Map.put(sub, :end_time, Time.from_iso8601!(end_time))
+    end
   end
 end
