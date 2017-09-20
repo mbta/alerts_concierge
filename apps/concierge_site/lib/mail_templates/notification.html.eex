@@ -18,7 +18,9 @@
         <%= notification.header %>
       </p>
       <br>
-      <p class="notification-description"><%= notification.description %></p>
+      <%= if notification.description do %>
+        <p class="notification-description"><%= String.replace(notification.description, "\r\n", "<br/>") %></p>
+      <% end %>
 
       <p class="notification-link-wrapper">
         <a class="notification-link" href="https://t.mbta.com/">View all alerts &rarr;</a>
