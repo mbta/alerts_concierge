@@ -529,23 +529,41 @@ defmodule AlertProcessor.Subscription.CommuterRailMapperTest do
 
   describe "get_trip_info" do
     test "returns trip options with closest trip preselected" do
-      {:ok, trips} = CommuterRailMapper.get_trip_info("Reading", "place-north", :sunday, "10:00:00")
-      assert [%AlertProcessor.Model.Trip{trip_number: "2200", selected: false},
-              %AlertProcessor.Model.Trip{trip_number: "2202", selected: true},
-              %AlertProcessor.Model.Trip{trip_number: "2204", selected: false},
-              %AlertProcessor.Model.Trip{trip_number: "2206", selected: false},
-              %AlertProcessor.Model.Trip{trip_number: "2208", selected: false},
-              %AlertProcessor.Model.Trip{trip_number: "2210", selected: false}] = trips
+      {:ok, trips} = CommuterRailMapper.get_trip_info("Reading", "place-north", :weekday, "10:00:00")
+      assert [%AlertProcessor.Model.Trip{trip_number: "200", selected: false},
+              %AlertProcessor.Model.Trip{trip_number: "202", selected: false},
+              %AlertProcessor.Model.Trip{trip_number: "204", selected: false},
+              %AlertProcessor.Model.Trip{trip_number: "286", selected: false},
+              %AlertProcessor.Model.Trip{trip_number: "288", selected: false},
+              %AlertProcessor.Model.Trip{trip_number: "290", selected: false},
+              %AlertProcessor.Model.Trip{trip_number: "210", selected: true},
+              %AlertProcessor.Model.Trip{trip_number: "212", selected: false},
+              %AlertProcessor.Model.Trip{trip_number: "216", selected: false},
+              %AlertProcessor.Model.Trip{trip_number: "292", selected: false},
+              %AlertProcessor.Model.Trip{trip_number: "294", selected: false},
+              %AlertProcessor.Model.Trip{trip_number: "296", selected: false},
+              %AlertProcessor.Model.Trip{trip_number: "298", selected: false},
+              %AlertProcessor.Model.Trip{trip_number: "226", selected: false},
+              %AlertProcessor.Model.Trip{trip_number: "228", selected: false}] = trips
     end
 
     test "returns trip options with preselected values" do
-      {:ok, trips} = CommuterRailMapper.get_trip_info("Reading", "place-north", :sunday, ["2202", "2208"])
-      assert [%AlertProcessor.Model.Trip{trip_number: "2200", selected: false},
-             %AlertProcessor.Model.Trip{trip_number: "2202", selected: true},
-             %AlertProcessor.Model.Trip{trip_number: "2204", selected: false},
-             %AlertProcessor.Model.Trip{trip_number: "2206", selected: false},
-             %AlertProcessor.Model.Trip{trip_number: "2208", selected: true},
-             %AlertProcessor.Model.Trip{trip_number: "2210", selected: false}] = trips
+      {:ok, trips} = CommuterRailMapper.get_trip_info("Reading", "place-north", :weekday, ["286", "298"])
+      assert [%AlertProcessor.Model.Trip{trip_number: "200", selected: false},
+              %AlertProcessor.Model.Trip{trip_number: "202", selected: false},
+              %AlertProcessor.Model.Trip{trip_number: "204", selected: false},
+              %AlertProcessor.Model.Trip{trip_number: "286", selected: true},
+              %AlertProcessor.Model.Trip{trip_number: "288", selected: false},
+              %AlertProcessor.Model.Trip{trip_number: "290", selected: false},
+              %AlertProcessor.Model.Trip{trip_number: "210", selected: false},
+              %AlertProcessor.Model.Trip{trip_number: "212", selected: false},
+              %AlertProcessor.Model.Trip{trip_number: "216", selected: false},
+              %AlertProcessor.Model.Trip{trip_number: "292", selected: false},
+              %AlertProcessor.Model.Trip{trip_number: "294", selected: false},
+              %AlertProcessor.Model.Trip{trip_number: "296", selected: false},
+              %AlertProcessor.Model.Trip{trip_number: "298", selected: true},
+              %AlertProcessor.Model.Trip{trip_number: "226", selected: false},
+              %AlertProcessor.Model.Trip{trip_number: "228", selected: false}] = trips
     end
 
     test "returns error if origin/destination are not on the same route" do
