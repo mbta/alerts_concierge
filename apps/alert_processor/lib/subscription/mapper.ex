@@ -331,6 +331,8 @@ defmodule AlertProcessor.Subscription.Mapper do
   end
   def get_trip_info(origin, destination, relevant_days, timestamp, map_trip_options_fn) do
     case map_trip_options_fn.(origin, destination, relevant_days) do
+      {:ok, []} ->
+        :error
       {:ok, trips} ->
         departure_start = timestamp |> Time.from_iso8601!() |> DateTimeHelper.seconds_of_day()
         closest_trip = Enum.min_by(trips, &calculate_difference(&1, departure_start))

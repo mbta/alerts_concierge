@@ -574,6 +574,7 @@ defmodule AlertProcessor.Subscription.FerryMapperTest do
     test "returns error if origin/destination are not on the same route" do
       :error = FerryMapper.get_trip_info("Boat-Hingham", "Boat-Charlestown", :sunday, "10:00:00")
       :error = FerryMapper.get_trip_info("Boat-Hingham", "Boat-Charlestown", :sunday, ["Boat-F1-Boat-Hingham-11:00:00-weekend-1", "Boat-F1-Boat-Hingham-15:00:00-weekend-1"])
+      :error = FerryMapper.get_trip_info("Boat-Long", "Boat-Rowes", :weekday, "10:00:00")
     end
   end
 
