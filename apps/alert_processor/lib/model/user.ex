@@ -279,7 +279,7 @@ defmodule AlertProcessor.Model.User do
   Checks if user's login credentials are valid
   """
   def authenticate(%{"email" => email, "password" => password} = params) do
-    user = Repo.get_by(__MODULE__, email: email)
+    user = Repo.get_by(__MODULE__, email: String.downcase(email))
 
     cond do
       user && user.encrypted_password == "" ->

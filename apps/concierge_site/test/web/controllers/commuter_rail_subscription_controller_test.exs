@@ -106,8 +106,8 @@ defmodule ConciergeSite.CommuterRailSubscriptionControllerTest do
       params = %{"subscription" => %{
         "origin" => "Reading",
         "destination" => "place-north",
-        "trips" => ["2202", "2208"],
-        "relevant_days" => "sunday",
+        "trips" => ["286", "298"],
+        "relevant_days" => "weekday",
         "departure_start" => "12:00:00",
         "alert_priority_type" => "low",
         "trip_type" => "one_way"
