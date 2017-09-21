@@ -231,7 +231,7 @@ defmodule AlertProcessor.Subscription.Mapper do
       ies
       |> Enum.with_index
       |> Enum.reduce(acc, fn({ie, i}, accumulator) ->
-        Multi.run(accumulator, {:informed_entity, index, i}, fn _ ->
+        Multi.run(accumulator, {:new_informed_entity, index, i}, fn _ ->
           ie_to_insert = ie
           |> Map.merge(%{
             subscription_id: uuid
@@ -257,7 +257,7 @@ defmodule AlertProcessor.Subscription.Mapper do
       trips
       |> Enum.with_index()
       |> Enum.reduce(Multi.new(), fn({trip, index}, acc) ->
-           Multi.run(acc, {:informed_entity, index}, fn _ ->
+           Multi.run(acc, {:new_informed_entity, index}, fn _ ->
              PaperTrail.insert(%InformedEntity{subscription_id: subscription.id, trip: trip}, originator: User.wrap_id(originator), meta: %{owner: subscription.user_id})
            end)
          end)

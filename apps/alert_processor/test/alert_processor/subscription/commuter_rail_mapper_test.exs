@@ -769,9 +769,9 @@ defmodule AlertProcessor.Subscription.CommuterRailMapperTest do
       result = Ecto.Multi.to_list(multi)
 
       assert {{:subscription, 0}, {:run, function1}} = List.first(result)
-      assert {{:informed_entity, 0, 0}, {:run, _}} = Enum.at(result, 1)
+      assert {{:new_informed_entity, 0, 0}, {:run, _}} = Enum.at(result, 1)
       assert {{:subscription, 1}, {:run, function2}} = Enum.at(result, 19)
-      assert {{:informed_entity, 1, 0}, {:run, _}} = Enum.at(result, 20)
+      assert {{:new_informed_entity, 1, 0}, {:run, _}} = Enum.at(result, 20)
       {:ok, %{model: subscription1}} = function1.(nil)
       {:ok, %{model: subscription2}} = function2.(nil)
       assert subscription1.id != nil
@@ -799,7 +799,7 @@ defmodule AlertProcessor.Subscription.CommuterRailMapperTest do
       multi = CommuterRailMapper.build_update_subscription_transaction(subscription, params, user.id)
 
       assert [
-        {{:informed_entity, 0}, {:run, function1}},
+        {{:new_informed_entity, 0}, {:run, function1}},
         {{:remove_old, 0}, {:run, function2}},
         {{:remove_old, 1}, {:run, function3}},
         {:subscription, {:run, function4}}

@@ -568,9 +568,9 @@ defmodule AlertProcessor.Subscription.SubwayMapperTest do
       result = Ecto.Multi.to_list(multi)
 
       assert {{:subscription, 0}, {:run, function1}} = List.first(result)
-      assert {{:informed_entity, 0, 0}, {:run, _}} = Enum.at(result, 1)
+      assert {{:new_informed_entity, 0, 0}, {:run, _}} = Enum.at(result, 1)
       assert {{:subscription, 1}, {:run, function2}} = Enum.at(result, 11)
-      assert {{:informed_entity, 1, 0}, {:run, _}} = Enum.at(result, 12)
+      assert {{:new_informed_entity, 1, 0}, {:run, _}} = Enum.at(result, 12)
       {:ok, %{model: subscription1}} = function1.(nil)
       {:ok, %{model: subscription2}} = function2.(nil)
       assert subscription1.id != nil
