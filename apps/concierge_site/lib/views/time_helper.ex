@@ -81,9 +81,9 @@ defmodule ConciergeSite.TimeHelper do
     |> DT.to_time()
   end
 
-  @spec timeranges_overlap?(Subscription.t, User.t) :: boolean
-  def timeranges_overlap?(_, %User{do_not_disturb_start: nil, do_not_disturb_end: nil}), do: false
-  def timeranges_overlap?(%Subscription{start_time: sub_start_time, end_time: sub_end_time}, %User{do_not_disturb_start: dnd_start, do_not_disturb_end: dnd_end}) do
+  @spec subscription_during_do_not_disturb?(Subscription.t, User.t) :: boolean
+  def subscription_during_do_not_disturb?(_, %User{do_not_disturb_start: nil, do_not_disturb_end: nil}), do: false
+  def subscription_during_do_not_disturb?(%Subscription{start_time: sub_start_time, end_time: sub_end_time}, %User{do_not_disturb_start: dnd_start, do_not_disturb_end: dnd_end}) do
     start_time = time_shift_zone(sub_start_time, "Etc/UTC", "America/New_York")
     end_time = time_shift_zone(sub_end_time, "Etc/UTC", "America/New_York")
 

@@ -58,21 +58,21 @@ defmodule ConciergeSite.TimeHelperTest do
     end
   end
 
-  describe "timeranges_overlap?/2" do
+  describe "subscription_during_do_not_disturb?/2" do
     test "returns true if range is completely contained within other" do
-      assert TimeHelper.timeranges_overlap?(%Subscription{start_time: ~T[08:00:00], end_time: ~T[12:00:00]}, %User{do_not_disturb_start: ~T[05:00:00], do_not_disturb_end: ~T[07:00:00]})
+      assert TimeHelper.subscription_during_do_not_disturb?(%Subscription{start_time: ~T[08:00:00], end_time: ~T[12:00:00]}, %User{do_not_disturb_start: ~T[05:00:00], do_not_disturb_end: ~T[07:00:00]})
     end
 
     test "returns true if range is partially contained within other" do
-      assert TimeHelper.timeranges_overlap?(%Subscription{start_time: ~T[08:00:00], end_time: ~T[12:00:00]}, %User{do_not_disturb_start: ~T[05:00:00], do_not_disturb_end: ~T[14:00:00]})
+      assert TimeHelper.subscription_during_do_not_disturb?(%Subscription{start_time: ~T[08:00:00], end_time: ~T[12:00:00]}, %User{do_not_disturb_start: ~T[05:00:00], do_not_disturb_end: ~T[14:00:00]})
     end
 
     test "returns false if no overlap" do
-      refute TimeHelper.timeranges_overlap?(%Subscription{start_time: ~T[08:00:00], end_time: ~T[12:00:00]}, %User{do_not_disturb_start: ~T[09:00:00], do_not_disturb_end: ~T[14:00:00]})
+      refute TimeHelper.subscription_during_do_not_disturb?(%Subscription{start_time: ~T[08:00:00], end_time: ~T[12:00:00]}, %User{do_not_disturb_start: ~T[09:00:00], do_not_disturb_end: ~T[14:00:00]})
     end
 
     test "returns false if dnd period is not set" do
-      refute TimeHelper.timeranges_overlap?(%Subscription{start_time: ~T[12:00:00], end_time: ~T[18:00:00]}, %User{do_not_disturb_start: nil, do_not_disturb_end: nil})
+      refute TimeHelper.subscription_during_do_not_disturb?(%Subscription{start_time: ~T[12:00:00], end_time: ~T[18:00:00]}, %User{do_not_disturb_start: nil, do_not_disturb_end: nil})
     end
   end
 end

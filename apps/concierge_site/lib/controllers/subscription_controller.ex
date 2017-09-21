@@ -15,7 +15,7 @@ defmodule ConciergeSite.SubscriptionController do
 
         dnd_overlap =
           Enum.any?(subscriptions, fn(subscription) ->
-            TimeHelper.timeranges_overlap?(subscription, user)
+            TimeHelper.subscription_during_do_not_disturb?(subscription, user)
           end)
 
         render conn, "index.html",
