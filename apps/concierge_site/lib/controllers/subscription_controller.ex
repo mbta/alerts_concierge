@@ -4,6 +4,7 @@ defmodule ConciergeSite.SubscriptionController do
 
   alias AlertProcessor.{Model.Subscription, Model.User, Subscription.DisplayInfo}
   alias AlertProcessor.Repo
+  alias ConciergeSite.TimeHelper
 
   def index(conn, _params, user, _claims) do
     case Subscription.for_user(user) do
@@ -12,7 +13,13 @@ defmodule ConciergeSite.SubscriptionController do
       subscriptions ->
         {:ok, departure_time_map} = DisplayInfo.departure_times_for_subscriptions(subscriptions)
 
+        dnd_overlap =
+          Enum.any?(subscriptions, fn(subscription) ->
+            TimeHelper.timeranges_overlap?(subscription, user)
+          end)
+
         render conn, "index.html",
+          dnd_overlap: dnd_overlap,
           subscriptions: subscriptions,
           departure_time_map: departure_time_map,
           vacation_start: user.vacation_start,
