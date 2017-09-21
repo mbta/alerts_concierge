@@ -19,7 +19,7 @@
       <%= label f, :phone_number, "Wireless Number", class: "form-label" %>
       <%= label f, :phone_number, "Please enter your wireless number to receive T-Alerts via SMS", class: "form-sub-label" %>
       <%= error_tag f, :phone_number %>
-      <%= telephone_input f, :phone_number, placeholder: "###-###-####", class: "form-control form-control-success form-control-danger", pattern: "^[0-9]{10}$" %>
+      <%= telephone_input f, :phone_number, placeholder: "###-###-####", class: "form-control form-control-success form-control-danger" %>
       <span></span>
     </div>
     <hr class="account-creation-divider">

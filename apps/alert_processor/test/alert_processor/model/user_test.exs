@@ -70,6 +70,12 @@ defmodule AlertProcessor.Model.UserTest do
       assert {:error, changeset} = User.create_account(Map.put(@valid_account_attrs, "password_confirmation", "Garbage"))
       refute changeset.valid?
     end
+
+    test "removes non digits from phone number input" do
+      assert {:ok, user} = User.create_account(Map.merge(@valid_account_attrs, %{"sms_toggle" => "true", "phone_number" => "555-555-1234"}))
+      assert user.phone_number == "5555551234"
+      assert user.id != nil
+    end
   end
 
   describe "create_admin_account" do
