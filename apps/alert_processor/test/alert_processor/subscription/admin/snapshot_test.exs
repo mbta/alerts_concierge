@@ -72,7 +72,7 @@ defmodule AlertProcessor.Subscription.SnapshotTest do
       [%{informed_entities: [%{id: ie1_id}, %{id: ie2_id}, %{id: ie3_id}]}] =
         Subscription |> Repo.all() |> Repo.preload(:informed_entities)
 
-        assert MapSet.new([ie1_id, ie2_id, ie3_id]) == MapSet.new(Enum.map(subscription.informed_entities, &(&1.id)))
+      assert MapSet.new([ie1_id, ie2_id, ie3_id]) == MapSet.new(Enum.map(subscription.informed_entities, &(&1.id)))
     end
 
     test "fetches informed_entities for correct version when multiple exist" do

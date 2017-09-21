@@ -53,7 +53,7 @@ defmodule AlertProcessor.Subscription.AmenitiesMapper do
         PaperTrail.delete(ie, originator: User.wrap_id(originator), meta: %{owner: subscription.user_id})
       end)
     end)
-    |> Multi.run(:subscription, fn _ ->
+    |> Multi.run({:subscription}, fn _ ->
       changeset = Subscription.update_changeset(subscription, params)
       PaperTrail.update(changeset, originator: User.wrap_id(originator), meta: %{owner: subscription.user_id}, origin: origin)
     end)

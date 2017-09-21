@@ -135,8 +135,8 @@ defmodule AlertProcessor.Model.Subscription do
 
   defp associate_informed_entity_versions(result) do
     data = Map.to_list(result)
-    [{_name, %{version: sub_version}} | ie_data] = data
-    ie_version_ids = get_ie_version_ids(ie_data)
+    sub_version = get_sub_version(data)
+    ie_version_ids = get_ie_version_ids(data)
 
     sub_version_changeset = Ecto.Changeset.cast(
       sub_version,
@@ -147,20 +147,22 @@ defmodule AlertProcessor.Model.Subscription do
     Repo.update(sub_version_changeset)
   end
 
-  defp get_ie_version_ids(multi_data) do
-    multi_data
+  defp get_sub_version(data) do
+    {_, %{version: sub_version}} = Enum.find(data, fn({name, _}) ->
+      :subscription == elem(name, 0)
+    end)
+
+    sub_version
+  end
+
+  defp get_ie_version_ids(data) do
+    data
     |> Enum.filter(fn({name, _data}) ->
-      :new_informed_entity == get_reason(name)
+      :new_informed_entity == elem(name, 0)
     end)
     |> Enum.map(fn({_name, %{version: %{id: id}}}) ->
       id
     end)
-  end
-
-  defp get_reason(name) do
-    name
-    |> Tuple.to_list()
-    |> List.first()
   end
 
   @doc """

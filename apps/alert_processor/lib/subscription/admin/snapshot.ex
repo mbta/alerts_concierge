@@ -3,11 +3,13 @@ defmodule AlertProcessor.Subscription.Snapshot do
   Manages snapshots of a subscripton and its informed_entities
   at a specific point in time
   """
-  alias AlertProcessor.{AlertParser, Helpers.StringHelper, Model,
-    Repo, Helpers.StructHelper, Subscription.DiagnosticQuery}
+  alias AlertProcessor.{AlertParser, Model, Repo, Helpers,
+    Subscription.DiagnosticQuery}
+  alias Helpers.{StringHelper, StructHelper}
   alias Model.{Alert, InformedEntity, Subscription, User}
   alias Calendar.Time.Parse, as: TParse
   alias Calendar.DateTime.Parse, as: DTParse
+  alias Calendar.NaiveDateTime, as: NaiveDT
   import Ecto.Query
 
   def get_snapshots_by_datetime(user, datetime) do
@@ -52,16 +54,23 @@ defmodule AlertProcessor.Subscription.Snapshot do
   end
 
   defp get_snapshot_data(versions) do
-    result = Enum.reduce(versions, %{subscription: %{}, informed_entities: []},
+    result =
+      versions
+      |> Enum.sort_by(&(&1.inserted_at), &NaiveDT.before?/2)
+      |> Enum.reduce(%{subscription: %{}, informed_entities: []},
       fn(%{event: event, item_changes: changes, meta: meta},
         %{subscription: sub}) ->
         if event == "delete" do
           %{subscription: %{}, informed_entities: []}
         else
-          ies = DiagnosticQuery.get_informed_entities(meta["informed_entity_version_ids"])
+          ie_versions =
+            meta["informed_entity_version_ids"]
+            |> DiagnosticQuery.get_informed_entities()
+            |> build_informed_entities_from_versions()
+
           %{
             subscription: Map.merge(sub, changes),
-            informed_entities: serialize_informed_entities(ies)
+            informed_entities: serialize_informed_entities(ie_versions)
           }
         end
       end)
@@ -73,9 +82,14 @@ defmodule AlertProcessor.Subscription.Snapshot do
     end
   end
 
+  defp build_informed_entities_from_versions(ie_versions) do
+    Enum.map(ie_versions, &(&1.item_changes))
+  end
+
   def serialize_alert_versions(alert_versions) do
     snapshot =
       alert_versions
+      |> Enum.sort_by(&(&1.inserted_at), &NaiveDT.before?/2)
       |> Enum.reduce(%{}, fn(%{item_changes: changes}, acc) ->
         Map.merge(acc, changes["data"])
       end)
@@ -83,7 +97,6 @@ defmodule AlertProcessor.Subscription.Snapshot do
       |> serialize_active_periods()
 
     snapshot = Map.put(snapshot, "informed_entities", serialize_informed_entities(snapshot["informed_entity"]))
-
     {:ok, StructHelper.to_struct(Alert, snapshot)}
   end
 

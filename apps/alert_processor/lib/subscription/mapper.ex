@@ -269,7 +269,7 @@ defmodule AlertProcessor.Subscription.Mapper do
             PaperTrail.delete(current_trip_entity, originator: User.wrap_id(originator), meta: %{owner: subscription.user_id})
           end)
         end)
-    |> Multi.run(:subscription, fn _ ->
+    |> Multi.run({:subscription}, fn _ ->
          PaperTrail.update(subscription_changeset, originator: User.wrap_id(originator), meta: %{owner: subscription.user_id}, origin: origin)
        end)
   end

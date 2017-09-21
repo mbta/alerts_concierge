@@ -802,7 +802,7 @@ defmodule AlertProcessor.Subscription.CommuterRailMapperTest do
         {{:new_informed_entity, 0}, {:run, function1}},
         {{:remove_old, 0}, {:run, function2}},
         {{:remove_old, 1}, {:run, function3}},
-        {:subscription, {:run, function4}}
+        {{:subscription}, {:run, function4}}
       ] = Ecto.Multi.to_list(multi)
       assert {:ok, %{model: informed_entity1, version: %{event: "insert"}}} = function1.(nil)
       assert informed_entity1.subscription_id == subscription.id
