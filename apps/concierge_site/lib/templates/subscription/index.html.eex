@@ -7,6 +7,9 @@
 
 <%= flash_info(@conn) %>
 <%= render "_vacation_banner.html", conn: @conn, vacation_start: @vacation_start, vacation_end: @vacation_end %>
+<%= if @dnd_overlap do %>
+  <%= render "_dnd_overlap_banner.html" %>
+<% end %>
 
 <div class="my-subscriptions-container">
   <%= render "_subscriptions.html", conn: @conn, subscriptions: @subscriptions, departure_time_map: @departure_time_map, render_links: true %>

@@ -140,6 +140,7 @@ defmodule ConciergeSite.SubscriptionViewTest do
 
     assigns = [
       conn: conn,
+      dnd_overlap: true,
       departure_time_map: %{},
       subscriptions: subscriptions,
       vacation_start: nil,
@@ -149,6 +150,7 @@ defmodule ConciergeSite.SubscriptionViewTest do
     rendered = ConciergeSite.SubscriptionView.render("index.html", assigns)
     binary = Phoenix.HTML.safe_to_string(rendered)
 
+    assert binary =~ "One or more of your current subscriptions overlap with your Do Not Disturb period"
     assert binary =~ "Commuter Rail"
     assert binary =~ "Anderson/Woburn"
     assert binary =~ "North Station"
@@ -192,6 +194,7 @@ defmodule ConciergeSite.SubscriptionViewTest do
 
     assigns = [
       conn: conn,
+      dnd_overlap: false,
       departure_time_map: %{"221" => ~T[12:00:00], "Boat-F4-Boat-Long-17:15:00-weekday-0" => ~T[17:15:00]},
       subscriptions: subscriptions,
       vacation_start: nil,
