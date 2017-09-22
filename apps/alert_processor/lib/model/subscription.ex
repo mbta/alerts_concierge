@@ -134,20 +134,35 @@ defmodule AlertProcessor.Model.Subscription do
   end
 
   defp associate_informed_entity_versions(result) do
-    [{_name, %{version: sub_version}} | informed_entities] = Map.to_list(result)
-
-    informed_entity_version_ids = Enum.map(
-      informed_entities, fn({_name, %{model: ie}}) ->
-        PaperTrail.get_version(ie).id
-      end)
+    data = Map.to_list(result)
+    sub_version = get_sub_version(data)
+    ie_version_ids = get_ie_version_ids(data)
 
     sub_version_changeset = Ecto.Changeset.cast(
       sub_version,
-      %{meta: Map.merge(sub_version.meta, %{informed_entity_version_ids: informed_entity_version_ids})},
+      %{meta: Map.merge(sub_version.meta, %{informed_entity_version_ids: ie_version_ids})},
       [:meta]
     )
 
     Repo.update(sub_version_changeset)
+  end
+
+  defp get_sub_version(data) do
+    {_, %{version: sub_version}} = Enum.find(data, fn({name, _}) ->
+      :subscription == elem(name, 0)
+    end)
+
+    sub_version
+  end
+
+  defp get_ie_version_ids(data) do
+    data
+    |> Enum.filter(fn({name, _data}) ->
+      :new_informed_entity == elem(name, 0)
+    end)
+    |> Enum.map(fn({_name, %{version: %{id: id}}}) ->
+      id
+    end)
   end
 
   @doc """

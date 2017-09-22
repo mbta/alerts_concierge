@@ -122,7 +122,7 @@ defmodule AlertProcessor.Subscription.AmenitiesMapperTest do
       result = Ecto.Multi.to_list(multi)
 
       assert {{:subscription, 0}, {:run, function}} = List.first(result)
-      assert {{:informed_entity, 0, 0}, {:run, _}} = Enum.at(result, 1)
+      assert {{:new_informed_entity, 0, 0}, {:run, _}} = Enum.at(result, 1)
 
       {:ok, %{model: subscription}} = function.(nil)
       assert subscription.id != nil

@@ -59,8 +59,6 @@ defmodule AlertProcessor.Subscription.DiagnosticQuery do
     query = from v in PaperTrail.Version,
       where: v.id in ^ids
 
-    query
-    |> Repo.all()
-    |> Enum.map(&(&1.item_changes))
+    Repo.all(query)
   end
 end
