@@ -29,6 +29,7 @@ defmodule ConciergeSite.Admin.AdminUserView do
   def display_admin_log_action(%{origin: "admin:message-subscriber"}), do: "Message Subscriber"
   def display_admin_log_action(%{origin: "admin:impersonate-subscriber"}), do: "Logged In As Subscriber"
   def display_admin_log_action(%{origin: "admin:create-admin-account"}), do: "Create Admin Account"
+  def display_admin_log_action(%{origin: "admin:upgrade-admin-account"}), do: "Upgrade Subscriber Account to Admin"
   def display_admin_log_action(%{origin: "admin:deactivate-subscriber-account"}), do: "Deactivate Subscriber Account"
   def display_admin_log_action(%{origin: "admin:deactivate-admin"}), do: "Deactivate Admin Account"
   def display_admin_log_action(%{origin: "admin:change-admin-role"}), do: "Change Admin Role"
