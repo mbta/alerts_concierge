@@ -19,7 +19,7 @@ defmodule ConciergeSite.Admin.SubscriptionSearchController do
         |> put_flash(:error, "There was an error with the search, please try a later date")
         |> render(:new, user: user, diagnoses: [])
       false ->
-        handle_unauthorized(conn)
+        render_unauthorized(conn)
     end
   end
 
@@ -39,11 +39,5 @@ defmodule ConciergeSite.Admin.SubscriptionSearchController do
         |> put_flash(:error, "That user does not exist")
         |> redirect(to: "/admin_users")
     end
-  end
-
-  defp handle_unauthorized(conn) do
-    conn
-    |> put_status(403)
-    |> render(ConciergeSite.ErrorView, "403.html", %{})
   end
 end
