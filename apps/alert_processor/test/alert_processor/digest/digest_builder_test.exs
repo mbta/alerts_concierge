@@ -9,13 +9,13 @@ defmodule AlertProcessor.DigestBuilderTest do
 
   @ddg %DigestDateGroup{}
 
-  @ie1 %{
+  @ie1 %InformedEntity{
     route: "16",
     route_type: 3,
     activities: InformedEntity.default_entity_activities()
   }
 
-  @ie2 %{
+  @ie2 %InformedEntity{
     route: "8",
     route_type: 3,
     activities: InformedEntity.default_entity_activities()
@@ -24,7 +24,7 @@ defmodule AlertProcessor.DigestBuilderTest do
   @alert1 %Alert{
     id: "1",
     header: "test1",
-    severity: :high,
+    severity: :severe,
     informed_entities: [
       @ie1,
       @ie2
@@ -34,7 +34,7 @@ defmodule AlertProcessor.DigestBuilderTest do
   @alert2 %Alert{
     id: "2",
     header: "test2",
-    severity: :low,
+    severity: :minor,
     informed_entities: [
       @ie2
     ]
@@ -52,12 +52,10 @@ defmodule AlertProcessor.DigestBuilderTest do
     user2 = insert(:user)
     sub1 = insert(:subscription, user: user1)
     sub2 = insert(:subscription, user: user2)
-    InformedEntity
-    |> struct(@ie1)
+    @ie1
     |> Map.merge(%{subscription_id: sub1.id})
     |> insert
-    InformedEntity
-    |> struct(@ie2)
+    @ie2
     |> Map.merge(%{subscription_id: sub2.id})
     |> insert
 
@@ -72,8 +70,7 @@ defmodule AlertProcessor.DigestBuilderTest do
     user = insert(:user)
 
     sub = insert(:subscription, user: user, alert_priority_type: :medium)
-    InformedEntity
-    |> struct(@ie2)
+    @ie2
     |> Map.merge(%{subscription_id: sub.id})
     |> insert
 
@@ -86,12 +83,10 @@ defmodule AlertProcessor.DigestBuilderTest do
     user2 = insert(:user)
     sub1 = insert(:subscription, user: user1)
     sub2 = insert(:subscription, user: user2)
-    InformedEntity
-    |> struct(@ie1)
+    @ie1
     |> Map.merge(%{subscription_id: sub1.id})
     |> insert
-    InformedEntity
-    |> struct(@ie2)
+    @ie2
     |> Map.merge(%{subscription_id: sub2.id})
     |> insert
 
@@ -119,12 +114,10 @@ defmodule AlertProcessor.DigestBuilderTest do
 
     sub1 = insert(:subscription, user: short_vacation_user)
     sub2 = insert(:subscription, user: long_vacation_user)
-    InformedEntity
-    |> struct(@ie1)
+    @ie1
     |> Map.merge(%{subscription_id: sub1.id})
     |> insert
-    InformedEntity
-    |> struct(@ie2)
+    @ie2
     |> Map.merge(%{subscription_id: sub2.id})
     |> insert
 

@@ -173,4 +173,9 @@ defmodule AlertProcessor.Model.Alert do
   defp default_severity_value(:minor), do: 1
   defp default_severity_value(:moderate), do: 2
   defp default_severity_value(:severe), do: 3
+  defp default_severity_value(:extreme), do: 4
+
+  def facility_alert?(%__MODULE__{informed_entities: ies}) do
+    {:ok, Enum.any?(ies, &(!is_nil(&1.facility_type)))}
+  end
 end
