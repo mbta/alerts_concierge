@@ -110,6 +110,23 @@ defmodule AlertProcessor.Model.UserTest do
     end
   end
 
+  describe "upgrade_admin_account" do
+    test "updgrades admin account" do
+      admin_user = insert(:user, role: "application_administration")
+      regular_user = insert(:user)
+      assert {:ok, user} = User.upgrade_admin_account(regular_user, %{role: "customer_support"}, admin_user)
+
+      assert %{
+        item_type: "User",
+        origin: "admin:upgrade-admin-account",
+        originator_id: originator_id,
+      } = PaperTrail.get_version(user)
+
+      assert "customer_support" == user.role
+      assert originator_id == admin_user.id
+    end
+  end
+
   describe "authenticate_admin/1" do
     test "authenticates if email and password are valid and user has the application_administration role" do
       Repo.insert!(%User{email: "test@email.com", role: "application_administration", encrypted_password: @encrypted_password})
@@ -260,6 +277,20 @@ defmodule AlertProcessor.Model.UserTest do
       } = PaperTrail.get_version(user)
       assert item_id == user.id
       assert originator_id == admin_user.id
+    end
+  end
+
+  describe "upgrade_account_changest" do
+    test "with valid role" do
+      changeset = User.upgrade_account_changeset(%User{}, %{role: "customer_support"})
+
+      assert changeset.valid?
+    end
+
+    test "with invalid role" do
+      changeset = User.upgrade_account_changeset(%User{}, %{role: "user"})
+
+      refute changeset.valid?
     end
   end
 
