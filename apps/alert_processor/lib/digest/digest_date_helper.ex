@@ -63,10 +63,10 @@ defmodule AlertProcessor.DigestDateHelper do
   end
 
   @spec active_period_within?(map, {DateTime.t, DateTime.t}) :: boolean()
-  defp active_period_within?(%{start: aps, end: nil}, {dgs, _dge}) do
-    not DT.after?(aps, dgs)
+  defp active_period_within?(%{start: aps, end: nil}, {_dgs, dge}) do
+    DT.before?(aps, dge)
   end
   defp active_period_within?(%{start: aps, end: ape}, {dgs, dge}) do
-    not DT.before?(dge, aps) and not DT.before?(ape, dgs)
+    !DT.before?(dge, aps) && !DT.before?(ape, dgs)
   end
 end

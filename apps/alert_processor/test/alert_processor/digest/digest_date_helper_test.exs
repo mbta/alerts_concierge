@@ -10,15 +10,15 @@ defmodule AlertProcessor.DigestDateHelperTest do
 
   @ap1 [
     %{
-      start: DT.from_erl!({{2017, 06, 27}, {0, 0, 1}}, "America/New_York"),
+      start: DT.from_erl!({{2017, 06, 27}, {2, 30, 0}}, "America/New_York"),
       end: DT.from_erl!({{2017, 06, 28}, {0, 0, 0}}, "America/New_York")
      }
   ]
 
   @ap2 [
     %{
-      start: DT.from_erl!({{2017, 05, 30}, {0, 0, 1}}, "America/New_York"),
-      end: DT.from_erl!({{2017, 06, 03}, {0, 0, 1}}, "America/New_York")
+      start: DT.from_erl!({{2017, 05, 30}, {2, 30, 0}}, "America/New_York"),
+      end: DT.from_erl!({{2017, 06, 03}, {2, 30, 1}}, "America/New_York")
     }
   ]
 
@@ -31,14 +31,14 @@ defmodule AlertProcessor.DigestDateHelperTest do
 
   @ap4 [
     %{
-      start: DT.from_erl!({{2017, 05, 27}, {1, 0, 1}}, "America/New_York"),
+      start: DT.from_erl!({{2017, 05, 27}, {2, 30, 0}}, "America/New_York"),
       end: DT.from_erl!({{2017, 05, 28}, {23, 0, 0}}, "America/New_York")
     }
   ]
 
   @ap5 [
     %{
-      start: DT.from_erl!({{2017, 05, 27}, {1, 0, 1}}, "America/New_York"),
+      start: DT.from_erl!({{2017, 05, 29}, {2, 30, 0}}, "America/New_York"),
       end: nil
     }
   ]
