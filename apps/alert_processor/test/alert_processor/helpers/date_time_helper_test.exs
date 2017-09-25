@@ -43,36 +43,36 @@ defmodule AlertProcessor.Helpers.DateTimeHelperTest do
     @sunday DT.from_erl!({{2017, 5, 28}, {0, 0, 0}}, "America/New_York")
 
     test "upcoming_weekend/0 returns the start and end DateTime of upcoming weekend" do
-      saturday_start = DT.from_erl!({{2017, 5, 27}, {0, 0, 0}}, "America/New_York")
-      sunday_end = DT.from_erl!({{2017, 5, 28}, {23, 59, 59}}, "America/New_York")
+      saturday_start = DT.from_erl!({{2017, 5, 27}, {2, 30, 1}}, "America/New_York")
+      sunday_end = DT.from_erl!({{2017, 5, 29}, {2, 30, 0}}, "America/New_York")
 
       assert DTH.upcoming_weekend(@thursday) == {saturday_start, sunday_end}
     end
 
     test "upcoming_weekend/0 works for current date of Saturday/Sunday" do
-      saturday_start = DT.from_erl!({{2017, 6, 03}, {0, 0, 0}}, "America/New_York")
-      sunday_end = DT.from_erl!({{2017, 6, 04}, {23, 59, 59}}, "America/New_York")
+      saturday_start = DT.from_erl!({{2017, 6, 03}, {2, 30, 1}}, "America/New_York")
+      sunday_end = DT.from_erl!({{2017, 6, 05}, {2, 30, 0}}, "America/New_York")
 
       assert DTH.upcoming_weekend(@saturday) == {saturday_start, sunday_end}
       assert DTH.upcoming_weekend(@sunday) == {saturday_start, sunday_end}
     end
 
     test "upcoming_week/0" do
-      monday_start = DT.from_erl!({{2017, 5, 29}, {0, 0, 0}}, "America/New_York")
-      friday_end = DT.from_erl!({{2017, 6, 2}, {23, 59, 59}}, "America/New_York")
+      monday_start = DT.from_erl!({{2017, 5, 29}, {2, 30, 1}}, "America/New_York")
+      friday_end = DT.from_erl!({{2017, 6, 3}, {2, 30, 0}}, "America/New_York")
 
       assert DTH.upcoming_week(@thursday) == {monday_start, friday_end}
     end
 
     test "next_weekend/0" do
-      saturday_start = DT.from_erl!({{2017, 6, 3}, {0, 0, 0}}, "America/New_York")
-      sunday_end = DT.from_erl!({{2017, 6, 4}, {23, 59, 59}}, "America/New_York")
+      saturday_start = DT.from_erl!({{2017, 6, 3}, {2, 30, 1}}, "America/New_York")
+      sunday_end = DT.from_erl!({{2017, 6, 5}, {2, 30, 0}}, "America/New_York")
 
       assert DTH.next_weekend(@thursday) == {saturday_start, sunday_end}
     end
 
     test "future/0" do
-      monday_start = DT.from_erl!({{2017, 6, 5}, {0, 0, 0}}, "America/New_York")
+      monday_start = DT.from_erl!({{2017, 6, 5}, {2, 30, 1}}, "America/New_York")
       far_in_future = DT.from_erl!({{3000, 01, 01}, {0, 0, 0}}, "America/New_York")
 
       assert DTH.future(@thursday) == {monday_start, far_in_future}

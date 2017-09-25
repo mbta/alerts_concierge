@@ -139,9 +139,9 @@ defmodule AlertProcessor.Helpers.DateTimeHelper do
 
     start_time = today
     |> Map.merge(%{
-      hour: 0,
-      minute: 0,
-      second: 0,
+      hour: 2,
+      minute: 30,
+      second: 1,
       microsecond: {0, 0}
     })
     |> DT.add!(seconds_till_saturday(today))
