@@ -89,13 +89,8 @@ defmodule AlertProcessor.Subscription.Mapper do
   def map_routes([{subscription, informed_entities}], %{"origin" => origin, "destination" => destination}, routes) do
     route_entities =
       Enum.flat_map(routes, fn(%Route{route_id: route, route_type: type, stop_list: stop_list}) ->
-        direction_id =
-          case stop_list
-            |> Enum.filter(fn({_name, id}) -> Enum.member?([origin, destination], id) end)
-            |> Enum.map(fn({_name, id}) -> id end) do
-            [^origin, ^destination] -> 1
-            [^destination, ^origin] -> 0
-          end
+        direction_id = map_direction_id(stop_list, origin, destination)
+
         [
           %InformedEntity{route: route, route_type: type},
           %InformedEntity{route: route, route_type: type, direction_id: direction_id}
@@ -104,19 +99,23 @@ defmodule AlertProcessor.Subscription.Mapper do
 
     [{subscription, informed_entities ++ route_entities}]
   end
-  def map_routes([{sub1, ie1}, {sub2, ie2}], _params, routes) do
+  def map_routes([{sub1, ie1}, {sub2, ie2}], %{"origin" => origin, "destination" => destination}, routes) do
     route_entities_1 =
-      Enum.flat_map(routes, fn(%Route{route_id: route, route_type: type}) ->
+      Enum.flat_map(routes, fn(%Route{route_id: route, route_type: type, stop_list: stop_list}) ->
+        direction_id = map_direction_id(stop_list, origin, destination)
+
         [
           %InformedEntity{route: route, route_type: type},
-          %InformedEntity{route: route, route_type: type, direction_id: 0}
+          %InformedEntity{route: route, route_type: type, direction_id: direction_id}
         ]
       end)
     route_entities_2 =
-      Enum.flat_map(routes, fn(%Route{route_id: route, route_type: type}) ->
+      Enum.flat_map(routes, fn(%Route{route_id: route, route_type: type, stop_list: stop_list}) ->
+        direction_id = map_direction_id(stop_list, destination, origin)
+
         [
           %InformedEntity{route: route, route_type: type},
-          %InformedEntity{route: route, route_type: type, direction_id: 1}
+          %InformedEntity{route: route, route_type: type, direction_id: direction_id}
         ]
       end)
 
@@ -125,15 +124,18 @@ defmodule AlertProcessor.Subscription.Mapper do
 
   def map_stops([{sub1, ie1}, {sub2, ie2}], %{"origin" => origin, "destination" => destination}, routes) do
     stop_entities = map_stops_in_range(routes, origin, destination)
+    [%Route{stop_list: stop_list} | _] = routes
 
     stop_entities_1 =
       Enum.flat_map(stop_entities, fn(stop_entity) ->
-        [stop_entity, %{stop_entity | direction_id: 0}]
+        direction_id = map_direction_id(stop_list, origin, destination)
+        [stop_entity, %{stop_entity | direction_id: direction_id}]
       end)
 
     stop_entities_2 =
       Enum.flat_map(stop_entities, fn(stop_entity) ->
-        [stop_entity, %{stop_entity | direction_id: 1}]
+        direction_id = map_direction_id(stop_list, destination, origin)
+        [stop_entity, %{stop_entity | direction_id: direction_id}]
       end)
 
     {:ok, {origin_name, ^origin}} = ServiceInfoCache.get_stop(origin)
@@ -186,6 +188,15 @@ defmodule AlertProcessor.Subscription.Mapper do
         %InformedEntity{route: route, route_type: type, stop: stop}
       end)
     end)
+  end
+
+  defp map_direction_id(stop_list, origin, destination) do
+    case stop_list
+      |> Enum.filter(fn({_name, id}) -> Enum.member?([origin, destination], id) end)
+      |> Enum.map(fn({_name, id}) -> id end) do
+        [^origin, ^destination] -> 1
+        [^destination, ^origin] -> 0
+    end
   end
 
   def map_trips([{sub1, ie1}, {sub2, ie2}], %{"trips" => trips, "return_trips" => return_trips}) do
