@@ -100,7 +100,7 @@ defmodule ConciergeSite.Admin.AdminUserController do
 
   def create(conn, %{"user" => admin_user_params}, user, _claims) do
     if AdminUserPolicy.can?(user, :create_admin_users) do
-      case User.create_admin_account(admin_user_params, user) do
+      case User.create_or_upgrade_admin_account(admin_user_params, user) do
         {:ok, _} ->
           conn
           |> redirect(to: "/admin/admin_users")

@@ -1,6 +1,6 @@
 defmodule ConciergeSite.Admin.AdminUserControllerTest do
   use ConciergeSite.ConnCase
-  alias AlertProcessor.Model.User
+  alias AlertProcessor.{Model.User, Repo}
 
   describe "application_administration user" do
     setup :insert_application_admin
@@ -490,6 +490,29 @@ defmodule ConciergeSite.Admin.AdminUserControllerTest do
 
       conn = post(conn, "/admin/admin_users/", admin_user_params)
       assert html_response(conn, 302) =~ "/admin/admin_users"
+      assert %User{} = Repo.get_by(User, email: "admin@mbta.com")
+    end
+
+    test "existing subscribers get upgraded to admins", %{conn: conn} do
+      email = "admin@mbta.com"
+      insert(:user, email: "admin@mbta.com", role: "user")
+
+      conn =
+        :user
+        |> insert(role: "application_administration")
+        |> guardian_login(conn, :token, @application_admin_token_params)
+
+      admin_user_params =
+              %{"user" => %{
+                "email" => email,
+                "password" => "password1",
+                "password_confirmation" => "password1",
+                "role" => "customer_support"
+              }}
+
+      conn = post(conn, "/admin/admin_users/", admin_user_params)
+      assert html_response(conn, 302) =~ "/admin/admin_users"
+      refute Repo.get_by(User, role: "user")
     end
   end
 

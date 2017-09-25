@@ -73,6 +73,22 @@ defmodule AlertProcessor.Model.User do
     end
   end
 
+  def create_or_upgrade_admin_account(%{"email" => email} = params, originator) do
+    case Repo.get_by(__MODULE__, email: email) do
+      user = %__MODULE__{} ->
+        upgrade_admin_account(user, params, originator)
+      _ ->
+        create_admin_account(params, originator)
+    end
+  end
+
+  def upgrade_admin_account(user, params, originator) do
+    user
+    |> upgrade_account_changeset(params)
+    |> PaperTrail.update(originator: wrap_id(originator), origin: "admin:upgrade-admin-account")
+    |> normalize_papertrail_result()
+  end
+
   def create_admin_account(params, originator) do
     %__MODULE__{}
     |> cast(params, [:role])
@@ -103,6 +119,13 @@ defmodule AlertProcessor.Model.User do
     |> validate_format(:password, ~r/[^a-zA-Z\s:]{1}/, message: "Password must contain one number or special character (? & % $ # !, etc).")
     |> validate_format(:phone_number, ~r/^[0-9]{10}$/, message: "Phone number is not in a valid format.")
     |> hash_password()
+  end
+
+  def upgrade_account_changeset(struct, params \\ %{}) do
+    struct
+    |> cast(params, [:role])
+    |> validate_required([:role])
+    |> validate_inclusion(:role, @admin_roles)
   end
 
   def update_account(struct, params, originator) do
