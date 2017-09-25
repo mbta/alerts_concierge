@@ -128,7 +128,7 @@ defmodule ConciergeSite.Helpers.MailHelper do
   end
 
   def manage_subscriptions_url(user) do
-    {:ok, token, _permissions} = Token.issue(user, [:manage_subscriptions])
+    {:ok, token, _permissions} = Token.issue(user, [:manage_subscriptions], {30, :days})
     Helpers.subscription_url(ConciergeSite.Endpoint, :index, token: token)
   end
 end
