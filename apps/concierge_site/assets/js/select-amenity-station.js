@@ -88,8 +88,9 @@ export default function($) {
   }
 
   function removeStation(event) {
-    removeStationFromSelected(event.target.textContent.trim());
-    event.currentTarget.remove();
+    let button = $(event.target).closest("button")
+    removeStationFromSelected(button.text().trim());
+    button.remove();
   }
 
   function setStopsValue() {
