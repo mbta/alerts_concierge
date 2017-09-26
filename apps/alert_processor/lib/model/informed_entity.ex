@@ -65,4 +65,6 @@ defmodule AlertProcessor.Model.InformedEntity do
   def entity_type(%__MODULE__{route: r, route_type: rt}) when is_binary(r) and is_number(rt), do: :route
   def entity_type(%__MODULE__{route_type: rt}) when is_number(rt), do: :mode
   def entity_type(_), do: :unknown
+
+  def default_entity_activities, do: ["BOARD", "EXIT", "RIDE"]
 end

@@ -39,7 +39,7 @@ defmodule AlertProcessor.Subscription.BusMapper do
   end
 
   defp map_route_type(subscriptions) do
-    Enum.map(subscriptions, & {&1, [%InformedEntity{route_type: 3, activities: ["BOARD", "EXIT", "RIDE"]}]})
+    Enum.map(subscriptions, & {&1, [%InformedEntity{route_type: 3, activities: InformedEntity.default_entity_activities()}]})
   end
 
   defp map_routes([{sub, ie}], _params, route_id, direction_id) do
@@ -61,8 +61,8 @@ defmodule AlertProcessor.Subscription.BusMapper do
 
   defp do_map_route(route, type, direction_id) do
     [
-      %InformedEntity{route: route, route_type: type, activities: ["BOARD", "EXIT", "RIDE"]},
-      %InformedEntity{route: route, route_type: type, direction_id: direction_id, activities: ["BOARD", "EXIT", "RIDE"]}
+      %InformedEntity{route: route, route_type: type, activities: InformedEntity.default_entity_activities()},
+      %InformedEntity{route: route, route_type: type, direction_id: direction_id, activities: InformedEntity.default_entity_activities()}
     ]
   end
 

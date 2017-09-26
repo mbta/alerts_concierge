@@ -15,7 +15,7 @@ defmodule AlertProcessor.AlertParserTest do
   test "process_alerts/1" do
     user = insert(:user, phone_number: nil)
     :subscription
-    |> build(user: user, alert_priority_type: :low, informed_entities: [%InformedEntity{route_type: 3, route: "16", activities: ["BOARD", "EXIT", "RIDE"]}])
+    |> build(user: user, alert_priority_type: :low, informed_entities: [%InformedEntity{route_type: 3, route: "16", activities: InformedEntity.default_entity_activities()}])
     |> weekday_subscription
     |> PaperTrail.insert
     use_cassette "old_alerts", custom: true, clear_mock: true, match_requests_on: [:query] do
@@ -31,32 +31,32 @@ defmodule AlertProcessor.AlertParserTest do
     user1 = insert(:user, phone_number: nil)
     :subscription
     |> build(user: user1, alert_priority_type: :low, informed_entities: [
-        %InformedEntity{route_type: 2, route: "CR-Needham", activities: ["BOARD", "EXIT", "RIDE"]},
-        %InformedEntity{route_type: 2, route: "CR-Needham", direction_id: 1, activities: ["BOARD", "EXIT", "RIDE"]}
+        %InformedEntity{route_type: 2, route: "CR-Needham", activities: InformedEntity.default_entity_activities()},
+        %InformedEntity{route_type: 2, route: "CR-Needham", direction_id: 1, activities: InformedEntity.default_entity_activities()}
       ])
     |> weekday_subscription
     |> PaperTrail.insert
     user2 = insert(:user, phone_number: nil)
     :subscription
     |> build(user: user2, alert_priority_type: :high, informed_entities: [
-        %InformedEntity{route_type: 2, route: "CR-Needham", activities: ["BOARD", "EXIT", "RIDE"]},
-        %InformedEntity{route_type: 2, route: "CR-Needham", direction_id: 1, activities: ["BOARD", "EXIT", "RIDE"]}
+        %InformedEntity{route_type: 2, route: "CR-Needham", activities: InformedEntity.default_entity_activities()},
+        %InformedEntity{route_type: 2, route: "CR-Needham", direction_id: 1, activities: InformedEntity.default_entity_activities()}
       ])
     |> weekday_subscription
     |> PaperTrail.insert
     user3 = insert(:user, phone_number: nil)
     :subscription
     |> build(user: user3, alert_priority_type: :low, informed_entities: [
-        %InformedEntity{route_type: 2, route: "CR-Lowell", activities: ["BOARD", "EXIT", "RIDE"]},
-        %InformedEntity{route_type: 2, route: "CR-Lowell", direction_id: 1, activities: ["BOARD", "EXIT", "RIDE"]}
+        %InformedEntity{route_type: 2, route: "CR-Lowell", activities: InformedEntity.default_entity_activities()},
+        %InformedEntity{route_type: 2, route: "CR-Lowell", direction_id: 1, activities: InformedEntity.default_entity_activities()}
       ])
     |> weekday_subscription
     |> PaperTrail.insert
     user4 = insert(:user, phone_number: nil)
     :subscription
     |> build(user: user4, alert_priority_type: :low, informed_entities: [
-        %InformedEntity{route_type: 2, route: "CR-Needham", activities: ["BOARD", "EXIT", "RIDE"]},
-        %InformedEntity{route_type: 2, route: "CR-Needham", direction_id: 1, activities: ["BOARD", "EXIT", "RIDE"]}
+        %InformedEntity{route_type: 2, route: "CR-Needham", activities: InformedEntity.default_entity_activities()},
+        %InformedEntity{route_type: 2, route: "CR-Needham", direction_id: 1, activities: InformedEntity.default_entity_activities()}
       ])
     |> weekday_subscription
     |> PaperTrail.insert
@@ -88,7 +88,7 @@ defmodule AlertProcessor.AlertParserTest do
     user = insert(:user)
 
     subscription_factory()
-    |> Map.put(:informed_entities, [%InformedEntity{trip: "775", activities: ["BOARD", "EXIT", "RIDE"]}])
+    |> Map.put(:informed_entities, [%InformedEntity{trip: "775", activities: InformedEntity.default_entity_activities()}])
     |> Map.merge(%{type: :commuter_rail, user: user, relevant_days: [:weekday], start_time: ~T[00:00:00], end_time: ~T[23:59:59]})
     |> insert()
 

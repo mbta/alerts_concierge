@@ -11,7 +11,7 @@ defmodule AlertProcessor.SubscriptionFilterEngineTest do
       effect_name: "Delay",
       header: "This is a test message",
       id: "1",
-      informed_entities: [%InformedEntity{route_type: 1, activities: ["BOARD", "EXIT", "RIDE"]}],
+      informed_entities: [%InformedEntity{route_type: 1, activities: InformedEntity.default_entity_activities()}],
       severity: :minor,
       last_push_notification: start_time
     }
@@ -23,19 +23,19 @@ defmodule AlertProcessor.SubscriptionFilterEngineTest do
     user2 = insert(:user, phone_number: nil)
 
     s1 = :subscription
-    |> build(user: user, alert_priority_type: :low, informed_entities: [%InformedEntity{route_type: 1, activities: ["BOARD", "EXIT", "RIDE"]}])
+    |> build(user: user, alert_priority_type: :low, informed_entities: [%InformedEntity{route_type: 1, activities: InformedEntity.default_entity_activities()}])
     |> weekday_subscription
     |> insert
     s2 = :subscription
-    |> build(user: user, alert_priority_type: :high, informed_entities: [%InformedEntity{route_type: 4, activities: ["BOARD", "EXIT", "RIDE"]}])
+    |> build(user: user, alert_priority_type: :high, informed_entities: [%InformedEntity{route_type: 4, activities: InformedEntity.default_entity_activities()}])
     |> weekday_subscription
     |> insert
     s3 = :subscription
-    |> build(user: user2, alert_priority_type: :low, informed_entities: [%InformedEntity{route_type: 3, activities: ["BOARD", "EXIT", "RIDE"]}])
+    |> build(user: user2, alert_priority_type: :low, informed_entities: [%InformedEntity{route_type: 3, activities: InformedEntity.default_entity_activities()}])
     |> weekday_subscription
     |> insert
     s4 = :subscription
-    |> build(user: user2, alert_priority_type: :high, informed_entities: [%InformedEntity{route_type: 2, activities: ["BOARD", "EXIT", "RIDE"]}])
+    |> build(user: user2, alert_priority_type: :high, informed_entities: [%InformedEntity{route_type: 2, activities: InformedEntity.default_entity_activities()}])
     |> weekday_subscription
     |> sunday_subscription
     |> insert
@@ -50,11 +50,11 @@ defmodule AlertProcessor.SubscriptionFilterEngineTest do
     user = insert(:user, phone_number: nil)
 
     s1 = :subscription
-    |> build(user: user, alert_priority_type: :low, informed_entities: [%InformedEntity{route_type: 1, activities: ["BOARD", "EXIT", "RIDE"]}])
+    |> build(user: user, alert_priority_type: :low, informed_entities: [%InformedEntity{route_type: 1, activities: InformedEntity.default_entity_activities()}])
     |> weekday_subscription
     |> insert
     s2 = :subscription
-    |> build(user: user, alert_priority_type: :low, informed_entities: [%InformedEntity{route_type: 1, activities: ["BOARD", "EXIT", "RIDE"]}])
+    |> build(user: user, alert_priority_type: :low, informed_entities: [%InformedEntity{route_type: 1, activities: InformedEntity.default_entity_activities()}])
     |> weekday_subscription
     |> insert
 

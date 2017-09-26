@@ -65,11 +65,12 @@ defmodule AlertProcessor.Subscription.Mapper do
 
   defp map_amenity_activities(:elevator), do: ["USING_WHEELCHAIR"]
   defp map_amenity_activities(:escalator), do: ["USING_ESCALATOR"]
+  defp map_amenity_activities(_), do: []
 
   def map_route_type(subscription_infos, routes) do
     route_type_entities =
       Enum.map(routes, fn(%Route{route_type: type}) ->
-        %InformedEntity{route_type: type, activities: ["BOARD", "EXIT", "RIDE"]}
+        %InformedEntity{route_type: type, activities: InformedEntity.default_entity_activities()}
       end)
 
     Enum.map(subscription_infos, fn({subscription, informed_entities}) ->
@@ -81,9 +82,9 @@ defmodule AlertProcessor.Subscription.Mapper do
     route_entities =
       Enum.flat_map(routes, fn(%Route{route_id: route, route_type: type}) ->
         [
-          %InformedEntity{route: route, route_type: type, activities: ["BOARD", "EXIT", "RIDE"]},
-          %InformedEntity{route: route, route_type: type, direction_id: 0, activities: ["BOARD", "EXIT", "RIDE"]},
-          %InformedEntity{route: route, route_type: type, direction_id: 1, activities: ["BOARD", "EXIT", "RIDE"]}
+          %InformedEntity{route: route, route_type: type, activities: InformedEntity.default_entity_activities()},
+          %InformedEntity{route: route, route_type: type, direction_id: 0, activities: InformedEntity.default_entity_activities()},
+          %InformedEntity{route: route, route_type: type, direction_id: 1, activities: InformedEntity.default_entity_activities()}
         ]
       end)
 
@@ -97,8 +98,8 @@ defmodule AlertProcessor.Subscription.Mapper do
         direction_id = map_direction_id(stop_list, origin, destination)
 
         [
-          %InformedEntity{route: route, route_type: type, activities: ["BOARD", "EXIT", "RIDE"]},
-          %InformedEntity{route: route, route_type: type, direction_id: direction_id, activities: ["BOARD", "EXIT", "RIDE"]}
+          %InformedEntity{route: route, route_type: type, activities: InformedEntity.default_entity_activities()},
+          %InformedEntity{route: route, route_type: type, direction_id: direction_id, activities: InformedEntity.default_entity_activities()}
         ]
       end)
 
@@ -110,8 +111,8 @@ defmodule AlertProcessor.Subscription.Mapper do
         direction_id = map_direction_id(stop_list, origin, destination)
 
         [
-          %InformedEntity{route: route, route_type: type, activities: ["BOARD", "EXIT", "RIDE"]},
-          %InformedEntity{route: route, route_type: type, direction_id: direction_id, activities: ["BOARD", "EXIT", "RIDE"]}
+          %InformedEntity{route: route, route_type: type, activities: InformedEntity.default_entity_activities()},
+          %InformedEntity{route: route, route_type: type, direction_id: direction_id, activities: InformedEntity.default_entity_activities()}
         ]
       end)
     route_entities_2 =
@@ -119,8 +120,8 @@ defmodule AlertProcessor.Subscription.Mapper do
         direction_id = map_direction_id(stop_list, destination, origin)
 
         [
-          %InformedEntity{route: route, route_type: type, activities: ["BOARD", "EXIT", "RIDE"]},
-          %InformedEntity{route: route, route_type: type, direction_id: direction_id, activities: ["BOARD", "EXIT", "RIDE"]}
+          %InformedEntity{route: route, route_type: type, activities: InformedEntity.default_entity_activities()},
+          %InformedEntity{route: route, route_type: type, direction_id: direction_id, activities: InformedEntity.default_entity_activities()}
         ]
       end)
 
@@ -198,14 +199,14 @@ defmodule AlertProcessor.Subscription.Mapper do
   end
 
   defp do_map_intermediate_stop(true, stop_entity, direction_id) do
-    [%{stop_entity | activities: ["BOARD", "EXIT", "RIDE"]}, %{stop_entity | direction_id: direction_id, activities: ["BOARD", "EXIT", "RIDE"]}]
+    [%{stop_entity | activities: InformedEntity.default_entity_activities()}, %{stop_entity | direction_id: direction_id, activities: InformedEntity.default_entity_activities()}]
   end
   defp do_map_intermediate_stop(false, stop_entity, direction_id) do
     [%{stop_entity | activities: ["RIDE"]}, %{stop_entity | direction_id: direction_id, activities: ["RIDE"]}]
   end
 
   defp do_map_end_stop(true, stop_entity, _, direction_id) do
-    [%{stop_entity | activities: ["BOARD", "EXIT", "RIDE"]}, %{stop_entity | direction_id: direction_id, activities: ["BOARD", "EXIT", "RIDE"]}]
+    [%{stop_entity | activities: InformedEntity.default_entity_activities()}, %{stop_entity | direction_id: direction_id, activities: InformedEntity.default_entity_activities()}]
   end
   defp do_map_end_stop(false, %InformedEntity{stop: origin} = stop_entity, origin, direction_id) do
     [%{stop_entity | activities: ["BOARD"]}, %{stop_entity | direction_id: direction_id, activities: ["BOARD"]}]
@@ -237,13 +238,13 @@ defmodule AlertProcessor.Subscription.Mapper do
   end
 
   def map_trips([{sub1, ie1}, {sub2, ie2}], %{"trips" => trips, "return_trips" => return_trips}) do
-    trip_entities = Enum.map(trips, & %InformedEntity{trip: &1, activities: ["BOARD", "EXIT", "RIDE"]})
+    trip_entities = Enum.map(trips, & %InformedEntity{trip: &1, activities: InformedEntity.default_entity_activities()})
     return_trip_entities = Enum.map(return_trips, & %InformedEntity{trip: &1})
 
     [{sub1, ie1 ++ trip_entities}, {sub2, ie2 ++ return_trip_entities}]
   end
   def map_trips([{subscription, informed_entities}], %{"trips" => trips}) do
-    trip_entities = Enum.map(trips, & %InformedEntity{trip: &1, activities: ["BOARD", "EXIT", "RIDE"]})
+    trip_entities = Enum.map(trips, & %InformedEntity{trip: &1, activities: InformedEntity.default_entity_activities()})
 
     [{subscription, informed_entities ++ trip_entities}]
   end

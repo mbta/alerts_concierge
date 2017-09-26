@@ -12,13 +12,13 @@ defmodule AlertProcessor.DigestBuilderTest do
   @ie1 %{
     route: "16",
     route_type: 3,
-    activities: ["BOARD", "EXIT", "RIDE"]
+    activities: InformedEntity.default_entity_activities()
   }
 
   @ie2 %{
     route: "8",
     route_type: 3,
-    activities: ["BOARD", "EXIT", "RIDE"]
+    activities: InformedEntity.default_entity_activities()
   }
 
   @alert1 %Alert{

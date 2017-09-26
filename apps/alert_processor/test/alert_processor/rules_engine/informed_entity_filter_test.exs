@@ -7,26 +7,26 @@ defmodule AlertProcessor.InformedEntityFilterTest do
   @ie1 %{
     route: "16",
     route_type: 3,
-    activities: ["BOARD", "EXIT", "RIDE"]
+    activities: InformedEntity.default_entity_activities()
   }
 
   @ie2 %{
     route: "8",
     route_type: 3,
-    activities: ["BOARD", "EXIT", "RIDE"]
+    activities: InformedEntity.default_entity_activities()
   }
 
   @ie3 %{
     route: "1",
     route_type: 3,
-    activities: ["BOARD", "EXIT", "RIDE"]
+    activities: InformedEntity.default_entity_activities()
   }
 
   @ie4 %{
     route: "16",
     route_type: 3,
     stop: "123",
-    activities: ["BOARD", "EXIT", "RIDE"]
+    activities: InformedEntity.default_entity_activities()
   }
 
   @ie5 %{
@@ -39,7 +39,7 @@ defmodule AlertProcessor.InformedEntityFilterTest do
     trip: "775",
     route_type: 2,
     route: "CR-Fairmount",
-    activities: ["BOARD", "EXIT", "RIDE"]
+    activities: InformedEntity.default_entity_activities()
   }
 
   @ie7 %{
