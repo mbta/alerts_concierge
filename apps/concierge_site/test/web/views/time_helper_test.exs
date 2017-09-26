@@ -82,5 +82,9 @@ defmodule ConciergeSite.TimeHelperTest do
     test "returns false if dnd period is not set" do
       refute TimeHelper.subscription_during_do_not_disturb?(%Subscription{start_time: ~T[12:00:00], end_time: ~T[18:00:00]}, %User{do_not_disturb_start: nil, do_not_disturb_end: nil})
     end
+
+    test "returns false if subscription is type amenity" do
+      refute TimeHelper.subscription_during_do_not_disturb?(%Subscription{type: :amenity, start_time: ~T[18:00:00], end_time: ~T[22:00:00]}, %User{do_not_disturb_start: ~T[17:00:00], do_not_disturb_end: ~T[02:00:00]})
+    end
   end
 end
