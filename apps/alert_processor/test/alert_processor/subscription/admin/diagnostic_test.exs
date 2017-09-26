@@ -60,6 +60,35 @@ defmodule AlertProcessor.Subscription.DiagnosticTest do
     {:ok, user: subscriber, subscription: inserted_sub, alert: alert}
   end
 
+  describe "sort/1" do
+    test "sorts diagnoses into passed/failed groups" do
+      passing = %{
+        passed_sent_alert_filter?: true,
+        passed_informed_entity_filter?: true,
+        passed_severity_filter?: true,
+        passed_active_period_filter?: true,
+        passes_vacation_period?: true,
+        passes_do_not_disturb?: true
+      }
+
+      failing = %{
+        passed_sent_alert_filter?: false,
+        passed_informed_entity_filter?: false,
+        passed_severity_filter?: false,
+        passed_active_period_filter?: false,
+        passes_vacation_period?: false,
+        passes_do_not_disturb?: false
+      }
+      diagnoses = [passing, failing]
+
+      assert Diagnostic.sort(diagnoses) == %{
+        all: diagnoses,
+        succeeded: [passing],
+        failed: [failing]
+      }
+    end
+  end
+
   describe "diagnose_alert/2" do
     test "alert matched sent alert", %{user: user, alert: alert, subscription: subscription} do
       params = %{
