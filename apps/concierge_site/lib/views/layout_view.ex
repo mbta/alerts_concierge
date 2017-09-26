@@ -33,6 +33,12 @@ defmodule ConciergeSite.LayoutView do
   def breadcrumbs(%Plug.Conn{path_info: ["admin", "my-account", _]}) do
     [%{title: "Admin Account", path: "/admin/my-account"}]
   end
+  def breadcrumbs(%Plug.Conn{path_info: ["admin", "subscription_search", endpoint]}) do
+    [
+      %{title: "Subscription Search", path: "/admin/subscription_search/#{endpoint}/new"},
+      %{title: "Results", path: "#"}
+    ]
+  end
   def breadcrumbs(%Plug.Conn{path_info: ["admin", path, endpoint]} = conn) do
     cond do
       conn.assigns[:subscriber] ->
