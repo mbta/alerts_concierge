@@ -3,7 +3,7 @@ defmodule AlertProcessor.DigestBuilderTest do
   use AlertProcessor.DataCase
   import AlertProcessor.Factory
 
-  alias AlertProcessor.{DigestBuilder, Model}
+  alias AlertProcessor.{DigestBuilder, Model, Repo}
   alias Model.{Alert, Digest, DigestDateGroup, InformedEntity}
   alias Calendar.DateTime, as: DT
 
@@ -19,6 +19,10 @@ defmodule AlertProcessor.DigestBuilderTest do
     route: "8",
     route_type: 3,
     activities: InformedEntity.default_entity_activities()
+  }
+
+  @facility_ie %InformedEntity{
+    facility_type: :escalator
   }
 
   @alert1 %Alert{
@@ -40,6 +44,24 @@ defmodule AlertProcessor.DigestBuilderTest do
     ]
   }
 
+  @alert3 %Alert{
+    id: "3",
+    header: "test3",
+    severity: :extreme,
+    informed_entities: [
+      @ie1
+    ]
+  }
+
+  @facility_alert %Alert{
+    id: "4",
+    header: "test4",
+    severity: :moderate,
+    informed_entities: [
+      @facility_ie
+    ]
+  }
+
   @digest_interval 604_800
 
   setup_all do
@@ -47,7 +69,7 @@ defmodule AlertProcessor.DigestBuilderTest do
     :ok
   end
 
-  test "build_digests/1 returns all alerts for each user based on informed entity" do
+  test "build_digests/1 returns all alerts for each user based on informed entity, including minor severity" do
     user1 = insert(:user)
     user2 = insert(:user)
     sub1 = insert(:subscription, user: user1)
@@ -64,18 +86,6 @@ defmodule AlertProcessor.DigestBuilderTest do
                 %Digest{user: user2, alerts: [@alert2, @alert1], digest_date_group: @ddg}]
 
     assert digests == expected
-  end
-
-  test "build_digests/1 does not filter on severity" do
-    user = insert(:user)
-
-    sub = insert(:subscription, user: user, alert_priority_type: :medium)
-    @ie2
-    |> Map.merge(%{subscription_id: sub.id})
-    |> insert
-
-    digests = DigestBuilder.build_digests({[@alert2], @ddg}, @digest_interval)
-    assert digests == [%Digest{user: user, alerts: [@alert2], digest_date_group: @ddg}]
   end
 
   test "build_digest/1 does not return duplicate alerts for each user based on informed entity" do
@@ -123,5 +133,73 @@ defmodule AlertProcessor.DigestBuilderTest do
 
     digests = DigestBuilder.build_digests({[@alert1, @alert2], @ddg}, @digest_interval)
     assert digests == [%Digest{user: short_vacation_user, alerts: [@alert1], digest_date_group: @ddg}]
+  end
+
+  test "build_digest/1 returns all alerts of :extreme severity, regardless of entities" do
+    user = insert(:user)
+    sub =
+      :subscription
+      |> insert(user: user)
+      |> Repo.preload(:informed_entities)
+
+    digests = DigestBuilder.build_digests({[@alert3], @ddg}, @digest_interval)
+    expected = [%Digest{user: user, alerts: [@alert3], digest_date_group: @ddg}]
+    assert sub.informed_entities == []
+    assert digests == expected
+  end
+
+  test "build_digest/1 returns all subs with matching facilities" do
+    user = insert(:user)
+    sub = insert(:subscription, user: user)
+
+    @facility_ie
+    |> Map.merge(%{subscription_id: sub.id})
+    |> insert()
+
+    digests = DigestBuilder.build_digests({[@facility_alert], @ddg}, @digest_interval)
+    expected = [%Digest{user: user, alerts: [@facility_alert], digest_date_group: @ddg}]
+    assert digests == expected
+  end
+
+  test "build_digests/1 returns all subs with the same route, >= :moderate severity" do
+    user = insert(:user)
+    minor_sub = insert(:subscription, user: user, alert_priority_type: :low)
+    moderate_sub = insert(:subscription, user: user, alert_priority_type: :medium)
+
+    %InformedEntity{route_type: 0, route: "Red", direction_id: 0}
+    |> Map.merge(%{subscription_id: minor_sub.id})
+    |> insert()
+
+    %InformedEntity{route_type: 0, route: "Red", direction_id: 0}
+    |> Map.merge(%{subscription_id: moderate_sub.id})
+    |> insert()
+
+    alert1 = %Alert{
+      id: "4",
+      header: "test",
+      severity: :minor,
+      informed_entities: [
+        %InformedEntity{
+          route_type: 0,
+          route: "Red"
+        }
+      ]
+    }
+
+    alert2 = %Alert{
+      id: "5",
+      header: "test",
+      severity: :moderate,
+      informed_entities: [
+        %InformedEntity{
+          route_type: 0,
+          route: "Red"
+        }
+      ]
+    }
+
+    digests = DigestBuilder.build_digests({[alert1, alert2], @ddg}, @digest_interval)
+    expected = [%Digest{user: user, alerts: [alert2], digest_date_group: @ddg}]
+    assert digests == expected
   end
 end
