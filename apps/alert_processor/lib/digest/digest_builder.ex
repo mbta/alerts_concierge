@@ -27,7 +27,6 @@ defmodule AlertProcessor.DigestBuilder do
   end
 
   defp fetch_active_users(alert, subs, digest_interval) do
-
     {facility_subs, route_subs} = split_subscriptions_by_type(subs)
 
     high_severity_subs = subscriptions_for_extreme_severity_alert(subs, alert: alert)

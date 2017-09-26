@@ -96,17 +96,17 @@ defmodule AlertProcessor.Model.Alert do
   """
   @spec severity_value(__MODULE__.t) :: integer | nil
   def severity_value(%__MODULE__{severity: severity, effect_name: effect_name, informed_entities: informed_entities}) do
-      informed_entities
-      |> Enum.map(fn(informed_entity) ->
-        mode =
-          case informed_entity do
-            %{route_type: rt, route: nil} when not is_nil(rt) -> "Systemwide"
-            %{route_type: rt, route: r} when not is_nil(rt) and not is_nil(r) -> route_string(rt)
-            %{stop: s} when not is_nil(s) -> "Facility"
-          end
-        priority_value(mode, effect_name, severity)
-      end)
-      |> Enum.max
+    informed_entities
+    |> Enum.map(fn(informed_entity) ->
+      mode =
+        case informed_entity do
+          %{route_type: rt, route: nil} when not is_nil(rt) -> "Systemwide"
+          %{route_type: rt, route: r} when not is_nil(rt) and not is_nil(r) -> route_string(rt)
+          %{stop: s} when not is_nil(s) -> "Facility"
+        end
+      priority_value(mode, effect_name, severity)
+    end)
+    |> Enum.max
   end
 
   @doc """
