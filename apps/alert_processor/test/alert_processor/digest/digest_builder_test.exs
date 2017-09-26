@@ -32,7 +32,8 @@ defmodule AlertProcessor.DigestBuilderTest do
     informed_entities: [
       @ie1,
       @ie2
-    ]
+    ],
+    active_period: []
   }
 
   @alert2 %Alert{
@@ -41,7 +42,8 @@ defmodule AlertProcessor.DigestBuilderTest do
     severity: :minor,
     informed_entities: [
       @ie2
-    ]
+    ],
+    active_period: []
   }
 
   @alert3 %Alert{
@@ -50,7 +52,8 @@ defmodule AlertProcessor.DigestBuilderTest do
     severity: :extreme,
     informed_entities: [
       @ie1
-    ]
+    ],
+    active_period: []
   }
 
   @facility_alert %Alert{
@@ -59,7 +62,8 @@ defmodule AlertProcessor.DigestBuilderTest do
     severity: :moderate,
     informed_entities: [
       @facility_ie
-    ]
+    ],
+    active_period: []
   }
 
   @digest_interval 604_800
@@ -183,7 +187,8 @@ defmodule AlertProcessor.DigestBuilderTest do
           route_type: 0,
           route: "Red"
         }
-      ]
+      ],
+      active_period: []
     }
 
     alert2 = %Alert{
@@ -195,11 +200,39 @@ defmodule AlertProcessor.DigestBuilderTest do
           route_type: 0,
           route: "Red"
         }
-      ]
+      ],
+      active_period: []
     }
 
     digests = DigestBuilder.build_digests({[alert1, alert2], @ddg}, @digest_interval)
     expected = [%Digest{user: user, alerts: [alert2], digest_date_group: @ddg}]
+    assert digests == expected
+  end
+
+  test "build_digests/1 does not return subs that match alerts with minor severity that are currently active" do
+    user = insert(:user)
+    sub = insert(:subscription, user: user)
+
+    previous_date = DT.from_erl!({{1017, 06, 27}, {2, 30, 0}}, "America/New_York")
+    future_date = DT.from_erl!({{3017, 06, 27}, {2, 30, 0}}, "America/New_York")
+
+    @ie1
+    |> Map.merge(%{subscription_id: sub.id})
+    |> insert
+
+    alert = %Alert{
+      id: "6",
+      header: "test",
+      severity: :minor,
+      informed_entities: [@ie1],
+      active_period: [%{
+        start: previous_date,
+        end: future_date
+      }]
+    }
+
+    digests = DigestBuilder.build_digests({[@alert1, alert], @ddg}, @digest_interval)
+    expected = [%Digest{user: user, alerts: [@alert1], digest_date_group: @ddg}]
     assert digests == expected
   end
 end

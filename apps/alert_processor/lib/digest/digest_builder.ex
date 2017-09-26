@@ -4,6 +4,7 @@ defmodule AlertProcessor.DigestBuilder do
   """
   alias AlertProcessor.{InformedEntityFilter, Model, Repo}
   alias Model.{Alert, Digest, DigestDateGroup, Subscription}
+  alias Calendar.DateTime, as: DT
 
   @doc """
   1. Takes a list of alerts
@@ -97,9 +98,20 @@ defmodule AlertProcessor.DigestBuilder do
   end
 
   defp subscriptions_for_informed_entity(subscriptions, alert: alert) do
-    subscriptions
-    |> InformedEntityFilter.filter(alert: alert)
+    if minor_and_started?(alert) do
+      []
+    else
+      InformedEntityFilter.filter(subscriptions, alert: alert)
+    end
   end
+
+  defp minor_and_started?(%Alert{severity: :minor, active_period: active_periods}) do
+    now = DateTime.utc_now()
+    Enum.any?(active_periods, fn(%{start: start, end: _}) ->
+      DT.before?(start, now)
+    end)
+  end
+  defp minor_and_started?(_), do: false
 
   defp sort_by_user(data, digest_date_group) do
     data
