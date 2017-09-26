@@ -56,11 +56,12 @@ defmodule AlertProcessor.Factory do
 
   def subway_subscription_entities() do
     [
-      %InformedEntity{route_type: 1},
-      %InformedEntity{route_type: 1, route: "Red"},
-      %InformedEntity{route_type: 1, route: "Red", direction_id: 0},
-      %InformedEntity{route_type: 1, route: "Red", stop: "place-davis"},
-      %InformedEntity{route_type: 1, route: "Red", stop: "place-harsq"}
+      %InformedEntity{route_type: 1, activities: ["BOARD", "EXIT", "RIDE"]},
+      %InformedEntity{route_type: 1, route: "Red", activities: ["BOARD", "EXIT", "RIDE"]},
+      %InformedEntity{route_type: 1, route: "Red", direction_id: 0, activities: ["BOARD", "EXIT", "RIDE"]},
+      %InformedEntity{route_type: 1, route: "Red", stop: "place-davis", activities: ["BOARD"]},
+      %InformedEntity{route_type: 1, route: "Red", stop: "place-portr", activities: ["RIDE"]},
+      %InformedEntity{route_type: 1, route: "Red", stop: "place-harsq", activities: ["EXIT"]}
     ]
   end
 
@@ -72,9 +73,9 @@ defmodule AlertProcessor.Factory do
 
   def bus_subscription_entities() do
     [
-      %InformedEntity{route_type: 3},
-      %InformedEntity{route_type: 3, route: "57A"},
-      %InformedEntity{route_type: 3, route: "57A", direction_id: 0}
+      %InformedEntity{route_type: 3, activities: ["BOARD", "EXIT", "RIDE"]},
+      %InformedEntity{route_type: 3, route: "57A", activities: ["BOARD", "EXIT", "RIDE"]},
+      %InformedEntity{route_type: 3, route: "57A", direction_id: 0, activities: ["BOARD", "EXIT", "RIDE"]}
     ]
   end
 
@@ -88,12 +89,12 @@ defmodule AlertProcessor.Factory do
 
   def commuter_rail_subscription_entities() do
     [
-      %InformedEntity{route_type: 2},
-      %InformedEntity{trip: "221"},
-      %InformedEntity{trip: "331"},
-      %InformedEntity{route_type: 2, route: "CR-Lowell", direction_id: 1},
-      %InformedEntity{route_type: 2, route: "CR-Lowell", stop: "Anderson/ Woburn"},
-      %InformedEntity{route_type: 2, route: "CR-Lowell", stop: "place-north"}
+      %InformedEntity{route_type: 2, activities: ["BOARD", "EXIT", "RIDE"]},
+      %InformedEntity{trip: "221", activities: ["BOARD", "EXIT", "RIDE"]},
+      %InformedEntity{trip: "331", activities: ["BOARD", "EXIT", "RIDE"]},
+      %InformedEntity{route_type: 2, route: "CR-Lowell", direction_id: 1, activities: ["BOARD", "EXIT", "RIDE"]},
+      %InformedEntity{route_type: 2, route: "CR-Lowell", stop: "Anderson/ Woburn", activities: ["BOARD"]},
+      %InformedEntity{route_type: 2, route: "CR-Lowell", stop: "place-north", activities: ["EXIT"]}
     ]
   end
 
@@ -107,12 +108,12 @@ defmodule AlertProcessor.Factory do
 
   def ferry_subscription_entities() do
     [
-      %InformedEntity{route_type: 4},
-      %InformedEntity{trip: "Boat-F4-Boat-Long-17:15:00-weekday-0"},
-      %InformedEntity{trip: "Boat-F4-Boat-Long-17:00:00-weekday-0"},
-      %InformedEntity{route_type: 4, route: "Boat-F4", direction_id: 1},
-      %InformedEntity{route_type: 4, route: "Boat-F4", stop: "Boat-Charlestown"},
-      %InformedEntity{route_type: 4, route: "Boat-F4", stop: "Boat-Long"}
+      %InformedEntity{route_type: 4, activities: ["BOARD", "EXIT", "RIDE"]},
+      %InformedEntity{trip: "Boat-F4-Boat-Long-17:15:00-weekday-0", activities: ["BOARD", "EXIT", "RIDE"]},
+      %InformedEntity{trip: "Boat-F4-Boat-Long-17:00:00-weekday-0", activities: ["BOARD", "EXIT", "RIDE"]},
+      %InformedEntity{route_type: 4, route: "Boat-F4", direction_id: 1, activities: ["BOARD", "EXIT", "RIDE"]},
+      %InformedEntity{route_type: 4, route: "Boat-F4", stop: "Boat-Charlestown", activities: ["BOARD"]},
+      %InformedEntity{route_type: 4, route: "Boat-F4", stop: "Boat-Long", activities: ["EXIT"]}
     ]
   end
 

@@ -6,34 +6,47 @@ defmodule AlertProcessor.InformedEntityFilterTest do
 
   @ie1 %{
     route: "16",
-    route_type: 3
+    route_type: 3,
+    activities: ["BOARD", "EXIT", "RIDE"]
   }
 
   @ie2 %{
     route: "8",
-    route_type: 3
+    route_type: 3,
+    activities: ["BOARD", "EXIT", "RIDE"]
   }
 
   @ie3 %{
     route: "1",
-    route_type: 3
+    route_type: 3,
+    activities: ["BOARD", "EXIT", "RIDE"]
   }
 
   @ie4 %{
     route: "16",
     route_type: 3,
-    stop: "123"
+    stop: "123",
+    activities: ["BOARD", "EXIT", "RIDE"]
   }
 
   @ie5 %{
     stop: "place-pktrm",
-    facility: :escalator
+    facility: :escalator,
+    activities: ["USING_ESCALATOR"]
   }
 
   @ie6 %{
     trip: "775",
     route_type: 2,
-    route: "CR-Fairmount"
+    route: "CR-Fairmount",
+    activities: ["BOARD", "EXIT", "RIDE"]
+  }
+
+  @ie7 %{
+    route_type: 2,
+    route: "CR-Lowell",
+    stop: "Mishawum",
+    activities: ["BOARD", "EXIT"]
   }
 
   @alert1 %Alert{
@@ -82,6 +95,14 @@ defmodule AlertProcessor.InformedEntityFilterTest do
     header: "test6",
     informed_entities: [
       @ie6
+    ]
+  }
+
+  @alert7 %Alert{
+    id: "7",
+    header: "test7",
+    informed_entities: [
+      @ie7
     ]
   }
 
@@ -162,5 +183,19 @@ defmodule AlertProcessor.InformedEntityFilterTest do
 
   test "matches trips", %{sub6: sub6, all_subscriptions: all_subscriptions} do
     assert [sub6] == InformedEntityFilter.filter(all_subscriptions, alert: @alert6)
+  end
+
+  test "ignores intermediate stops if activities do not match" do
+    user = insert(:user)
+    {:ok, subscription} =
+      :subscription
+      |> build(user: user)
+      |> weekday_subscription()
+      |> commuter_rail_subscription()
+      |> Repo.preload(:informed_entities)
+      |> Ecto.Changeset.change()
+      |> Ecto.Changeset.put_assoc(:informed_entities, [%InformedEntity{route_type: 2, route: "CR-Lowell", stop: "Mishawum", activities: ["RIDE"]} | commuter_rail_subscription_entities()])
+      |> Repo.insert()
+    assert [] == InformedEntityFilter.filter([subscription], alert: @alert7)
   end
 end

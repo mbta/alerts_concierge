@@ -122,6 +122,8 @@ defmodule AlertProcessor.AlertParser do
           Map.put(acc, :facility_id, v)
         "direction_id" ->
           Map.put(acc, :direction_id, v)
+        "activities" ->
+          Map.put(acc, :activities, v)
         _ ->
           acc
       end
