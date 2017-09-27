@@ -33,7 +33,7 @@ defmodule AlertProcessor.DigestBuilder do
     high_severity_subs = subscriptions_for_extreme_severity_alert(subs, alert: alert)
     facility_subs = subscriptions_for_facility_alert(facility_subs, alert: alert)
     route_subs = subscriptions_for_whole_route(route_subs, alert: alert)
-    matching_subs = subscriptions_for_informed_entity(subs, alert: alert)
+    matching_subs = subscriptions_for_upcoming_entity_matches(subs, alert: alert)
 
     next_digest_sent_at =
       DateTime.utc_now()
@@ -44,7 +44,6 @@ defmodule AlertProcessor.DigestBuilder do
     |> Kernel.++(facility_subs)
     |> Kernel.++(route_subs)
     |> Kernel.++(matching_subs)
-    |> Enum.uniq_by(&(&1.id))
     |> Enum.map(&(&1.user))
     |> Enum.uniq_by(&(&1.id))
     |> Enum.filter(fn user ->
@@ -69,14 +68,13 @@ defmodule AlertProcessor.DigestBuilder do
 
   defp subscriptions_for_facility_alert(subscriptions, alert: alert) do
     case Alert.facility_alert?(alert) do
-      {:ok, true} ->
-        InformedEntityFilter.filter(subscriptions, alert: alert)
-      _ -> []
+      true -> InformedEntityFilter.filter(subscriptions, alert: alert)
+      false -> []
     end
   end
 
   defp subscriptions_for_whole_route(subscriptions, alert: alert) do
-    with {:ok, false} <- Alert.facility_alert?(alert),
+    with false <- Alert.facility_alert?(alert),
       true <- Alert.severity_value(alert) >= 2 do
         match_route_subs(subscriptions, alert: alert)
     else
@@ -97,7 +95,7 @@ defmodule AlertProcessor.DigestBuilder do
     end)
   end
 
-  defp subscriptions_for_informed_entity(subscriptions, alert: alert) do
+  defp subscriptions_for_upcoming_entity_matches(subscriptions, alert: alert) do
     if minor_and_started?(alert) do
       []
     else

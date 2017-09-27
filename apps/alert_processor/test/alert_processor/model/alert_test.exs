@@ -3,7 +3,7 @@ defmodule AlertProcessor.Model.AlertTest do
   alias AlertProcessor.Model.{Alert, InformedEntity}
 
   @ie1 %InformedEntity{route_type: 0, route: nil}
-  @ie2 %InformedEntity{facility_type: :elevator}
+  @ie2 %InformedEntity{stop: "place-nqnce", facility_type: :elevator}
   @ie3 %InformedEntity{route_type: 0, route: "Red"}
   @ie4 %InformedEntity{stop: "place-nqncy"}
 
@@ -35,19 +35,19 @@ defmodule AlertProcessor.Model.AlertTest do
   end
 
   describe "facility_alert?/1" do
-    test "it returns {:ok, true} if any informed_entity has a facility_type" do
+    test "it returns true if any informed_entity has a facility_type" do
       alert = %Alert{informed_entities: [@ie1, @ie2, @ie3]}
-      assert {:ok, true} == Alert.facility_alert?(alert)
+      assert true == Alert.facility_alert?(alert)
     end
 
-    test "it returns {:ok, false} if no informed_entity has a facility_type" do
+    test "it returns false if no informed_entity has a facility_type" do
       alert = %Alert{informed_entities: [@ie1, @ie3]}
-      assert {:ok, false} == Alert.facility_alert?(alert)
+      assert false == Alert.facility_alert?(alert)
     end
 
-    test "it returns {:ok, false} if no informed_entities" do
+    test "it returns false if no informed_entities" do
       alert = %Alert{informed_entities: []}
-      assert {:ok, false} == Alert.facility_alert?(alert)
+      assert false == Alert.facility_alert?(alert)
     end
   end
 end

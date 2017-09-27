@@ -176,6 +176,6 @@ defmodule AlertProcessor.Model.Alert do
   defp default_severity_value(:extreme), do: 4
 
   def facility_alert?(%__MODULE__{informed_entities: ies}) do
-    {:ok, Enum.any?(ies, &(!is_nil(&1.facility_type)))}
+    Enum.any?(ies, &InformedEntity.entity_type(&1) == :amenity)
   end
 end

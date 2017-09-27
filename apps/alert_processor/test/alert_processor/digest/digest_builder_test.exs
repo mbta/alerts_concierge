@@ -22,7 +22,8 @@ defmodule AlertProcessor.DigestBuilderTest do
   }
 
   @facility_ie %InformedEntity{
-    facility_type: :escalator
+    facility_type: :escalator,
+    stop: "place-nqncy"
   }
 
   @alert1 %Alert{
