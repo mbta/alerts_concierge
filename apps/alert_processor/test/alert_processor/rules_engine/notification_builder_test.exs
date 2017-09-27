@@ -38,7 +38,7 @@ defmodule AlertProcessor.NotificationBuilderTest do
       active_period: [%{start: time.two_days_from_now, end: time.three_days_from_now}]
     }
 
-    [notification] = NotificationBuilder.build_notifications(sub, alert, time.now)
+    [notification] = NotificationBuilder.build_notifications({user, [sub]}, alert, time.now)
     assert DT.same_time?(notification.send_after, time.one_day_from_now)
   end
 
@@ -51,7 +51,7 @@ defmodule AlertProcessor.NotificationBuilderTest do
       active_period: [%{start: time.two_days_ago, end: time.one_day_ago}]
     }
 
-    assert Enum.empty? NotificationBuilder.build_notifications(sub, alert, time.now)
+    assert Enum.empty? NotificationBuilder.build_notifications({user, [sub]}, alert, time.now)
   end
 
   test "set send after to current time for immediate alerts", %{time: time} do
@@ -63,7 +63,7 @@ defmodule AlertProcessor.NotificationBuilderTest do
       active_period: [%{start: time.thirty_minutes_from_now, end: time.one_day_from_now}]
     }
 
-    [notification] = NotificationBuilder.build_notifications(sub, alert, time.now)
+    [notification] = NotificationBuilder.build_notifications({user, [sub]}, alert, time.now)
     assert DT.same_time?(notification.send_after, time.now)
   end
 
@@ -76,7 +76,7 @@ defmodule AlertProcessor.NotificationBuilderTest do
       active_period: [%{start: time.two_days_from_now, end: time.three_days_from_now}]
     }
 
-    [notification] = NotificationBuilder.build_notifications(sub, alert, time.now)
+    [notification] = NotificationBuilder.build_notifications({user, [sub]}, alert, time.now)
     assert DT.same_time?(notification.send_after, time.one_day_from_now)
   end
 
@@ -89,7 +89,7 @@ defmodule AlertProcessor.NotificationBuilderTest do
       active_period: [%{start: time.thirty_minutes_from_now, end: time.one_day_from_now}]
     }
 
-    assert Enum.empty? NotificationBuilder.build_notifications(sub, alert, time.now)
+    assert Enum.empty? NotificationBuilder.build_notifications({user, [sub]}, alert, time.now)
   end
 
   test "send notification at end of vacation period if active_period overlaps", %{time: time} do
@@ -101,7 +101,7 @@ defmodule AlertProcessor.NotificationBuilderTest do
       active_period: [%{start: time.thirty_minutes_from_now, end: time.three_days_from_now}]
     }
 
-    [notification] = NotificationBuilder.build_notifications(sub, alert, time.now)
+    [notification] = NotificationBuilder.build_notifications({user, [sub]}, alert, time.now)
     assert DT.same_time?(notification.send_after, time.one_day_from_now)
     assert %DateTime{time_zone: "Etc/UTC"} = notification.send_after
   end
@@ -130,7 +130,7 @@ defmodule AlertProcessor.NotificationBuilderTest do
       active_period: [%{start: time.now, end: time.thirty_minutes_from_now}]
     }
 
-    assert Enum.empty?  NotificationBuilder.build_notifications(sub, alert, time.now)
+    assert Enum.empty?  NotificationBuilder.build_notifications({user, [sub]}, alert, time.now)
   end
 
   test "send notification at end of blackout period if active_period overlaps", %{time: time} do
@@ -157,7 +157,7 @@ defmodule AlertProcessor.NotificationBuilderTest do
       active_period: [%{start: time.now, end: time.one_day_from_now}]
     }
 
-    [notification] = NotificationBuilder.build_notifications(sub, alert, time.now)
+    [notification] = NotificationBuilder.build_notifications({user, [sub]}, alert, time.now)
     assert DT.same_time?(notification.send_after, time.one_hour_from_now)
   end
 
@@ -190,7 +190,7 @@ defmodule AlertProcessor.NotificationBuilderTest do
       }]
     }
 
-    [notification] = NotificationBuilder.build_notifications(sub, alert, today_5am)
+    [notification] = NotificationBuilder.build_notifications({user, [sub]}, alert, today_5am)
     assert DT.same_time?(notification.send_after, today_8am)
     assert %DateTime{time_zone: "Etc/UTC"} = notification.send_after
   end
@@ -223,7 +223,7 @@ defmodule AlertProcessor.NotificationBuilderTest do
       }]
     }
 
-    [notification] = NotificationBuilder.build_notifications(sub, alert, today_10pm)
+    [notification] = NotificationBuilder.build_notifications({user, [sub]}, alert, today_10pm)
     assert DT.same_time?(notification.send_after, tomorrow_8am)
     assert %DateTime{time_zone: "Etc/UTC"} = notification.send_after
   end

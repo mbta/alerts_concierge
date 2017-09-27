@@ -45,7 +45,7 @@ defmodule AlertProcessor.Subscription.Diagnostic do
   end
 
   defp alert_sent?(diagnostic, alert: alert, subscriptions: subscriptions, notifications: notifications) do
-    result = SentAlertFilter.filter(subscriptions, alert: alert, notifications: notifications) != []
+    result = SentAlertFilter.filter(subscriptions, alert: alert, notifications: notifications) != {[], []}
     Map.put(diagnostic, :passed_sent_alert_filter?, result)
   end
 

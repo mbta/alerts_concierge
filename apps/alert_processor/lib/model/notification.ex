@@ -38,6 +38,7 @@ defmodule AlertProcessor.Model.Notification do
     field :status, AlertProcessor.AtomType
     field :last_push_notification, :utc_datetime
     field :alert, :string, virtual: true
+    field :subscription_ids, {:array, :string}
 
     timestamps()
   end

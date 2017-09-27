@@ -20,7 +20,7 @@ defmodule AlertProcessor.NotificationBuilder do
   """
   @spec build_notifications(Subscription.t, Alert.t, DateTime.t)
   :: [Notification.t]
-  def build_notifications(%Subscription{user: user}, %Alert{active_period: ap} = alert, now) do
+  def build_notifications({user, subscriptions}, %Alert{active_period: ap} = alert, now) do
     Enum.reduce(ap, [], fn(active_period, result) ->
       case calculate_send_after(user, {active_period.start, active_period.end}, now) do
         {:error, _} ->
@@ -37,7 +37,8 @@ defmodule AlertProcessor.NotificationBuilder do
               status: :unsent,
               send_after: time,
               last_push_notification: alert.last_push_notification,
-              alert: alert
+              alert: alert,
+              subscription_ids: Enum.map(subscriptions, & &1.id)
             }
           [notification | result]
       end
