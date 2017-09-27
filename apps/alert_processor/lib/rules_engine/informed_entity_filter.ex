@@ -50,7 +50,10 @@ defmodule AlertProcessor.InformedEntityFilter do
     trip_id == subscription_trip_id
   end
   defp entity_match?(alert_ie, subscription_ie) do
-    alert_ie == subscription_ie
+    alert_activities = alert_ie.activities
+    subscription_activities = subscription_ie.activities
+
+    Enum.any?(subscription_activities, &Enum.member?(alert_activities, &1)) && Map.put(alert_ie, :activities, nil) == Map.put(subscription_ie, :activities, nil)
   end
 
   defp admin_subscriptions(subscriptions, informed_entities) do

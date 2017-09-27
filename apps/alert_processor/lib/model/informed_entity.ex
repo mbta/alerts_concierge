@@ -9,6 +9,7 @@ defmodule AlertProcessor.Model.InformedEntity do
   @type facility_type :: :elevator | :escalator
 
   @type t :: %__MODULE__{
+    activities: [String.t],
     direction_id: integer | nil,
     facility_type: facility_type | nil,
     route: String.t | nil,
@@ -24,6 +25,7 @@ defmodule AlertProcessor.Model.InformedEntity do
 
   schema "informed_entities" do
     belongs_to :subscription, Subscription, type: :binary_id
+    field :activities, {:array, :string}
     field :direction_id, :integer
     field :facility_type, AlertProcessor.AtomType
     field :route, :string
@@ -43,7 +45,7 @@ defmodule AlertProcessor.Model.InformedEntity do
   end
 
   def queryable_fields do
-    [:direction_id, :facility_type, :route, :route_type, :stop, :trip]
+    [:activities, :direction_id, :facility_type, :route, :route_type, :stop, :trip]
   end
 
   @doc """
@@ -63,4 +65,6 @@ defmodule AlertProcessor.Model.InformedEntity do
   def entity_type(%__MODULE__{route: r, route_type: rt}) when is_binary(r) and is_number(rt), do: :route
   def entity_type(%__MODULE__{route_type: rt}) when is_number(rt), do: :mode
   def entity_type(_), do: :unknown
+
+  def default_entity_activities, do: ["BOARD", "EXIT", "RIDE"]
 end
