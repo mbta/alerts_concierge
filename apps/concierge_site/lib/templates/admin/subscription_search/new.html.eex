@@ -24,7 +24,7 @@
       Search Results
     </div>
   </div>
-  <div class="admin-table-body">
+  <div class="admin-table-body diagnostic-container">
     <%= if Enum.empty?(@diagnoses.all) do %>
       <div class="diagnostic-result-block">
         <p>
@@ -60,13 +60,16 @@
               <div class="diagnostic-subscription-info">
                 <%= ConciergeSite.SubscriptionView.subscription_info(diagnosis.subscription, @departure_time_map) %>
               </div>
-              <div class="diagnostic-results">
+              <div id="<%= diagnosis.subscription.id %>" class="diagnostic-results hidden">
                 <p><%= sent_alert_result(diagnosis) %></p>
                 <p><%= severity_result(diagnosis) %></p>
                 <p><%= active_period_result(diagnosis) %></p>
                 <p><%= do_not_disturb_result(diagnosis) %></p>
                 <p><%= vacation_result(diagnosis) %></p>
                 <p><%= informed_entity_result(diagnosis) %></p>
+              </div>
+              <div data-target-sub-id="<%= diagnosis.subscription.id %>" class="diagnostic-result-toggle">
+                <span class="diagnostic-toggle-text <%= diagnosis.subscription.id %>">+ View Details</span><span class="diagnostic-toggle-text <%= diagnosis.subscription.id %> hidden">+ Hide Details</span>
               </div>
             </div>
           <% end %>

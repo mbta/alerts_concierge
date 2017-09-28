@@ -351,6 +351,10 @@
 .diagnostic-results {
   padding: 0 0.5rem;
   border-top: 1px solid $pale-grey;
+
+  &.hidden {
+    display: none;
+  }
 }
 
 .diagnostic-result-entity {
@@ -396,5 +400,17 @@
 
   &.failure {
     color: $red;
+  }
+}
+
+.diagnostic-result-toggle {
+  text-align: right;
+  color: $blue;
+  text-decoration: underline;
+}
+
+.diagnostic-toggle-text {
+  &.hidden {
+    display: none;
   }
 }
