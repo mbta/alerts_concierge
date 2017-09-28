@@ -96,17 +96,17 @@ defmodule AlertProcessor.Model.Alert do
   """
   @spec severity_value(__MODULE__.t) :: integer | nil
   def severity_value(%__MODULE__{severity: severity, effect_name: effect_name, informed_entities: informed_entities}) do
-      informed_entities
-      |> Enum.map(fn(informed_entity) ->
-        mode =
-          case informed_entity do
-            %{route_type: rt, route: nil} when not is_nil(rt) -> "Systemwide"
-            %{route_type: rt, route: r} when not is_nil(rt) and not is_nil(r) -> route_string(rt)
-            %{stop: s} when not is_nil(s) -> "Facility"
-          end
-        priority_value(mode, effect_name, severity)
-      end)
-      |> Enum.max
+    informed_entities
+    |> Enum.map(fn(informed_entity) ->
+      mode =
+        case informed_entity do
+          %{route_type: rt, route: nil} when not is_nil(rt) -> "Systemwide"
+          %{route_type: rt, route: r} when not is_nil(rt) and not is_nil(r) -> route_string(rt)
+          %{stop: s} when not is_nil(s) -> "Facility"
+        end
+      priority_value(mode, effect_name, severity)
+    end)
+    |> Enum.max
   end
 
   @doc """
@@ -173,4 +173,9 @@ defmodule AlertProcessor.Model.Alert do
   defp default_severity_value(:minor), do: 1
   defp default_severity_value(:moderate), do: 2
   defp default_severity_value(:severe), do: 3
+  defp default_severity_value(:extreme), do: 4
+
+  def facility_alert?(%__MODULE__{informed_entities: ies}) do
+    Enum.any?(ies, &InformedEntity.entity_type(&1) == :amenity)
+  end
 end

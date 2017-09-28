@@ -152,6 +152,7 @@ defmodule AlertProcessor.AlertParser do
      %{stop: stop}
   end
 
+  def parse_severity(sev) when sev >= 9, do: :extreme
   def parse_severity(sev) when sev >= 7, do: :severe
   def parse_severity(sev) when sev >= 5, do: :moderate
   def parse_severity(sev) when is_integer(sev), do: :minor
