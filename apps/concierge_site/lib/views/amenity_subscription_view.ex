@@ -32,9 +32,9 @@ defmodule ConciergeSite.AmenitySubscriptionView do
   """
   @spec amenity_schedule(Subscription.t) :: iolist
   def amenity_schedule(subscription) do
+    entity_info = Enum.join(pretty_station_count(subscription) ++ lines(subscription), " + ")
     [
-      pretty_station_count(subscription),
-      lines(subscription),
+      entity_info,
       " on ",
       relevant_days(subscription)
     ]
@@ -42,9 +42,9 @@ defmodule ConciergeSite.AmenitySubscriptionView do
 
   defp pretty_station_count(subscription) do
     case count = number_of_stations(subscription) do
-      0 -> ""
-      1 -> "#{count} station + "
-      _ -> "#{count} stations + "
+      0 -> []
+      1 -> ["1 station"]
+      _ -> ["#{count} stations"]
     end
   end
 
@@ -66,5 +66,7 @@ defmodule ConciergeSite.AmenitySubscriptionView do
     )
     |> Enum.uniq
     |> Enum.join(", ")
+    |> List.wrap()
+    |> Enum.filter(& String.length(&1) > 0)
   end
 end
