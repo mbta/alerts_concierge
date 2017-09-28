@@ -23,7 +23,8 @@ defmodule AlertProcessor.SentAlertFilterTest do
         service_effect: "test",
         description: "test",
         status: :sent,
-        last_push_notification: @later
+        last_push_notification: @later,
+        subscriptions: [sub1]
       }
 
       other_notification = %Notification{
@@ -34,18 +35,19 @@ defmodule AlertProcessor.SentAlertFilterTest do
         service_effect: "test",
         description: "test",
         status: :sent,
-        last_push_notification: @later
+        last_push_notification: @later,
+        subscriptions: [sub2]
       }
 
       n1 = Repo.insert!(Notification.create_changeset(notification))
       n2 = Repo.insert!(Notification.create_changeset(other_notification))
 
-      assert [sub2] ==
+      assert {[sub2],  []} ==
         SentAlertFilter.filter([sub1, sub2], alert: @alert, notifications: [n1, n2])
     end
 
     test "returns empty list if no match" do
-      assert [] = SentAlertFilter.filter([], alert: @alert, notifications: [])
+      assert {[], []} = SentAlertFilter.filter([], alert: @alert, notifications: [])
     end
 
     test "returns the subscription if notification failed" do
@@ -59,18 +61,20 @@ defmodule AlertProcessor.SentAlertFilterTest do
         header: "You are being notified",
         service_effect: "test",
         description: "test",
-        status: :failed
+        status: :failed,
+        subscriptions: []
       }
 
       Repo.insert(Notification.create_changeset(notification))
 
-      assert [subscription] ==
+      assert {[subscription], []} ==
         SentAlertFilter.filter([subscription], alert: @alert, notifications: [notification])
     end
 
-    test "returns subscriptions that have received the alert if the last_push_notification changed" do
+    test "returns subscriptions to auto resend that have received the alert if the last_push_notification changed" do
       user = insert(:user)
       sub1 = :subscription |> insert(user: user) |> Repo.preload(:user)
+      sub2 = :subscription |> insert(user: user) |> Repo.preload(:user)
       alert = %Alert{id: "123", last_push_notification: @now}
       updated_alert = %Alert{id: "123", last_push_notification: @later}
       notification = %Notification{
@@ -81,15 +85,42 @@ defmodule AlertProcessor.SentAlertFilterTest do
         service_effect: "test",
         description: "test",
         status: :sent,
-        last_push_notification: @now
+        last_push_notification: @now,
+        subscriptions: [sub1]
       }
       Repo.insert(Notification.create_changeset(notification))
 
-      assert [] ==
-        SentAlertFilter.filter([sub1], alert: alert, notifications: [notification])
+      assert {[], []} ==
+        SentAlertFilter.filter([sub1, sub2], alert: alert, notifications: [notification])
 
-      assert [sub1] ==
-        SentAlertFilter.filter([sub1], alert: updated_alert, notifications: [notification])
+      assert {[], [sub1]} ==
+        SentAlertFilter.filter([sub1, sub2], alert: updated_alert, notifications: [notification])
+    end
+
+    test "do not resend if subscription no longer exists" do
+      user = insert(:user)
+      sub1 = :subscription |> insert(user: user) |> Repo.preload(:user)
+      sub2 = :subscription |> insert(user: user) |> Repo.preload(:user)
+      alert = %Alert{id: "123", last_push_notification: @now}
+      updated_alert = %Alert{id: "123", last_push_notification: @later}
+      notification = %Notification{
+        alert_id: "123",
+        user_id: user.id,
+        email: "a@b.com",
+        header: "You are being notified",
+        service_effect: "test",
+        description: "test",
+        status: :sent,
+        last_push_notification: @now,
+        subscriptions: [sub1]
+      }
+      Repo.insert(Notification.create_changeset(notification))
+
+      assert {[], []} ==
+        SentAlertFilter.filter([sub1, sub2], alert: alert, notifications: [notification])
+
+      assert {[sub2], []} ==
+        SentAlertFilter.filter([sub2], alert: updated_alert, notifications: [notification])
     end
   end
 end

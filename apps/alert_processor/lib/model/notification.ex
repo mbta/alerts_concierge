@@ -27,6 +27,8 @@ defmodule AlertProcessor.Model.Notification do
 
   schema "notifications" do
     belongs_to :user, User, type: :binary_id
+    has_many :notification_subscriptions, AlertProcessor.Model.NotificationSubscription
+    has_many :subscriptions, through: [:notification_subscriptions, :subscription]
 
     field :alert_id, :string
     field :send_after, :utc_datetime
@@ -44,7 +46,11 @@ defmodule AlertProcessor.Model.Notification do
 
   @spec save(__MODULE__.t, atom) :: {:ok, __MODULE__.t} | {:error, Ecto.Changeset.t}
   def save(notification, status) do
-    Repo.insert(__MODULE__.create_changeset(%{notification | status: status, user_id: notification.user.id}))
+    Repo.insert(
+      %{notification | status: status, user_id: notification.user.id}
+      |> __MODULE__.create_changeset()
+      |> cast_assoc(:notification_subscriptions)
+    )
   end
 
   @permitted_fields ~w(alert_id user_id send_after description service_effect header phone_number email status last_push_notification)a

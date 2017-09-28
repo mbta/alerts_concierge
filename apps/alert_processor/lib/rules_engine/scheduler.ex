@@ -4,18 +4,18 @@ defmodule AlertProcessor.Scheduler do
   """
 
   alias AlertProcessor.{Model, HoldingQueue, NotificationBuilder}
-  alias Model.{Alert, Notification, Subscription}
+  alias Model.{Alert, Notification, Subscription, User}
 
   @doc """
-  1. Generate a Notification for each Subscription/Alert combination
+  1. Generate a Notification for each {User, [Subscription]}/Alert combination
   2. Add resulting list of Notifications to holding queue
   """
-  @spec schedule_notifications([Subscription.t], Alert.t, DateTime.t)
+  @spec schedule_notifications({User.t, [Subscription.t]}, Alert.t, DateTime.t)
   :: {:ok, [Notification.t]} | :error
-  def schedule_notifications(subscriptions, alert, now \\ nil) do
+  def schedule_notifications(user_subscriptions, alert, now \\ nil) do
     now = now || DateTime.utc_now()
 
-    notifications = subscriptions
+    notifications = user_subscriptions
     |> Enum.flat_map(&NotificationBuilder.build_notifications(&1, alert, now))
 
     enqueue_notifications(notifications)

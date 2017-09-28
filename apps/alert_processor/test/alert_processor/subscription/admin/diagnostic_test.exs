@@ -61,7 +61,7 @@ defmodule AlertProcessor.Subscription.DiagnosticTest do
   end
 
   describe "diagnose_alert/2" do
-    test "alert matched sent alert", %{user: user, alert: alert} do
+    test "alert matched sent alert", %{user: user, alert: alert, subscription: subscription} do
       params = %{
         "alert_date" => %{
           "year" => "2020",
@@ -82,7 +82,8 @@ defmodule AlertProcessor.Subscription.DiagnosticTest do
           alert_id: alert.alert_id,
           status: :sent,
           email: user.email,
-          last_push_notification: lpn
+          last_push_notification: lpn,
+          subscriptions: [subscription]
         })
 
       %Notification{}
