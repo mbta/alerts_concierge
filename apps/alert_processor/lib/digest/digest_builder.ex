@@ -30,22 +30,16 @@ defmodule AlertProcessor.DigestBuilder do
   defp fetch_active_users(alert, subs, digest_interval) do
     {facility_subs, route_subs} = split_subscriptions_by_type(subs)
 
-    high_severity_subs = subscriptions_for_extreme_severity_alert(subs, alert: alert)
-    facility_subs = subscriptions_for_facility_alert(facility_subs, alert: alert)
-    route_subs = subscriptions_for_whole_route(route_subs, alert: alert)
-    matching_subs = subscriptions_for_upcoming_entity_matches(subs, alert: alert)
-
     next_digest_sent_at =
       DateTime.utc_now()
       |> DateTime.to_unix()
       |> Kernel.+(digest_interval)
 
-    high_severity_subs
-    |> Kernel.++(facility_subs)
-    |> Kernel.++(route_subs)
-    |> Kernel.++(matching_subs)
-    |> Enum.map(&(&1.user))
-    |> Enum.uniq_by(&(&1.id))
+    MapSet.new()
+    |> subscribers_for_extreme_severity_alert(subs, alert: alert)
+    |> subscribers_for_facility_alert(facility_subs, alert: alert)
+    |> subscribers_for_whole_route(route_subs, alert: alert)
+    |> subscribers_for_upcoming_entity_matches(subs, alert: alert)
     |> Enum.filter(fn user ->
       is_nil(user.vacation_end) or DateTime.to_unix(user.vacation_end) < next_digest_sent_at
     end)
@@ -58,27 +52,38 @@ defmodule AlertProcessor.DigestBuilder do
     end)
   end
 
-  defp subscriptions_for_extreme_severity_alert(subscriptions, alert: alert) do
+  defp subscribers_for_extreme_severity_alert(users, subscriptions, alert: alert) do
     if alert.severity == :extreme do
       subscriptions
+      |> Enum.map(&(&1.user))
+      |> MapSet.new()
+      |> MapSet.union(users)
     else
-      []
+      users
     end
   end
 
-  defp subscriptions_for_facility_alert(subscriptions, alert: alert) do
+  defp subscribers_for_facility_alert(users, subscriptions, alert: alert) do
     case Alert.facility_alert?(alert) do
-      true -> InformedEntityFilter.filter(subscriptions, alert: alert)
-      false -> []
+      true ->
+        InformedEntityFilter.filter(subscriptions, alert: alert)
+        |> Enum.map(&(&1.user))
+        |> MapSet.new()
+        |> MapSet.union(users)
+      false -> users
     end
   end
 
-  defp subscriptions_for_whole_route(subscriptions, alert: alert) do
+  defp subscribers_for_whole_route(users, subscriptions, alert: alert) do
     with false <- Alert.facility_alert?(alert),
       true <- Alert.severity_value(alert) >= 2 do
-        match_route_subs(subscriptions, alert: alert)
+        subscriptions
+        |> match_route_subs(alert: alert)
+        |> Enum.map(&(&1.user))
+        |> MapSet.new()
+        |> MapSet.union(users)
     else
-      _ -> []
+      _ -> users
     end
   end
 
@@ -95,11 +100,15 @@ defmodule AlertProcessor.DigestBuilder do
     end)
   end
 
-  defp subscriptions_for_upcoming_entity_matches(subscriptions, alert: alert) do
+  defp subscribers_for_upcoming_entity_matches(users, subscriptions, alert: alert) do
     if minor_and_started?(alert) do
-      []
+      users
     else
-      InformedEntityFilter.filter(subscriptions, alert: alert)
+      subscriptions
+      |> InformedEntityFilter.filter(alert: alert)
+      |> Enum.map(&(&1.user))
+      |> MapSet.new()
+      |> MapSet.union(users)
     end
   end
 
