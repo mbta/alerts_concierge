@@ -3,7 +3,7 @@ defmodule AlertProcessor.Mixfile do
 
   def project do
     [app: :alert_processor,
-     version: "0.0.48",
+     version: "0.0.49",
      build_path: "../../_build",
      config_path: "../../config/config.exs",
      deps_path: "../../deps",
