@@ -30,8 +30,8 @@ defmodule AlertProcessor.Subscription.FerryMapperTest do
 
     test "constructs subscription with origin and destination" do
       {:ok, [{subscription, _ie}]} = FerryMapper.map_subscriptions(@one_way_params)
-      assert subscription.origin == "Long Wharf, Boston"
-      assert subscription.destination == "Hewitt's Cove, Hingham"
+      assert subscription.origin == "Boston (Long Wharf)"
+      assert subscription.destination == "Hingham (Hewitt's Cove)"
     end
 
     test "constructs subscription with timeframe" do
@@ -211,10 +211,10 @@ defmodule AlertProcessor.Subscription.FerryMapperTest do
 
     test "constructs subscription with origin and destination" do
       {:ok, [{sub1, _ie1}, {sub2, _ie2}]} = FerryMapper.map_subscriptions(@round_trip_params)
-      assert sub1.origin == "Long Wharf, Boston"
-      assert sub1.destination == "Hewitt's Cove, Hingham"
-      assert sub2.origin == "Hewitt's Cove, Hingham"
-      assert sub2.destination == "Long Wharf, Boston"
+      assert sub1.origin == "Boston (Long Wharf)"
+      assert sub1.destination == "Hingham (Hewitt's Cove)"
+      assert sub2.origin == "Hingham (Hewitt's Cove)"
+      assert sub2.destination == "Boston (Long Wharf)"
     end
 
     test "constructs subscription with timeframe" do
@@ -450,40 +450,40 @@ defmodule AlertProcessor.Subscription.FerryMapperTest do
     test "returns inbound results for origin destination" do
       use_cassette "long_wharf_to_hingham_schedules", custom: true, clear_mock: true, match_requests_on: [:query] do
         {:ok, trips} = FerryMapper.map_trip_options("Boat-Long", "Boat-Hingham", :weekday, @test_date)
-        assert [%Trip{arrival_time: ~T[09:55:00], departure_time: ~T[09:10:00], destination: {"Hewitt's Cove, Hingham", "Boat-Hingham"}, direction_id: 0, origin: {"Long Wharf, Boston", "Boat-Long"}, trip_number: "Boat-F1-Boat-Long-09:10:00-weekday-0"},
-                %Trip{arrival_time: ~T[11:50:00], departure_time: ~T[11:00:00], destination: {"Hewitt's Cove, Hingham", "Boat-Hingham"}, direction_id: 0, origin: {"Long Wharf, Boston", "Boat-Long"}, trip_number: "Boat-F1-Boat-Long-11:00:00-weekday-0"},
-                %Trip{arrival_time: ~T[12:45:00], departure_time: ~T[12:15:00], destination: {"Hewitt's Cove, Hingham", "Boat-Hingham"}, direction_id: 0, origin: {"Long Wharf, Boston", "Boat-Long"}, trip_number: "Boat-F1-Boat-Long-12:15:00-weekday-0"},
-                %Trip{arrival_time: ~T[13:55:00], departure_time: ~T[13:00:00], destination: {"Hewitt's Cove, Hingham", "Boat-Hingham"}, direction_id: 0, origin: {"Long Wharf, Boston", "Boat-Long"}, trip_number: "Boat-F1-Boat-Long-13:00:00-weekday-0"},
-                %Trip{arrival_time: ~T[14:30:00], departure_time: ~T[14:00:00], destination: {"Hewitt's Cove, Hingham", "Boat-Hingham"}, direction_id: 0, origin: {"Long Wharf, Boston", "Boat-Long"}, trip_number: "Boat-F1-Boat-Long-14:00:00-weekday-0"},
-                %Trip{arrival_time: ~T[15:40:00], departure_time: ~T[14:40:00], destination: {"Hewitt's Cove, Hingham", "Boat-Hingham"}, direction_id: 0, origin: {"Long Wharf, Boston", "Boat-Long"}, trip_number: "Boat-F1-Boat-Long-14:40:00-weekday-0"},
-                %Trip{arrival_time: ~T[16:20:00], departure_time: ~T[15:40:00], destination: {"Hewitt's Cove, Hingham", "Boat-Hingham"}, direction_id: 0, origin: {"Long Wharf, Boston", "Boat-Long"}, trip_number: "Boat-F1-Boat-Long-15:40:00-weekday-0"},
-                %Trip{arrival_time: ~T[17:10:00], departure_time: ~T[16:30:00], destination: {"Hewitt's Cove, Hingham", "Boat-Hingham"}, direction_id: 0, origin: {"Long Wharf, Boston", "Boat-Long"}, trip_number: "Boat-F1-Boat-Long-16:30:00-weekday-0"},
-                %Trip{arrival_time: ~T[18:50:00], departure_time: ~T[18:05:00], destination: {"Hewitt's Cove, Hingham", "Boat-Hingham"}, direction_id: 0, origin: {"Long Wharf, Boston", "Boat-Long"}, trip_number: "Boat-F1-Boat-Long-18:05:00-weekday-0"},
-                %Trip{arrival_time: ~T[19:25:00], departure_time: ~T[18:40:00], destination: {"Hewitt's Cove, Hingham", "Boat-Hingham"}, direction_id: 0, origin: {"Long Wharf, Boston", "Boat-Long"}, trip_number: "Boat-F1-Boat-Long-18:40:00-weekday-0"},
-                %Trip{arrival_time: ~T[20:20:00], departure_time: ~T[19:35:00], destination: {"Hewitt's Cove, Hingham", "Boat-Hingham"}, direction_id: 0, origin: {"Long Wharf, Boston", "Boat-Long"}, trip_number: "Boat-F1-Boat-Long-19:35:00-weekday-0"},
-                %Trip{arrival_time: ~T[20:55:00], departure_time: ~T[20:15:00], destination: {"Hewitt's Cove, Hingham", "Boat-Hingham"}, direction_id: 0, origin: {"Long Wharf, Boston", "Boat-Long"}, trip_number: "Boat-F1-Boat-Long-20:15:00-weekday-0"},
-                %Trip{arrival_time: ~T[22:05:00], departure_time: ~T[21:10:00], destination: {"Hewitt's Cove, Hingham", "Boat-Hingham"}, direction_id: 0, origin: {"Long Wharf, Boston", "Boat-Long"}, trip_number: "Boat-F1-Boat-Long-21:10:00-weekday-0"},
-                %Trip{arrival_time: ~T[22:35:00], departure_time: ~T[21:50:00], destination: {"Hewitt's Cove, Hingham", "Boat-Hingham"}, direction_id: 0, origin: {"Long Wharf, Boston", "Boat-Long"}, trip_number: "Boat-F1-Boat-Long-21:50:00-weekday-0"}] = trips
+        assert [%Trip{arrival_time: ~T[09:55:00], departure_time: ~T[09:10:00], destination: {"Hingham (Hewitt's Cove)", "Boat-Hingham"}, direction_id: 0, origin: {"Boston (Long Wharf)", "Boat-Long"}, trip_number: "Boat-F1-Boat-Long-09:10:00-weekday-0"},
+                %Trip{arrival_time: ~T[11:50:00], departure_time: ~T[11:00:00], destination: {"Hingham (Hewitt's Cove)", "Boat-Hingham"}, direction_id: 0, origin: {"Boston (Long Wharf)", "Boat-Long"}, trip_number: "Boat-F1-Boat-Long-11:00:00-weekday-0"},
+                %Trip{arrival_time: ~T[12:45:00], departure_time: ~T[12:15:00], destination: {"Hingham (Hewitt's Cove)", "Boat-Hingham"}, direction_id: 0, origin: {"Boston (Long Wharf)", "Boat-Long"}, trip_number: "Boat-F1-Boat-Long-12:15:00-weekday-0"},
+                %Trip{arrival_time: ~T[13:55:00], departure_time: ~T[13:00:00], destination: {"Hingham (Hewitt's Cove)", "Boat-Hingham"}, direction_id: 0, origin: {"Boston (Long Wharf)", "Boat-Long"}, trip_number: "Boat-F1-Boat-Long-13:00:00-weekday-0"},
+                %Trip{arrival_time: ~T[14:30:00], departure_time: ~T[14:00:00], destination: {"Hingham (Hewitt's Cove)", "Boat-Hingham"}, direction_id: 0, origin: {"Boston (Long Wharf)", "Boat-Long"}, trip_number: "Boat-F1-Boat-Long-14:00:00-weekday-0"},
+                %Trip{arrival_time: ~T[15:40:00], departure_time: ~T[14:40:00], destination: {"Hingham (Hewitt's Cove)", "Boat-Hingham"}, direction_id: 0, origin: {"Boston (Long Wharf)", "Boat-Long"}, trip_number: "Boat-F1-Boat-Long-14:40:00-weekday-0"},
+                %Trip{arrival_time: ~T[16:20:00], departure_time: ~T[15:40:00], destination: {"Hingham (Hewitt's Cove)", "Boat-Hingham"}, direction_id: 0, origin: {"Boston (Long Wharf)", "Boat-Long"}, trip_number: "Boat-F1-Boat-Long-15:40:00-weekday-0"},
+                %Trip{arrival_time: ~T[17:10:00], departure_time: ~T[16:30:00], destination: {"Hingham (Hewitt's Cove)", "Boat-Hingham"}, direction_id: 0, origin: {"Boston (Long Wharf)", "Boat-Long"}, trip_number: "Boat-F1-Boat-Long-16:30:00-weekday-0"},
+                %Trip{arrival_time: ~T[18:50:00], departure_time: ~T[18:05:00], destination: {"Hingham (Hewitt's Cove)", "Boat-Hingham"}, direction_id: 0, origin: {"Boston (Long Wharf)", "Boat-Long"}, trip_number: "Boat-F1-Boat-Long-18:05:00-weekday-0"},
+                %Trip{arrival_time: ~T[19:25:00], departure_time: ~T[18:40:00], destination: {"Hingham (Hewitt's Cove)", "Boat-Hingham"}, direction_id: 0, origin: {"Boston (Long Wharf)", "Boat-Long"}, trip_number: "Boat-F1-Boat-Long-18:40:00-weekday-0"},
+                %Trip{arrival_time: ~T[20:20:00], departure_time: ~T[19:35:00], destination: {"Hingham (Hewitt's Cove)", "Boat-Hingham"}, direction_id: 0, origin: {"Boston (Long Wharf)", "Boat-Long"}, trip_number: "Boat-F1-Boat-Long-19:35:00-weekday-0"},
+                %Trip{arrival_time: ~T[20:55:00], departure_time: ~T[20:15:00], destination: {"Hingham (Hewitt's Cove)", "Boat-Hingham"}, direction_id: 0, origin: {"Boston (Long Wharf)", "Boat-Long"}, trip_number: "Boat-F1-Boat-Long-20:15:00-weekday-0"},
+                %Trip{arrival_time: ~T[22:05:00], departure_time: ~T[21:10:00], destination: {"Hingham (Hewitt's Cove)", "Boat-Hingham"}, direction_id: 0, origin: {"Boston (Long Wharf)", "Boat-Long"}, trip_number: "Boat-F1-Boat-Long-21:10:00-weekday-0"},
+                %Trip{arrival_time: ~T[22:35:00], departure_time: ~T[21:50:00], destination: {"Hingham (Hewitt's Cove)", "Boat-Hingham"}, direction_id: 0, origin: {"Boston (Long Wharf)", "Boat-Long"}, trip_number: "Boat-F1-Boat-Long-21:50:00-weekday-0"}] = trips
       end
     end
 
     test "returns outbound results for origin destination" do
       use_cassette "hingham_to_long_wharf_schedules", custom: true, clear_mock: true, match_requests_on: [:query] do
         {:ok, trips} = FerryMapper.map_trip_options("Boat-Hingham", "Boat-Long", :weekday, @test_date)
-        assert [%Trip{arrival_time: ~T[06:23:00], departure_time: ~T[05:40:00], destination: {"Long Wharf, Boston", "Boat-Long"}, direction_id: 1, origin: {"Hewitt's Cove, Hingham", "Boat-Hingham"}, trip_number: "Boat-F1-Boat-Hingham-05:40:00-weekday-1"},
-                %Trip{arrival_time: ~T[07:23:00], departure_time: ~T[06:40:00], destination: {"Long Wharf, Boston", "Boat-Long"}, direction_id: 1, origin: {"Hewitt's Cove, Hingham", "Boat-Hingham"}, trip_number: "Boat-F1-Boat-Hingham-06:40:00-weekday-1"},
-                %Trip{arrival_time: ~T[11:00:00], departure_time: ~T[10:00:00], destination: {"Long Wharf, Boston", "Boat-Long"}, direction_id: 1, origin: {"Hewitt's Cove, Hingham", "Boat-Hingham"}, trip_number: "Boat-F1-Boat-Hingham-10:00:00-weekday-1"},
-                %Trip{arrival_time: ~T[12:55:00], departure_time: ~T[12:00:00], destination: {"Long Wharf, Boston", "Boat-Long"}, direction_id: 1, origin: {"Hewitt's Cove, Hingham", "Boat-Hingham"}, trip_number: "Boat-F1-Boat-Hingham-12:00:00-weekday-1"},
-                %Trip{arrival_time: ~T[13:50:00], departure_time: ~T[13:00:00], destination: {"Long Wharf, Boston", "Boat-Long"}, direction_id: 1, origin: {"Hewitt's Cove, Hingham", "Boat-Hingham"}, trip_number: "Boat-F1-Boat-Hingham-13:00:00-weekday-1"},
-                %Trip{arrival_time: ~T[14:35:00], departure_time: ~T[14:00:00], destination: {"Long Wharf, Boston", "Boat-Long"}, direction_id: 1, origin: {"Hewitt's Cove, Hingham", "Boat-Hingham"}, trip_number: "Boat-F1-Boat-Hingham-14:00:00-weekday-1"},
-                %Trip{arrival_time: ~T[15:33:00], departure_time: ~T[15:00:00], destination: {"Long Wharf, Boston", "Boat-Long"}, direction_id: 1, origin: {"Hewitt's Cove, Hingham", "Boat-Hingham"}, trip_number: "Boat-F1-Boat-Hingham-15:00:00-weekday-1"},
-                %Trip{arrival_time: ~T[16:27:00], departure_time: ~T[15:45:00], destination: {"Long Wharf, Boston", "Boat-Long"}, direction_id: 1, origin: {"Hewitt's Cove, Hingham", "Boat-Hingham"}, trip_number: "Boat-F1-Boat-Hingham-15:45:00-weekday-1"},
-                %Trip{arrival_time: ~T[17:12:00], departure_time: ~T[16:30:00], destination: {"Long Wharf, Boston", "Boat-Long"}, direction_id: 1, origin: {"Hewitt's Cove, Hingham", "Boat-Hingham"}, trip_number: "Boat-F1-Boat-Hingham-16:30:00-weekday-1"},
-                %Trip{arrival_time: ~T[17:57:00], departure_time: ~T[17:15:00], destination: {"Long Wharf, Boston", "Boat-Long"}, direction_id: 1, origin: {"Hewitt's Cove, Hingham", "Boat-Hingham"}, trip_number: "Boat-F1-Boat-Hingham-17:15:00-weekday-1"},
-                %Trip{arrival_time: ~T[19:28:00], departure_time: ~T[18:55:00], destination: {"Long Wharf, Boston", "Boat-Long"}, direction_id: 1, origin: {"Hewitt's Cove, Hingham", "Boat-Hingham"}, trip_number: "Boat-F1-Boat-Hingham-18:55:00-weekday-1"},
-                %Trip{arrival_time: ~T[20:12:00], departure_time: ~T[19:30:00], destination: {"Long Wharf, Boston", "Boat-Long"}, direction_id: 1, origin: {"Hewitt's Cove, Hingham", "Boat-Hingham"}, trip_number: "Boat-F1-Boat-Hingham-19:30:00-weekday-1"},
-                %Trip{arrival_time: ~T[21:03:00], departure_time: ~T[20:30:00], destination: {"Long Wharf, Boston", "Boat-Long"}, direction_id: 1, origin: {"Hewitt's Cove, Hingham", "Boat-Hingham"}, trip_number: "Boat-F1-Boat-Hingham-20:30:00-weekday-1"},
-                %Trip{arrival_time: ~T[21:33:00], departure_time: ~T[21:00:00], destination: {"Long Wharf, Boston", "Boat-Long"}, direction_id: 1, origin: {"Hewitt's Cove, Hingham", "Boat-Hingham"}, trip_number: "Boat-F1-Boat-Hingham-21:00:00-weekday-1"}] = trips
+        assert [%Trip{arrival_time: ~T[06:23:00], departure_time: ~T[05:40:00], destination: {"Boston (Long Wharf)", "Boat-Long"}, direction_id: 1, origin: {"Hingham (Hewitt's Cove)", "Boat-Hingham"}, trip_number: "Boat-F1-Boat-Hingham-05:40:00-weekday-1"},
+                %Trip{arrival_time: ~T[07:23:00], departure_time: ~T[06:40:00], destination: {"Boston (Long Wharf)", "Boat-Long"}, direction_id: 1, origin: {"Hingham (Hewitt's Cove)", "Boat-Hingham"}, trip_number: "Boat-F1-Boat-Hingham-06:40:00-weekday-1"},
+                %Trip{arrival_time: ~T[11:00:00], departure_time: ~T[10:00:00], destination: {"Boston (Long Wharf)", "Boat-Long"}, direction_id: 1, origin: {"Hingham (Hewitt's Cove)", "Boat-Hingham"}, trip_number: "Boat-F1-Boat-Hingham-10:00:00-weekday-1"},
+                %Trip{arrival_time: ~T[12:55:00], departure_time: ~T[12:00:00], destination: {"Boston (Long Wharf)", "Boat-Long"}, direction_id: 1, origin: {"Hingham (Hewitt's Cove)", "Boat-Hingham"}, trip_number: "Boat-F1-Boat-Hingham-12:00:00-weekday-1"},
+                %Trip{arrival_time: ~T[13:50:00], departure_time: ~T[13:00:00], destination: {"Boston (Long Wharf)", "Boat-Long"}, direction_id: 1, origin: {"Hingham (Hewitt's Cove)", "Boat-Hingham"}, trip_number: "Boat-F1-Boat-Hingham-13:00:00-weekday-1"},
+                %Trip{arrival_time: ~T[14:35:00], departure_time: ~T[14:00:00], destination: {"Boston (Long Wharf)", "Boat-Long"}, direction_id: 1, origin: {"Hingham (Hewitt's Cove)", "Boat-Hingham"}, trip_number: "Boat-F1-Boat-Hingham-14:00:00-weekday-1"},
+                %Trip{arrival_time: ~T[15:33:00], departure_time: ~T[15:00:00], destination: {"Boston (Long Wharf)", "Boat-Long"}, direction_id: 1, origin: {"Hingham (Hewitt's Cove)", "Boat-Hingham"}, trip_number: "Boat-F1-Boat-Hingham-15:00:00-weekday-1"},
+                %Trip{arrival_time: ~T[16:27:00], departure_time: ~T[15:45:00], destination: {"Boston (Long Wharf)", "Boat-Long"}, direction_id: 1, origin: {"Hingham (Hewitt's Cove)", "Boat-Hingham"}, trip_number: "Boat-F1-Boat-Hingham-15:45:00-weekday-1"},
+                %Trip{arrival_time: ~T[17:12:00], departure_time: ~T[16:30:00], destination: {"Boston (Long Wharf)", "Boat-Long"}, direction_id: 1, origin: {"Hingham (Hewitt's Cove)", "Boat-Hingham"}, trip_number: "Boat-F1-Boat-Hingham-16:30:00-weekday-1"},
+                %Trip{arrival_time: ~T[17:57:00], departure_time: ~T[17:15:00], destination: {"Boston (Long Wharf)", "Boat-Long"}, direction_id: 1, origin: {"Hingham (Hewitt's Cove)", "Boat-Hingham"}, trip_number: "Boat-F1-Boat-Hingham-17:15:00-weekday-1"},
+                %Trip{arrival_time: ~T[19:28:00], departure_time: ~T[18:55:00], destination: {"Boston (Long Wharf)", "Boat-Long"}, direction_id: 1, origin: {"Hingham (Hewitt's Cove)", "Boat-Hingham"}, trip_number: "Boat-F1-Boat-Hingham-18:55:00-weekday-1"},
+                %Trip{arrival_time: ~T[20:12:00], departure_time: ~T[19:30:00], destination: {"Boston (Long Wharf)", "Boat-Long"}, direction_id: 1, origin: {"Hingham (Hewitt's Cove)", "Boat-Hingham"}, trip_number: "Boat-F1-Boat-Hingham-19:30:00-weekday-1"},
+                %Trip{arrival_time: ~T[21:03:00], departure_time: ~T[20:30:00], destination: {"Boston (Long Wharf)", "Boat-Long"}, direction_id: 1, origin: {"Hingham (Hewitt's Cove)", "Boat-Hingham"}, trip_number: "Boat-F1-Boat-Hingham-20:30:00-weekday-1"},
+                %Trip{arrival_time: ~T[21:33:00], departure_time: ~T[21:00:00], destination: {"Boston (Long Wharf)", "Boat-Long"}, direction_id: 1, origin: {"Hingham (Hewitt's Cove)", "Boat-Hingham"}, trip_number: "Boat-F1-Boat-Hingham-21:00:00-weekday-1"}] = trips
       end
     end
 
@@ -494,42 +494,42 @@ defmodule AlertProcessor.Subscription.FerryMapperTest do
     test "returns saturday results" do
       use_cassette "hingham_to_long_wharf_saturday_schedules", custom: true, clear_mock: true, match_requests_on: [:query] do
         {:ok, trips} = FerryMapper.map_trip_options("Boat-Hingham", "Boat-Long", :saturday, Calendar.Date.from_ordinal!(2017, 231))
-        assert [%Trip{arrival_time: ~T[08:55:00], departure_time: ~T[08:00:00], destination: {"Long Wharf, Boston", "Boat-Long"}, direction_id: 1, origin: {"Hewitt's Cove, Hingham", "Boat-Hingham"}, trip_number: "Boat-F1-Boat-Hingham-08:00:00-weekend-1"},
-                %Trip{arrival_time: ~T[09:55:00], departure_time: ~T[09:00:00], destination: {"Long Wharf, Boston", "Boat-Long"}, direction_id: 1, origin: {"Hewitt's Cove, Hingham", "Boat-Hingham"}, trip_number: "Boat-F1-Boat-Hingham-09:00:00-weekend-1"},
-                %Trip{arrival_time: ~T[10:55:00], departure_time: ~T[10:00:00], destination: {"Long Wharf, Boston", "Boat-Long"}, direction_id: 1, origin: {"Hewitt's Cove, Hingham", "Boat-Hingham"}, trip_number: "Boat-F1-Boat-Hingham-10:00:00-weekend-1"},
-                %Trip{arrival_time: ~T[11:55:00], departure_time: ~T[11:00:00], destination: {"Long Wharf, Boston", "Boat-Long"}, direction_id: 1, origin: {"Hewitt's Cove, Hingham", "Boat-Hingham"}, trip_number: "Boat-F1-Boat-Hingham-11:00:00-weekend-1"},
-                %Trip{arrival_time: ~T[12:55:00], departure_time: ~T[12:00:00], destination: {"Long Wharf, Boston", "Boat-Long"}, direction_id: 1, origin: {"Hewitt's Cove, Hingham", "Boat-Hingham"}, trip_number: "Boat-F1-Boat-Hingham-12:00:00-weekend-1"},
-                %Trip{arrival_time: ~T[13:55:00], departure_time: ~T[13:00:00], destination: {"Long Wharf, Boston", "Boat-Long"}, direction_id: 1, origin: {"Hewitt's Cove, Hingham", "Boat-Hingham"}, trip_number: "Boat-F1-Boat-Hingham-13:00:00-weekend-1"},
-                %Trip{arrival_time: ~T[14:55:00], departure_time: ~T[14:00:00], destination: {"Long Wharf, Boston", "Boat-Long"}, direction_id: 1, origin: {"Hewitt's Cove, Hingham", "Boat-Hingham"}, trip_number: "Boat-F1-Boat-Hingham-14:00:00-weekend-1"},
-                %Trip{arrival_time: ~T[15:55:00], departure_time: ~T[15:00:00], destination: {"Long Wharf, Boston", "Boat-Long"}, direction_id: 1, origin: {"Hewitt's Cove, Hingham", "Boat-Hingham"}, trip_number: "Boat-F1-Boat-Hingham-15:00:00-weekend-1"},
-                %Trip{arrival_time: ~T[16:55:00], departure_time: ~T[16:00:00], destination: {"Long Wharf, Boston", "Boat-Long"}, direction_id: 1, origin: {"Hewitt's Cove, Hingham", "Boat-Hingham"}, trip_number: "Boat-F1-Boat-Hingham-16:00:00-weekend-1"},
-                %Trip{arrival_time: ~T[17:35:00], departure_time: ~T[17:00:00], destination: {"Long Wharf, Boston", "Boat-Long"}, direction_id: 1, origin: {"Hewitt's Cove, Hingham", "Boat-Hingham"}, trip_number: "Boat-F1-Boat-Hingham-17:00:00-weekend-1"},
-                %Trip{arrival_time: ~T[18:55:00], departure_time: ~T[18:00:00], destination: {"Long Wharf, Boston", "Boat-Long"}, direction_id: 1, origin: {"Hewitt's Cove, Hingham", "Boat-Hingham"}, trip_number: "Boat-F1-Boat-Hingham-18:00:00-weekend-1"},
-                %Trip{arrival_time: ~T[19:35:00], departure_time: ~T[19:00:00], destination: {"Long Wharf, Boston", "Boat-Long"}, direction_id: 1, origin: {"Hewitt's Cove, Hingham", "Boat-Hingham"}, trip_number: "Boat-F1-Boat-Hingham-19:00:00-weekend-1"},
-                %Trip{arrival_time: ~T[20:35:00], departure_time: ~T[20:00:00], destination: {"Long Wharf, Boston", "Boat-Long"}, direction_id: 1, origin: {"Hewitt's Cove, Hingham", "Boat-Hingham"}, trip_number: "Boat-F1-Boat-Hingham-20:00:00-weekend-1"},
-                %Trip{arrival_time: ~T[21:45:00], departure_time: ~T[21:00:00], destination: {"Long Wharf, Boston", "Boat-Long"}, direction_id: 1, origin: {"Hewitt's Cove, Hingham", "Boat-Hingham"}, trip_number: "Boat-F1-Boat-Hingham-21:00:00-weekend-1"},
-                %Trip{arrival_time: ~T[22:05:00], departure_time: ~T[21:30:00], destination: {"Long Wharf, Boston", "Boat-Long"}, direction_id: 1, origin: {"Hewitt's Cove, Hingham", "Boat-Hingham"}, trip_number: "Boat-F1-Boat-Hingham-21:30:00-saturday-1"},
-                %Trip{arrival_time: ~T[23:10:00], departure_time: ~T[22:30:00], destination: {"Long Wharf, Boston", "Boat-Long"}, direction_id: 1, origin: {"Hewitt's Cove, Hingham", "Boat-Hingham"}, trip_number: "Boat-F1-Boat-Hingham-22:30:00-saturday-1"}] = trips
+        assert [%Trip{arrival_time: ~T[08:55:00], departure_time: ~T[08:00:00], destination: {"Boston (Long Wharf)", "Boat-Long"}, direction_id: 1, origin: {"Hingham (Hewitt's Cove)", "Boat-Hingham"}, trip_number: "Boat-F1-Boat-Hingham-08:00:00-weekend-1"},
+                %Trip{arrival_time: ~T[09:55:00], departure_time: ~T[09:00:00], destination: {"Boston (Long Wharf)", "Boat-Long"}, direction_id: 1, origin: {"Hingham (Hewitt's Cove)", "Boat-Hingham"}, trip_number: "Boat-F1-Boat-Hingham-09:00:00-weekend-1"},
+                %Trip{arrival_time: ~T[10:55:00], departure_time: ~T[10:00:00], destination: {"Boston (Long Wharf)", "Boat-Long"}, direction_id: 1, origin: {"Hingham (Hewitt's Cove)", "Boat-Hingham"}, trip_number: "Boat-F1-Boat-Hingham-10:00:00-weekend-1"},
+                %Trip{arrival_time: ~T[11:55:00], departure_time: ~T[11:00:00], destination: {"Boston (Long Wharf)", "Boat-Long"}, direction_id: 1, origin: {"Hingham (Hewitt's Cove)", "Boat-Hingham"}, trip_number: "Boat-F1-Boat-Hingham-11:00:00-weekend-1"},
+                %Trip{arrival_time: ~T[12:55:00], departure_time: ~T[12:00:00], destination: {"Boston (Long Wharf)", "Boat-Long"}, direction_id: 1, origin: {"Hingham (Hewitt's Cove)", "Boat-Hingham"}, trip_number: "Boat-F1-Boat-Hingham-12:00:00-weekend-1"},
+                %Trip{arrival_time: ~T[13:55:00], departure_time: ~T[13:00:00], destination: {"Boston (Long Wharf)", "Boat-Long"}, direction_id: 1, origin: {"Hingham (Hewitt's Cove)", "Boat-Hingham"}, trip_number: "Boat-F1-Boat-Hingham-13:00:00-weekend-1"},
+                %Trip{arrival_time: ~T[14:55:00], departure_time: ~T[14:00:00], destination: {"Boston (Long Wharf)", "Boat-Long"}, direction_id: 1, origin: {"Hingham (Hewitt's Cove)", "Boat-Hingham"}, trip_number: "Boat-F1-Boat-Hingham-14:00:00-weekend-1"},
+                %Trip{arrival_time: ~T[15:55:00], departure_time: ~T[15:00:00], destination: {"Boston (Long Wharf)", "Boat-Long"}, direction_id: 1, origin: {"Hingham (Hewitt's Cove)", "Boat-Hingham"}, trip_number: "Boat-F1-Boat-Hingham-15:00:00-weekend-1"},
+                %Trip{arrival_time: ~T[16:55:00], departure_time: ~T[16:00:00], destination: {"Boston (Long Wharf)", "Boat-Long"}, direction_id: 1, origin: {"Hingham (Hewitt's Cove)", "Boat-Hingham"}, trip_number: "Boat-F1-Boat-Hingham-16:00:00-weekend-1"},
+                %Trip{arrival_time: ~T[17:35:00], departure_time: ~T[17:00:00], destination: {"Boston (Long Wharf)", "Boat-Long"}, direction_id: 1, origin: {"Hingham (Hewitt's Cove)", "Boat-Hingham"}, trip_number: "Boat-F1-Boat-Hingham-17:00:00-weekend-1"},
+                %Trip{arrival_time: ~T[18:55:00], departure_time: ~T[18:00:00], destination: {"Boston (Long Wharf)", "Boat-Long"}, direction_id: 1, origin: {"Hingham (Hewitt's Cove)", "Boat-Hingham"}, trip_number: "Boat-F1-Boat-Hingham-18:00:00-weekend-1"},
+                %Trip{arrival_time: ~T[19:35:00], departure_time: ~T[19:00:00], destination: {"Boston (Long Wharf)", "Boat-Long"}, direction_id: 1, origin: {"Hingham (Hewitt's Cove)", "Boat-Hingham"}, trip_number: "Boat-F1-Boat-Hingham-19:00:00-weekend-1"},
+                %Trip{arrival_time: ~T[20:35:00], departure_time: ~T[20:00:00], destination: {"Boston (Long Wharf)", "Boat-Long"}, direction_id: 1, origin: {"Hingham (Hewitt's Cove)", "Boat-Hingham"}, trip_number: "Boat-F1-Boat-Hingham-20:00:00-weekend-1"},
+                %Trip{arrival_time: ~T[21:45:00], departure_time: ~T[21:00:00], destination: {"Boston (Long Wharf)", "Boat-Long"}, direction_id: 1, origin: {"Hingham (Hewitt's Cove)", "Boat-Hingham"}, trip_number: "Boat-F1-Boat-Hingham-21:00:00-weekend-1"},
+                %Trip{arrival_time: ~T[22:05:00], departure_time: ~T[21:30:00], destination: {"Boston (Long Wharf)", "Boat-Long"}, direction_id: 1, origin: {"Hingham (Hewitt's Cove)", "Boat-Hingham"}, trip_number: "Boat-F1-Boat-Hingham-21:30:00-saturday-1"},
+                %Trip{arrival_time: ~T[23:10:00], departure_time: ~T[22:30:00], destination: {"Boston (Long Wharf)", "Boat-Long"}, direction_id: 1, origin: {"Hingham (Hewitt's Cove)", "Boat-Hingham"}, trip_number: "Boat-F1-Boat-Hingham-22:30:00-saturday-1"}] = trips
       end
     end
 
     test "returns sunday results" do
       use_cassette "hingham_to_long_wharf_sunday_schedules", custom: true, clear_mock: true, match_requests_on: [:query] do
         {:ok, trips} = FerryMapper.map_trip_options("Boat-Hingham", "Boat-Long", :sunday, Calendar.Date.from_ordinal!(2017, 232))
-        assert [%{arrival_time: ~T[08:55:00], departure_time: ~T[08:00:00], destination: {"Long Wharf, Boston", "Boat-Long"}, direction_id: 1, origin: {"Hewitt's Cove, Hingham", "Boat-Hingham"}, trip_number: "Boat-F1-Boat-Hingham-08:00:00-weekend-1"},
-                %{arrival_time: ~T[09:55:00], departure_time: ~T[09:00:00], destination: {"Long Wharf, Boston", "Boat-Long"}, direction_id: 1, origin: {"Hewitt's Cove, Hingham", "Boat-Hingham"}, trip_number: "Boat-F1-Boat-Hingham-09:00:00-weekend-1"},
-                %{arrival_time: ~T[10:55:00], departure_time: ~T[10:00:00], destination: {"Long Wharf, Boston", "Boat-Long"}, direction_id: 1, origin: {"Hewitt's Cove, Hingham", "Boat-Hingham"}, trip_number: "Boat-F1-Boat-Hingham-10:00:00-weekend-1"},
-                %{arrival_time: ~T[11:55:00], departure_time: ~T[11:00:00], destination: {"Long Wharf, Boston", "Boat-Long"}, direction_id: 1, origin: {"Hewitt's Cove, Hingham", "Boat-Hingham"}, trip_number: "Boat-F1-Boat-Hingham-11:00:00-weekend-1"},
-                %{arrival_time: ~T[12:55:00], departure_time: ~T[12:00:00], destination: {"Long Wharf, Boston", "Boat-Long"}, direction_id: 1, origin: {"Hewitt's Cove, Hingham", "Boat-Hingham"}, trip_number: "Boat-F1-Boat-Hingham-12:00:00-weekend-1"},
-                %{arrival_time: ~T[13:55:00], departure_time: ~T[13:00:00], destination: {"Long Wharf, Boston", "Boat-Long"}, direction_id: 1, origin: {"Hewitt's Cove, Hingham", "Boat-Hingham"}, trip_number: "Boat-F1-Boat-Hingham-13:00:00-weekend-1"},
-                %{arrival_time: ~T[14:55:00], departure_time: ~T[14:00:00], destination: {"Long Wharf, Boston", "Boat-Long"}, direction_id: 1, origin: {"Hewitt's Cove, Hingham", "Boat-Hingham"}, trip_number: "Boat-F1-Boat-Hingham-14:00:00-weekend-1"},
-                %{arrival_time: ~T[15:55:00], departure_time: ~T[15:00:00], destination: {"Long Wharf, Boston", "Boat-Long"}, direction_id: 1, origin: {"Hewitt's Cove, Hingham", "Boat-Hingham"}, trip_number: "Boat-F1-Boat-Hingham-15:00:00-weekend-1"},
-                %{arrival_time: ~T[16:55:00], departure_time: ~T[16:00:00], destination: {"Long Wharf, Boston", "Boat-Long"}, direction_id: 1, origin: {"Hewitt's Cove, Hingham", "Boat-Hingham"}, trip_number: "Boat-F1-Boat-Hingham-16:00:00-weekend-1"},
-                %{arrival_time: ~T[17:35:00], departure_time: ~T[17:00:00], destination: {"Long Wharf, Boston", "Boat-Long"}, direction_id: 1, origin: {"Hewitt's Cove, Hingham", "Boat-Hingham"}, trip_number: "Boat-F1-Boat-Hingham-17:00:00-weekend-1"},
-                %{arrival_time: ~T[18:55:00], departure_time: ~T[18:00:00], destination: {"Long Wharf, Boston", "Boat-Long"}, direction_id: 1, origin: {"Hewitt's Cove, Hingham", "Boat-Hingham"}, trip_number: "Boat-F1-Boat-Hingham-18:00:00-weekend-1"},
-                %{arrival_time: ~T[19:35:00], departure_time: ~T[19:00:00], destination: {"Long Wharf, Boston", "Boat-Long"}, direction_id: 1, origin: {"Hewitt's Cove, Hingham", "Boat-Hingham"}, trip_number: "Boat-F1-Boat-Hingham-19:00:00-weekend-1"},
-                %{arrival_time: ~T[20:35:00], departure_time: ~T[20:00:00], destination: {"Long Wharf, Boston", "Boat-Long"}, direction_id: 1, origin: {"Hewitt's Cove, Hingham", "Boat-Hingham"}, trip_number: "Boat-F1-Boat-Hingham-20:00:00-weekend-1"},
-                %{arrival_time: ~T[21:45:00], departure_time: ~T[21:00:00], destination: {"Long Wharf, Boston", "Boat-Long"}, direction_id: 1, origin: {"Hewitt's Cove, Hingham", "Boat-Hingham"}, trip_number: "Boat-F1-Boat-Hingham-21:00:00-weekend-1"}] = trips
+        assert [%{arrival_time: ~T[08:55:00], departure_time: ~T[08:00:00], destination: {"Boston (Long Wharf)", "Boat-Long"}, direction_id: 1, origin: {"Hingham (Hewitt's Cove)", "Boat-Hingham"}, trip_number: "Boat-F1-Boat-Hingham-08:00:00-weekend-1"},
+                %{arrival_time: ~T[09:55:00], departure_time: ~T[09:00:00], destination: {"Boston (Long Wharf)", "Boat-Long"}, direction_id: 1, origin: {"Hingham (Hewitt's Cove)", "Boat-Hingham"}, trip_number: "Boat-F1-Boat-Hingham-09:00:00-weekend-1"},
+                %{arrival_time: ~T[10:55:00], departure_time: ~T[10:00:00], destination: {"Boston (Long Wharf)", "Boat-Long"}, direction_id: 1, origin: {"Hingham (Hewitt's Cove)", "Boat-Hingham"}, trip_number: "Boat-F1-Boat-Hingham-10:00:00-weekend-1"},
+                %{arrival_time: ~T[11:55:00], departure_time: ~T[11:00:00], destination: {"Boston (Long Wharf)", "Boat-Long"}, direction_id: 1, origin: {"Hingham (Hewitt's Cove)", "Boat-Hingham"}, trip_number: "Boat-F1-Boat-Hingham-11:00:00-weekend-1"},
+                %{arrival_time: ~T[12:55:00], departure_time: ~T[12:00:00], destination: {"Boston (Long Wharf)", "Boat-Long"}, direction_id: 1, origin: {"Hingham (Hewitt's Cove)", "Boat-Hingham"}, trip_number: "Boat-F1-Boat-Hingham-12:00:00-weekend-1"},
+                %{arrival_time: ~T[13:55:00], departure_time: ~T[13:00:00], destination: {"Boston (Long Wharf)", "Boat-Long"}, direction_id: 1, origin: {"Hingham (Hewitt's Cove)", "Boat-Hingham"}, trip_number: "Boat-F1-Boat-Hingham-13:00:00-weekend-1"},
+                %{arrival_time: ~T[14:55:00], departure_time: ~T[14:00:00], destination: {"Boston (Long Wharf)", "Boat-Long"}, direction_id: 1, origin: {"Hingham (Hewitt's Cove)", "Boat-Hingham"}, trip_number: "Boat-F1-Boat-Hingham-14:00:00-weekend-1"},
+                %{arrival_time: ~T[15:55:00], departure_time: ~T[15:00:00], destination: {"Boston (Long Wharf)", "Boat-Long"}, direction_id: 1, origin: {"Hingham (Hewitt's Cove)", "Boat-Hingham"}, trip_number: "Boat-F1-Boat-Hingham-15:00:00-weekend-1"},
+                %{arrival_time: ~T[16:55:00], departure_time: ~T[16:00:00], destination: {"Boston (Long Wharf)", "Boat-Long"}, direction_id: 1, origin: {"Hingham (Hewitt's Cove)", "Boat-Hingham"}, trip_number: "Boat-F1-Boat-Hingham-16:00:00-weekend-1"},
+                %{arrival_time: ~T[17:35:00], departure_time: ~T[17:00:00], destination: {"Boston (Long Wharf)", "Boat-Long"}, direction_id: 1, origin: {"Hingham (Hewitt's Cove)", "Boat-Hingham"}, trip_number: "Boat-F1-Boat-Hingham-17:00:00-weekend-1"},
+                %{arrival_time: ~T[18:55:00], departure_time: ~T[18:00:00], destination: {"Boston (Long Wharf)", "Boat-Long"}, direction_id: 1, origin: {"Hingham (Hewitt's Cove)", "Boat-Hingham"}, trip_number: "Boat-F1-Boat-Hingham-18:00:00-weekend-1"},
+                %{arrival_time: ~T[19:35:00], departure_time: ~T[19:00:00], destination: {"Boston (Long Wharf)", "Boat-Long"}, direction_id: 1, origin: {"Hingham (Hewitt's Cove)", "Boat-Hingham"}, trip_number: "Boat-F1-Boat-Hingham-19:00:00-weekend-1"},
+                %{arrival_time: ~T[20:35:00], departure_time: ~T[20:00:00], destination: {"Boston (Long Wharf)", "Boat-Long"}, direction_id: 1, origin: {"Hingham (Hewitt's Cove)", "Boat-Hingham"}, trip_number: "Boat-F1-Boat-Hingham-20:00:00-weekend-1"},
+                %{arrival_time: ~T[21:45:00], departure_time: ~T[21:00:00], destination: {"Boston (Long Wharf)", "Boat-Long"}, direction_id: 1, origin: {"Hingham (Hewitt's Cove)", "Boat-Hingham"}, trip_number: "Boat-F1-Boat-Hingham-21:00:00-weekend-1"}] = trips
       end
     end
   end

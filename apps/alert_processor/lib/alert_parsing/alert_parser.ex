@@ -4,7 +4,7 @@ defmodule AlertProcessor.AlertParser do
   relevant information to subscription filter engine.
   """
   require Logger
-  alias AlertProcessor.{AlertCache, AlertsClient, ApiClient, Helpers.StringHelper, HoldingQueue, Parser, ServiceInfoCache, SubscriptionFilterEngine}
+  alias AlertProcessor.{AlertCache, AlertsClient, Helpers.StringHelper, HoldingQueue, Parser, ServiceInfoCache, SubscriptionFilterEngine}
   alias AlertProcessor.Model.{Alert, InformedEntity, Notification, SavedAlert}
 
   @behaviour Parser
@@ -16,10 +16,9 @@ defmodule AlertProcessor.AlertParser do
   @spec process_alerts() :: [{:ok, [Notification.t]}]
   def process_alerts() do
     with {:ok, alerts} <- AlertsClient.get_alerts(),
-         {:ok, facilities} <- ApiClient.facilities() do
+         {:ok, facility_map} <- ServiceInfoCache.get_facility_map() do
       {alerts_needing_notifications, alert_ids_to_clear_notifications} =
-        {alerts, facilities}
-        |> map_facilities()
+        {alerts, facility_map}
         |> parse_alerts()
         |> AlertCache.update_cache()
 
@@ -27,14 +26,6 @@ defmodule AlertProcessor.AlertParser do
       HoldingQueue.remove_notifications(alert_ids_to_clear_notifications)
       SubscriptionFilterEngine.process_alerts(alerts_needing_notifications)
     end
-  end
-
-  defp map_facilities({alerts, facilities}) do
-    facilities_map = for f <- facilities, into: %{} do
-      %{"attributes" => %{"type" => facility_type}, "id" => id} = f
-      {id, facility_type}
-    end
-    {alerts, facilities_map}
   end
 
   defp parse_alerts({alerts, facilities_map}) do

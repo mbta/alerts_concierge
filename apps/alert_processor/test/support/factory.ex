@@ -101,8 +101,8 @@ defmodule AlertProcessor.Factory do
   def ferry_subscription(%Subscription{} = subscription) do
     %{subscription |
       type: :ferry,
-      origin: "Long Wharf, Boston",
-      destination: "Charlestown Navy Yard"
+      origin: "Boston (Long Wharf)",
+      destination: "Charlestown (Navy Yard)"
     }
   end
 
