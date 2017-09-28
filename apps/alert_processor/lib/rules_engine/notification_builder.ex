@@ -18,7 +18,7 @@ defmodule AlertProcessor.NotificationBuilder do
   4a. Determine whether a notification should go out based on a user's do_not_disturb
   4b. If do_not_disturb overlaps send_after, adjust send_after to end of period
   """
-  @spec build_notifications(Subscription.t, Alert.t, DateTime.t)
+  @spec build_notifications({User.t, Subscription.t}, Alert.t, DateTime.t)
   :: [Notification.t]
   def build_notifications({user, subscriptions}, %Alert{active_period: ap} = alert, now) do
     Enum.reduce(ap, [], fn(active_period, result) ->
