@@ -38,6 +38,18 @@ defmodule ConciergeSite.LayoutViewTest do
 
       assert LayoutView.breadcrumbs(conn) == [%{title: "New Subscriptions", path: "/subscriptions/new"}]
     end
+
+    test "renders breadcrumbs diagnostics", %{conn: conn} do
+      id = "abc123"
+      conn =
+        conn
+        |> Map.put(:path_info, ["admin", "subscription_search"])
+        |> Map.put(:request_path, "/admin/subscription_search/#{id}/new")
+
+      assert LayoutView.breadcrumbs(conn) == [
+        %{title: "Subscription Search", path: "/admin/subscription_search/#{id}/new"}
+      ]
+    end
   end
 
   describe "impersonation_banner/2" do
