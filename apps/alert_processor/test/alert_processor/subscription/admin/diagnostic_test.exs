@@ -83,7 +83,7 @@ defmodule AlertProcessor.Subscription.DiagnosticTest do
           status: :sent,
           email: user.email,
           last_push_notification: lpn,
-          subscription_ids: [subscription.id]
+          subscriptions: [subscription]
         })
 
       %Notification{}

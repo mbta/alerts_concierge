@@ -24,7 +24,7 @@ defmodule AlertProcessor.SentAlertFilterTest do
         description: "test",
         status: :sent,
         last_push_notification: @later,
-        subscription_ids: [sub1.id]
+        subscriptions: [sub1]
       }
 
       other_notification = %Notification{
@@ -36,7 +36,7 @@ defmodule AlertProcessor.SentAlertFilterTest do
         description: "test",
         status: :sent,
         last_push_notification: @later,
-        subscription_ids: [sub2.id]
+        subscriptions: [sub2]
       }
 
       n1 = Repo.insert!(Notification.create_changeset(notification))
@@ -62,7 +62,7 @@ defmodule AlertProcessor.SentAlertFilterTest do
         service_effect: "test",
         description: "test",
         status: :failed,
-        subscription_ids: []
+        subscriptions: []
       }
 
       Repo.insert(Notification.create_changeset(notification))
@@ -86,7 +86,7 @@ defmodule AlertProcessor.SentAlertFilterTest do
         description: "test",
         status: :sent,
         last_push_notification: @now,
-        subscription_ids: [sub1.id]
+        subscriptions: [sub1]
       }
       Repo.insert(Notification.create_changeset(notification))
 
@@ -112,7 +112,7 @@ defmodule AlertProcessor.SentAlertFilterTest do
         description: "test",
         status: :sent,
         last_push_notification: @now,
-        subscription_ids: [sub1.id]
+        subscriptions: [sub1]
       }
       Repo.insert(Notification.create_changeset(notification))
 

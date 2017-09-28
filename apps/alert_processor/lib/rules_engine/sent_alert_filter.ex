@@ -24,7 +24,7 @@ defmodule AlertProcessor.SentAlertFilter do
 
     {subscriptions_to_auto_resend, subscriptions_to_consider} =
       Enum.split_with(subscriptions, fn(sub) ->
-        Enum.any?(notifications_to_resend, & Enum.member?(&1.subscription_ids, sub.id) && &1.alert_id == alert_id && &1.status == :sent)
+        Enum.any?(notifications_to_resend, & Enum.member?(&1.subscriptions, sub) && &1.alert_id == alert_id && &1.status == :sent)
       end)
 
     subscriptions_to_test =

@@ -21,6 +21,7 @@ defmodule AlertProcessor.SubscriptionFilterEngine do
     notification_query = from n in Notification,
       where: n.user_id in ^user_ids,
       where: n.alert_id in ^alert_ids,
+      preload: [:subscriptions],
       select: n
 
     notifications = Repo.all(notification_query)
