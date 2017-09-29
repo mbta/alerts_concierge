@@ -37,4 +37,16 @@ defmodule AlertProcessor.DigestDispatcherTest do
     DigestDispatcher.send_emails([message])
     assert_received {:sent_digest_email, ^message}
   end
+
+  test "send_email/1 ignores digests without a body" do
+    user = %User{email: "abc@123.com"}
+    alert = %Alert{id: "3",
+                   header: "Test",
+                   informed_entities: [%InformedEntity{route_type: 1, route: "Red"}]}
+    digest = %Digest{user: user, alerts: [alert], digest_date_group: @ddg}
+    message = DigestMessage.from_digest(digest)
+
+    DigestDispatcher.send_emails([message])
+    refute_received {:sent_digest_email, ^message}
+  end
 end

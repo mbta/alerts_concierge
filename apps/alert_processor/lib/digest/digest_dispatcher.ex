@@ -10,11 +10,15 @@ defmodule AlertProcessor.DigestDispatcher do
   """
   @spec send_emails([DigestMessage.t]) :: :ok
   def send_emails(digest_messages) do
-    Enum.each(digest_messages, fn(digest_message) ->
-      :timer.sleep(send_rate())
-      @mailer.send_digest_email(digest_message)
-    end)
+    Enum.each(digest_messages, &do_send_email/1)
   end
+
+  defp do_send_email(%DigestMessage{body: []}), do: :ok
+  defp do_send_email(digest_message) do
+    :timer.sleep(send_rate())
+    @mailer.send_digest_email(digest_message)
+  end
+
 
   defp send_rate do
     ConfigHelper.get_int(:send_rate)
