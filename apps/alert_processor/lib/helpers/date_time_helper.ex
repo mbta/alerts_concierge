@@ -116,7 +116,7 @@ defmodule AlertProcessor.Helpers.DateTimeHelper do
     if difference >= 0 do
       difference
     else
-      interval - difference
+      interval + difference
     end
   end
 

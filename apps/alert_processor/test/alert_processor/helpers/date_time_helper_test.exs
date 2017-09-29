@@ -2,19 +2,24 @@ defmodule AlertProcessor.Helpers.DateTimeHelperTest do
   use ExUnit.Case
   alias AlertProcessor.Helpers.DateTimeHelper, as: DTH
   alias Calendar.DateTime, as: DT
+  alias Calendar.Time, as: T
 
   @interval 604_800 # 1 Week in seconds
-  @sunday 7
+  @thursday 4
   @time_of_day ~T[21:00:00]
 
   test "seconds_until_next_digest/3 returns seconds between now and a specific day/time" do
     tuesday_8pm_utc = {~D[2017-05-16], ~T[20:00:00]}
     seconds = DTH.seconds_until_next_digest(@interval,
-                                            @sunday,
+                                            @thursday,
                                             @time_of_day,
                                             tuesday_8pm_utc)
 
-    assert seconds == 435_600
+    unix_now = DateTime.from_naive!(~N[2017-05-16 20:00:00], "Etc/UTC") |> DateTime.to_unix()
+    send_at_datetime = DateTime.from_unix!(unix_now + seconds)
+    assert DateTime.compare(send_at_datetime, DateTime.from_naive!(~N[2017-05-18 21:00:00], "Etc/UTC")) == :eq
+    assert Date.day_of_week(send_at_datetime) == @thursday
+    assert T.diff(DateTime.to_time(send_at_datetime), @time_of_day) == 0
   end
 
   test "seconds_until_next_digest/3 handles day of week before current day of week" do
@@ -24,17 +29,25 @@ defmodule AlertProcessor.Helpers.DateTimeHelperTest do
                                             @time_of_day,
                                             sunday_8pm_utc)
 
-    assert seconds == 687_600
+    unix_now = DateTime.from_naive!(~N[2017-05-21 20:00:00], "Etc/UTC") |> DateTime.to_unix()
+    send_at_datetime = DateTime.from_unix!(unix_now + seconds)
+    assert DateTime.compare(send_at_datetime, DateTime.from_naive!(~N[2017-05-27 21:00:00], "Etc/UTC")) == :eq
+    assert Date.day_of_week(send_at_datetime) == 6
+    assert T.diff(DateTime.to_time(send_at_datetime), @time_of_day) == 0
   end
 
   test "seconds_until_next_digest/3 handles time of day earlier than current" do
-    tuesday_8pm_utc = {~D[2017-05-16], ~T[20:00:00]}
+    tuesday_8pm_utc = {~D[2017-05-16], ~T[09:00:00]}
     seconds = DTH.seconds_until_next_digest(@interval,
-                                            @sunday,
+                                            @thursday,
                                             ~T[12:00:00],
                                             tuesday_8pm_utc)
 
-    assert seconds == 403_200
+    unix_now = DateTime.from_naive!(~N[2017-05-16 09:00:00], "Etc/UTC") |> DateTime.to_unix()
+    send_at_datetime = DateTime.from_unix!(unix_now + seconds)
+    assert DateTime.compare(send_at_datetime, DateTime.from_naive!(~N[2017-05-18 12:00:00], "Etc/UTC")) == :eq
+    assert Date.day_of_week(send_at_datetime) == @thursday
+    assert T.diff(DateTime.to_time(send_at_datetime), ~T[12:00:00]) == 0
   end
 
   describe "digest groups" do
