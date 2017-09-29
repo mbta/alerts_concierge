@@ -65,7 +65,21 @@ defmodule ConciergeSite.AmenitySubscriptionViewTest do
         |> AmenitySubscriptionView.amenity_schedule()
         |> IO.iodata_to_binary
 
-      assert result == "Green Line on Saturdays"  
+      assert result == "Green Line on Saturdays"
+    end
+
+    test "it displays stops only properly" do
+      subscription = %Subscription{
+        informed_entities: [%InformedEntity{facility_type: :elevator, stop: "place-harvard"}],
+        relevant_days: [:saturday]
+      }
+
+      result =
+        subscription
+        |> AmenitySubscriptionView.amenity_schedule()
+        |> IO.iodata_to_binary
+
+      assert result == "1 station on Saturdays"
     end
   end
 end
