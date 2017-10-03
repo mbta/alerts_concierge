@@ -813,6 +813,7 @@ defmodule AlertProcessor.Subscription.FerryMapperTest do
       ] = Ecto.Multi.to_list(multi)
       assert {:ok, %{model: informed_entity1, version: %{event: "insert"}}} = function1.(nil)
       assert informed_entity1.subscription_id == subscription.id
+      assert informed_entity1.activities == InformedEntity.default_entity_activities()
       assert {:ok, %{model: _informed_entity2, version: %{event: "delete"}}} = function2.(nil)
       assert {:ok, %{model: _informed_entity3, version: %{event: "delete"}}} = function3.(nil)
       assert {:ok, %{model: updated_subscription, version: %{event: "update"}}} = function4.(nil)
