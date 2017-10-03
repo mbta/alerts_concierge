@@ -307,7 +307,7 @@ defmodule AlertProcessor.Subscription.Mapper do
       |> Enum.with_index()
       |> Enum.reduce(Multi.new(), fn({trip, index}, acc) ->
            Multi.run(acc, {:new_informed_entity, index}, fn _ ->
-             PaperTrail.insert(%InformedEntity{subscription_id: subscription.id, trip: trip}, originator: User.wrap_id(originator), meta: %{owner: subscription.user_id})
+             PaperTrail.insert(%InformedEntity{subscription_id: subscription.id, trip: trip, activities: InformedEntity.default_entity_activities()}, originator: User.wrap_id(originator), meta: %{owner: subscription.user_id})
            end)
          end)
 
