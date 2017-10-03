@@ -1,7 +1,7 @@
 defmodule AlertProcessor.SentAlertFilterTest do
   use AlertProcessor.DataCase
   alias AlertProcessor.{SentAlertFilter, Model}
-  alias Model.{Alert, Notification}
+  alias Model.{Alert, Notification, Subscription}
   import AlertProcessor.Factory
 
   @now DateTime.utc_now
@@ -66,15 +66,21 @@ defmodule AlertProcessor.SentAlertFilterTest do
       }
 
       Repo.insert(Notification.create_changeset(notification))
+      subscriptions =
+        Subscription
+        |> Repo.all()
+        |> Repo.preload(:user)
+        |> Repo.preload(:informed_entities)
 
-      assert {[subscription], []} ==
-        SentAlertFilter.filter([subscription], alert: @alert, notifications: [notification])
+      assert {[returned_sub], []} =
+        SentAlertFilter.filter(subscriptions, alert: @alert, notifications: [notification])
+      assert returned_sub.id == subscription.id
     end
 
     test "returns subscriptions to auto resend that have received the alert if the last_push_notification changed" do
       user = insert(:user)
       sub1 = :subscription |> insert(user: user) |> Repo.preload(:user)
-      sub2 = :subscription |> insert(user: user) |> Repo.preload(:user)
+      :subscription |> insert(user: user) |> Repo.preload(:user)
       alert = %Alert{id: "123", last_push_notification: @now}
       updated_alert = %Alert{id: "123", last_push_notification: @later}
       notification = %Notification{
@@ -89,12 +95,18 @@ defmodule AlertProcessor.SentAlertFilterTest do
         subscriptions: [sub1]
       }
       Repo.insert(Notification.create_changeset(notification))
+      subscriptions =
+        Subscription
+        |> Repo.all()
+        |> Repo.preload(:user)
+        |> Repo.preload(:informed_entities)
 
       assert {[], []} ==
-        SentAlertFilter.filter([sub1, sub2], alert: alert, notifications: [notification])
+        SentAlertFilter.filter(subscriptions, alert: alert, notifications: [notification])
 
-      assert {[], [sub1]} ==
-        SentAlertFilter.filter([sub1, sub2], alert: updated_alert, notifications: [notification])
+      assert {[], [returned_sub]} =
+        SentAlertFilter.filter(subscriptions, alert: updated_alert, notifications: [notification])
+      assert returned_sub.id == sub1.id
     end
 
     test "do not resend if subscription no longer exists" do
@@ -115,12 +127,25 @@ defmodule AlertProcessor.SentAlertFilterTest do
         subscriptions: [sub1]
       }
       Repo.insert(Notification.create_changeset(notification))
+      subscriptions =
+        Subscription
+        |> Repo.all()
+        |> Repo.preload(:user)
+        |> Repo.preload(:informed_entities)
 
       assert {[], []} ==
-        SentAlertFilter.filter([sub1, sub2], alert: alert, notifications: [notification])
+        SentAlertFilter.filter(subscriptions, alert: alert, notifications: [notification])
 
-      assert {[sub2], []} ==
-        SentAlertFilter.filter([sub2], alert: updated_alert, notifications: [notification])
+      subscriptions =
+        Subscription
+        |> where([s], s.id != ^sub1.id)
+        |> Repo.all()
+        |> Repo.preload(:user)
+        |> Repo.preload(:informed_entities)
+
+      assert {[returned_sub], []} =
+        SentAlertFilter.filter(subscriptions, alert: updated_alert, notifications: [notification])
+      assert returned_sub.id == sub2.id
     end
   end
 end
