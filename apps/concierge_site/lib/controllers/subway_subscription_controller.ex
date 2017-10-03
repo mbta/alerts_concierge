@@ -21,18 +21,22 @@ defmodule ConciergeSite.SubwaySubscriptionController do
   end
 
   def update(conn, %{"id" => id, "subscription" => subscription_params}, user, {:ok, claims}) do
-    subscription = Subscription.one_for_user!(id, user.id)
-    params = SubscriptionParams.prepare_for_update_changeset(subscription_params)
-
-    case Subscription.update_subscription(subscription, params, Map.get(claims, "imp", user.id)) do
-      {:ok, _subscription} ->
-        :ok = User.clear_holding_queue_for_user_id(user.id)
+    subscription = Subscription.one_for_user!(id, user.id, true)
+    with {:ok, params} <- SubscriptionParams.prepare_for_update_changeset(subscription_params),
+         {:ok, _subscription} <- Subscription.update_subscription(subscription, params, Map.get(claims, "imp", user.id)) do
+      :ok = User.clear_holding_queue_for_user_id(user.id)
+      conn
+      |> put_flash(:info, "Subscription updated.")
+      |> redirect(to: subscription_path(conn, :index))
+    else
+      {:error, %Ecto.Changeset{} = changeset} ->
         conn
-        |> put_flash(:info, "Subscription updated.")
-        |> redirect(to: subscription_path(conn, :index))
-      {:error, changeset} ->
+        |> put_flash(:error, "Subscription could not be updated. Please see errors below.")
+        |> render("edit.html", subscription: subscription, changeset: changeset)
+      {:error, error_message} ->
+        changeset = Subscription.create_changeset(subscription)
         conn
-        |> put_flash(:error, "Subscription could not be updated")
+        |> put_flash(:error, error_message)
         |> render("edit.html", subscription: subscription, changeset: changeset)
     end
   end

@@ -2,20 +2,27 @@ defmodule ConciergeSite.Subscriptions.SubscriptionParams do
   @moduledoc """
   Functions for processing user input during the subscription flow
   """
+  import ConciergeSite.Subscriptions.ParamsValidator
   alias AlertProcessor.Helpers.DateTimeHelper
 
   @spec prepare_for_update_changeset(map) :: map
   def prepare_for_update_changeset(params) do
-    relevant_days =
-      params
-      |> Map.take(~w(saturday sunday weekday))
-      |> relevant_days_from_booleans()
-      |> Enum.map(&String.to_existing_atom/1)
+    {params, errors} = validate_endtime_after_starttime({params, []})
 
-    %{"alert_priority_type" => String.to_existing_atom(params["alert_priority_type"]),
-      "relevant_days" => relevant_days,
-      "end_time" => DateTimeHelper.timestamp_to_utc_datetime(params["departure_end"]),
-      "start_time" => DateTimeHelper.timestamp_to_utc_datetime(params["departure_start"])}
+    if errors == [] do
+      relevant_days =
+        params
+        |> Map.take(~w(saturday sunday weekday))
+        |> relevant_days_from_booleans()
+        |> Enum.map(&String.to_existing_atom/1)
+
+      {:ok, %{"alert_priority_type" => String.to_existing_atom(params["alert_priority_type"]),
+        "relevant_days" => relevant_days,
+        "end_time" => DateTimeHelper.timestamp_to_utc_datetime(params["departure_end"]),
+        "start_time" => DateTimeHelper.timestamp_to_utc_datetime(params["departure_start"])}}
+    else
+      {:error, full_error_message_iodata(errors)}
+    end
   end
 
   def relevant_days_from_booleans(day_map) do
@@ -35,6 +42,25 @@ defmodule ConciergeSite.Subscriptions.SubscriptionParams do
         false
       true ->
         true
+    end
+  end
+
+  def validate_endtime_after_starttime({%{"return_start" => _} = params, errors}) do
+    errors =
+      errors
+      |> do_validate_endtime_after_starttime(params["return_start"], params["return_end"], "return")
+      |> do_validate_endtime_after_starttime(params["departure_start"], params["departure_end"], "departure")
+    {params, errors}
+  end
+  def validate_endtime_after_starttime({params, errors}) do
+    {params, do_validate_endtime_after_starttime(errors, params["departure_start"], params["departure_end"], "departure")}
+  end
+
+  defp do_validate_endtime_after_starttime(errors, start_time, end_time, trip_type) do
+    if outside_service_time_range(start_time, end_time) do
+      ["Start time on", trip_type, "trip cannot be same as or later than end time. End of service day is 03:00AM." | errors]
+    else
+      errors
     end
   end
 end

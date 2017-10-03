@@ -64,25 +64,6 @@ defmodule ConciergeSite.Subscriptions.SubwayParams do
     end
   end
 
-  defp validate_endtime_after_starttime({%{"return_start" => _} = params, errors}) do
-    cond do
-      outside_service_time_range(params["return_start"], params["return_end"]) ->
-        {params, ["Start time on return trip cannot be same as or later than end time. End of service day is 03:00AM."]}
-      outside_service_time_range(params["departure_start"], params["departure_end"]) ->
-        {params, ["Start time on departure trip cannot be same as or later than end time. End of service day is 03:00AM."]}
-      true ->
-        {params, errors}
-    end
-  end
-
-  defp validate_endtime_after_starttime({params, errors}) do
-    if outside_service_time_range(params["departure_start"], params["departure_end"]) do
-      {params, ["Start time on departure trip cannot be same as or later than end time. End of service day is 03:00AM."]}
-    else
-      {params, errors}
-    end
-  end
-
   def map_station_schedules(origin, destination) do
     case ApiClient.subway_schedules_union(origin, destination) do
       {:ok, schedule_data, included_data} ->

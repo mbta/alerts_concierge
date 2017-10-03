@@ -182,6 +182,64 @@ defmodule ConciergeSite.BusSubscriptionControllerTest do
       assert html_response(conn, 302) =~ "my-subscriptions"
       assert :error = HoldingQueue.pop()
     end
+
+    test "PATCH /subscriptions/bus/:id invalid timeframe", %{conn: conn, user: user} do
+      subscription =
+        subscription_factory()
+        |> bus_subscription()
+        |> weekday_subscription()
+        |> Map.put(:informed_entities, bus_subscription_entities())
+        |> Map.merge(%{user_id: user.id})
+        |> insert()
+
+      params = %{"subscription" => %{
+        "departure_start" => "22:45:00",
+        "departure_end" => "09:15:00",
+        "return_start" => "16:45:00",
+        "return_end" => "17:15:00",
+        "route" => "741 - 1",
+        "saturday" => "true",
+        "sunday" => "false",
+        "weekday" => "false",
+        "trip_type" => "round_trip",
+        "alert_priority_type" => "low"
+      }}
+
+      conn = user
+      |> guardian_login(conn)
+      |> patch("/subscriptions/bus/#{subscription.id}", params)
+
+      assert html_response(conn, 200) =~ "Please correct the following errors to proceed: Start time on departure trip cannot be same as or later than end time. End of service day is 03:00AM."
+    end
+
+    test "PATCH /subscriptions/bus/:id invalid params", %{conn: conn, user: user} do
+      subscription =
+        subscription_factory()
+        |> bus_subscription()
+        |> weekday_subscription()
+        |> Map.put(:informed_entities, bus_subscription_entities())
+        |> Map.merge(%{user_id: user.id})
+        |> insert()
+
+      params = %{"subscription" => %{
+        "departure_start" => "08:45:00",
+        "departure_end" => "09:15:00",
+        "return_start" => "16:45:00",
+        "return_end" => "17:15:00",
+        "route" => "741 - 1",
+        "saturday" => "false",
+        "sunday" => "false",
+        "weekday" => "false",
+        "trip_type" => "round_trip",
+        "alert_priority_type" => "low"
+      }}
+
+      conn = user
+      |> guardian_login(conn)
+      |> patch("/subscriptions/bus/#{subscription.id}", params)
+
+      assert html_response(conn, 200) =~ "Subscription could not be updated"
+    end
   end
 
   describe "unauthorized" do
