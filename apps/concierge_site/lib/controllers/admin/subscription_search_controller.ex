@@ -22,7 +22,7 @@ defmodule ConciergeSite.Admin.SubscriptionSearchController do
         |> redirect(to: "/admin_users")
       {:error, user} ->
         conn
-        |> put_flash(:error, "There was an error with the search, please try a later date")
+        |> put_flash(:error, "That alert ID and date does not return any subscriptions. The user did not have any valid subscriptions on that date, or that alert did not exist.")
         |> render(:new, user: user, diagnoses: %{all: [], succeeded: [], failed: []}, departure_time_map: %{})
       false ->
         render_unauthorized(conn)
