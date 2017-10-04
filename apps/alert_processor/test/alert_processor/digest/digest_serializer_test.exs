@@ -21,11 +21,11 @@ defmodule AlertProcessor.DigestSerializerTest do
   @user %User{id: "1"}
 
   @saturday DT.from_erl!({{2017, 06, 03}, {0, 0, 0}}, "America/New_York")
-  @sunday DT.from_erl!({{2017, 06, 04}, {23, 59, 59}}, "America/New_York")
+  @sunday DT.from_erl!({{2017, 06, 05}, {02, 30, 00}}, "America/New_York")
   @monday DT.from_erl!({{2017, 06, 05}, {0, 0, 0}}, "America/New_York")
-  @friday DT.from_erl!({{2017, 06, 09}, {23, 59, 59}}, "America/New_York")
+  @friday DT.from_erl!({{2017, 06, 10}, {02, 30, 00}}, "America/New_York")
   @next_saturday DT.from_erl!({{2017, 06, 10}, {0, 0, 0}}, "America/New_York")
-  @next_sunday DT.from_erl!({{2017, 06, 11}, {23, 59, 59}}, "America/New_York")
+  @next_sunday DT.from_erl!({{2017, 06, 12}, {02, 30, 01}}, "America/New_York")
   @next_monday DT.from_erl!({{2017, 06, 12}, {0, 0, 0}}, "America/New_York")
   @future DT.from_erl!({{3017, 06, 03}, {0, 0, 0}}, "America/New_York")
 
@@ -131,7 +131,7 @@ defmodule AlertProcessor.DigestSerializerTest do
 
   test "serialize/1 serializes title for month boundaries" do
     may = DT.from_erl!({{2017, 05, 29}, {0, 0, 0}}, "America/New_York")
-    june = DT.from_erl!({{2017, 06, 02}, {23, 59, 59}}, "America/New_York")
+    june = DT.from_erl!({{2017, 06, 03}, {02, 30, 00}}, "America/New_York")
 
     ddg = %DigestDateGroup{
       upcoming_weekend: %{

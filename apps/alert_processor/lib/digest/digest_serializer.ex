@@ -4,6 +4,7 @@ defmodule AlertProcessor.DigestSerializer do
   """
   alias AlertProcessor.{Helpers.DateTimeHelper, Model}
   alias Model.{Alert, Digest}
+  alias Calendar.DateTime, as: DT
   @date_groups [:upcoming_weekend, :upcoming_week, :next_weekend, :future]
 
   @doc """
@@ -30,14 +31,15 @@ defmodule AlertProcessor.DigestSerializer do
   end
 
   defp title(date_group, {start_date, end_date}) do
+    adjusted_end_date = DT.subtract!(end_date, 86_400)
     prefix = prefix(date_group)
     cond do
       date_group == :future ->
         prefix
-      start_date.month == end_date.month ->
-        "#{prefix}, #{DateTimeHelper.month_name(start_date)} #{start_date.day} - #{end_date.day}"
+      start_date.month == adjusted_end_date.month ->
+        "#{prefix}, #{DateTimeHelper.month_name(start_date)} #{start_date.day} - #{adjusted_end_date.day}"
       true ->
-        "#{prefix}, #{DateTimeHelper.month_name(start_date)} #{start_date.day} - #{DateTimeHelper.month_name(end_date)} #{end_date.day}"
+        "#{prefix}, #{DateTimeHelper.month_name(start_date)} #{start_date.day} - #{DateTimeHelper.month_name(adjusted_end_date)} #{adjusted_end_date.day}"
     end
   end
 

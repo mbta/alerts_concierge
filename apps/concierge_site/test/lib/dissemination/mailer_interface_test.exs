@@ -32,7 +32,7 @@ defmodule ConciergeSite.Dissemination.MailerInterfaceTest do
     test "receives a digest message and sends an email" do
       now = Calendar.DateTime.now!("America/New_York")
       saturday = Calendar.DateTime.from_erl!({{2017, 05, 26}, {0, 0, 0}}, "America/New_York")
-      end_sunday = Calendar.DateTime.from_erl!({{2017, 05, 27}, {23, 59, 59}}, "America/New_York")
+      end_sunday = Calendar.DateTime.from_erl!({{2017, 05, 28}, {02, 30, 00}}, "America/New_York")
 
       digest_date_group = %DigestDateGroup{
         upcoming_weekend: %{
