@@ -9,7 +9,7 @@ defmodule ConciergeSite.Dissemination.DigestEmailTest do
 
   @now Calendar.DateTime.now!("America/New_York")
   @saturday DT.from_erl!({{2017, 05, 26}, {0, 0, 0}}, "America/New_York")
-  @end_sunday DT.from_erl!({{2017, 05, 27}, {23, 59, 59}}, "America/New_York")
+  @end_sunday DT.from_erl!({{2017, 05, 28}, {02, 30, 00}}, "America/New_York")
 
   @ddg %DigestDateGroup{
     upcoming_weekend: %{
