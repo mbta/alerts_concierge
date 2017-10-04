@@ -8,6 +8,31 @@ defmodule AlertProcessor.Subscription.Diagnostic do
     SeverityFilter, Subscription, NotificationBuilder}
   alias Subscription.{DiagnosticQuery, Snapshot}
 
+  @diagnostic_checks [
+    :passed_sent_alert_filter?,
+    :passed_informed_entity_filter?,
+    :passed_severity_filter?,
+    :passed_active_period_filter?,
+    :passes_vacation_period?,
+    :passes_do_not_disturb?
+  ]
+
+  def sort(diagnoses) do
+    diagnoses = diagnoses || []
+    {succeeded, failed} = Enum.split_with(diagnoses, fn(diag) ->
+      diag
+      |> Map.take(@diagnostic_checks)
+      |> Map.values()
+      |> Enum.all?
+    end)
+
+   %{
+      succeeded: succeeded,
+      failed: failed,
+      all: diagnoses
+    }
+  end
+
   def diagnose_alert(user, %{"alert_date" => date_params, "alert_id" => alert_id}) do
     date = Enum.reduce(date_params, %{}, fn({k, v}, acc) ->
       Map.put(acc, k, String.to_integer(v))

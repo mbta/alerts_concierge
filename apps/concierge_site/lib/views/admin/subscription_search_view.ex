@@ -77,12 +77,16 @@ defmodule ConciergeSite.Admin.SubscriptionSearchView do
     else
       failure([
         "Alert entities do not match subscription:",
-        direction_result(snapshot),
-        facility_result(snapshot),
-        route_result(snapshot),
-        route_type_result(snapshot),
-        stop_result(snapshot),
-        trip_result(snapshot)
+        content_tag(:div, class: "informed-entity-detailed-results") do
+          [
+            direction_result(snapshot),
+            facility_result(snapshot),
+            route_result(snapshot),
+            route_type_result(snapshot),
+            stop_result(snapshot),
+            trip_result(snapshot)
+          ]
+        end
       ])
     end
   end

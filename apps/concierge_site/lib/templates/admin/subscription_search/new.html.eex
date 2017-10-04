@@ -24,30 +24,55 @@
       Search Results
     </div>
   </div>
-  <div class="admin-table-body">
-    <%= if Enum.empty?(@diagnoses) do %>
-      <div class="admin-table-row">
-        <div class="admin-table-cell">
+  <div class="admin-table-body diagnostic-container">
+    <%= if Enum.empty?(@diagnoses.all) do %>
+      <div class="diagnostic-result-block">
+        <p>
           No Results
-        </div>
+        </p>
       </div>
     <% else %>
-      <%= alert_title(@diagnoses) %>
-      <%= for diagnosis <- @diagnoses do %>
-        <div class="admin-table-row">
-          <div>
-            <div class="diagnostic-subscription-info">
-              <%= ConciergeSite.SubscriptionView.subscription_info(diagnosis.subscription) %>
+      <%= alert_title(@diagnoses.all) %>
+      <%= unless Enum.empty?(@diagnoses.succeeded) do %>
+        <div class="diagnostic-subscription-match-title">
+          <i class="fa fa-check-circle fa-2x sub-match-title success"></i>
+          <span>&nbsp;Match</span>
+        </div>
+        <div class="diagnostic-subscriptions-success">
+          <%= for diagnosis <- @diagnoses.succeeded do %>
+            <div class="diagnostic-result-block">
+              <div class="diagnostic-subscription-info">
+                <%= ConciergeSite.SubscriptionView.subscription_info(diagnosis.subscription, @departure_time_map) %>
+              </div>
             </div>
-            <div class="diagnostic-result">
-              <p><%= sent_alert_result(diagnosis) %></p>
-              <p><%= severity_result(diagnosis) %></p>
-              <p><%= active_period_result(diagnosis) %></p>
-              <p><%= do_not_disturb_result(diagnosis) %></p>
-              <p><%= vacation_result(diagnosis) %></p>
-              <p><%= informed_entity_result(diagnosis) %></p>
+          <% end %>
+        </div>
+      <% end %>
+
+      <%= unless Enum.empty?(@diagnoses.failed) do %>
+        <div class="diagnostic-subscription-match-title">
+          <i class="fa fa-check-circle fa-2x sub-match-title failure"></i>
+          <span>&nbsp;No Match</span>
+        </div>
+        <div class="diagnostic-subscriptions-failure">
+          <%= for diagnosis <- @diagnoses.failed do %>
+            <div class="diagnostic-result-block">
+              <div class="diagnostic-subscription-info">
+                <%= ConciergeSite.SubscriptionView.subscription_info(diagnosis.subscription, @departure_time_map) %>
+              </div>
+              <div id="<%= diagnosis.subscription.id %>" class="diagnostic-results hidden">
+                <p><%= sent_alert_result(diagnosis) %></p>
+                <p><%= severity_result(diagnosis) %></p>
+                <p><%= active_period_result(diagnosis) %></p>
+                <p><%= do_not_disturb_result(diagnosis) %></p>
+                <p><%= vacation_result(diagnosis) %></p>
+                <p><%= informed_entity_result(diagnosis) %></p>
+              </div>
+              <div data-target-sub-id="<%= diagnosis.subscription.id %>" class="diagnostic-result-toggle">
+                <span class="diagnostic-toggle-text <%= diagnosis.subscription.id %>">+ View Details</span><span class="diagnostic-toggle-text <%= diagnosis.subscription.id %> hidden">+ Hide Details</span>
+              </div>
             </div>
-          </div>
+          <% end %>
         </div>
       <% end %>
     <% end %>

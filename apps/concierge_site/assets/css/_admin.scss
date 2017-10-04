@@ -338,13 +338,23 @@
   color: $brand-success;
 }
 
-.diagnostic-subscription-info {
-  width: 100%;
-  border-bottom: 1px solid $pale-grey;
+.diagnostic-result-block {
+  margin: 1rem 3rem;
+  padding: 0rem 1rem;
+  border: solid 1px $pale-grey;
 }
 
-.diagnostic-result {
-  padding: 0 0.25rem;
+.diagnostic-subscription-info {
+  width: 100%;
+}
+
+.diagnostic-results {
+  padding: 0 0.5rem;
+  border-top: 1px solid $pale-grey;
+
+  &.hidden {
+    display: none;
+  }
 }
 
 .diagnostic-result-entity {
@@ -363,4 +373,44 @@
 
 .diagnostic-alert.id {
   font-weight: bold;
+}
+
+.diagnostic-subscription-match-title {
+  display: inline;
+  display: flex;
+  align-items: center;
+  font-weight: bold;
+  padding: 0rem 3rem;
+  margin-top: 1rem;
+}
+
+.informed-entity-detailed-results {
+  padding-top: 0.5rem;
+  padding-left: 1rem;
+
+  &.diagnostic-result {
+    padding-bottom: 0.5rem;
+  }
+}
+
+.sub-match-title {
+  &.success {
+    color: $brand-success
+  }
+
+  &.failure {
+    color: $red;
+  }
+}
+
+.diagnostic-result-toggle {
+  text-align: right;
+  color: $blue;
+  text-decoration: underline;
+}
+
+.diagnostic-toggle-text {
+  &.hidden {
+    display: none;
+  }
 }
