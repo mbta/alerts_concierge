@@ -10,7 +10,7 @@ defmodule AlertProcessor.ServiceInfoCache do
   require Logger
 
   @service_types [:bus, :commuter_rail, :ferry, :subway]
-  @info_types [:parent_stop_info, :subway_full_routes, :ferry_general_ids, :commuter_rail_trip_ids]
+  @info_types [:parent_stop_info, :subway_full_routes, :ferry_general_ids, :commuter_rail_trip_ids, :facility_map]
 
   @doc false
   def start_link(opts \\ [name: __MODULE__]) do
@@ -74,6 +74,10 @@ defmodule AlertProcessor.ServiceInfoCache do
 
   def get_trip_name(name \\ __MODULE__, trip_id) do
     GenServer.call(name, {:get_trip_name, trip_id})
+  end
+
+  def get_facility_map(name \\ __MODULE__) do
+    GenServer.call(name, :get_facility_map)
   end
 
   @doc """
@@ -158,6 +162,10 @@ defmodule AlertProcessor.ServiceInfoCache do
   def handle_call({:get_trip_name, trip_id}, _from, %{commuter_rail_trip_ids: commuter_rail_trip_ids} = state) do
     trip_name = Map.get(commuter_rail_trip_ids, trip_id)
     {:reply, {:ok, trip_name}, state}
+  end
+
+  def handle_call(:get_facility_map, _from, %{facility_map: facility_map} = state) do
+    {:reply, {:ok, facility_map}, state}
   end
 
   defp parse_headsign(relevant_routes, direction_id) do
@@ -248,6 +256,14 @@ defmodule AlertProcessor.ServiceInfoCache do
     for trip <- trips, into: %{} do
       %{"attributes" => %{"name" => name}, "id" => trip_id} = trip
       {trip_id, name}
+    end
+  end
+  defp fetch_service_info(:facility_map) do
+    {:ok, facilities} = ApiClient.facilities()
+
+    for f <- facilities, into: %{} do
+      %{"attributes" => %{"type" => facility_type}, "id" => id} = f
+      {id, facility_type}
     end
   end
 
