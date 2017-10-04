@@ -18,6 +18,7 @@ defmodule AlertProcessor.Subscription.Diagnostic do
   ]
 
   def sort(diagnoses) do
+    diagnoses = diagnoses || []
     {succeeded, failed} = Enum.split_with(diagnoses, fn(diag) ->
       diag
       |> Map.take(@diagnostic_checks)
@@ -28,7 +29,7 @@ defmodule AlertProcessor.Subscription.Diagnostic do
    %{
       succeeded: succeeded,
       failed: failed,
-      all: diagnoses || []
+      all: diagnoses
     }
   end
 

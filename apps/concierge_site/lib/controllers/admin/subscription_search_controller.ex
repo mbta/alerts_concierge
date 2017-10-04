@@ -23,7 +23,7 @@ defmodule ConciergeSite.Admin.SubscriptionSearchController do
       {:error, user} ->
         conn
         |> put_flash(:error, "There was an error with the search, please try a later date")
-        |> render(:new, user: user, diagnoses: %{all: []}, departure_time_map: %{})
+        |> render(:new, user: user, diagnoses: %{all: [], succeeded: [], failed: []}, departure_time_map: %{})
       false ->
         render_unauthorized(conn)
     end
@@ -39,7 +39,7 @@ defmodule ConciergeSite.Admin.SubscriptionSearchController do
   def new(conn, %{"user_id" => user_id}, _admin, _claims) do
     case Repo.get_by(User, id: user_id) do
       %User{} = user ->
-        render(conn, :new, user: user, diagnoses: %{all: []}, departure_time_map: %{})
+        render(conn, :new, user: user, diagnoses: %{all: [], succeeded: [], failed: []}, departure_time_map: %{})
       _ ->
         conn
         |> put_flash(:error, "That user does not exist")
