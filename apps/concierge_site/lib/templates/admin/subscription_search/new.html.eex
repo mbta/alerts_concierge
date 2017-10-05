@@ -1,6 +1,14 @@
 <h1>Search by Alert</h1>
 <%= flash_error(@conn) %>
 <div class="admin-subscription-search">
+  <h2 class="text-center">
+    Diagnostic
+  </h2>
+  <p class="text-center">
+    Enter the Alert ID and date.
+    The tool will reconstruct the state of the user, alert, and user's subscriptions on the selected date.
+    It will then apply all of the notification filters to see how the alert matches each subscription.
+  </p>
   <%= form_for @conn, admin_subscription_search_path(@conn, :create, @user.id), [as: :search], fn f -> %>
     <div class="form-group">
       <%= label f, :alert_id, "Alert ID", class: "form-label" %>
