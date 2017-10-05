@@ -1,6 +1,7 @@
 import 'jsdom-global/register';
 import jsdom from 'mocha-jsdom';
 import { assert } from 'chai';
+import { simulateKeyUp, simulateKeyPress } from './utils';
 import selectAmenityStation from '../js/select-amenity-station';
 
 describe("selectAmenityStation", function() {
@@ -32,7 +33,93 @@ describe("selectAmenityStation", function() {
 
       assert.lengthOf(list.first().children(), 0)
     })
-  })
+  });
+
+  describe("keypress handling for suggestions", () => {
+    it("first suggestion is selected by default", () => {
+      const $stationInput = $("input.subscription-select-amenity-station");
+      $stationInput.val("Quincy");
+
+      simulateKeyUp($stationInput[0]);
+
+      const $firstSuggestion = $(".amenity-station").first();
+      const $lastSuggestion = $(".amenity-station").last();
+
+      assert($firstSuggestion.is(".selected-suggestion"));
+      assert.isFalse($lastSuggestion.is(".selected-suggestion"));
+    });
+
+    it("pressing the down arrow moves the selected suggestion down to the next suggestion", () => {
+      const $stationInput = $("input.subscription-select-amenity-station");
+      $stationInput.val("Quincy");
+
+      simulateKeyUp($stationInput[0]);
+      simulateKeyPress($stationInput[0], 40);
+      const $firstSuggestion = $(".amenity-station").first();
+      const $lastSuggestion = $(".amenity-station").last();
+
+      assert.isFalse($firstSuggestion.is(".selected-suggestion"));
+      assert($lastSuggestion.is(".selected-suggestion"));
+    });
+
+    it("pressing the down arrow doesn't do anything if there aren't any more suggestions below", () => {
+      const $stationInput = $("input.subscription-select-amenity-station");
+      $stationInput.val("Quincy");
+
+      simulateKeyUp($stationInput[0]);
+      simulateKeyPress($stationInput[0], 40);
+      simulateKeyPress($stationInput[0], 40);
+      const $firstSuggestion = $(".amenity-station").first();
+      const $lastSuggestion = $(".amenity-station").last();
+
+      assert.isFalse($firstSuggestion.is(".selected-suggestion"));
+      assert($lastSuggestion.is(".selected-suggestion"));
+    });
+
+    it("pressing the up arrow moves the selected suggestion up to the previous suggestion", () => {
+      const $stationInput = $("input.subscription-select-amenity-station");
+      $stationInput.val("Quincy");
+
+      simulateKeyUp($stationInput[0]);
+      simulateKeyPress($stationInput[0], 40);
+      simulateKeyPress($stationInput[0], 38);
+      const $firstSuggestion = $(".amenity-station").first();
+      const $lastSuggestion = $(".amenity-station").last();
+
+      assert($firstSuggestion.is(".selected-suggestion"));
+      assert.isFalse($lastSuggestion.is(".selected-suggestion"));
+    });
+
+    it("pressing the up arrow doesn't do anything if there aren't any more suggestions above", () => {
+      const $stationInput = $("input.subscription-select-amenity-station");
+      $stationInput.val("Quincy");
+
+      simulateKeyUp($stationInput[0]);
+      simulateKeyPress($stationInput[0], 38);
+      const $firstSuggestion = $(".amenity-station").first();
+      const $lastSuggestion = $(".amenity-station").last();
+
+      assert($firstSuggestion.is(".selected-suggestion"));
+      assert.isFalse($lastSuggestion.is(".selected-suggestion"));
+    });
+
+    it("pressing enter selects the highlighted suggestion", () => {
+      const $stationInput = $("input.subscription-select-amenity-station");
+      $stationInput.val("Quincy");
+
+      simulateKeyUp($stationInput[0]);
+      simulateKeyPress($stationInput[0], 40);
+
+      const $lastSuggestion = $(".amenity-station").last();
+      assert($lastSuggestion.is(".selected-suggestion"));
+
+      simulateKeyPress($stationInput[0], 13);
+
+      const $selectedStations = $(".btn-selected-station")
+
+      assert.equal($selectedStations[0].textContent.trim(), "Quincy Center")
+    });
+  });
 
   describe("immediate changes upon page load", () => {
     it("adds text inputs to the page for station entry", () => {
@@ -123,7 +210,6 @@ describe("selectAmenityStation", function() {
     })
   })
 
-
   describe("route input losing focus", () => {
     it("clears removes suggestions", () => {
       const $stationInput = $("input.subscription-select-amenity-station");
@@ -148,6 +234,7 @@ describe("selectAmenityStation", function() {
             <option value="">Select a station</option>
             <optgroup label="Red Line">
               <option value="place-nqncy">North Quincy</option>
+              <option value="place-qnctr">Quincy Center</option>
               <option value="place-central">Central Square</option>
             </optgroup>
             <optgroup label="Needham Line">
@@ -160,10 +247,4 @@ describe("selectAmenityStation", function() {
       </form>
     </div>
     `
-
-  function simulateKeyUp(target) {
-    const event = document.createEvent("HTMLEvents");
-    event.initEvent("keyup", true, true);
-    target.dispatchEvent(event);
-  }
 });

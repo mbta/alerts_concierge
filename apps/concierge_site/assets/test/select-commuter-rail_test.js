@@ -1,7 +1,7 @@
 import 'jsdom-global/register';
 import jsdom from 'mocha-jsdom';
 import { assert } from 'chai';
-import { simulateKeyUp } from './utils';
+import { simulateKeyUp, simulateKeyPress } from './utils';
 import selectStation from '../js/select-station';
 
 describe("selectCommuterRailStation", function() {
@@ -128,6 +128,100 @@ describe("selectCommuterRailStation", function() {
     });
   });
 
+  describe("keypress handling for suggestions", () => {
+    beforeEach(function() {
+      $("body").append(commuterRailHtml);
+      selectStation($);
+    });
+
+    afterEach(function() {
+      $("body > div").remove()
+    });
+
+    it("first suggestion is selected by default", () => {
+      const $originInput = $("input.subscription-select-origin");
+      $originInput.val("tation");
+
+      simulateKeyUp($originInput[0]);
+
+      const $firstSuggestion = $(".origin-station-suggestion").first();
+      const $lastSuggestion = $(".origin-station-suggestion").last();
+
+      assert($firstSuggestion.is(".selected-suggestion"));
+      assert.isFalse($lastSuggestion.is(".selected-suggestion"));
+    });
+
+    it("pressing the down arrow moves the selected suggestion down to the next suggestion", () => {
+      const $originInput = $("input.subscription-select-origin");
+      $originInput.val("tation");
+
+      simulateKeyUp($originInput[0]);
+      simulateKeyPress($originInput[0], 40);
+      const $firstSuggestion = $(".origin-station-suggestion").first();
+      const $lastSuggestion = $(".origin-station-suggestion").last();
+
+      assert.isFalse($firstSuggestion.is(".selected-suggestion"));
+      assert($lastSuggestion.is(".selected-suggestion"));
+    });
+
+    it("pressing the down arrow doesn't do anything if there aren't any more suggestions below", () => {
+      const $originInput = $("input.subscription-select-origin");
+      $originInput.val("tation");
+
+      simulateKeyUp($originInput[0]);
+      simulateKeyPress($originInput[0], 40);
+      simulateKeyPress($originInput[0], 40);
+      const $firstSuggestion = $(".origin-station-suggestion").first();
+      const $lastSuggestion = $(".origin-station-suggestion").last();
+
+      assert.isFalse($firstSuggestion.is(".selected-suggestion"));
+      assert($lastSuggestion.is(".selected-suggestion"));
+    });
+
+    it("pressing the up arrow moves the selected suggestion up to the previous suggestion", () => {
+      const $originInput = $("input.subscription-select-origin");
+      $originInput.val("tation");
+
+      simulateKeyUp($originInput[0]);
+      simulateKeyPress($originInput[0], 40);
+      simulateKeyPress($originInput[0], 38);
+      const $firstSuggestion = $(".origin-station-suggestion").first();
+      const $lastSuggestion = $(".origin-station-suggestion").last();
+
+      assert($firstSuggestion.is(".selected-suggestion"));
+      assert.isFalse($lastSuggestion.is(".selected-suggestion"));
+    });
+
+    it("pressing the up arrow doesn't do anything if there aren't any more suggestions above", () => {
+      const $originInput = $("input.subscription-select-origin");
+      $originInput.val("tation");
+
+      simulateKeyUp($originInput[0]);
+      simulateKeyPress($originInput[0], 38);
+      const $firstSuggestion = $(".origin-station-suggestion").first();
+      const $lastSuggestion = $(".origin-station-suggestion").last();
+
+      assert($firstSuggestion.is(".selected-suggestion"));
+      assert.isFalse($lastSuggestion.is(".selected-suggestion"));
+    });
+
+    it("pressing enter selects the highlighted suggestion", () => {
+      const $originInput = $("input.subscription-select-origin");
+      $originInput.val("tation");
+
+      simulateKeyUp($originInput[0]);
+      simulateKeyPress($originInput[0], 40);
+
+      const $firstSuggestion = $(".origin-station-suggestion").first();
+      const $lastSuggestion = $(".origin-station-suggestion").last();
+      assert($lastSuggestion.is(".selected-suggestion"));
+
+      simulateKeyPress($originInput[0], 13);
+
+      assert.equal($originInput.val(), "South Station")
+    });
+  });
+
   describe("commuter rail prefilled", () => {
     beforeEach(function() {
       $("body").append(commuterRailHtmlWithSelections);
@@ -157,43 +251,40 @@ describe("selectCommuterRailStation", function() {
       <input type="hidden" name="mode" value="commuter-rail">
       <div class="form-group select-station">
         <label for="origin" class="station-input-label form-label">Origin</label>
+        <select class="subscription-select subscription-select-origin no-js" id="subscription_origin" name="subscription[origin]" data-valid="false">
+          <option value="">Select a station</option>
+          <optgroup label="Lowell Line">
+            <option value="place-north">North Station</option>
+          </optgroup>
+          <optgroup label="Newburyport/Rockport Line">
+            <option value="Gloucester">Gloucester</option>
+            <option value="place-north">North Station</option>
+          </optgroup>
+          <optgroup label="Middleborough/Lakeville Line">
+            <option value="place-brntn">Braintree</option>
+            <option value="place-qnctr">Quincy Center</option>
+            <option value="place-sstat">South Station</option>
+          </optgroup>
+        </select>
       </div>
-      <i class="fa fa-check-circle valid-checkmark-icon"></i>
-      <select class="subscription-select subscription-select-origin no-js" id="subscription_origin" name="subscription[origin]" data-valid="false">
-        <option value="">Select a station</option>
-        <optgroup label="Lowell Line">
-          <option value="place-north">North Station</option>
-        </optgroup>
-        <optgroup label="Newburyport/Rockport Line">
-          <option value="Gloucester">Gloucester</option>
-          <option value="place-north">North Station</option>
-        </optgroup>
-        <optgroup label="Middleborough/Lakeville Line">
-          <option value="place-brntn">Braintree</option>
-          <option value="place-qnctr">Quincy Center</option>
-          <option value="place-sstat">South Station</option>
-        </optgroup>
-      </select>
       <div class="form-group select-station">
         <label for="destination" class="station-input-label form-label">Destination</label>
-        <div class="suggestion-container">
+        <select class="subscription-select subscription-select-destination no-js" id="subscription_destination" name="subscription[destination]" data-valid="false">
+          <option value="">Select a station</option>
+          <optgroup label="Lowell Line">
+            <option value="place-north">North Station</option>
+          </optgroup>
+          <optgroup label="Newburyport/Rockport Line">
+            <option value="Gloucester">Gloucester</option>
+            <option value="place-north">North Station</option>
+          </optgroup>
+          <optgroup label="Middleborough/Lakeville Line">
+            <option value="place-brntn">Braintree</option>
+            <option value="place-qnctr">Quincy Center</option>
+            <option value="place-sstat">South Station</option>
+          </optgroup>
+        </select>
       </div>
-      <i class="fa fa-check-circle valid-checkmark-icon"></i>
-      <select class="subscription-select subscription-select-destination no-js" id="subscription_destination" name="subscription[destination]" data-valid="false">
-        <option value="">Select a station</option>
-        <optgroup label="Lowell Line">
-          <option value="place-north">North Station</option>
-        </optgroup>
-        <optgroup label="Newburyport/Rockport Line">
-          <option value="Gloucester">Gloucester</option>
-          <option value="place-north">North Station</option>
-        </optgroup>
-        <optgroup label="Middleborough/Lakeville Line">
-          <option value="place-brntn">Braintree</option>
-          <option value="place-qnctr">Quincy Center</option>
-          <option value="place-sstat">South Station</option>
-        </optgroup>
-      </select>
     </form>
   </div>
   `;

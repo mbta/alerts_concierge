@@ -1,6 +1,7 @@
 import 'jsdom-global/register';
 import jsdom from 'mocha-jsdom';
 import { assert } from 'chai';
+import { simulateKeyUp, simulateKeyPress } from './utils';
 import selectBusRoute from '../js/select-bus-route';
 
 describe("selectBusRoute", function() {
@@ -52,10 +53,11 @@ describe("selectBusRoute", function() {
       simulateKeyUp($routeInput[0])
 
       const $suggestions = $(".bus-route")
-      const routeSuggestion = $suggestions.first().text();
+      const routeSuggestion = $suggestions.text();
 
-      assert.lengthOf($suggestions, 1)
+      assert.lengthOf($suggestions, 2)
       assert.include(routeSuggestion, "Silver Line SL1 - Inbound")
+      assert.include(routeSuggestion, "Silver Line SL1 - Outbound")
     });
 
 
@@ -67,10 +69,11 @@ describe("selectBusRoute", function() {
       simulateKeyUp($routeInput[0])
 
       const $suggestions = $(".bus-route")
-      const routeSuggestion = $suggestions.first().text();
+      const routeSuggestion = $suggestions.text();
 
-      assert.lengthOf($suggestions, 1)
+      assert.lengthOf($suggestions, 2)
       assert.include(routeSuggestion, "Silver Line SL1 - Inbound")
+      assert.include(routeSuggestion, "Silver Line SL1 - Outbound")
     });
   });
 
@@ -87,6 +90,75 @@ describe("selectBusRoute", function() {
       assert.equal($routeInput.val(), "Silver Line SL1 - Inbound");
     });
   })
+
+  describe("keypress handling for suggestions", () => {
+    it("first suggestion is selected by default", () => {
+      const $routeInput = $("input.subscription-select-route");
+      $routeInput.val("7");
+
+      simulateKeyUp($routeInput[0]);
+
+      const $firstSuggestion = $(".bus-route").first();
+      const $lastSuggestion = $(".bus-route").last();
+
+      assert($firstSuggestion.is(".selected-suggestion"));
+      assert.isFalse($lastSuggestion.is(".selected-suggestion"));
+    });
+
+    it("pressing the down arrow moves the selected suggestion down to the next suggestion", () => {
+      const $routeInput = $("input.subscription-select-route");
+      $routeInput.val("7");
+
+      simulateKeyUp($routeInput[0]);
+      simulateKeyPress($routeInput[0], 40);
+      const $firstSuggestion = $(".bus-route").first();
+      const $lastSuggestion = $(".bus-route").last();
+
+      assert.isFalse($firstSuggestion.is(".selected-suggestion"));
+      assert($lastSuggestion.is(".selected-suggestion"));
+    });
+
+    it("pressing the down arrow doesn't do anything if there aren't any more suggestions below", () => {
+      const $routeInput = $("input.subscription-select-route");
+      $routeInput.val("7");
+
+      simulateKeyUp($routeInput[0]);
+      simulateKeyPress($routeInput[0], 40);
+      simulateKeyPress($routeInput[0], 40);
+      const $firstSuggestion = $(".bus-route").first();
+      const $lastSuggestion = $(".bus-route").last();
+
+      assert.isFalse($firstSuggestion.is(".selected-suggestion"));
+      assert($lastSuggestion.is(".selected-suggestion"));
+    });
+
+    it("pressing the up arrow moves the selected suggestion up to the previous suggestion", () => {
+      const $routeInput = $("input.subscription-select-route");
+      $routeInput.val("7");
+
+      simulateKeyUp($routeInput[0]);
+      simulateKeyPress($routeInput[0], 40);
+      simulateKeyPress($routeInput[0], 38);
+      const $firstSuggestion = $(".bus-route").first();
+      const $lastSuggestion = $(".bus-route").last();
+
+      assert($firstSuggestion.is(".selected-suggestion"));
+      assert.isFalse($lastSuggestion.is(".selected-suggestion"));
+    });
+
+    it("pressing the up arrow doesn't do anything if there aren't any more suggestions above", () => {
+      const $routeInput = $("input.subscription-select-route");
+      $routeInput.val("7");
+
+      simulateKeyUp($routeInput[0]);
+      simulateKeyPress($routeInput[0], 38);
+      const $firstSuggestion = $(".bus-route").first();
+      const $lastSuggestion = $(".bus-route").last();
+
+      assert($firstSuggestion.is(".selected-suggestion"));
+      assert.isFalse($lastSuggestion.is(".selected-suggestion"));
+    });
+  });
 
   describe("route input losing focus", () => {
     it("populates the route input field with the first suggestion", () => {
@@ -148,23 +220,19 @@ describe("selectBusRoute", function() {
   });
 
   const tripInfoPageHtml = `
-    <div class="enter-trip-info bus">
-      <form>
+    <div class="enter-trip-info">
+      <form class="trip-info-form bus">
         <div class="form-group select-route">
           <label for="route" class="station-input-label form-label">Origin</label>
           <select class="subscription-select subscription-select-route no-js">
             <option value="">Enter your bus route and direction</option>
             <option value="741 - 1">Silver Line SL1 - Inbound</option>
+            <option value="741 - 0">Silver Line SL1 - Outbound</option>
+            <option value="57 - 1">Route 57 - Inbound</option>
             <option value="57 - 0">Route 57 - Outbound</option>
           </select>
         </div>
       </form>
     </div>
     `
-
-  function simulateKeyUp(target) {
-    const event = document.createEvent("HTMLEvents");
-    event.initEvent("keyup", true, true);
-    target.dispatchEvent(event);
-  }
 });

@@ -1,4 +1,8 @@
 import filterSuggestions from './filter-suggestions';
+import {
+  onKeyDownOverrides,
+  selectedSuggestionClass,
+} from './station-select-helpers';
 
 export default function($) {
   $ = $ || window.jQuery;
@@ -6,18 +10,20 @@ export default function($) {
   let props = {};
   let state = {
     route: undefined,
+    selectedSuggestionIndex: 0,
   };
 
-  const $enterTripInfoContainer = $("div.enter-trip-info.bus")[0];
-  if ($enterTripInfoContainer === undefined) {
-    return;
-  }
-
-  if ($(".enter-trip-info").length) {
+  if ($(".trip-info-form.bus").length) {
     props.allRoutes = generateRoutes();
     props.allRouteNames = generateRouteNames();
     attachSuggestionInput();
     validateRouteInput();
+
+    document.onkeydown = function(event){
+      onKeyDownOverrides(event, state, $);
+    }
+  } else {
+    return;
   }
 
   function attachSuggestionInput() {
@@ -37,9 +43,9 @@ export default function($) {
     `
   }
 
-  function renderRouteSuggestion(route) {
+  function renderRouteSuggestion(route, index) {
     return `
-      <div class="station-suggestion bus-route">
+      <div class="station-suggestion bus-route ${selectedSuggestionClass(state.selectedSuggestionIndex, index)}">
         <span class="route-name">${route}</span>
         <span class="route-logo" style="padding-right: 10px;">${renderBusIcon()}</span>
       </div>
@@ -85,8 +91,8 @@ export default function($) {
     const query = event.target.value;
     if (query.length > 0) {
       const matchingRoutes = filterSuggestions(query, props.allRouteNames);
-      const suggestionElements = matchingRoutes.map(function(route) {
-        return renderRouteSuggestion(route);
+      const suggestionElements = matchingRoutes.map(function(route, index) {
+        return renderRouteSuggestion(route, index);
       });
 
       const $suggestionContainer = $('.suggestion-container');
@@ -106,11 +112,12 @@ export default function($) {
   }
 
   function pickFirstSuggestion(event) {
+    state.selectedSuggestionIndex = 0;
     const $routeInput = $('.subscription-select-route');
-    const $firstSuggestion = $(`.bus-route > .route-name`).first();
+    const $selectedSuggestion = $(".selected-suggestion").first();
 
-    if ($firstSuggestion.length) {
-      const routeName = $firstSuggestion.text().trim();
+    if ($selectedSuggestion.length) {
+      const routeName = $selectedSuggestion.text().trim();
       $routeInput.val(routeName);
       validateRouteInput(routeName)
     } else if (!props.allRouteNames.includes($routeInput.val())) {

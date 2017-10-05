@@ -1,7 +1,9 @@
 import filterSuggestions from './filter-suggestions';
 import {
   generateStationList,
+  onKeyDownOverridesAmenity,
   renderStationInput,
+  selectedSuggestionClass,
   unmountStationSuggestions
 } from './station-select-helpers';
 
@@ -10,12 +12,19 @@ export default function($) {
 
   let state = {
     selectableStations: [],
-    selectedStations: []
+    selectedStations: [],
+    selectedSuggestionIndex: 0,
   };
 
-  if ($(".enter-trip-info").length) {
+  if ($(".trip-info-form.amenities").length) {
     setSelectedStations();
     attachSuggestionInput();
+
+    document.onkeydown = function(event){
+      onKeyDownOverridesAmenity(event, state, chooseSuggestion, removeStation, $);
+    }
+  } else {
+    return;
   }
 
   function setSelectedStations() {
@@ -35,9 +44,9 @@ export default function($) {
     $(".amenity-station-select-sub-label").after(renderStationInput("station", "subscription-select-amenity-station station-input", ""));
   }
 
-  function renderRouteSuggestion(route) {
+  function renderRouteSuggestion(route, index) {
     return `
-      <div class="station-suggestion amenity-station">
+      <div class="station-suggestion amenity-station ${selectedSuggestionClass(state.selectedSuggestionIndex, index)}">
         <span class="station-name">${route}</span>
       </div>
     `
@@ -47,13 +56,31 @@ export default function($) {
     const query = event.target.value;
     if (query.length > 0) {
       const matchingRoutes = filterSuggestions(query, state.selectableStations);
-      const suggestionElements = matchingRoutes.map(function(route) {
-        return renderRouteSuggestion(route);
+      const suggestionElements = matchingRoutes.map(function(route, index) {
+        return renderRouteSuggestion(route, index);
       });
 
       const $suggestionContainer = $('.suggestion-container');
       $suggestionContainer.html(suggestionElements);
     } else {
+      unmountStationSuggestions(".amenity-station", $);
+    }
+  }
+
+  function chooseSuggestion() {
+    state.selectedSuggestionIndex = 0;
+    const $routeInput = $('.subscription-select-route');
+    const $selectedSuggestion = $(".selected-suggestion").first();
+
+    if ($selectedSuggestion.length) {
+      const stationName = $selectedSuggestion.text().trim();
+      const $stationSelect = $(".subscription-select-amenity-station");
+      const $stationListContainer = $('.selected-station-list.amenity-station-list');
+      const station = renderStation(stationName);
+      $stationListContainer.append(station);
+
+      removeStationFromOptions(stationName);
+      $stationSelect.val("");
       unmountStationSuggestions(".amenity-station", $);
     }
   }
@@ -67,8 +94,8 @@ export default function($) {
 
     removeStationFromOptions(stationName);
     $stationSelect.val("");
-      unmountStationSuggestions(".amenity-station", $);
-    }
+    unmountStationSuggestions(".amenity-station", $);
+  }
 
   function removeStationFromOptions(stationName) {
     state.selectableStations
@@ -78,8 +105,7 @@ export default function($) {
   }
 
   function removeStationFromSelected(stationName) {
-    state.selectedStations
-    .splice(state.selectableStations.indexOf(stationName), 1);
+    state.selectedStations.splice(state.selectedStations.indexOf(stationName), 1);
     state.selectableStations.push(stationName);
   };
 
