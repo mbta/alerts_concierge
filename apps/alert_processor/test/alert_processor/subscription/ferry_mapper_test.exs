@@ -490,85 +490,46 @@ defmodule AlertProcessor.Subscription.FerryMapperTest do
     test "returns error for invalid origin destination combo" do
       assert :error = FerryMapper.map_trip_options("Boat-Charlestown", "Boat-Hingham", :weekday, @test_date)
     end
-
-    test "returns saturday results" do
-      use_cassette "hingham_to_long_wharf_saturday_schedules", custom: true, clear_mock: true, match_requests_on: [:query] do
-        {:ok, trips} = FerryMapper.map_trip_options("Boat-Hingham", "Boat-Long", :saturday, Calendar.Date.from_ordinal!(2017, 231))
-        assert [%Trip{arrival_time: ~T[08:55:00], departure_time: ~T[08:00:00], destination: {"Boston (Long Wharf)", "Boat-Long"}, direction_id: 1, origin: {"Hingham (Hewitt's Cove)", "Boat-Hingham"}, trip_number: "Boat-F1-Boat-Hingham-08:00:00-weekend-1"},
-                %Trip{arrival_time: ~T[09:55:00], departure_time: ~T[09:00:00], destination: {"Boston (Long Wharf)", "Boat-Long"}, direction_id: 1, origin: {"Hingham (Hewitt's Cove)", "Boat-Hingham"}, trip_number: "Boat-F1-Boat-Hingham-09:00:00-weekend-1"},
-                %Trip{arrival_time: ~T[10:55:00], departure_time: ~T[10:00:00], destination: {"Boston (Long Wharf)", "Boat-Long"}, direction_id: 1, origin: {"Hingham (Hewitt's Cove)", "Boat-Hingham"}, trip_number: "Boat-F1-Boat-Hingham-10:00:00-weekend-1"},
-                %Trip{arrival_time: ~T[11:55:00], departure_time: ~T[11:00:00], destination: {"Boston (Long Wharf)", "Boat-Long"}, direction_id: 1, origin: {"Hingham (Hewitt's Cove)", "Boat-Hingham"}, trip_number: "Boat-F1-Boat-Hingham-11:00:00-weekend-1"},
-                %Trip{arrival_time: ~T[12:55:00], departure_time: ~T[12:00:00], destination: {"Boston (Long Wharf)", "Boat-Long"}, direction_id: 1, origin: {"Hingham (Hewitt's Cove)", "Boat-Hingham"}, trip_number: "Boat-F1-Boat-Hingham-12:00:00-weekend-1"},
-                %Trip{arrival_time: ~T[13:55:00], departure_time: ~T[13:00:00], destination: {"Boston (Long Wharf)", "Boat-Long"}, direction_id: 1, origin: {"Hingham (Hewitt's Cove)", "Boat-Hingham"}, trip_number: "Boat-F1-Boat-Hingham-13:00:00-weekend-1"},
-                %Trip{arrival_time: ~T[14:55:00], departure_time: ~T[14:00:00], destination: {"Boston (Long Wharf)", "Boat-Long"}, direction_id: 1, origin: {"Hingham (Hewitt's Cove)", "Boat-Hingham"}, trip_number: "Boat-F1-Boat-Hingham-14:00:00-weekend-1"},
-                %Trip{arrival_time: ~T[15:55:00], departure_time: ~T[15:00:00], destination: {"Boston (Long Wharf)", "Boat-Long"}, direction_id: 1, origin: {"Hingham (Hewitt's Cove)", "Boat-Hingham"}, trip_number: "Boat-F1-Boat-Hingham-15:00:00-weekend-1"},
-                %Trip{arrival_time: ~T[16:55:00], departure_time: ~T[16:00:00], destination: {"Boston (Long Wharf)", "Boat-Long"}, direction_id: 1, origin: {"Hingham (Hewitt's Cove)", "Boat-Hingham"}, trip_number: "Boat-F1-Boat-Hingham-16:00:00-weekend-1"},
-                %Trip{arrival_time: ~T[17:35:00], departure_time: ~T[17:00:00], destination: {"Boston (Long Wharf)", "Boat-Long"}, direction_id: 1, origin: {"Hingham (Hewitt's Cove)", "Boat-Hingham"}, trip_number: "Boat-F1-Boat-Hingham-17:00:00-weekend-1"},
-                %Trip{arrival_time: ~T[18:55:00], departure_time: ~T[18:00:00], destination: {"Boston (Long Wharf)", "Boat-Long"}, direction_id: 1, origin: {"Hingham (Hewitt's Cove)", "Boat-Hingham"}, trip_number: "Boat-F1-Boat-Hingham-18:00:00-weekend-1"},
-                %Trip{arrival_time: ~T[19:35:00], departure_time: ~T[19:00:00], destination: {"Boston (Long Wharf)", "Boat-Long"}, direction_id: 1, origin: {"Hingham (Hewitt's Cove)", "Boat-Hingham"}, trip_number: "Boat-F1-Boat-Hingham-19:00:00-weekend-1"},
-                %Trip{arrival_time: ~T[20:35:00], departure_time: ~T[20:00:00], destination: {"Boston (Long Wharf)", "Boat-Long"}, direction_id: 1, origin: {"Hingham (Hewitt's Cove)", "Boat-Hingham"}, trip_number: "Boat-F1-Boat-Hingham-20:00:00-weekend-1"},
-                %Trip{arrival_time: ~T[21:45:00], departure_time: ~T[21:00:00], destination: {"Boston (Long Wharf)", "Boat-Long"}, direction_id: 1, origin: {"Hingham (Hewitt's Cove)", "Boat-Hingham"}, trip_number: "Boat-F1-Boat-Hingham-21:00:00-weekend-1"},
-                %Trip{arrival_time: ~T[22:05:00], departure_time: ~T[21:30:00], destination: {"Boston (Long Wharf)", "Boat-Long"}, direction_id: 1, origin: {"Hingham (Hewitt's Cove)", "Boat-Hingham"}, trip_number: "Boat-F1-Boat-Hingham-21:30:00-saturday-1"},
-                %Trip{arrival_time: ~T[23:10:00], departure_time: ~T[22:30:00], destination: {"Boston (Long Wharf)", "Boat-Long"}, direction_id: 1, origin: {"Hingham (Hewitt's Cove)", "Boat-Hingham"}, trip_number: "Boat-F1-Boat-Hingham-22:30:00-saturday-1"}] = trips
-      end
-    end
-
-    test "returns sunday results" do
-      use_cassette "hingham_to_long_wharf_sunday_schedules", custom: true, clear_mock: true, match_requests_on: [:query] do
-        {:ok, trips} = FerryMapper.map_trip_options("Boat-Hingham", "Boat-Long", :sunday, Calendar.Date.from_ordinal!(2017, 232))
-        assert [%{arrival_time: ~T[08:55:00], departure_time: ~T[08:00:00], destination: {"Boston (Long Wharf)", "Boat-Long"}, direction_id: 1, origin: {"Hingham (Hewitt's Cove)", "Boat-Hingham"}, trip_number: "Boat-F1-Boat-Hingham-08:00:00-weekend-1"},
-                %{arrival_time: ~T[09:55:00], departure_time: ~T[09:00:00], destination: {"Boston (Long Wharf)", "Boat-Long"}, direction_id: 1, origin: {"Hingham (Hewitt's Cove)", "Boat-Hingham"}, trip_number: "Boat-F1-Boat-Hingham-09:00:00-weekend-1"},
-                %{arrival_time: ~T[10:55:00], departure_time: ~T[10:00:00], destination: {"Boston (Long Wharf)", "Boat-Long"}, direction_id: 1, origin: {"Hingham (Hewitt's Cove)", "Boat-Hingham"}, trip_number: "Boat-F1-Boat-Hingham-10:00:00-weekend-1"},
-                %{arrival_time: ~T[11:55:00], departure_time: ~T[11:00:00], destination: {"Boston (Long Wharf)", "Boat-Long"}, direction_id: 1, origin: {"Hingham (Hewitt's Cove)", "Boat-Hingham"}, trip_number: "Boat-F1-Boat-Hingham-11:00:00-weekend-1"},
-                %{arrival_time: ~T[12:55:00], departure_time: ~T[12:00:00], destination: {"Boston (Long Wharf)", "Boat-Long"}, direction_id: 1, origin: {"Hingham (Hewitt's Cove)", "Boat-Hingham"}, trip_number: "Boat-F1-Boat-Hingham-12:00:00-weekend-1"},
-                %{arrival_time: ~T[13:55:00], departure_time: ~T[13:00:00], destination: {"Boston (Long Wharf)", "Boat-Long"}, direction_id: 1, origin: {"Hingham (Hewitt's Cove)", "Boat-Hingham"}, trip_number: "Boat-F1-Boat-Hingham-13:00:00-weekend-1"},
-                %{arrival_time: ~T[14:55:00], departure_time: ~T[14:00:00], destination: {"Boston (Long Wharf)", "Boat-Long"}, direction_id: 1, origin: {"Hingham (Hewitt's Cove)", "Boat-Hingham"}, trip_number: "Boat-F1-Boat-Hingham-14:00:00-weekend-1"},
-                %{arrival_time: ~T[15:55:00], departure_time: ~T[15:00:00], destination: {"Boston (Long Wharf)", "Boat-Long"}, direction_id: 1, origin: {"Hingham (Hewitt's Cove)", "Boat-Hingham"}, trip_number: "Boat-F1-Boat-Hingham-15:00:00-weekend-1"},
-                %{arrival_time: ~T[16:55:00], departure_time: ~T[16:00:00], destination: {"Boston (Long Wharf)", "Boat-Long"}, direction_id: 1, origin: {"Hingham (Hewitt's Cove)", "Boat-Hingham"}, trip_number: "Boat-F1-Boat-Hingham-16:00:00-weekend-1"},
-                %{arrival_time: ~T[17:35:00], departure_time: ~T[17:00:00], destination: {"Boston (Long Wharf)", "Boat-Long"}, direction_id: 1, origin: {"Hingham (Hewitt's Cove)", "Boat-Hingham"}, trip_number: "Boat-F1-Boat-Hingham-17:00:00-weekend-1"},
-                %{arrival_time: ~T[18:55:00], departure_time: ~T[18:00:00], destination: {"Boston (Long Wharf)", "Boat-Long"}, direction_id: 1, origin: {"Hingham (Hewitt's Cove)", "Boat-Hingham"}, trip_number: "Boat-F1-Boat-Hingham-18:00:00-weekend-1"},
-                %{arrival_time: ~T[19:35:00], departure_time: ~T[19:00:00], destination: {"Boston (Long Wharf)", "Boat-Long"}, direction_id: 1, origin: {"Hingham (Hewitt's Cove)", "Boat-Hingham"}, trip_number: "Boat-F1-Boat-Hingham-19:00:00-weekend-1"},
-                %{arrival_time: ~T[20:35:00], departure_time: ~T[20:00:00], destination: {"Boston (Long Wharf)", "Boat-Long"}, direction_id: 1, origin: {"Hingham (Hewitt's Cove)", "Boat-Hingham"}, trip_number: "Boat-F1-Boat-Hingham-20:00:00-weekend-1"},
-                %{arrival_time: ~T[21:45:00], departure_time: ~T[21:00:00], destination: {"Boston (Long Wharf)", "Boat-Long"}, direction_id: 1, origin: {"Hingham (Hewitt's Cove)", "Boat-Hingham"}, trip_number: "Boat-F1-Boat-Hingham-21:00:00-weekend-1"}] = trips
-      end
-    end
   end
 
   describe "get_trip_info" do
     test "returns trip options with closest trip preselected" do
-      {:ok, trips} = FerryMapper.get_trip_info("Boat-Hingham", "Boat-Long", :sunday, "10:00:00")
-      assert [%Trip{trip_number: "Boat-F1-Boat-Hingham-08:00:00-weekend-1", selected: false},
-              %Trip{trip_number: "Boat-F1-Boat-Hingham-09:00:00-weekend-1", selected: false},
-              %Trip{trip_number: "Boat-F1-Boat-Hingham-10:00:00-weekend-1", selected: true},
-              %Trip{trip_number: "Boat-F1-Boat-Hingham-11:00:00-weekend-1", selected: false},
-              %Trip{trip_number: "Boat-F1-Boat-Hingham-12:00:00-weekend-1", selected: false},
-              %Trip{trip_number: "Boat-F1-Boat-Hingham-13:00:00-weekend-1", selected: false},
-              %Trip{trip_number: "Boat-F1-Boat-Hingham-14:00:00-weekend-1", selected: false},
-              %Trip{trip_number: "Boat-F1-Boat-Hingham-15:00:00-weekend-1", selected: false},
-              %Trip{trip_number: "Boat-F1-Boat-Hingham-16:00:00-weekend-1", selected: false},
-              %Trip{trip_number: "Boat-F1-Boat-Hingham-17:00:00-weekend-1", selected: false},
-              %Trip{trip_number: "Boat-F1-Boat-Hingham-18:00:00-weekend-1", selected: false},
-              %Trip{trip_number: "Boat-F1-Boat-Hingham-19:00:00-weekend-1", selected: false},
-              %Trip{trip_number: "Boat-F1-Boat-Hingham-20:00:00-weekend-1", selected: false},
-              %Trip{trip_number: "Boat-F1-Boat-Hingham-21:00:00-weekend-1", selected: false}] = trips
+      {:ok, trips} = FerryMapper.get_trip_info("Boat-Hingham", "Boat-Long", :weekday, "10:00:00")
+
+      assert [%Trip{trip_number: "Boat-F1-Boat-Hingham-05:40:00-weekday-1", selected: false},
+              %Trip{trip_number: "Boat-F1-Boat-Hingham-06:40:00-weekday-1", selected: false},
+              %Trip{trip_number: "Boat-F1-Boat-Hingham-10:00:00-weekday-1", selected: true},
+              %Trip{trip_number: "Boat-F1-Boat-Hingham-12:00:00-weekday-1", selected: false},
+              %Trip{trip_number: "Boat-F1-Boat-Hingham-13:00:00-weekday-1", selected: false},
+              %Trip{trip_number: "Boat-F1-Boat-Hingham-14:00:00-weekday-1", selected: false},
+              %Trip{trip_number: "Boat-F1-Boat-Hingham-15:00:00-weekday-1", selected: false},
+              %Trip{trip_number: "Boat-F1-Boat-Hingham-15:45:00-weekday-1", selected: false},
+              %Trip{trip_number: "Boat-F1-Boat-Hingham-16:30:00-weekday-1", selected: false},
+              %Trip{trip_number: "Boat-F1-Boat-Hingham-17:15:00-weekday-1", selected: false},
+              %Trip{trip_number: "Boat-F1-Boat-Hingham-18:55:00-weekday-1", selected: false},
+              %Trip{trip_number: "Boat-F1-Boat-Hingham-19:30:00-weekday-1", selected: false},
+              %Trip{trip_number: "Boat-F1-Boat-Hingham-20:30:00-weekday-1", selected: false},
+              %Trip{trip_number: "Boat-F1-Boat-Hingham-21:00:00-weekday-1", selected: false}] = trips
+
     end
 
     test "returns trip options with preselected values" do
-      {:ok, trips} = FerryMapper.get_trip_info("Boat-Hingham", "Boat-Long", :sunday, ["Boat-F1-Boat-Hingham-11:00:00-weekend-1", "Boat-F1-Boat-Hingham-15:00:00-weekend-1"])
-      assert [%Trip{trip_number: "Boat-F1-Boat-Hingham-08:00:00-weekend-1", selected: false},
-              %Trip{trip_number: "Boat-F1-Boat-Hingham-09:00:00-weekend-1", selected: false},
-              %Trip{trip_number: "Boat-F1-Boat-Hingham-10:00:00-weekend-1", selected: false},
-              %Trip{trip_number: "Boat-F1-Boat-Hingham-11:00:00-weekend-1", selected: true},
-              %Trip{trip_number: "Boat-F1-Boat-Hingham-12:00:00-weekend-1", selected: false},
-              %Trip{trip_number: "Boat-F1-Boat-Hingham-13:00:00-weekend-1", selected: false},
-              %Trip{trip_number: "Boat-F1-Boat-Hingham-14:00:00-weekend-1", selected: false},
-              %Trip{trip_number: "Boat-F1-Boat-Hingham-15:00:00-weekend-1", selected: true},
-              %Trip{trip_number: "Boat-F1-Boat-Hingham-16:00:00-weekend-1", selected: false},
-              %Trip{trip_number: "Boat-F1-Boat-Hingham-17:00:00-weekend-1", selected: false},
-              %Trip{trip_number: "Boat-F1-Boat-Hingham-18:00:00-weekend-1", selected: false},
-              %Trip{trip_number: "Boat-F1-Boat-Hingham-19:00:00-weekend-1", selected: false},
-              %Trip{trip_number: "Boat-F1-Boat-Hingham-20:00:00-weekend-1", selected: false},
-              %Trip{trip_number: "Boat-F1-Boat-Hingham-21:00:00-weekend-1", selected: false}] = trips
+      {:ok, trips} = FerryMapper.get_trip_info("Boat-Hingham", "Boat-Long", :weekday, ["Boat-F1-Boat-Hingham-10:00:00-weekday-1", "Boat-F1-Boat-Hingham-15:00:00-weekday-1"])
+
+      assert [%Trip{trip_number: "Boat-F1-Boat-Hingham-05:40:00-weekday-1", selected: false},
+              %Trip{trip_number: "Boat-F1-Boat-Hingham-06:40:00-weekday-1", selected: false},
+              %Trip{trip_number: "Boat-F1-Boat-Hingham-10:00:00-weekday-1", selected: true},
+              %Trip{trip_number: "Boat-F1-Boat-Hingham-12:00:00-weekday-1", selected: false},
+              %Trip{trip_number: "Boat-F1-Boat-Hingham-13:00:00-weekday-1", selected: false},
+              %Trip{trip_number: "Boat-F1-Boat-Hingham-14:00:00-weekday-1", selected: false},
+              %Trip{trip_number: "Boat-F1-Boat-Hingham-15:00:00-weekday-1", selected: true},
+              %Trip{trip_number: "Boat-F1-Boat-Hingham-15:45:00-weekday-1", selected: false},
+              %Trip{trip_number: "Boat-F1-Boat-Hingham-16:30:00-weekday-1", selected: false},
+              %Trip{trip_number: "Boat-F1-Boat-Hingham-17:15:00-weekday-1", selected: false},
+              %Trip{trip_number: "Boat-F1-Boat-Hingham-18:55:00-weekday-1", selected: false},
+              %Trip{trip_number: "Boat-F1-Boat-Hingham-19:30:00-weekday-1", selected: false},
+              %Trip{trip_number: "Boat-F1-Boat-Hingham-20:30:00-weekday-1", selected: false},
+              %Trip{trip_number: "Boat-F1-Boat-Hingham-21:00:00-weekday-1", selected: false}] = trips
     end
 
     test "returns error if origin/destination are not on the same route" do
@@ -729,25 +690,10 @@ defmodule AlertProcessor.Subscription.FerryMapperTest do
         trip_schedule_info_map = FerryMapper.trip_schedule_info_map("Boat-Charlestown", "Boat-Long", :saturday, Calendar.Date.from_ordinal!(2017, 231))
         assert %{
           {"Boat-Charlestown", "Boat-F4-Boat-Charlestown-12:15:00-weekend-1"} => _,
-          {"Boat-Long", "Boat-F4-Boat-Charlestown-12:15:00-weekend-1"} => _,
           {"Boat-Charlestown", "Boat-F4-Boat-Long-11:30:00-weekend-0"} => _,
           {"Boat-Long", "Boat-F4-Boat-Long-11:30:00-weekend-0"} => _,
           {"Boat-Charlestown", "Boat-F4-Boat-Charlestown-13:45:00-weekend-1"} => _,
           {"Boat-Long", "Boat-F4-Boat-Charlestown-13:45:00-weekend-1"} => _,
-        } = trip_schedule_info_map
-      end
-    end
-
-    test "maps schedule info between two stations on sunday" do
-      use_cassette "trip_schedule_info_sunday_ferry", custom: true, clear_mock: true, match_requests_on: [:query] do
-        trip_schedule_info_map = FerryMapper.trip_schedule_info_map("Boat-Long", "Boat-Hull", :sunday, Calendar.Date.from_ordinal!(2017, 232))
-        assert %{
-          {"Boat-Long", "Boat-F1-Boat-Long-19:00:00-weekend-0"} => _,
-          {"Boat-Hull", "Boat-F1-Boat-Long-19:00:00-weekend-0"} => _,
-          {"Boat-Long", "Boat-F1-Boat-Hingham-14:00:00-weekend-1"} => _,
-          {"Boat-Hull", "Boat-F1-Boat-Hingham-14:00:00-weekend-1"} => _,
-          {"Boat-Long", "Boat-F1-Boat-Long-19:45:00-weekend-0"} => _,
-          {"Boat-Hull", "Boat-F1-Boat-Long-19:45:00-weekend-0"} => _,
         } = trip_schedule_info_map
       end
     end
