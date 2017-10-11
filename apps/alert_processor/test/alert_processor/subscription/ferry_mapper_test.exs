@@ -90,76 +90,8 @@ defmodule AlertProcessor.Subscription.FerryMapperTest do
 
     test "constructs subscription with stops" do
       {:ok, [{_sub, informed_entities}]} = FerryMapper.map_subscriptions(@one_way_params)
-      boat_long_count =
-        Enum.count(informed_entities, fn(informed_entity) ->
-          match?(%InformedEntity{route: "Boat-F1", route_type: 4, stop: "Boat-Long", direction_id: nil}, informed_entity)
-        end)
-      assert boat_long_count == 1
-      boat_rowes_count =
-        Enum.count(informed_entities, fn(informed_entity) ->
-          match?(%InformedEntity{route: "Boat-F1", route_type: 4, stop: "Boat-Rowes", direction_id: nil}, informed_entity)
-        end)
-      assert boat_rowes_count == 1
-      boat_george_count =
-        Enum.count(informed_entities, fn(informed_entity) ->
-          match?(%InformedEntity{route: "Boat-F1", route_type: 4, stop: "Boat-George", direction_id: nil}, informed_entity)
-        end)
-      assert boat_george_count == 1
-      boat_hull_count =
-        Enum.count(informed_entities, fn(informed_entity) ->
-          match?(%InformedEntity{route: "Boat-F1", route_type: 4, stop: "Boat-Hull", direction_id: nil}, informed_entity)
-        end)
-      assert boat_hull_count == 1
-      boat_logan_count =
-        Enum.count(informed_entities, fn(informed_entity) ->
-          match?(%InformedEntity{route: "Boat-F1", route_type: 4, stop: "Boat-Logan", direction_id: nil}, informed_entity)
-        end)
-      assert boat_logan_count == 1
-      boat_hingham_count =
-        Enum.count(informed_entities, fn(informed_entity) ->
-          match?(%InformedEntity{route: "Boat-F1", route_type: 4, stop: "Boat-Hingham", direction_id: nil}, informed_entity)
-        end)
-      assert boat_hingham_count == 1
-      total_station_count =
-        Enum.count(informed_entities, fn(informed_entity) ->
-          InformedEntity.entity_type(informed_entity) == :stop
-        end)
-        assert total_station_count == 12
-      boat_long_with_direction_count =
-        Enum.count(informed_entities, fn(informed_entity) ->
-          match?(%InformedEntity{route: "Boat-F1", route_type: 4, stop: "Boat-Long", direction_id: 0}, informed_entity)
-        end)
-      assert boat_long_with_direction_count == 1
-      boat_rowes_with_direction_count =
-        Enum.count(informed_entities, fn(informed_entity) ->
-          match?(%InformedEntity{route: "Boat-F1", route_type: 4, stop: "Boat-Rowes", direction_id: 0}, informed_entity)
-        end)
-      assert boat_rowes_with_direction_count == 1
-      boat_george_with_direction_count =
-        Enum.count(informed_entities, fn(informed_entity) ->
-          match?(%InformedEntity{route: "Boat-F1", route_type: 4, stop: "Boat-George", direction_id: 0}, informed_entity)
-        end)
-      assert boat_george_with_direction_count == 1
-      boat_hull_with_direction_count =
-        Enum.count(informed_entities, fn(informed_entity) ->
-          match?(%InformedEntity{route: "Boat-F1", route_type: 4, stop: "Boat-Hull", direction_id: 0}, informed_entity)
-        end)
-      assert boat_hull_with_direction_count == 1
-      boat_logan_with_direction_count =
-        Enum.count(informed_entities, fn(informed_entity) ->
-          match?(%InformedEntity{route: "Boat-F1", route_type: 4, stop: "Boat-Logan", direction_id: 0}, informed_entity)
-        end)
-      assert boat_logan_with_direction_count == 1
-      boat_hingham_with_direction_count =
-        Enum.count(informed_entities, fn(informed_entity) ->
-          match?(%InformedEntity{route: "Boat-F1", route_type: 4, stop: "Boat-Hingham", direction_id: 0}, informed_entity)
-        end)
-      assert boat_hingham_with_direction_count == 1
-      total_station_with_direction_count =
-        Enum.count(informed_entities, fn(informed_entity) ->
-          InformedEntity.entity_type(informed_entity) == :stop
-        end)
-      assert total_station_with_direction_count == 12
+      stop_entities = Enum.filter(informed_entities, &InformedEntity.entity_type(&1) == :stop)
+      assert Enum.all?(stop_entities, & match?(%InformedEntity{route: "Boat-F1", route_type: 4, direction_id: nil}, &1) || match?(%InformedEntity{route: "Boat-F1", route_type: 4, direction_id: 0}, &1))
     end
 
     test "constructs subscription with trips" do
@@ -281,136 +213,10 @@ defmodule AlertProcessor.Subscription.FerryMapperTest do
 
     test "constructs subscription with stops" do
       {:ok, [{_sub1, ie1}, {_sub2, ie2}]} = FerryMapper.map_subscriptions(@round_trip_params)
-      boat_hingham_count =
-        Enum.count(ie1, fn(informed_entity) ->
-          match?(%InformedEntity{route: "Boat-F1", route_type: 4, stop: "Boat-Hingham", direction_id: nil}, informed_entity)
-        end)
-      assert boat_hingham_count == 1
-      boat_rowes_count =
-        Enum.count(ie1, fn(informed_entity) ->
-          match?(%InformedEntity{route: "Boat-F1", route_type: 4, stop: "Boat-Rowes", direction_id: nil}, informed_entity)
-        end)
-      assert boat_rowes_count == 1
-      boat_george_count =
-        Enum.count(ie1, fn(informed_entity) ->
-          match?(%InformedEntity{route: "Boat-F1", route_type: 4, stop: "Boat-George", direction_id: nil}, informed_entity)
-        end)
-      assert boat_george_count == 1
-      boat_hull_count =
-        Enum.count(ie1, fn(informed_entity) ->
-          match?(%InformedEntity{route: "Boat-F1", route_type: 4, stop: "Boat-Hull", direction_id: nil}, informed_entity)
-        end)
-      assert boat_hull_count == 1
-      boat_logan_count =
-        Enum.count(ie1, fn(informed_entity) ->
-          match?(%InformedEntity{route: "Boat-F1", route_type: 4, stop: "Boat-Logan", direction_id: nil}, informed_entity)
-        end)
-      assert boat_logan_count == 1
-      boat_long_count =
-        Enum.count(ie1, fn(informed_entity) ->
-          match?(%InformedEntity{route: "Boat-F1", route_type: 4, stop: "Boat-Long", direction_id: nil}, informed_entity)
-        end)
-      assert boat_long_count == 1
-      boat_hingham_with_direction_count =
-        Enum.count(ie1, fn(informed_entity) ->
-          match?(%InformedEntity{route: "Boat-F1", route_type: 4, stop: "Boat-Hingham", direction_id: 0}, informed_entity)
-        end)
-      assert boat_hingham_with_direction_count == 1
-      boat_rowes_with_direction_count =
-        Enum.count(ie1, fn(informed_entity) ->
-          match?(%InformedEntity{route: "Boat-F1", route_type: 4, stop: "Boat-Rowes", direction_id: 0}, informed_entity)
-        end)
-      assert boat_rowes_with_direction_count == 1
-      boat_george_with_direction_count =
-        Enum.count(ie1, fn(informed_entity) ->
-          match?(%InformedEntity{route: "Boat-F1", route_type: 4, stop: "Boat-George", direction_id: 0}, informed_entity)
-        end)
-      assert boat_george_with_direction_count == 1
-      boat_hull_with_direction_count =
-        Enum.count(ie1, fn(informed_entity) ->
-          match?(%InformedEntity{route: "Boat-F1", route_type: 4, stop: "Boat-Hull", direction_id: 0}, informed_entity)
-        end)
-      assert boat_hull_with_direction_count == 1
-      boat_logan_with_direction_count =
-        Enum.count(ie1, fn(informed_entity) ->
-          match?(%InformedEntity{route: "Boat-F1", route_type: 4, stop: "Boat-Logan", direction_id: 0}, informed_entity)
-        end)
-      assert boat_logan_with_direction_count == 1
-      boat_long_with_direction_count =
-        Enum.count(ie1, fn(informed_entity) ->
-          match?(%InformedEntity{route: "Boat-F1", route_type: 4, stop: "Boat-Long", direction_id: 0}, informed_entity)
-        end)
-      assert boat_long_with_direction_count == 1
-      total_station_count =
-        Enum.count(ie1, fn(informed_entity) ->
-          InformedEntity.entity_type(informed_entity) == :stop
-        end)
-      assert total_station_count == 12
-      boat_hingham_count =
-        Enum.count(ie2, fn(informed_entity) ->
-          match?(%InformedEntity{route: "Boat-F1", route_type: 4, stop: "Boat-Hingham", direction_id: nil}, informed_entity)
-        end)
-      assert boat_hingham_count == 1
-      boat_rowes_count =
-        Enum.count(ie2, fn(informed_entity) ->
-          match?(%InformedEntity{route: "Boat-F1", route_type: 4, stop: "Boat-Rowes", direction_id: nil}, informed_entity)
-        end)
-      assert boat_rowes_count == 1
-      boat_george_count =
-        Enum.count(ie2, fn(informed_entity) ->
-          match?(%InformedEntity{route: "Boat-F1", route_type: 4, stop: "Boat-George", direction_id: nil}, informed_entity)
-        end)
-      assert boat_george_count == 1
-      boat_hull_count =
-        Enum.count(ie2, fn(informed_entity) ->
-          match?(%InformedEntity{route: "Boat-F1", route_type: 4, stop: "Boat-Hull", direction_id: nil}, informed_entity)
-        end)
-      assert boat_hull_count == 1
-      boat_logan_count =
-        Enum.count(ie2, fn(informed_entity) ->
-          match?(%InformedEntity{route: "Boat-F1", route_type: 4, stop: "Boat-Logan", direction_id: nil}, informed_entity)
-        end)
-      assert boat_logan_count == 1
-      boat_long_count =
-        Enum.count(ie2, fn(informed_entity) ->
-          match?(%InformedEntity{route: "Boat-F1", route_type: 4, stop: "Boat-Long", direction_id: nil}, informed_entity)
-        end)
-      assert boat_long_count == 1
-      boat_hingham_with_direction_count =
-        Enum.count(ie2, fn(informed_entity) ->
-          match?(%InformedEntity{route: "Boat-F1", route_type: 4, stop: "Boat-Hingham", direction_id: 1}, informed_entity)
-        end)
-      assert boat_hingham_with_direction_count == 1
-      boat_rowes_with_direction_count =
-        Enum.count(ie2, fn(informed_entity) ->
-          match?(%InformedEntity{route: "Boat-F1", route_type: 4, stop: "Boat-Rowes", direction_id: 1}, informed_entity)
-        end)
-      assert boat_rowes_with_direction_count == 1
-      boat_george_with_direction_count =
-        Enum.count(ie2, fn(informed_entity) ->
-          match?(%InformedEntity{route: "Boat-F1", route_type: 4, stop: "Boat-George", direction_id: 1}, informed_entity)
-        end)
-      assert boat_george_with_direction_count == 1
-      boat_hull_with_direction_count =
-        Enum.count(ie2, fn(informed_entity) ->
-          match?(%InformedEntity{route: "Boat-F1", route_type: 4, stop: "Boat-Hull", direction_id: 1}, informed_entity)
-        end)
-      assert boat_hull_with_direction_count == 1
-      boat_logan_with_direction_count =
-        Enum.count(ie2, fn(informed_entity) ->
-          match?(%InformedEntity{route: "Boat-F1", route_type: 4, stop: "Boat-Logan", direction_id: 1}, informed_entity)
-        end)
-      assert boat_logan_with_direction_count == 1
-      boat_long_with_direction_count =
-        Enum.count(ie2, fn(informed_entity) ->
-          match?(%InformedEntity{route: "Boat-F1", route_type: 4, stop: "Boat-Long", direction_id: 1}, informed_entity)
-        end)
-      assert boat_long_with_direction_count == 1
-      total_station_count =
-        Enum.count(ie2, fn(informed_entity) ->
-          InformedEntity.entity_type(informed_entity) == :stop
-        end)
-      assert total_station_count == 12
+      stop_entities1 = Enum.filter(ie1, &InformedEntity.entity_type(&1) == :stop)
+      stop_entities2 = Enum.filter(ie2, &InformedEntity.entity_type(&1) == :stop)
+      assert Enum.all?(stop_entities1, & match?(%InformedEntity{route: "Boat-F1", route_type: 4, direction_id: nil}, &1) || match?(%InformedEntity{route: "Boat-F1", route_type: 4, direction_id: 0}, &1))
+      assert Enum.all?(stop_entities2, & match?(%InformedEntity{route: "Boat-F1", route_type: 4, direction_id: nil}, &1) || match?(%InformedEntity{route: "Boat-F1", route_type: 4, direction_id: 1}, &1))
     end
 
     test "constructs subscription with trips" do
@@ -450,40 +256,14 @@ defmodule AlertProcessor.Subscription.FerryMapperTest do
     test "returns inbound results for origin destination" do
       use_cassette "long_wharf_to_hingham_schedules", custom: true, clear_mock: true, match_requests_on: [:query] do
         {:ok, trips} = FerryMapper.map_trip_options("Boat-Long", "Boat-Hingham", :weekday, @test_date)
-        assert [%Trip{arrival_time: ~T[09:55:00], departure_time: ~T[09:10:00], destination: {"Hingham (Hewitt's Cove)", "Boat-Hingham"}, direction_id: 0, origin: {"Boston (Long Wharf)", "Boat-Long"}, trip_number: "Boat-F1-Boat-Long-09:10:00-weekday-0"},
-                %Trip{arrival_time: ~T[11:50:00], departure_time: ~T[11:00:00], destination: {"Hingham (Hewitt's Cove)", "Boat-Hingham"}, direction_id: 0, origin: {"Boston (Long Wharf)", "Boat-Long"}, trip_number: "Boat-F1-Boat-Long-11:00:00-weekday-0"},
-                %Trip{arrival_time: ~T[12:45:00], departure_time: ~T[12:15:00], destination: {"Hingham (Hewitt's Cove)", "Boat-Hingham"}, direction_id: 0, origin: {"Boston (Long Wharf)", "Boat-Long"}, trip_number: "Boat-F1-Boat-Long-12:15:00-weekday-0"},
-                %Trip{arrival_time: ~T[13:55:00], departure_time: ~T[13:00:00], destination: {"Hingham (Hewitt's Cove)", "Boat-Hingham"}, direction_id: 0, origin: {"Boston (Long Wharf)", "Boat-Long"}, trip_number: "Boat-F1-Boat-Long-13:00:00-weekday-0"},
-                %Trip{arrival_time: ~T[14:30:00], departure_time: ~T[14:00:00], destination: {"Hingham (Hewitt's Cove)", "Boat-Hingham"}, direction_id: 0, origin: {"Boston (Long Wharf)", "Boat-Long"}, trip_number: "Boat-F1-Boat-Long-14:00:00-weekday-0"},
-                %Trip{arrival_time: ~T[15:40:00], departure_time: ~T[14:40:00], destination: {"Hingham (Hewitt's Cove)", "Boat-Hingham"}, direction_id: 0, origin: {"Boston (Long Wharf)", "Boat-Long"}, trip_number: "Boat-F1-Boat-Long-14:40:00-weekday-0"},
-                %Trip{arrival_time: ~T[16:20:00], departure_time: ~T[15:40:00], destination: {"Hingham (Hewitt's Cove)", "Boat-Hingham"}, direction_id: 0, origin: {"Boston (Long Wharf)", "Boat-Long"}, trip_number: "Boat-F1-Boat-Long-15:40:00-weekday-0"},
-                %Trip{arrival_time: ~T[17:10:00], departure_time: ~T[16:30:00], destination: {"Hingham (Hewitt's Cove)", "Boat-Hingham"}, direction_id: 0, origin: {"Boston (Long Wharf)", "Boat-Long"}, trip_number: "Boat-F1-Boat-Long-16:30:00-weekday-0"},
-                %Trip{arrival_time: ~T[18:50:00], departure_time: ~T[18:05:00], destination: {"Hingham (Hewitt's Cove)", "Boat-Hingham"}, direction_id: 0, origin: {"Boston (Long Wharf)", "Boat-Long"}, trip_number: "Boat-F1-Boat-Long-18:05:00-weekday-0"},
-                %Trip{arrival_time: ~T[19:25:00], departure_time: ~T[18:40:00], destination: {"Hingham (Hewitt's Cove)", "Boat-Hingham"}, direction_id: 0, origin: {"Boston (Long Wharf)", "Boat-Long"}, trip_number: "Boat-F1-Boat-Long-18:40:00-weekday-0"},
-                %Trip{arrival_time: ~T[20:20:00], departure_time: ~T[19:35:00], destination: {"Hingham (Hewitt's Cove)", "Boat-Hingham"}, direction_id: 0, origin: {"Boston (Long Wharf)", "Boat-Long"}, trip_number: "Boat-F1-Boat-Long-19:35:00-weekday-0"},
-                %Trip{arrival_time: ~T[20:55:00], departure_time: ~T[20:15:00], destination: {"Hingham (Hewitt's Cove)", "Boat-Hingham"}, direction_id: 0, origin: {"Boston (Long Wharf)", "Boat-Long"}, trip_number: "Boat-F1-Boat-Long-20:15:00-weekday-0"},
-                %Trip{arrival_time: ~T[22:05:00], departure_time: ~T[21:10:00], destination: {"Hingham (Hewitt's Cove)", "Boat-Hingham"}, direction_id: 0, origin: {"Boston (Long Wharf)", "Boat-Long"}, trip_number: "Boat-F1-Boat-Long-21:10:00-weekday-0"},
-                %Trip{arrival_time: ~T[22:35:00], departure_time: ~T[21:50:00], destination: {"Hingham (Hewitt's Cove)", "Boat-Hingham"}, direction_id: 0, origin: {"Boston (Long Wharf)", "Boat-Long"}, trip_number: "Boat-F1-Boat-Long-21:50:00-weekday-0"}] = trips
+        assert Enum.all?(trips, &match?(&1, %Trip{destination: {"Hingham (Hewitt's Cove)", "Boat-Hingham"}, direction_id: 0, origin: {"Boston (Long Wharf)", "Boat-Long"}}))
       end
     end
 
     test "returns outbound results for origin destination" do
       use_cassette "hingham_to_long_wharf_schedules", custom: true, clear_mock: true, match_requests_on: [:query] do
         {:ok, trips} = FerryMapper.map_trip_options("Boat-Hingham", "Boat-Long", :weekday, @test_date)
-        assert [%Trip{arrival_time: ~T[06:23:00], departure_time: ~T[05:40:00], destination: {"Boston (Long Wharf)", "Boat-Long"}, direction_id: 1, origin: {"Hingham (Hewitt's Cove)", "Boat-Hingham"}, trip_number: "Boat-F1-Boat-Hingham-05:40:00-weekday-1"},
-                %Trip{arrival_time: ~T[07:23:00], departure_time: ~T[06:40:00], destination: {"Boston (Long Wharf)", "Boat-Long"}, direction_id: 1, origin: {"Hingham (Hewitt's Cove)", "Boat-Hingham"}, trip_number: "Boat-F1-Boat-Hingham-06:40:00-weekday-1"},
-                %Trip{arrival_time: ~T[11:00:00], departure_time: ~T[10:00:00], destination: {"Boston (Long Wharf)", "Boat-Long"}, direction_id: 1, origin: {"Hingham (Hewitt's Cove)", "Boat-Hingham"}, trip_number: "Boat-F1-Boat-Hingham-10:00:00-weekday-1"},
-                %Trip{arrival_time: ~T[12:55:00], departure_time: ~T[12:00:00], destination: {"Boston (Long Wharf)", "Boat-Long"}, direction_id: 1, origin: {"Hingham (Hewitt's Cove)", "Boat-Hingham"}, trip_number: "Boat-F1-Boat-Hingham-12:00:00-weekday-1"},
-                %Trip{arrival_time: ~T[13:50:00], departure_time: ~T[13:00:00], destination: {"Boston (Long Wharf)", "Boat-Long"}, direction_id: 1, origin: {"Hingham (Hewitt's Cove)", "Boat-Hingham"}, trip_number: "Boat-F1-Boat-Hingham-13:00:00-weekday-1"},
-                %Trip{arrival_time: ~T[14:35:00], departure_time: ~T[14:00:00], destination: {"Boston (Long Wharf)", "Boat-Long"}, direction_id: 1, origin: {"Hingham (Hewitt's Cove)", "Boat-Hingham"}, trip_number: "Boat-F1-Boat-Hingham-14:00:00-weekday-1"},
-                %Trip{arrival_time: ~T[15:33:00], departure_time: ~T[15:00:00], destination: {"Boston (Long Wharf)", "Boat-Long"}, direction_id: 1, origin: {"Hingham (Hewitt's Cove)", "Boat-Hingham"}, trip_number: "Boat-F1-Boat-Hingham-15:00:00-weekday-1"},
-                %Trip{arrival_time: ~T[16:27:00], departure_time: ~T[15:45:00], destination: {"Boston (Long Wharf)", "Boat-Long"}, direction_id: 1, origin: {"Hingham (Hewitt's Cove)", "Boat-Hingham"}, trip_number: "Boat-F1-Boat-Hingham-15:45:00-weekday-1"},
-                %Trip{arrival_time: ~T[17:12:00], departure_time: ~T[16:30:00], destination: {"Boston (Long Wharf)", "Boat-Long"}, direction_id: 1, origin: {"Hingham (Hewitt's Cove)", "Boat-Hingham"}, trip_number: "Boat-F1-Boat-Hingham-16:30:00-weekday-1"},
-                %Trip{arrival_time: ~T[17:57:00], departure_time: ~T[17:15:00], destination: {"Boston (Long Wharf)", "Boat-Long"}, direction_id: 1, origin: {"Hingham (Hewitt's Cove)", "Boat-Hingham"}, trip_number: "Boat-F1-Boat-Hingham-17:15:00-weekday-1"},
-                %Trip{arrival_time: ~T[19:28:00], departure_time: ~T[18:55:00], destination: {"Boston (Long Wharf)", "Boat-Long"}, direction_id: 1, origin: {"Hingham (Hewitt's Cove)", "Boat-Hingham"}, trip_number: "Boat-F1-Boat-Hingham-18:55:00-weekday-1"},
-                %Trip{arrival_time: ~T[20:12:00], departure_time: ~T[19:30:00], destination: {"Boston (Long Wharf)", "Boat-Long"}, direction_id: 1, origin: {"Hingham (Hewitt's Cove)", "Boat-Hingham"}, trip_number: "Boat-F1-Boat-Hingham-19:30:00-weekday-1"},
-                %Trip{arrival_time: ~T[21:03:00], departure_time: ~T[20:30:00], destination: {"Boston (Long Wharf)", "Boat-Long"}, direction_id: 1, origin: {"Hingham (Hewitt's Cove)", "Boat-Hingham"}, trip_number: "Boat-F1-Boat-Hingham-20:30:00-weekday-1"},
-                %Trip{arrival_time: ~T[21:33:00], departure_time: ~T[21:00:00], destination: {"Boston (Long Wharf)", "Boat-Long"}, direction_id: 1, origin: {"Hingham (Hewitt's Cove)", "Boat-Hingham"}, trip_number: "Boat-F1-Boat-Hingham-21:00:00-weekday-1"}] = trips
+        assert Enum.all?(trips, &match?(&1, %Trip{destination: {"Boston (Long Wharf)", "Boat-Long"}, direction_id: 1, origin: {"Hingham (Hewitt's Cove)", "Boat-Hingham"}}))
       end
     end
 
@@ -494,42 +274,19 @@ defmodule AlertProcessor.Subscription.FerryMapperTest do
 
   describe "get_trip_info" do
     test "returns trip options with closest trip preselected" do
-      {:ok, trips} = FerryMapper.get_trip_info("Boat-Hingham", "Boat-Long", :weekday, "10:00:00")
+      {:ok, trips} = FerryMapper.get_trip_info("Boat-Hingham", "Boat-Long", :weekday, [])
+      selected_trip = trips |> Enum.at(2) |> Map.get(:departure_time) |> Time.to_string()
+      {:ok, with_selected_trip} = FerryMapper.get_trip_info("Boat-Hingham", "Boat-Long", :weekday, selected_trip)
 
-      assert [%Trip{trip_number: "Boat-F1-Boat-Hingham-05:40:00-weekday-1", selected: false},
-              %Trip{trip_number: "Boat-F1-Boat-Hingham-06:40:00-weekday-1", selected: false},
-              %Trip{trip_number: "Boat-F1-Boat-Hingham-10:00:00-weekday-1", selected: true},
-              %Trip{trip_number: "Boat-F1-Boat-Hingham-12:00:00-weekday-1", selected: false},
-              %Trip{trip_number: "Boat-F1-Boat-Hingham-13:00:00-weekday-1", selected: false},
-              %Trip{trip_number: "Boat-F1-Boat-Hingham-14:00:00-weekday-1", selected: false},
-              %Trip{trip_number: "Boat-F1-Boat-Hingham-15:00:00-weekday-1", selected: false},
-              %Trip{trip_number: "Boat-F1-Boat-Hingham-15:45:00-weekday-1", selected: false},
-              %Trip{trip_number: "Boat-F1-Boat-Hingham-16:30:00-weekday-1", selected: false},
-              %Trip{trip_number: "Boat-F1-Boat-Hingham-17:15:00-weekday-1", selected: false},
-              %Trip{trip_number: "Boat-F1-Boat-Hingham-18:55:00-weekday-1", selected: false},
-              %Trip{trip_number: "Boat-F1-Boat-Hingham-19:30:00-weekday-1", selected: false},
-              %Trip{trip_number: "Boat-F1-Boat-Hingham-20:30:00-weekday-1", selected: false},
-              %Trip{trip_number: "Boat-F1-Boat-Hingham-21:00:00-weekday-1", selected: false}] = trips
-
+      assert [%{selected: false}, %{selected: false}, %{selected: true}, %{selected: false} | _] = with_selected_trip
     end
 
     test "returns trip options with preselected values" do
-      {:ok, trips} = FerryMapper.get_trip_info("Boat-Hingham", "Boat-Long", :weekday, ["Boat-F1-Boat-Hingham-10:00:00-weekday-1", "Boat-F1-Boat-Hingham-15:00:00-weekday-1"])
+      {:ok, trips} = FerryMapper.get_trip_info("Boat-Hingham", "Boat-Long", :weekday, [])
+      selected_trips = [Enum.at(trips, 1).trip_number]
+      {:ok, with_selected_trips} = FerryMapper.get_trip_info("Boat-Hingham", "Boat-Long", :weekday, selected_trips)
 
-      assert [%Trip{trip_number: "Boat-F1-Boat-Hingham-05:40:00-weekday-1", selected: false},
-              %Trip{trip_number: "Boat-F1-Boat-Hingham-06:40:00-weekday-1", selected: false},
-              %Trip{trip_number: "Boat-F1-Boat-Hingham-10:00:00-weekday-1", selected: true},
-              %Trip{trip_number: "Boat-F1-Boat-Hingham-12:00:00-weekday-1", selected: false},
-              %Trip{trip_number: "Boat-F1-Boat-Hingham-13:00:00-weekday-1", selected: false},
-              %Trip{trip_number: "Boat-F1-Boat-Hingham-14:00:00-weekday-1", selected: false},
-              %Trip{trip_number: "Boat-F1-Boat-Hingham-15:00:00-weekday-1", selected: true},
-              %Trip{trip_number: "Boat-F1-Boat-Hingham-15:45:00-weekday-1", selected: false},
-              %Trip{trip_number: "Boat-F1-Boat-Hingham-16:30:00-weekday-1", selected: false},
-              %Trip{trip_number: "Boat-F1-Boat-Hingham-17:15:00-weekday-1", selected: false},
-              %Trip{trip_number: "Boat-F1-Boat-Hingham-18:55:00-weekday-1", selected: false},
-              %Trip{trip_number: "Boat-F1-Boat-Hingham-19:30:00-weekday-1", selected: false},
-              %Trip{trip_number: "Boat-F1-Boat-Hingham-20:30:00-weekday-1", selected: false},
-              %Trip{trip_number: "Boat-F1-Boat-Hingham-21:00:00-weekday-1", selected: false}] = trips
+      assert [%{selected: false}, %{selected: true}, %{selected: false} | _] = with_selected_trips
     end
 
     test "returns error if origin/destination are not on the same route" do
@@ -673,15 +430,8 @@ defmodule AlertProcessor.Subscription.FerryMapperTest do
 
     test "maps schedule info between two stations on weekday" do
       use_cassette "trip_schedule_info_weekday_ferry", custom: true, clear_mock: true, match_requests_on: [:query] do
-        trip_schedule_info_map = FerryMapper.trip_schedule_info_map("Boat-Hingham", "Boat-Logan", :weekday, @test_date)
-        assert %{
-          {"Boat-Hingham", "Boat-F1-Boat-Hingham-19:30:00-weekday-1"} => _,
-          {"Boat-Logan", "Boat-F1-Boat-Hingham-19:30:00-weekday-1"} => _,
-          {"Boat-Hingham", "Boat-F1-Boat-Hingham-15:45:00-weekday-1"} => _,
-          {"Boat-Logan", "Boat-F1-Boat-Hingham-15:45:00-weekday-1"} => _,
-          {"Boat-Hingham", "Boat-F1-Boat-Long-21:50:00-weekday-0"} => _,
-          {"Boat-Logan", "Boat-F1-Boat-Long-21:50:00-weekday-0"} => _,
-        } = trip_schedule_info_map
+        trip_schedule_info_map = FerryMapper.trip_schedule_info_map("Boat-Charlestown", "Boat-Long", :weekday, @test_date)
+        assert Enum.all?(trip_schedule_info_map, &match?({{"Boat-Charlestown", _}, %DateTime{}}, &1) || match?({{"Boat-Long", _}, %DateTime{}}, &1))
       end
     end
 
@@ -722,8 +472,8 @@ defmodule AlertProcessor.Subscription.FerryMapperTest do
 
       assert {{:subscription, 0}, {:run, function1}} = List.first(result)
       assert {{:new_informed_entity, 0, 0}, {:run, _}} = Enum.at(result, 1)
-      assert {{:subscription, 1}, {:run, function2}} = Enum.at(result, 19)
-      assert {{:new_informed_entity, 1, 0}, {:run, _}} = Enum.at(result, 20)
+      assert {{:subscription, 1}, {:run, function2}} = Enum.find(result, &match?({{:subscription, 1}, {:run, _}}, &1))
+      assert {{:new_informed_entity, 1, 0}, {:run, _}} = Enum.find(result, &match?({{:new_informed_entity, 1, 0}, {:run, _}}, &1))
 
       {:ok, %{model: subscription1}} = function1.(nil)
       {:ok, %{model: subscription2}} = function2.(nil)
