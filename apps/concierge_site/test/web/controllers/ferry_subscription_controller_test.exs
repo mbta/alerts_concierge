@@ -104,26 +104,26 @@ defmodule ConciergeSite.FerrySubscriptionControllerTest do
     end
 
     test "POST /subscriptions/ferry", %{conn: conn} do
+      {:ok, [_, %{trip_number: tn1}, %{trip_number: tn2} | _]} = AlertProcessor.Subscription.FerryMapper.map_trip_options("Boat-Long", "Boat-Hingham", :weekday)
+
       params = %{"subscription" => %{
         "origin" => "Boat-Long",
         "destination" => "Boat-Hingham",
-        "trips" => ["Boat-F1-Boat-Hingham-10:00:00-weekday-1", "Boat-F1-Boat-Hingham-12:00:00-weekday-1"],
+        "trips" => [tn1, tn2],
         "relevant_days" => "weekday",
         "departure_start" => "09:00:00",
         "alert_priority_type" => "low",
         "trip_type" => "one_way"
       }}
 
-      use_cassette "ferry_create", clear_mock: true do
-        conn = post(conn, "/subscriptions/ferry", params)
+      conn = post(conn, "/subscriptions/ferry", params)
 
-        subscriptions = Repo.all(Subscription)
-        [ie | _] = InformedEntity |> Repo.all() |> Repo.preload(:subscription)
+      subscriptions = Repo.all(Subscription)
+      [ie | _] = InformedEntity |> Repo.all() |> Repo.preload(:subscription)
 
-        assert html_response(conn, 302) =~ "my-subscriptions"
-        assert length(subscriptions) == 1
-        assert ie.subscription == List.first(subscriptions)
-      end
+      assert html_response(conn, 302) =~ "my-subscriptions"
+      assert length(subscriptions) == 1
+      assert ie.subscription == List.first(subscriptions)
     end
 
     test "GET /subscriptions/ferry/:id/edit", %{conn: conn, user: user} do

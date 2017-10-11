@@ -59,7 +59,7 @@ defmodule ConciergeSite.Subscriptions.CommuterRailParams do
       {:ok, _} ->
         {params, errors}
       _ ->
-        {params, ["Please select a valid origin and destination combination." | errors]}
+        {params, ["There are no scheduled trips between your origin and destination on the days you have selected. Please choose a new origin, destination, or travel day." | errors]}
     end
   end
 
