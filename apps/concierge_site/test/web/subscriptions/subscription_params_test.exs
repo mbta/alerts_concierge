@@ -13,7 +13,7 @@ defmodule ConciergeSite.Subscriptions.SubscriptionParamsTest do
         "weekday" => "true"
       }
 
-      update_params = SubscriptionParams.prepare_for_update_changeset(params)
+      {:ok, update_params} = SubscriptionParams.prepare_for_update_changeset(params)
 
       assert update_params["relevant_days"] == [:saturday, :sunday, :weekday]
     end
@@ -28,10 +28,10 @@ defmodule ConciergeSite.Subscriptions.SubscriptionParamsTest do
         "weekday" => "true"
       }
 
-      %{
+      {:ok, %{
         "start_time" => st,
         "end_time" => et
-        } = SubscriptionParams.prepare_for_update_changeset(params)
+        }} = SubscriptionParams.prepare_for_update_changeset(params)
 
       assert DateTime.to_time(st) == ~T[03:00:00]
       assert DateTime.to_time(et) == ~T[03:15:00]
@@ -47,9 +47,23 @@ defmodule ConciergeSite.Subscriptions.SubscriptionParamsTest do
         "weekday" => "true"
       }
 
-      update_params = SubscriptionParams.prepare_for_update_changeset(params)
+      {:ok, update_params} = SubscriptionParams.prepare_for_update_changeset(params)
 
       assert update_params["alert_priority_type"] == :high
+    end
+
+    test "it returns an error if start time is beyond end of service day" do
+      params = %{
+        "alert_priority_type" => "high",
+        "departure_start" => "23:15:00",
+        "departure_end" => "07:00:00",
+        "saturday" => "true",
+        "sunday" => "true",
+        "weekday" => "true"
+      }
+
+      {:error, error_message} = SubscriptionParams.prepare_for_update_changeset(params)
+      assert IO.iodata_to_binary(error_message) == "Please correct the following errors to proceed: Start time on departure trip cannot be same as or later than end time. End of service day is 03:00AM."
     end
   end
 

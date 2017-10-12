@@ -165,6 +165,53 @@ defmodule ConciergeSite.SubwaySubscriptionControllerTest do
       assert html_response(conn, 302) =~ "my-subscriptions"
       assert :error = HoldingQueue.pop()
     end
+
+    test "PATCH /subscriptions/subway/:id invalid timeframe", %{conn: conn, user: user} do
+      subscription =
+        subscription_factory()
+        |> subway_subscription()
+        |> Map.merge(%{user_id: user.id})
+        |> insert()
+
+      params = %{"subscription" => %{
+        "alert_priority_type" => "high",
+        "departure_end" => "05:15:00",
+        "departure_start" => "23:00:00",
+        "saturday" => "true",
+        "sunday" => "true",
+        "weekday" => "true"
+      }}
+
+      conn = user
+      |> guardian_login(conn)
+      |> patch("/subscriptions/subway/#{subscription.id}", params)
+
+      assert html_response(conn, 200) =~ "Please correct the following errors to proceed: Start time on departure trip cannot be same as or later than end time. End of service day is 03:00AM."
+    end
+
+    test "PATCH /subscriptions/subway/:id invalid params", %{conn: conn, user: user} do
+      subscription =
+        subscription_factory()
+        |> subway_subscription()
+        |> weekday_subscription()
+        |> Map.merge(%{user_id: user.id})
+        |> insert()
+
+      params = %{"subscription" => %{
+        "alert_priority_type" => "high",
+        "departure_end" => "23:15:00",
+        "departure_start" => "23:00:00",
+        "saturday" => "false",
+        "sunday" => "false",
+        "weekday" => "false"
+      }}
+
+      conn = user
+      |> guardian_login(conn)
+      |> patch("/subscriptions/subway/#{subscription.id}", params)
+
+      assert html_response(conn, 200) =~ "Subscription could not be updated"
+    end
   end
 
   describe "unauthorized" do

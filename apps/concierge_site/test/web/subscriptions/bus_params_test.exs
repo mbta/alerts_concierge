@@ -43,18 +43,20 @@ defmodule ConciergeSite.Subscriptions.BusParamsTest do
     test "it returns error messages when the departure end is before departure start" do
       params = %{
         "route" => "88 - 0",
+        "weekday" => "true",
         "departure_start" => "14:00:00",
         "departure_end" => "12:00:00",
         "trip_type" => "one_way"
       }
 
-      {:error, message} = BusParams.validate_info_params(params) 
+      {:error, message} = BusParams.validate_info_params(params)
       assert IO.iodata_to_binary(message) == "Please correct the following errors to proceed: Start time on departure trip cannot be same as or later than end time. End of service day is 03:00AM."
     end
 
     test "it returns error messages when the return end is before return start" do
       params = %{
         "route" => "88 - 0",
+        "weekday" => "true",
         "departure_start" => "12:00:00",
         "departure_end" => "14:00:00",
         "return_start" => "18:00:00",
@@ -64,6 +66,21 @@ defmodule ConciergeSite.Subscriptions.BusParamsTest do
 
       {:error, message} = BusParams.validate_info_params(params)
       assert IO.iodata_to_binary(message) == "Please correct the following errors to proceed: Start time on return trip cannot be same as or later than end time. End of service day is 03:00AM."
+    end
+
+    test "it returns error messages when the return end is before return start and departure end is before departure start" do
+      params = %{
+        "route" => "88 - 0",
+        "weekday" => "true",
+        "departure_start" => "16:00:00",
+        "departure_end" => "14:00:00",
+        "return_start" => "18:00:00",
+        "return_end" => "17:00:00",
+        "trip_type" => "one_way"
+      }
+
+      {:error, message} = BusParams.validate_info_params(params)
+      assert IO.iodata_to_binary(message) == "Please correct the following errors to proceed: Start time on departure trip cannot be same as or later than end time. End of service day is 03:00AM. Start time on return trip cannot be same as or later than end time. End of service day is 03:00AM."
     end
 
     test "it returns ok when the return end is before return start but before 3:00AM" do
