@@ -1,7 +1,7 @@
 import 'jsdom-global/register';
 import jsdom from 'mocha-jsdom';
 import { assert } from 'chai';
-import { simulateKeyUp } from './utils';
+import { simulateKeyUp, simulateKeyPress } from './utils';
 import selectStation from '../js/select-station';
 
 describe("selectStation", function() {
@@ -185,6 +185,91 @@ describe("selectStation", function() {
         assert.equal($destinationInput.attr("data-station-id"), "place-brntn");
       });
     })
+
+    describe("keypress handling for suggestions", () => {
+      it("first suggestion is selected by default", () => {
+        const $originInput = $("input.subscription-select-origin");
+        $originInput.val("ee");
+
+        simulateKeyUp($originInput[0]);
+
+        const $firstSuggestion = $(".origin-station-suggestion").first();
+        const $lastSuggestion = $(".origin-station-suggestion").last();
+
+        assert($firstSuggestion.is(".selected-suggestion"));
+        assert.isFalse($lastSuggestion.is(".selected-suggestion"));
+      });
+
+      it("pressing the down arrow moves the selected suggestion down to the next suggestion", () => {
+        const $originInput = $("input.subscription-select-origin");
+        $originInput.val("ee");
+
+        simulateKeyUp($originInput[0]);
+        simulateKeyPress($originInput[0], 40);
+        const $firstSuggestion = $(".origin-station-suggestion").first();
+        const $lastSuggestion = $(".origin-station-suggestion").last();
+
+        assert.isFalse($firstSuggestion.is(".selected-suggestion"));
+        assert($lastSuggestion.is(".selected-suggestion"));
+      });
+
+      it("pressing the down arrow doesn't do anything if there aren't any more suggestions below", () => {
+        const $originInput = $("input.subscription-select-origin");
+        $originInput.val("ee");
+
+        simulateKeyUp($originInput[0]);
+        simulateKeyPress($originInput[0], 40);
+        simulateKeyPress($originInput[0], 40);
+        const $firstSuggestion = $(".origin-station-suggestion").first();
+        const $lastSuggestion = $(".origin-station-suggestion").last();
+
+        assert.isFalse($firstSuggestion.is(".selected-suggestion"));
+        assert($lastSuggestion.is(".selected-suggestion"));
+      });
+
+      it("pressing the up arrow moves the selected suggestion up to the previous suggestion", () => {
+        const $originInput = $("input.subscription-select-origin");
+        $originInput.val("ee");
+
+        simulateKeyUp($originInput[0]);
+        simulateKeyPress($originInput[0], 40);
+        simulateKeyPress($originInput[0], 38);
+        const $firstSuggestion = $(".origin-station-suggestion").first();
+        const $lastSuggestion = $(".origin-station-suggestion").last();
+
+        assert($firstSuggestion.is(".selected-suggestion"));
+        assert.isFalse($lastSuggestion.is(".selected-suggestion"));
+      });
+
+      it("pressing the up arrow doesn't do anything if there aren't any more suggestions above", () => {
+        const $originInput = $("input.subscription-select-origin");
+        $originInput.val("ee");
+
+        simulateKeyUp($originInput[0]);
+        simulateKeyPress($originInput[0], 38);
+        const $firstSuggestion = $(".origin-station-suggestion").first();
+        const $lastSuggestion = $(".origin-station-suggestion").last();
+
+        assert($firstSuggestion.is(".selected-suggestion"));
+        assert.isFalse($lastSuggestion.is(".selected-suggestion"));
+      });
+
+      it("pressing enter selects the highlighted suggestion", () => {
+        const $originInput = $("input.subscription-select-origin");
+        $originInput.val("ee");
+
+        simulateKeyUp($originInput[0]);
+        simulateKeyPress($originInput[0], 40);
+
+        const $firstSuggestion = $(".origin-station-suggestion").first();
+        const $lastSuggestion = $(".origin-station-suggestion").last();
+        assert($lastSuggestion.is(".selected-suggestion"));
+
+        simulateKeyPress($originInput[0], 13);
+
+        assert.equal($originInput.val(), "Park Street")
+      });
+    });
 
     describe("station input losing focus", () => {
       it("populates the origin input field with the first suggestion", () => {
@@ -393,7 +478,7 @@ describe("selectStation", function() {
         <form class="trip-info-form subway">
           <div class="form-group select-station">
             <label for="origin" class="station-input-label form-label">Origin</label>
-            <select class="subscription-select-origin no-js" id="subscription_origin" name="subscription[origin]">
+            <select class="subscription-select subscription-select-origin no-js" id="subscription_origin" name="subscription[origin]">
               <option value="">Select a station</option>
               <optgroup label="Red Line">
                 <option value="place-brntn">Braintree</option>
@@ -408,7 +493,7 @@ describe("selectStation", function() {
           </div>
           <div class="form-group select-station">
             <label for="destination" class="station-input-label form-label">Destination</label>
-            <select class="subscription-select-destination no-js" id="subscription_destination" name="subscription[destination]">
+            <select class="subscription-select subscription-select-destination no-js" id="subscription_destination" name="subscription[destination]">
               <option value="">Select a station</option>
               <optgroup label="Red Line">
                 <option value="place-brntn">Braintree</option>

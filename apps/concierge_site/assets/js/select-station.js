@@ -1,5 +1,5 @@
 import filterSuggestions from './filter-suggestions';
-import {generateRouteList, generateStationList, renderStationInput, unmountStationSuggestions} from './station-select-helpers';
+import {generateRouteList, generateStationList, onKeyDownOverrides, renderStationInput, selectedSuggestionClass, unmountStationSuggestions} from './station-select-helpers';
 
 export default function($) {
   $ = $ || window.jQuery;
@@ -7,15 +7,11 @@ export default function($) {
   let props = {};
   let state = {
     origin: {},
-    destination: {}
+    destination: {},
+    selectedSuggestionIndex: 0,
   };
 
-  const $enterTripInfoContainer = $("div.enter-trip-info")[0];
-  if ($enterTripInfoContainer === undefined) {
-    return;
-  }
-
-  if ($(".enter-trip-info").length) {
+  if ($(".trip-info-form.subway, .trip-info-form.commuter-rail, .trip-info-form.ferry").length) {
     const className = "select.subscription-select-origin optgroup";
     props.allRoutes = generateRouteList(className, $);
     props.allStations = generateStationList(className, $);
@@ -27,6 +23,12 @@ export default function($) {
 
     attachSuggestionInputs();
     validateInputs();
+
+    document.onkeydown = function(event){
+      onKeyDownOverrides(event, state, $);
+    }
+  } else {
+    return;
   }
 
   function typeahead(event) {
@@ -35,8 +37,8 @@ export default function($) {
 
     if (query.length > 0) {
       const matchingStations = filter(originDestination, query, props.allStations, state);
-      const suggestionElements = matchingStations.map(function(station) {
-        return renderStationSuggestion(originDestination, station);
+      const suggestionElements = matchingStations.map(function(station, index) {
+        return renderStationSuggestion(originDestination, station, index);
       });
 
       const $suggestionContainer =
@@ -104,17 +106,17 @@ export default function($) {
     }
 
   function pickFirstSuggestion(event) {
+    state.selectedSuggestionIndex = 0;
     const originDestination = event.data.originDestination;
     const $stationInput = $(`.${subscriptionSelectClass(originDestination)}`);
-    const $firstSuggestion =
-      $(`.${originDestination}-station-suggestion`).first();
-
-    if ($firstSuggestion.length) {
-      const stationName = $(".station-name", $firstSuggestion).text();
+    const $selectedSuggestion =
+      $(`.${originDestination}-station-suggestion.selected-suggestion`).first();
+    if ($selectedSuggestion.length) {
+      const stationName = $(".station-name", $selectedSuggestion).text();
       $stationInput.val(stationName);
       $stationInput.attr("data-valid", true);
-      $stationInput.attr("data-station-id",  $firstSuggestion.attr("data-station-id"));
-      setSelectedStation(originDestination, stationName, $firstSuggestion.attr("data-lines"));
+      $stationInput.attr("data-station-id",  $selectedSuggestion.attr("data-station-id"));
+      setSelectedStation(originDestination, stationName, $selectedSuggestion.attr("data-lines"));
     } else if (!props.validStationNames.includes($stationInput.val())) {
       $stationInput.val(null);
     }
@@ -189,7 +191,7 @@ export default function($) {
     `
   }
 
-  function renderStationSuggestion(originDestination, station) {
+  function renderStationSuggestion(originDestination, station, index) {
     const form = $(".trip-info-form");
     let svg = "";
 
@@ -202,12 +204,12 @@ export default function($) {
       svg = renderFerryIcon(station.allLineNames);
     }
 
-    return renderSuggestionIcons(svg, originDestination, station)
+    return renderSuggestionIcons(svg, originDestination, station, index)
   }
 
-  function renderSuggestionIcons(svg, originDestination, station) {
+  function renderSuggestionIcons(svg, originDestination, station, index) {
     return `
-      <div class="${stationSuggestionClass(originDestination)}" data-lines="${station.allLineNames.join(",")}" data-station-id="${station.id}">
+      <div class="${stationSuggestionClass(originDestination)} ${selectedSuggestionClass(state.selectedSuggestionIndex, index)}" data-lines="${station.allLineNames.join(",")}" data-station-id="${station.id}" data-select-index="${index}">
         <div class="station-name">${station.name}</div>
         <div class="station-lines">
           ${svg}
