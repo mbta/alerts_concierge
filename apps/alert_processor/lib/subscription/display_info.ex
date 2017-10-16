@@ -6,6 +6,25 @@ defmodule AlertProcessor.Subscription.DisplayInfo do
 
   alias AlertProcessor.{ApiClient, Helpers.DateTimeHelper, Model.InformedEntity, Model.Subscription, ServiceInfoCache}
 
+  @spec station_names_for_subscriptions([Subscription.t]) :: {:ok, map} | :error
+  def station_names_for_subscriptions(subscriptions) do
+    display_names =
+      subscriptions
+      |> Enum.flat_map(fn(subscription) ->
+        if subscription.origin && subscription.destination do
+          [subscription.origin, subscription.destination]
+        else
+          []
+        end
+      end)
+      |> Enum.uniq()
+      |> Map.new(fn(stop_id) ->
+        {:ok, {name, _id}} = ServiceInfoCache.get_stop(stop_id)
+        {stop_id, name}
+      end)
+    {:ok, display_names}
+  end
+
   @spec departure_times_for_subscriptions([Subscription.t], Date.t | nil) :: {:ok, map} | :error
   def departure_times_for_subscriptions(subscriptions, selected_date \\ nil) do
     with {:ok, stops, relevant_days} <- parse_subscription_stops_and_relevant_days(subscriptions),

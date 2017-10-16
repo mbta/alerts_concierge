@@ -99,7 +99,7 @@ defmodule ConciergeSite.SubscriberDetailsTest do
     test "maps updating amenities", %{user: user} do
       params = %{
         "amenities" => ["elevator"],
-        "stops" => "North Station,South Station",
+        "stops" => "place-north,place-sstat",
         "routes" => ["red"],
         "relevant_days" => ["weekday"]
       }
@@ -107,7 +107,7 @@ defmodule ConciergeSite.SubscriberDetailsTest do
       multi = AmenitiesMapper.build_subscription_transaction(subscription_infos, user, user.id)
       Repo.transaction(multi)
       subscription = Repo.one(from s in Subscription, where: s.user_id == ^user.id and s.type == "amenity", preload: [:informed_entities])
-      {:ok, subscription_infos} = AmenitiesMapper.map_subscriptions(Map.put(params, "stops", "South Station"))
+      {:ok, subscription_infos} = AmenitiesMapper.map_subscriptions(Map.put(params, "stops", "place-sstat"))
       multi = AmenitiesMapper.build_subscription_update_transaction(subscription, subscription_infos, user.id)
       Repo.transaction(multi)
       changelog = user.id |> SubscriberDetails.changelog() |> changelog_to_binary()

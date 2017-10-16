@@ -5,7 +5,9 @@ defmodule ConciergeSite.AmenitySubscriptionView do
     only: [relevant_days: 1]
 
   def stringify(params) when is_list(params) do
-    Enum.join(params, ",")
+    params
+    |> Enum.map(fn({_, id}) -> id end)
+    |> Enum.join(",")
   end
   def stringify(p), do: p
 

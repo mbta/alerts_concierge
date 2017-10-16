@@ -30,8 +30,8 @@ defmodule AlertProcessor.Subscription.CommuterRailMapperTest do
 
     test "constructs subscription with origin and destination" do
       {:ok, [{subscription, _ie}]} = CommuterRailMapper.map_subscriptions(@one_way_params)
-      assert subscription.origin == "Anderson/Woburn"
-      assert subscription.destination == "North Station"
+      assert subscription.origin == "Anderson/ Woburn"
+      assert subscription.destination == "place-north"
     end
 
     test "constructs subscription with timeframe" do
@@ -206,10 +206,10 @@ defmodule AlertProcessor.Subscription.CommuterRailMapperTest do
 
     test "constructs subscription with origin and destination" do
       {:ok, [{sub1, _ie1}, {sub2, _ie2}]} = CommuterRailMapper.map_subscriptions(@round_trip_params)
-      assert sub1.origin == "North Station"
-      assert sub1.destination == "Anderson/Woburn"
-      assert sub2.origin == "Anderson/Woburn"
-      assert sub2.destination == "North Station"
+      assert sub1.origin == "place-north"
+      assert sub1.destination == "Anderson/ Woburn"
+      assert sub2.origin == "Anderson/ Woburn"
+      assert sub2.destination == "place-north"
     end
 
     test "constructs subscription with timeframe" do

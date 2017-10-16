@@ -45,7 +45,7 @@
         <p>No Subscriptions</p>
       <% else %>
         <div class="subscriber-subscriptions">
-          <%= render ConciergeSite.SubscriptionView, "_subscriptions.html", conn: @conn, subscriptions: @subscriptions, departure_time_map: @departure_time_map, render_links: false %>
+          <%= render ConciergeSite.SubscriptionView, "_subscriptions.html", conn: @conn, subscriptions: @subscriptions, station_display_names: @station_display_names, departure_time_map: @departure_time_map, render_links: false %>
         </div>
       <% end %>
       <h2>Account Activity</h2>

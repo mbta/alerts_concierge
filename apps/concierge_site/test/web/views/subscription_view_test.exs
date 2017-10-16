@@ -142,6 +142,7 @@ defmodule ConciergeSite.SubscriptionViewTest do
       conn: conn,
       dnd_overlap: true,
       departure_time_map: %{},
+      station_display_names: %{"place-north" => "North Station", "Anderson/ Woburn" => "Anderson/Woburn", "Boat-Long" => "Boston (Long Wharf)", "Boat-Charlestown" => "Charlestown"},
       subscriptions: subscriptions,
       vacation_start: nil,
       vacation_end: nil
@@ -196,6 +197,7 @@ defmodule ConciergeSite.SubscriptionViewTest do
       conn: conn,
       dnd_overlap: false,
       departure_time_map: %{"221" => ~T[12:00:00], "Boat-F4-Boat-Long-17:15:00-weekday-0" => ~T[17:15:00]},
+      station_display_names: %{"place-north" => "North Station", "Anderson/ Woburn" => "Anderson/Woburn", "Boat-Long" => "Boston (Long Wharf)", "Boat-Charlestown" => "Charlestown"},
       subscriptions: subscriptions,
       vacation_start: nil,
       vacation_end: nil

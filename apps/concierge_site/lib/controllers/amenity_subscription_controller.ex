@@ -74,14 +74,14 @@ defmodule ConciergeSite.AmenitySubscriptionController do
         station_select_options = station_options(cr_stations, subway_stations)
         subscription = Subscription.one_for_user!(id, user.id, true)
         changeset = Subscription.update_changeset(subscription, sub_params)
-        st = set_trip_options(operation, sub_params, subscription, station_select_options)
+        st = set_station_options(operation, sub_params, subscription)
 
         render conn,
           "edit.html",
           subscription: subscription,
           changeset: changeset,
           station_select_options: station_select_options,
-          selected_trip_options: st
+          selected_station_options: st
     else
       _error ->
         conn
@@ -97,7 +97,7 @@ defmodule ConciergeSite.AmenitySubscriptionController do
       station_select_options = station_options(cr_stations, subway_stations)
 
       selected_stations = if type == :add do
-          add_station_to_list(sub_params, station_select_options)
+          add_station_to_list(sub_params)
         else
           selected_stations
         end
@@ -116,48 +116,50 @@ defmodule ConciergeSite.AmenitySubscriptionController do
     end
   end
 
-  defp set_trip_options(operation, sub_params, subscription, options) do
+  defp set_station_options(operation, sub_params, subscription) do
     case operation do
       :add ->
         subscription
-        |> selected_trip_options(options)
+        |> selected_station_options()
         |> replace_stops(sub_params)
-        |> add_station_selection(sub_params, options)
+        |> add_station_selection(sub_params)
       :remove ->
         subscription
-        |> selected_trip_options(options)
+        |> selected_station_options()
         |> replace_stops(sub_params)
-        |> remove_station_selection(sub_params, options)
+        |> remove_station_selection(sub_params)
       nil ->
-        selected_trip_options(subscription, options)
+        selected_station_options(subscription)
     end
   end
 
-  defp selected_trip_options(%Subscription{informed_entities: ies}, options) do
+  defp selected_station_options(%Subscription{informed_entities: ies}) do
     ies
     |> Enum.reduce(
       %{amenities: MapSet.new, routes: MapSet.new, stations: MapSet.new},
       fn(ie, acc) ->
-        acc = case id_to_name(ie.stop, options) do
-          {name, _id} ->
-            Map.put(acc, :stations, MapSet.put(acc.stations, name))
-          _ -> acc
-        end
 
-        acc = if is_nil(ie.facility_type) do
-          acc
-        else
-          amenities = MapSet.put(acc.amenities, ie.facility_type)
-          Map.put(acc, :amenities, amenities)
-        end
+        acc =
+          if ie.stop do
+            {:ok, stop} = ServiceInfoCache.get_stop(ie.stop)
+            stations = MapSet.put(acc.stations, stop)
+            Map.put(acc, :stations, stations)
+          else
+            acc
+          end
+
+        acc =
+          if is_nil(ie.facility_type) do
+            acc
+          else
+            amenities = MapSet.put(acc.amenities, ie.facility_type)
+            Map.put(acc, :amenities, amenities)
+          end
 
         if is_nil(ie.route) do
           acc
         else
-          routes = MapSet.put(
-            acc.routes,
-            String.downcase(ie.route)
-          )
+          routes = MapSet.put(acc.routes, String.downcase(ie.route))
           Map.put(acc, :routes, routes)
         end
       end)
@@ -171,40 +173,38 @@ defmodule ConciergeSite.AmenitySubscriptionController do
     put_in trip_options.stations, stations
   end
 
-  defp add_station_selection(trip_options, params, options) do
-    stations = add_station_to_list(params, options)
+  defp add_station_selection(trip_options, params) do
+    stations = add_station_to_list(params)
     put_in trip_options.stations, stations
   end
 
-  defp remove_station_selection(trip_options, params, _options) do
+  defp remove_station_selection(trip_options, params) do
     stations = remove_station_from_list(params, params["station"])
     put_in trip_options.stations, stations
   end
 
-  defp add_station_to_list(sub_params, options) do
+  defp add_station_to_list(sub_params) do
     stations = String.split(sub_params["stops"], ",", trim: true)
-
-    {station_name, _station_id} = id_to_name(sub_params["station"], options)
-
-    stations
-    |> Kernel.++([station_name])
+    [sub_params["station"] | stations]
+    |> Enum.map(&fetch_stop_from_cache/1)
     |> Enum.uniq()
   end
 
   defp remove_station_from_list(sub_params, station) do
-    stations = String.split(sub_params["stops"], ",", trim: true)
-    stations -- [station]
-  end
-
-  defp id_to_name(station, options) do
-    options
-    |> Enum.flat_map(fn({_route, stops}) -> stops end)
-    |> Enum.find(fn({_name, id}) -> id == station end)
+    sub_params["stops"]
+    |> String.split(",", trim: true)
+    |> Kernel.--([station])
+    |> Enum.map(&fetch_stop_from_cache/1)
   end
 
   defp station_options(cr_stations, subway_stations) do
     subway_stations
-      |> Kernel.++(cr_stations)
-      |> Lines.station_list_select_options()
+    |> Kernel.++(cr_stations)
+    |> Lines.station_list_select_options()
+  end
+
+  defp fetch_stop_from_cache(stop) do
+    {:ok, stop} = ServiceInfoCache.get_stop(stop)
+    stop
   end
 end

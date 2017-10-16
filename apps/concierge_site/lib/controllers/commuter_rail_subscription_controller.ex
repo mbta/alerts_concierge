@@ -3,7 +3,7 @@ defmodule ConciergeSite.CommuterRailSubscriptionController do
   use Guardian.Phoenix.Controller
   alias ConciergeSite.Subscriptions.{CommuterRailParams, Lines, TemporaryState}
   alias AlertProcessor.Model.{Subscription, User}
-  alias AlertProcessor.{ServiceInfoCache, Subscription.CommuterRailMapper}
+  alias AlertProcessor.{ServiceInfoCache, Subscription.CommuterRailMapper, Subscription.DisplayInfo}
 
   def new(conn, _params, _user, _claims) do
     render conn, "new.html"
@@ -13,7 +13,9 @@ defmodule ConciergeSite.CommuterRailSubscriptionController do
     subscription = Subscription.one_for_user!(id, user.id, true)
     changeset = Subscription.create_changeset(subscription)
     {:ok, trips} = CommuterRailMapper.get_trip_info_from_subscription(subscription)
-    render conn, "edit.html", subscription: subscription, changeset: changeset, trips: %{departure_trips: trips}
+    {:ok, station_display_names} = DisplayInfo.station_names_for_subscriptions([subscription])
+    {:ok, departure_time_map} = DisplayInfo.departure_times_for_subscriptions([subscription])
+    render conn, "edit.html", subscription: subscription, changeset: changeset, trips: %{departure_trips: trips}, station_display_names: station_display_names, departure_time_map: departure_time_map
   end
 
   def update(conn, %{"id" => id, "subscription" => subscription_params}, user, {:ok, claims}) do
@@ -146,8 +148,10 @@ defmodule ConciergeSite.CommuterRailSubscriptionController do
 
   def handle_invalid_update_submission(conn, subscription, changeset) do
     {:ok, trips} = CommuterRailMapper.get_trip_info_from_subscription(subscription)
+    {:ok, station_display_names} = DisplayInfo.station_names_for_subscriptions([subscription])
+    {:ok, departure_time_map} = DisplayInfo.departure_times_for_subscriptions([subscription])
     conn
     |> put_flash(:error, "Please select at least one trip")
-    |> render("edit.html", subscription: subscription, changeset: changeset, trips: %{departure_trips: trips})
+    |> render("edit.html", subscription: subscription, changeset: changeset, trips: %{departure_trips: trips}, station_display_names: station_display_names, departure_time_map: departure_time_map)
   end
 end

@@ -6,7 +6,7 @@ defmodule ConciergeSite.SubwaySubscriptionController do
   alias ConciergeSite.Subscriptions.SubwayParams
   alias ConciergeSite.Subscriptions.SubscriptionParams
   alias AlertProcessor.ServiceInfoCache
-  alias AlertProcessor.Subscription.SubwayMapper
+  alias AlertProcessor.Subscription.{DisplayInfo, SubwayMapper}
   alias AlertProcessor.Model.Subscription
   alias AlertProcessor.Model.User
 
@@ -15,9 +15,10 @@ defmodule ConciergeSite.SubwaySubscriptionController do
   end
 
   def edit(conn, %{"id" => id}, user, _claims) do
-    subscription = Subscription.one_for_user!(id, user.id)
+    subscription = Subscription.one_for_user!(id, user.id, true)
     changeset = Subscription.create_changeset(subscription)
-    render conn, "edit.html", subscription: subscription, changeset: changeset
+    {:ok, station_display_names} = DisplayInfo.station_names_for_subscriptions([subscription])
+    render conn, "edit.html", subscription: subscription, changeset: changeset, station_display_names: station_display_names
   end
 
   def update(conn, %{"id" => id, "subscription" => subscription_params}, user, {:ok, claims}) do
@@ -30,14 +31,16 @@ defmodule ConciergeSite.SubwaySubscriptionController do
       |> redirect(to: subscription_path(conn, :index))
     else
       {:error, %Ecto.Changeset{} = changeset} ->
+        {:ok, station_display_names} = DisplayInfo.station_names_for_subscriptions([subscription])
         conn
         |> put_flash(:error, "Subscription could not be updated. Please see errors below.")
-        |> render("edit.html", subscription: subscription, changeset: changeset)
+        |> render("edit.html", subscription: subscription, changeset: changeset, station_display_names: station_display_names)
       {:error, error_message} ->
+        {:ok, station_display_names} = DisplayInfo.station_names_for_subscriptions([subscription])
         changeset = Subscription.create_changeset(subscription)
         conn
         |> put_flash(:error, error_message)
-        |> render("edit.html", subscription: subscription, changeset: changeset)
+        |> render("edit.html", subscription: subscription, changeset: changeset, station_display_names: station_display_names)
     end
   end
 

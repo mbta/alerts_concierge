@@ -22,11 +22,13 @@ defmodule ConciergeSite.Admin.SubscriberController do
     notifications = SubscriberDetails.notification_timeline(subscriber)
     subscriptions = Subscription.for_user(subscriber)
     account_changelog = SubscriberDetails.changelog(subscriber_id)
+    {:ok, station_display_names} = DisplayInfo.station_names_for_subscriptions(subscriptions)
     {:ok, departure_time_map} = DisplayInfo.departure_times_for_subscriptions(subscriptions)
     User.log_admin_action(:view_subscriber, user, subscriber)
     render conn, "show.html",
       subscriber: subscriber,
       subscriptions: subscriptions,
+      station_display_names: station_display_names,
       departure_time_map: departure_time_map,
       account_changelog: account_changelog,
       notifications: notifications

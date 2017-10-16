@@ -10,7 +10,7 @@
                 <img src="<%= static_url(@conn, "/images/ferry.svg") %>" />
               </div>
             </div>
-            <%= subscription_info(subscription, @departure_time_map) %>
+            <%= subscription_info(subscription, @station_display_names, @departure_time_map) %>
             <div class="subscription-edit-link">
               <i class="fa fa-chevron-right" aria-hidden="true"></i>
             </div>
@@ -23,7 +23,7 @@
               <img src="<%= static_url(@conn, "/images/ferry.svg") %>" />
             </div>
           </div>
-          <%= subscription_info(subscription, @departure_time_map) %>
+          <%= subscription_info(subscription, @station_display_names, @departure_time_map) %>
         </div>
       <% end %>
     <% end %>

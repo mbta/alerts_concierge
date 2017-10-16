@@ -55,8 +55,8 @@ defmodule AlertProcessor.Subscription.SubwayMapperTest do
 
     test "constructs subscription with origin and destination" do
       {:ok, [{subscription, _ie}]} = SubwayMapper.map_subscriptions(@one_way_params)
-      assert subscription.origin == "Davis"
-      assert subscription.destination == "Harvard"
+      assert subscription.origin == "place-davis"
+      assert subscription.destination == "place-harsq"
     end
 
     test "constructs subscription with timeframe" do
@@ -168,10 +168,10 @@ defmodule AlertProcessor.Subscription.SubwayMapperTest do
 
     test "constructs subscription with origin and destination" do
       {:ok, [{sub1, _ie1}, {sub2, _ie2}]} = SubwayMapper.map_subscriptions(@round_trip_params)
-      assert sub1.origin == "Davis"
-      assert sub1.destination == "Harvard"
-      assert sub2.origin == "Harvard"
-      assert sub2.destination == "Davis"
+      assert sub1.origin == "place-davis"
+      assert sub1.destination == "place-harsq"
+      assert sub2.origin == "place-harsq"
+      assert sub2.destination == "place-davis"
     end
 
     test "constructs subscription with timeframe" do
@@ -348,8 +348,8 @@ defmodule AlertProcessor.Subscription.SubwayMapperTest do
 
     test "constructs subscription with origin and destination" do
       {:ok, [{subscription, _ie}]} = SubwayMapper.map_subscriptions(@green_line_one_way_params)
-      assert subscription.origin == "North Station"
-      assert subscription.destination == "Kenmore"
+      assert subscription.origin == "place-north"
+      assert subscription.destination == "place-kencl"
     end
 
     test "constructs subscription with timeframe" do
@@ -444,8 +444,8 @@ defmodule AlertProcessor.Subscription.SubwayMapperTest do
 
     test "constructs subscription with origin and destination" do
       {:ok, [{subscription, _ie}]} = SubwayMapper.map_subscriptions(@roaming_params)
-      assert subscription.origin == "Davis"
-      assert subscription.destination == "Harvard"
+      assert subscription.origin == "place-davis"
+      assert subscription.destination == "place-harsq"
     end
 
     test "constructs subscription with timeframe" do

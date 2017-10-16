@@ -34,10 +34,10 @@ export default function($) {
     const stations = generateStationList(className, $);
 
     if (selectedStops) {
-      state.selectedStations = stations.filter((station) => selectedStopIds.includes(station.name));
+      state.selectedStations = stations.filter((station) => selectedStopIds.includes(station.id));
     }
 
-    state.selectableStations = stations.filter((station) => !selectedStopIds.includes(station.name));
+    state.selectableStations = stations.filter((station) => !selectedStopIds.includes(station.id));
   }
 
   function attachSuggestionInput() {
