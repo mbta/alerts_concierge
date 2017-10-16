@@ -102,7 +102,7 @@ defmodule AlertProcessor.Factory do
     %{subscription |
       type: :ferry,
       origin: "Boston (Long Wharf)",
-      destination: "Charlestown (Navy Yard)"
+      destination: "Charlestown"
     }
   end
 

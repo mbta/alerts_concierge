@@ -158,7 +158,7 @@ defmodule ConciergeSite.SubscriptionViewTest do
 
     assert binary =~ "Ferry"
     assert binary =~ "Boston (Long Wharf)"
-    assert binary =~ "Charlestown (Navy Yard)"
+    assert binary =~ "Charlestown"
     assert binary =~ "Weekdays from 10:00am to  2:00pm"
   end
 
@@ -213,7 +213,7 @@ defmodule ConciergeSite.SubscriptionViewTest do
 
     assert binary =~ "Ferry"
     assert binary =~ "Boston (Long Wharf)"
-    assert binary =~ "Charlestown (Navy Yard)"
+    assert binary =~ "Charlestown"
     assert Regex.scan(~r/Weekdays \| Departs from Boston \(Long Wharf\)/, binary) |> Enum.count == 2
     assert Regex.scan(~r/pm, Weekdays \| Departs from Boston \(Long Wharf\)/, binary) |> Enum.count == 1
     assert binary =~ "5:15pm, Weekdays | Departs from Boston (Long Wharf)"
