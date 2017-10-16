@@ -49,11 +49,24 @@ defmodule AlertProcessor.InformedEntityFilter do
   defp entity_match?(%{trip: trip_id}, %{trip: subscription_trip_id}) when not is_nil(trip_id) do
     trip_id == subscription_trip_id
   end
+  defp entity_match?(%{facility_type: ft, route: route, stop: stop, activities: activities},
+    %{facility_type: sub_ft, route: sub_route, activities: sub_activities, stop: sub_stop}) when not is_nil(ft) and not is_nil(sub_ft) do
+
+    if is_nil(sub_stop) do
+      route == sub_route && activity_overlap?(activities, sub_activities)
+    else
+      stop == sub_stop && activity_overlap?(activities, sub_activities)
+    end
+  end
   defp entity_match?(alert_ie, subscription_ie) do
     alert_activities = alert_ie.activities
     subscription_activities = subscription_ie.activities
 
-    Enum.any?(subscription_activities, &Enum.member?(alert_activities, &1)) && Map.put(alert_ie, :activities, nil) == Map.put(subscription_ie, :activities, nil)
+    activity_overlap?(subscription_activities, alert_activities) && Map.put(alert_ie, :activities, nil) == Map.put(subscription_ie, :activities, nil)
+  end
+
+  defp activity_overlap?(activities, other_activities) do
+    Enum.any?(activities, &Enum.member?(other_activities, &1))
   end
 
   defp admin_subscriptions(subscriptions, informed_entities) do
