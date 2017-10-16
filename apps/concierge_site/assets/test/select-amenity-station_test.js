@@ -243,6 +243,7 @@ describe("selectAmenityStation", function() {
             </optgroup>
           </select>
           <div class="selected-station-list amenity-station-list"></div>
+          <input class="subscription-amenities-stops" id="subscription_stops" name="subscription[stops]" type="hidden" value="">
         </div>
       </form>
     </div>

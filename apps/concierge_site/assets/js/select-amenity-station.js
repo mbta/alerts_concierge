@@ -29,25 +29,25 @@ export default function($) {
 
   function setSelectedStations() {
     const selectedStops = $(".subscription-amenities-stops").val();
+    const selectedStopIds = selectedStops.split(",");
+    const className = "select.subscription-select-amenity-station";
+    const stations = generateStationList(className, $);
+
     if (selectedStops) {
-      state.selectedStations = selectedStops.split(",");
+      state.selectedStations = stations.filter((station) => selectedStopIds.includes(station.name));
     }
 
-    const className = "select.subscription-select-amenity-station";
-    const stations = generateStationList(className, $).map(station => station.name);
-    state.selectableStations = stations
-      .slice(1, stations.length)
-      .filter(stationName => !state.selectedStations.includes(stationName));
+    state.selectableStations = stations.filter((station) => !selectedStopIds.includes(station.name));
   }
 
   function attachSuggestionInput() {
     $(".amenity-station-select-sub-label").after(renderStationInput("station", "subscription-select-amenity-station station-input", ""));
   }
 
-  function renderRouteSuggestion(route, index) {
+  function renderStationSuggestion(station, index) {
     return `
       <div class="station-suggestion amenity-station ${selectedSuggestionClass(state.selectedSuggestionIndex, index)}">
-        <span class="station-name">${route}</span>
+        <span class="station-name">${station.name}</span>
       </div>
     `
   }
@@ -55,9 +55,9 @@ export default function($) {
   function typeahead(event) {
     const query = event.target.value;
     if (query.length > 0) {
-      const matchingRoutes = filterSuggestions(query, state.selectableStations);
-      const suggestionElements = matchingRoutes.map(function(route, index) {
-        return renderRouteSuggestion(route, index);
+      const matchingStations = filterSuggestions(query, state.selectableStations, "name");
+      const suggestionElements = matchingStations.map(function(station, index) {
+        return renderStationSuggestion(station, index);
       });
 
       const $suggestionContainer = $('.suggestion-container');
@@ -98,15 +98,15 @@ export default function($) {
   }
 
   function removeStationFromOptions(stationName) {
-    state.selectableStations
-    .splice(state.selectableStations.indexOf(stationName), 1);
+    const station = state.selectableStations.splice(state.selectableStations.map((station) => station.name).indexOf(stationName), 1);
 
-    state.selectedStations.push(stationName);
+    state.selectedStations.push(station[0]);
   }
 
   function removeStationFromSelected(stationName) {
-    state.selectedStations.splice(state.selectedStations.indexOf(stationName), 1);
-    state.selectableStations.push(stationName);
+    const station = state.selectedStations.splice(state.selectedStations.map((station) => station.name).indexOf(stationName), 1);
+
+    state.selectableStations.push(station[0]);
   };
 
   function renderStation(stationName) {
@@ -120,7 +120,7 @@ export default function($) {
   }
 
   function setStopsValue() {
-    const stops = state.selectedStations.join(',');
+    const stops = state.selectedStations.map((station) => station.id).join(',');
     const $stopsInput = $('.subscription-amenities-stops')
     $stopsInput.val(stops);
     return true;
