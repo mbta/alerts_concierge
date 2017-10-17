@@ -34,7 +34,7 @@ defmodule AlertProcessor.AlertParser do
     end
   end
 
-  defp parse_alert(%{
+  def parse_alert(%{
     "active_period" => active_periods,
     "effect_detail" => effect_name,
     "id" => alert_id,
@@ -58,7 +58,7 @@ defmodule AlertProcessor.AlertParser do
     }
   end
 
-  defp parse_alert(alert, _) do
+  def parse_alert(alert, _) do
     Logger.warn("Failed to parse alert: #{Poison.encode!(alert)}")
     nil
   end

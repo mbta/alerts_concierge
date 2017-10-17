@@ -49,6 +49,7 @@ defmodule AlertProcessor.Subscription.Diagnostic do
         |> Enum.map(fn(snap) ->
           build_diagnosis(alert_snapshot, notifications, [snap])
         end)
+        |> Enum.reject(&(is_nil(&1)))
         {:ok, result}
     else
       _ ->
@@ -81,7 +82,6 @@ defmodule AlertProcessor.Subscription.Diagnostic do
 
   defp matches_informed_entities?(diagnostic, alert: alert, subscriptions: subscriptions) do
     subs = InformedEntityFilter.filter(subscriptions, alert: alert)
-
     if subs == [] do
       diagnostic
       |> Map.put(:passed_informed_entity_filter?, false)

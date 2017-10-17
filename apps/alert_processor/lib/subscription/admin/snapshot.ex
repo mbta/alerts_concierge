@@ -4,9 +4,9 @@ defmodule AlertProcessor.Subscription.Snapshot do
   at a specific point in time
   """
   alias AlertProcessor.{AlertParser, Model, Repo, Helpers,
-    Subscription.DiagnosticQuery}
-  alias Helpers.{StringHelper, StructHelper}
-  alias Model.{Alert, InformedEntity, Subscription, User}
+    Subscription.DiagnosticQuery, ServiceInfoCache}
+  alias Helpers.StructHelper
+  alias Model.{InformedEntity, Subscription, User}
   alias Calendar.Time.Parse, as: TParse
   alias Calendar.DateTime.Parse, as: DTParse
   alias Calendar.NaiveDateTime, as: NaiveDT
@@ -83,57 +83,37 @@ defmodule AlertProcessor.Subscription.Snapshot do
   end
 
   defp build_informed_entities_from_versions(ie_versions) do
-    Enum.map(ie_versions, &(&1.item_changes))
+    ie_versions
+    |> Enum.map(fn(informed_entity) ->
+      Map.put_new(informed_entity.item_changes, "activities", [])
+    end)
   end
 
   def serialize_alert_versions(alert_versions) do
-    snapshot =
+    alert =
       alert_versions
       |> Enum.sort_by(&(&1.inserted_at), &NaiveDT.before?/2)
-      |> Enum.reduce(%{}, fn(%{item_changes: changes}, acc) ->
+      |> Enum.reduce(%{activities: []}, fn(%{item_changes: changes}, acc) ->
         Map.merge(acc, changes["data"])
       end)
-      |> serialize_alert()
-      |> serialize_active_periods()
-
-    snapshot = Map.put(snapshot, "informed_entities", serialize_informed_entities(snapshot["informed_entity"]))
-    {:ok, StructHelper.to_struct(Alert, snapshot)}
-  end
-
-  defp serialize_alert(alert) do
-    Map.merge(alert, %{
-      "effect_name" => StringHelper.split_capitalize(alert["effect_detail"], "_"),
-      "header" => AlertParser.parse_translation(alert["header_text"]),
-      "severity" => AlertParser.parse_severity(alert["severity"]),
-      "last_push_notification" => DateTime.from_unix!(alert["last_push_notification_timestamp"]),
-      "service_effect" => AlertParser.parse_translation(alert["service_effect_text"]),
-      "description" => AlertParser.parse_translation(alert["description_text"]),
-      "timeframe" => AlertParser.parse_translation(alert["timeframe_text"]),
-      "recurrence" => AlertParser.parse_translation(alert["recurrence_text"])
-    })
-  end
-
-  defp serialize_active_periods(alert) do
-    active_periods = Enum.map(alert["active_period"], fn(ap) ->
-      serialize_active_period(ap)
-    end)
-    Map.put(alert, "active_period", active_periods)
-  end
-
-  def serialize_active_period(map) do
-    for {key, val} <- map, into: %{} do
-       {String.to_existing_atom(key), DateTime.from_unix!(val)}
-    end
+      |> AlertParser.parse_alert(ServiceInfoCache.get_facility_map())
+    {:ok, alert}
   end
 
   defp serialize_informed_entities(nil), do: []
   defp serialize_informed_entities(informed_entities) do
-   Enum.map(informed_entities, fn(ie) ->
+    Enum.map(informed_entities, fn(ie) ->
       InformedEntity
       |> StructHelper.to_struct(ie)
       |> set_facility_type()
+      |> set_activities()
     end)
   end
+
+  defp set_activities(%InformedEntity{activities: nil} = ie) do
+    Map.put(ie, :activities, [])
+  end
+  defp set_activities(informed_entity), do: informed_entity
 
   defp set_facility_type(%{facility_type: nil} = ie), do: ie
   defp set_facility_type(%{facility_type: ft} = ie) do

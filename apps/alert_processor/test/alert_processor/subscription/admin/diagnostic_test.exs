@@ -187,8 +187,11 @@ defmodule AlertProcessor.Subscription.DiagnosticTest do
       assert result.passed_active_period_filter? == false
     end
 
-    test "alert matched severity", %{user: user} do
-      data = Map.put(@alert_params, "severity", 7)
+    test "alert severity is greater or equal to subscription", %{user: user} do
+      data = Map.merge(@alert_params, %{
+        "effect_detail" => "invalid",
+        "severity" => 5
+      })
 
       alert_params =  %{
         alert_id: "114167",
