@@ -1,7 +1,7 @@
 defmodule AlertProcessor.SentAlertFilterTest do
   use AlertProcessor.DataCase
   alias AlertProcessor.{SentAlertFilter, Model}
-  alias Model.{Alert, Notification, Subscription}
+  alias Model.{Alert, Notification, NotificationSubscription, Subscription}
   import AlertProcessor.Factory
 
   @now DateTime.utc_now
@@ -124,17 +124,31 @@ defmodule AlertProcessor.SentAlertFilterTest do
         description: "test",
         status: :sent,
         last_push_notification: @now,
-        subscriptions: [sub1]
+        notification_subscriptions: [%NotificationSubscription{subscription: sub1}]
+      }
+      notification2 = %Notification{
+        alert_id: "123",
+        user_id: user.id,
+        email: "a@b.com",
+        header: "You are being notified",
+        service_effect: "test",
+        description: "test",
+        status: :sent,
+        last_push_notification: Calendar.DateTime.subtract!(@now, 1800),
+        notification_subscriptions: [%NotificationSubscription{subscription: sub1}]
       }
       Repo.insert(Notification.create_changeset(notification))
+      Repo.insert(Notification.create_changeset(notification2))
       subscriptions =
         Subscription
         |> Repo.all()
         |> Repo.preload(:user)
         |> Repo.preload(:informed_entities)
 
+      notifications = Notification.most_recent_for_subscriptions_and_alerts(subscriptions, [alert])
+
       assert {[], []} ==
-        SentAlertFilter.filter(subscriptions, alert: alert, notifications: [notification])
+        SentAlertFilter.filter(subscriptions, alert: alert, notifications: notifications)
 
       subscriptions =
         Subscription
@@ -144,7 +158,7 @@ defmodule AlertProcessor.SentAlertFilterTest do
         |> Repo.preload(:informed_entities)
 
       assert {[returned_sub], []} =
-        SentAlertFilter.filter(subscriptions, alert: updated_alert, notifications: [notification])
+        SentAlertFilter.filter(subscriptions, alert: updated_alert, notifications: notifications)
       assert returned_sub.id == sub2.id
     end
   end

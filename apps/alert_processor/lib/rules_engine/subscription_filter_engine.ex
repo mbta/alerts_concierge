@@ -6,7 +6,6 @@ defmodule AlertProcessor.SubscriptionFilterEngine do
   alias AlertProcessor.{ActivePeriodFilter, InformedEntityFilter, Model,
     Repo, Scheduler, SentAlertFilter, SeverityFilter}
   alias Model.{Alert, Notification, Subscription}
-  import Ecto.Query
 
   def process_alerts(alerts) do
     subscriptions =
@@ -15,16 +14,7 @@ defmodule AlertProcessor.SubscriptionFilterEngine do
       |> Repo.preload(:user)
       |> Repo.preload(:informed_entities)
 
-    user_ids = Enum.map(subscriptions, &(&1.user.id))
-    alert_ids = Enum.map(alerts, &(&1.id))
-
-    notification_query = from n in Notification,
-      where: n.user_id in ^user_ids,
-      where: n.alert_id in ^alert_ids,
-      preload: [:subscriptions],
-      select: n
-
-    notifications = Repo.all(notification_query)
+    notifications = Notification.most_recent_for_subscriptions_and_alerts(subscriptions, alerts)
 
     for alert <- alerts do
       SystemMetrics.Tracer.trace(fn() ->

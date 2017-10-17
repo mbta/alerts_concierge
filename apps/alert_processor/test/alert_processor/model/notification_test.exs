@@ -3,7 +3,7 @@ defmodule AlertProcessor.Model.NotificationTest do
   use AlertProcessor.DataCase
   import AlertProcessor.Factory
 
-  alias AlertProcessor.Model.Notification
+  alias AlertProcessor.Model.{Notification, NotificationSubscription}
 
   @base_attrs %{
     email: "test@test.com",
@@ -109,5 +109,28 @@ defmodule AlertProcessor.Model.NotificationTest do
     {:ok, _} = Notification.save(other_notification, :sent)
     [%Notification{id: returned_notification_id}] = Notification.sent_to_user(user)
     assert returned_notification_id == saved_notification_1.id
+  end
+
+  test "most_recent_for_subscriptions_and_alerts/2 only returns latest notification by last_push_notification for alert/user combo" do
+    now = DateTime.utc_now()
+    later = Calendar.DateTime.add!(now, 1800)
+    user1 = insert(:user)
+    sub1 = insert(:subscription, user: user1)
+
+    notification1 = struct(Notification, Map.merge(@base_attrs, %{user: user1, last_push_notification: now, notification_subscriptions: [%NotificationSubscription{subscription: sub1}]}))
+    {:ok, saved_notification_1} = Notification.save(notification1, :sent)
+    notification2 = struct(Notification, Map.merge(@base_attrs, %{user: user1, last_push_notification: later, notification_subscriptions: [%NotificationSubscription{subscription: sub1}]}))
+    {:ok, saved_notification_2} = Notification.save(notification2, :sent)
+    notification3 = struct(Notification, Map.merge(@base_attrs, %{user: user1, last_push_notification: now, alert_id: "55555", notification_subscriptions: [%NotificationSubscription{subscription: sub1}]}))
+    {:ok, saved_notification_3} = Notification.save(notification3, :sent)
+
+    notifications = Notification.most_recent_for_subscriptions_and_alerts([sub1], [%{id: "12345678"}, %{id: "55555"}])
+    returned_notification_ids = Enum.map(notifications, & &1.id)
+    refute Enum.member?(returned_notification_ids, saved_notification_1.id)
+    assert Enum.member?(returned_notification_ids, saved_notification_2.id)
+    assert Enum.member?(returned_notification_ids, saved_notification_3.id)
+    [returned_notification1, returned_notification2] = notifications
+    assert [sub1.id] == Enum.map(returned_notification1.subscriptions, & &1.id)
+    assert [sub1.id] == Enum.map(returned_notification2.subscriptions, & &1.id)
   end
 end
