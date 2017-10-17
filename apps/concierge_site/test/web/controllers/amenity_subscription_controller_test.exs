@@ -22,7 +22,7 @@ defmodule ConciergeSite.AmenitySubscriptionControllerTest do
       conn = conn
       |> post("/subscriptions/amenities/add_station", params)
 
-      expected = "formaction=\"/subscriptions/amenities/remove_station/Forest%20Hills\""
+      expected = "formaction=\"/subscriptions/amenities/remove_station/place-forhl\""
 
       assert html_response(conn, 200) =~ expected
     end
@@ -46,7 +46,7 @@ defmodule ConciergeSite.AmenitySubscriptionControllerTest do
         |> guardian_login(build_conn())
         |> post("/subscriptions/amenities/add_station", params)
 
-      expected = ~r/formaction=\"\/subscriptions\/amenities\/remove_station\/Forest%20Hills\"/
+      expected = ~r/formaction=\"\/subscriptions\/amenities\/remove_station\/place-forhl\"/
       result = html_response(conn, 200)
       number_of_matches = length(Regex.scan(expected, result))
 
@@ -69,7 +69,7 @@ defmodule ConciergeSite.AmenitySubscriptionControllerTest do
 
     test "POST /subscriptions/amenities with valid params", %{conn: conn} do
       params = %{"subscription" => %{
-        "stops" => "North Quincy,Forest Hills",
+        "stops" => "place-nqncy,place-forhl",
         "amenities" => ["elevator"],
         "relevant_days" => ["saturday"],
         "routes" => ["blue"]
@@ -152,7 +152,7 @@ defmodule ConciergeSite.AmenitySubscriptionControllerTest do
         |> PaperTrail.insert!()
 
       params = %{"subscription" => %{
-        "stops" => "North Quincy,Forest Hills",
+        "stops" => "place-nqncy,place-forhl",
         "amenities" => ["elevator"],
         "relevant_days" => ["saturday"],
         "routes" => ["blue"]
@@ -175,7 +175,7 @@ defmodule ConciergeSite.AmenitySubscriptionControllerTest do
 
       params = %{
         "subscription" => %{
-          "stops" => "North Quincy",
+          "stops" => "place-nqncy",
           "amenities" => ["elevator"],
           "relevant_days" => ["saturday"],
           "routes" => ["blue"],
@@ -184,7 +184,7 @@ defmodule ConciergeSite.AmenitySubscriptionControllerTest do
         },
       }
 
-      station_link = "formaction=\"/subscriptions/amenities/remove_station/Forest%20Hills\" type=\"submit\">"
+      station_link = "formaction=\"/subscriptions/amenities/remove_station/place-forhl\" type=\"submit\">"
 
       use_cassette "amenities_update", clear_mock: true  do
         conn = patch(conn, "/subscriptions/amenities/add_station", params)
@@ -202,19 +202,19 @@ defmodule ConciergeSite.AmenitySubscriptionControllerTest do
 
       params = %{
         "subscription" => %{
-          "stops" => "North Quincy,Forest Hills",
+          "stops" => "place-nqncy,place-forhl",
           "amenities" => ["elevator"],
           "relevant_days" => ["saturday"],
           "routes" => ["blue"],
           "id" => sub.id
         },
-        "station" => "Forest Hills"
+        "station" => "place-forhl"
       }
 
-      station_link = "formaction=\"/subscriptions/amenities/remove_station/Forest%20Hills\" type=\"submit\">\nForest Hills"
+      station_link = "formaction=\"/subscriptions/amenities/remove_station/place-forhl\" type=\"submit\">\nForest Hills"
 
       use_cassette "amenities_update", clear_mock: true  do
-        conn = patch(conn, "/subscriptions/amenities/remove_station/Forest%20Hills", params)
+        conn = patch(conn, "/subscriptions/amenities/remove_station/place-forhl", params)
         refute html_response(conn, 200) =~ station_link
       end
     end

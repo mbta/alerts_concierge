@@ -54,7 +54,7 @@ defmodule ConciergeSite.SubscriptionControllerTest do
 
       assert html_response(conn, 200) =~ "Ferry"
       assert html_response(conn, 200) =~ "Boston (Long Wharf)"
-      assert html_response(conn, 200) =~ "Charlestown (Navy Yard)"
+      assert html_response(conn, 200) =~ "Charlestown"
       assert html_response(conn, 200) =~ "5:00pm, Weekdays | Departs from Boston (Long Wharf)"
       assert html_response(conn, 200) =~ "5:15pm, Weekdays | Departs from Boston (Long Wharf)"
     end

@@ -46,32 +46,32 @@ defmodule ConciergeSite.SubscriptionView do
     Map.merge(%{amenity: [], ferry: [], bus: [], commuter_rail: [], subway: []}, subscription_map)
   end
 
-  def subscription_info(subscription, additional_info \\ nil)
-  def subscription_info(%{type: type} = subscription, additional_info) do
+  def subscription_info(subscription, station_display_names \\ nil, departure_time_map \\ nil)
+  def subscription_info(%{type: type} = subscription, station_display_names, departure_time_map) do
     if Enum.member?([:amenity, :bus, :commuter_rail, :ferry, :subway], type) do
-      do_subscription_info(subscription, additional_info)
+      do_subscription_info(subscription, station_display_names, departure_time_map)
     else
       ""
     end
   end
 
-  defp do_subscription_info(%{type: :amenity} = subscription, _) do
+  defp do_subscription_info(%{type: :amenity} = subscription, _, _) do
     content_tag :div, class: "subscription-info" do
       [
         content_tag :div, class: "subscription-route" do
           "Station Amenities"
         end,
         content_tag :div, class: "subscription-details" do
-          route_body(subscription, nil)
+          route_body(subscription, nil, nil)
         end
       ]
     end
   end
-  defp do_subscription_info(subscription, additional_info) when additional_info == %{} do
+  defp do_subscription_info(subscription, station_display_names, departure_time_map) when departure_time_map == %{} do
     content_tag :div, class: "subscription-info" do
       [
         content_tag :div, class: "subscription-route" do
-          route_header(subscription)
+          route_header(subscription, station_display_names)
         end,
         content_tag :div, class: "subscription-details" do
           [
@@ -85,40 +85,39 @@ defmodule ConciergeSite.SubscriptionView do
       ]
     end
   end
-  defp do_subscription_info(subscription, additional_info) do
+  defp do_subscription_info(subscription, station_display_names, departure_time_map) do
     content_tag :div, class: "subscription-info" do
       [
         content_tag :div, class: "subscription-route" do
-          route_header(subscription)
+          route_header(subscription, station_display_names)
         end,
         content_tag :div, class: "subscription-details" do
-          route_body(subscription, additional_info)
+          route_body(subscription, station_display_names, departure_time_map)
         end
       ]
     end
   end
 
   def route_header(%{type: :amenity}), do: "Station Amenities"
-  def route_header(%{type: :bus} = subscription) do
+  def route_header(%{type: :bus} = subscription, _) do
     [
       content_tag(:span, Route.name(parse_route(subscription))),
       content_tag(:i, "", class: "fa fa-long-arrow-right"),
       content_tag(:span, direction_name(subscription))
     ]
   end
-
-  def route_header(subscription) do
+  def route_header(subscription, station_display_names) do
     case direction_name(subscription) do
-      :roaming -> content_tag(:span, "#{subscription.origin} - #{subscription.destination}")
+      :roaming -> content_tag(:span, "#{Map.get(station_display_names, subscription.origin, subscription.origin)} - #{Map.get(station_display_names, subscription.destination, subscription.destination)}")
       _ -> [
-            content_tag(:span, subscription.origin),
+            content_tag(:span, Map.get(station_display_names, subscription.origin, subscription.origin)),
             content_tag(:i, "", class: "fa fa-long-arrow-right"),
-            content_tag(:span, subscription.destination)
+            content_tag(:span, Map.get(station_display_names, subscription.destination, subscription.destination))
           ]
     end
   end
 
-  defp route_body(%{type: :amenity} = subscription, _) do
+  defp route_body(%{type: :amenity} = subscription, _, _) do
     [
       content_tag :div, class: "subscription-facility-types" do
         amenity_facility_type(subscription)
@@ -128,7 +127,7 @@ defmodule ConciergeSite.SubscriptionView do
       end
     ]
   end
-  defp route_body(%{type: :subway} = subscription, _) do
+  defp route_body(%{type: :subway} = subscription, _, _) do
     case direction_name(subscription) do
       :roaming ->
         timeframe(subscription)
@@ -136,10 +135,10 @@ defmodule ConciergeSite.SubscriptionView do
         [timeframe(subscription), " | ", direction_name(subscription), " ", parse_headsign(subscription)]
     end
   end
-  defp route_body(%{type: :bus} = subscription, _) do
+  defp route_body(%{type: :bus} = subscription,  _, _) do
     [timeframe(subscription), " | ", parse_headsign(subscription)]
   end
-  defp route_body(%{type: :commuter_rail, relevant_days: [relevant_days]} = subscription, departure_time_map) do
+  defp route_body(%{type: :commuter_rail, relevant_days: [relevant_days]} = subscription, station_display_names, departure_time_map) do
     for trip_entity <- get_trip_entities(subscription, departure_time_map) do
       departure_time_iodata = departure_time_iodata(departure_time_map[trip_entity.trip], fn time -> [" at ", time] end)
 
@@ -149,12 +148,12 @@ defmodule ConciergeSite.SubscriptionView do
         ", ",
         relevant_days |> to_string() |> String.capitalize(),
         "s | Departs ",
-        subscription.origin,
+        Map.get(station_display_names, subscription.origin, subscription.origin),
         departure_time_iodata
       ])
     end
   end
-  defp route_body(%{type: :ferry, relevant_days: [relevant_days]} = subscription, departure_time_map) do
+  defp route_body(%{type: :ferry, relevant_days: [relevant_days]} = subscription, station_display_names, departure_time_map) do
     for trip_entity <- get_trip_entities(subscription, departure_time_map) do
       departure_time_iodata = departure_time_iodata(departure_time_map[trip_entity.trip], fn time -> [time, ", "] end)
 
@@ -162,7 +161,7 @@ defmodule ConciergeSite.SubscriptionView do
         departure_time_iodata,
         relevant_days |> to_string() |> String.capitalize(),
         "s | Departs from ",
-        subscription.origin
+        Map.get(station_display_names, subscription.origin, subscription.origin)
       ])
     end
   end

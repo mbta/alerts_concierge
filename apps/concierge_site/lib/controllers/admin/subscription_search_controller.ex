@@ -10,11 +10,10 @@ defmodule ConciergeSite.Admin.SubscriptionSearchController do
       {:ok, user} <- get_user(user_id),
       {:ok, diagnoses} <- Diagnostic.diagnose_alert(user, search_params),
       sorted_diagnoses <- Diagnostic.sort(diagnoses),
-      {:ok, departure_time_map} <-
-        sorted_diagnoses.all
-        |> Enum.map(&(&1.subscription))
-        |> DisplayInfo.departure_times_for_subscriptions() do
-        render conn, :new, user: user, diagnoses: sorted_diagnoses, departure_time_map: departure_time_map
+      subscriptions <- Enum.map(sorted_diagnoses.all, &(&1.subscription)),
+      {:ok, station_display_names} <- DisplayInfo.station_names_for_subscriptions(subscriptions),
+      {:ok, departure_time_map} <- DisplayInfo.departure_times_for_subscriptions(subscriptions) do
+        render conn, :new, user: user, diagnoses: sorted_diagnoses, station_display_names: station_display_names, departure_time_map: departure_time_map
     else
       {:error, :no_user} ->
         conn
@@ -23,7 +22,7 @@ defmodule ConciergeSite.Admin.SubscriptionSearchController do
       {:error, user} ->
         conn
         |> put_flash(:error, "That alert ID and date does not return any subscriptions. The user did not have any valid subscriptions on that date, or that alert did not exist.")
-        |> render(:new, user: user, diagnoses: %{all: [], succeeded: [], failed: []}, departure_time_map: %{})
+        |> render(:new, user: user, diagnoses: %{all: [], succeeded: [], failed: []}, station_display_names: %{}, departure_time_map: %{})
       false ->
         render_unauthorized(conn)
     end
@@ -39,7 +38,7 @@ defmodule ConciergeSite.Admin.SubscriptionSearchController do
   def new(conn, %{"user_id" => user_id}, _admin, _claims) do
     case Repo.get_by(User, id: user_id) do
       %User{} = user ->
-        render(conn, :new, user: user, diagnoses: %{all: [], succeeded: [], failed: []}, departure_time_map: %{})
+        render(conn, :new, user: user, diagnoses: %{all: [], succeeded: [], failed: []}, station_display_names: %{}, departure_time_map: %{})
       _ ->
         conn
         |> put_flash(:error, "That user does not exist")

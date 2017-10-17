@@ -7,7 +7,7 @@ defmodule AlertProcessor.Subscription.AmenitiesMapper do
   import AlertProcessor.Subscription.Mapper, except: [map_timeframe: 1]
   import Ecto.Query
   alias Ecto.Multi
-  alias AlertProcessor.{Repo, ServiceInfoCache}
+  alias AlertProcessor.Repo
   alias AlertProcessor.Model.{InformedEntity, Subscription, User}
 
   defdelegate build_subscription_transaction(subscriptions, user, originator), to: AlertProcessor.Subscription.Mapper
@@ -99,15 +99,7 @@ defmodule AlertProcessor.Subscription.AmenitiesMapper do
   defp map_stop_names(params) do
     stop_ids = params["stops"]
     |> String.split(",", trim: true)
-    |> station_ids_from_names()
     Map.put(params, "stops", stop_ids)
-  end
-
-  defp station_ids_from_names(names) do
-    Enum.map(names, fn(name) ->
-      {:ok, {_, id}} = ServiceInfoCache.get_stop_by_name(name)
-      id
-    end)
   end
 
   defp map_entities(subscriptions, params) do

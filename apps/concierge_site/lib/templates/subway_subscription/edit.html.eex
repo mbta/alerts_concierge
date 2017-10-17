@@ -1,6 +1,6 @@
 <%= render ConciergeSite.SubscriptionView,
            "_edit_subscription_header.html",
-           title: [@subscription.origin, " - ", @subscription.destination],
+           title: ConciergeSite.SubscriptionView.route_header(@subscription, @station_display_names),
            subscription: @subscription %>
 
 <div class="edit-subscription subscription-step">

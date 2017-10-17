@@ -1,4 +1,4 @@
-<h1><%= route_header(@subscription) %></h1>
+<h1>Station amenity alerts</h1>
 <div class="subscription-step">
   <h2>Delete Subscription?</h2>
   <%= flash_error(@conn) %>

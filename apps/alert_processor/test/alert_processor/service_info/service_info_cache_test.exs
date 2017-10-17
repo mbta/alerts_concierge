@@ -122,14 +122,6 @@ defmodule AlertProcessor.ServiceInfoCacheTest do
     end
   end
 
-  test "get_stop_by_name returns the correct stop" do
-    use_cassette "service_info", custom: true, clear_mock: true, match_requests_on: [:query] do
-      {:ok, pid} = ServiceInfoCache.start_link([name: :service_info_cache_test_stop])
-      assert {:ok, {"Davis", "place-davis"}} == ServiceInfoCache.get_stop_by_name(pid, "Davis")
-      assert {:ok, nil} == ServiceInfoCache.get_stop(pid, "Place doesn't exist")
-    end
-  end
-
   test "get_direction_name :subway returns the correct direction name" do
     use_cassette "service_info", custom: true, clear_mock: true, match_requests_on: [:query] do
       {:ok, pid} = ServiceInfoCache.start_link([name: :service_info_cache_test_direction_name])
@@ -147,15 +139,15 @@ defmodule AlertProcessor.ServiceInfoCacheTest do
   test "get_headsign :subway returns the correct headsigns" do
     use_cassette "service_info", custom: true, clear_mock: true, match_requests_on: [:query] do
       {:ok, pid} = ServiceInfoCache.start_link([name: :service_info_cache_test_headsigns])
-      assert {:ok, "Ashmont"} == ServiceInfoCache.get_headsign(pid, "Davis", "Ashmont", 0)
-      assert {:ok, "Braintree"} == ServiceInfoCache.get_headsign(pid, "Davis", "Braintree", 0)
-      assert {:ok, "Alewife"} == ServiceInfoCache.get_headsign(pid, "Ashmont", "Davis", 1)
-      assert {:ok, "Alewife"} == ServiceInfoCache.get_headsign(pid, "Braintree", "Davis", 1)
-      assert {:ok, "Ashmont or Braintree"} == ServiceInfoCache.get_headsign(pid, "Davis", "Park Street", 0)
-      assert {:ok, "Alewife"} == ServiceInfoCache.get_headsign(pid, "Park Street", "Davis", 1)
-      assert {:ok, "C"} == ServiceInfoCache.get_headsign(pid, "North Station", "Cleveland Circle", 0)
-      assert {:ok, "C"} == ServiceInfoCache.get_headsign(pid, "Cleveland Circle", "North Station", 1)
-      assert {:ok, "B, C, D, or E"} == ServiceInfoCache.get_headsign(pid, "Government Center", "Haymarket", 0)
+      assert {:ok, "Ashmont"} == ServiceInfoCache.get_headsign(pid, "place-davis", "place-asmnl", 0)
+      assert {:ok, "Braintree"} == ServiceInfoCache.get_headsign(pid, "place-davis", "place-brntn", 0)
+      assert {:ok, "Alewife"} == ServiceInfoCache.get_headsign(pid, "place-asmnl", "place-davis", 1)
+      assert {:ok, "Alewife"} == ServiceInfoCache.get_headsign(pid, "place-brntn", "place-davis", 1)
+      assert {:ok, "Ashmont or Braintree"} == ServiceInfoCache.get_headsign(pid, "place-davis", "place-pktrm", 0)
+      assert {:ok, "Alewife"} == ServiceInfoCache.get_headsign(pid, "place-pktrm", "place-davis", 1)
+      assert {:ok, "C"} == ServiceInfoCache.get_headsign(pid, "place-north", "place-clmnl", 0)
+      assert {:ok, "C"} == ServiceInfoCache.get_headsign(pid, "place-clmnl", "place-north", 1)
+      assert {:ok, "B, C, D, or E"} == ServiceInfoCache.get_headsign(pid, "place-gover", "place-haecl", 0)
       assert :error == ServiceInfoCache.get_headsign(pid, "garbage", "more garbage", 1)
     end
   end

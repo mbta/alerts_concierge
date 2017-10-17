@@ -3,7 +3,7 @@ defmodule AlertProcessor.Subscription.Mapper do
   Module for common subscription mapping functions to be imported into
   mode-specific mapper modules.
   """
-  alias AlertProcessor.{Helpers.DateTimeHelper, Model.InformedEntity, Model.Route, Model.Subscription, Model.Trip, Model.User, ServiceInfoCache}
+  alias AlertProcessor.{Helpers.DateTimeHelper, Model.InformedEntity, Model.Route, Model.Subscription, Model.Trip, Model.User}
   alias Ecto.Multi
 
   @type map_trip_info_fn :: (String.t, String.t, Subscription.relevant_day -> :error | {:ok, [Trip.t]})
@@ -153,15 +153,12 @@ defmodule AlertProcessor.Subscription.Mapper do
         do_map_end_stop(false, stop_entity, destination, direction_id_2)
       end)
 
-    {:ok, {origin_name, ^origin}} = ServiceInfoCache.get_stop(origin)
-    {:ok, {destination_name, ^destination}} = ServiceInfoCache.get_stop(destination)
-
     [
       {
-        Map.merge(sub1, %{origin: origin_name, destination: destination_name}),
+        Map.merge(sub1, %{origin: origin, destination: destination}),
         ie1 ++ stop_entities_1 ++ end_stop_entities_1
       }, {
-        Map.merge(sub2, %{origin: destination_name, destination: origin_name}),
+        Map.merge(sub2, %{origin: destination, destination: origin}),
         ie2 ++ stop_entities_2 ++ end_stop_entities_2
       }
     ]
@@ -192,10 +189,7 @@ defmodule AlertProcessor.Subscription.Mapper do
         Enum.flat_map(direction_ids, &do_map_end_stop(roaming_subscription, stop_entity, origin, &1))
       end)
 
-    {:ok, {origin_name, ^origin}} = ServiceInfoCache.get_stop(origin)
-    {:ok, {destination_name, ^destination}} = ServiceInfoCache.get_stop(destination)
-
-    [{Map.merge(subscription, %{origin: origin_name, destination: destination_name}), informed_entities ++ stop_entities ++ end_stop_entities}]
+    [{Map.merge(subscription, %{origin: origin, destination: destination}), informed_entities ++ stop_entities ++ end_stop_entities}]
   end
 
   defp do_map_intermediate_stop(true, stop_entity, direction_id) do
@@ -406,11 +400,9 @@ defmodule AlertProcessor.Subscription.Mapper do
 
   @spec get_trip_info_from_subscription(Subscription.t, map_trip_info_fn) :: {:ok, [Trip.t]} | :error
   def get_trip_info_from_subscription(subscription, map_trip_options_fn) do
-    with {:ok, {_name, origin_id}} <- ServiceInfoCache.get_stop_by_name(subscription.origin),
-         {:ok, {_name, destination_id}} <- ServiceInfoCache.get_stop_by_name(subscription.destination),
-         [relevant_days] <- subscription.relevant_days,
+    with [relevant_days] <- subscription.relevant_days,
          selected_trips <- Subscription.subscription_trip_ids(subscription) do
-      get_trip_info(origin_id, destination_id, relevant_days, selected_trips, map_trip_options_fn)
+      get_trip_info(subscription.origin, subscription.destination, relevant_days, selected_trips, map_trip_options_fn)
     else
       _ -> :error
     end

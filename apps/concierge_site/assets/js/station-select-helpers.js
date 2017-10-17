@@ -41,7 +41,7 @@ function generateStationList(className, $) {
 
       if (alreadyAddedStation) {
         alreadyAddedStation.allLineNames.push(group.label)
-      } else {
+      } else if (option.value) {
         const station = {
           name: option.text,
           id: option.value,

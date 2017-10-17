@@ -24,7 +24,7 @@ defmodule AlertProcessor.Subscriptions.DisplayInfoTest do
       end
     end
 
-    test "departure_times_for_subscriptions with bad info" do
+    test "with bad info" do
       use_cassette "schedule_display_info_bad", custom: true, clear_mock: true, match_requests_on: [:query] do
         informed_entities = [
           %InformedEntity{route_type: 2, route: "CR-Lowell", stop: "place-south"},
@@ -38,6 +38,38 @@ defmodule AlertProcessor.Subscriptions.DisplayInfoTest do
           |> weekday_subscription()
 
         assert {:ok, %{}} == DisplayInfo.departure_times_for_subscriptions([subscription], @test_date)
+      end
+    end
+  end
+
+  describe "station_names_for_subscriptions" do
+    test "creates map of stop_id => stop name for displaying" do
+      use_cassette "schedule_display_info", custom: true, clear_mock: true, match_requests_on: [:query] do
+        informed_entities = commuter_rail_subscription_entities()
+        subscription =
+          :subscription
+          |> build(informed_entities: informed_entities)
+          |> commuter_rail_subscription()
+          |> weekday_subscription()
+
+        assert {:ok, %{
+            "place-north" => "North Station",
+            "Anderson/ Woburn" => "Anderson/Woburn"
+          }} = DisplayInfo.station_names_for_subscriptions([subscription])
+      end
+    end
+
+    test "with bad info" do
+      use_cassette "schedule_display_info", custom: true, clear_mock: true, match_requests_on: [:query] do
+        informed_entities = commuter_rail_subscription_entities()
+        subscription =
+          :subscription
+          |> build(informed_entities: informed_entities)
+          |> commuter_rail_subscription()
+          |> Map.merge(%{origin: nil, destination: nil})
+          |> weekday_subscription()
+
+        assert {:ok, %{}} == DisplayInfo.station_names_for_subscriptions([subscription])
       end
     end
   end

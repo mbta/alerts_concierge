@@ -30,8 +30,8 @@ defmodule AlertProcessor.Subscription.FerryMapperTest do
 
     test "constructs subscription with origin and destination" do
       {:ok, [{subscription, _ie}]} = FerryMapper.map_subscriptions(@one_way_params)
-      assert subscription.origin == "Boston (Long Wharf)"
-      assert subscription.destination == "Hingham (Hewitt's Cove)"
+      assert subscription.origin == "Boat-Long"
+      assert subscription.destination == "Boat-Hingham"
     end
 
     test "constructs subscription with timeframe" do
@@ -143,10 +143,10 @@ defmodule AlertProcessor.Subscription.FerryMapperTest do
 
     test "constructs subscription with origin and destination" do
       {:ok, [{sub1, _ie1}, {sub2, _ie2}]} = FerryMapper.map_subscriptions(@round_trip_params)
-      assert sub1.origin == "Boston (Long Wharf)"
-      assert sub1.destination == "Hingham (Hewitt's Cove)"
-      assert sub2.origin == "Hingham (Hewitt's Cove)"
-      assert sub2.destination == "Boston (Long Wharf)"
+      assert sub1.origin == "Boat-Long"
+      assert sub1.destination == "Boat-Hingham"
+      assert sub2.origin == "Boat-Hingham"
+      assert sub2.destination == "Boat-Long"
     end
 
     test "constructs subscription with timeframe" do

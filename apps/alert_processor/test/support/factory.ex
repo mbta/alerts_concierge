@@ -50,8 +50,8 @@ defmodule AlertProcessor.Factory do
   def subway_subscription(%Subscription{} = subscription) do
     %{subscription |
       type: :subway,
-      origin: "Davis",
-      destination: "Harvard"}
+      origin: "place-davis",
+      destination: "place-harsq"}
   end
 
   def subway_subscription_entities() do
@@ -82,8 +82,8 @@ defmodule AlertProcessor.Factory do
   def commuter_rail_subscription(%Subscription{} = subscription) do
     %{subscription |
       type: :commuter_rail,
-      origin: "North Station",
-      destination: "Anderson/Woburn"
+      origin: "place-north",
+      destination: "Anderson/ Woburn"
     }
   end
 
@@ -101,8 +101,8 @@ defmodule AlertProcessor.Factory do
   def ferry_subscription(%Subscription{} = subscription) do
     %{subscription |
       type: :ferry,
-      origin: "Boston (Long Wharf)",
-      destination: "Charlestown (Navy Yard)"
+      origin: "Boat-Long",
+      destination: "Boat-Charlestown"
     }
   end
 

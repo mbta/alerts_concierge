@@ -91,23 +91,22 @@ defmodule ConciergeSite.Admin.SubscriberControllerTest do
     end
 
     test "GET /admin/subscribers/:id with subscriptions", %{conn: conn, subscriber1: subscriber} do
-      {:ok, subscription} =
-        :subscription
-        |> build(user: subscriber)
-        |> weekday_subscription()
-        |> subway_subscription()
-        |> Repo.preload(:informed_entities)
-        |> Ecto.Changeset.change()
-        |> Ecto.Changeset.put_assoc(:informed_entities, subway_subscription_entities())
-        |> Repo.insert()
+      :subscription
+      |> build(user: subscriber)
+      |> weekday_subscription()
+      |> subway_subscription()
+      |> Repo.preload(:informed_entities)
+      |> Ecto.Changeset.change()
+      |> Ecto.Changeset.put_assoc(:informed_entities, subway_subscription_entities())
+      |> Repo.insert()
 
       conn = get(conn, admin_subscriber_path(conn, :show, subscriber))
 
       assert html_response(conn, 200) =~ subscriber.email
       refute html_response(conn, 200) =~ "No Subscriptions"
       assert html_response(conn, 200) =~ "No Notification"
-      assert html_response(conn, 200) =~ subscription.origin
-      assert html_response(conn, 200) =~ subscription.destination
+      assert html_response(conn, 200) =~ "Davis"
+      assert html_response(conn, 200) =~ "Harvard"
     end
 
     test "GET /admin/subscribers/:id/new_message", %{conn: conn, subscriber1: subscriber1} do

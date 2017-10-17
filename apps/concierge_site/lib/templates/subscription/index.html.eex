@@ -12,6 +12,6 @@
 <% end %>
 
 <div class="my-subscriptions-container">
-  <%= render "_subscriptions.html", conn: @conn, subscriptions: @subscriptions, departure_time_map: @departure_time_map, render_links: true %>
+  <%= render "_subscriptions.html", conn: @conn, subscriptions: @subscriptions, station_display_names: @station_display_names, departure_time_map: @departure_time_map, render_links: true %>
   <%= link("Create a new subscription", to: subscription_path(@conn, :new), class: "btn btn-primary btn-create-new-sub") %>
 </div>
