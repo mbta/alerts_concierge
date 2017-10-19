@@ -85,17 +85,23 @@ defmodule AlertProcessor.AlertParser do
   end
 
   defp parse_informed_entities(informed_entities, facilities_map) do
-    InformedEntity.queryable_fields
-    Enum.map(informed_entities, fn(ie) ->
-      struct_params = parse_informed_entity(ie)
-      informed_entity = struct(InformedEntity, struct_params)
-      with {:facility_id, facility_id} <- Enum.find(struct_params, &(elem(&1, 0) == :facility_id)),
-           %{^facility_id => facility_type} <- facilities_map do
-        %{informed_entity | facility_type: facility_type |> String.downcase() |> String.to_existing_atom()}
-      else
-        _ -> informed_entity
-      end
+    informed_entities
+    |> Enum.map(fn(ie) ->
+      struct_params = ie
+        |> parse_informed_entity()
+        |> set_route_for_amenity()
+
+      Enum.map(struct_params, fn(sp) ->
+        informed_entity = struct(InformedEntity, sp)
+        with {:facility_id, facility_id} <- Enum.find(sp, &(elem(&1, 0) == :facility_id)),
+             %{^facility_id => facility_type} <- facilities_map do
+          %{informed_entity | facility_type: facility_type |> String.downcase() |> String.to_existing_atom()}
+        else
+          _ -> informed_entity
+        end
+      end)
     end)
+    |> List.flatten()
   end
 
   defp parse_informed_entity(informed_entity) do
@@ -119,6 +125,23 @@ defmodule AlertProcessor.AlertParser do
           acc
       end
     end)
+  end
+
+  defp set_route_for_amenity(%{facility_id: fid, stop: stop} = entity) when not is_nil(fid) do
+    with {:ok, subway_infos} <- ServiceInfoCache.get_subway_info(),
+      {:ok, cr_infos} <- ServiceInfoCache.get_commuter_rail_info(),
+      routes <- get_routes_for_stop(stop, subway_infos ++ cr_infos) do
+        Enum.map(routes, & Map.put(entity, :route, &1))
+    else
+      _ -> [entity]
+    end
+  end
+  defp set_route_for_amenity(entity), do: [entity]
+
+  defp get_routes_for_stop(stop, route_info) do
+    route_info
+    |> Enum.filter(&(List.keymember?(&1.stop_list, stop, 1)))
+    |> Enum.map(&(&1.route_id))
   end
 
   defp parse_trip(%{"trip_id" => trip_id}, %{"route_type" => 4}) do
