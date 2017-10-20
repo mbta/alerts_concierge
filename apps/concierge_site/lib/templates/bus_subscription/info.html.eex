@@ -40,7 +40,7 @@
       <% end %>
     </div>
 
-    <%= hidden_input f, :routes, value: stringify(@selected_routes |> Enum.map(& elem(&1, 1)) |> Enum.join(",")), class: "selected-subscription-entities" %>
+    <%= hidden_input f, :routes, value: stringify(@selected_routes), class: "selected-subscription-entities" %>
 
     <%= render "_travel_days_checkboxes.html",
                form: f,

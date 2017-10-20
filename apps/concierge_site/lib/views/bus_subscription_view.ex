@@ -132,7 +132,7 @@ defmodule ConciergeSite.BusSubscriptionView do
 
   def stringify(params) when is_list(params) do
     params
-    |> Enum.map(fn({_, id}) -> id end)
+    |> Enum.map(&elem(&1, 1))
     |> Enum.join(",")
   end
   def stringify(p), do: p
