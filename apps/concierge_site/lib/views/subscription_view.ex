@@ -100,11 +100,16 @@ defmodule ConciergeSite.SubscriptionView do
 
   def route_header(%{type: :amenity}), do: "Station Amenities"
   def route_header(%{type: :bus} = subscription, _) do
-    [
-      content_tag(:span, Route.name(parse_route(subscription))),
-      content_tag(:i, "", class: "fa fa-long-arrow-right"),
-      content_tag(:span, direction_name(subscription))
-    ]
+    route_entity_count =  Enum.count(subscription.informed_entities, &InformedEntity.entity_type(&1) == :route && &1.direction_id != nil)
+    if route_entity_count > 1 do
+      [to_string(route_entity_count), " Bus Routes"]
+    else
+      [
+        content_tag(:span, Route.name(parse_route(subscription))),
+        content_tag(:i, "", class: "fa fa-long-arrow-right"),
+        content_tag(:span, direction_name(subscription))
+      ]
+    end
   end
   def route_header(subscription, station_display_names) do
     case direction_name(subscription) do
@@ -136,7 +141,12 @@ defmodule ConciergeSite.SubscriptionView do
     end
   end
   defp route_body(%{type: :bus} = subscription,  _, _) do
-    [timeframe(subscription), " | ", parse_headsign(subscription)]
+    route_entity_count =  Enum.count(subscription.informed_entities, &InformedEntity.entity_type(&1) == :route && &1.direction_id != nil)
+    if route_entity_count > 1 do
+      timeframe(subscription)
+    else
+      [timeframe(subscription), " | ", parse_headsign(subscription)]
+    end
   end
   defp route_body(%{type: :commuter_rail, relevant_days: [relevant_days]} = subscription, station_display_names, departure_time_map) do
     for trip_entity <- get_trip_entities(subscription, departure_time_map) do
@@ -202,7 +212,7 @@ defmodule ConciergeSite.SubscriptionView do
   defp direction_name(subscription) do
     case parse_direction(subscription) do
       :roaming ->
-        :roaming
+        "Roaming"
       direction ->
         {:ok, direction_name} = ServiceInfoCache.get_direction_name(parse_route_id(subscription), direction)
         direction_name

@@ -5,7 +5,7 @@ defmodule ConciergeSite.Subscriptions.BusParamsTest do
   describe "validate_info_params" do
     test "it returns error messages when route not present" do
       params = %{
-        "route" => "",
+        "routes" => "",
         "weekday" => "true",
         "departure_start" => "12:00:00",
         "departure_end" => "14:00:00",
@@ -30,7 +30,7 @@ defmodule ConciergeSite.Subscriptions.BusParamsTest do
 
     test "it returns error messages when a relevant day option is not selected" do
       params = %{
-        "route" => "88 - 0",
+        "routes" => "88 - 0",
         "departure_start" => "12:00:00",
         "departure_end" => "14:00:00",
         "trip_type" => "one_way"
@@ -42,7 +42,7 @@ defmodule ConciergeSite.Subscriptions.BusParamsTest do
 
     test "it returns error messages when the departure end is before departure start" do
       params = %{
-        "route" => "88 - 0",
+        "routes" => "88 - 0",
         "weekday" => "true",
         "departure_start" => "14:00:00",
         "departure_end" => "12:00:00",
@@ -55,7 +55,7 @@ defmodule ConciergeSite.Subscriptions.BusParamsTest do
 
     test "it returns error messages when the return end is before return start" do
       params = %{
-        "route" => "88 - 0",
+        "routes" => "88 - 0",
         "weekday" => "true",
         "departure_start" => "12:00:00",
         "departure_end" => "14:00:00",
@@ -70,7 +70,7 @@ defmodule ConciergeSite.Subscriptions.BusParamsTest do
 
     test "it returns error messages when the return end is before return start and departure end is before departure start" do
       params = %{
-        "route" => "88 - 0",
+        "routes" => "88 - 0",
         "weekday" => "true",
         "departure_start" => "16:00:00",
         "departure_end" => "14:00:00",
@@ -85,7 +85,7 @@ defmodule ConciergeSite.Subscriptions.BusParamsTest do
 
     test "it returns ok when the return end is before return start but before 3:00AM" do
       params = %{
-        "route" => "88 - 0",
+        "routes" => "88 - 0",
         "weekday" => "true",
         "saturday" => "true",
         "departure_start" => "12:00:00",
@@ -100,7 +100,7 @@ defmodule ConciergeSite.Subscriptions.BusParamsTest do
 
     test "it returns ok when route and relevant day(s) are selected" do
       params = %{
-        "route" => "88 - 0",
+        "routes" => "88 - 0",
         "weekday" => "true",
         "saturday" => "true",
         "departure_start" => "12:00:00",
@@ -129,7 +129,7 @@ defmodule ConciergeSite.Subscriptions.BusParamsTest do
 
     test "sets return timeframe to nil" do
       params = %{
-        "route" => "88 - 0",
+        "routes" => "88 - 0",
         "sunday" => "true",
         "departure_start" => "12:00:00",
         "departure_end" => "13:00:00",
@@ -137,7 +137,7 @@ defmodule ConciergeSite.Subscriptions.BusParamsTest do
       }
 
       assert %{
-        "route" => "88 - 0",
+        "routes" => "88 - 0",
         "departure_start" => ds,
         "departure_end" => de,
         "return_start" => nil,
@@ -152,7 +152,7 @@ defmodule ConciergeSite.Subscriptions.BusParamsTest do
   describe "prepare_for_mapper round_trip" do
     test "converts relevant day options to array" do
       params = %{
-        "route" => "88 - 0",
+        "routes" => "88 - 0",
         "saturday" => "true",
         "departure_start" => "12:00:00",
         "departure_end" => "13:00:00",
@@ -162,7 +162,7 @@ defmodule ConciergeSite.Subscriptions.BusParamsTest do
       }
 
       assert %{
-        "route" => "88 - 0",
+        "routes" => "88 - 0",
         "departure_start" => ds,
         "departure_end" => de,
         "return_start" => rs,

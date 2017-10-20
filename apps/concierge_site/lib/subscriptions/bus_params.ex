@@ -9,7 +9,7 @@ defmodule ConciergeSite.Subscriptions.BusParams do
   def validate_info_params(params) do
     {_, errors} =
       {params, []}
-      |> validate_presence_of_route()
+      |> validate_presence_of_routes()
       |> validate_at_least_one_travel_day()
       |> validate_endtime_after_starttime()
 
@@ -20,8 +20,8 @@ defmodule ConciergeSite.Subscriptions.BusParams do
     end
   end
 
-  defp validate_presence_of_route({params, errors}) do
-    if params["route"] == "" || params["route"] == nil do
+  defp validate_presence_of_routes({params, errors}) do
+    if params["routes"] == "" || params["routes"] == nil do
       {params, ["Route is invalid." | errors]}
     else
       {params, errors}
@@ -68,7 +68,7 @@ defmodule ConciergeSite.Subscriptions.BusParams do
 
   def do_prepare_for_mapper(params, translated_params) do
     params
-    |> Map.take(["alert_priority_type", "departure_end", "departure_start", "return_start", "return_end", "route"])
+    |> Map.take(["alert_priority_type", "departure_end", "departure_start", "return_start", "return_end", "routes"])
     |> Map.merge(translated_params)
   end
 end

@@ -2,6 +2,7 @@ defmodule ConciergeSite.AmenitySubscriptionController do
   use ConciergeSite.Web, :controller
   use Guardian.Phoenix.Controller
   alias ConciergeSite.Subscriptions.{AmenitiesParams, Lines}
+  alias ConciergeSite.Helpers.MultiSelectHelper
   alias AlertProcessor.{ServiceInfoCache,
     Subscription.AmenitiesMapper, Model.Subscription, Model.User}
 
@@ -21,7 +22,7 @@ defmodule ConciergeSite.AmenitySubscriptionController do
     render_edit_page(conn, id, user, sub_params, :remove)
   end
   def remove_station(conn, %{"station" => station, "subscription" => sub_params}, _user, _claims) do
-    new_stations = remove_station_from_list(sub_params, station)
+    new_stations = MultiSelectHelper.remove_station_from_list(sub_params, station)
     render_new_page(conn, sub_params, new_stations, :remove)
   end
 
@@ -71,7 +72,7 @@ defmodule ConciergeSite.AmenitySubscriptionController do
   defp render_edit_page(conn, id, user, sub_params, operation) do
     with {:ok, subway_stations} <- ServiceInfoCache.get_subway_full_routes(),
       {:ok, cr_stations} <- ServiceInfoCache.get_commuter_rail_info() do
-        station_select_options = station_options(cr_stations, subway_stations)
+        station_select_options = MultiSelectHelper.station_options(cr_stations, subway_stations)
         subscription = Subscription.one_for_user!(id, user.id, true)
         changeset = Subscription.update_changeset(subscription, sub_params)
         st = set_station_options(operation, sub_params, subscription)
@@ -94,10 +95,10 @@ defmodule ConciergeSite.AmenitySubscriptionController do
     with {:ok, subway_stations} <- ServiceInfoCache.get_subway_full_routes(),
       {:ok, cr_stations} <- ServiceInfoCache.get_commuter_rail_info() do
 
-      station_select_options = station_options(cr_stations, subway_stations)
+      station_select_options = MultiSelectHelper.station_options(cr_stations, subway_stations)
 
       selected_stations = if type == :add do
-          add_station_to_list(sub_params)
+          MultiSelectHelper.add_station_to_list(sub_params)
         else
           selected_stations
         end
@@ -121,13 +122,13 @@ defmodule ConciergeSite.AmenitySubscriptionController do
       :add ->
         subscription
         |> selected_station_options()
-        |> replace_stops(sub_params)
-        |> add_station_selection(sub_params)
+        |> MultiSelectHelper.replace_stops(sub_params)
+        |> MultiSelectHelper.add_station_selection(sub_params)
       :remove ->
         subscription
         |> selected_station_options()
-        |> replace_stops(sub_params)
-        |> remove_station_selection(sub_params)
+        |> MultiSelectHelper.replace_stops(sub_params)
+        |> MultiSelectHelper.remove_station_selection(sub_params)
       nil ->
         selected_station_options(subscription)
     end
@@ -166,45 +167,5 @@ defmodule ConciergeSite.AmenitySubscriptionController do
       |> Enum.reduce(%{}, fn({k, v}, acc) ->
         Map.put(acc, k, MapSet.to_list(v))
       end)
-  end
-
-  defp replace_stops(trip_options, params) do
-    stations = String.split(params["stops"], ",", trim: true)
-    put_in trip_options.stations, stations
-  end
-
-  defp add_station_selection(trip_options, params) do
-    stations = add_station_to_list(params)
-    put_in trip_options.stations, stations
-  end
-
-  defp remove_station_selection(trip_options, params) do
-    stations = remove_station_from_list(params, params["station"])
-    put_in trip_options.stations, stations
-  end
-
-  defp add_station_to_list(sub_params) do
-    stations = String.split(sub_params["stops"], ",", trim: true)
-    [sub_params["station"] | stations]
-    |> Enum.map(&fetch_stop_from_cache/1)
-    |> Enum.uniq()
-  end
-
-  defp remove_station_from_list(sub_params, station) do
-    sub_params["stops"]
-    |> String.split(",", trim: true)
-    |> Kernel.--([station])
-    |> Enum.map(&fetch_stop_from_cache/1)
-  end
-
-  defp station_options(cr_stations, subway_stations) do
-    subway_stations
-    |> Kernel.++(cr_stations)
-    |> Lines.station_list_select_options()
-  end
-
-  defp fetch_stop_from_cache(stop) do
-    {:ok, stop} = ServiceInfoCache.get_stop(stop)
-    stop
   end
 end

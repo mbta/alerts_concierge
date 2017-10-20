@@ -5,7 +5,7 @@ defmodule AlertProcessor.Subscription.BusMapperTest do
   alias AlertProcessor.Model.InformedEntity
 
   @one_way_params %{
-    "route" => "16 - 1",
+    "routes" => "16 - 1",
     "relevant_days" => ["weekday", "saturday"],
     "departure_start" => DateTime.from_naive!(~N[2017-07-20 12:00:00], "Etc/UTC"),
     "departure_end" => DateTime.from_naive!(~N[2017-07-20 14:00:00], "Etc/UTC"),
@@ -16,7 +16,7 @@ defmodule AlertProcessor.Subscription.BusMapperTest do
   }
 
   @round_trip_params %{
-    "route" => "16 - 0",
+    "routes" => "16 - 0",
     "relevant_days" => ["weekday", "saturday"],
     "departure_start" => DateTime.from_naive!(~N[2017-07-20 12:00:00], "Etc/UTC"),
     "departure_end" => DateTime.from_naive!(~N[2017-07-20 14:00:00], "Etc/UTC"),
@@ -123,7 +123,7 @@ defmodule AlertProcessor.Subscription.BusMapperTest do
     end
 
     test "constructs subscription with route in other direction" do
-      {:ok, [{_sub1, ie1}, {_sub2, ie2}]} = BusMapper.map_subscription(Map.merge(@round_trip_params, %{"route" => "16 - 1"}))
+      {:ok, [{_sub1, ie1}, {_sub2, ie2}]} = BusMapper.map_subscription(Map.merge(@round_trip_params, %{"routes" => "16 - 1"}))
       route_entity_count =
         Enum.count(ie1, fn(informed_entity) ->
           match?(%InformedEntity{route: "16", route_type: 3, stop: nil, direction_id: nil}, informed_entity)
@@ -166,7 +166,7 @@ defmodule AlertProcessor.Subscription.BusMapperTest do
 
   describe "build_subscription_transaction" do
     @round_trip_params %{
-      "route" => "16 - 0",
+      "routes" => "16 - 0",
       "relevant_days" => ["weekday", "saturday"],
       "departure_start" => DateTime.from_naive!(~N[2017-07-20 12:00:00], "Etc/UTC"),
       "departure_end" => DateTime.from_naive!(~N[2017-07-20 14:00:00], "Etc/UTC"),

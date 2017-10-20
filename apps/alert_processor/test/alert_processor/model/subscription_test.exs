@@ -300,7 +300,7 @@ defmodule AlertProcessor.Model.SubscriptionTest do
 
   describe "set_versioned_subscription/1" do
     @params %{
-      "route" => "16 - 0",
+      "routes" => "16 - 0",
       "relevant_days" => ["weekday", "saturday"],
       "departure_start" => DateTime.from_naive!(~N[2017-07-20 12:00:00], "Etc/UTC"),
       "departure_end" => DateTime.from_naive!(~N[2017-07-20 14:00:00], "Etc/UTC"),

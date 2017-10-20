@@ -15,9 +15,17 @@ defmodule ConciergeSite.Subscriptions.BusRoutes do
   def route_list_select_options(routes) do
     Enum.flat_map(routes, fn(route) ->
       [
-        "Route #{Route.name(route)} - Inbound": "#{route.route_id} - 1",
-        "Route #{Route.name(route)} - Outbound": "#{route.route_id} - 0"
+        route_list_select_option(route, "1"),
+        route_list_select_option(route, "0")
       ]
     end)
+  end
+
+  @spec route_list_select_option(%Route{}, String.t) :: {String.t, String.t}
+  def route_list_select_option(route, "0") do
+    {:"Route #{Route.name(route)} - Outbound", "#{route.route_id} - 0"}
+  end
+  def route_list_select_option(route, "1") do
+    {:"Route #{Route.name(route)} - Inbound", "#{route.route_id} - 1"}
   end
 end

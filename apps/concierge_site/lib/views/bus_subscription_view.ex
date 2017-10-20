@@ -1,6 +1,6 @@
 defmodule ConciergeSite.BusSubscriptionView do
   use ConciergeSite.Web, :view
-  alias AlertProcessor.Model.{Route, Subscription}
+  alias AlertProcessor.Model.{InformedEntity, Route, Subscription}
   import ConciergeSite.SubscriptionHelper,
     only: [atomize_keys: 1, joined_day_list: 1, progress_link_class: 3,
            do_query_string_params: 2, selected_relevant_days: 1]
@@ -33,7 +33,7 @@ defmodule ConciergeSite.BusSubscriptionView do
   @spec params_for_step(step) :: [String.t]
   def params_for_step(:trip_type), do: ~w(trip_type)
   def params_for_step(:trip_info), do: [
-    "route", "departure_start", "departure_end", "return_start", "return_end",
+    "routes", "departure_start", "departure_end", "return_start", "return_end",
     "weekday", "saturday", "sunday" | params_for_step(:trip_type)
   ]
   def params_for_step(:preferences), do: ["alert_priority_type" | params_for_step(:trip_info)]
@@ -44,9 +44,14 @@ defmodule ConciergeSite.BusSubscriptionView do
   """
   @spec route_name(Subscription.t) :: iodata
   def route_name(subscription) do
-    route = parse_route(subscription)
-    direction = direction_name(subscription)
-    ["Route ", Route.name(route), " ", direction]
+    route_entity_count =  Enum.count(subscription.informed_entities, &InformedEntity.entity_type(&1) == :route && &1.direction_id != nil)
+    if route_entity_count > 1 do
+      [to_string(route_entity_count), " Bus Routes"]
+    else
+      route = parse_route(subscription)
+      direction = direction_name(subscription)
+      ["Route ", Route.name(route), " ", direction]
+    end
   end
 
   defp direction_name(subscription) do
@@ -64,22 +69,21 @@ defmodule ConciergeSite.BusSubscriptionView do
     |> named_direction()
   end
 
-  def trip_summary_routes(%{"trip_type" => "round_trip"} = params, route) do
+  def trip_summary_routes(%{"trip_type" => "round_trip"} = params, routes) do
     [
-      departure_format(params, route),
-      return_format(params, route)
+      departure_format(params, routes),
+      return_format(params, routes)
     ]
   end
-
-  def trip_summary_routes(%{"trip_type" => "one_way"} = params, route) do
-    [departure_format(params, route)]
+  def trip_summary_routes(%{"trip_type" => "one_way"} = params, routes) do
+    [departure_format(params, routes)]
   end
 
-  defp departure_format(params, route) do
+  defp departure_format(params, [route]) do
     ["Route ",
      Route.name(route),
      " ",
-     direction_from_route(params["route"]),
+     direction_from_route(params["routes"]),
      ", ",
      joined_day_list(params),
      " ",
@@ -87,9 +91,18 @@ defmodule ConciergeSite.BusSubscriptionView do
      " - ",
      format_time_string(params["departure_end"])]
   end
+  defp departure_format(params, routes) do
+    [to_string(Enum.count(routes)),
+    " Bus Routes, ",
+    joined_day_list(params),
+    " ",
+    format_time_string(params["departure_start"]),
+    " - ",
+    format_time_string(params["departure_end"])]
+  end
 
-  defp return_format(params, route) do
-    direction = direction_from_route(params["route"])
+  defp return_format(params, [route]) do
+    direction = direction_from_route(params["routes"])
     ["Route ",
      Route.name(route),
      " ",
@@ -101,10 +114,26 @@ defmodule ConciergeSite.BusSubscriptionView do
      " - ",
      format_time_string(params["return_end"])]
   end
+  defp return_format(params, routes) do
+    [to_string(Enum.count(routes)),
+    " Bus Routes, ",
+    joined_day_list(params),
+    " ",
+    format_time_string(params["return_start"]),
+    " - ",
+    format_time_string(params["return_end"])]
+  end
 
   defp reverse_direction("inbound"), do: "outbound"
   defp reverse_direction("outbound"), do: "inbound"
 
   defp named_direction("0"), do: "outbound"
   defp named_direction("1"), do: "inbound"
+
+  def stringify(params) when is_list(params) do
+    params
+    |> Enum.map(fn({_, id}) -> id end)
+    |> Enum.join(",")
+  end
+  def stringify(p), do: p
 end

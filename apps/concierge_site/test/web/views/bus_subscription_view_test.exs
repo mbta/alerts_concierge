@@ -42,7 +42,7 @@ defmodule ConciergeSite.BusSubscriptionViewTest do
       "departure_end" => "09:15:00",
       "return_start" => "16:45:00",
       "return_end" => "17:15:00",
-      "route" => "741 - 1",
+      "routes" => "741 - 1",
       "saturday" => "true",
       "sunday" => "true",
       "weekday" => "true",
@@ -61,14 +61,14 @@ defmodule ConciergeSite.BusSubscriptionViewTest do
 
     test "returns summary of routes for one way" do
       params = Map.merge(@params, %{"trip_type" => "one_way"})
-      [summary] = BusSubscriptionView.trip_summary_routes(params, @route)
+      [summary] = BusSubscriptionView.trip_summary_routes(params, [@route])
 
       assert IO.iodata_to_binary(summary) =~ "Route Silver Line SL1 inbound, Saturday, Sunday, or weekdays  8:45 AM -  9:15 AM"
     end
 
     test "returns summary of routes for round trip" do
       params = Map.merge(@params, %{"trip_type" => "round_trip"})
-      [inbound, outbound] = BusSubscriptionView.trip_summary_routes(params, @route)
+      [inbound, outbound] = BusSubscriptionView.trip_summary_routes(params, [@route])
 
       assert IO.iodata_to_binary(inbound) =~ "Route Silver Line SL1 inbound, Saturday, Sunday, or weekday  8:45 AM -  9:15 AM"
       assert IO.iodata_to_binary(outbound) =~ "Route Silver Line SL1 outbound, Saturday, Sunday, or weekday  4:45 PM -  5:15 PM"
