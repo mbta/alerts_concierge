@@ -1,7 +1,7 @@
 defmodule ConciergeSite.AmenitySubscriptionController do
   use ConciergeSite.Web, :controller
   use Guardian.Phoenix.Controller
-  alias ConciergeSite.Subscriptions.{AmenitiesParams, Lines}
+  alias ConciergeSite.Subscriptions.{AmenitiesParams}
   alias ConciergeSite.Helpers.MultiSelectHelper
   alias AlertProcessor.{ServiceInfoCache,
     Subscription.AmenitiesMapper, Model.Subscription, Model.User}
