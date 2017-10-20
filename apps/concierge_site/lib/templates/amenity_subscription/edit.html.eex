@@ -7,7 +7,7 @@
 
 <div class="subscription-step amenities">
   <div class="enter-trip-info">
-    <%= form_for @changeset, amenity_subscription_path(@conn, :update, @subscription), [class: "trip-info-form amenities", as: :subscription, method: :patch], fn f -> %>
+    <%= form_for @changeset, amenity_subscription_path(@conn, :update, @subscription), [class: "single-submit-form trip-info-form multi-select-form amenities", as: :subscription, method: :patch], fn f -> %>
       <div class="amenity-subscription-form-section">
         <%= render "_amenity_options.html",
             form: f,
@@ -36,11 +36,12 @@
                     action: "edit" %>
       </div>
 
-      <%= hidden_input f, :stops, value: stringify(Map.get(@selected_station_options, :stations, [])), class: "subscription-amenities-stops" %>
+      <%= hidden_input f, :stops, value: stringify(Map.get(@selected_station_options, :stations, [])), class: "selected-subscription-entities" %>
       <%= hidden_input f, :id, value: @subscription.id %>
 
-      <%= submit "Update Subscription",
-          class: "btn btn-primary btn-amenity-submit" %>
+      <div class="trip-info-footer">
+        <%= submit "Update Subscription", class: "btn btn-primary btn-subscription-next" %>
+      </div>
     <% end %>
   </div>
 </div>

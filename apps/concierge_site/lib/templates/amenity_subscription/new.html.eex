@@ -2,7 +2,7 @@
 <%= flash_error(@conn) %>
 <div class="subscription-step amenities">
   <div class="enter-trip-info">
-    <%= form_for @conn, amenity_subscription_path(@conn, :create), [class: "single-submit-form trip-info-form amenities", as: :subscription], fn f -> %>
+    <%= form_for @conn, amenity_subscription_path(@conn, :create), [class: "single-submit-form trip-info-form multi-select-form amenities", as: :subscription], fn f -> %>
       <div class="amenity-subscription-form-section">
         <%= render "_amenity_options.html",
             form: f,
@@ -31,10 +31,11 @@
                     action: "new" %>
       </div>
 
-      <%= hidden_input f, :stops, value: stringify(@selected_stations), class: "subscription-amenities-stops" %>
+      <%= hidden_input f, :stops, value: stringify(@selected_stations), class: "selected-subscription-entities" %>
 
-      <%= submit "Create Subscription",
-          class: "btn btn-primary btn-amenity-submit" %>
+      <div class="trip-info-footer">
+        <%= submit "Create Subscription", class: "btn btn-primary btn-amenity-submit" %>
+      </div>
     <% end %>
   </div>
 </div>

@@ -6,7 +6,7 @@
   <h2 class="preferences-subtitle">Set your subscription preferences:</h2>
 
   <div class="trip-summary">
-    <%= for trip <- trip_summary_routes(@subscription_params, @route) do %>
+    <%= for trip <- trip_summary_routes(@subscription_params, @routes) do %>
       <div><%= trip %></div>
     <% end %>
   </div>
