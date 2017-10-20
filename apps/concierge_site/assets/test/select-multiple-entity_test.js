@@ -2,9 +2,9 @@ import 'jsdom-global/register';
 import jsdom from 'mocha-jsdom';
 import { assert } from 'chai';
 import { simulateKeyUp, simulateKeyPress } from './utils';
-import selectAmenityStation from '../js/select-amenity-station';
+import selectMultipleEntity from '../js/select-multiple-entity';
 
-describe("selectAmenityStation", function() {
+describe("selectMultipleEntity", function() {
   let $;
 
   before(function() {
@@ -13,7 +13,7 @@ describe("selectAmenityStation", function() {
 
   beforeEach(function() {
     $("body").append(tripInfoPageHtml);
-    selectAmenityStation($);
+    selectMultipleEntity($);
   });
 
   afterEach(function() {
@@ -22,14 +22,14 @@ describe("selectAmenityStation", function() {
 
   describe("clicking on a chosen station", () => {
     it("removes the button from the list", () => {
-      const $stationInput = $("input.subscription-select-amenity-station");
+      const $stationInput = $("input.subscription-select-entity-input");
       $stationInput.val("Central");
       simulateKeyUp($stationInput[0]);
-      let suggestions = $(".amenity-station");
-      $(".amenity-station").first().mousedown();
-      $(".btn-selected-station").first().mousedown();
+      let suggestions = $(".entity-suggestion");
+      $(".entity-suggestion").first().mousedown();
+      $(".btn-selected-entity").first().mousedown();
 
-      let list = $('.selected-station-list.amenity-station-list')
+      let list = $('.selected-entity-list')
 
       assert.lengthOf(list.first().children(), 0)
     })
@@ -37,85 +37,85 @@ describe("selectAmenityStation", function() {
 
   describe("keypress handling for suggestions", () => {
     it("first suggestion is selected by default", () => {
-      const $stationInput = $("input.subscription-select-amenity-station");
+      const $stationInput = $("input.subscription-select-entity-input");
       $stationInput.val("Quincy");
 
       simulateKeyUp($stationInput[0]);
 
-      const $firstSuggestion = $(".amenity-station").first();
-      const $lastSuggestion = $(".amenity-station").last();
+      const $firstSuggestion = $(".entity-suggestion").first();
+      const $lastSuggestion = $(".entity-suggestion").last();
 
       assert($firstSuggestion.is(".selected-suggestion"));
       assert.isFalse($lastSuggestion.is(".selected-suggestion"));
     });
 
     it("pressing the down arrow moves the selected suggestion down to the next suggestion", () => {
-      const $stationInput = $("input.subscription-select-amenity-station");
+      const $stationInput = $("input.subscription-select-entity-input");
       $stationInput.val("Quincy");
 
       simulateKeyUp($stationInput[0]);
       simulateKeyPress($stationInput[0], 40);
-      const $firstSuggestion = $(".amenity-station").first();
-      const $lastSuggestion = $(".amenity-station").last();
+      const $firstSuggestion = $(".entity-suggestion").first();
+      const $lastSuggestion = $(".entity-suggestion").last();
 
       assert.isFalse($firstSuggestion.is(".selected-suggestion"));
       assert($lastSuggestion.is(".selected-suggestion"));
     });
 
     it("pressing the down arrow doesn't do anything if there aren't any more suggestions below", () => {
-      const $stationInput = $("input.subscription-select-amenity-station");
+      const $stationInput = $("input.subscription-select-entity-input");
       $stationInput.val("Quincy");
 
       simulateKeyUp($stationInput[0]);
       simulateKeyPress($stationInput[0], 40);
       simulateKeyPress($stationInput[0], 40);
-      const $firstSuggestion = $(".amenity-station").first();
-      const $lastSuggestion = $(".amenity-station").last();
+      const $firstSuggestion = $(".entity-suggestion").first();
+      const $lastSuggestion = $(".entity-suggestion").last();
 
       assert.isFalse($firstSuggestion.is(".selected-suggestion"));
       assert($lastSuggestion.is(".selected-suggestion"));
     });
 
     it("pressing the up arrow moves the selected suggestion up to the previous suggestion", () => {
-      const $stationInput = $("input.subscription-select-amenity-station");
+      const $stationInput = $("input.subscription-select-entity-input");
       $stationInput.val("Quincy");
 
       simulateKeyUp($stationInput[0]);
       simulateKeyPress($stationInput[0], 40);
       simulateKeyPress($stationInput[0], 38);
-      const $firstSuggestion = $(".amenity-station").first();
-      const $lastSuggestion = $(".amenity-station").last();
+      const $firstSuggestion = $(".entity-suggestion").first();
+      const $lastSuggestion = $(".entity-suggestion").last();
 
       assert($firstSuggestion.is(".selected-suggestion"));
       assert.isFalse($lastSuggestion.is(".selected-suggestion"));
     });
 
     it("pressing the up arrow doesn't do anything if there aren't any more suggestions above", () => {
-      const $stationInput = $("input.subscription-select-amenity-station");
+      const $stationInput = $("input.subscription-select-entity-input");
       $stationInput.val("Quincy");
 
       simulateKeyUp($stationInput[0]);
       simulateKeyPress($stationInput[0], 38);
-      const $firstSuggestion = $(".amenity-station").first();
-      const $lastSuggestion = $(".amenity-station").last();
+      const $firstSuggestion = $(".entity-suggestion").first();
+      const $lastSuggestion = $(".entity-suggestion").last();
 
       assert($firstSuggestion.is(".selected-suggestion"));
       assert.isFalse($lastSuggestion.is(".selected-suggestion"));
     });
 
     it("pressing enter selects the highlighted suggestion", () => {
-      const $stationInput = $("input.subscription-select-amenity-station");
+      const $stationInput = $("input.subscription-select-entity-input");
       $stationInput.val("Quincy");
 
       simulateKeyUp($stationInput[0]);
       simulateKeyPress($stationInput[0], 40);
 
-      const $lastSuggestion = $(".amenity-station").last();
+      const $lastSuggestion = $(".entity-suggestion").last();
       assert($lastSuggestion.is(".selected-suggestion"));
 
       simulateKeyPress($stationInput[0], 13);
 
-      const $selectedStations = $(".btn-selected-station")
+      const $selectedStations = $(".btn-selected-entity")
 
       assert.equal($selectedStations[0].textContent.trim(), "Quincy Center")
     });
@@ -124,7 +124,7 @@ describe("selectAmenityStation", function() {
   describe("immediate changes upon page load", () => {
     it("adds text inputs to the page for station entry", () => {
       const $suggestionContainers = $(".suggestion-container");
-      const $stationInput = $("input.subscription-select-amenity-station");
+      const $stationInput = $("input.subscription-select-entity-input");
 
       assert.lengthOf($suggestionContainers, 1);
       assert.lengthOf($stationInput, 1);
@@ -133,12 +133,12 @@ describe("selectAmenityStation", function() {
 
   describe("type ahead suggestions", () => {
     it("adds matching stops to the page when the user types a name into the input field", () => {
-      const $stationInput = $("input.subscription-select-amenity-station");
+      const $stationInput = $("input.subscription-select-entity-input");
       $stationInput.val("Central Square");
 
       simulateKeyUp($stationInput[0]);
 
-      const $suggestions = $(".amenity-station")
+      const $suggestions = $(".entity-suggestion")
       const routeSuggestion = $suggestions.first().text();
 
       assert.lengthOf($suggestions, 1)
@@ -146,12 +146,12 @@ describe("selectAmenityStation", function() {
     });
 
     it("shows partially matching stops", () => {
-      const $stationInput = $("input.subscription-select-amenity-station");
+      const $stationInput = $("input.subscription-select-entity-input");
       $stationInput.val("Central");
 
       simulateKeyUp($stationInput[0]);
 
-      const $suggestions = $(".amenity-station")
+      const $suggestions = $(".entity-suggestion")
       const routeSuggestion = $suggestions.first().text();
 
       assert.lengthOf($suggestions, 1)
@@ -159,12 +159,12 @@ describe("selectAmenityStation", function() {
     });
 
     it("matches case insensitively", () => {
-      const $stationInput = $("input.subscription-select-amenity-station");
+      const $stationInput = $("input.subscription-select-entity-input");
       $stationInput.val("central square");
 
       simulateKeyUp($stationInput[0]);
 
-      const $suggestions = $(".amenity-station")
+      const $suggestions = $(".entity-suggestion")
       const routeSuggestion = $suggestions.first().text();
 
       assert.lengthOf($suggestions, 1)
@@ -172,39 +172,39 @@ describe("selectAmenityStation", function() {
     });
 
     it("does not show prompt as a suggestion", () => {
-      const $stationInput = $("input.subscription-select-amenity-station");
+      const $stationInput = $("input.subscription-select-entity-input");
       $stationInput.val("Select");
 
       simulateKeyUp($stationInput[0]);
 
-      const $suggestions = $(".amenity-station")
+      const $suggestions = $(".entity-suggestion")
       assert.lengthOf($suggestions, 0)
     });
   });
 
   describe("clicking on a suggestion", () => {
     it("adds a button with that choice to list of stops", () => {
-      const $stationInput = $("input.subscription-select-amenity-station");
+      const $stationInput = $("input.subscription-select-entity-input");
       $stationInput.val("Central");
 
       simulateKeyUp($stationInput[0])
-      $(".amenity-station").first().mousedown();
-      const $selectedStations = $(".btn-selected-station")
+      $(".entity-suggestion").first().mousedown();
+      const $selectedStations = $(".btn-selected-entity")
 
       assert.equal($selectedStations[0].textContent.trim(), "Central Square")
     });
 
     it("removes the option from the possible suggestions", () => {
-      const $stationInput = $("input.subscription-select-amenity-station");
+      const $stationInput = $("input.subscription-select-entity-input");
       $stationInput.val("Central");
 
       simulateKeyUp($stationInput[0]);
-      let suggestions = $(".amenity-station");
+      let suggestions = $(".entity-suggestion");
 
       assert.lengthOf(suggestions, 1);
 
-      $(".amenity-station").first().mousedown();
-      suggestions = $(".amenity-station");
+      $(".entity-suggestion").first().mousedown();
+      suggestions = $(".entity-suggestion");
 
       assert.lengthOf(suggestions, 0);
     })
@@ -212,13 +212,13 @@ describe("selectAmenityStation", function() {
 
   describe("route input losing focus", () => {
     it("clears removes suggestions", () => {
-      const $stationInput = $("input.subscription-select-amenity-station");
+      const $stationInput = $("input.subscription-select-entity-input");
       $stationInput.val("abc123");
 
       $stationInput.focus();
       simulateKeyUp($stationInput[0]);
-      $("input.subscription-select-route").focus();
-      const $suggestions = $("amenity-station");
+      $("input.subscription-select-entity-input").focus();
+      const $suggestions = $(".entity-suggestion");
 
       assert.lengthOf($suggestions, 0);
     });
@@ -226,11 +226,11 @@ describe("selectAmenityStation", function() {
 
   const tripInfoPageHtml = `
     <div class="enter-trip-info">
-      <form class="trip-info-form amenities">
-        <div class="form-group select-station select-amenity-station">
-          <label for="station" class="station-input-label form-label">What stations do you use?</label>
-          <div class="form-sub-label amenity-station-select-sub-label">Enter as many stations as you would like.</div>
-          <select class="subscription-select subscription-select-amenity-station no-js">
+      <form class="trip-info-form multi-select-form">
+        <div class="form-group select-entity">
+          <label for="station" class="entity-input-label form-label">What stations do you use?</label>
+          <div class="form-sub-label entity-select-sub-label">Enter as many stations as you would like.</div>
+          <select class="subscription-select no-js" data-entity-type="stop">
             <option value="">Select a station</option>
             <optgroup label="Red Line">
               <option value="place-nqncy">North Quincy</option>
@@ -242,8 +242,8 @@ describe("selectAmenityStation", function() {
               <option value="place-bellevue">Bellevue</option>
             </optgroup>
           </select>
-          <div class="selected-station-list amenity-station-list"></div>
-          <input class="subscription-amenities-stops" id="subscription_stops" name="subscription[stops]" type="hidden" value="">
+          <div class="selected-entity-list"></div>
+          <input class="selected-subscription-entities" id="subscription_stops" name="subscription[stops]" type="hidden" value="">
         </div>
       </form>
     </div>

@@ -2,9 +2,9 @@ import 'jsdom-global/register';
 import jsdom from 'mocha-jsdom';
 import { assert } from 'chai';
 import { simulateKeyUp, simulateKeyPress } from './utils';
-import selectStation from '../js/select-station';
+import selectEntity from '../js/select-entity';
 
-describe("selectStation", function() {
+describe("selectEntity", function() {
   let $;
 
   before(function() {
@@ -18,7 +18,7 @@ describe("selectStation", function() {
   describe("subway", () => {
     beforeEach(function() {
       $("body").append(subwayTripInfoPageHtml);
-      selectStation($);
+      selectEntity($);
     });
 
     describe("immediate changes upon page load", () => {
@@ -475,9 +475,9 @@ describe("selectStation", function() {
 
     const subwayTripInfoPageHtml = `
       <div class="subscription-step enter-trip-info">
-        <form class="trip-info-form subway">
-          <div class="form-group select-station">
-            <label for="origin" class="station-input-label form-label">Origin</label>
+        <form class="trip-info-form single-select-form subway">
+          <div class="form-group select-entity">
+            <label for="origin" class="entity-input-label form-label">Origin</label>
             <select class="subscription-select subscription-select-origin no-js" id="subscription_origin" name="subscription[origin]">
               <option value="">Select a station</option>
               <optgroup label="Red Line">
@@ -491,8 +491,8 @@ describe("selectStation", function() {
               </optgroup>
             </select>
           </div>
-          <div class="form-group select-station">
-            <label for="destination" class="station-input-label form-label">Destination</label>
+          <div class="form-group select-entity">
+            <label for="destination" class="entity-input-label form-label">Destination</label>
             <select class="subscription-select subscription-select-destination no-js" id="subscription_destination" name="subscription[destination]">
               <option value="">Select a station</option>
               <optgroup label="Red Line">
@@ -514,7 +514,7 @@ describe("selectStation", function() {
   describe("ferry", () => {
     beforeEach(function() {
       $("body").append(ferryTripInfoPageHtml);
-      selectStation($);
+      selectEntity($);
     });
 
     it("displays line along with icon", () => {
@@ -545,9 +545,9 @@ describe("selectStation", function() {
 
     const ferryTripInfoPageHtml = `
       <div class="subscription-step enter-trip-info">
-        <form class="trip-info-form ferry">
-          <div class="form-group select-station">
-            <label for="origin" class="station-input-label form-label">Origin</label>
+        <form class="trip-info-form single-select-form ferry">
+          <div class="form-group select-entity">
+            <label for="origin" class="entity-input-label form-label">Origin</label>
             <select class="subscription-select-origin no-js" id="subscription_origin" name="subscription[origin]">
               <option value="">Select a station</option>
               <optgroup label="Charlestown Ferry">
@@ -568,8 +568,8 @@ describe("selectStation", function() {
               </optgroup>
             </select>
           </div>
-          <div class="form-group select-station">
-            <label for="destination" class="station-input-label form-label">Destination</label>
+          <div class="form-group select-entity">
+            <label for="destination" class="entity-input-label form-label">Destination</label>
             <select class="subscription-select-destination no-js" id="subscription_destination" name="subscription[destination]">
               <option value="">Select a station</option>
               <optgroup label="Charlestown Ferry">

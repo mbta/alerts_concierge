@@ -20,17 +20,15 @@ import "phoenix_html"
 
 // import socket from "./socket"
 
-import selectStation from './select-station';
-import selectBusRoute from './select-bus-route';
-import selectAmenityStation from './select-amenity-station';
+import selectEntity from './select-entity';
+import selectMultipleEntity from './select-multiple-entity';
 import selectTrip from './select-trip';
 import formHelpers from './form-helpers';
 import vacationDatepicker from './vacation-datepicker';
 import subscriptionSearch from './subscription-search';
 
-selectBusRoute();
-selectStation();
-selectAmenityStation();
+selectEntity();
+selectMultipleEntity();
 selectTrip();
 formHelpers();
 vacationDatepicker();

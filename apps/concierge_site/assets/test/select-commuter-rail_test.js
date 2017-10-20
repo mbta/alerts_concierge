@@ -2,9 +2,9 @@ import 'jsdom-global/register';
 import jsdom from 'mocha-jsdom';
 import { assert } from 'chai';
 import { simulateKeyUp, simulateKeyPress } from './utils';
-import selectStation from '../js/select-station';
+import selectEntity from '../js/select-entity';
 
-describe("selectCommuterRailStation", function() {
+describe("selectEntity", function() {
   let $;
 
   before(function() {
@@ -14,7 +14,7 @@ describe("selectCommuterRailStation", function() {
   describe("commuter rail default destinations", () => {
     beforeEach(() => {
       $("body").append(commuterRailHtml);
-      selectStation($);
+      selectEntity($);
     });
 
     afterEach(function() {
@@ -84,7 +84,7 @@ describe("selectCommuterRailStation", function() {
   describe("select commuter rail station", () => {
     beforeEach(function() {
       $("body").append(commuterRailHtml);
-      selectStation($);
+      selectEntity($);
     });
 
     afterEach(function() {
@@ -131,7 +131,7 @@ describe("selectCommuterRailStation", function() {
   describe("keypress handling for suggestions", () => {
     beforeEach(function() {
       $("body").append(commuterRailHtml);
-      selectStation($);
+      selectEntity($);
     });
 
     afterEach(function() {
@@ -225,7 +225,7 @@ describe("selectCommuterRailStation", function() {
   describe("commuter rail prefilled", () => {
     beforeEach(function() {
       $("body").append(commuterRailHtmlWithSelections);
-      selectStation($);
+      selectEntity($);
     });
 
     afterEach(function() {
@@ -245,12 +245,12 @@ describe("selectCommuterRailStation", function() {
 
   const commuterRailHtml = `
   <div class="subscription-step enter-trip-info">
-    <form accept-charset="UTF-8" action="/subscriptions/commuter_rail/new/train" class="trip-info-form commuter-rail" method="post">
+    <form accept-charset="UTF-8" action="/subscriptions/commuter_rail/new/train" class="trip-info-form single-select-form commuter-rail" method="post">
       <input type="hidden" name="default-south-id" value="place-sstat">
       <input type="hidden" name="default-north-id" value="place-north">
       <input type="hidden" name="mode" value="commuter-rail">
       <div class="form-group select-station">
-        <label for="origin" class="station-input-label form-label">Origin</label>
+        <label for="origin" class="entity-input-label form-label">Origin</label>
         <select class="subscription-select subscription-select-origin no-js" id="subscription_origin" name="subscription[origin]" data-valid="false">
           <option value="">Select a station</option>
           <optgroup label="Lowell Line">
@@ -268,7 +268,7 @@ describe("selectCommuterRailStation", function() {
         </select>
       </div>
       <div class="form-group select-station">
-        <label for="destination" class="station-input-label form-label">Destination</label>
+        <label for="destination" class="entity-input-label form-label">Destination</label>
         <select class="subscription-select subscription-select-destination no-js" id="subscription_destination" name="subscription[destination]" data-valid="false">
           <option value="">Select a station</option>
           <optgroup label="Lowell Line">
@@ -291,12 +291,12 @@ describe("selectCommuterRailStation", function() {
 
   const commuterRailHtmlWithSelections = `
   <div class="subscription-step enter-trip-info">
-    <form accept-charset="UTF-8" action="/subscriptions/commuter_rail/new/train" class="trip-info-form commuter-rail" method="post">
+    <form accept-charset="UTF-8" action="/subscriptions/commuter_rail/new/train" class="trip-info-form single-select-form commuter-rail" method="post">
       <input type="hidden" name="default-south-id" value="place-sstat">
       <input type="hidden" name="default-north-id" value="place-north">
       <input type="hidden" name="mode" value="commuter-rail">
       <div class="form-group select-station">
-        <label for="origin" class="station-input-label form-label">Origin</label>
+        <label for="origin" class="entity-input-label form-label">Origin</label>
       </div>
       <i class="fa fa-check-circle valid-checkmark-icon"></i>
       <select class="subscription-select subscription-select-origin no-js" id="subscription_origin" name="subscription[origin]" data-valid="false">
@@ -316,7 +316,7 @@ describe("selectCommuterRailStation", function() {
         </optgroup>
       </select>
       <div class="form-group select-station">
-        <label for="destination" class="station-input-label form-label">Destination</label>
+        <label for="destination" class="entity-input-label form-label">Destination</label>
         <div class="suggestion-container">
       </div>
       <i class="fa fa-check-circle valid-checkmark-icon"></i>

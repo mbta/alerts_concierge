@@ -81,7 +81,7 @@ describe("selectStation", function() {
 
   const tripSelectPageHtml = `
     <div class="select-trip-number">
-      <form class="trip-info-form commuter-rail">
+      <form class="trip-info-form single-select-form">
         <div class="trip-select-list-header">Depart</div>
         <div class="trip-select-list">
           <div class="trip-option">
