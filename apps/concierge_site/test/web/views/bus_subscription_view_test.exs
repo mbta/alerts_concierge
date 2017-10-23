@@ -113,18 +113,4 @@ defmodule ConciergeSite.BusSubscriptionViewTest do
       assert "2 Bus Routes" == subscription |> BusSubscriptionView.route_name() |> IO.iodata_to_binary()
     end
   end
-
-  describe "stringify/1" do
-    test "returns comma separated list from list of tuples" do
-      assert "One,Two,Three" = BusSubscriptionView.stringify([{1, "One"}, {2, "Two"}, {3, "Three"}])
-    end
-
-    test "returns empty string for empty list" do
-      assert "" = BusSubscriptionView.stringify([])
-    end
-
-    test "returns value if not a list" do
-      assert "Four,Five,Six" = BusSubscriptionView.stringify("Four,Five,Six")
-    end
-  end
 end

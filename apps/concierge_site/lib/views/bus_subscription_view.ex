@@ -129,11 +129,4 @@ defmodule ConciergeSite.BusSubscriptionView do
 
   defp named_direction("0"), do: "outbound"
   defp named_direction("1"), do: "inbound"
-
-  def stringify(params) when is_list(params) do
-    params
-    |> Enum.map(&elem(&1, 1))
-    |> Enum.join(",")
-  end
-  def stringify(p), do: p
 end

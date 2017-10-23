@@ -100,7 +100,7 @@ defmodule ConciergeSite.SubscriptionView do
 
   def route_header(%{type: :amenity}), do: "Station Amenities"
   def route_header(%{type: :bus} = subscription, _) do
-    route_entity_count =  Enum.count(subscription.informed_entities, &InformedEntity.entity_type(&1) == :route && &1.direction_id != nil)
+    route_entity_count = Subscription.route_count(subscription)
     if route_entity_count > 1 do
       [to_string(route_entity_count), " Bus Routes"]
     else
@@ -141,7 +141,7 @@ defmodule ConciergeSite.SubscriptionView do
     end
   end
   defp route_body(%{type: :bus} = subscription,  _, _) do
-    route_entity_count =  Enum.count(subscription.informed_entities, &InformedEntity.entity_type(&1) == :route && &1.direction_id != nil)
+    route_entity_count = Subscription.route_count(subscription)
     if route_entity_count > 1 do
       timeframe(subscription)
     else

@@ -59,14 +59,14 @@ function onKeyDownOverrides(event, state, $) {
   const visibleSuggestionCount = $(".entity-suggestion").length;
   const $target = $(event.target);
 
-  if (event.keyCode === 38 && $target.is(".subscription-select-entity-input")) {
+  if (event.keyCode === 38 && $target.hasClass("subscription-select-entity-input")) {
     event.preventDefault();
     decrementselectedSuggestionIndex(state, visibleSuggestionCount)
 
-  } else if (event.keyCode === 40 && $target.is(".subscription-select-entity-input")) {
+  } else if (event.keyCode === 40 && $target.hasClass("subscription-select-entity-input")) {
     event.preventDefault();
     incrementselectedSuggestionIndex(state, visibleSuggestionCount)
-  } else if (event.keyCode === 13 && $target.is(".btn-subscription-next")) {
+  } else if (event.keyCode === 13 && $target.hasClass("btn-subscription-next")) {
     return;
   } else if (event.keyCode === 13) {
     event.preventDefault();
@@ -92,17 +92,17 @@ function onKeyDownOverridesAmenity(event, state, chooseSuggestion, removeStation
   const visibleSuggestionCount = $(".entity-suggestion").length;
   const $target = $(event.target);
 
-  if (event.keyCode === 38 && $target.is(".subscription-select-entity-input")) {
+  if (event.keyCode === 38 && $target.hasClass("subscription-select-entity-input")) {
     event.preventDefault();
     decrementselectedSuggestionIndex(state, visibleSuggestionCount)
 
-  } else if (event.keyCode === 40  && $target.is(".subscription-select-entity-input")) {
+  } else if (event.keyCode === 40  && $target.hasClass("subscription-select-entity-input")) {
     event.preventDefault();
     incrementselectedSuggestionIndex(state, visibleSuggestionCount)
   } else if (event.keyCode === 13) {
-    if ($target.is("button.btn-subscription-next")) {
+    if ($target.hasClass("btn-subscription-next")) {
       return;
-    } else if ($target.is("button.btn-selected-entity")) {
+    } else if ($target.hasClass("btn-selected-entity")) {
       event.preventDefault();
       removeStation(event);
     } else {

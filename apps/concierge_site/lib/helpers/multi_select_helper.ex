@@ -1,5 +1,4 @@
 defmodule ConciergeSite.Helpers.MultiSelectHelper do
-  alias AlertProcessor.ServiceInfoCache
   alias ConciergeSite.Subscriptions.Lines
 
   def station_options(cr_stations, subway_stations) do

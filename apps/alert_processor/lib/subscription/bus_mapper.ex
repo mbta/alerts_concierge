@@ -27,14 +27,13 @@ defmodule AlertProcessor.Subscription.BusMapper do
   end
 
   defp map_entities(subscriptions, params) do
-    with %{"routes" => routes} <- params,
-         subscription_infos <- map_route_type(subscriptions),
-         subscription_infos <- map_routes(subscription_infos, routes),
-         subscription_infos <- filter_duplicate_entities(subscription_infos) do
-      {:ok, subscription_infos}
-    else
-      _ -> :error
-    end
+    %{"routes" => routes} = params
+    subscription_infos =
+      subscriptions
+      |> map_route_type()
+      |> map_routes(routes)
+      |> filter_duplicate_entities()
+    {:ok, subscription_infos}
   end
 
   defp map_route_type(subscriptions) do

@@ -4,13 +4,6 @@ defmodule ConciergeSite.AmenitySubscriptionView do
   import ConciergeSite.SubscriptionHelper,
     only: [relevant_days: 1]
 
-  def stringify(params) when is_list(params) do
-    params
-    |> Enum.map(fn({_, id}) -> id end)
-    |> Enum.join(",")
-  end
-  def stringify(p), do: p
-
   @doc """
   Returns string with ampersand separated list of facilty types for an amenity subscription
   """
