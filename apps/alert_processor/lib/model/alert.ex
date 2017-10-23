@@ -6,7 +6,7 @@ defmodule AlertProcessor.Model.Alert do
 
   defstruct [:active_period, :effect_name, :id, :header, :informed_entities,
              :severity, :last_push_notification, :service_effect, :description,
-             :timeframe, :recurrence]
+             :timeframe, :recurrence, :duration_certainty, :estimated_duration, :created_at]
 
   @type informed_entity :: [
     %{
@@ -31,6 +31,9 @@ defmodule AlertProcessor.Model.Alert do
     description: String.t,
     timeframe: String.t,
     recurrence: String.t,
+    duration_certainty: String.t,
+    estimated_duration: integer,
+    created_at: DateTime.t,
   }
 
   @route_types %{
@@ -177,5 +180,21 @@ defmodule AlertProcessor.Model.Alert do
 
   def facility_alert?(%__MODULE__{informed_entities: ies}) do
     Enum.any?(ies, &InformedEntity.entity_type(&1) == :amenity)
+  end
+
+  def advanced_notice_in_seconds(%__MODULE__{duration_certainty: "ESTIMATED", severity: :minor, estimated_duration: estimated_duration}) do
+    Enum.min([3600, estimated_duration])
+  end
+  def advanced_notice_in_seconds(%__MODULE__{duration_certainty: "ESTIMATED", severity: :moderate, estimated_duration: estimated_duration}) do
+    Enum.min([7200, estimated_duration])
+  end
+  def advanced_notice_in_seconds(%__MODULE__{duration_certainty: "ESTIMATED", severity: :severe, estimated_duration: estimated_duration}) do
+    Enum.min([14_400, estimated_duration])
+  end
+  def advanced_notice_in_seconds(%__MODULE__{duration_certainty: "ESTIMATED", severity: :extreme, estimated_duration: estimated_duration}) do
+    Enum.min([14_400, estimated_duration])
+  end
+  def advanced_notice_in_seconds(%__MODULE__{}) do
+    86_400
   end
 end

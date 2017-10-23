@@ -119,4 +119,46 @@ defmodule AlertProcessor.AlertParserTest do
       assert [{:ok, []} | _] = AlertParser.process_alerts()
     end
   end
+
+  test "correctly parses estimated timeframe alert" do
+    use_cassette "estimated_alert", custom: true, clear_mock: true, match_requests_on: [:query] do
+      {:ok, [alert], feed_timestamp} = AlertProcessor.AlertsClient.get_alerts()
+      result = AlertParser.parse_alert(alert, %{}, feed_timestamp)
+      assert %AlertProcessor.Model.Alert{
+        active_period: [%{start: _start_datetime, end: end_datetime}],
+        created_at: created_at_datetime,
+        duration_certainty: "ESTIMATED",
+        effect_name: "Delay",
+        estimated_duration: 14400,
+        header: "Red Line experiencing minor delays",
+        id: "115513",
+        informed_entities: _informed_entities,
+        service_effect: "Minor Red Line delay",
+        severity: :minor,
+      } = result
+      assert 1507661434 == feed_timestamp
+      assert (36 * 60 * 60) == DateTime.to_unix(end_datetime) - DateTime.to_unix(created_at_datetime)
+    end
+  end
+
+  test "rounds estimated duration to nearest 15 min to handle timestamp drift" do
+    use_cassette "estimated_alert_drifted", custom: true, clear_mock: true, match_requests_on: [:query] do
+      {:ok, [alert], feed_timestamp} = AlertProcessor.AlertsClient.get_alerts()
+      result = AlertParser.parse_alert(alert, %{}, feed_timestamp)
+      assert %AlertProcessor.Model.Alert{
+        active_period: [%{start: _start_datetime, end: end_datetime}],
+        created_at: created_at_datetime,
+        duration_certainty: "ESTIMATED",
+        effect_name: "Delay",
+        estimated_duration: 14400,
+        header: "Red Line experiencing minor delays",
+        id: "115513",
+        informed_entities: _informed_entities,
+        service_effect: "Minor Red Line delay",
+        severity: :minor,
+      } = result
+      assert 1507661322 == feed_timestamp
+      assert (36 * 60 * 60) == DateTime.to_unix(end_datetime) - DateTime.to_unix(created_at_datetime)
+    end
+  end
 end

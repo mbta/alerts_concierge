@@ -6,7 +6,7 @@ defmodule AlertProcessor.AlertsClientTest do
 
   test "get_alerts/0 returns list of alerts if successful" do
     use_cassette "get_alerts_enhanced_json", custom: true, clear_mock: true, match_requests_on: [:query] do
-      assert {:ok, [_h | _t]} = AlertsClient.get_alerts()
+      assert {:ok, [_h | _t], 1498234472} = AlertsClient.get_alerts()
     end
   end
 end

@@ -15,10 +15,10 @@ defmodule AlertProcessor.AlertParser do
   """
   @spec process_alerts() :: [{:ok, [Notification.t]}]
   def process_alerts() do
-    with {:ok, alerts} <- AlertsClient.get_alerts(),
+    with {:ok, alerts, feed_timestamp} <- AlertsClient.get_alerts(),
          {:ok, facility_map} <- ServiceInfoCache.get_facility_map() do
       {alerts_needing_notifications, alert_ids_to_clear_notifications} =
-        {alerts, facility_map}
+        {alerts, facility_map, feed_timestamp}
         |> parse_alerts()
         |> AlertCache.update_cache()
 
@@ -28,37 +28,38 @@ defmodule AlertProcessor.AlertParser do
     end
   end
 
-  defp parse_alerts({alerts, facilities_map}) do
-    for alert_json <- alerts, alert = parse_alert(alert_json, facilities_map), into: %{} do
+  defp parse_alerts({alerts, facilities_map, feed_timestamp}) do
+    for alert_json <- alerts, alert = parse_alert(alert_json, facilities_map, feed_timestamp), into: %{} do
       {alert.id, alert}
     end
   end
 
   def parse_alert(%{
-    "active_period" => active_periods,
-    "effect_detail" => effect_name,
-    "id" => alert_id,
-    "informed_entity" => informed_entities,
-    "service_effect_text" => service_effect_text_translations,
-    "severity" => severity,
-    "header_text" => header_text_translations
-  } = alert_data, facilities_map) do
-    %Alert{
-      active_period: parse_active_periods(active_periods),
-      description: alert_data |> Map.get("description_text") |> parse_translation(),
-      effect_name: StringHelper.split_capitalize(effect_name, "_"),
-      header: parse_translation(header_text_translations),
-      id: to_string(alert_id),
-      informed_entities: parse_informed_entities(informed_entities, facilities_map),
-      last_push_notification: alert_data |> Map.get_lazy("last_push_notification_timestamp", fn -> Map.get(alert_data, "created_timestamp") end) |> parse_datetime(),
-      service_effect: parse_translation(service_effect_text_translations),
-      severity: parse_severity(severity),
-      timeframe: parse_translation(alert_data["timeframe_text"]),
-      recurrence: parse_translation(alert_data["recurrence_text"]),
-    }
+      "id" => id,
+      "active_period" => active_period,
+      "created_timestamp" => created_timestamp,
+      "duration_certainty" => duration_certainty,
+      "effect_detail" => effect_detail,
+      "header_text" => header_text,
+      "informed_entity" => informed_entity,
+      "service_effect_text" => service_effect_text,
+      "severity" => severity
+    } = alert_data, facilities_map, feed_timestamp) do
+    %Alert{}
+    |> Map.put(:duration_certainty, duration_certainty)
+    |> parse_active_periods(active_period, created_timestamp, feed_timestamp)
+    |> parse_informed_entities(informed_entity, facilities_map)
+    |> Map.put(:description, parse_translation(alert_data["description_text"]))
+    |> Map.put(:effect_name, StringHelper.split_capitalize(effect_detail, "_"))
+    |> Map.put(:header, parse_translation(header_text))
+    |> Map.put(:id, to_string(id))
+    |> Map.put(:service_effect, parse_translation(service_effect_text))
+    |> Map.put(:last_push_notification, alert_data |> Map.get_lazy("last_push_notification_timestamp", fn -> Map.get(alert_data, "created_timestamp") end) |> parse_datetime())
+    |> Map.put(:severity, parse_severity(severity))
+    |> Map.put(:timeframe, parse_translation(alert_data["timeframe_text"]))
+    |> Map.put(:recurrence, parse_translation(alert_data["recurrence_text"]))
   end
-
-  def parse_alert(alert, _) do
+  def parse_alert(alert, _, _) do
     Logger.warn("Failed to parse alert: #{Poison.encode!(alert)}")
     nil
   end
@@ -68,8 +69,15 @@ defmodule AlertProcessor.AlertParser do
     dt
   end
 
-  defp parse_active_periods(active_periods) do
-    Enum.map(active_periods, &parse_active_period(&1))
+  defp parse_active_periods(%Alert{duration_certainty: "ESTIMATED"} = alert, [%{"start" => start_timestamp, "end" => end_timestamp}], created_timestamp, feed_timestamp) when not is_nil(feed_timestamp) do
+    estimated_duration = round((end_timestamp - feed_timestamp) / 900) * 900
+    start_datetime = parse_datetime(start_timestamp)
+    end_datetime = parse_datetime(created_timestamp + (36 * 60 * 60))
+
+    %{alert | active_period: [%{start: start_datetime, end: end_datetime}], estimated_duration: estimated_duration, created_at: parse_datetime(created_timestamp)}
+  end
+  defp parse_active_periods(alert, active_periods, created_timestamp, _) do
+    %{alert | active_period: Enum.map(active_periods, &parse_active_period(&1)), created_at: parse_datetime(created_timestamp)}
   end
 
   defp parse_active_period(active_period) do
@@ -84,24 +92,25 @@ defmodule AlertProcessor.AlertParser do
     |> Map.put_new(:end, nil)
   end
 
-  defp parse_informed_entities(informed_entities, facilities_map) do
-    informed_entities
-    |> Enum.map(fn(ie) ->
-      struct_params = ie
-        |> parse_informed_entity()
-        |> set_route_for_amenity()
+  defp parse_informed_entities(alert, informed_entities, facilities_map) do
+    informed_entities =
+      Enum.flat_map(informed_entities, fn(ie) ->
+        struct_params = ie
+          |> parse_informed_entity()
+          |> set_route_for_amenity()
 
-      Enum.map(struct_params, fn(sp) ->
-        informed_entity = struct(InformedEntity, sp)
-        with {:facility_id, facility_id} <- Enum.find(sp, &(elem(&1, 0) == :facility_id)),
-             %{^facility_id => facility_type} <- facilities_map do
-          %{informed_entity | facility_type: facility_type |> String.downcase() |> String.to_existing_atom()}
-        else
-          _ -> informed_entity
-        end
+        Enum.map(struct_params, fn(sp) ->
+          informed_entity = struct(InformedEntity, sp)
+          with {:facility_id, facility_id} <- Enum.find(sp, &(elem(&1, 0) == :facility_id)),
+              %{^facility_id => facility_type} <- facilities_map do
+            %{informed_entity | facility_type: facility_type |> String.downcase() |> String.to_existing_atom()}
+          else
+            _ -> informed_entity
+          end
+        end)
       end)
-    end)
-    |> List.flatten()
+
+    %{alert | informed_entities: informed_entities}
   end
 
   defp parse_informed_entity(informed_entity) do

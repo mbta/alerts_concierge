@@ -77,7 +77,7 @@ defmodule AlertProcessor.HoldingQueue do
   end
   def handle_call({:push, notification}, _from, notifications) do
     newstate = [notification | notifications]
-    {:reply, :ok, Enum.uniq_by(newstate, & {&1.user_id, &1.alert_id})}
+    {:reply, :ok, Enum.uniq_by(newstate, & {&1.user_id, &1.alert_id, &1.send_after})}
   end
   def handle_call({:remove, removed_alert_ids}, _from, notifications) do
     newstate = Enum.reject(notifications, &Enum.member?(removed_alert_ids, &1.alert_id))

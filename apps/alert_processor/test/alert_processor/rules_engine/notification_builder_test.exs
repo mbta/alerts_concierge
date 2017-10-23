@@ -6,7 +6,7 @@ defmodule AlertProcessor.NotificationBuilderTest do
   alias Calendar.DateTime, as: DT
 
   setup_all do
-    now = DT.from_date_and_time_and_zone!({2018, 1, 8}, {14, 10, 55}, "Etc/UTC")
+    now = DT.from_date_and_time_and_zone!({2018, 1, 11}, {14, 10, 55}, "Etc/UTC")
     two_days_ago = DT.subtract!(now, 172_800)
     one_day_ago = DT.subtract!(now, 86_400)
     thirty_minutes_from_now = DT.add!(now, 1800)
@@ -204,9 +204,9 @@ defmodule AlertProcessor.NotificationBuilderTest do
   The default time to send the alert immediately 10pm
   In this case, the alert would then get scheduled for 8am *tomorrow*
   """ do
-    today_10pm = DT.from_date_and_time_and_zone!({2018, 1, 8}, {22, 0, 0}, "America/New_York")
+    today_10pm = DT.from_date_and_time_and_zone!({2018, 1, 11}, {22, 0, 0}, "America/New_York")
     tomorrow_10pm = DT.add!(today_10pm, 86_400)
-    tomorrow_8am = DT.from_date_and_time_and_zone!({2018, 1, 9}, {8, 0, 0}, "America/New_York")
+    tomorrow_8am = DT.from_date_and_time_and_zone!({2018, 1, 12}, {8, 0, 0}, "America/New_York")
     user = insert(
       :user,
       do_not_disturb_start: ~T[20:00:00],
@@ -226,5 +226,44 @@ defmodule AlertProcessor.NotificationBuilderTest do
     [notification] = NotificationBuilder.build_notifications({user, [sub]}, alert, today_10pm)
     assert DT.same_time?(notification.send_after, tomorrow_8am)
     assert %DateTime{time_zone: "Etc/UTC"} = notification.send_after
+  end
+
+  test "handles estimated timeframes", %{time: time} do
+    three_hours = 60 * 60 * 3
+    thirty_six_hours = 60 * 60 * 36
+    user = insert(:user)
+    sub1 = :subscription |> insert(user: user, start_time: ~T[07:00:00], end_time: ~T[08:00:00]) |> weekday_subscription()
+    sub2 = :subscription |> insert(user: user, start_time: ~T[09:00:00], end_time: ~T[10:00:00]) |> weekday_subscription()
+    sub3 = :subscription |> insert(user: user, start_time: ~T[10:00:00], end_time: ~T[11:00:00]) |> saturday_subscription()
+    sub4 = :subscription |> insert(user: user, start_time: ~T[22:00:00], end_time: ~T[23:00:00]) |> weekday_subscription()
+
+    alert = %Alert{
+      id: "1",
+      header: "header",
+      severity: :minor,
+      active_period: [%{
+        start: DT.add!(time.now, 60),
+        end: DT.add!(time.now, thirty_six_hours)
+      }],
+      duration_certainty: "ESTIMATED",
+      estimated_duration: three_hours,
+      created_at: time.now
+    }
+
+    [n1, n2, n3, n4] = NotificationBuilder.build_notifications({user, [sub1, sub3, sub2, sub4]}, alert, time.now)
+
+    assert %{notification_subscriptions: [%{subscription_id: n1_sub_id}], send_after: n1_send_after} = n1
+    assert %{notification_subscriptions: [%{subscription_id: n2_sub_id}], send_after: n2_send_after} = n2
+    assert %{notification_subscriptions: [%{subscription_id: n3_sub_id}], send_after: n3_send_after} = n3
+    assert %{notification_subscriptions: [%{subscription_id: n4_sub_id}], send_after: n4_send_after} = n4
+    assert n4_sub_id == sub3.id
+    assert n3_sub_id == sub4.id
+    assert n2_sub_id == sub1.id
+    assert n1_sub_id == sub4.id
+
+    assert DT.same_time?(time.now, n4_send_after)
+    assert DT.same_time?(DT.add!(time.now, 86_400 - 655 - (12 * 60 * 60)), n3_send_after)
+    assert DT.same_time?(DT.add!(time.now, 86_400 - 655 - (3 * 60 * 60)), n2_send_after)
+    assert DT.same_time?(DT.add!(time.now, (86_400 * 2) - 655 - (12 * 60 * 60)), n1_send_after)
   end
 end

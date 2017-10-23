@@ -8,11 +8,11 @@ defmodule AlertProcessor.AlertsClient do
   @doc """
   fetch all alerts from enhanced json feed
   """
-  @spec get_alerts() :: [map] | {atom, map}
+  @spec get_alerts() :: [map] | {:ok, map, integer} | {:error, String.t}
   def get_alerts do
    case get(alerts_url()) do
-      {:ok, %{body: %{"alerts" => alerts}}} ->
-        {:ok, alerts}
+      {:ok, %{body: %{"alerts" => alerts, "timestamp" => timestamp}}} ->
+        {:ok, alerts, timestamp}
       {:error, message} ->
         {:error, message}
     end
