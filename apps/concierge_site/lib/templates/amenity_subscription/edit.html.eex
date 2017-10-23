@@ -17,8 +17,7 @@
         <%= render "_station_select.html",
                 form: f,
                 select_options: @station_select_options,
-                formaction: amenity_subscription_path(@conn, :add_station),
-                action: "edit" %>
+                selected_station_options: @selected_station_options[:stations] %>
 
         <%= render "_selected_station_list.html",
                   stations: Map.get(@selected_station_options, :stations, []),

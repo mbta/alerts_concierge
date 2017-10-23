@@ -213,6 +213,10 @@
   background-color: $white;
   font-family: $font-family-base;
   height: 3rem;
+
+  &.multi-select {
+    height: 100%;
+  }
 }
 
 .select-days {

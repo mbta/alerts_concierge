@@ -62,7 +62,7 @@ defmodule ConciergeSite.BusSubscriptionView do
     |> named_direction()
   end
 
-  defp direction_from_route(route) do
+  defp direction_from_route([route]) do
     route
     |> String.split(" - ")
     |> List.last

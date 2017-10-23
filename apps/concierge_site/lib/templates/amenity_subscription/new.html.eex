@@ -11,9 +11,7 @@
 
         <%= render "_station_select.html",
                 form: f,
-                select_options: @station_list_select_options,
-                formaction: amenity_subscription_path(@conn, :add_station),
-                action: "new" %>
+                select_options: @station_list_select_options %>
 
         <%= render "_selected_station_list.html",
                   stations: @selected_stations,

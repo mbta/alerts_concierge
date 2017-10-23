@@ -52,19 +52,6 @@ defmodule ConciergeSite.BusSubscriptionController do
   end
 
   def info(conn, params, user, _claims) do
-    render_info_page(conn, params, user, [], :info)
-  end
-
-  def add_route(conn, %{"subscription" => sub_params}, user, _claims) do
-    render_info_page(conn, sub_params, user, [], :add)
-  end
-
-  def remove_route(conn, %{"route" => route, "subscription" => sub_params}, user, _claims) do
-    new_stations = MultiSelectHelper.remove_route_from_list(sub_params, route)
-    render_info_page(conn, sub_params, user, new_stations, :remove)
-  end
-
-  def render_info_page(conn, params, user, selected_routes, action) do
     subscription_params = Map.merge(params, %{user_id: user.id, route_type: 3})
     token = TemporaryState.encode(subscription_params)
 
@@ -72,20 +59,13 @@ defmodule ConciergeSite.BusSubscriptionController do
       {:ok, routes} ->
         route_list_select_options = BusRoutes.route_list_select_options(routes)
 
-        selected_routes =
-          if action == :remove do
-            selected_routes
-          else
-            MultiSelectHelper.add_route_to_list(subscription_params)
-          end
-
-        subscription_params = Map.put(subscription_params, "routes", selected_routes)
+        subscription_params = Map.put(subscription_params, "routes", [])
 
         render conn, "info.html",
           token: token,
           subscription_params: subscription_params,
           route_list_select_options: route_list_select_options,
-          selected_routes: selected_routes
+          selected_routes: []
       _error ->
         conn
         |> put_flash(:error, "There was an error fetching route data. Please try again.")
@@ -100,7 +80,7 @@ defmodule ConciergeSite.BusSubscriptionController do
     token = TemporaryState.encode(subscription_params)
 
     with :ok <- BusParams.validate_info_params(subscription_params),
-      route_ids <- subscription_params["routes"] |> String.split(",") |> Enum.map(& &1 |> String.split(" - ") |> List.first()) do
+      route_ids <- subscription_params["routes"] |> Enum.map(& &1 |> String.split(" - ") |> List.first()) do
       routes =
         Enum.map(route_ids, fn(route_id) ->
           {:ok, route} = ServiceInfoCache.get_route(route_id)

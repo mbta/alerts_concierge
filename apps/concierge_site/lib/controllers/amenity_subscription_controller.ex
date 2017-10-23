@@ -7,23 +7,7 @@ defmodule ConciergeSite.AmenitySubscriptionController do
     Subscription.AmenitiesMapper, Model.Subscription, Model.User}
 
   def new(conn, _params, _user, _claims) do
-    render_new_page(conn, %{"stops" => []}, [], :new)
-  end
-
-  def add_station(conn, %{"subscription" => %{"id" => id} = sub_params}, user, _claims) do
-    render_edit_page(conn, id, user, sub_params, :add)
-  end
-  def add_station(conn, %{"subscription" => sub_params}, _user, _claims) do
-    render_new_page(conn, sub_params, [], :add)
-  end
-
-  def remove_station(conn, %{"station" => station, "subscription" => %{"id" => id} = sub_params}, user, _claims) do
-    sub_params = Map.merge(sub_params, %{"station" => station})
-    render_edit_page(conn, id, user, sub_params, :remove)
-  end
-  def remove_station(conn, %{"station" => station, "subscription" => sub_params}, _user, _claims) do
-    new_stations = MultiSelectHelper.remove_station_from_list(sub_params, station)
-    render_new_page(conn, sub_params, new_stations, :remove)
+    render_new_page(conn, %{"stops" => []}, [])
   end
 
   def create(conn, %{"subscription" => sub_params}, user, {:ok, claims}) do
@@ -37,11 +21,11 @@ defmodule ConciergeSite.AmenitySubscriptionController do
       {:error, message} ->
         conn
         |> put_flash(:error, message)
-        |> render_new_page(sub_params, String.split(sub_params["stops"], ",", trim: true), :create)
+        |> render_new_page(sub_params, String.split(sub_params["stops"], ",", trim: true))
       _ ->
         conn
         |> put_flash(:error, "there was an error saving the subscription. Please try again.")
-        |> render_new_page(sub_params, String.split(sub_params["stops"], ",", trim: true), :create)
+        |> render_new_page(sub_params, String.split(sub_params["stops"], ",", trim: true))
     end
   end
 
@@ -91,17 +75,11 @@ defmodule ConciergeSite.AmenitySubscriptionController do
     end
   end
 
-  defp render_new_page(conn, sub_params, selected_stations, type) do
+  defp render_new_page(conn, sub_params, selected_stations) do
     with {:ok, subway_stations} <- ServiceInfoCache.get_subway_full_routes(),
       {:ok, cr_stations} <- ServiceInfoCache.get_commuter_rail_info() do
 
       station_select_options = MultiSelectHelper.station_options(cr_stations, subway_stations)
-
-      selected_stations = if type == :add do
-          MultiSelectHelper.add_station_to_list(sub_params)
-        else
-          selected_stations
-        end
 
       subscription_params = Map.put(sub_params, "stops", selected_stations)
 

@@ -18,7 +18,11 @@
                action: "new" %>
 
     <%= for {param_name, value} <- atomize_keys(@subscription_params) do %>
-      <%= hidden_input f, param_name, value: value %>
+        <%= if is_list(value) do %>
+          <%= hidden_input f, param_name, value: Enum.join(value, ",") %>
+        <% else %>
+          <%= hidden_input f, param_name, value: value %>
+        <% end %>
     <% end %>
 
     <div class="trip-info-footer">

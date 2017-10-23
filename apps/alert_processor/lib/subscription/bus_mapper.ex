@@ -41,10 +41,10 @@ defmodule AlertProcessor.Subscription.BusMapper do
     Enum.map(subscriptions, & {&1, [%InformedEntity{route_type: 3, activities: InformedEntity.default_entity_activities()}]})
   end
 
+  defp map_routes(sub_infos, routes) when is_binary(routes), do: map_routes(sub_infos, String.split(routes, ","))
   defp map_routes([{sub, ie}], routes) do
     route_entities =
       routes
-      |> String.split(",")
       |> Enum.flat_map(fn(route) ->
         {route_id, direction_id} = extract_route_and_direction(route)
         do_map_routes(:one_way, route_id, direction_id)
@@ -53,9 +53,7 @@ defmodule AlertProcessor.Subscription.BusMapper do
   end
   defp map_routes([{sub1, ie1}, {sub2, ie2}], routes) do
     {informed_entities_1, informed_entities_2} =
-      routes
-      |> String.split(",")
-      |> Enum.reduce({ie1, ie2}, fn(route, {ie_1, ie_2}) ->
+      Enum.reduce(routes, {ie1, ie2}, fn(route, {ie_1, ie_2}) ->
         {route_id, direction_id} = extract_route_and_direction(route)
         {route_entities_1, route_entities_2} = do_map_routes(:round_trip, route_id, direction_id)
         {ie_1 ++ route_entities_1, ie_2 ++ route_entities_2}

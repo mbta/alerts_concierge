@@ -18,29 +18,24 @@
       <% end %>
       <div class="form-sub-label entity-select-sub-label">Enter as many routes as you would like.</div>
       <div class="entity-select-group">
-        <%= select f,
-                  :route,
+        <%= multiple_select f,
+                  :routes,
                   @route_list_select_options,
-                  class: "subscription-select no-js",
+                  selected: @selected_routes,
+                  class: "subscription-select multi-select no-js",
                   prompt: "Enter a route",
                   data: [entity_type: "route"] %>
 
-        <%= submit "Add Route",
-            formaction: bus_subscription_path(@conn, :add_route),
-            class: "btn btn-primary btn-add-subscription-entity no-js" %>
       </div>
     </div>
 
     <div class="selected-entity-list">
       <%= for {route_name, route_id} <- @selected_routes do %>
-        <%= submit formaction: bus_subscription_path(@conn, :remove_route, route: route_id),
-            class: "btn btn-sm btn-selected-entity" do %>
+        <%= button to: "#", class: "btn btn-sm btn-selected-entity" do %>
           <%= route_name %>&nbsp;<i class="fa fa-times" aria-hidden="true"></i>
         <% end %>
       <% end %>
     </div>
-
-    <%= hidden_input f, :routes, value: stringify(@selected_routes), class: "selected-subscription-entities" %>
 
     <%= render "_travel_days_checkboxes.html",
                form: f,

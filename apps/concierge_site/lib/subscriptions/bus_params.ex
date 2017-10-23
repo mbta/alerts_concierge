@@ -21,10 +21,9 @@ defmodule ConciergeSite.Subscriptions.BusParams do
   end
 
   defp validate_presence_of_routes({params, errors}) do
-    if params["routes"] == "" || params["routes"] == nil do
-      {params, ["Route is invalid." | errors]}
-    else
-      {params, errors}
+    case params["routes"] do
+      [_h | _t] -> {params, errors}
+      _ -> {params, ["Route is invalid." | errors]}
     end
   end
 

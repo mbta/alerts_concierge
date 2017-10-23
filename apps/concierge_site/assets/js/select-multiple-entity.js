@@ -28,12 +28,12 @@ export default function($) {
   }
 
   function setSelectedEntities() {
-    const selectedStops = $(".selected-subscription-entities").val();
-    const selectedStopIds = selectedStops.split(",");
+    const selectedStopIds = $(".subscription-select").val();
+    //const selectedStopIds = selectedStops.split(",");
     const className = "select.subscription-select";
     const entities = generateStationList(className, $);
 
-    if (selectedStops) {
+    if (selectedStopIds) {
       state.selectedEntities = entities.filter((entity) => selectedStopIds.includes(entity.id));
     }
 
@@ -149,8 +149,8 @@ export default function($) {
   }
 
   function setStopsValue() {
-    const stops = state.selectedEntities.map((station) => station.id).join(',');
-    const $stopsInput = $('.selected-subscription-entities')
+    const stops = state.selectedEntities.map((station) => station.id);
+    const $stopsInput = $('.subscription-select')
     $stopsInput.val(stops);
     return true;
   }
@@ -167,5 +167,5 @@ export default function($) {
   $(document).on(
     "mousedown", ".btn-selected-entity", {}, removeStation);
   $(document).on(
-    "focusout", ".subscription-select-entity-input", {}, unmountSuggestions);
+    "focusout", ".subscription-select-entity-input", {}, chooseSuggestion);
 }
