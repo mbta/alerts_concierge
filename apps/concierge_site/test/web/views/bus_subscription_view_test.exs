@@ -42,7 +42,7 @@ defmodule ConciergeSite.BusSubscriptionViewTest do
       "departure_end" => "09:15:00",
       "return_start" => "16:45:00",
       "return_end" => "17:15:00",
-      "routes" => "741 - 1",
+      "routes" => ["741 - 1"],
       "saturday" => "true",
       "sunday" => "true",
       "weekday" => "true",

@@ -21,16 +21,33 @@ defmodule ConciergeSite.AmenitySubscriptionController do
       {:error, message} ->
         conn
         |> put_flash(:error, message)
-        |> render_new_page(sub_params, String.split(sub_params["stops"], ",", trim: true))
+        |> render_new_page(sub_params, sub_params["stops"])
       _ ->
         conn
         |> put_flash(:error, "there was an error saving the subscription. Please try again.")
-        |> render_new_page(sub_params, String.split(sub_params["stops"], ",", trim: true))
+        |> render_new_page(sub_params, sub_params["stops"])
     end
   end
 
   def edit(conn, %{"id" => id}, user, _) do
-    render_edit_page(conn, id, user, %{}, nil)
+    with {:ok, subway_stations} <- ServiceInfoCache.get_subway_full_routes(),
+      {:ok, cr_stations} <- ServiceInfoCache.get_commuter_rail_info() do
+        station_select_options = MultiSelectHelper.station_options(cr_stations, subway_stations)
+        subscription = Subscription.one_for_user!(id, user.id, true)
+        changeset = Subscription.update_changeset(subscription)
+
+        render conn,
+          "edit.html",
+          subscription: subscription,
+          changeset: changeset,
+          station_select_options: station_select_options,
+          selected_station_options: selected_station_options(subscription)
+    else
+      _error ->
+        conn
+        |> put_flash(:error, "There was an error. Please try again.")
+        |> redirect(to: subscription_path(conn, :index))
+    end
   end
 
   def update(conn, %{"id" => id, "subscription" => sub_params}, user, {:ok, claims}) do
@@ -53,62 +70,23 @@ defmodule ConciergeSite.AmenitySubscriptionController do
     end
   end
 
-  defp render_edit_page(conn, id, user, sub_params, operation) do
-    with {:ok, subway_stations} <- ServiceInfoCache.get_subway_full_routes(),
-      {:ok, cr_stations} <- ServiceInfoCache.get_commuter_rail_info() do
-        station_select_options = MultiSelectHelper.station_options(cr_stations, subway_stations)
-        subscription = Subscription.one_for_user!(id, user.id, true)
-        changeset = Subscription.update_changeset(subscription, sub_params)
-        st = set_station_options(operation, sub_params, subscription)
-
-        render conn,
-          "edit.html",
-          subscription: subscription,
-          changeset: changeset,
-          station_select_options: station_select_options,
-          selected_station_options: st
-    else
-      _error ->
-        conn
-        |> put_flash(:error, "There was an error. Please try again.")
-        |> redirect(to: subscription_path(conn, :index))
-    end
-  end
-
-  defp render_new_page(conn, sub_params, selected_stations) do
+  defp render_new_page(conn, sub_params, selected_station_options) do
     with {:ok, subway_stations} <- ServiceInfoCache.get_subway_full_routes(),
       {:ok, cr_stations} <- ServiceInfoCache.get_commuter_rail_info() do
 
       station_select_options = MultiSelectHelper.station_options(cr_stations, subway_stations)
 
-      subscription_params = Map.put(sub_params, "stops", selected_stations)
+      subscription_params = Map.put(sub_params, "stops", selected_station_options)
 
       render conn, :new,
         subscription_params: subscription_params,
         station_list_select_options: station_select_options,
-        selected_stations: selected_stations
+        selected_station_options: selected_station_options || []
     else
       _error ->
         conn
         |> put_flash(:error, "There was an error fetching station data. Please try again.")
         |> redirect(to: subscription_path(conn, :new))
-    end
-  end
-
-  defp set_station_options(operation, sub_params, subscription) do
-    case operation do
-      :add ->
-        subscription
-        |> selected_station_options()
-        |> MultiSelectHelper.replace_stops(sub_params)
-        |> MultiSelectHelper.add_station_selection(sub_params)
-      :remove ->
-        subscription
-        |> selected_station_options()
-        |> MultiSelectHelper.replace_stops(sub_params)
-        |> MultiSelectHelper.remove_station_selection(sub_params)
-      nil ->
-        selected_station_options(subscription)
     end
   end
 

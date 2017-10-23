@@ -15,7 +15,7 @@ defmodule ConciergeSite.AmenitySubscriptionControllerTest do
 
     test "POST /subscriptions/amenities with valid params", %{conn: conn} do
       params = %{"subscription" => %{
-        "stops" => "place-nqncy,place-forhl",
+        "stops" => ["place-nqncy", "place-forhl"],
         "amenities" => ["elevator"],
         "relevant_days" => ["saturday"],
         "routes" => ["blue"]
@@ -32,7 +32,6 @@ defmodule ConciergeSite.AmenitySubscriptionControllerTest do
 
     test "POST /subscriptions/amenities with invalid params", %{conn: conn} do
       params = %{"subscription" => %{
-        "stops" => "",
         "amenities" => [],
         "relevant_days" => [],
         "routes" => []
@@ -98,7 +97,7 @@ defmodule ConciergeSite.AmenitySubscriptionControllerTest do
         |> PaperTrail.insert!()
 
       params = %{"subscription" => %{
-        "stops" => "place-nqncy,place-forhl",
+        "stops" => ["place-nqncy", "place-forhl"],
         "amenities" => ["elevator"],
         "relevant_days" => ["saturday"],
         "routes" => ["blue"]

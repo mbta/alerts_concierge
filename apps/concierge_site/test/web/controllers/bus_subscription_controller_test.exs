@@ -38,7 +38,7 @@ defmodule ConciergeSite.BusSubscriptionControllerTest do
       params = %{"subscription" => %{
         "departure_start" => "08:45:00",
         "departure_end" => "09:15:00",
-        "routes" => "741 - 1",
+        "routes" => ["741 - 1"],
         "saturday" => "true",
         "sunday" => "false",
         "weekday" => "false",
@@ -57,7 +57,7 @@ defmodule ConciergeSite.BusSubscriptionControllerTest do
       params = %{"subscription" => %{
         "departure_start" => "08:45:00",
         "departure_end" => "09:15:00",
-        "routes" => "",
+        "routes" => [],
         "saturday" => "false",
         "sunday" => "false",
         "weekday" => "false",
@@ -75,7 +75,7 @@ defmodule ConciergeSite.BusSubscriptionControllerTest do
       params = %{"subscription" => %{
         "departure_start" => "08:45:00",
         "departure_end" => "09:15:00",
-        "routes" => "741 - 1",
+        "routes" => ["741 - 1"],
         "saturday" => "true",
         "sunday" => "false",
         "weekday" => "false",
@@ -96,7 +96,7 @@ defmodule ConciergeSite.BusSubscriptionControllerTest do
         "departure_end" => "09:15:00",
         "return_start" => "16:45:00",
         "return_end" => "17:15:00",
-        "routes" => "741 - 1",
+        "routes" => ["741 - 1"],
         "saturday" => "true",
         "sunday" => "false",
         "weekday" => "false",

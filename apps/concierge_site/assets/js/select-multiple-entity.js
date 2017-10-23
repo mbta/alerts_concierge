@@ -116,7 +116,7 @@ export default function($) {
 
   function assignSuggestion(event) {
     const stationName = event.target.textContent.trim();
-    const $stationSelect = $(".subscription-select-entity");
+    const $stationSelect = $(".subscription-select-entity-input");
     const $stationListContainer = $('.selected-entity-list');
     const station = renderEntity(stationName);
     $stationListContainer.append(station);

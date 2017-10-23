@@ -11,7 +11,7 @@
     <div class="form-group select-entity">
       <label for="route" class="entity-input-label form-label">Which bus routes do you take?</label>
       <%= if @subscription_params["trip_type"] == "round_trip" do %>
-        <div class="form-sub-label entity-select-sub-label">
+        <div class="form-sub-label">
           Choose the direction of your first trip. The other direction will be
           used for the return trip.
         </div>
@@ -30,7 +30,7 @@
     </div>
 
     <div class="selected-entity-list">
-      <%= for {route_name, route_id} <- @selected_routes do %>
+      <%= for {route_name, _} <- @selected_routes do %>
         <%= button to: "#", class: "btn btn-sm btn-selected-entity" do %>
           <%= route_name %>&nbsp;<i class="fa fa-times" aria-hidden="true"></i>
         <% end %>

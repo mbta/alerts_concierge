@@ -6,7 +6,7 @@ defmodule AlertProcessor.Subscription.AmenitiesMapperTest do
 
   @params %{
     "amenities" => ["elevator"],
-    "stops" => "place-north,place-sstat",
+    "stops" => ["place-north", "place-sstat"],
     "routes" => ["red"],
     "relevant_days" => ["weekday"]
   }
@@ -110,7 +110,7 @@ defmodule AlertProcessor.Subscription.AmenitiesMapperTest do
   describe "build_subscription_transaction" do
     @params %{
       "amenities" => ["elevator"],
-      "stops" => "place-north,place-sstat",
+      "stops" => ["place-north", "place-sstat"],
       "routes" => ["red"],
       "relevant_days" => ["weekday"]
     }

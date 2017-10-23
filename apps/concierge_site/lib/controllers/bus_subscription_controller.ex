@@ -2,7 +2,6 @@ defmodule ConciergeSite.BusSubscriptionController do
   use ConciergeSite.Web, :controller
   use Guardian.Phoenix.Controller
   alias ConciergeSite.Subscriptions.{BusParams, BusRoutes, TemporaryState, SubscriptionParams}
-  alias ConciergeSite.Helpers.MultiSelectHelper
   alias AlertProcessor.{Model.Subscription, Model.User, ServiceInfoCache, Subscription.BusMapper}
 
   def new(conn, _params, _user, _claims) do
@@ -103,7 +102,10 @@ defmodule ConciergeSite.BusSubscriptionController do
     case ServiceInfoCache.get_bus_info() do
       {:ok, routes} ->
         route_list_select_options = BusRoutes.route_list_select_options(routes)
-        selected_routes = MultiSelectHelper.add_route_to_list(subscription_params)
+        selected_routes =
+          Enum.filter(route_list_select_options, fn({_, option_value}) ->
+            Enum.member?(subscription_params["routes"], option_value)
+          end)
 
         conn
         |> put_flash(:error, error_message)

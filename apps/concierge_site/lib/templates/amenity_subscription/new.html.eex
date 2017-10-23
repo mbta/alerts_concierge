@@ -11,10 +11,11 @@
 
         <%= render "_station_select.html",
                 form: f,
-                select_options: @station_list_select_options %>
+                select_options: @station_list_select_options,
+                selected_station_options: @selected_station_options || [] %>
 
         <%= render "_selected_station_list.html",
-                  stations: @selected_stations,
+                  stations: @selected_station_options || [],
                   conn: @conn,
                   action: "new" %>
 
@@ -28,8 +29,6 @@
                     checked: Map.get(@subscription_params, "relevant_days", []),
                     action: "new" %>
       </div>
-
-      <%= hidden_input f, :stops, value: stringify(@selected_stations), class: "selected-subscription-entities" %>
 
       <div class="trip-info-footer">
         <%= submit "Create Subscription", class: "btn btn-primary btn-amenity-submit" %>

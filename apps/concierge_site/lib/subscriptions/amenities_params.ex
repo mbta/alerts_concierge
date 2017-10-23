@@ -26,9 +26,8 @@ defmodule ConciergeSite.Subscriptions.AmenitiesParams do
     end
   end
 
-  defp missing_stops?(params) do
-    params["stops"] == ""
-  end
+  defp missing_stops?(%{"stops" => [stop]}) when not is_nil(stop), do: false
+  defp missing_stops?(_), do: true
 
   defp missing_routes?(params) do
     Enum.empty?(params["routes"])

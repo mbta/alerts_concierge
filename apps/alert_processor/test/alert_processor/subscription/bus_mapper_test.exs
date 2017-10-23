@@ -5,7 +5,7 @@ defmodule AlertProcessor.Subscription.BusMapperTest do
   alias AlertProcessor.Model.InformedEntity
 
   @one_way_params %{
-    "routes" => "16 - 1",
+    "routes" => ["16 - 1"],
     "relevant_days" => ["weekday", "saturday"],
     "departure_start" => DateTime.from_naive!(~N[2017-07-20 12:00:00], "Etc/UTC"),
     "departure_end" => DateTime.from_naive!(~N[2017-07-20 14:00:00], "Etc/UTC"),
@@ -16,7 +16,7 @@ defmodule AlertProcessor.Subscription.BusMapperTest do
   }
 
   @round_trip_params %{
-    "routes" => "16 - 0",
+    "routes" => ["16 - 0"],
     "relevant_days" => ["weekday", "saturday"],
     "departure_start" => DateTime.from_naive!(~N[2017-07-20 12:00:00], "Etc/UTC"),
     "departure_end" => DateTime.from_naive!(~N[2017-07-20 14:00:00], "Etc/UTC"),

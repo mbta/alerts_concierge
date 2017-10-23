@@ -243,7 +243,6 @@ describe("selectMultipleEntity", function() {
             </optgroup>
           </select>
           <div class="selected-entity-list"></div>
-          <input class="selected-subscription-entities" id="subscription_stops" name="subscription[stops]" type="hidden" value="">
         </div>
       </form>
     </div>
