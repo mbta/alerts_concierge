@@ -116,7 +116,7 @@ defmodule AlertProcessor.AlertParserTest do
 
   test "correctly parses entities without activities" do
     use_cassette "no_activities_alerts", custom: true, clear_mock: true, match_requests_on: [:query] do
-      assert [] = AlertParser.process_alerts()
+      assert [{:ok, []} | _] = AlertParser.process_alerts()
     end
   end
 end

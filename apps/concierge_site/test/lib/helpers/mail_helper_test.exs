@@ -27,11 +27,14 @@ defmodule ConcerigeSite.Helpers.MailHelperTest do
       green_c_alert = Map.merge(@alert, %{informed_entities: [%InformedEntity{route_type: 0, route: "Green-C"}]})
       green_d_alert = Map.merge(@alert, %{informed_entities: [%InformedEntity{route_type: 0, route: "Green-D"}]})
       green_e_alert = Map.merge(@alert, %{informed_entities: [%InformedEntity{route_type: 0, route: "Green-E"}]})
+      facility_alert = Map.merge(@alert, %{informed_entities: [%InformedEntity{route_type: nil, facility_type: :elevator}]})
+      unparsed_facility_alert = Map.merge(@alert, %{informed_entities: [%InformedEntity{route_type: nil, facility_type: nil}]})
 
       red = "/images/icons/icn_red-line.png"
       blue = "/images/icons/icn_blue-line.png"
       orange = "/images/icons/icn_orange-line.png"
       green = "/images/icons/icn_green-line.png"
+      facility = "/images/icons/icn_facility.png"
 
       assert MailHelper.logo_for_alert(red_alert) =~ red
       assert MailHelper.logo_for_alert(blue_alert) =~ blue
@@ -41,6 +44,8 @@ defmodule ConcerigeSite.Helpers.MailHelperTest do
       assert MailHelper.logo_for_alert(green_c_alert) =~ green
       assert MailHelper.logo_for_alert(green_d_alert) =~ green
       assert MailHelper.logo_for_alert(green_e_alert) =~ green
+      assert MailHelper.logo_for_alert(facility_alert) =~ facility
+      assert MailHelper.logo_for_alert(unparsed_facility_alert) =~ facility
     end
 
     test "logo_for_alert/1 returns commuter rail" do
@@ -82,11 +87,14 @@ defmodule ConcerigeSite.Helpers.MailHelperTest do
       green_c_alert = Map.merge(@alert, %{informed_entities: [%InformedEntity{route_type: 0, route: "Green-C"}]})
       green_d_alert = Map.merge(@alert, %{informed_entities: [%InformedEntity{route_type: 0, route: "Green-D"}]})
       green_e_alert = Map.merge(@alert, %{informed_entities: [%InformedEntity{route_type: 0, route: "Green-E"}]})
+      facility_alert = Map.merge(@alert, %{informed_entities: [%InformedEntity{route_type: nil, facility_type: :elevator}]})
+      unparsed_facility_alert = Map.merge(@alert, %{informed_entities: [%InformedEntity{route_type: nil, facility_type: nil}]})
 
       red = "logo-red-line"
       blue = "logo-blue-line"
       orange = "logo-orange-line"
       green = "logo-green-line"
+      facility = "logo-facility"
 
       assert MailHelper.alt_text_for_alert(red_alert) == red
       assert MailHelper.alt_text_for_alert(blue_alert) == blue
@@ -96,6 +104,8 @@ defmodule ConcerigeSite.Helpers.MailHelperTest do
       assert MailHelper.alt_text_for_alert(green_c_alert) == green
       assert MailHelper.alt_text_for_alert(green_d_alert) == green
       assert MailHelper.alt_text_for_alert(green_e_alert) == green
+      assert MailHelper.alt_text_for_alert(facility_alert) == facility
+      assert MailHelper.alt_text_for_alert(unparsed_facility_alert) == facility
     end
 
     test "alt_text_for_alert/1 returns commuter rail" do

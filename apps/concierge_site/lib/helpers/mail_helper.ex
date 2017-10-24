@@ -50,19 +50,30 @@ defmodule ConciergeSite.Helpers.MailHelper do
   end
 
   @spec logo_for_route_type(InformedEntity.t) :: iodata
-  defp logo_for_route_type(%InformedEntity{route_type: 0, route: r}), do: logo_for_subway(r)
-  defp logo_for_route_type(%InformedEntity{route_type: 1, route: r}), do: logo_for_subway(r)
-  defp logo_for_route_type(%InformedEntity{route_type: 2}),
-    do: Helpers.static_url(ConciergeSite.Endpoint, "/images/icons/icn_commuter.png")
-
-  defp logo_for_route_type(%InformedEntity{route_type: 3}),
-    do: Helpers.static_url(ConciergeSite.Endpoint, "/images/icons/icn_bus.png")
-
-  defp logo_for_route_type(%InformedEntity{route_type: 4}),
-    do: Helpers.static_url(ConciergeSite.Endpoint, "/images/icons/icn_ferry.png")
-
-  defp logo_for_route_type(%InformedEntity{facility_type: ft}) when not is_nil(ft),
-    do: Helpers.static_url(ConciergeSite.Endpoint, "/images/icons/icn_facility.png")
+  defp logo_for_route_type(%InformedEntity{route_type: 0, route: r}) do
+    logo_for_subway(r)
+  end
+  defp logo_for_route_type(%InformedEntity{route_type: 1, route: r}) do
+    logo_for_subway(r)
+  end
+  defp logo_for_route_type(%InformedEntity{route_type: 2}) do
+    Helpers.static_url(ConciergeSite.Endpoint, "/images/icons/icn_commuter.png")
+  end
+  defp logo_for_route_type(%InformedEntity{route_type: 3}) do
+    Helpers.static_url(ConciergeSite.Endpoint, "/images/icons/icn_bus.png")
+  end
+  defp logo_for_route_type(%InformedEntity{route_type: 4}) do
+    Helpers.static_url(ConciergeSite.Endpoint, "/images/icons/icn_ferry.png")
+  end
+  defp logo_for_route_type(%InformedEntity{facility_type: ft}) when not is_nil(ft) do
+    Helpers.static_url(ConciergeSite.Endpoint, "/images/icons/icn_facility.png")
+  end
+  defp logo_for_route_type(%InformedEntity{facility_type: ft}) when not is_nil(ft) do
+    Helpers.static_url(ConciergeSite.Endpoint, "/images/icons/icn_facility.png")
+  end
+  defp logo_for_route_type(_) do
+    Helpers.static_url(ConciergeSite.Endpoint, "/images/icons/icn_facility.png")
+  end
 
   defp logo_for_subway("Red"),
     do: Helpers.static_url(ConciergeSite.Endpoint, "/images/icons/icn_red-line.png")
@@ -98,6 +109,7 @@ defmodule ConciergeSite.Helpers.MailHelper do
   defp alt_text_for_route_type(%InformedEntity{route_type: 3}), do: "logo-bus"
   defp alt_text_for_route_type(%InformedEntity{route_type: 4}), do: "logo-ferry"
   defp alt_text_for_route_type(%InformedEntity{facility_type: ft}) when not is_nil(ft), do: "logo-facility"
+  defp alt_text_for_route_type(_), do: "logo-facility"
 
   defp alt_text_for_subway(route) do
     case route do
