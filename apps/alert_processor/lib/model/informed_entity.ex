@@ -25,7 +25,7 @@ defmodule AlertProcessor.Model.InformedEntity do
 
   schema "informed_entities" do
     belongs_to :subscription, Subscription, type: :binary_id
-    field :activities, {:array, :string}
+    field :activities, {:array, :string}, default: []
     field :direction_id, :integer
     field :facility_type, AlertProcessor.AtomType
     field :route, :string
