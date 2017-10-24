@@ -40,6 +40,24 @@ defmodule AlertProcessor.Subscriptions.DisplayInfoTest do
         assert {:ok, %{}} == DisplayInfo.departure_times_for_subscriptions([subscription], @test_date)
       end
     end
+
+    test "with empty response" do
+      use_cassette "schedule_display_info_empty", custom: true, clear_mock: true, match_requests_on: [:query] do
+        informed_entities = [
+          %InformedEntity{route_type: 4, activities: InformedEntity.default_entity_activities()},
+          %InformedEntity{route_type: 4, route: "Boat-F1", direction_id: 1, activities: InformedEntity.default_entity_activities()},
+          %InformedEntity{route_type: 4, route: "Boat-F1", stop: "Boat-Hingham", activities: ["BOARD"]},
+          %InformedEntity{route_type: 4, route: "Boat-F1", stop: "Boat-Rowes", activities: ["EXIT"]}
+        ]
+
+        subscription =
+          :subscription
+          |> build(origin: "Boat-Hingham", destination: "Boat-Rowes", type: :ferry, informed_entities: informed_entities)
+          |> saturday_subscription()
+
+        assert {:ok, %{}} == DisplayInfo.departure_times_for_subscriptions([subscription], @test_date)
+      end
+    end
   end
 
   describe "station_names_for_subscriptions" do

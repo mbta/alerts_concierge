@@ -37,9 +37,9 @@ defmodule AlertProcessor.Subscription.DisplayInfo do
   end
 
   defp parse_subscription_stops_and_relevant_days(subscriptions) do
+    relevant_subscriptions = Enum.filter(subscriptions, & Enum.member?([:commuter_rail, :ferry], &1.type))
     stops =
-      subscriptions
-      |> Enum.filter(& Enum.member?([:commuter_rail, :ferry], &1.type))
+      relevant_subscriptions
       |> Enum.flat_map(fn(subscription) ->
         for informed_entity <- subscription.informed_entities, InformedEntity.entity_type(informed_entity) == :stop do
           informed_entity.stop
@@ -48,7 +48,7 @@ defmodule AlertProcessor.Subscription.DisplayInfo do
       |> Enum.uniq()
 
     relevant_days =
-      subscriptions
+      relevant_subscriptions
       |> Enum.flat_map(& &1.relevant_days)
       |> Enum.uniq()
 
@@ -63,7 +63,7 @@ defmodule AlertProcessor.Subscription.DisplayInfo do
       relevant_date = selected_date || DateTimeHelper.determine_date(relevant_day, Date.utc_today())
       case ApiClient.schedules_for_stops(stops, relevant_date) do
         {:ok, schedules, trips} -> {previous_schedules ++ schedules, previous_trips ++ trips}
-        {:error, %HTTPoison.Error{}} -> {previous_schedules, previous_trips}
+        _ -> {previous_schedules, previous_trips}
       end
     end)
   end
