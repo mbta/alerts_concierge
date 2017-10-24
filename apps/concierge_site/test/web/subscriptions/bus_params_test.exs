@@ -137,7 +137,7 @@ defmodule ConciergeSite.Subscriptions.BusParamsTest do
       }
 
       assert %{
-        "routes" => "88 - 0",
+        "routes" => ["88 - 0"],
         "departure_start" => ds,
         "departure_end" => de,
         "return_start" => nil,
@@ -162,7 +162,7 @@ defmodule ConciergeSite.Subscriptions.BusParamsTest do
       }
 
       assert %{
-        "routes" => "88 - 0",
+        "routes" => ["88 - 0"],
         "departure_start" => ds,
         "departure_end" => de,
         "return_start" => rs,

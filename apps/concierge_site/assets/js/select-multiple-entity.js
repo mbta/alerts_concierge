@@ -29,7 +29,6 @@ export default function($) {
 
   function setSelectedEntities() {
     const selectedStopIds = $(".subscription-select").val();
-    //const selectedStopIds = selectedStops.split(",");
     const className = "select.subscription-select";
     const entities = generateStationList(className, $);
 

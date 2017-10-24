@@ -300,7 +300,7 @@ defmodule AlertProcessor.Model.SubscriptionTest do
 
   describe "set_versioned_subscription/1" do
     @params %{
-      "routes" => "16 - 0",
+      "routes" => ["16 - 0"],
       "relevant_days" => ["weekday", "saturday"],
       "departure_start" => DateTime.from_naive!(~N[2017-07-20 12:00:00], "Etc/UTC"),
       "departure_end" => DateTime.from_naive!(~N[2017-07-20 14:00:00], "Etc/UTC"),
@@ -588,7 +588,7 @@ defmodule AlertProcessor.Model.SubscriptionTest do
         |> bus_subscription()
         |> Repo.preload(:informed_entities)
         |> Ecto.Changeset.change()
-        |> Ecto.Changeset.put_assoc(:informed_entities, Enum.uniq(bus_subscription_entities(:inbound, "87") ++ bus_subscription_entities(:outbound, "87")))
+        |> Ecto.Changeset.put_assoc(:informed_entities, Enum.uniq(bus_subscription_entities("87", :inbound) ++ bus_subscription_entities("87", :outbound)))
         |> Repo.insert()
 
       assert 2 == Subscription.route_count(subscription)

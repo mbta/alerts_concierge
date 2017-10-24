@@ -78,8 +78,8 @@ defmodule ConciergeSite.BusSubscriptionController do
 
     token = TemporaryState.encode(subscription_params)
 
-    with :ok <- BusParams.validate_info_params(subscription_params),
-      route_ids <- subscription_params["routes"] |> Enum.map(& &1 |> String.split(" - ") |> List.first()) do
+    with :ok <- BusParams.validate_info_params(subscription_params) do
+      route_ids = subscription_params["routes"] |> Enum.map(& &1 |> String.split(" - ") |> List.first())
       routes =
         Enum.map(route_ids, fn(route_id) ->
           {:ok, route} = ServiceInfoCache.get_route(route_id)

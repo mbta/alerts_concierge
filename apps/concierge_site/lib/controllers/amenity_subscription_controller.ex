@@ -21,11 +21,11 @@ defmodule ConciergeSite.AmenitySubscriptionController do
       {:error, message} ->
         conn
         |> put_flash(:error, message)
-        |> render_new_page(sub_params, sub_params["stops"])
+        |> render_new_page(sub_params, Map.get(sub_params, "stops", []))
       _ ->
         conn
         |> put_flash(:error, "there was an error saving the subscription. Please try again.")
-        |> render_new_page(sub_params, sub_params["stops"])
+        |> render_new_page(sub_params, Map.get(sub_params, "stops", []))
     end
   end
 
@@ -81,7 +81,7 @@ defmodule ConciergeSite.AmenitySubscriptionController do
       render conn, :new,
         subscription_params: subscription_params,
         station_list_select_options: station_select_options,
-        selected_station_options: selected_station_options || []
+        selected_station_options: selected_station_options
     else
       _error ->
         conn

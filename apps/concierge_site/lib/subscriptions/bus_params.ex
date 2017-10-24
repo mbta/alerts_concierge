@@ -47,7 +47,8 @@ defmodule ConciergeSite.Subscriptions.BusParams do
       "departure_end" => DateTimeHelper.timestamp_to_utc_datetime(params["departure_end"]),
       "return_start" => nil,
       "return_end" => nil,
-      "amenities" => []
+      "amenities" => [],
+      "routes" => params["routes"] |> to_string() |> String.split(",", trim: true)
     }
 
     do_prepare_for_mapper(params, translated_params)
@@ -59,7 +60,8 @@ defmodule ConciergeSite.Subscriptions.BusParams do
       "departure_end" => DateTimeHelper.timestamp_to_utc_datetime(params["departure_end"]),
       "return_start" => DateTimeHelper.timestamp_to_utc_datetime(params["return_start"]),
       "return_end" => DateTimeHelper.timestamp_to_utc_datetime(params["return_end"]),
-      "amenities" => []
+      "amenities" => [],
+      "routes" => params["routes"] |> to_string() |> String.split(",", trim: true)
     }
 
     do_prepare_for_mapper(params, translated_params)

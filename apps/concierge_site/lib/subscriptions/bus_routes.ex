@@ -23,9 +23,9 @@ defmodule ConciergeSite.Subscriptions.BusRoutes do
 
   @spec route_list_select_option(%Route{}, String.t) :: {String.t, String.t}
   def route_list_select_option(route, "0") do
-    {:"Route #{Route.name(route)} - Outbound", "#{route.route_id} - 0"}
+    {"Route #{Route.name(route)} - Outbound", "#{route.route_id} - 0"}
   end
   def route_list_select_option(route, "1") do
-    {:"Route #{Route.name(route)} - Inbound", "#{route.route_id} - 1"}
+    {"Route #{Route.name(route)} - Inbound", "#{route.route_id} - 1"}
   end
 end

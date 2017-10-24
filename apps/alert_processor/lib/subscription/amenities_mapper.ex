@@ -97,7 +97,7 @@ defmodule AlertProcessor.Subscription.AmenitiesMapper do
   end
 
   defp map_stop_names(params) do
-    stop_ids = params["stops"] || []
+    stop_ids = Map.get(params, "stops", [])
     Map.put(params, "stops", stop_ids)
   end
 

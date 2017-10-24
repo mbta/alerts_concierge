@@ -15,7 +15,7 @@ defmodule ConciergeSite.Subscriptions.BusRoutesTest do
 
       select_options = BusRoutes.route_list_select_options(routes)
 
-      assert select_options == ["Route 57A Long Name - Inbound": "57A - 1", "Route 57A Long Name - Outbound": "57A - 0"]
+      assert select_options == [{"Route 57A Long Name - Inbound", "57A - 1"}, {"Route 57A Long Name - Outbound", "57A - 0"}]
     end
   end
 end

@@ -40,7 +40,6 @@ defmodule AlertProcessor.Subscription.BusMapper do
     Enum.map(subscriptions, & {&1, [%InformedEntity{route_type: 3, activities: InformedEntity.default_entity_activities()}]})
   end
 
-  defp map_routes(sub_infos, routes) when is_binary(routes), do: map_routes(sub_infos, String.split(routes, ","))
   defp map_routes([{sub, ie}], routes) do
     route_entities =
       routes

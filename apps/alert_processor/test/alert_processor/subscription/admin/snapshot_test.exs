@@ -52,7 +52,7 @@ defmodule AlertProcessor.Subscription.SnapshotTest do
 
     test "fetches correct informed_entities for version" do
       params = %{
-        "routes" => "16 - 0",
+        "routes" => ["16 - 0"],
         "relevant_days" => ["weekday", "saturday"],
         "departure_start" => DateTime.from_naive!(~N[2017-07-20 12:00:00], "Etc/UTC"),
         "departure_end" => DateTime.from_naive!(~N[2017-07-20 14:00:00], "Etc/UTC"),

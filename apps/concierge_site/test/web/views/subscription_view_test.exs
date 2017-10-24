@@ -138,7 +138,7 @@ defmodule ConciergeSite.SubscriptionViewTest do
         subscription_factory()
         |> bus_subscription()
         |> weekday_subscription()
-        |> Map.put(:informed_entities, bus_subscription_entities(:inbound, "88"))
+        |> Map.put(:informed_entities, bus_subscription_entities("88", :inbound))
       rendered = html_to_binary(SubscriptionView.subscription_info(subscription))
       assert rendered =~ "88"
       assert rendered =~ "Inbound"
