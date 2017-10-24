@@ -300,7 +300,7 @@ defmodule AlertProcessor.Model.SubscriptionTest do
 
   describe "set_versioned_subscription/1" do
     @params %{
-      "route" => "16 - 0",
+      "routes" => ["16 - 0"],
       "relevant_days" => ["weekday", "saturday"],
       "departure_start" => DateTime.from_naive!(~N[2017-07-20 12:00:00], "Etc/UTC"),
       "departure_end" => DateTime.from_naive!(~N[2017-07-20 14:00:00], "Etc/UTC"),
@@ -545,6 +545,53 @@ defmodule AlertProcessor.Model.SubscriptionTest do
       subscription = :subscription |> build() |> sunday_subscription() |> saturday_subscription() |> weekday_subscription()
       relevant_days_string = Subscription.relevant_days_string(subscription)
       assert IO.iodata_to_binary(relevant_days_string) == "Weekdays, Saturdays, Sundays"
+    end
+  end
+
+  describe "route_count/1" do
+    test "returns the number of route entities in a subscription" do
+      user = build(:user)
+      {:ok, subscription} =
+        :subscription
+        |> build(user: user)
+        |> weekday_subscription()
+        |> bus_subscription()
+        |> Repo.preload(:informed_entities)
+        |> Ecto.Changeset.change()
+        |> Ecto.Changeset.put_assoc(:informed_entities, bus_subscription_entities())
+        |> Repo.insert()
+
+      assert 1 == Subscription.route_count(subscription)
+    end
+
+    test "returns the number of route entities in a subscription for multiple" do
+      user = build(:user)
+      {:ok, subscription} =
+        :subscription
+        |> build(user: user)
+        |> weekday_subscription()
+        |> bus_subscription()
+        |> Repo.preload(:informed_entities)
+        |> Ecto.Changeset.change()
+        |> Ecto.Changeset.put_assoc(:informed_entities, bus_subscription_entities() ++ bus_subscription_entities("87"))
+        |> Repo.insert()
+
+      assert 2 == Subscription.route_count(subscription)
+    end
+
+    test "treats same route in opposite direction as separate route" do
+      user = build(:user)
+      {:ok, subscription} =
+        :subscription
+        |> build(user: user)
+        |> weekday_subscription()
+        |> bus_subscription()
+        |> Repo.preload(:informed_entities)
+        |> Ecto.Changeset.change()
+        |> Ecto.Changeset.put_assoc(:informed_entities, Enum.uniq(bus_subscription_entities("87", :inbound) ++ bus_subscription_entities("87", :outbound)))
+        |> Repo.insert()
+
+      assert 2 == Subscription.route_count(subscription)
     end
   end
 end

@@ -7,21 +7,34 @@
 
   <%= flash_error(@conn) %>
 
-  <%= form_for @conn, bus_subscription_path(@conn, :preferences), [class: "trip-info-form bus", as: :subscription], fn f -> %>
-    <div class="form-group select-station">
-    <label for="route" class="station-input-label form-label">Which bus route do you take?</label>
-    <%= if @subscription_params["trip_type"] == "round_trip" do %>
-      <div class="form-sub-label route-sub-label">
-        Choose the direction of your first trip. The other direction will be
-        used for the return trip.
+  <%= form_for @conn, bus_subscription_path(@conn, :preferences), [class: "single-submit-form trip-info-form multi-select-form bus", as: :subscription], fn f -> %>
+    <div class="form-group select-entity">
+      <label for="route" class="entity-input-label form-label">Which bus routes do you take?</label>
+      <%= if @subscription_params["trip_type"] == "round_trip" do %>
+        <div class="form-sub-label">
+          Choose the direction of your first trip. The other direction will be
+          used for the return trip.
+        </div>
+      <% end %>
+      <div class="form-sub-label entity-select-sub-label">Enter as many routes as you would like.</div>
+      <div class="entity-select-group">
+        <%= multiple_select f,
+                  :routes,
+                  @route_list_select_options,
+                  selected: @selected_routes,
+                  class: "subscription-select multi-select no-js",
+                  prompt: "Enter a route",
+                  data: [entity_type: "route"] %>
+
       </div>
-    <% end %>
-    <%= select f,
-               :route,
-               @route_list_select_options,
-               class: "subscription-select subscription-select-route no-js",
-               prompt: "Enter your bus route and direction",
-               selected: @subscription_params["route"] %>
+    </div>
+
+    <div class="selected-entity-list">
+      <%= for {route_name, _} <- @selected_routes do %>
+        <%= button to: "#", class: "btn btn-sm btn-selected-entity" do %>
+          <%= route_name %>&nbsp;<i class="fa fa-times" aria-hidden="true"></i>
+        <% end %>
+      <% end %>
     </div>
 
     <%= render "_travel_days_checkboxes.html",

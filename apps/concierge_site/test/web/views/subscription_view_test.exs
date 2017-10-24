@@ -5,6 +5,7 @@ defmodule ConciergeSite.SubscriptionViewTest do
   alias AlertProcessor.Repo
   alias AlertProcessor.Model.{InformedEntity, Route, Subscription}
   import AlertProcessor.Factory
+  import ConciergeSite.HTMLTestHelper, only: [html_to_binary: 1]
 
   describe "sorted_subscription/1" do
     test "sorted_subscriptions groups subscriptions by mode" do
@@ -105,6 +106,54 @@ defmodule ConciergeSite.SubscriptionViewTest do
     test "returns false if either value is nil" do
       refute SubscriptionView.on_vacation?(nil, ~N[2035-07-01 00:00:00])
       refute SubscriptionView.on_vacation?(~N[2035-07-01 00:00:00], nil)
+    end
+  end
+
+  describe "route_header" do
+    test "handles single route" do
+      subscription =
+        subscription_factory()
+        |> bus_subscription()
+        |> weekday_subscription()
+        |> Map.put(:informed_entities, bus_subscription_entities())
+      rendered = html_to_binary(SubscriptionView.route_header(subscription, %{}))
+      assert rendered =~ "57A"
+      assert rendered =~ "fa-long-arrow-right"
+      assert rendered =~ "Outbound"
+    end
+
+    test "handles multiple routes" do
+      subscription =
+        subscription_factory()
+        |> bus_subscription()
+        |> weekday_subscription()
+        |> Map.put(:informed_entities, Enum.uniq(bus_subscription_entities() ++ bus_subscription_entities("87") ++ bus_subscription_entities("88")))
+      assert IO.iodata_to_binary(SubscriptionView.route_header(subscription, %{})) == "3 Bus Routes"
+    end
+  end
+
+  describe "subscription_info" do
+    test "handles single route" do
+      subscription =
+        subscription_factory()
+        |> bus_subscription()
+        |> weekday_subscription()
+        |> Map.put(:informed_entities, bus_subscription_entities("88", :inbound))
+      rendered = html_to_binary(SubscriptionView.subscription_info(subscription))
+      assert rendered =~ "88"
+      assert rendered =~ "Inbound"
+      assert rendered =~ "10:00am -  2:00pm, Weekdays | Lechmere via Davis"
+    end
+
+    test "handles multiple routes" do
+      subscription =
+        subscription_factory()
+        |> bus_subscription()
+        |> weekday_subscription()
+        |> Map.put(:informed_entities, Enum.uniq(bus_subscription_entities() ++ bus_subscription_entities("87") ++ bus_subscription_entities("88")))
+      rendered = html_to_binary(SubscriptionView.subscription_info(subscription))
+      assert rendered =~ "3 Bus Routes"
+      assert rendered =~ "10:00am -  2:00pm, Weekdays"
     end
   end
 

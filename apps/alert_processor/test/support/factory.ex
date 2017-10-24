@@ -71,11 +71,14 @@ defmodule AlertProcessor.Factory do
     }
   end
 
-  def bus_subscription_entities() do
+  def bus_subscription_entities(route \\ "57A"), do: bus_subscription_entities(route, 0)
+  def bus_subscription_entities(route, :inbound), do: bus_subscription_entities(route, 1)
+  def bus_subscription_entities(route, :outbound), do: bus_subscription_entities(route, 0)
+  def bus_subscription_entities(route, direction_id) do
     [
       %InformedEntity{route_type: 3, activities: InformedEntity.default_entity_activities()},
-      %InformedEntity{route_type: 3, route: "57A", activities: InformedEntity.default_entity_activities()},
-      %InformedEntity{route_type: 3, route: "57A", direction_id: 0, activities: InformedEntity.default_entity_activities()}
+      %InformedEntity{route_type: 3, route: route, activities: InformedEntity.default_entity_activities()},
+      %InformedEntity{route_type: 3, route: route, direction_id: direction_id, activities: InformedEntity.default_entity_activities()}
     ]
   end
 

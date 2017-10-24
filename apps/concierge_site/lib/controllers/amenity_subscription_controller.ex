@@ -1,28 +1,13 @@
 defmodule ConciergeSite.AmenitySubscriptionController do
   use ConciergeSite.Web, :controller
   use Guardian.Phoenix.Controller
-  alias ConciergeSite.Subscriptions.{AmenitiesParams, Lines}
+  alias ConciergeSite.Subscriptions.{AmenitiesParams}
+  alias ConciergeSite.Helpers.MultiSelectHelper
   alias AlertProcessor.{ServiceInfoCache,
     Subscription.AmenitiesMapper, Model.Subscription, Model.User}
 
   def new(conn, _params, _user, _claims) do
-    render_new_page(conn, %{"stops" => []}, [], :new)
-  end
-
-  def add_station(conn, %{"subscription" => %{"id" => id} = sub_params}, user, _claims) do
-    render_edit_page(conn, id, user, sub_params, :add)
-  end
-  def add_station(conn, %{"subscription" => sub_params}, _user, _claims) do
-    render_new_page(conn, sub_params, [], :add)
-  end
-
-  def remove_station(conn, %{"station" => station, "subscription" => %{"id" => id} = sub_params}, user, _claims) do
-    sub_params = Map.merge(sub_params, %{"station" => station})
-    render_edit_page(conn, id, user, sub_params, :remove)
-  end
-  def remove_station(conn, %{"station" => station, "subscription" => sub_params}, _user, _claims) do
-    new_stations = remove_station_from_list(sub_params, station)
-    render_new_page(conn, sub_params, new_stations, :remove)
+    render_new_page(conn, %{"stops" => []}, [])
   end
 
   def create(conn, %{"subscription" => sub_params}, user, {:ok, claims}) do
@@ -36,16 +21,33 @@ defmodule ConciergeSite.AmenitySubscriptionController do
       {:error, message} ->
         conn
         |> put_flash(:error, message)
-        |> render_new_page(sub_params, String.split(sub_params["stops"], ",", trim: true), :create)
+        |> render_new_page(sub_params, Map.get(sub_params, "stops", []))
       _ ->
         conn
         |> put_flash(:error, "there was an error saving the subscription. Please try again.")
-        |> render_new_page(sub_params, String.split(sub_params["stops"], ",", trim: true), :create)
+        |> render_new_page(sub_params, Map.get(sub_params, "stops", []))
     end
   end
 
   def edit(conn, %{"id" => id}, user, _) do
-    render_edit_page(conn, id, user, %{}, nil)
+    with {:ok, subway_stations} <- ServiceInfoCache.get_subway_full_routes(),
+      {:ok, cr_stations} <- ServiceInfoCache.get_commuter_rail_info() do
+        station_select_options = MultiSelectHelper.station_options(cr_stations, subway_stations)
+        subscription = Subscription.one_for_user!(id, user.id, true)
+        changeset = Subscription.update_changeset(subscription)
+
+        render conn,
+          "edit.html",
+          subscription: subscription,
+          changeset: changeset,
+          station_select_options: station_select_options,
+          selected_station_options: selected_station_options(subscription)
+    else
+      _error ->
+        conn
+        |> put_flash(:error, "There was an error. Please try again.")
+        |> redirect(to: subscription_path(conn, :index))
+    end
   end
 
   def update(conn, %{"id" => id, "subscription" => sub_params}, user, {:ok, claims}) do
@@ -68,68 +70,23 @@ defmodule ConciergeSite.AmenitySubscriptionController do
     end
   end
 
-  defp render_edit_page(conn, id, user, sub_params, operation) do
-    with {:ok, subway_stations} <- ServiceInfoCache.get_subway_full_routes(),
-      {:ok, cr_stations} <- ServiceInfoCache.get_commuter_rail_info() do
-        station_select_options = station_options(cr_stations, subway_stations)
-        subscription = Subscription.one_for_user!(id, user.id, true)
-        changeset = Subscription.update_changeset(subscription, sub_params)
-        st = set_station_options(operation, sub_params, subscription)
-
-        render conn,
-          "edit.html",
-          subscription: subscription,
-          changeset: changeset,
-          station_select_options: station_select_options,
-          selected_station_options: st
-    else
-      _error ->
-        conn
-        |> put_flash(:error, "There was an error. Please try again.")
-        |> redirect(to: subscription_path(conn, :index))
-    end
-  end
-
-  defp render_new_page(conn, sub_params, selected_stations, type) do
+  defp render_new_page(conn, sub_params, selected_station_options) do
     with {:ok, subway_stations} <- ServiceInfoCache.get_subway_full_routes(),
       {:ok, cr_stations} <- ServiceInfoCache.get_commuter_rail_info() do
 
-      station_select_options = station_options(cr_stations, subway_stations)
+      station_select_options = MultiSelectHelper.station_options(cr_stations, subway_stations)
 
-      selected_stations = if type == :add do
-          add_station_to_list(sub_params)
-        else
-          selected_stations
-        end
-
-      subscription_params = Map.put(sub_params, "stops", selected_stations)
+      subscription_params = Map.put(sub_params, "stops", selected_station_options)
 
       render conn, :new,
         subscription_params: subscription_params,
         station_list_select_options: station_select_options,
-        selected_stations: selected_stations
+        selected_station_options: selected_station_options
     else
       _error ->
         conn
         |> put_flash(:error, "There was an error fetching station data. Please try again.")
         |> redirect(to: subscription_path(conn, :new))
-    end
-  end
-
-  defp set_station_options(operation, sub_params, subscription) do
-    case operation do
-      :add ->
-        subscription
-        |> selected_station_options()
-        |> replace_stops(sub_params)
-        |> add_station_selection(sub_params)
-      :remove ->
-        subscription
-        |> selected_station_options()
-        |> replace_stops(sub_params)
-        |> remove_station_selection(sub_params)
-      nil ->
-        selected_station_options(subscription)
     end
   end
 
@@ -166,45 +123,5 @@ defmodule ConciergeSite.AmenitySubscriptionController do
       |> Enum.reduce(%{}, fn({k, v}, acc) ->
         Map.put(acc, k, MapSet.to_list(v))
       end)
-  end
-
-  defp replace_stops(trip_options, params) do
-    stations = String.split(params["stops"], ",", trim: true)
-    put_in trip_options.stations, stations
-  end
-
-  defp add_station_selection(trip_options, params) do
-    stations = add_station_to_list(params)
-    put_in trip_options.stations, stations
-  end
-
-  defp remove_station_selection(trip_options, params) do
-    stations = remove_station_from_list(params, params["station"])
-    put_in trip_options.stations, stations
-  end
-
-  defp add_station_to_list(sub_params) do
-    stations = String.split(sub_params["stops"], ",", trim: true)
-    [sub_params["station"] | stations]
-    |> Enum.map(&fetch_stop_from_cache/1)
-    |> Enum.uniq()
-  end
-
-  defp remove_station_from_list(sub_params, station) do
-    sub_params["stops"]
-    |> String.split(",", trim: true)
-    |> Kernel.--([station])
-    |> Enum.map(&fetch_stop_from_cache/1)
-  end
-
-  defp station_options(cr_stations, subway_stations) do
-    subway_stations
-    |> Kernel.++(cr_stations)
-    |> Lines.station_list_select_options()
-  end
-
-  defp fetch_stop_from_cache(stop) do
-    {:ok, stop} = ServiceInfoCache.get_stop(stop)
-    stop
   end
 end

@@ -11,7 +11,7 @@ export default function($) {
     selectedSuggestionIndex: 0,
   };
 
-  if ($(".trip-info-form.subway, .trip-info-form.commuter-rail, .trip-info-form.ferry").length) {
+  if ($(".trip-info-form.single-select-form").length) {
     const className = "select.subscription-select-origin optgroup";
     props.allRoutes = generateRouteList(className, $);
     props.allStations = generateStationList(className, $);
@@ -271,7 +271,7 @@ export default function($) {
   }
 
   function stationInputClass(originDestination) {
-    return `${subscriptionSelectClass(originDestination)} station-input`;
+    return `${subscriptionSelectClass(originDestination)} subscription-select-entity-input`;
   }
 
   function subscriptionSelectClass(originDestination) {
@@ -279,7 +279,7 @@ export default function($) {
   }
 
   function stationSuggestionClass(originDestination) {
-    return `${originDestination}-station-suggestion station-suggestion`
+    return `${originDestination}-station-suggestion entity-suggestion`
   }
 
   function circleIconClass(lineName) {

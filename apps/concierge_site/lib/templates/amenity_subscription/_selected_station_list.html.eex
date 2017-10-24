@@ -1,7 +1,6 @@
-<div class="selected-station-list amenity-station-list">
-  <%= for {station_name, station_id} <- @stations do %>
-    <%= submit formaction: amenity_subscription_path(@conn, :remove_station, station_id),
-        class: "btn btn-sm btn-selected-station" do %>
+<div class="selected-entity-list js">
+  <%= for {station_name, _} <- @stations do %>
+    <%= button to: "#", class: "btn btn-sm btn-selected-entity" do %>
       <%= station_name %>&nbsp;<i class="fa fa-times" aria-hidden="true"></i>
     <% end %>
   <% end %>

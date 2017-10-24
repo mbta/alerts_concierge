@@ -95,10 +95,6 @@ defmodule ConciergeSite.Router do
     get "/ferry/new/info", FerrySubscriptionController, :info
     post "/ferry/new/ferry", FerrySubscriptionController, :ferry
     post "/ferry/new/preferences", FerrySubscriptionController, :preferences
-    post "/amenities/add_station", AmenitySubscriptionController, :add_station
-    patch "/amenities/add_station", AmenitySubscriptionController, :add_station
-    post "/amenities/remove_station/:station", AmenitySubscriptionController, :remove_station
-    patch "/amenities/remove_station/:station", AmenitySubscriptionController, :remove_station
     resources "/amenities", AmenitySubscriptionController,
       only: [:new, :create, :edit, :update]
   end

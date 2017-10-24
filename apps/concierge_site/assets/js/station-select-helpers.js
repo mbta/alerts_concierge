@@ -1,6 +1,6 @@
 function renderStationInput(name, className, preselectedValue) {
     return `
-      <input type="text" name="${name}" placeholder="Enter a station" autocomplete="off" class="subscription-select ${className}"  value="${preselectedValue}"/>
+      <input type="text" name="${name}" placeholder="Enter a ${name}" autocomplete="off" class="${className}" value="${preselectedValue}"/>
       <div class="suggestion-container"></div>
       <i class="fa fa-check-circle valid-checkmark-icon"></i>
     `
@@ -56,17 +56,17 @@ function generateStationList(className, $) {
 }
 
 function onKeyDownOverrides(event, state, $) {
-  const visibleSuggestionCount = $(".station-suggestion").length;
+  const visibleSuggestionCount = $(".entity-suggestion").length;
   const $target = $(event.target);
 
-  if (event.keyCode === 38 && $target.is(".station-input")) {
+  if (event.keyCode === 38 && $target.hasClass("subscription-select-entity-input")) {
     event.preventDefault();
     decrementselectedSuggestionIndex(state, visibleSuggestionCount)
 
-  } else if (event.keyCode === 40 && $target.is(".station-input")) {
+  } else if (event.keyCode === 40 && $target.hasClass("subscription-select-entity-input")) {
     event.preventDefault();
     incrementselectedSuggestionIndex(state, visibleSuggestionCount)
-  } else if (event.keyCode === 13 && $target.is(".btn-subscription-next")) {
+  } else if (event.keyCode === 13 && $target.hasClass("btn-subscription-next")) {
     return;
   } else if (event.keyCode === 13) {
     event.preventDefault();
@@ -89,20 +89,20 @@ function onKeyDownOverrides(event, state, $) {
 }
 
 function onKeyDownOverridesAmenity(event, state, chooseSuggestion, removeStation, $) {
-  const visibleSuggestionCount = $(".station-suggestion").length;
+  const visibleSuggestionCount = $(".entity-suggestion").length;
   const $target = $(event.target);
 
-  if (event.keyCode === 38 && $target.is(".station-input")) {
+  if (event.keyCode === 38 && $target.hasClass("subscription-select-entity-input")) {
     event.preventDefault();
     decrementselectedSuggestionIndex(state, visibleSuggestionCount)
 
-  } else if (event.keyCode === 40  && $target.is(".station-input")) {
+  } else if (event.keyCode === 40  && $target.hasClass("subscription-select-entity-input")) {
     event.preventDefault();
     incrementselectedSuggestionIndex(state, visibleSuggestionCount)
   } else if (event.keyCode === 13) {
-    if ($target.is("button.btn-amenity-submit")) {
+    if ($target.hasClass("btn-subscription-next")) {
       return;
-    } else if ($target.is("button.btn-selected-station")) {
+    } else if ($target.hasClass("btn-selected-entity")) {
       event.preventDefault();
       removeStation(event);
     } else {

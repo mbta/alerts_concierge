@@ -58,10 +58,13 @@ defmodule ConciergeSite.BusSubscriptionController do
       {:ok, routes} ->
         route_list_select_options = BusRoutes.route_list_select_options(routes)
 
+        subscription_params = Map.put(subscription_params, "routes", [])
+
         render conn, "info.html",
           token: token,
           subscription_params: subscription_params,
-          route_list_select_options: route_list_select_options
+          route_list_select_options: route_list_select_options,
+          selected_routes: []
       _error ->
         conn
         |> put_flash(:error, "There was an error fetching route data. Please try again.")
@@ -75,12 +78,17 @@ defmodule ConciergeSite.BusSubscriptionController do
 
     token = TemporaryState.encode(subscription_params)
 
-    with :ok <- BusParams.validate_info_params(subscription_params),
-      route_id <- subscription_params["route"] |> String.split(" - ") |> List.first(),
-      {:ok, route} <- ServiceInfoCache.get_route(route_id) do
+    with :ok <- BusParams.validate_info_params(subscription_params) do
+      route_ids = subscription_params["routes"] |> Enum.map(& &1 |> String.split(" - ") |> List.first())
+      routes =
+        Enum.map(route_ids, fn(route_id) ->
+          {:ok, route} = ServiceInfoCache.get_route(route_id)
+          route
+        end)
+
       render conn, "preferences.html",
         token: token,
-        route: route,
+        routes: routes,
         subscription_params: subscription_params
     else
       {:error, message} ->
@@ -94,6 +102,10 @@ defmodule ConciergeSite.BusSubscriptionController do
     case ServiceInfoCache.get_bus_info() do
       {:ok, routes} ->
         route_list_select_options = BusRoutes.route_list_select_options(routes)
+        selected_routes =
+          Enum.filter(route_list_select_options, fn({_, option_value}) ->
+            Enum.member?(subscription_params["routes"], option_value)
+          end)
 
         conn
         |> put_flash(:error, error_message)
@@ -101,7 +113,8 @@ defmodule ConciergeSite.BusSubscriptionController do
           "info.html",
           token: token,
           subscription_params: subscription_params,
-          route_list_select_options: route_list_select_options
+          route_list_select_options: route_list_select_options,
+          selected_routes: selected_routes
         )
       _error ->
         conn

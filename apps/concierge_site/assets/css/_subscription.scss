@@ -146,23 +146,24 @@
   width: 100%;
 }
 
-.station-input-label {
+.entity-input-label {
   margin-bottom: .25rem;
   text-align: left;
 }
 
-.station-input {
+.subscription-select-entity-input {
   border: $border-width solid $steel;
   border-radius: 4px;
   font-family: $font-family-base;
   padding: .5rem 0 .5rem .75rem;
+  width: 100%;
 
   ~ .valid-checkmark-icon {
     display: none;
   }
 }
 
-.station-input[data-valid='true'] {
+.subscription-select-entity-input[data-valid='true'] {
   border-color: $brand-success;
 
   ~ .valid-checkmark-icon {
@@ -174,7 +175,7 @@
   }
 }
 
-.station-suggestion {
+.entity-suggestion {
   background-color: $pale-grey-30;
   border-bottom: $border-width solid $white;
   color: $brand-primary;
@@ -184,15 +185,15 @@
   padding: .75rem 0 .75rem 1rem;
 }
 
-.station-suggestion.selected-suggestion {
+.entity-suggestion.selected-suggestion {
   background-color: $pale-grey;
 }
 
-.station-suggestion.hidden {
+.entity-suggestion.hidden {
   display: none;
 }
 
-.station-suggestion:hover {
+.entity-suggestion:hover {
   cursor: pointer;
 }
 
@@ -212,6 +213,10 @@
   background-color: $white;
   font-family: $font-family-base;
   height: 3rem;
+
+  &.multi-select {
+    height: 100%;
+  }
 }
 
 .select-days {
@@ -252,7 +257,7 @@
   margin-bottom: 1rem;
 }
 
-.route-sub-label {
+.entity-select-sub-label {
   padding-top: .5rem;
   text-align: left;
 }
@@ -467,28 +472,28 @@
   text-align: center;
 }
 
-.amenity-station-list {
+.selected-entity-list {
   margin-top: -1rem;
   margin-bottom: 1.5rem;
   text-align: left;
   width: 100%;
 }
 
-.station-select-group {
+.entity-select-group {
   display: inline-flex;
   width: 100%;
 }
 
-.subscription-select-amenity-station.no-js {
+.subscription-select-entity.no-js {
   margin-bottom: 1.5rem;
 }
 
-.btn-add-amenity-station {
+.btn-add-subscription-entity {
   height: 54px;
   margin-left: 1rem;
 }
 
-.btn-selected-station {
+.btn-selected-entity {
   background-color: $pale-grey;
   margin: 0.25rem 0.25rem;
 }

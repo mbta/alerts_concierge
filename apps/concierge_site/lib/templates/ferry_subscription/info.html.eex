@@ -12,9 +12,9 @@
     to you.
   </p>
 
-  <%= form_for @conn, ferry_subscription_path(@conn, :ferry), [class: "trip-info-form ferry", as: :subscription], fn f -> %>
+  <%= form_for @conn, ferry_subscription_path(@conn, :ferry), [class: "trip-info-form single-select-form ferry", as: :subscription], fn f -> %>
     <div class="form-group select-station">
-      <label for="origin" class="station-input-label form-label">Origin</label>
+      <label for="origin" class="entity-input-label form-label">Origin</label>
       <%= select f,
                  :origin,
                  @station_list_select_options,
@@ -23,8 +23,8 @@
                  selected: @subscription_params["origin"] %>
     </div>
     <div class="form-group select-station">
-      <label for="destination" class="station-input-label form-label">Destination</label>
-      <div class="form-sub-label route-sub-label">
+      <label for="destination" class="entity-input-label form-label">Destination</label>
+      <div class="form-sub-label entity-select-sub-label">
         Both origin and destination stations must be on the same line.
       </div>
       <%= select f,

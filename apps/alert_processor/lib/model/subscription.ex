@@ -432,4 +432,9 @@ defmodule AlertProcessor.Model.Subscription do
 
   defp normalize_papertrail_result({:ok, %{model: subscription}}), do: {:ok, subscription}
   defp normalize_papertrail_result(result), do: result
+
+  @spec route_count(__MODULE__.t) :: integer
+  def route_count(subscription) do
+    Enum.count(subscription.informed_entities, &InformedEntity.entity_type(&1) == :route && &1.direction_id != nil)
+  end
 end

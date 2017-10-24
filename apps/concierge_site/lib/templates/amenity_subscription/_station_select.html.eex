@@ -1,15 +1,13 @@
-<div class="form-group select-station select-amenity-station">
-  <label for="station" class="station-input-label form-label">What stations do you use?</label>
-  <div class="form-sub-label amenity-station-select-sub-label">Enter as many stations as you would like.</div>
-  <div class="station-select-group">
-    <%= select @form,
-              :station,
+<div class="form-group select-entity">
+  <label for="station" class="entity-input-label form-label">What stations do you use?</label>
+  <div class="form-sub-label entity-select-sub-label">Enter as many stations as you would like.</div>
+  <div class="entity-select-group">
+    <%= multiple_select @form,
+              :stops,
               @select_options,
-              class: "subscription-select subscription-select-amenity-station no-js",
-              prompt: "Enter a station" %>
-
-    <%= submit "Add Station",
-        formaction: @formaction,
-        class: "btn btn-primary btn-add-amenity-station no-js" %>
+              selected: Enum.map(@selected_station_options, & elem(&1, 1)),
+              class: "subscription-select multi-select no-js",
+              prompt: "Enter a station",
+              data: [entity_type: "station"] %>
   </div>
 </div>

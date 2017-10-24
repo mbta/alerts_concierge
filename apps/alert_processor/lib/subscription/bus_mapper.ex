@@ -27,36 +27,52 @@ defmodule AlertProcessor.Subscription.BusMapper do
   end
 
   defp map_entities(subscriptions, params) do
-    with %{"route" => route} <- params,
-         {route_id, direction_id} = extract_route_and_direction(route),
-         subscription_infos <- map_route_type(subscriptions),
-         subscription_infos <- map_routes(subscription_infos, params, route_id, direction_id),
-         subscription_infos <- filter_duplicate_entities(subscription_infos) do
-      {:ok, subscription_infos}
-    else
-      _ -> :error
-    end
+    %{"routes" => routes} = params
+    subscription_infos =
+      subscriptions
+      |> map_route_type()
+      |> map_routes(routes)
+      |> filter_duplicate_entities()
+    {:ok, subscription_infos}
   end
 
   defp map_route_type(subscriptions) do
     Enum.map(subscriptions, & {&1, [%InformedEntity{route_type: 3, activities: InformedEntity.default_entity_activities()}]})
   end
 
-  defp map_routes([{sub, ie}], _params, route_id, direction_id) do
-    route_entities = do_map_route(route_id, 3, direction_id)
+  defp map_routes([{sub, ie}], routes) do
+    route_entities =
+      routes
+      |> Enum.flat_map(fn(route) ->
+        {route_id, direction_id} = extract_route_and_direction(route)
+        do_map_routes(:one_way, route_id, direction_id)
+      end)
     [{sub, ie ++ route_entities}]
   end
-  defp map_routes([{sub1, ie1}, {sub2, ie2}], _params, route_id, 1) do
+  defp map_routes([{sub1, ie1}, {sub2, ie2}], routes) do
+    {informed_entities_1, informed_entities_2} =
+      Enum.reduce(routes, {ie1, ie2}, fn(route, {ie_1, ie_2}) ->
+        {route_id, direction_id} = extract_route_and_direction(route)
+        {route_entities_1, route_entities_2} = do_map_routes(:round_trip, route_id, direction_id)
+        {ie_1 ++ route_entities_1, ie_2 ++ route_entities_2}
+      end)
+    [{sub1, informed_entities_1}, {sub2, informed_entities_2}]
+  end
+
+  defp do_map_routes(:one_way, route_id, direction_id) do
+    do_map_route(route_id, 3, direction_id)
+  end
+  defp do_map_routes(:round_trip, route_id, 1) do
     route_entities_1 = do_map_route(route_id, 3, 1)
     route_entities_2 = do_map_route(route_id, 3, 0)
 
-    [{sub1, ie1 ++ route_entities_1}, {sub2, ie2 ++ route_entities_2}]
+    {route_entities_1, route_entities_2}
   end
-  defp map_routes([{sub1, ie1}, {sub2, ie2}], _params, route_id, 0) do
+  defp do_map_routes(:round_trip, route_id, 0) do
     route_entities_1 = do_map_route(route_id, 3, 0)
     route_entities_2 = do_map_route(route_id, 3, 1)
 
-    [{sub1, ie1 ++ route_entities_1}, {sub2, ie2 ++ route_entities_2}]
+    {route_entities_1, route_entities_2}
   end
 
   defp do_map_route(route, type, direction_id) do

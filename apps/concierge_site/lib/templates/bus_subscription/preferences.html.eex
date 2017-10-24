@@ -6,7 +6,7 @@
   <h2 class="preferences-subtitle">Set your subscription preferences:</h2>
 
   <div class="trip-summary">
-    <%= for trip <- trip_summary_routes(@subscription_params, @route) do %>
+    <%= for trip <- trip_summary_routes(@subscription_params, @routes) do %>
       <div><%= trip %></div>
     <% end %>
   </div>
@@ -18,7 +18,11 @@
                action: "new" %>
 
     <%= for {param_name, value} <- atomize_keys(@subscription_params) do %>
-      <%= hidden_input f, param_name, value: value %>
+        <%= if is_list(value) do %>
+          <%= hidden_input f, param_name, value: Enum.join(value, ",") %>
+        <% else %>
+          <%= hidden_input f, param_name, value: value %>
+        <% end %>
     <% end %>
 
     <div class="trip-info-footer">
