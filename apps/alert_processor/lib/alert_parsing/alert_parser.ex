@@ -46,8 +46,8 @@ defmodule AlertProcessor.AlertParser do
       "severity" => severity
     } = alert_data, facilities_map, feed_timestamp) do
     %Alert{}
-    |> Map.put(:duration_certainty, duration_certainty)
-    |> parse_active_periods(active_period, created_timestamp, feed_timestamp)
+    |> parse_duration_certainty(duration_certainty, active_period, feed_timestamp)
+    |> parse_active_periods(active_period, created_timestamp)
     |> parse_informed_entities(informed_entity, facilities_map)
     |> Map.put(:description, parse_translation(alert_data["description_text"]))
     |> Map.put(:effect_name, StringHelper.split_capitalize(effect_detail, "_"))
@@ -69,14 +69,19 @@ defmodule AlertProcessor.AlertParser do
     dt
   end
 
-  defp parse_active_periods(%Alert{duration_certainty: "ESTIMATED"} = alert, [%{"start" => start_timestamp, "end" => end_timestamp}], created_timestamp, feed_timestamp) when not is_nil(feed_timestamp) do
+  defp parse_duration_certainty(alert, "ESTIMATED", [%{"start" => _start_timestamp, "end" => end_timestamp}], feed_timestamp) do
     estimated_duration = round((end_timestamp - feed_timestamp) / 900) * 900
+    %{alert | duration_certainty: {:estimated, estimated_duration}}
+  end
+  defp parse_duration_certainty(alert, _, _, _), do: %{alert | duration_certainty: :known}
+
+  defp parse_active_periods(%Alert{duration_certainty: {:estimated, _}} = alert, [%{"start" => start_timestamp, "end" => _end_timestamp}], created_timestamp) do
     start_datetime = parse_datetime(start_timestamp)
     end_datetime = parse_datetime(created_timestamp + (36 * 60 * 60))
 
-    %{alert | active_period: [%{start: start_datetime, end: end_datetime}], estimated_duration: estimated_duration, created_at: parse_datetime(created_timestamp)}
+    %{alert | active_period: [%{start: start_datetime, end: end_datetime}], created_at: parse_datetime(created_timestamp)}
   end
-  defp parse_active_periods(alert, active_periods, created_timestamp, _) do
+  defp parse_active_periods(alert, active_periods, created_timestamp) do
     %{alert | active_period: Enum.map(active_periods, &parse_active_period(&1)), created_at: parse_datetime(created_timestamp)}
   end
 

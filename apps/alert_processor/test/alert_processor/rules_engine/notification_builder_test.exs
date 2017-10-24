@@ -245,8 +245,7 @@ defmodule AlertProcessor.NotificationBuilderTest do
         start: DT.add!(time.now, 60),
         end: DT.add!(time.now, thirty_six_hours)
       }],
-      duration_certainty: "ESTIMATED",
-      estimated_duration: three_hours,
+      duration_certainty: {:estimated, three_hours},
       created_at: time.now
     }
 

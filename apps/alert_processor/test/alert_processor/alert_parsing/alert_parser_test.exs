@@ -127,9 +127,8 @@ defmodule AlertProcessor.AlertParserTest do
       assert %AlertProcessor.Model.Alert{
         active_period: [%{start: _start_datetime, end: end_datetime}],
         created_at: created_at_datetime,
-        duration_certainty: "ESTIMATED",
+        duration_certainty: {:estimated, 14400},
         effect_name: "Delay",
-        estimated_duration: 14400,
         header: "Red Line experiencing minor delays",
         id: "115513",
         informed_entities: _informed_entities,
@@ -148,9 +147,8 @@ defmodule AlertProcessor.AlertParserTest do
       assert %AlertProcessor.Model.Alert{
         active_period: [%{start: _start_datetime, end: end_datetime}],
         created_at: created_at_datetime,
-        duration_certainty: "ESTIMATED",
+        duration_certainty: {:estimated, 14400},
         effect_name: "Delay",
-        estimated_duration: 14400,
         header: "Red Line experiencing minor delays",
         id: "115513",
         informed_entities: _informed_entities,

@@ -6,7 +6,7 @@ defmodule AlertProcessor.Model.Alert do
 
   defstruct [:active_period, :effect_name, :id, :header, :informed_entities,
              :severity, :last_push_notification, :service_effect, :description,
-             :timeframe, :recurrence, :duration_certainty, :estimated_duration, :created_at]
+             :timeframe, :recurrence, :duration_certainty, :created_at]
 
   @type informed_entity :: [
     %{
@@ -31,8 +31,7 @@ defmodule AlertProcessor.Model.Alert do
     description: String.t,
     timeframe: String.t,
     recurrence: String.t,
-    duration_certainty: String.t,
-    estimated_duration: integer,
+    duration_certainty: {:estimated, pos_integer} | :known,
     created_at: DateTime.t,
   }
 
@@ -182,16 +181,16 @@ defmodule AlertProcessor.Model.Alert do
     Enum.any?(ies, &InformedEntity.entity_type(&1) == :amenity)
   end
 
-  def advanced_notice_in_seconds(%__MODULE__{duration_certainty: "ESTIMATED", severity: :minor, estimated_duration: estimated_duration}) do
+  def advanced_notice_in_seconds(%__MODULE__{duration_certainty: {:estimated, estimated_duration}, severity: :minor}) do
     Enum.min([3600, estimated_duration])
   end
-  def advanced_notice_in_seconds(%__MODULE__{duration_certainty: "ESTIMATED", severity: :moderate, estimated_duration: estimated_duration}) do
+  def advanced_notice_in_seconds(%__MODULE__{duration_certainty: {:estimated, estimated_duration}, severity: :moderate}) do
     Enum.min([7200, estimated_duration])
   end
-  def advanced_notice_in_seconds(%__MODULE__{duration_certainty: "ESTIMATED", severity: :severe, estimated_duration: estimated_duration}) do
+  def advanced_notice_in_seconds(%__MODULE__{duration_certainty: {:estimated, estimated_duration}, severity: :severe}) do
     Enum.min([14_400, estimated_duration])
   end
-  def advanced_notice_in_seconds(%__MODULE__{duration_certainty: "ESTIMATED", severity: :extreme, estimated_duration: estimated_duration}) do
+  def advanced_notice_in_seconds(%__MODULE__{duration_certainty: {:estimated, estimated_duration}, severity: :extreme}) do
     Enum.min([14_400, estimated_duration])
   end
   def advanced_notice_in_seconds(%__MODULE__{}) do

@@ -230,21 +230,21 @@ defmodule AlertProcessor.Helpers.DateTimeHelper do
   end
 
   defp do_determine_relevant_day_of_week(time, 7) do
-    if Time.compare(time, ~T[03:00:00]) == :gt do
+    if in_current_service_date?(time) do
       :sunday
     else
       :saturday
     end
   end
   defp do_determine_relevant_day_of_week(time, 6) do
-    if Time.compare(time, ~T[03:00:00]) == :gt do
+    if in_current_service_date?(time)do
       :saturday
     else
       :weekday
     end
   end
   defp do_determine_relevant_day_of_week(time, 1) do
-    if Time.compare(time, ~T[03:00:00]) == :gt do
+    if in_current_service_date?(time) do
       :weekday
     else
       :sunday
@@ -252,5 +252,9 @@ defmodule AlertProcessor.Helpers.DateTimeHelper do
   end
   defp do_determine_relevant_day_of_week(_, _) do
     :weekday
+  end
+
+  defp in_current_service_date?(time) do
+    Time.compare(time, ~T[03:00:00]) == :gt
   end
 end

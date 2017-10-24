@@ -53,48 +53,48 @@ defmodule AlertProcessor.Model.AlertTest do
 
   describe "advanced_notice_in_seconds/1 estimated minor" do
     test "returns the default minor value if less than estimated duration" do
-      alert = %Alert{duration_certainty: "ESTIMATED", severity: :minor, estimated_duration: 7200}
+      alert = %Alert{duration_certainty: {:estimated, 7200}, severity: :minor}
       assert 3600 = Alert.advanced_notice_in_seconds(alert)
     end
 
     test "returns the estimated duration if lower than the default minor value" do
-      alert = %Alert{duration_certainty: "ESTIMATED", severity: :minor, estimated_duration: 1800}
+      alert = %Alert{duration_certainty: {:estimated, 1800}, severity: :minor}
       assert 1800 = Alert.advanced_notice_in_seconds(alert)
     end
   end
 
   describe "advanced_notice_in_seconds/1 estimated moderate" do
     test "returns the default moderate value if less than estimated duration" do
-      alert = %Alert{duration_certainty: "ESTIMATED", severity: :moderate, estimated_duration: 14_400}
+      alert = %Alert{duration_certainty: {:estimated, 14_400}, severity: :moderate}
       assert 7200 = Alert.advanced_notice_in_seconds(alert)
     end
 
     test "returns the estimated duration if lower than the default moderate value" do
-      alert = %Alert{duration_certainty: "ESTIMATED", severity: :moderate, estimated_duration: 3600}
+      alert = %Alert{duration_certainty: {:estimated, 3600}, severity: :moderate}
       assert 3600 = Alert.advanced_notice_in_seconds(alert)
     end
   end
 
   describe "advanced_notice_in_seconds/1 estimated severe" do
     test "returns the default severe value if less than estimated duration" do
-      alert = %Alert{duration_certainty: "ESTIMATED", severity: :severe, estimated_duration: 28_800}
+      alert = %Alert{duration_certainty: {:estimated, 28_800}, severity: :severe}
       assert 14_400 = Alert.advanced_notice_in_seconds(alert)
     end
 
     test "returns the estimated duration if lower than the default severe value" do
-      alert = %Alert{duration_certainty: "ESTIMATED", severity: :severe, estimated_duration: 7200}
+      alert = %Alert{duration_certainty: {:estimated, 7200}, severity: :severe}
       assert 7200 = Alert.advanced_notice_in_seconds(alert)
     end
   end
 
   describe "advanced_notice_in_seconds/1 estimated extreme" do
     test "returns the default extreme value if less than estimated duration" do
-      alert = %Alert{duration_certainty: "ESTIMATED", severity: :extreme, estimated_duration: 28_800}
+      alert = %Alert{duration_certainty: {:estimated, 28_800}, severity: :extreme}
       assert 14_400 = Alert.advanced_notice_in_seconds(alert)
     end
 
     test "returns the estimated duration if lower than the default extreme value" do
-      alert = %Alert{duration_certainty: "ESTIMATED", severity: :extreme, estimated_duration: 3600}
+      alert = %Alert{duration_certainty: {:estimated, 3600}, severity: :extreme}
       assert 3600 = Alert.advanced_notice_in_seconds(alert)
     end
   end
