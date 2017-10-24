@@ -65,6 +65,8 @@ defmodule AlertProcessor.InformedEntityFilter do
     activity_overlap?(subscription_activities, alert_activities) && Map.put(alert_ie, :activities, nil) == Map.put(subscription_ie, :activities, nil)
   end
 
+  defp activity_overlap?(nil, _), do: false
+  defp activity_overlap?(_, nil), do: false
   defp activity_overlap?(activities, other_activities) do
     Enum.any?(activities, &Enum.member?(other_activities, &1))
   end
