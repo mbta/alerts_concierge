@@ -31,7 +31,8 @@ defmodule AlertProcessor.InformedEntityFilterTest do
 
   @ie5 %{
     stop: "place-pktrm",
-    facility: :escalator,
+    route: nil,
+    facility_type: :escalator,
     activities: ["USING_ESCALATOR"]
   }
 
@@ -47,6 +48,13 @@ defmodule AlertProcessor.InformedEntityFilterTest do
     route: "CR-Lowell",
     stop: "Mishawum",
     activities: ["BOARD", "EXIT"]
+  }
+
+  @ie8 %{
+    stop: nil,
+    route: "Red",
+    facility_type: :escalator,
+    activities: ["USING_ESCALATOR"]
   }
 
   @alert1 %Alert{
@@ -86,7 +94,7 @@ defmodule AlertProcessor.InformedEntityFilterTest do
     id: "5",
     header: "test5",
     informed_entities: [
-      @ie5
+      Map.put(@ie5, :route, "Red")
     ]
   }
 
@@ -117,20 +125,22 @@ defmodule AlertProcessor.InformedEntityFilterTest do
     sub4 = insert(:subscription, user: user1)
     sub5 = insert(:subscription, user: user4)
     sub6 = insert(:subscription, user: user1)
+    sub7 = insert(:subscription, user: user1)
     InformedEntity |> struct(@ie1) |> Map.merge(%{subscription_id: sub1.id}) |> insert
     InformedEntity |> struct(@ie1) |> Map.merge(%{subscription_id: sub2.id}) |> insert
     InformedEntity |> struct(@ie4) |> Map.merge(%{subscription_id: sub3.id}) |> insert
     InformedEntity |> struct(@ie2) |> Map.merge(%{subscription_id: sub4.id}) |> insert
     InformedEntity |> struct(@ie5) |> Map.merge(%{subscription_id: sub5.id}) |> insert
     InformedEntity |> struct(%{trip: "775", subscription_id: sub6.id}) |> insert
+    InformedEntity |> struct(@ie8) |> Map.merge(%{subscription_id: sub7.id}) |> insert
 
-    [sub1, sub2, sub3, sub4, sub5, sub6] = Subscription
+    [sub1, sub2, sub3, sub4, sub5, sub6, sub7] = Subscription
       |> Repo.all()
       |> Repo.preload(:informed_entities)
       |> Repo.preload(:user)
 
-    {:ok, sub1: sub1, sub2: sub2, sub3: sub3, sub4: sub4, sub5: sub5, sub6: sub6,
-     user1: user1, user2: user2, all_subscriptions: [sub1, sub2, sub3, sub4, sub5, sub6]}
+    {:ok, sub1: sub1, sub2: sub2, sub3: sub3, sub4: sub4, sub5: sub5, sub6: sub6, sub7: sub7,
+     user1: user1, user2: user2, all_subscriptions: [sub1, sub2, sub3, sub4, sub5, sub6, sub7]}
   end
 
   test "filter returns :ok empty list if subscription list passed is empty" do
@@ -157,8 +167,8 @@ defmodule AlertProcessor.InformedEntityFilterTest do
     assert [] == InformedEntityFilter.filter(all_subscriptions, alert: @alert3)
   end
 
-  test "matches facility alerts", %{sub5: sub5, all_subscriptions: all_subscriptions} do
-    assert [sub5] == InformedEntityFilter.filter(all_subscriptions, alert: @alert5)
+  test "matches facility alerts on stop or route", %{sub5: sub5, sub7: sub7, all_subscriptions: all_subscriptions} do
+    assert [sub5, sub7] == InformedEntityFilter.filter(all_subscriptions, alert: @alert5)
   end
 
   test "matches admin mode subscription", %{sub1: sub1, sub2: sub2} do

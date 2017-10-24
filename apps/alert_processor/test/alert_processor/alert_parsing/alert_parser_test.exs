@@ -3,7 +3,7 @@ defmodule AlertProcessor.AlertParserTest do
   use ExVCR.Mock, adapter: ExVCR.Adapter.Hackney
   use Bamboo.Test, shared: :true
   import AlertProcessor.Factory
-  alias AlertProcessor.{AlertParser, Model, Repo}
+  alias AlertProcessor.{AlertCache, AlertParser, Model, Repo}
   alias Model.{InformedEntity, SavedAlert}
 
   setup_all do
@@ -81,6 +81,20 @@ defmodule AlertProcessor.AlertParserTest do
       result = AlertParser.process_alerts
       [notification] = Enum.reduce(result, [], fn({:ok, x}, acc) -> acc ++ x end)
       assert notification.header == "Escalator 343 DAVIS SQUARE - Unpaid Lobby to Holland Street unavailable today"
+    end
+  end
+
+  test "process_alerts/1 parses alerts adds routes to facility entities" do
+    use_cassette "facilities_alerts", custom: true, clear_mock: true, match_requests_on: [:query] do
+      AlertParser.process_alerts
+      facility_entities =
+        AlertCache.get_alerts()
+        |> Enum.flat_map(&(&1.informed_entities))
+        |> Enum.reject(&(is_nil(&1.facility_type)))
+
+      for entity <- facility_entities do
+        refute is_nil(entity.route)
+      end
     end
   end
 
