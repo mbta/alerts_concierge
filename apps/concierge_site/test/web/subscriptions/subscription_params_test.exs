@@ -76,8 +76,9 @@ defmodule ConciergeSite.Subscriptions.SubscriptionParamsTest do
       refute SubscriptionParams.outside_service_time_range("23:00:00", "01:00:00")
     end
 
-    test "returns false for subscriptions ending at 3am" do
+    test "returns false for subscriptions starting or ending at 3am" do
       refute SubscriptionParams.outside_service_time_range("12:00:00", "03:00:00")
+      refute SubscriptionParams.outside_service_time_range("03:00:00", "15:00:00")
     end
 
     test "returns true for equal start and end times" do
