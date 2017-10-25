@@ -200,7 +200,7 @@ defmodule ConciergeSite.SubscriptionViewTest do
     rendered = ConciergeSite.SubscriptionView.render("index.html", assigns)
     binary = Phoenix.HTML.safe_to_string(rendered)
 
-    assert binary =~ "One or more of your current subscriptions overlap with your Do Not Disturb period"
+    assert binary =~ "We won’t send you notifications during your ‘Do Not Disturb’ period. Right now your Do Not Disturb period overlaps with one of your subscriptions."
     assert binary =~ "Commuter Rail"
     assert binary =~ "Anderson/Woburn"
     assert binary =~ "North Station"
