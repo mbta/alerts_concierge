@@ -196,4 +196,9 @@ defmodule AlertProcessor.Model.Alert do
   def advanced_notice_in_seconds(%__MODULE__{}) do
     86_400
   end
+
+  def commuter_rail_alert?(%__MODULE__{informed_entities: ies}) when is_list(ies) do
+    Enum.any?(ies, &(&1.route_type == 2))
+  end
+  def commuter_rail_alert?(_), do: false
 end

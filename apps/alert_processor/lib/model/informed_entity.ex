@@ -7,6 +7,14 @@ defmodule AlertProcessor.Model.InformedEntity do
   alias AlertProcessor.Model.Subscription
 
   @type facility_type :: :elevator | :escalator
+  @type schedule :: %{
+    arrival_time: String.t,
+    departure_time: String.t,
+    stop_id: String.t,
+    route_id: String.t,
+    trip_id: String.t,
+    stop_sequence: integer
+  } | nil
 
   @type t :: %__MODULE__{
     activities: [String.t],
@@ -16,7 +24,8 @@ defmodule AlertProcessor.Model.InformedEntity do
     route_type: integer | nil,
     subscription_id: String.t,
     stop: String.t | nil,
-    trip: String.t | nil
+    trip: String.t | nil,
+    schedule: schedule
   }
 
   use Ecto.Schema
@@ -32,6 +41,7 @@ defmodule AlertProcessor.Model.InformedEntity do
     field :route_type, :integer
     field :stop, :string
     field :trip, :string
+    field :schedule, :map, virtual: true
 
     timestamps()
   end

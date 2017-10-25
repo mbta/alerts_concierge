@@ -3,15 +3,15 @@ defmodule AlertProcessor.NotificationBuilder do
   Responsible for construction of Notifications from an Alert and Subscription
   """
 
-  alias AlertProcessor.Model.{Alert, Notification, Subscription, User}
-  alias AlertProcessor.Helpers.DateTimeHelper
+  alias AlertProcessor.{Model, Helpers.DateTimeHelper, TextReplacement}
+  alias Model.{Alert, Notification, Subscription, User}
   alias Calendar.Time, as: T
   alias Calendar.DateTime, as: DT
 
   @notification_time 86_400
 
   @doc """
-  Given a single subsciption, for each active_period in a given alert:
+  Given a list of subsciptions, for each active_period in a given alert:
   1. Build notification with alert and user info
   2. Determine what time the notification should go out (send_after)
   3a. Determine whether or not to send notification based on user's vacation period
@@ -19,7 +19,7 @@ defmodule AlertProcessor.NotificationBuilder do
   4a. Determine whether a notification should go out based on a user's do_not_disturb
   4b. If do_not_disturb overlaps send_after, adjust send_after to end of period
   """
-  @spec build_notifications({User.t, Subscription.t}, Alert.t, DateTime.t)
+  @spec build_notifications({User.t, [Subscription.t]}, Alert.t, DateTime.t)
   :: [Notification.t]
   def build_notifications({user, subscriptions}, %Alert{duration_certainty: {:estimated, estimated_duration}, active_period: [%{start: start_datetime}]} = alert, now) do
 
@@ -99,12 +99,13 @@ defmodule AlertProcessor.NotificationBuilder do
         {:error, _} ->
           result
         %DateTime{} = time ->
+          replaced_text = TextReplacement.replace_text(alert, subscriptions)
           notification = %Notification{
               alert_id: alert.id,
               user: user,
-              header: alert.header,
+              header: replaced_text.header,
               service_effect: alert.service_effect,
-              description: alert.description,
+              description: replaced_text.description,
               phone_number: user.phone_number,
               email: user.email,
               status: :unsent,
@@ -118,7 +119,7 @@ defmodule AlertProcessor.NotificationBuilder do
     end)
   end
 
-  @spec calculate_send_after(User.t, {DateTime.t, DateTime.t | nil}, DateTime.t, integer)
+  @spec calculate_send_after(User.t, {DateTime.t, DateTime.t | nil}, DateTime.t)
   :: DateTime.t | {:error, atom}
   def calculate_send_after(%User{
       vacation_start: vs,
