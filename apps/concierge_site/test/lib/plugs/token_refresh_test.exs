@@ -4,9 +4,9 @@ defmodule ConciergeSite.Plugs.TokenRefreshTest do
 
   alias ConciergeSite.{Auth.Token, Plugs.TokenLogin, Plugs.TokenRefresh}
 
-  test "it refreshes the token if it expires within five minutes", %{conn: conn} do
+  test "it refreshes the token if it expires within fifteen minutes", %{conn: conn} do
     user = insert(:user)
-    {:ok, token, _} = Token.issue(user, {4, :minutes})
+    {:ok, token, _} = Token.issue(user, {14, :minutes})
     conn = init_test_session(%{conn | params: %{"token" => token}}, %{})
     conn =
       conn
@@ -16,9 +16,9 @@ defmodule ConciergeSite.Plugs.TokenRefreshTest do
     refute get_session(refreshed_conn, "guardian_default") == get_session(conn, "guardian_default")
   end
 
-  test "it does nothing if the token expires more than five minutes from now", %{conn: conn} do
+  test "it does nothing if the token expires more than fifteen minutes from now", %{conn: conn} do
     user = insert(:user)
-    {:ok, token, _} = Token.issue(user, {6, :minutes})
+    {:ok, token, _} = Token.issue(user, {16, :minutes})
     conn = init_test_session(%{conn | params: %{"token" => token}}, %{})
     conn =
       conn
