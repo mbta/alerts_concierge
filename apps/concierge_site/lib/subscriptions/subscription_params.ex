@@ -34,11 +34,13 @@ defmodule ConciergeSite.Subscriptions.SubscriptionParams do
   @spec outside_service_time_range(String.t, String.t) :: boolean
   def outside_service_time_range(start_time, end_time) do
     cond do
+      start_time == end_time ->
+        true
       end_time > start_time and end_time > "00:00:00" and end_time <= "03:00:00" ->
         false
       end_time > start_time and start_time >= "03:00:00" ->
         false
-      start_time >= "03:00:00" and end_time >= "00:00:00" and end_time < "03:00:00" ->
+      start_time >= "03:00:00" and end_time >= "00:00:00" and end_time <= "03:00:00" ->
         false
       true ->
         true

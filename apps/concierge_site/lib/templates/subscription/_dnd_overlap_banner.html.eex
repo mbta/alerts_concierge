@@ -1,3 +1,4 @@
 <div class="callout dnd-overlap">
-  One or more of your current subscriptions overlap with your Do Not Disturb period.
+  <span>We won’t send you notifications during your ‘Do Not Disturb’ period. Right now your Do Not Disturb period overlaps with one of your subscriptions.</span>
+  <span>You can edit the period on the <%= link "My Account", to: my_account_path(ConciergeSite.Endpoint, :edit) %> page.</span>
 </div>

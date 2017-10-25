@@ -69,13 +69,21 @@ defmodule ConciergeSite.Subscriptions.SubscriptionParamsTest do
 
   describe "outside_service_time_range" do
     test "it returns true for start time and end time that falls outside of one service day" do
-
-      assert SubscriptionParams.outside_service_time_range("00:00:00", "08:00:00") == true
+      assert SubscriptionParams.outside_service_time_range("00:00:00", "08:00:00")
     end
 
     test "it returns false for time range that is within one service day" do
+      refute SubscriptionParams.outside_service_time_range("23:00:00", "01:00:00")
+    end
 
-      assert SubscriptionParams.outside_service_time_range("23:00:00", "01:00:00") == false
+    test "returns false for subscriptions starting or ending at 3am" do
+      refute SubscriptionParams.outside_service_time_range("12:00:00", "03:00:00")
+      refute SubscriptionParams.outside_service_time_range("03:00:00", "15:00:00")
+    end
+
+    test "returns true for equal start and end times" do
+      assert SubscriptionParams.outside_service_time_range("03:00:00", "03:00:00")
+      assert SubscriptionParams.outside_service_time_range("12:00:00", "12:00:00")
     end
   end
 end
