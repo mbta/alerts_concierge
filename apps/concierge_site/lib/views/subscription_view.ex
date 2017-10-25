@@ -212,7 +212,7 @@ defmodule ConciergeSite.SubscriptionView do
   defp direction_name(subscription) do
     case parse_direction(subscription) do
       :roaming ->
-        "Roaming"
+        :roaming
       direction ->
         {:ok, direction_name} = ServiceInfoCache.get_direction_name(parse_route_id(subscription), direction)
         direction_name

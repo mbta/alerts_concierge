@@ -65,6 +65,18 @@ defmodule AlertProcessor.Factory do
     ]
   end
 
+  def roaming_subway_subscription_entities() do
+    [
+      %InformedEntity{route_type: 1, activities: InformedEntity.default_entity_activities()},
+      %InformedEntity{route_type: 1, route: "Red", activities: InformedEntity.default_entity_activities()},
+      %InformedEntity{route_type: 1, route: "Red", direction_id: 0, activities: InformedEntity.default_entity_activities()},
+      %InformedEntity{route_type: 1, route: "Red", direction_id: 1, activities: InformedEntity.default_entity_activities()},
+      %InformedEntity{route_type: 1, route: "Red", stop: "place-davis", activities: InformedEntity.default_entity_activities()},
+      %InformedEntity{route_type: 1, route: "Red", stop: "place-portr", activities: InformedEntity.default_entity_activities()},
+      %InformedEntity{route_type: 1, route: "Red", stop: "place-harsq", activities: InformedEntity.default_entity_activities()}
+    ]
+  end
+
   def bus_subscription(%Subscription{} = subscription) do
     %{subscription |
       type: :bus
