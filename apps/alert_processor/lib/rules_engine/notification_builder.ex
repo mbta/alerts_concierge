@@ -59,9 +59,8 @@ defmodule AlertProcessor.NotificationBuilder do
   def build_notifications({user, subscriptions}, alert, now) do
     user
     |> do_build_notifications(subscriptions, alert, now)
-    |> Enum.sort_by(& DateTime.to_unix(&1.send_after))
-    |> List.first()
-    |> List.wrap()
+    |> Enum.min_by(&DateTime.to_unix(&1.send_after), fn -> [] end)
+    |> List.wrap
   end
 
   defp build_estimated_duration_notifications(user, subscriptions, alert, now, advanced_notice_in_seconds) do
