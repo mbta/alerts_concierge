@@ -49,6 +49,7 @@ defmodule AlertProcessor.AlertParser do
     |> parse_duration_certainty(duration_certainty, active_period, feed_timestamp)
     |> parse_active_periods(active_period, created_timestamp)
     |> parse_informed_entities(informed_entity, facilities_map)
+    |> Map.put(:created_at, parse_datetime(created_timestamp))
     |> Map.put(:description, parse_translation(alert_data["description_text"]))
     |> Map.put(:effect_name, StringHelper.split_capitalize(effect_detail, "_"))
     |> Map.put(:header, parse_translation(header_text))
@@ -79,10 +80,10 @@ defmodule AlertProcessor.AlertParser do
     start_datetime = parse_datetime(start_timestamp)
     end_datetime = parse_datetime(created_timestamp + (36 * 60 * 60))
 
-    %{alert | active_period: [%{start: start_datetime, end: end_datetime}], created_at: parse_datetime(created_timestamp)}
+    %{alert | active_period: [%{start: start_datetime, end: end_datetime}]}
   end
-  defp parse_active_periods(alert, active_periods, created_timestamp) do
-    %{alert | active_period: Enum.map(active_periods, &parse_active_period(&1)), created_at: parse_datetime(created_timestamp)}
+  defp parse_active_periods(alert, active_periods, _) do
+    %{alert | active_period: Enum.map(active_periods, &parse_active_period(&1))}
   end
 
   defp parse_active_period(active_period) do

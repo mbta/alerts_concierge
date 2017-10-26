@@ -30,7 +30,7 @@ defmodule AlertProcessor.NotificationBuilder do
         {
           DateTime.compare(subscription_start_datetime, now) == :lt,
           Enum.member?(subscription.relevant_days, AlertProcessor.Helpers.DateTimeHelper.determine_relevant_day_of_week(subscription_start_datetime)),
-          subscription_start_datetime
+          DateTime.to_unix(subscription_start_datetime)
         }
       end)
 
@@ -41,26 +41,18 @@ defmodule AlertProcessor.NotificationBuilder do
     advanced_notice_in_seconds = Alert.advanced_notice_in_seconds(alert)
 
     # create notifications for all remaining mapping subscriptions for current day
-    later_today_notifications =
-      if rest_subscription == [] do
-        []
-      else
-        later_today_subscriptions =
-          Enum.reject(rest_subscription, fn(sub) ->
-            Time.compare(sub.start_time, DateTime.to_time(now)) == :lt
-          end)
-        build_estimated_duration_notifications(user, later_today_subscriptions, alert, start_datetime, advanced_notice_in_seconds)
-      end
+    later_today_subscriptions =
+      Enum.reject(rest_subscription, fn(sub) ->
+        Time.compare(sub.start_time, DateTime.to_time(now)) == :lt
+      end)
+    later_today_notifications = build_estimated_duration_notifications(user, later_today_subscriptions, alert, start_datetime, advanced_notice_in_seconds)
 
-    # create notifications for all matching subscriptions tomorrow (+24 hours) scheduling will handle notifications past 36 hour active period timeframe
-    next_notifications = build_estimated_duration_notifications(user, sorted_subscriptions, alert, DT.add!(start_datetime, 86_400), advanced_notice_in_seconds)
+    tomorrow_notifications = build_estimated_duration_notifications(user, sorted_subscriptions, alert, DT.add!(start_datetime, 86_400), advanced_notice_in_seconds)
 
-    # create notifications for all matching subscriptions tomorrow (+48 hours) scheduling will handle notifications past 36 hour active period timeframe
-    next_next_notifications = build_estimated_duration_notifications(user, sorted_subscriptions, alert, DT.add!(start_datetime, 86_400 * 2), advanced_notice_in_seconds)
+    day_after_tomorrow_notifications = build_estimated_duration_notifications(user, sorted_subscriptions, alert, DT.add!(start_datetime, 86_400 * 2), advanced_notice_in_seconds)
 
-    # order all notifications by send_after time and remove notifications that fall within estimated duration between previous notification and itself
     filter_estimated_duration_notifications_by_estimated_duration(
-      [first_notification | later_today_notifications ++ next_notifications ++ next_next_notifications],
+      [first_notification | later_today_notifications ++ tomorrow_notifications ++ day_after_tomorrow_notifications],
       estimated_duration
     )
   end
@@ -82,19 +74,20 @@ defmodule AlertProcessor.NotificationBuilder do
   defp filter_estimated_duration_notifications_by_estimated_duration(notifications, estimated_duration) do
     notifications
     |> Enum.sort_by(& DateTime.to_unix(&1.send_after))
-    |> Enum.reduce([], fn(notification, acc) ->
-      if acc != [] do
-        [previous_notification | _] = acc
-        diff = DateTime.to_unix(notification.send_after) - DateTime.to_unix(previous_notification.send_after)
-        if diff < estimated_duration do
-          acc
-        else
-          [notification | acc]
-        end
-      else
-        [notification]
-      end
-    end)
+    |> Enum.reduce([], &add_to_acc_if_not_within_duration(&1, &2, estimated_duration))
+  end
+
+  defp add_to_acc_if_not_within_duration(notification, acc, estimated_duration)
+  defp add_to_acc_if_not_within_duration(notification, [], _) do
+    [notification]
+  end
+  defp add_to_acc_if_not_within_duration(notification, [previous_notification | _] = acc, estimated_duration) do
+    diff = DateTime.to_unix(notification.send_after) - DateTime.to_unix(previous_notification.send_after)
+    if diff < estimated_duration do
+      acc
+    else
+      [notification | acc]
+    end
   end
 
   defp do_build_notifications(user, subscriptions, %Alert{active_period: ap} = alert, now, notification_time \\ @notification_time) do

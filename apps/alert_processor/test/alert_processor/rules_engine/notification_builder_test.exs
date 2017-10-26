@@ -251,14 +251,14 @@ defmodule AlertProcessor.NotificationBuilderTest do
 
     [n1, n2, n3, n4] = NotificationBuilder.build_notifications({user, [sub1, sub3, sub2, sub4]}, alert, time.now)
 
-    assert %{notification_subscriptions: [%{subscription_id: n1_sub_id}], send_after: n1_send_after} = n1
-    assert %{notification_subscriptions: [%{subscription_id: n2_sub_id}], send_after: n2_send_after} = n2
-    assert %{notification_subscriptions: [%{subscription_id: n3_sub_id}], send_after: n3_send_after} = n3
-    assert %{notification_subscriptions: [%{subscription_id: n4_sub_id}], send_after: n4_send_after} = n4
-    assert n4_sub_id == sub3.id
-    assert n3_sub_id == sub4.id
-    assert n2_sub_id == sub1.id
-    assert n1_sub_id == sub4.id
+    assert %{notification_subscriptions: [%{subscription_id: s4_notification_2}], send_after: n1_send_after} = n1
+    assert %{notification_subscriptions: [%{subscription_id: s1_notification}], send_after: n2_send_after} = n2
+    assert %{notification_subscriptions: [%{subscription_id: s4_notification_1}], send_after: n3_send_after} = n3
+    assert %{notification_subscriptions: [%{subscription_id: s3_notification}], send_after: n4_send_after} = n4
+    assert s3_notification == sub3.id
+    assert s4_notification_1 == sub4.id
+    assert s1_notification == sub1.id
+    assert s4_notification_2 == sub4.id
 
     assert DT.same_time?(time.now, n4_send_after)
     assert DT.same_time?(DT.add!(time.now, 86_400 - 655 - (12 * 60 * 60)), n3_send_after)
