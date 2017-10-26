@@ -249,20 +249,20 @@ defmodule AlertProcessor.NotificationBuilderTest do
       created_at: time.now
     }
 
-    [n1, n2, n3, n4] = NotificationBuilder.build_notifications({user, [sub1, sub3, sub2, sub4]}, alert, time.now)
+    [s4_notification_2, s1_notification, s4_notification_1, s3_notification] = NotificationBuilder.build_notifications({user, [sub1, sub3, sub2, sub4]}, alert, time.now)
 
-    assert %{notification_subscriptions: [%{subscription_id: s4_notification_2}], send_after: n1_send_after} = n1
-    assert %{notification_subscriptions: [%{subscription_id: s1_notification}], send_after: n2_send_after} = n2
-    assert %{notification_subscriptions: [%{subscription_id: s4_notification_1}], send_after: n3_send_after} = n3
-    assert %{notification_subscriptions: [%{subscription_id: s3_notification}], send_after: n4_send_after} = n4
-    assert s3_notification == sub3.id
-    assert s4_notification_1 == sub4.id
-    assert s1_notification == sub1.id
-    assert s4_notification_2 == sub4.id
+    sub1_id = sub1.id
+    sub3_id = sub3.id
+    sub4_id = sub4.id
 
-    assert DT.same_time?(time.now, n4_send_after)
-    assert DT.same_time?(DT.add!(time.now, 86_400 - 655 - (12 * 60 * 60)), n3_send_after)
-    assert DT.same_time?(DT.add!(time.now, 86_400 - 655 - (3 * 60 * 60)), n2_send_after)
-    assert DT.same_time?(DT.add!(time.now, (86_400 * 2) - 655 - (12 * 60 * 60)), n1_send_after)
+    assert %{notification_subscriptions: [%{subscription_id: ^sub4_id}]} = s4_notification_2
+    assert %{notification_subscriptions: [%{subscription_id: ^sub1_id}]} = s1_notification
+    assert %{notification_subscriptions: [%{subscription_id: ^sub4_id}]} = s4_notification_1
+    assert %{notification_subscriptions: [%{subscription_id: ^sub3_id}]} = s3_notification
+
+    assert DT.same_time?(DT.add!(time.now, (86_400 * 2) - 655 - (12 * 60 * 60)), s4_notification_2.send_after)
+    assert DT.same_time?(DT.add!(time.now, 86_400 - 655 - (3 * 60 * 60)), s1_notification.send_after)
+    assert DT.same_time?(DT.add!(time.now, 86_400 - 655 - (12 * 60 * 60)), s4_notification_1.send_after)
+    assert DT.same_time?(time.now, s3_notification.send_after)
   end
 end
