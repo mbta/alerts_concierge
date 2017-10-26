@@ -42,11 +42,11 @@ defmodule AlertProcessor.SubscriptionFilterEngineTest do
 
     result = SubscriptionFilterEngine.process_alert(alert, [s1, s2, s3, s4], [])
 
-    assert {:ok, [%Notification{email: email}, %Notification{email: email}]} = result
+    assert {:ok, [%Notification{email: email}]} = result
     assert email == user.email
   end
 
-  test "process_alert/1 when multiple matching subscriptions for user only sends 1 notification per active period", %{alert: alert} do
+  test "process_alert/1 when multiple matching subscriptions for user only sends 1 notification even when multiple matching active periods", %{alert: alert} do
     user = insert(:user, phone_number: nil)
 
     s1 = :subscription
@@ -60,7 +60,7 @@ defmodule AlertProcessor.SubscriptionFilterEngineTest do
 
     result = SubscriptionFilterEngine.process_alert(alert, [s1, s2], [])
 
-    assert {:ok, [%Notification{email: email}, %Notification{email: email}]} = result
+    assert {:ok, [%Notification{email: email}]} = result
     assert email == user.email
   end
 end
