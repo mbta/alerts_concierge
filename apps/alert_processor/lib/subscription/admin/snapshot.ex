@@ -96,7 +96,7 @@ defmodule AlertProcessor.Subscription.Snapshot do
       |> Enum.reduce(%{activities: []}, fn(%{item_changes: changes}, acc) ->
         Map.merge(acc, changes["data"])
       end)
-      |> AlertParser.parse_alert(ServiceInfoCache.get_facility_map())
+      |> AlertParser.parse_alert(ServiceInfoCache.get_facility_map(), nil)
     {:ok, alert}
   end
 

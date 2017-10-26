@@ -221,4 +221,40 @@ defmodule AlertProcessor.Helpers.DateTimeHelper do
     day_of_week = Calendar.Date.day_of_week(today_date)
     Calendar.Date.advance!(today_date, 7 - day_of_week)
   end
+
+  def determine_relevant_day_of_week(datetime, local_datetime \\ "America/New_York") do
+    {:ok, adjusted_datetime} = DT.shift_zone(datetime, local_datetime)
+    day_of_week = Date.day_of_week(adjusted_datetime)
+    time = DateTime.to_time(adjusted_datetime)
+    do_determine_relevant_day_of_week(time, day_of_week)
+  end
+
+  defp do_determine_relevant_day_of_week(time, 7) do
+    if in_current_service_date?(time) do
+      :sunday
+    else
+      :saturday
+    end
+  end
+  defp do_determine_relevant_day_of_week(time, 6) do
+    if in_current_service_date?(time)do
+      :saturday
+    else
+      :weekday
+    end
+  end
+  defp do_determine_relevant_day_of_week(time, 1) do
+    if in_current_service_date?(time) do
+      :weekday
+    else
+      :sunday
+    end
+  end
+  defp do_determine_relevant_day_of_week(_, _) do
+    :weekday
+  end
+
+  defp in_current_service_date?(time) do
+    Time.compare(time, ~T[03:00:00]) == :gt
+  end
 end

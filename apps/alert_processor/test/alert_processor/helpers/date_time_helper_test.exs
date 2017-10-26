@@ -105,4 +105,41 @@ defmodule AlertProcessor.Helpers.DateTimeHelperTest do
       assert DTH.format_date(~N[2017-08-28 02:00:00]) == "08-27-2017"
     end
   end
+
+  describe "determine_relevant_day_of_week" do
+    test "handles weekday" do
+      friday = DT.from_erl!({{2017, 10, 13}, {12, 0, 0}}, "Etc/UTC")
+      assert :weekday = DTH.determine_relevant_day_of_week(friday)
+    end
+
+    test "handles weekday early morning" do
+      friday = DT.from_erl!({{2017, 10, 13}, {6, 0, 0}}, "Etc/UTC")
+      assert :weekday = DTH.determine_relevant_day_of_week(friday)
+    end
+
+    test "handles monday early morning" do
+      monday = DT.from_erl!({{2017, 10, 9}, {6, 0, 0}}, "Etc/UTC")
+      assert :sunday = DTH.determine_relevant_day_of_week(monday)
+    end
+
+    test "handles saturday" do
+      saturday = DT.from_erl!({{2017, 10, 14}, {12, 0, 0}}, "Etc/UTC")
+      assert :saturday = DTH.determine_relevant_day_of_week(saturday)
+    end
+
+    test "handles saturday early morning" do
+      saturday = DT.from_erl!({{2017, 10, 14}, {6, 30, 0}}, "Etc/UTC")
+      assert :weekday = DTH.determine_relevant_day_of_week(saturday)
+    end
+
+    test "handles sunday" do
+      sunday = DT.from_erl!({{2017, 10, 15}, {12, 0, 0}}, "Etc/UTC")
+      assert :sunday = DTH.determine_relevant_day_of_week(sunday)
+    end
+
+    test "handles sunday early morning" do
+      sunday = DT.from_erl!({{2017, 10, 15}, {5, 30, 0}}, "Etc/UTC")
+      assert :saturday = DTH.determine_relevant_day_of_week(sunday)
+    end
+  end
 end
