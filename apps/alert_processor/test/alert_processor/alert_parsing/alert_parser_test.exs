@@ -114,6 +114,24 @@ defmodule AlertProcessor.AlertParserTest do
     end
   end
 
+  test "correctly parses bus stop alert to match bus route subscription" do
+    user = insert(:user)
+
+    subscription_factory()
+    |> bus_subscription()
+    |> weekday_subscription()
+    |> Map.put(:informed_entities, bus_subscription_entities("66", :inbound))
+    |> Map.put(:user, user)
+    |> insert()
+
+    use_cassette "bus_stop_alert", custom: true, clear_mock: true, match_requests_on: [:query] do
+      result = AlertParser.process_alerts()
+      [notification] = Enum.reduce(result, [], fn({:ok, x}, acc) -> acc ++ x end)
+      assert notification.header == "Malcolm X Blvd @ King St (inbound) stop moving"
+      assert notification.alert_id == "115718"
+    end
+  end
+
   test "correctly parses entities without activities" do
     use_cassette "no_activities_alerts", custom: true, clear_mock: true, match_requests_on: [:query] do
       assert [{:ok, []} | _] = AlertParser.process_alerts()

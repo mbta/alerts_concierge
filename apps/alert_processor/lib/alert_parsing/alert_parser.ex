@@ -103,7 +103,8 @@ defmodule AlertProcessor.AlertParser do
       Enum.flat_map(informed_entities, fn(ie) ->
         struct_params = ie
           |> parse_informed_entity()
-          |> set_route_for_amenity()
+          |> remove_stops_for_bus()
+          |> Enum.flat_map(&set_route_for_amenity/1)
 
         Enum.map(struct_params, fn(sp) ->
           informed_entity = struct(InformedEntity, sp)
@@ -141,6 +142,9 @@ defmodule AlertProcessor.AlertParser do
       end
     end)
   end
+
+  defp remove_stops_for_bus(%{route_type: 3} = entity), do: [entity, Map.put(entity, :stop, nil)]
+  defp remove_stops_for_bus(entity), do: [entity]
 
   defp set_route_for_amenity(%{facility_id: fid, stop: stop} = entity) when not is_nil(fid) do
     with {:ok, subway_infos} <- ServiceInfoCache.get_subway_info(),

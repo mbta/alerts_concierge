@@ -98,26 +98,6 @@ defmodule AlertProcessor.NotificationWorkerTest do
     assert capture_log(a) =~ "Sending rate exceeded for user: #{user.id}"
   end
 
-  test "Worker runs on interval jobs from sending queue to notification", %{notification_2: notification_2, notification_3: notification_3} do
-    user = insert :user
-    notification_2 = Map.put(notification_2, :user, user)
-    notification_3 = Map.put(notification_3, :user, user)
-
-    SendingQueue.start_link()
-    {:ok, pid} = NotificationWorker.start_link([name: :notification_worker_interval_test])
-    :erlang.trace(pid, true, [:receive])
-    SendingQueue.enqueue(notification_2)
-    :timer.sleep(101)
-
-    assert_number_of_notifications_persisted_for_user(1, user)
-
-    assert SendingQueue.pop == :error
-    SendingQueue.enqueue(notification_3)
-    :timer.sleep(101)
-
-    assert_number_of_notifications_persisted_for_user(2, user)
-  end
-
   defp assert_number_of_notifications_persisted_for_user(count, user) do
     assert count == Repo.one(from n in Notification, where: n.user_id == ^user.id, select: count(n.id))
   end
