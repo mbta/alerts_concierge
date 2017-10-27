@@ -112,6 +112,29 @@ defmodule ConciergeSite.BusSubscriptionControllerTest do
       assert response =~ "Route Silver Line SL1 outbound, Saturday  4:45 PM -  5:15 PM"
     end
 
+    test "POST /subscriptions/bus/new/preferences displays summary of a round trip multi route", %{conn: conn, user: user} do
+      params = %{"subscription" => %{
+        "departure_start" => "08:45:00",
+        "departure_end" => "09:15:00",
+        "return_start" => "16:45:00",
+        "return_end" => "17:15:00",
+        "routes" => ["741 - 1", "87 - 1"],
+        "saturday" => "true",
+        "sunday" => "false",
+        "weekday" => "false",
+        "trip_type" => "round_trip",
+      }}
+
+      conn = user
+      |> guardian_login(conn)
+      |> post("/subscriptions/bus/new/preferences", params)
+
+      response = html_response(conn, 200)
+      assert response =~ "2 Bus Routes, Saturday  8:45 AM -  9:15 AM"
+      assert response =~ "Silver Line SL1 outbound"
+      assert response =~ "87 outbound"
+    end
+
     test "POST /subscriptions/bus creates subscriptions", %{conn: conn, user: user} do
       params = %{"subscription" => %{
         "departure_start" => "08:45:00",
@@ -151,6 +174,25 @@ defmodule ConciergeSite.BusSubscriptionControllerTest do
       |> get("/subscriptions/bus/#{subscription.id}/edit")
 
       assert html_response(conn, 200) =~ "Edit Subscription"
+      assert html_response(conn, 200) =~ "57A outbound"
+    end
+
+    test "GET /subscriptions/bus/:id/edit multi route", %{conn: conn, user: user} do
+      factory =
+        subscription_factory()
+        |> bus_subscription()
+        |> Map.put(:informed_entities, Enum.uniq(bus_subscription_entities() ++ bus_subscription_entities("87")))
+        |> Map.merge(%{user: user})
+      subscription = insert(factory)
+
+      conn = user
+      |> guardian_login(conn)
+      |> get("/subscriptions/bus/#{subscription.id}/edit")
+
+      assert html_response(conn, 200) =~ "Edit Subscription"
+      assert html_response(conn, 200) =~ "2 Bus Routes"
+      assert html_response(conn, 200) =~ "57A outbound"
+      assert html_response(conn, 200) =~ "87 outbound"
     end
 
     test "PATCH /subscriptions/bus/:id", %{conn: conn, user: user} do

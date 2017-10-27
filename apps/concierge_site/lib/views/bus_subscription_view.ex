@@ -61,11 +61,9 @@ defmodule ConciergeSite.BusSubscriptionView do
       subscription.informed_entities
       |> Enum.filter(&InformedEntity.entity_type(&1) == :route && &1.direction_id != nil)
       |> Enum.map(& {&1.route, &1.direction_id})
-    if Enum.count(route_and_directions) > 1 do
-      multi_route_subscription_details(route_and_directions, trip_type)
-    end
+    multi_route_subscription_details(route_and_directions, trip_type)
   end
-  def multi_route_subscription_details(route_and_directions, trip_type) do
+  def multi_route_subscription_details([_, _ | _] = route_and_directions, trip_type) do
     route_and_directions
     |> Enum.map(&parse_route_and_direction/1)
     |> Enum.map(fn({route_id, direction_id}) ->
@@ -82,6 +80,9 @@ defmodule ConciergeSite.BusSubscriptionView do
         end
         content_tag(:div, [Route.name(route), " ", direction_string])
     end)
+  end
+  def multi_route_subscription_details(_, _) do
+    []
   end
 
   defp parse_route_and_direction({route_id, direction_id}), do: {route_id, direction_id}
