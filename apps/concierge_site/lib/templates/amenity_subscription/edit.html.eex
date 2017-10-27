@@ -8,32 +8,7 @@
 <div class="subscription-step amenities">
   <div class="enter-trip-info">
     <%= form_for @changeset, amenity_subscription_path(@conn, :update, @subscription), [class: "single-submit-form trip-info-form multi-select-form amenities", as: :subscription, method: :patch], fn f -> %>
-      <div class="amenity-subscription-form-section">
-        <%= render "_amenity_options.html",
-            form: f,
-            checked: Map.get(@selected_station_options, :amenities, []) |> Enum.map(&Atom.to_string/1),
-            action: "edit" %>
-
-        <%= render "_station_select.html",
-                form: f,
-                select_options: @station_select_options,
-                selected_station_options: Map.get(@selected_station_options, :stations, []) %>
-
-        <%= render "_selected_station_list.html",
-                  stations: Map.get(@selected_station_options, :stations, []),
-                  conn: @conn,
-                  action: "edit" %>
-
-        <%= render "_subway_line_select.html",
-                  form: f,
-                  checked: Map.get(@selected_station_options, :routes, []),
-                  action: "edit" %>
-
-        <%= render "_travel_days_checkboxes.html",
-                    form: f,
-                    checked: @subscription.relevant_days |> Enum.map(&Atom.to_string/1),
-                    action: "edit" %>
-      </div>
+      <%= render "_amenity_form.html", f: f, station_select_options: @station_select_options, selected_options: @selected_options, action: "edit" %>
 
       <div class="trip-info-footer">
         <%= submit "Update Subscription", class: "btn btn-primary btn-subscription-next" %>

@@ -7,7 +7,7 @@ defmodule ConciergeSite.AmenitySubscriptionController do
     Subscription.AmenitiesMapper, Model.Subscription, Model.User}
 
   def new(conn, _params, _user, _claims) do
-    render_new_page(conn, %{"stops" => []}, [])
+    render_new_page(conn)
   end
 
   def create(conn, %{"subscription" => sub_params}, user, {:ok, claims}) do
@@ -21,11 +21,11 @@ defmodule ConciergeSite.AmenitySubscriptionController do
       {:error, message} ->
         conn
         |> put_flash(:error, message)
-        |> render_new_page(sub_params, Map.get(sub_params, "stops", []))
+        |> render_new_page(sub_params)
       _ ->
         conn
         |> put_flash(:error, "there was an error saving the subscription. Please try again.")
-        |> render_new_page(sub_params, Map.get(sub_params, "stops", []))
+        |> render_new_page(sub_params)
     end
   end
 
@@ -41,7 +41,7 @@ defmodule ConciergeSite.AmenitySubscriptionController do
           subscription: subscription,
           changeset: changeset,
           station_select_options: station_select_options,
-          selected_station_options: selected_station_options(subscription)
+          selected_options: selected_options(subscription)
     else
       _error ->
         conn
@@ -70,18 +70,22 @@ defmodule ConciergeSite.AmenitySubscriptionController do
     end
   end
 
-  defp render_new_page(conn, sub_params, selected_station_options) do
+  defp render_new_page(conn, sub_params \\ %{}) do
     with {:ok, subway_stations} <- ServiceInfoCache.get_subway_full_routes(),
       {:ok, cr_stations} <- ServiceInfoCache.get_commuter_rail_info() do
 
       station_select_options = MultiSelectHelper.station_options(cr_stations, subway_stations)
 
-      subscription_params = Map.put(sub_params, "stops", selected_station_options)
+      selected_options = %{
+        amenities: sub_params |> Map.get("amenities", []) |> Enum.reject(&empty_or_nil?/1),
+        relevant_days: sub_params |> Map.get("relevant_days", []) |> Enum.reject(&empty_or_nil?/1),
+        routes: sub_params |> Map.get("routes", []) |> Enum.reject(&empty_or_nil?/1),
+        stations: sub_params |> Map.get("stops", []) |> Enum.map(&fetch_stop/1) |> Enum.reject(&empty_or_nil?/1)
+      }
 
       render conn, :new,
-        subscription_params: subscription_params,
-        station_list_select_options: station_select_options,
-        selected_station_options: selected_station_options
+        station_select_options: station_select_options,
+        selected_options: selected_options
     else
       _error ->
         conn
@@ -90,10 +94,10 @@ defmodule ConciergeSite.AmenitySubscriptionController do
     end
   end
 
-  defp selected_station_options(%Subscription{informed_entities: ies}) do
+  defp selected_options(%Subscription{informed_entities: ies, relevant_days: relevant_days}) do
     ies
     |> Enum.reduce(
-      %{amenities: MapSet.new, routes: MapSet.new, stations: MapSet.new},
+      %{amenities: MapSet.new, relevant_days: MapSet.new, routes: MapSet.new, stations: MapSet.new},
       fn(ie, acc) ->
 
         acc =
@@ -109,8 +113,8 @@ defmodule ConciergeSite.AmenitySubscriptionController do
           if is_nil(ie.facility_type) do
             acc
           else
-            amenities = MapSet.put(acc.amenities, ie.facility_type)
-            Map.put(acc, :amenities, amenities)
+            amenities = [to_string(ie.facility_type), acc.amenities]
+            Map.put(acc, :amenities, MapSet.new(amenities))
           end
 
         if is_nil(ie.route) do
@@ -120,8 +124,18 @@ defmodule ConciergeSite.AmenitySubscriptionController do
           Map.put(acc, :routes, routes)
         end
       end)
+      |> Map.put(:relevant_days, relevant_days |> Enum.reject(&empty_or_nil?/1) |> Enum.map(&to_string/1) |> MapSet.new())
       |> Enum.reduce(%{}, fn({k, v}, acc) ->
         Map.put(acc, k, MapSet.to_list(v))
       end)
+  end
+
+  defp empty_or_nil?(nil), do: true
+  defp empty_or_nil?(""), do: true
+  defp empty_or_nil?(_), do: false
+
+  defp fetch_stop(stop_id) do
+    {:ok, stop} = ServiceInfoCache.get_stop(stop_id)
+    stop
   end
 end

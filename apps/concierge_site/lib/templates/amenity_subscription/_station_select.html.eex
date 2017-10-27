@@ -5,7 +5,7 @@
     <%= multiple_select @form,
               :stops,
               @select_options,
-              selected: Enum.map(@selected_station_options, & elem(&1, 1)),
+              selected: @selected_station_options |> Enum.map(& elem(&1, 1)),
               class: "subscription-select multi-select no-js",
               prompt: "Enter a station",
               data: [entity_type: "station"] %>

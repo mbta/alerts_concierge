@@ -50,6 +50,29 @@ defmodule ConciergeSite.AmenitySubscriptionControllerTest do
       assert expected_error == error
     end
 
+    test "POST /subscriptions/amenities with invalid params with stations selected", %{conn: conn} do
+      params = %{"subscription" => %{
+        "stops" => ["place-nqncy", "place-forhl"],
+        "amenities" => [],
+        "relevant_days" => [],
+        "routes" => ["blue"]
+      }}
+
+      conn = conn
+      |> post("/subscriptions/amenities", params)
+
+      expected_error = "Please correct the following errors to proceed: At least one travel day must be selected. At least one amenity must be selected."
+      error =
+        conn
+        |> get_flash("error")
+        |> IO.iodata_to_binary()
+
+      assert html_response(conn, 200) =~ "Create New Subscription"
+      assert html_response(conn, 200) =~ "North Quincy"
+      assert html_response(conn, 200) =~ "Forest Hills"
+      assert expected_error == error
+    end
+
     test "GET /subscriptions/amenities/:id/edit", %{conn: conn, user: user} do
       amenity_subscription_entities =     [
         %InformedEntity{route_type: 4, facility_type: :elevator, route: "Green"},
