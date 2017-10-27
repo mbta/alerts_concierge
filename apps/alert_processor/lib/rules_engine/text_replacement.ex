@@ -54,6 +54,7 @@ defmodule AlertProcessor.TextReplacement do
             new_text = serialize(replacement)
             substitute(text, new_text)
           end)
+          |> IO.iodata_to_binary
         {key, text}
       end
     end
