@@ -22,6 +22,15 @@ defmodule ConciergeSite.SubscriptionControllerTest do
       :subscription
       |> build(user: user)
       |> weekday_subscription()
+      |> subway_subscription()
+      |> Repo.preload(:informed_entities)
+      |> Ecto.Changeset.change()
+      |> Ecto.Changeset.put_assoc(:informed_entities, roaming_subway_subscription_entities())
+      |> Repo.insert()
+
+      :subscription
+      |> build(user: user)
+      |> weekday_subscription()
       |> commuter_rail_subscription()
       |> Repo.preload(:informed_entities)
       |> Ecto.Changeset.change()
