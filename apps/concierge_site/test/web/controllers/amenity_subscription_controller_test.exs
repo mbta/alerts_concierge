@@ -131,6 +131,62 @@ defmodule ConciergeSite.AmenitySubscriptionControllerTest do
         assert :error = HoldingQueue.pop()
       end
     end
+
+    test "PATCH /subscriptions/amenities/:id with incomplete params", %{conn: conn, user: user} do
+      subscription =
+        subscription_factory()
+        |> Map.put(:informed_entities, amenity_subscription_entities())
+        |> amenity_subscription()
+        |> weekday_subscription()
+        |> Map.merge(%{user: user})
+        |> PaperTrail.insert!()
+
+      params = %{"subscription" => %{
+        "stops" => ["place-nqncy", "place-forhl"],
+        "amenities" => [],
+        "relevant_days" => [],
+        "routes" => ["blue"]
+      }}
+
+      conn = patch(conn, "/subscriptions/amenities/#{subscription.id}", params)
+
+      expected_error = "Please correct the following errors to proceed: At least one travel day must be selected. At least one amenity must be selected."
+      error =
+        conn
+        |> get_flash("error")
+        |> IO.iodata_to_binary()
+
+      assert html_response(conn, 302) =~ "/subscriptions/amenities/#{subscription.id}/edit"
+      assert expected_error == error
+    end
+
+    test "PATCH /subscriptions/amenities/:id with empty params", %{conn: conn, user: user} do
+      subscription =
+        subscription_factory()
+        |> Map.put(:informed_entities, amenity_subscription_entities())
+        |> amenity_subscription()
+        |> weekday_subscription()
+        |> Map.merge(%{user: user})
+        |> PaperTrail.insert!()
+
+      params = %{"subscription" => %{
+        "stops" => [],
+        "amenities" => [],
+        "relevant_days" => [],
+        "routes" => []
+      }}
+
+      conn = patch(conn, "/subscriptions/amenities/#{subscription.id}", params)
+
+      expected_error = "Please correct the following errors to proceed: At least one station or line must be selected. At least one travel day must be selected. At least one amenity must be selected."
+      error =
+        conn
+        |> get_flash("error")
+        |> IO.iodata_to_binary()
+
+      assert html_response(conn, 302) =~ "/subscriptions/amenities/#{subscription.id}/edit"
+      assert expected_error == error
+    end
   end
 
   describe "unauthorized" do
