@@ -21,11 +21,11 @@ defmodule ConciergeSite.AmenitySubscriptionController do
       {:error, message} ->
         conn
         |> put_flash(:error, message)
-        |> render_new_page(sub_params)
+        |> render_new_page()
       _ ->
         conn
         |> put_flash(:error, "there was an error saving the subscription. Please try again.")
-        |> render_new_page(sub_params)
+        |> render_new_page()
     end
   end
 
@@ -70,8 +70,9 @@ defmodule ConciergeSite.AmenitySubscriptionController do
     end
   end
 
-  defp render_new_page(conn, sub_params \\ %{}) do
-    with {:ok, subway_stations} <- ServiceInfoCache.get_subway_full_routes(),
+  defp render_new_page(conn) do
+    with sub_params <- Map.get(conn.params, "subscription", %{}),
+      {:ok, subway_stations} <- ServiceInfoCache.get_subway_full_routes(),
       {:ok, cr_stations} <- ServiceInfoCache.get_commuter_rail_info() do
 
       station_select_options = MultiSelectHelper.station_options(cr_stations, subway_stations)
@@ -113,7 +114,7 @@ defmodule ConciergeSite.AmenitySubscriptionController do
           if is_nil(ie.facility_type) do
             acc
           else
-            amenities = [to_string(ie.facility_type), acc.amenities]
+            amenities = MapSet.put(acc.amenities, to_string(ie.facility_type))
             Map.put(acc, :amenities, MapSet.new(amenities))
           end
 
@@ -124,10 +125,8 @@ defmodule ConciergeSite.AmenitySubscriptionController do
           Map.put(acc, :routes, routes)
         end
       end)
-      |> Map.put(:relevant_days, relevant_days |> Enum.reject(&empty_or_nil?/1) |> Enum.map(&to_string/1) |> MapSet.new())
-      |> Enum.reduce(%{}, fn({k, v}, acc) ->
-        Map.put(acc, k, MapSet.to_list(v))
-      end)
+      |> Map.put(:relevant_days, relevant_days |> Enum.reject(&empty_or_nil?/1) |> MapSet.new(&to_string/1))
+      |> Map.new(fn({k, v}) -> {k, MapSet.to_list(v)} end)
   end
 
   defp empty_or_nil?(nil), do: true

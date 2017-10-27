@@ -58,8 +58,7 @@ defmodule ConciergeSite.AmenitySubscriptionControllerTest do
         "routes" => ["blue"]
       }}
 
-      conn = conn
-      |> post("/subscriptions/amenities", params)
+      conn = post(conn, "/subscriptions/amenities", params)
 
       expected_error = "Please correct the following errors to proceed: At least one travel day must be selected. At least one amenity must be selected."
       error =
