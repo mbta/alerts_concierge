@@ -3,7 +3,7 @@ defmodule ConciergeSite.SubscriberDetailsTest do
 
   alias AlertProcessor.Model.{Subscription, User}
   alias AlertProcessor.Subscription.{AmenitiesMapper, CommuterRailMapper}
-  alias ConciergeSite.SubscriberDetails
+  alias ConciergeSite.{SubscriberDetails, UserParams}
   import AlertProcessor.Factory
 
   setup do
@@ -36,7 +36,14 @@ defmodule ConciergeSite.SubscriberDetailsTest do
     test "maps updating", %{user: user} do
       User.update_account(user, %{"phone_number" => "5551231234", "do_not_disturb_end" => nil, "do_not_disturb_start" => nil}, user.id)
       changelog = user.id |> SubscriberDetails.changelog() |> changelog_to_binary()
-      assert changelog =~ "#{user.email} updated do_not_disturb_end from 07:00:00 to N/A, do_not_disturb_start from 22:00:00 to N/A, phone_number from N/A to 5551231234"
+      assert changelog =~ "#{user.email} updated do_not_disturb_end from  7:00 AM to N/A, do_not_disturb_start from 10:00 PM to N/A, phone_number from N/A to 5551231234"
+    end
+
+    test "maps setting vacation", %{user: user} do
+      {:ok, vacation_dates} = UserParams.convert_vacation_strings_to_datetimes(%{"vacation_start" => "01/01/2020", "vacation_end" => "01/01/2030"})
+      User.update_vacation(user, vacation_dates, user.id)
+      changelog = user.id |> SubscriberDetails.changelog() |> changelog_to_binary()
+      assert changelog =~ "#{user.email} updated vacation_end from N/A to 01/01/2030, vacation_start from N/A to 01/01/2020"
     end
 
     test "maps updating password", %{user: user} do
@@ -93,7 +100,7 @@ defmodule ConciergeSite.SubscriberDetailsTest do
       assert changelog =~ "#{user.email} added trip 123 to subscription #{subscription.id}"
       assert changelog =~ "#{user.email} removed trip 125 from subscription #{subscription.id}"
       assert changelog =~ "#{user.email} added trip 127 to subscription #{subscription.id}"
-      assert changelog =~ "#{user.email} updated alert_priority_type from low to high, end_time from 14:00:00 to 15:00:00 for subscription #{subscription.id}"
+      assert changelog =~ "#{user.email} updated alert_priority_type from low to high, end_time from 10:00am to 11:00am for subscription #{subscription.id}"
     end
 
     test "maps updating amenities", %{user: user} do

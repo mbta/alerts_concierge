@@ -5,6 +5,7 @@ defmodule ConciergeSite.SubscriberDetails do
   """
   alias AlertProcessor.{Helpers.DateTimeHelper, Model.Notification, Model.Subscription, Model.User, Repo}
   alias ConciergeSite.TimeHelper
+  alias Calendar.Strftime
   import Ecto.Query
 
   def changelog(user_id) do
@@ -79,7 +80,7 @@ defmodule ConciergeSite.SubscriberDetails do
             if old_value == new_value do
               []
             else
-              [changed_key <> " from " <> to_string(old_value) <> " to " <> to_string(new_value)]
+              [updated_key_string(changed_key, old_value, new_value)]
             end
           end)
         |> Enum.join(", ")
@@ -193,7 +194,7 @@ defmodule ConciergeSite.SubscriberDetails do
             if old_value == new_value do
               []
             else
-              [changed_key <> " from " <> to_string(old_value) <> " to " <> to_string(new_value)]
+              [updated_key_string(changed_key, old_value, new_value)]
             end
           end)
         |> Enum.join(", ")
@@ -281,5 +282,29 @@ defmodule ConciergeSite.SubscriberDetails do
     date = DateTimeHelper.format_date(inserted_at)
     time = inserted_at |> NaiveDateTime.to_time() |> TimeHelper.format_time()
     {date, time}
+  end
+
+  defp updated_key_string(changed_key, old_value, new_value) do
+    changed_key <> " from " <> format_value(changed_key, old_value) <> " to " <> format_value(changed_key, new_value)
+  end
+
+  defp format_value(changed_key, value) do
+    cond do
+      Regex.match?(~r/^[0-9]{2}\:[0-9]{2}\:[0-9]{2}$/, to_string(value)) ->
+        format_time(changed_key, value)
+      Regex.match?(~r/^[0-9]{4}\-[0-9]{2}\-[0-9]{2}T[0-9]{2}\:[0-9]{2}\:[0-9]{2}Z$/, to_string(value)) ->
+        value |> NaiveDateTime.from_iso8601!() |> Strftime.strftime!("%m/%d/%Y")
+      is_list(value) ->
+        Enum.join(value, ", ")
+      true ->
+        to_string(value)
+    end
+  end
+
+  defp format_time(changed_key, value) when changed_key == "do_not_disturb_start" or changed_key == "do_not_disturb_end" do
+    TimeHelper.format_time_string(value)
+  end
+  defp format_time(_, value) do
+    value |> Time.from_iso8601!() |> TimeHelper.format_time()
   end
 end
