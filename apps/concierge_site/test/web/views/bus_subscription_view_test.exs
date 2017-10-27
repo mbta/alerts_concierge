@@ -2,6 +2,7 @@ defmodule ConciergeSite.BusSubscriptionViewTest do
   use ExUnit.Case
   alias ConciergeSite.BusSubscriptionView
   alias AlertProcessor.Model.Route
+  alias ConciergeSite.HTMLTestHelper
   import AlertProcessor.Factory
 
   describe "progress_link_class" do
@@ -74,7 +75,7 @@ defmodule ConciergeSite.BusSubscriptionViewTest do
       params = Map.merge(@params, %{"trip_type" => "one_way"})
       [summary] = BusSubscriptionView.trip_summary_routes(params, [@route])
 
-      assert IO.iodata_to_binary(summary) =~ "Route Silver Line SL1 inbound, Saturday, Sunday, or weekdays  8:45 AM -  9:15 AM"
+      assert HTMLTestHelper.html_to_binary(summary) =~ "Route Silver Line SL1 inbound, Saturday, Sunday, or weekdays  8:45 AM -  9:15 AM"
     end
 
     test "returns summary of routes for round trip" do
@@ -89,8 +90,8 @@ defmodule ConciergeSite.BusSubscriptionViewTest do
       params = Map.merge(@params, %{"trip_type" => "round_trip"})
       [inbound, outbound] = BusSubscriptionView.trip_summary_routes(params, [@route, @route2])
 
-      assert IO.iodata_to_binary(inbound) =~ "2 Bus Routes, Saturday, Sunday, or weekday  8:45 AM -  9:15 AM"
-      assert IO.iodata_to_binary(outbound) =~ "2 Bus Routes, Saturday, Sunday, or weekday  4:45 PM -  5:15 PM"
+      assert HTMLTestHelper.html_to_binary(inbound) =~ "2 Bus Routes, Saturday, Sunday, or weekday  8:45 AM -  9:15 AM"
+      assert HTMLTestHelper.html_to_binary(outbound) =~ "2 Bus Routes, Saturday, Sunday, or weekday  4:45 PM -  5:15 PM"
     end
   end
 

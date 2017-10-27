@@ -1,6 +1,7 @@
 defmodule ConciergeSite.BusSubscriptionView do
   use ConciergeSite.Web, :view
   alias AlertProcessor.Model.{InformedEntity, Route, Subscription}
+  alias AlertProcessor.ServiceInfoCache
   import ConciergeSite.SubscriptionHelper,
     only: [atomize_keys: 1, joined_day_list: 1, progress_link_class: 3,
            do_query_string_params: 2, selected_relevant_days: 1]
@@ -54,6 +55,41 @@ defmodule ConciergeSite.BusSubscriptionView do
     end
   end
 
+  def multi_route_subscription_details(subscription, trip_type \\ :depart)
+  def multi_route_subscription_details(%Subscription{} = subscription, trip_type) do
+    route_and_directions =
+      subscription.informed_entities
+      |> Enum.filter(&InformedEntity.entity_type(&1) == :route && &1.direction_id != nil)
+      |> Enum.map(& {&1.route, &1.direction_id})
+    if Enum.count(route_and_directions) > 1 do
+      multi_route_subscription_details(route_and_directions, trip_type)
+    end
+  end
+  def multi_route_subscription_details(route_and_directions, trip_type) do
+    route_and_directions
+    |> Enum.map(&parse_route_and_direction/1)
+    |> Enum.map(fn({route_id, direction_id}) ->
+      {:ok, route} = ServiceInfoCache.get_route(route_id)
+      {route, direction_id}
+    end)
+    |> Enum.sort_by(& {elem(&1, 0).order, elem(&1, 1)})
+    |> Enum.map(fn({route, direction_id}) ->
+      direction_string =
+        if trip_type == :depart do
+          named_direction(direction_id)
+        else
+          direction_id |> named_direction() |> reverse_direction()
+        end
+        content_tag(:div, [Route.name(route), " ", direction_string])
+    end)
+  end
+
+  defp parse_route_and_direction({route_id, direction_id}), do: {route_id, direction_id}
+  defp parse_route_and_direction(route_and_direction) do
+    [route_id, direction_id | _] = String.split(route_and_direction, " - ")
+    {route_id, direction_id}
+  end
+
   defp direction_name(subscription) do
     subscription.informed_entities
     |> Enum.filter_map(&(!is_nil(&1.direction_id)), &(&1.direction_id))
@@ -98,7 +134,8 @@ defmodule ConciergeSite.BusSubscriptionView do
     " ",
     format_time_string(params["departure_start"]),
     " - ",
-    format_time_string(params["departure_end"])]
+    format_time_string(params["departure_end"]),
+    multi_route_subscription_details(params["routes"], :depart)]
   end
 
   defp return_format(params, [route]) do
@@ -121,12 +158,15 @@ defmodule ConciergeSite.BusSubscriptionView do
     " ",
     format_time_string(params["return_start"]),
     " - ",
-    format_time_string(params["return_end"])]
+    format_time_string(params["return_end"]),
+    multi_route_subscription_details(params["routes"], :return)]
   end
 
   defp reverse_direction("inbound"), do: "outbound"
   defp reverse_direction("outbound"), do: "inbound"
 
+  defp named_direction(0), do: "outbound"
+  defp named_direction(1), do: "inbound"
   defp named_direction("0"), do: "outbound"
   defp named_direction("1"), do: "inbound"
 end
