@@ -1,0 +1,25 @@
+<div class="amenity-subscription-form-section">
+  <%= render "_amenity_options.html",
+      form: @f,
+      checked: Map.get(@selected_options, :amenities, []),
+      action: @action %>
+
+  <%= render "_station_select.html",
+          form: @f,
+          select_options: @station_select_options,
+          selected_station_options: Map.get(@selected_options, :stations, []) %>
+
+  <%= render "_selected_station_list.html",
+            stations: Map.get(@selected_options, :stations, []),
+            action: @action %>
+
+  <%= render "_subway_line_select.html",
+            form: @f,
+            checked: Map.get(@selected_options, :routes, []),
+            action: @action %>
+
+  <%= render "_travel_days_checkboxes.html",
+              form: @f,
+              checked: Map.get(@selected_options, :relevant_days, []),
+              action: @action %>
+</div>

@@ -50,6 +50,28 @@ defmodule ConciergeSite.AmenitySubscriptionControllerTest do
       assert expected_error == error
     end
 
+    test "POST /subscriptions/amenities with invalid params with stations selected", %{conn: conn} do
+      params = %{"subscription" => %{
+        "stops" => ["place-nqncy", "place-forhl"],
+        "amenities" => [],
+        "relevant_days" => [],
+        "routes" => ["blue"]
+      }}
+
+      conn = post(conn, "/subscriptions/amenities", params)
+
+      expected_error = "Please correct the following errors to proceed: At least one travel day must be selected. At least one amenity must be selected."
+      error =
+        conn
+        |> get_flash("error")
+        |> IO.iodata_to_binary()
+
+      assert html_response(conn, 200) =~ "Create New Subscription"
+      assert html_response(conn, 200) =~ "North Quincy"
+      assert html_response(conn, 200) =~ "Forest Hills"
+      assert expected_error == error
+    end
+
     test "GET /subscriptions/amenities/:id/edit", %{conn: conn, user: user} do
       amenity_subscription_entities =     [
         %InformedEntity{route_type: 4, facility_type: :elevator, route: "Green"},
@@ -108,6 +130,62 @@ defmodule ConciergeSite.AmenitySubscriptionControllerTest do
         assert html_response(conn, 302) =~ "my-subscriptions"
         assert :error = HoldingQueue.pop()
       end
+    end
+
+    test "PATCH /subscriptions/amenities/:id with incomplete params", %{conn: conn, user: user} do
+      subscription =
+        subscription_factory()
+        |> Map.put(:informed_entities, amenity_subscription_entities())
+        |> amenity_subscription()
+        |> weekday_subscription()
+        |> Map.merge(%{user: user})
+        |> PaperTrail.insert!()
+
+      params = %{"subscription" => %{
+        "stops" => ["place-nqncy", "place-forhl"],
+        "amenities" => [],
+        "relevant_days" => [],
+        "routes" => ["blue"]
+      }}
+
+      conn = patch(conn, "/subscriptions/amenities/#{subscription.id}", params)
+
+      expected_error = "Please correct the following errors to proceed: At least one travel day must be selected. At least one amenity must be selected."
+      error =
+        conn
+        |> get_flash("error")
+        |> IO.iodata_to_binary()
+
+      assert html_response(conn, 302) =~ "/subscriptions/amenities/#{subscription.id}/edit"
+      assert expected_error == error
+    end
+
+    test "PATCH /subscriptions/amenities/:id with empty params", %{conn: conn, user: user} do
+      subscription =
+        subscription_factory()
+        |> Map.put(:informed_entities, amenity_subscription_entities())
+        |> amenity_subscription()
+        |> weekday_subscription()
+        |> Map.merge(%{user: user})
+        |> PaperTrail.insert!()
+
+      params = %{"subscription" => %{
+        "stops" => [],
+        "amenities" => [],
+        "relevant_days" => [],
+        "routes" => []
+      }}
+
+      conn = patch(conn, "/subscriptions/amenities/#{subscription.id}", params)
+
+      expected_error = "Please correct the following errors to proceed: At least one station or line must be selected. At least one travel day must be selected. At least one amenity must be selected."
+      error =
+        conn
+        |> get_flash("error")
+        |> IO.iodata_to_binary()
+
+      assert html_response(conn, 302) =~ "/subscriptions/amenities/#{subscription.id}/edit"
+      assert expected_error == error
     end
   end
 
