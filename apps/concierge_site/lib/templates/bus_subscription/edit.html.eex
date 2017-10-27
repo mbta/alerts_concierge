@@ -7,6 +7,11 @@
   <h2>Edit Subscription</h2>
   <%= flash_error(@conn) %>
 
+  <div class="trip-summary">
+    <%= route_name(@subscription) %>
+    <%= multi_route_subscription_details(@subscription) %>
+  </div>
+
   <%= form_for @changeset, bus_subscription_path(@conn, :update, @subscription), fn f -> %>
     <%= render "_alert_type_radio_buttons.html",
                form: f,

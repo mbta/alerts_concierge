@@ -2,6 +2,7 @@ defmodule ConciergeSite.BusSubscriptionViewTest do
   use ExUnit.Case
   alias ConciergeSite.BusSubscriptionView
   alias AlertProcessor.Model.Route
+  alias ConciergeSite.HTMLTestHelper
   import AlertProcessor.Factory
 
   describe "progress_link_class" do
@@ -74,7 +75,7 @@ defmodule ConciergeSite.BusSubscriptionViewTest do
       params = Map.merge(@params, %{"trip_type" => "one_way"})
       [summary] = BusSubscriptionView.trip_summary_routes(params, [@route])
 
-      assert IO.iodata_to_binary(summary) =~ "Route Silver Line SL1 inbound, Saturday, Sunday, or weekdays  8:45 AM -  9:15 AM"
+      assert HTMLTestHelper.html_to_binary(summary) =~ "Route Silver Line SL1 inbound, Saturday, Sunday, or weekdays  8:45 AM -  9:15 AM"
     end
 
     test "returns summary of routes for round trip" do
@@ -86,11 +87,15 @@ defmodule ConciergeSite.BusSubscriptionViewTest do
     end
 
     test "returns summary of routes for round trip for multiple routes" do
-      params = Map.merge(@params, %{"trip_type" => "round_trip"})
+      params = Map.merge(@params, %{"trip_type" => "round_trip", "routes" => ["741 - 1", "87 - 1"]})
       [inbound, outbound] = BusSubscriptionView.trip_summary_routes(params, [@route, @route2])
 
-      assert IO.iodata_to_binary(inbound) =~ "2 Bus Routes, Saturday, Sunday, or weekday  8:45 AM -  9:15 AM"
-      assert IO.iodata_to_binary(outbound) =~ "2 Bus Routes, Saturday, Sunday, or weekday  4:45 PM -  5:15 PM"
+      assert HTMLTestHelper.html_to_binary(inbound) =~ "2 Bus Routes, Saturday, Sunday, or weekday  8:45 AM -  9:15 AM"
+      assert HTMLTestHelper.html_to_binary(inbound) =~ "Silver Line SL1 inbound"
+      assert HTMLTestHelper.html_to_binary(inbound) =~ "87 inbound"
+      assert HTMLTestHelper.html_to_binary(outbound) =~ "2 Bus Routes, Saturday, Sunday, or weekday  4:45 PM -  5:15 PM"
+      assert HTMLTestHelper.html_to_binary(outbound) =~ "Silver Line SL1 outbound"
+      assert HTMLTestHelper.html_to_binary(outbound) =~ "87 outbound"
     end
   end
 
@@ -111,6 +116,39 @@ defmodule ConciergeSite.BusSubscriptionViewTest do
         |> Map.put(:informed_entities, Enum.uniq(bus_subscription_entities() ++ bus_subscription_entities("87")))
 
       assert "2 Bus Routes" == subscription |> BusSubscriptionView.route_name() |> IO.iodata_to_binary()
+    end
+  end
+
+  describe "multi_route_subscription_details" do
+    test "single route via params" do
+      output = BusSubscriptionView.multi_route_subscription_details(["66 - 0"])
+      assert HTMLTestHelper.html_to_binary(output) == ""
+    end
+
+    test "multiple routes via params" do
+      output = BusSubscriptionView.multi_route_subscription_details(["87 - 1", "88 - 1", "90 - 0"])
+      assert HTMLTestHelper.html_to_binary(output) =~ "87 inbound"
+      assert HTMLTestHelper.html_to_binary(output) =~ "88 inbound"
+      assert HTMLTestHelper.html_to_binary(output) =~ "90 outbound"
+    end
+
+    test "single route via subscription" do
+      subscription =
+        subscription_factory()
+        |> bus_subscription()
+        |> Map.put(:informed_entities, bus_subscription_entities())
+      output = BusSubscriptionView.multi_route_subscription_details(subscription)
+      assert HTMLTestHelper.html_to_binary(output) == ""
+    end
+
+    test "multiple routes via subscription" do
+      subscription =
+        subscription_factory()
+        |> bus_subscription()
+        |> Map.put(:informed_entities, Enum.uniq(bus_subscription_entities() ++ bus_subscription_entities("87")))
+      output = BusSubscriptionView.multi_route_subscription_details(subscription)
+      assert HTMLTestHelper.html_to_binary(output) =~ "57A outbound"
+      assert HTMLTestHelper.html_to_binary(output) =~ "87 outbound"
     end
   end
 end

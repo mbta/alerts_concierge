@@ -6,7 +6,7 @@ defmodule ConciergeSite.SubscriptionView do
 
   alias AlertProcessor.{Model, ServiceInfoCache}
   alias Model.{InformedEntity, Route, Subscription}
-  alias ConciergeSite.{AmenitySubscriptionView, SubscriptionHelper, TimeHelper}
+  alias ConciergeSite.{AmenitySubscriptionView, BusSubscriptionView, SubscriptionHelper, TimeHelper}
 
   import SubscriptionHelper,
     only: [direction_id: 1, relevant_days: 1]
@@ -143,7 +143,10 @@ defmodule ConciergeSite.SubscriptionView do
   defp route_body(%{type: :bus} = subscription,  _, _) do
     route_entity_count = Subscription.route_count(subscription)
     if route_entity_count > 1 do
-      timeframe(subscription)
+      [
+        BusSubscriptionView.multi_route_subscription_details(subscription),
+        timeframe(subscription)
+      ]
     else
       [timeframe(subscription), " | ", parse_headsign(subscription)]
     end
