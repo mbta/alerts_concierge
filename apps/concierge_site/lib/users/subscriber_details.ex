@@ -285,18 +285,18 @@ defmodule ConciergeSite.SubscriberDetails do
   end
 
   defp updated_key_string(changed_key, old_value, new_value) do
-    changed_key <> " from " <> format_value(changed_key, old_value) <> " to " <> format_value(changed_key, new_value)
+    [changed_key, " from ", format_value(changed_key, old_value), " to ", format_value(changed_key, new_value)]
   end
 
   defp format_value(changed_key, value) do
-    cond do
-      Regex.match?(~r/^[0-9]{2}\:[0-9]{2}\:[0-9]{2}$/, to_string(value)) ->
+    case value do
+      <<_ :: size(16), ":", _ :: size(16), ":", _ :: size(16)>> ->
         format_time(changed_key, value)
-      Regex.match?(~r/^[0-9]{4}\-[0-9]{2}\-[0-9]{2}T[0-9]{2}\:[0-9]{2}\:[0-9]{2}Z$/, to_string(value)) ->
+      <<_ :: size(32), "-", _ :: size(16), "-", _ :: size(16), "T", _ :: size(16), ":", _ :: size(16), ":", _ :: size(16), "Z">> ->
         value |> NaiveDateTime.from_iso8601!() |> Strftime.strftime!("%m/%d/%Y")
-      is_list(value) ->
+      [_h | _t] ->
         Enum.join(value, ", ")
-      true ->
+      _ ->
         to_string(value)
     end
   end
