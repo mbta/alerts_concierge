@@ -49,22 +49,40 @@ defmodule AlertProcessor.Subscription.Mapper do
     [{subscription,
       Enum.flat_map(amenities, fn(amenity) ->
         amenity_type = String.to_existing_atom(amenity)
-        route_amenities =
-          Enum.map(routes, fn(route) ->
-            %InformedEntity{route: String.capitalize(route), facility_type: amenity_type, activities: map_amenity_activities(amenity_type)}
-          end)
-        stop_amenities =
-          Enum.map(stops, fn(stop) ->
-            %InformedEntity{stop: stop, facility_type: amenity_type, activities: map_amenity_activities(amenity_type)}
-          end)
+        route_amenities = Enum.flat_map(routes, &map_amenity(amenity_type, &1, nil))
+        stop_amenities = Enum.flat_map(stops, &map_amenity(amenity_type, nil, &1))
+
         route_amenities ++ stop_amenities
       end)
     }]
   end
   def map_amenities(_, _), do: :error
 
+  defp map_amenity(:elevator, route, nil) do
+    [
+      %InformedEntity{route: String.capitalize(route), facility_type: :elevator, activities: map_amenity_activities(:elevator)},
+      %InformedEntity{route: String.capitalize(route), facility_type: :portable_boarding_lift, activities: map_amenity_activities(:elevator)}
+    ]
+  end
+  defp map_amenity(:elevator, nil, stop) do
+    [
+      %InformedEntity{stop: stop, facility_type: :elevator, activities: map_amenity_activities(:elevator)},
+      %InformedEntity{stop: stop, facility_type: :portable_boarding_lift, activities: map_amenity_activities(:elevator)}
+    ]
+  end
+  defp map_amenity(amenity_type, route, nil) do
+    [%InformedEntity{route: String.capitalize(route), facility_type: amenity_type, activities: map_amenity_activities(amenity_type)}]
+  end
+  defp map_amenity(amenity_type, nil, stop) do
+    [%InformedEntity{stop: stop, facility_type: amenity_type, activities: map_amenity_activities(amenity_type)}]
+  end
+
   defp map_amenity_activities(:elevator), do: ["USING_WHEELCHAIR"]
+  defp map_amenity_activities(:portable_boarding_lift), do: ["USING_WHEELCHAIR"]
+  defp map_amenity_activities(:elevated_subplatform), do: ["USING_WHEELCHAIR"]
   defp map_amenity_activities(:escalator), do: ["USING_ESCALATOR"]
+  defp map_amenity_activities(:bike_storage), do: ["STORE_BIKE"]
+  defp map_amenity_activities(:parking_area), do: ["PARK_CAR"]
   defp map_amenity_activities(_), do: []
 
   def map_route_type(subscription_infos, routes) do
