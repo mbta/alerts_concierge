@@ -202,8 +202,10 @@ defmodule ConciergeSite.SubscriptionView do
   end
 
   defp parse_route_id(subscription) do
-    %InformedEntity{route: route} = Enum.find(subscription.informed_entities, fn(%InformedEntity{route: route}) -> !is_nil(route) end)
-    route
+    case Enum.find(subscription.informed_entities, fn(%InformedEntity{route: route}) -> !is_nil(route) end) do
+      %InformedEntity{route: route} -> route
+      nil -> nil
+    end
   end
 
   def parse_route(%Subscription{type: :amenity}), do: %{order: 1}

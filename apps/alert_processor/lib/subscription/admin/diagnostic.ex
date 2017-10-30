@@ -128,9 +128,9 @@ defmodule AlertProcessor.Subscription.Diagnostic do
   end
 
   defp matches_any_route_type?(diagnostic, alert: alert, informed_entities: ies) do
-    alert_ies_route_types = Enum.map(alert.informed_entities, &(&1.route_type))
-    ies_route_types = Enum.map(ies, &(&1.route_type))
-    result = length(alert_ies_route_types -- ies_route_types) > length(alert_ies_route_types)
+    alert_ies_route_types = Enum.map(alert.informed_entities, &(&1.route_type)) |> Enum.uniq()
+    ies_route_types = Enum.map(ies, &(&1.route_type)) |> Enum.uniq()
+    result = length(alert_ies_route_types -- ies_route_types) < length(alert_ies_route_types)
     Map.put(diagnostic, :matches_any_route_type?, result)
   end
 
