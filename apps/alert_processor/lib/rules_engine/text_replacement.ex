@@ -34,12 +34,13 @@ defmodule AlertProcessor.TextReplacement do
         {key, trips}
       end
 
-      replace_schedule(trip_mapping, alert)
+      trip_mapping
+      |> replace_schedule(alert)
+      |> Enum.reduce(alert, fn({k, v}, alert) ->
+        Map.put(alert, k, v)
+      end)
     else
-      %{
-        header: alert.header,
-        description: alert.description
-      }
+      alert
     end
   end
 
@@ -70,13 +71,13 @@ defmodule AlertProcessor.TextReplacement do
   end
 
   defp schedule_regex do
-    ~r/(?<train_number>\d{2,3})\s*\((?<time>\d{1,2}\:\d{2}\s*[a|p|A|P)][m|M])\sfrom\s(?<station>[\w\s]+)\)/
+    ~r/(?<train_number>\d{2,3})\s*\((?<time>\d{1,2}\:\d{2}\s*[aApP][mM])\sfrom\s(?<station>[\w\s\W]+)\)/
   end
 
   defp parse_target(text) when is_binary(text) do
     schedule_regex()
     |> Regex.scan(text)
-    |> Enum.with_index() # TODO: Handle no match
+    |> Enum.with_index()
     |> Enum.reduce(%{}, fn({[_, _train, time, station], index}, acc) ->
       Map.put(acc, index, {{station, parse_time(time)}, text})
     end)
@@ -91,7 +92,7 @@ defmodule AlertProcessor.TextReplacement do
       |> String.split(time_regex, trim: true)
       |> Enum.map(&String.to_integer/1)
 
-    if String.ends_with?(time_with_ampm, ["pm", "PM"]) do
+    if Regex.match?(~r/[pP][mM]/, time_with_ampm) do
       Time.from_erl!({hour + 12, minute, 0})
     else
       Time.from_erl!({hour + 12, minute, 0})

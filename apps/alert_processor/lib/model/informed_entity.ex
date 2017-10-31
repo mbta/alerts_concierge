@@ -8,12 +8,9 @@ defmodule AlertProcessor.Model.InformedEntity do
 
   @type facility_type :: :elevator | :escalator
   @type schedule :: %{
-    arrival_time: String.t,
     departure_time: String.t,
     stop_id: String.t,
-    route_id: String.t,
     trip_id: String.t,
-    stop_sequence: integer
   } | nil
 
   @type t :: %__MODULE__{

@@ -11,7 +11,7 @@ defmodule AlertProcessor.NotificationBuilder do
   @notification_time 86_400
 
   @doc """
-  Given a list of subsciptions, for each active_period in a given alert:
+  Given a user and their subscriptions, for each active_period in a given alert:
   1. Build notification with alert and user info
   2. Determine what time the notification should go out (send_after)
   3a. Determine whether or not to send notification based on user's vacation period
@@ -99,13 +99,13 @@ defmodule AlertProcessor.NotificationBuilder do
         {:error, _} ->
           result
         %DateTime{} = time ->
-          replaced_text = TextReplacement.replace_text(alert, subscriptions)
+          alert = TextReplacement.replace_text(alert, subscriptions)
           notification = %Notification{
               alert_id: alert.id,
               user: user,
-              header: replaced_text.header,
+              header: alert.header,
               service_effect: alert.service_effect,
-              description: replaced_text.description,
+              description: alert.description,
               phone_number: user.phone_number,
               email: user.email,
               status: :unsent,

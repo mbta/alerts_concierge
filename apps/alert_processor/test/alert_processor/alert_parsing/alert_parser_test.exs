@@ -128,12 +128,9 @@ defmodule AlertProcessor.AlertParserTest do
 
       assert length(result) > 0
       assert %{
-        arrival_time: _,
-        departure_time: _,
-        stop_id: _,
-        route_id: _,
-        trip_id: _,
-        stop_sequence: _
+        departure_time: "2017-10-26T08:52:00-04:00",
+        stop_id: "Newburyport",
+        trip_id: "CR-Saturday-Spring-17-1150",
       } = schedule
     end
   end

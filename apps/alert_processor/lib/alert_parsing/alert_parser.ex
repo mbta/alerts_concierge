@@ -193,12 +193,9 @@ defmodule AlertProcessor.AlertParser do
 
   defp parse_schedule_stop(stop) do
     %{
-      arrival_time: stop["attributes"]["arrival_time"],
       departure_time: stop["attributes"]["departure_time"],
       stop_id: stop["relationships"]["stop"]["data"]["id"],
-      route_id: stop["relationships"]["route"]["data"]["id"],
-      trip_id: stop["relationships"]["trip"]["data"]["id"],
-      stop_sequence: stop["attributes"]["stop_sequence"]
+      trip_id: stop["relationships"]["trip"]["data"]["id"]
     }
   end
 
