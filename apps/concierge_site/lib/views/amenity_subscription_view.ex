@@ -15,9 +15,10 @@ defmodule ConciergeSite.AmenitySubscriptionView do
     |> Enum.map(fn(amenity) ->
       amenity
       |> Atom.to_string()
+      |> String.replace("_", " ")
       |> String.capitalize()
     end)
-    |> Enum.join(" & ")
+    |> AlertProcessor.Helpers.StringHelper.and_join()
   end
 
   @doc """

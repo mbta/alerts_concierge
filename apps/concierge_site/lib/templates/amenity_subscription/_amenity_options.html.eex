@@ -11,8 +11,9 @@
                    unchecked_value: nil,
                    class: "subscription-day-checkbox",
                    checked: Enum.member?(@checked, "elevator") %>
-      Elevators
+      Elevators and step-free access
     </label>
+    <br/>
     <label>
       <%= checkbox @form,
                    :escalator,
@@ -22,6 +23,28 @@
                    class: "subscription-day-checkbox",
                    checked: Enum.member?(@checked, "escalator") %>
       Escalators
+    </label>
+    <br/>
+    <label>
+      <%= checkbox @form,
+                   :parking_area,
+                   name: "subscription[amenities][]",
+                   checked_value: "parking_area",
+                   unchecked_value: nil,
+                   class: "subscription-day-checkbox",
+                   checked: Enum.member?(@checked, "parking_area") %>
+      Parking
+    </label>
+    <br/>
+    <label>
+      <%= checkbox @form,
+                   :bike_storage,
+                   name: "subscription[amenities][]",
+                   checked_value: "bike_storage",
+                   unchecked_value: nil,
+                   class: "subscription-day-checkbox",
+                   checked: Enum.member?(@checked, "bike_storage") %>
+      Bike Storage
     </label>
   </div>
 </div>

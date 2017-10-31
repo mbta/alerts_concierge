@@ -9,18 +9,27 @@ defmodule AlertProcessor.Helpers.StringHelper do
   and no commas for 2 words.
   """
   @spec or_join([String.t]) :: String.t
-  def or_join(str \\ "", words)
-  def or_join(str, []), do: str
-  def or_join("", [str]), do: str
-  def or_join("", [x, y]), do: "#{x} or #{y}"
-  def or_join(str, [h]) do
-    "#{str}, or #{h}"
+  def or_join(str \\ "", words), do: do_formatted_join(str, words, "or")
+
+  @doc """
+  and_join takes an array of strings and concats with commas and
+  adds an and before the last word. Will only join with a single and
+  and no commas for 2 words.
+  """
+  @spec and_join([String.t]) :: String.t
+  def and_join(str \\ "", words), do: do_formatted_join(str, words, "and")
+
+  defp do_formatted_join(str, [], _), do: str
+  defp do_formatted_join("", [str], _), do: str
+  defp do_formatted_join("", [x, y], joiner), do: "#{x} #{joiner} #{y}"
+  defp do_formatted_join(str, [h], joiner) do
+    "#{str}, #{joiner} #{h}"
   end
-  def or_join("", [h | t]) do
-    or_join(h, t)
+  defp do_formatted_join("", [h | t], joiner) do
+    do_formatted_join(h, t, joiner)
   end
-  def or_join(str, [h | t]) do
-    or_join("#{str}, #{h}", t)
+  defp do_formatted_join(str, [h | t], joiner) do
+    do_formatted_join("#{str}, #{h}", t, joiner)
   end
 
   @doc """

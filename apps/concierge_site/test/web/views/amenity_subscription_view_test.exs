@@ -20,12 +20,12 @@ defmodule ConciergeSite.AmenitySubscriptionViewTest do
   }
 
   describe "amenity_facility_type/1" do
-    test "it returns ampersand separated list of amenities" do
+    test "it returns and separated list of amenities" do
       result =
         @subscription
         |> AmenitySubscriptionView.amenity_facility_type()
         |> IO.iodata_to_binary
-      assert result == "Escalator & Elevator"
+      assert result == "Escalator and Elevator"
     end
   end
 
