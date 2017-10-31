@@ -70,6 +70,11 @@ defmodule AlertProcessor.Subscription.AmenitiesMapperTest do
         match?(%InformedEntity{facility_type: :portable_boarding_lift, stop: "place-north", activities: ["USING_WHEELCHAIR"]}, informed_entity)
       end)
       assert north_station_entities_count == 1
+      north_station_entities_count =
+        Enum.count(informed_entities, fn(informed_entity) ->
+          match?(%InformedEntity{facility_type: :elevated_subplatform, stop: "place-north", activities: ["USING_WHEELCHAIR"]}, informed_entity)
+        end)
+      assert north_station_entities_count == 1
 
       south_station_entities_count =
         Enum.count(informed_entities, fn(informed_entity) ->
@@ -81,18 +86,6 @@ defmodule AlertProcessor.Subscription.AmenitiesMapperTest do
         match?(%InformedEntity{facility_type: :portable_boarding_lift, stop: "place-sstat", activities: ["USING_WHEELCHAIR"]}, informed_entity)
       end)
       assert south_station_entities_count == 1
-    end
-  end
-
-  describe "elevated_subplatform" do
-    test "creates expected entities" do
-      {:ok, [{_subscription, informed_entities}]} = AmenitiesMapper.map_subscriptions(Map.put(@params, "amenities", ["elevated_subplatform"]))
-      north_station_entities_count =
-        Enum.count(informed_entities, fn(informed_entity) ->
-          match?(%InformedEntity{facility_type: :elevated_subplatform, stop: "place-north", activities: ["USING_WHEELCHAIR"]}, informed_entity)
-        end)
-      assert north_station_entities_count == 1
-
       south_station_entities_count =
         Enum.count(informed_entities, fn(informed_entity) ->
           match?(%InformedEntity{facility_type: :elevated_subplatform, stop: "place-sstat", activities: ["USING_WHEELCHAIR"]}, informed_entity)

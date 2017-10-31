@@ -60,21 +60,27 @@ defmodule AlertProcessor.Subscription.Mapper do
 
   defp map_amenity(:elevator, route, nil) do
     [
-      %InformedEntity{route: String.capitalize(route), facility_type: :elevator, activities: map_amenity_activities(:elevator)},
-      %InformedEntity{route: String.capitalize(route), facility_type: :portable_boarding_lift, activities: map_amenity_activities(:elevator)}
+      %{map_base_amenity(:elevator) | route: String.capitalize(route)},
+      %{map_base_amenity(:portable_boarding_lift) | route: String.capitalize(route)},
+      %{map_base_amenity(:elevated_subplatform) | route: String.capitalize(route)},
     ]
   end
   defp map_amenity(:elevator, nil, stop) do
     [
-      %InformedEntity{stop: stop, facility_type: :elevator, activities: map_amenity_activities(:elevator)},
-      %InformedEntity{stop: stop, facility_type: :portable_boarding_lift, activities: map_amenity_activities(:elevator)}
+      %{map_base_amenity(:elevator) | stop: stop},
+      %{map_base_amenity(:portable_boarding_lift) | stop: stop},
+      %{map_base_amenity(:elevated_subplatform) | stop: stop}
     ]
   end
   defp map_amenity(amenity_type, route, nil) do
-    [%InformedEntity{route: String.capitalize(route), facility_type: amenity_type, activities: map_amenity_activities(amenity_type)}]
+    [%{map_base_amenity(amenity_type) | route: String.capitalize(route)}]
   end
   defp map_amenity(amenity_type, nil, stop) do
-    [%InformedEntity{stop: stop, facility_type: amenity_type, activities: map_amenity_activities(amenity_type)}]
+    [%{map_base_amenity(amenity_type) | stop: stop}]
+  end
+
+  defp map_base_amenity(facility_type) do
+    %InformedEntity{facility_type: facility_type, activities: map_amenity_activities(facility_type)}
   end
 
   defp map_amenity_activities(:elevator), do: ["USING_WHEELCHAIR"]
