@@ -11,8 +11,8 @@ defmodule ConciergeSite.Admin.SubscriptionSearchView do
     end
   end
 
-  defp success(body, class \\ nil) do
-    content_tag(:div, class: "diagnostic-result#{class} success") do
+  defp success(body) do
+    content_tag(:div, class: "diagnostic-result success") do
       [
         content_tag(:i, "", class: "fa fa-check-circle diagnostic-check-success"),
         " ",
@@ -33,9 +33,9 @@ defmodule ConciergeSite.Admin.SubscriptionSearchView do
 
   def do_not_disturb_result(snapshot) do
     if snapshot.passes_do_not_disturb? do
-      success("Alert was not filtered by do_not_disturb")
+      success("Alert was not filtered by do not disturb period")
     else
-      failure("Alert was filtered by do_not_disturb")
+      failure("Alert was filtered by do not disturb period")
     end
   end
 
@@ -43,7 +43,7 @@ defmodule ConciergeSite.Admin.SubscriptionSearchView do
     if snapshot.passes_vacation_period? do
       success("Alert was not filtered by vacation period")
     else
-      failure("Alert was filtered by vacation_period")
+      failure("Alert was filtered by vacation period")
     end
   end
 
@@ -73,7 +73,7 @@ defmodule ConciergeSite.Admin.SubscriptionSearchView do
 
   def informed_entity_result(snapshot) do
     if snapshot.passed_informed_entity_filter? do
-      success("Alert entities match subcription")
+      success("Alert entities match subscription")
     else
       failure([
         "Alert entities do not match subscription:",
@@ -93,7 +93,7 @@ defmodule ConciergeSite.Admin.SubscriptionSearchView do
 
   defp direction_result(snapshot) do
     if snapshot.matches_any_direction? do
-      success("At least 1 direction matches", "-entity")
+      success("At least 1 direction matches")
     else
       failure("No direction matches")
     end
@@ -101,7 +101,7 @@ defmodule ConciergeSite.Admin.SubscriptionSearchView do
 
   defp facility_result(snapshot) do
     if snapshot.matches_any_facility? do
-      success("At least 1 facility type matches", "-entity")
+      success("At least 1 facility type matches")
     else
       failure("No facility type matches")
     end
@@ -109,31 +109,31 @@ defmodule ConciergeSite.Admin.SubscriptionSearchView do
 
   defp route_result(snapshot) do
     if snapshot.matches_any_route? do
-      success("At least 1 route matches", "-entity")
+      success("At least 1 route matches")
     else
       failure("No route matches")
     end
   end
 
   defp route_type_result(snapshot) do
-    if snapshot.matches_any_direction? do
-      success("At least 1 route_type matches", "-entity")
+    if snapshot.matches_any_route_type? do
+      success("At least 1 route type matches")
     else
-      failure("No route_type matches")
+      failure("No route type matches")
     end
   end
 
   defp stop_result(snapshot) do
     if snapshot.matches_any_stop? do
-      success("At least 1 stop matches", "-entity")
+      success("At least 1 stop matches")
     else
       failure("No stop matches")
     end
   end
 
   defp trip_result(snapshot) do
-    if snapshot.matches_any_direction? do
-      success("At least 1 trip matches", "-entity")
+    if snapshot.matches_any_trip? do
+      success("At least 1 trip matches")
     else
       failure("No trip matches")
     end

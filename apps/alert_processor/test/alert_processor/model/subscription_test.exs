@@ -335,6 +335,42 @@ defmodule AlertProcessor.Model.SubscriptionTest do
       assert MapSet.new(sub_version.meta["informed_entity_version_ids"]) ==
         MapSet.new(informed_entity_version_ids)
     end
+
+    test "creates round_trip subscription and informed entities from Ecto.Multi" do
+      user = insert(:user)
+      {:ok, [info1, info2 | _]} = BusMapper.map_subscription(Map.put(@params, "trip_type", "round_trip"))
+      multi = Mapper.build_subscription_transaction([info1, info2], user, user.id)
+      Subscription.set_versioned_subscription(multi)
+
+      assert [sub1, sub2 | _] = Subscription |> Repo.all() |> Repo.preload(:informed_entities)
+      refute length(sub1.informed_entities) == 0
+      refute length(sub2.informed_entities) == 0
+    end
+
+    test "associates versions of informed entities with version of round_trip subscription" do
+      user = insert(:user)
+      {:ok, [info1, info2 | _]} = BusMapper.map_subscription(Map.put(@params, "trip_type", "round_trip"))
+      multi = Mapper.build_subscription_transaction([info1, info2], user, user.id)
+      Subscription.set_versioned_subscription(multi)
+
+      [sub1, sub2 | _] = Subscription |> Repo.all() |> Repo.preload(:informed_entities)
+
+      sub_version1 = PaperTrail.get_version(sub1)
+      informed_entity_version_ids = Enum.map(sub1.informed_entities, fn(ie) ->
+        PaperTrail.get_version(ie).id
+      end)
+
+      assert MapSet.new(sub_version1.meta["informed_entity_version_ids"]) ==
+        MapSet.new(informed_entity_version_ids)
+
+      sub_version2 = PaperTrail.get_version(sub2)
+      informed_entity_version_ids = Enum.map(sub2.informed_entities, fn(ie) ->
+        PaperTrail.get_version(ie).id
+      end)
+
+      assert MapSet.new(sub_version2.meta["informed_entity_version_ids"]) ==
+        MapSet.new(informed_entity_version_ids)
+    end
   end
 
   describe "update_subscription" do

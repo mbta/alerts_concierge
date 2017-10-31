@@ -120,7 +120,7 @@ defmodule AlertProcessor.Model.Subscription do
   def set_versioned_subscription(multi) do
     result = Repo.transaction(fn ->
       with {:ok, result} <- Repo.transaction(multi),
-        {:ok, _} <- associate_informed_entity_versions(result) do
+        :ok <- associate_informed_entity_versions(result) do
           :ok
       else
         _ -> Repo.rollback(:undo_multi)
@@ -135,9 +135,19 @@ defmodule AlertProcessor.Model.Subscription do
 
   defp associate_informed_entity_versions(result) do
     data = Map.to_list(result)
-    sub_version = get_sub_version(data)
-    ie_version_ids = get_ie_version_ids(data)
+    sub_versions = get_sub_version(data)
 
+    for sub_version <- sub_versions do
+      do_associate_informed_entity_versions(data, sub_version)
+    end
+    :ok
+  end
+
+  defp do_associate_informed_entity_versions(data, {sub_index, sub_version}) do
+    do_associate_informed_entity_versions(data, sub_version, sub_index)
+  end
+  defp do_associate_informed_entity_versions(data, sub_version, sub_index \\ nil) do
+    ie_version_ids = get_ie_version_ids(data, sub_index)
     sub_version_changeset = Ecto.Changeset.cast(
       sub_version,
       %{meta: Map.merge(sub_version.meta, %{informed_entity_version_ids: ie_version_ids})},
@@ -148,17 +158,32 @@ defmodule AlertProcessor.Model.Subscription do
   end
 
   defp get_sub_version(data) do
-    {_, %{version: sub_version}} = Enum.find(data, fn({name, _}) ->
+    data
+    |> Enum.filter(fn({name, _}) ->
       :subscription == elem(name, 0)
     end)
-
-    sub_version
+    |> Enum.map(fn({name, %{version: sub_version}}) ->
+      case name do
+        {:subscription, sub_index} ->
+          {sub_index, sub_version}
+          _ -> sub_version
+      end
+    end)
   end
 
-  defp get_ie_version_ids(data) do
+  defp get_ie_version_ids(data, nil) do
     data
     |> Enum.filter(fn({name, _data}) ->
       :new_informed_entity == elem(name, 0)
+    end)
+    |> Enum.map(fn({_name, %{version: %{id: id}}}) ->
+      id
+    end)
+  end
+  defp get_ie_version_ids(data, sub_index) do
+    data
+    |> Enum.filter(fn({name, _data}) ->
+      :new_informed_entity == elem(name, 0) && sub_index == elem(name, 1)
     end)
     |> Enum.map(fn({_name, %{version: %{id: id}}}) ->
       id
