@@ -2,7 +2,6 @@ defmodule AlertProcessor.Model.UserTest do
   use AlertProcessor.DataCase
   import AlertProcessor.Factory
   alias AlertProcessor.Model.User
-  alias ConciergeSite.Auth.Token
 
   @valid_attrs %{email: "email@test.com", role: "user", password: "password1"}
   @valid_account_attrs %{
@@ -159,42 +158,6 @@ defmodule AlertProcessor.Model.UserTest do
     test "email is not case sensitive" do
       Repo.insert!(%User{email: "test@email.com", role: "application_administration", encrypted_password: @encrypted_password})
       assert {:ok, _} = User.authenticate_admin(%{"email" => "TEST@EMAIL.COM", "password" => @password})
-    end
-  end
-
-  describe "claims_with_permission/3" do
-    test "encodes the admin user's claims with permission" do
-      admin_user = insert(:user, role: "application_administration")
-      {:ok, token, _} = Token.issue(admin_user)
-      {:ok, claims} = Guardian.decode_and_verify(token)
-      new_claims =
-        claims
-        |> User.claims_with_permission(claims, admin_user)
-        |> Guardian.Permissions.from_claims()
-        |> Guardian.Permissions.to_list()
-      assert [:reset_password, :unsubscribe, :disable_account, :full_permissions, :manage_subscriptions] == new_claims
-    end
-
-    test "encodes the user's claims with previous permission" do
-      user = insert(:user)
-      {:ok, token, _} = Token.issue(user, [:disable_account])
-      {:ok, prev_claims} = Guardian.decode_and_verify(token)
-      {:ok, _, refreshed_claims} = Guardian.refresh!(token, prev_claims, %{ttl: {60, :minutes}})
-      new_claims =
-        prev_claims
-        |> User.claims_with_permission(refreshed_claims, user)
-        |> Guardian.Permissions.from_claims()
-        |> Guardian.Permissions.to_list()
-      assert [:disable_account] == new_claims
-    end
-
-    test "replaces empty permissions with default permissions" do
-      user = insert(:user)
-      {:ok, token, _} = Token.issue(user)
-      {:ok, prev_claims} = Guardian.decode_and_verify(token)
-      {:ok, _, refreshed_claims} = Guardian.refresh!(token, prev_claims, %{ttl: {60, :minutes}})
-      %{"pem" => %{"default" => permission_number}} = User.claims_with_permission(Map.put(prev_claims, "pem", %{}), refreshed_claims, user)
-      assert Guardian.Permissions.max == permission_number
     end
   end
 

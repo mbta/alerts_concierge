@@ -12,8 +12,12 @@ defmodule ConciergeSite.Plugs.TokenRefreshTest do
       conn
       |> TokenLogin.call(%{})
     refreshed_conn = TokenRefresh.call(conn, %{})
+    new_token = get_session(conn, "guardian_default")
     refute refreshed_conn == conn
-    refute get_session(refreshed_conn, "guardian_default") == get_session(conn, "guardian_default")
+    refute get_session(refreshed_conn, "guardian_default") == new_token
+    {:ok, old_claims} = Guardian.decode_and_verify(token)
+    {:ok, new_claims} = Guardian.decode_and_verify(new_token)
+    assert Map.take(old_claims, ["pem", "sub"]) == Map.take(new_claims, ["pem", "sub"])
   end
 
   test "it does nothing if the token expires more than fifteen minutes from now", %{conn: conn} do

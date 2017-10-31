@@ -6,7 +6,6 @@ defmodule ConciergeSite.Plugs.TokenRefresh do
   """
   import Plug.Conn
   import Guardian.Plug
-  import AlertProcessor.Model.User, only: [claims_with_permission: 3]
   @behaviour Plug
 
   def init(opts), do: opts
@@ -14,22 +13,17 @@ defmodule ConciergeSite.Plugs.TokenRefresh do
   def call(conn, _) do
     with token <- get_session(conn, "guardian_default"),
          {:ok, claims} <- Guardian.decode_and_verify(token),
-         true <- token_expires_within_fifteen_minutes?(claims),
-         {:ok, new_token, new_claims} <- Guardian.refresh!(token, claims, %{ttl: {24, :hours}}) do
-      current_user = current_resource(conn)
-      new_claims = claims_with_permission(claims, new_claims, current_user)
-      key = Map.get(new_claims, :key, :default)
+         true <- token_expires_within_fifteen_minutes?(claims) do
 
-      conn
-      |> configure_session(renew: true)
-      |> put_session(Guardian.Keys.base_key(key), new_token)
-      |> set_current_resource(current_user, key)
-      |> set_claims({:ok, new_claims}, key)
-      |> set_current_token(new_token, key)
+      current_user = current_resource(conn)
+      sign_in(conn, current_user, :access, perms: map_permissions(claims["pem"]))
     else
       _ -> conn
     end
   end
+
+  defp map_permissions(%{"admin" => admin, "default" => default}), do: %{admin: admin, default: default}
+  defp map_permissions(%{"default" => default}), do: %{default: default}
 
   defp token_expires_within_fifteen_minutes?(%{"exp" => exp}) do
     now = DateTime.utc_now() |> DateTime.to_unix()
