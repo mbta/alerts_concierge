@@ -3,6 +3,7 @@ defmodule AlertProcessor.TextReplacementTest do
   import AlertProcessor.Factory
   alias AlertProcessor.{Model, TextReplacement}
   alias Model.{Alert, InformedEntity, Subscription}
+  doctest TextReplacement
 
   setup do
     user = insert(:user)
@@ -85,6 +86,58 @@ defmodule AlertProcessor.TextReplacementTest do
       }
 
       assert TextReplacement.replace_text(alert, [sub]) == Map.merge(alert, expected)
+    end
+  end
+
+  describe "parse_target/1" do
+    test "when passed invalid parameters" do
+      assert TextReplacement.parse_target(nil) == %{}
+      assert TextReplacement.parse_target([]) == %{}
+    end
+
+    test "parses train 2-4 digit train numbers, with/wihout spaces" do
+      first = "Lowell line 12(11:20am from Lowell)"
+      second = "Lowell line 123(11:20am from Lowell)"
+      third = "Lowell line 1234(11:20am from Lowell)"
+      fourth = "Lowell line 123 (11:20am from Lowell)"
+
+      assert TextReplacement.parse_target(first) == %{0 => {{"Lowell", ~T[11:20:00]}, first}}
+      assert TextReplacement.parse_target(second) == %{0 => {{"Lowell", ~T[11:20:00]}, second}}
+      assert TextReplacement.parse_target(third) == %{0 => {{"Lowell", ~T[11:20:00]}, third}}
+      assert TextReplacement.parse_target(fourth) == %{0 => {{"Lowell", ~T[11:20:00]}, fourth}}
+    end
+
+    test "parses time" do
+      first = "Lowell line 12 (11:20am from Lowell)"
+      second = "Lowell line 12 (11:20 AM from Lowell)"
+      third = "Lowell line 12 (11:20 PM from Lowell)"
+      fourth = "Lowell line 12 (11:20PM from Lowell)"
+
+      assert TextReplacement.parse_target(first) == %{0 => {{"Lowell", ~T[11:20:00]}, first}}
+      assert TextReplacement.parse_target(second) == %{0 => {{"Lowell", ~T[11:20:00]}, second}}
+      assert TextReplacement.parse_target(third) == %{0 => {{"Lowell", ~T[23:20:00]}, third}}
+      assert TextReplacement.parse_target(fourth) == %{0 => {{"Lowell", ~T[23:20:00]}, fourth}}
+    end
+
+    test "parse station" do
+      first = "Lowell line 12 (11:20am from Anderson/Woburn)"
+      second = "Lowell line 12 (11:20am from Lowell)"
+      third = "Lowell line 12 (11:20am from Anderson / Woburn)"
+      fourth = "Lowell line 12 (11:20am from Anderson/ Woburn)"
+
+      assert TextReplacement.parse_target(first) == %{0 => {{"Anderson/Woburn", ~T[11:20:00]}, first}}
+      assert TextReplacement.parse_target(second) == %{0 => {{"Lowell", ~T[11:20:00]}, second}}
+      assert TextReplacement.parse_target(third) == %{0 => {{"Anderson / Woburn", ~T[11:20:00]}, third}}
+      assert TextReplacement.parse_target(fourth) == %{0 => {{"Anderson/ Woburn", ~T[11:20:00]}, fourth}}
+    end
+
+    test "parses multiple matches" do
+      text = "Lowell line 12 (11:20am from Anderson/Woburn) and Rockport line 456 (2:30pm from South Station)"
+
+      assert TextReplacement.parse_target(text) == %{
+        0 => {{"Anderson/Woburn", ~T[11:20:00]}, text},
+        1 => {{"South Station", ~T[14:30:00]}, text}
+      }
     end
   end
 end

@@ -71,10 +71,18 @@ defmodule AlertProcessor.TextReplacement do
   end
 
   defp schedule_regex do
-    ~r/(?<train_number>\d{2,3})\s*\((?<time>\d{1,2}\:\d{2}\s*[aApP][mM])\sfrom\s(?<station>[\w\s\W]+)\)/
+    ~r/(?<train_number>\d{2,4})\s*\((?<time>\d{1,2}\:\d{2}\s*[aApP][mM])\sfrom\s(?<station>[\w\s\W]+)\)/U
   end
 
-  defp parse_target(text) when is_binary(text) do
+  @doc """
+  Takes a string and returns a map of matches, where the key is the order index (first match is 0, second is 1 etc),
+  and the value is a tuple of the following structure:
+  {{station_name, time}, match}. Example:
+
+      iex> AlertProcessor.TextReplacement.parse_target("Lowell line 123 (11:20am from South Station)")
+      %{0 => {{"South Station", ~T[11:20:00]}, "Lowell line 123 (11:20am from South Station)"}}
+  """
+  def parse_target(text) when is_binary(text) do
     schedule_regex()
     |> Regex.scan(text)
     |> Enum.with_index()
@@ -82,7 +90,7 @@ defmodule AlertProcessor.TextReplacement do
       Map.put(acc, index, {{station, parse_time(time)}, text})
     end)
   end
-  defp parse_target(_), do: %{}
+  def parse_target(_), do: %{}
 
   defp parse_time(time_with_ampm) do
     time_regex = ~r/\:|\s*[aApP][mM]/
@@ -95,7 +103,7 @@ defmodule AlertProcessor.TextReplacement do
     if Regex.match?(~r/[pP][mM]/, time_with_ampm) do
       Time.from_erl!({hour + 12, minute, 0})
     else
-      Time.from_erl!({hour + 12, minute, 0})
+      Time.from_erl!({hour, minute, 0})
     end
   end
 
