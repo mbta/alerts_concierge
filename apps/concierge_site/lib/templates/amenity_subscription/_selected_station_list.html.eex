@@ -1,7 +1,0 @@
-<div class="selected-entity-list js">
-  <%= for {station_name, _} <- @stations do %>
-    <%= button to: "#", class: "btn btn-sm btn-selected-entity" do %>
-      <%= station_name %>&nbsp;<i class="fa fa-times" aria-hidden="true"></i>
-    <% end %>
-  <% end %>
-</div>

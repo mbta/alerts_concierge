@@ -34,6 +34,30 @@ defmodule ConciergeSite.BusSubscriptionControllerTest do
       assert html_response(conn, 200) =~ "Info"
     end
 
+    test "GET /subscriptions/bus/new/info with values already set", %{conn: conn}  do
+      params = %{
+        "departure_end" => "08:30:00",
+        "departure_start" => "08:00:00",
+        "routes" => ["741 - 0", "742 - 0"],
+        "saturday" => false,
+        "sunday" => false,
+        "trip_type" => "one_way",
+        "weekday" => true
+      }
+      user = Repo.insert!(%User{email: "test@email.com",
+                                role: "user",
+                                encrypted_password: @encrypted_password})
+      conn = user
+      |> guardian_login(conn)
+      |> get("/subscriptions/bus/new/info", params)
+
+      assert html_response(conn, 200) =~ "Which bus routes do you take?"
+      assert html_response(conn, 200) =~ "<option selected=\"selected\" value=\"741 - 0\">"
+      assert html_response(conn, 200) =~ "<option selected=\"selected\" value=\"742 - 0\">"
+      assert html_response(conn, 200) =~ "<option value=\"742 - 1\">"
+      refute html_response(conn, 200) =~ "<option selected=\"selected\" value=\"742 - 1\">"
+    end
+
     test "POST /subscriptions/bus/new/preferences with a valid submission", %{conn: conn, user: user} do
       params = %{"subscription" => %{
         "departure_start" => "08:45:00",

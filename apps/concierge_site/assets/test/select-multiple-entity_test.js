@@ -23,15 +23,17 @@ describe("selectMultipleEntity", function() {
   describe("clicking on a chosen station", () => {
     it("removes the button from the list", () => {
       const $stationInput = $("input.subscription-select-entity-input");
+      let list = $('.selected-entity-list');
+      assert.lengthOf(list.first().children(), 1);
+
       $stationInput.val("Central");
       simulateKeyUp($stationInput[0]);
       let suggestions = $(".entity-suggestion");
       $(".entity-suggestion").first().mousedown();
+      assert.lengthOf(list.first().children(), 2);
       $(".btn-selected-entity").first().mousedown();
 
-      let list = $('.selected-entity-list')
-
-      assert.lengthOf(list.first().children(), 0)
+      assert.lengthOf(list.first().children(), 1)
     })
   });
 
@@ -117,7 +119,8 @@ describe("selectMultipleEntity", function() {
 
       const $selectedStations = $(".btn-selected-entity")
 
-      assert.equal($selectedStations[0].textContent.trim(), "Quincy Center")
+      assert.equal($selectedStations[0].textContent.trim(), "Bellevue")
+      assert.equal($selectedStations[1].textContent.trim(), "Quincy Center")
     });
   });
 
@@ -128,6 +131,14 @@ describe("selectMultipleEntity", function() {
 
       assert.lengthOf($suggestionContainers, 1);
       assert.lengthOf($stationInput, 1);
+    });
+
+    it("renders pre-selected options", () => {
+      const $selectedEntityList = $(".btn-selected-entity");
+      const selectedEntityText = $selectedEntityList.text().trim();
+
+      assert.lengthOf($selectedEntityList, 1);
+      assert.equal($selectedEntityList[0].textContent.trim(), "Bellevue")
     });
   });
 
@@ -191,7 +202,8 @@ describe("selectMultipleEntity", function() {
       $(".entity-suggestion").first().mousedown();
       const $selectedStations = $(".btn-selected-entity")
 
-      assert.equal($selectedStations[0].textContent.trim(), "Central Square")
+      assert.equal($selectedStations[0].textContent.trim(), "Bellevue");
+      assert.equal($selectedStations[1].textContent.trim(), "Central Square");
     });
 
     it("removes the option from the possible suggestions", () => {
@@ -239,7 +251,7 @@ describe("selectMultipleEntity", function() {
             </optgroup>
             <optgroup label="Needham Line">
               <option value="place-rggl">Ruggles</option>
-              <option value="place-bellevue">Bellevue</option>
+              <option selected="selected" value="place-bellevue">Bellevue</option>
             </optgroup>
           </select>
           <div class="selected-entity-list"></div>

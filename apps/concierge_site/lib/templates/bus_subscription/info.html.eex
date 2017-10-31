@@ -30,11 +30,6 @@
     </div>
 
     <div class="selected-entity-list">
-      <%= for {route_name, _} <- @selected_routes do %>
-        <%= button to: "#", class: "btn btn-sm btn-selected-entity" do %>
-          <%= route_name %>&nbsp;<i class="fa fa-times" aria-hidden="true"></i>
-        <% end %>
-      <% end %>
     </div>
 
     <%= render "_travel_days_checkboxes.html",

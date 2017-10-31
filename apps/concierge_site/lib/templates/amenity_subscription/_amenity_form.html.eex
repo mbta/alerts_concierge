@@ -9,9 +9,7 @@
           select_options: @station_select_options,
           selected_station_options: Map.get(@selected_options, :stations, []) %>
 
-  <%= render "_selected_station_list.html",
-            stations: Map.get(@selected_options, :stations, []),
-            action: @action %>
+  <div class="selected-entity-list"></div>
 
   <%= render "_subway_line_select.html",
             form: @f,
