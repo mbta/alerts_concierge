@@ -33,9 +33,9 @@ defmodule ConciergeSite.Admin.SubscriptionSearchView do
 
   def do_not_disturb_result(snapshot) do
     if snapshot.passes_do_not_disturb? do
-      success("Alert was not filtered by do_not_disturb")
+      success("Alert was not filtered by do not disturb period")
     else
-      failure("Alert was filtered by do_not_disturb")
+      failure("Alert was filtered by do not disturb period")
     end
   end
 
@@ -43,7 +43,7 @@ defmodule ConciergeSite.Admin.SubscriptionSearchView do
     if snapshot.passes_vacation_period? do
       success("Alert was not filtered by vacation period")
     else
-      failure("Alert was filtered by vacation_period")
+      failure("Alert was filtered by vacation period")
     end
   end
 
@@ -73,7 +73,7 @@ defmodule ConciergeSite.Admin.SubscriptionSearchView do
 
   def informed_entity_result(snapshot) do
     if snapshot.passed_informed_entity_filter? do
-      success("Alert entities match subcription")
+      success("Alert entities match subscription")
     else
       failure([
         "Alert entities do not match subscription:",
@@ -117,9 +117,9 @@ defmodule ConciergeSite.Admin.SubscriptionSearchView do
 
   defp route_type_result(snapshot) do
     if snapshot.matches_any_route_type? do
-      success("At least 1 route_type matches")
+      success("At least 1 route type matches")
     else
-      failure("No route_type matches")
+      failure("No route type matches")
     end
   end
 
