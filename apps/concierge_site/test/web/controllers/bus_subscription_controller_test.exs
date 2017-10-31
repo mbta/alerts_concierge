@@ -52,6 +52,10 @@ defmodule ConciergeSite.BusSubscriptionControllerTest do
       |> get("/subscriptions/bus/new/info", params)
 
       assert html_response(conn, 200) =~ "Which bus routes do you take?"
+      assert html_response(conn, 200) =~ "<option selected=\"selected\" value=\"741 - 0\">"
+      assert html_response(conn, 200) =~ "<option selected=\"selected\" value=\"742 - 0\">"
+      assert html_response(conn, 200) =~ "<option value=\"742 - 1\">"
+      refute html_response(conn, 200) =~ "<option selected=\"selected\" value=\"742 - 1\">"
     end
 
     test "POST /subscriptions/bus/new/preferences with a valid submission", %{conn: conn, user: user} do

@@ -56,14 +56,7 @@ defmodule ConciergeSite.BusSubscriptionController do
 
     case ServiceInfoCache.get_bus_info do
       {:ok, routes} ->
-        route_list_select_options = BusRoutes.route_list_select_options(routes)
-        subscription_params = Map.put_new(subscription_params, "routes", [])
-
-        render conn, "info.html",
-          token: token,
-          subscription_params: subscription_params,
-          route_list_select_options: route_list_select_options,
-          selected_routes: subscription_params["routes"]
+        render_info_page(conn, subscription_params, token, routes)
       _error ->
         conn
         |> put_flash(:error, "There was an error fetching route data. Please try again.")
@@ -100,22 +93,26 @@ defmodule ConciergeSite.BusSubscriptionController do
   defp handle_error_info_submission(conn, subscription_params, token, error_message) do
     case ServiceInfoCache.get_bus_info() do
       {:ok, routes} ->
-        route_list_select_options = BusRoutes.route_list_select_options(routes)
-        subscription_params = Map.put_new(subscription_params, "routes", [])
-
         conn
         |> put_flash(:error, error_message)
-        |> render(
-          "info.html",
-          token: token,
-          subscription_params: subscription_params,
-          route_list_select_options: route_list_select_options,
-          selected_routes: subscription_params["routes"]
-        )
+        |> render_info_page(subscription_params, token, routes)
       _error ->
         conn
         |> put_flash(:error, "There was an error fetching route data. Please try again.")
         |> render("new.html", token: token, subscription_params: subscription_params)
     end
+  end
+
+  defp render_info_page(conn, subscription_params, token, routes) do
+    route_list_select_options = BusRoutes.route_list_select_options(routes)
+    subscription_params = Map.put_new(subscription_params, "routes", [])
+
+    render(conn,
+      "info.html",
+      token: token,
+      subscription_params: subscription_params,
+      route_list_select_options: route_list_select_options,
+      selected_routes: subscription_params["routes"]
+    )
   end
 end
