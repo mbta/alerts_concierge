@@ -34,6 +34,11 @@ export default function($) {
 
     if (selectedStopIds) {
       state.selectedEntities = entities.filter((entity) => selectedStopIds.includes(entity.id));
+      const $stationListContainer = $('.selected-entity-list');
+      state.selectedEntities.map((entity) => {
+        const station = renderEntity(entity.name);
+        $stationListContainer.append(station);
+      });
     }
 
     state.selectableEntities = entities.filter((entity) => !selectedStopIds.includes(entity.id));

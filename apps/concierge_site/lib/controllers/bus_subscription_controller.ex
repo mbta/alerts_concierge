@@ -57,14 +57,13 @@ defmodule ConciergeSite.BusSubscriptionController do
     case ServiceInfoCache.get_bus_info do
       {:ok, routes} ->
         route_list_select_options = BusRoutes.route_list_select_options(routes)
-
-        subscription_params = Map.put(subscription_params, "routes", [])
+        subscription_params = Map.put_new(subscription_params, "routes", [])
 
         render conn, "info.html",
           token: token,
           subscription_params: subscription_params,
           route_list_select_options: route_list_select_options,
-          selected_routes: []
+          selected_routes: subscription_params["routes"]
       _error ->
         conn
         |> put_flash(:error, "There was an error fetching route data. Please try again.")
@@ -102,10 +101,7 @@ defmodule ConciergeSite.BusSubscriptionController do
     case ServiceInfoCache.get_bus_info() do
       {:ok, routes} ->
         route_list_select_options = BusRoutes.route_list_select_options(routes)
-        selected_routes =
-          Enum.filter(route_list_select_options, fn({_, option_value}) ->
-            Enum.member?(subscription_params["routes"], option_value)
-          end)
+        subscription_params = Map.put_new(subscription_params, "routes", [])
 
         conn
         |> put_flash(:error, error_message)
@@ -114,7 +110,7 @@ defmodule ConciergeSite.BusSubscriptionController do
           token: token,
           subscription_params: subscription_params,
           route_list_select_options: route_list_select_options,
-          selected_routes: selected_routes
+          selected_routes: subscription_params["routes"]
         )
       _error ->
         conn
