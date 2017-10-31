@@ -11,7 +11,7 @@
                    unchecked_value: nil,
                    class: "subscription-day-checkbox",
                    checked: Enum.member?(@checked, "elevator") %>
-      Elevators, Boarding Lifts, and Elevated Subplatforms
+      Elevators and step-free access
     </label>
     <br/>
     <label>
