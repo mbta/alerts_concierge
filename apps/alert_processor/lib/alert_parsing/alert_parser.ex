@@ -4,7 +4,9 @@ defmodule AlertProcessor.AlertParser do
   relevant information to subscription filter engine.
   """
   require Logger
-  alias AlertProcessor.{AlertCache, AlertsClient, Helpers.StringHelper, HoldingQueue, Parser, ServiceInfoCache, SubscriptionFilterEngine}
+  alias AlertProcessor.{AlertCache, AlertsClient, ApiClient,
+    Helpers.StringHelper, HoldingQueue, Parser, ServiceInfoCache,
+    SubscriptionFilterEngine}
   alias AlertProcessor.Model.{Alert, InformedEntity, Notification, SavedAlert}
 
   @behaviour Parser
@@ -163,17 +165,38 @@ defmodule AlertProcessor.AlertParser do
     |> Enum.map(&(&1.route_id))
   end
 
+  defp parse_trip(%{"trip_id" => trip_id}, %{"route_type" => 2}) do
+    with {:ok, schedule} <- ApiClient.schedule_for_trip(trip_id),
+    {:ok, trip_name} <- ServiceInfoCache.get_trip_name(trip_id),
+    parsed_schedule <- parse_schedule(schedule) do
+       %{trip: trip_name, schedule: parsed_schedule}
+    else
+     _ -> %{}
+   end
+  end
   defp parse_trip(%{"trip_id" => trip_id}, %{"route_type" => 4}) do
-     case ServiceInfoCache.get_generalized_trip_id(trip_id) do
-       {:ok, trip} -> %{trip: trip}
-       _ -> %{}
-     end
+    case ServiceInfoCache.get_generalized_trip_id(trip_id) do
+      {:ok, trip_name} -> %{trip: trip_name}
+      _ -> %{}
+    end
   end
   defp parse_trip(%{"trip_id" => trip_id}, _ie) do
     case ServiceInfoCache.get_trip_name(trip_id) do
       {:ok, trip_name} -> %{trip: trip_name}
       _ -> %{}
     end
+  end
+
+  defp parse_schedule(schedule) do
+    Enum.map(schedule, &parse_schedule_stop/1)
+  end
+
+  defp parse_schedule_stop(stop) do
+    %{
+      departure_time: stop["attributes"]["departure_time"],
+      stop_id: stop["relationships"]["stop"]["data"]["id"],
+      trip_id: stop["relationships"]["trip"]["data"]["id"]
+    }
   end
 
   defp parse_stop(stop_id) do

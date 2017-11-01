@@ -114,6 +114,27 @@ defmodule AlertProcessor.AlertParserTest do
     end
   end
 
+  test "adds schedule data to trip alerts" do
+    use_cassette "trip_alerts", custom: true, clear_mock: true, match_requests_on: [:query] do
+      AlertParser.process_alerts()
+
+      result =
+        AlertCache.get_alerts()
+        |> Enum.flat_map(& &1.informed_entities)
+        |> Enum.map(& &1.schedule)
+        |> Enum.reject(& is_nil(&1))
+
+      [schedule | _] = List.first(result)
+
+      assert length(result) > 0
+      assert %{
+        departure_time: "2017-10-26T08:52:00-04:00",
+        stop_id: "Newburyport",
+        trip_id: "CR-Saturday-Spring-17-1150",
+      } = schedule
+    end
+  end
+
   test "correctly parses bus stop alert to match bus route subscription" do
     user = insert(:user)
 
