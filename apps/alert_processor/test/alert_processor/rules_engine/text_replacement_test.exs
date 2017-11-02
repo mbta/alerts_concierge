@@ -81,8 +81,8 @@ defmodule AlertProcessor.TextReplacementTest do
       }
 
       expected = %{
-        header: "Newburyport Train (22:17 PM from Chelsea) has departed Newburyport 20-40 minutes late and will operate at a reduced speed due to a mechanical issue.",
-        description: "Affected trips: Newburyport Train (22:17 PM from Chelsea)"
+        header: "Newburyport Train 180 (22:17 pm from Chelsea) has departed Newburyport 20-40 minutes late and will operate at a reduced speed due to a mechanical issue.",
+        description: "Affected trips: Newburyport Train 180 (22:17 pm from Chelsea)"
       }
 
       assert TextReplacement.replace_text(alert, [sub]) == Map.merge(alert, expected)
@@ -101,10 +101,10 @@ defmodule AlertProcessor.TextReplacementTest do
       third = "Lowell line 1234(11:20am from Lowell)"
       fourth = "Lowell line 123 (11:20am from Lowell)"
 
-      assert TextReplacement.parse_target(first) == %{0 => {{"Lowell", ~T[11:20:00]}, first}}
-      assert TextReplacement.parse_target(second) == %{0 => {{"Lowell", ~T[11:20:00]}, second}}
-      assert TextReplacement.parse_target(third) == %{0 => {{"Lowell", ~T[11:20:00]}, third}}
-      assert TextReplacement.parse_target(fourth) == %{0 => {{"Lowell", ~T[11:20:00]}, fourth}}
+      assert TextReplacement.parse_target(first) == %{0 => {{"12", "Lowell", ~T[11:20:00]}, first}}
+      assert TextReplacement.parse_target(second) == %{0 => {{"123", "Lowell", ~T[11:20:00]}, second}}
+      assert TextReplacement.parse_target(third) == %{0 => {{"1234", "Lowell", ~T[11:20:00]}, third}}
+      assert TextReplacement.parse_target(fourth) == %{0 => {{"123", "Lowell", ~T[11:20:00]}, fourth}}
     end
 
     test "parses time" do
@@ -113,10 +113,10 @@ defmodule AlertProcessor.TextReplacementTest do
       third = "Lowell line 12 (11:20 PM from Lowell)"
       fourth = "Lowell line 12 (11:20PM from Lowell)"
 
-      assert TextReplacement.parse_target(first) == %{0 => {{"Lowell", ~T[11:20:00]}, first}}
-      assert TextReplacement.parse_target(second) == %{0 => {{"Lowell", ~T[11:20:00]}, second}}
-      assert TextReplacement.parse_target(third) == %{0 => {{"Lowell", ~T[23:20:00]}, third}}
-      assert TextReplacement.parse_target(fourth) == %{0 => {{"Lowell", ~T[23:20:00]}, fourth}}
+      assert TextReplacement.parse_target(first) == %{0 => {{"12", "Lowell", ~T[11:20:00]}, first}}
+      assert TextReplacement.parse_target(second) == %{0 => {{"12", "Lowell", ~T[11:20:00]}, second}}
+      assert TextReplacement.parse_target(third) == %{0 => {{"12", "Lowell", ~T[23:20:00]}, third}}
+      assert TextReplacement.parse_target(fourth) == %{0 => {{"12", "Lowell", ~T[23:20:00]}, fourth}}
     end
 
     test "parse station" do
@@ -125,18 +125,18 @@ defmodule AlertProcessor.TextReplacementTest do
       third = "Lowell line 12 (11:20am from Anderson / Woburn)"
       fourth = "Lowell line 12 (11:20am from Anderson/ Woburn)"
 
-      assert TextReplacement.parse_target(first) == %{0 => {{"Anderson/Woburn", ~T[11:20:00]}, first}}
-      assert TextReplacement.parse_target(second) == %{0 => {{"Lowell", ~T[11:20:00]}, second}}
-      assert TextReplacement.parse_target(third) == %{0 => {{"Anderson / Woburn", ~T[11:20:00]}, third}}
-      assert TextReplacement.parse_target(fourth) == %{0 => {{"Anderson/ Woburn", ~T[11:20:00]}, fourth}}
+      assert TextReplacement.parse_target(first) == %{0 => {{"12", "Anderson/Woburn", ~T[11:20:00]}, first}}
+      assert TextReplacement.parse_target(second) == %{0 => {{"12", "Lowell", ~T[11:20:00]}, second}}
+      assert TextReplacement.parse_target(third) == %{0 => {{"12", "Anderson / Woburn", ~T[11:20:00]}, third}}
+      assert TextReplacement.parse_target(fourth) == %{0 => {{"12", "Anderson/ Woburn", ~T[11:20:00]}, fourth}}
     end
 
     test "parses multiple matches" do
       text = "Lowell line 12 (11:20am from Anderson/Woburn) and Rockport line 456 (2:30pm from South Station)"
 
       assert TextReplacement.parse_target(text) == %{
-        0 => {{"Anderson/Woburn", ~T[11:20:00]}, text},
-        1 => {{"South Station", ~T[14:30:00]}, text}
+        0 => {{"12", "Anderson/Woburn", ~T[11:20:00]}, text},
+        1 => {{"456", "South Station", ~T[14:30:00]}, text}
       }
     end
   end
