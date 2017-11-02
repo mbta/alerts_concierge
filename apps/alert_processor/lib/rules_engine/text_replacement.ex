@@ -16,11 +16,11 @@ defmodule AlertProcessor.TextReplacement do
       trip_mapping = for {key, targets} <- match_targets, into: %{} do
         trips =
           targets
-          |> Enum.flat_map(fn({index, {target, _text}}) ->
-            trip = Map.get(stop_schedules, target)
+          |> Enum.flat_map(fn({index, {{train, stop, time}, _text}}) ->
+            trip = Map.get(stop_schedules, {stop, time})
             Enum.reduce(subscriptions, %{}, fn(sub, acc) ->
               case trip_schedules[{sub.origin, trip}] do
-                %Time{} = time -> Map.put(acc, index, {sub.origin, time})
+                %Time{} = time -> Map.put(acc, index, {train, sub.origin, time})
                 _ -> acc
               end
             end)
@@ -29,6 +29,8 @@ defmodule AlertProcessor.TextReplacement do
             {original, text} = match_targets[key][k]
             if original != replacement do
               {original, replacement, text}
+            else
+              {original, original, text}
             end
           end)
         {key, trips}
@@ -61,9 +63,11 @@ defmodule AlertProcessor.TextReplacement do
     end
   end
 
-  defp serialize({stop, time}) do
-    time_string = Strftime.strftime!(time, "%H:%M %p")
-    "(#{time_string} from #{stop})"
+  defp serialize({train, stop, time}) do
+    time_string = time
+      |> Strftime.strftime!("%k:%M %P")
+      |> String.trim_leading()
+    "#{train} (#{time_string} from #{stop})"
   end
 
   defp substitute(text, new) do
@@ -80,14 +84,14 @@ defmodule AlertProcessor.TextReplacement do
   {{station_name, time}, match}. Example:
 
       iex> AlertProcessor.TextReplacement.parse_target("Lowell line 123 (11:20am from South Station)")
-      %{0 => {{"South Station", ~T[11:20:00]}, "Lowell line 123 (11:20am from South Station)"}}
+      %{0 => {{"123", "South Station", ~T[11:20:00]}, "Lowell line 123 (11:20am from South Station)"}}
   """
   def parse_target(text) when is_binary(text) do
     schedule_regex()
     |> Regex.scan(text)
     |> Enum.with_index()
-    |> Enum.reduce(%{}, fn({[_, _train, time, station], index}, acc) ->
-      Map.put(acc, index, {{station, parse_time(time)}, text})
+    |> Enum.reduce(%{}, fn({[_, train, time, station], index}, acc) ->
+      Map.put(acc, index, {{train, station, parse_time(time)}, text})
     end)
   end
   def parse_target(_), do: %{}
