@@ -20,7 +20,7 @@ defmodule AlertProcessor.TextReplacement do
             trip = Map.get(stop_schedules, {stop, time})
             Enum.reduce(subscriptions, %{}, fn(sub, acc) ->
               case trip_schedules[{sub.origin, trip}] do
-                %Time{} = time -> Map.put(acc, index, {train, sub.origin, time})
+                {%Time{} = time, trip_name} -> Map.put(acc, index, {train, trip_name, time})
                 _ -> acc
               end
             end)
@@ -119,8 +119,8 @@ defmodule AlertProcessor.TextReplacement do
         case ServiceInfoCache.get_stop(schedule.stop_id) do
           {:ok, {stop_name, _}} ->
             departure_time = extract_time(schedule.departure_time)
-            stop_time_trips = Map.put(stop_time_trips, {stop_name, departure_time}, schedule.trip_id)
-            trip_schedules = Map.put(trip_schedules, {stop_name, schedule.trip_id}, departure_time)
+            stop_time_trips = Map.put(stop_time_trips, {schedule.stop_id, departure_time}, schedule.trip_id)
+            trip_schedules = Map.put(trip_schedules, {schedule.stop_id, schedule.trip_id}, {departure_time, stop_name})
             {stop_time_trips, trip_schedules}
           _ -> {stop_time_trips, trip_schedules}
         end
