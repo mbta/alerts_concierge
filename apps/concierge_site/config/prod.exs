@@ -26,6 +26,7 @@ config :phoenix, :serve_endpoints, true
 # Do not print debug messages in production
 config :logger,
   level: :info,
+  truncate: :infinity,
   backends: [{Logger.Backend.Logentries, :logentries}, :console]
 
 config :logger, :logentries,
