@@ -29,7 +29,7 @@ config :concierge_site, ConciergeSite.Dissemination.DummyMailer,
   adapter: ConciergeSite.Dissemination.NullAdapter,
   deliver_later_strategy: ConciergeSite.Dissemination.DeliverLaterStrategy
 
-config :concierge_site, send_from_email: {:system, "SENDER_EMAIL_ADDRESS", "developer@mbta.com"}
+config :concierge_site, send_from_email: {:system, "SENDER_EMAIL_ADDRESS", "alert@mbta.com"}
 
 # Configures Elixir's Logger
 config :logger, :console,
