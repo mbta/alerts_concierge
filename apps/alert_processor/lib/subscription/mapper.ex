@@ -4,6 +4,7 @@ defmodule AlertProcessor.Subscription.Mapper do
   mode-specific mapper modules.
   """
   alias AlertProcessor.{Helpers.DateTimeHelper, Model.InformedEntity, Model.Route, Model.Subscription, Model.Trip, Model.User}
+  alias ConciergeSite.TimeHelper
   alias Ecto.Multi
 
   @type map_trip_info_fn :: (String.t, String.t, Subscription.relevant_day -> :error | {:ok, [Trip.t]})
@@ -18,8 +19,8 @@ defmodule AlertProcessor.Subscription.Mapper do
 
   def do_map_timeframe(start_time, end_time, relevant_days) do
     %Subscription{
-      start_time: DateTime.to_time(start_time),
-      end_time: DateTime.to_time(end_time),
+      start_time: TimeHelper.string_to_time(start_time),
+      end_time: TimeHelper.string_to_time(end_time),
       relevant_days: Enum.map(relevant_days, &String.to_existing_atom/1)
     }
   end

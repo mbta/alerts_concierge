@@ -6,8 +6,7 @@ defmodule ConciergeSite.BusSubscriptionView do
     only: [atomize_keys: 1, joined_day_list: 1, progress_link_class: 3,
            do_query_string_params: 2, selected_relevant_days: 1]
   import ConciergeSite.TimeHelper,
-    only: [travel_time_options: 0, time_option_local_strftime: 1,
-           format_time_string: 1]
+    only: [travel_time_options: 0, format_time_string: 1, time_to_string: 1]
   import ConciergeSite.SubscriptionView,
     only: [parse_route: 1]
 
