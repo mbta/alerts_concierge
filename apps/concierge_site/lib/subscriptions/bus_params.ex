@@ -3,7 +3,6 @@ defmodule ConciergeSite.Subscriptions.BusParams do
   Functions for processing user input during the bus subscription flow
   """
   import ConciergeSite.Subscriptions.{ParamsValidator, SubscriptionParams}
-  alias AlertProcessor.Helpers.DateTimeHelper
 
   @spec validate_info_params(map) :: :ok | {:error, String.t}
   def validate_info_params(params) do
@@ -43,8 +42,8 @@ defmodule ConciergeSite.Subscriptions.BusParams do
   def prepare_for_mapper(%{"trip_type" => "one_way"} = params) do
     translated_params = %{
       "relevant_days" => relevant_days_from_booleans(Map.take(params, ~w(weekday saturday sunday))),
-      "departure_start" => params["departure_start"],
-      "departure_end" => params["departure_end"],
+      "departure_start" => Time.from_iso8601!(params["departure_start"]),
+      "departure_end" => Time.from_iso8601!(params["departure_end"]),
       "return_start" => nil,
       "return_end" => nil,
       "amenities" => [],
@@ -56,10 +55,10 @@ defmodule ConciergeSite.Subscriptions.BusParams do
   def prepare_for_mapper(%{"trip_type" => "round_trip"} = params) do
     translated_params = %{
       "relevant_days" => relevant_days_from_booleans(Map.take(params, ~w(weekday saturday sunday))),
-      "departure_start" => params["departure_start"],
-      "departure_end" => params["departure_end"],
-      "return_start" => params["return_start"],
-      "return_end" => params["return_end"],
+      "departure_start" => Time.from_iso8601!(params["departure_start"]),
+      "departure_end" => Time.from_iso8601!(params["departure_end"]),
+      "return_start" => Time.from_iso8601!(params["return_start"]),
+      "return_end" => Time.from_iso8601!(params["return_end"]),
       "amenities" => [],
       "routes" => params["routes"] |> to_string() |> String.split(",", trim: true)
     }

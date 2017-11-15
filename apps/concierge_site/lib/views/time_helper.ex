@@ -72,24 +72,10 @@ defmodule ConciergeSite.TimeHelper do
     end
   end
 
-  @spec time_shift_zone(Time.t, String.t, String.t) :: Time.t
-  def time_shift_zone(time, current_zone, target_timezone) do
-    erl_time = T.to_erl(time)
-    erl_date = Date.utc_today()
-
-    erl_date
-    |> DT.from_date_and_time_and_zone!(erl_time, current_zone)
-    |> DT.shift_zone!(target_timezone)
-    |> DT.to_time()
-  end
-
   @spec subscription_during_do_not_disturb?(Subscription.t, User.t) :: boolean
   def subscription_during_do_not_disturb?(_, %User{do_not_disturb_start: nil, do_not_disturb_end: nil}), do: false
   def subscription_during_do_not_disturb?(%Subscription{type: :amenity}, _), do: false
-  def subscription_during_do_not_disturb?(%Subscription{start_time: sub_start_time, end_time: sub_end_time}, %User{do_not_disturb_start: dnd_start, do_not_disturb_end: dnd_end}) do
-    start_time = time_shift_zone(sub_start_time, "Etc/UTC", "America/New_York")
-    end_time = time_shift_zone(sub_end_time, "Etc/UTC", "America/New_York")
-
+  def subscription_during_do_not_disturb?(%Subscription{start_time: start_time, end_time: end_time}, %User{do_not_disturb_start: dnd_start, do_not_disturb_end: dnd_end}) do
     if normalized_time_value(dnd_start) > normalized_time_value(dnd_end) do
       normalized_time_value(end_time) > normalized_time_value(dnd_start) || normalized_time_value(dnd_end) > normalized_time_value(start_time)
     else

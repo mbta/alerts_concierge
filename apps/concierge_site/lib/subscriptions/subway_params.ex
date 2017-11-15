@@ -4,7 +4,7 @@ defmodule ConciergeSite.Subscriptions.SubwayParams do
   """
 
   import ConciergeSite.Subscriptions.{ParamsValidator, SubscriptionParams}
-  alias AlertProcessor.{ApiClient, Helpers.DateTimeHelper}
+  alias AlertProcessor.ApiClient
 
   @spec validate_info_params(map) :: :ok | {:error, String.t}
   def validate_info_params(params) do
@@ -114,8 +114,8 @@ defmodule ConciergeSite.Subscriptions.SubwayParams do
     translated_params = %{
       "relevant_days" => relevant_days_from_booleans(Map.take(params, ~w(weekday saturday sunday))),
       "roaming" => "false",
-      "departure_start" => params["departure_start"],
-      "departure_end" => params["departure_end"],
+      "departure_start" => Time.from_iso8601!(params["departure_start"]),
+      "departure_end" => Time.from_iso8601!(params["departure_end"]),
       "return_start" => nil,
       "return_end" => nil,
       "amenities" => []
@@ -127,10 +127,10 @@ defmodule ConciergeSite.Subscriptions.SubwayParams do
     translated_params = %{
       "relevant_days" => relevant_days_from_booleans(Map.take(params, ~w(weekday saturday sunday))),
       "roaming" => "false",
-      "departure_start" => params["departure_start"],
-      "departure_end" => params["departure_end"],
-      "return_start" => params["return_start"],
-      "return_end" => params["return_end"],
+      "departure_start" => Time.from_iso8601!(params["departure_start"]),
+      "departure_end" => Time.from_iso8601!(params["departure_end"]),
+      "return_start" => Time.from_iso8601!(params["return_start"]),
+      "return_end" => Time.from_iso8601!(params["return_end"]),
       "amenities" => []
     }
 

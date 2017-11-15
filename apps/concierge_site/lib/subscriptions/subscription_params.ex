@@ -3,7 +3,6 @@ defmodule ConciergeSite.Subscriptions.SubscriptionParams do
   Functions for processing user input during the subscription flow
   """
   import ConciergeSite.Subscriptions.ParamsValidator
-  alias AlertProcessor.Helpers.DateTimeHelper
 
   @spec prepare_for_update_changeset(map) :: map
   def prepare_for_update_changeset(params) do

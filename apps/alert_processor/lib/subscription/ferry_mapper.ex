@@ -162,8 +162,8 @@ defmodule AlertProcessor.Subscription.FerryMapper do
         }
       } = schedule
 
-      {:ok, departure_datetime, _} = DateTime.from_iso8601(departure_time)
-      {{includes_info[stop_id], includes_info[trip_id]}, departure_datetime}
+      time = departure_time |> String.slice(11..18) |> Time.from_iso8601!
+      {{includes_info[stop_id], includes_info[trip_id]}, time}
     end
   end
 end

@@ -8,13 +8,15 @@ defmodule ConciergeSite.SubscriberDetailsTest do
 
   setup do
     {:ok, user} = User.create_account(%{"email" => "test_email@whatever.com", "password" => "Password1", "password_confirmation" => "Password1"})
+    {:ok, start_time} = Time.new(12, 0, 0)
+    {:ok, end_time} = Time.new(12, 0, 0)
     one_way_params = %{
       "origin" => "Anderson/ Woburn",
       "destination" => "place-north",
       "trips" => ["123", "125"],
       "relevant_days" => ["saturday"],
-      "departure_start" => DateTime.from_naive!(~N[2017-07-20 12:00:00], "Etc/UTC"),
-      "departure_end" => DateTime.from_naive!(~N[2017-07-20 14:00:00], "Etc/UTC"),
+      "departure_start" => start_time,
+      "departure_end" => end_time,
       "return_start" => nil,
       "return_end" => nil,
       "alert_priority_type" => "low",
@@ -87,10 +89,12 @@ defmodule ConciergeSite.SubscriberDetailsTest do
 
     test "maps updating", %{user: user} do
       subscription = Repo.one(from s in Subscription, where: s.user_id == ^user.id, preload: [:informed_entities])
+      {:ok, start_time} = Time.new(10, 0, 0)
+      {:ok, end_time} = Time.new(11, 0, 0)
       params = %{
         "alert_priority_type" => :high,
-        "start_time" => DateTime.from_naive!(~N[2017-07-20 12:00:00], "Etc/UTC"),
-        "end_time" => DateTime.from_naive!(~N[2017-07-20 15:00:00], "Etc/UTC"),
+        "start_time" => start_time,
+        "end_time" => end_time,
         "trips" => ["123", "127"]
       }
       multi = CommuterRailMapper.build_update_subscription_transaction(subscription, params, user.id)
@@ -100,7 +104,7 @@ defmodule ConciergeSite.SubscriberDetailsTest do
       assert changelog =~ "#{user.email} added trip 123 to subscription #{subscription.id}"
       assert changelog =~ "#{user.email} removed trip 125 from subscription #{subscription.id}"
       assert changelog =~ "#{user.email} added trip 127 to subscription #{subscription.id}"
-      assert changelog =~ "#{user.email} updated alert_priority_type from low to high, end_time from 10:00am to 11:00am for subscription #{subscription.id}"
+      assert changelog =~ "#{user.email} updated alert_priority_type from low to high, end_time from 12:00pm to 11:00am, start_time from 12:00pm to 10:00am for subscription #{subscription.id}"
     end
 
     test "maps updating amenities", %{user: user} do
