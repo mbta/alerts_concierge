@@ -437,7 +437,7 @@ defmodule AlertProcessor.Subscription.FerryMapperTest do
 
     test "maps schedule info between two stations on saturday" do
       use_cassette "trip_schedule_info_saturday_ferry", custom: true, clear_mock: true, match_requests_on: [:query] do
-        trip_schedule_info_map = FerryMapper.trip_schedule_info_map("Boat-Charlestown", "Boat-Long", :saturday, Calendar.Date.from_ordinal!(2017, 231))
+        trip_schedule_info_map = FerryMapper.trip_schedule_info_map("Boat-Charlestown", "Boat-Long", :saturday, Calendar.Date.from_ordinal!(2017, 315))
         assert %{
           {"Boat-Charlestown", "Boat-F4-Boat-Charlestown-12:15:00-weekend-1"} => _,
           {"Boat-Charlestown", "Boat-F4-Boat-Long-11:30:00-weekend-0"} => _,
