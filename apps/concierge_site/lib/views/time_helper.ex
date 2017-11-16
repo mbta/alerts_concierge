@@ -4,7 +4,6 @@ defmodule ConciergeSite.TimeHelper do
   """
 
   alias Calendar.Time, as: T
-  alias Calendar.DateTime, as: DT
   alias Calendar.Strftime
   alias AlertProcessor.Helpers.DateTimeHelper
   alias AlertProcessor.Model.{Subscription, User}

@@ -104,14 +104,14 @@ defmodule ConciergeSite.Subscriptions.FerryParamsTest do
         "return_start" => nil,
         "return_end" => nil
       } = FerryParams.prepare_for_mapper(@params)
-      assert DateTime.to_time(ds) == ~T[10:40:00]
-      assert DateTime.to_time(de) == ~T[11:23:00]
+      assert ds == ~T[06:40:00]
+      assert de == ~T[07:23:00]
     end
 
     test "it adjusts the actual departure_start and departure_end timestamps based on trips selected" do
       assert %{"departure_start" => ds, "departure_end" => de} = FerryParams.prepare_for_mapper(@params)
-      assert DateTime.to_time(ds) == ~T[10:40:00]
-      assert DateTime.to_time(de) == ~T[11:23:00]
+      assert ds == ~T[06:40:00]
+      assert de == ~T[07:23:00]
     end
 
     test "it transform single relevant days value into array with same value" do
@@ -147,16 +147,16 @@ defmodule ConciergeSite.Subscriptions.FerryParamsTest do
         "return_start" => rs,
         "return_end" => re
       } = FerryParams.prepare_for_mapper(@params)
-      assert DateTime.to_time(ds) == ~T[14:00:00]
-      assert DateTime.to_time(de) == ~T[16:55:00]
-      assert DateTime.to_time(rs) == ~T[01:10:00]
-      assert DateTime.to_time(re) == ~T[02:05:00]
+      assert ds == ~T[10:00:00]
+      assert de == ~T[12:55:00]
+      assert rs == ~T[21:10:00]
+      assert re == ~T[22:05:00]
     end
 
     test "it adjusts the actual departure_start and departure_end timestamps based on trips selected" do
       assert %{"departure_start" => ds, "departure_end" => de} = FerryParams.prepare_for_mapper(@params)
-      assert DateTime.to_time(ds) == ~T[14:00:00]
-      assert DateTime.to_time(de) == ~T[16:55:00]
+      assert ds == ~T[10:00:00]
+      assert de == ~T[12:55:00]
     end
 
     test "it transform single relevant days value into array with same value" do
@@ -165,8 +165,8 @@ defmodule ConciergeSite.Subscriptions.FerryParamsTest do
 
     test "it sets return_start and return_end to nil" do
       assert %{"return_start" => rs, "return_end" => re} = FerryParams.prepare_for_mapper(@params)
-      assert DateTime.to_time(rs) == ~T[01:10:00]
-      assert DateTime.to_time(re) == ~T[02:05:00]
+      assert rs == ~T[21:10:00]
+      assert re == ~T[22:05:00]
     end
   end
 end

@@ -144,8 +144,8 @@ defmodule ConciergeSite.Subscriptions.BusParamsTest do
         "return_end" => nil,
         "relevant_days" => ["sunday"]
       } = BusParams.prepare_for_mapper(params)
-      assert DateTime.to_time(ds) == ~T[16:00:00]
-      assert DateTime.to_time(de) == ~T[17:00:00]
+      assert ds == ~T[12:00:00]
+      assert de == ~T[13:00:00]
     end
   end
 
@@ -169,10 +169,10 @@ defmodule ConciergeSite.Subscriptions.BusParamsTest do
         "return_end" => re,
         "relevant_days" => ["saturday"]
       } = BusParams.prepare_for_mapper(params)
-      assert DateTime.to_time(ds) == ~T[16:00:00]
-      assert DateTime.to_time(de) == ~T[17:00:00]
-      assert DateTime.to_time(rs) == ~T[22:00:00]
-      assert DateTime.to_time(re) == ~T[23:00:00]
+      assert ds == ~T[12:00:00]
+      assert de == ~T[13:00:00]
+      assert rs == ~T[18:00:00]
+      assert re == ~T[19:00:00]
     end
   end
 end

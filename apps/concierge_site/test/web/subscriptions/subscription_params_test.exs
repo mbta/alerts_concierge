@@ -33,8 +33,8 @@ defmodule ConciergeSite.Subscriptions.SubscriptionParamsTest do
         "end_time" => et
         }} = SubscriptionParams.prepare_for_update_changeset(params)
 
-      assert DateTime.to_time(st) == ~T[03:00:00]
-      assert DateTime.to_time(et) == ~T[03:15:00]
+      assert st == "23:00:00"
+      assert et == "23:15:00"
     end
 
     test "it converts alert_priority_type to an atom" do

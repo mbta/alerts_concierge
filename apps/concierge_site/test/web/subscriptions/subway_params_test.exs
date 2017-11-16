@@ -201,8 +201,8 @@ defmodule ConciergeSite.Subscriptions.SubwayParamsTest do
         "origin" => "place-chmnl",
         "destination" => "place-dwnxg"
       } = SubwayParams.prepare_for_mapper(subscription_params)
-      assert DateTime.to_time(ds) == ~T[12:45:00]
-      assert DateTime.to_time(de) == ~T[13:15:00]
+      assert ds == ~T[08:45:00]
+      assert de == ~T[09:15:00]
     end
 
     test "it maps params properly for round_trip" do
@@ -232,10 +232,11 @@ defmodule ConciergeSite.Subscriptions.SubwayParamsTest do
         "origin" => "place-chmnl",
         "destination" => "place-dwnxg"
       } = SubwayParams.prepare_for_mapper(subscription_params)
-      assert DateTime.to_time(ds) == ~T[12:45:00]
-      assert DateTime.to_time(de) == ~T[13:15:00]
-      assert DateTime.to_time(rs) == ~T[20:45:00]
-      assert DateTime.to_time(re) == ~T[21:15:00]
+
+      assert ds == ~T[08:45:00]
+      assert de == ~T[09:15:00]
+      assert rs == ~T[16:45:00]
+      assert re == ~T[17:15:00]
     end
 
     test "it maps params properly for roaming" do
@@ -263,8 +264,8 @@ defmodule ConciergeSite.Subscriptions.SubwayParamsTest do
         "origin" => "place-chmnl",
         "destination" => "place-dwnxg"
       } = SubwayParams.prepare_for_mapper(subscription_params)
-      assert DateTime.to_time(ds) == ~T[12:45:00]
-      assert DateTime.to_time(de) == ~T[13:15:00]
+      assert ds == ~T[08:45:00]
+      assert de == ~T[09:15:00]
     end
   end
 end

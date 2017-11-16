@@ -140,8 +140,8 @@ defmodule ConciergeSite.Subscriptions.SubwayParams do
     translated_params = %{
       "relevant_days" => relevant_days_from_booleans(Map.take(params, ~w(weekday saturday sunday))),
       "roaming" => "true",
-      "departure_start" => params["departure_start"],
-      "departure_end" => params["departure_end"],
+      "departure_start" => Time.from_iso8601!(params["departure_start"]),
+      "departure_end" => Time.from_iso8601!(params["departure_end"]),
       "return_start" => nil,
       "return_end" => nil,
       "amenities" => []
