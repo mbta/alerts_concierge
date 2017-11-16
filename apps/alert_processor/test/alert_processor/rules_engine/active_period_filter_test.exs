@@ -18,7 +18,7 @@ defmodule AlertProcessor.ActivePeriodFilterTest do
 
     alert2 = %Alert{
       active_period: [
-        %{start: datetime_from_native(~N[2017-04-26 15:00:00]), end: datetime_from_native(~N[2017-04-26 17:00:00])}
+        %{start: datetime_from_native(~N[2017-04-26 11:00:00]), end: datetime_from_native(~N[2017-04-26 13:00:00])}
       ]
     }
 

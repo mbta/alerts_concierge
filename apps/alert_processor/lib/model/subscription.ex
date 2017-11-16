@@ -367,7 +367,7 @@ defmodule AlertProcessor.Model.Subscription do
   end
 
   defp after_midnight?(timestamp) do
-    local_timestamp = Time.compare(timestamp, ~T[04:00:00])
+    local_timestamp = Time.compare(timestamp, ~T[00:00:00])
     local_timestamp != :gt
   end
 
