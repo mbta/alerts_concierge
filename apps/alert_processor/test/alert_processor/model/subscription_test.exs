@@ -302,10 +302,10 @@ defmodule AlertProcessor.Model.SubscriptionTest do
     @params %{
       "routes" => ["16 - 0"],
       "relevant_days" => ["weekday", "saturday"],
-      "departure_start" => DateTime.from_naive!(~N[2017-07-20 12:00:00], "Etc/UTC"),
-      "departure_end" => DateTime.from_naive!(~N[2017-07-20 14:00:00], "Etc/UTC"),
-      "return_start" => DateTime.from_naive!(~N[2017-07-20 18:00:00], "Etc/UTC"),
-      "return_end" => DateTime.from_naive!(~N[2017-07-20 20:00:00], "Etc/UTC"),
+      "departure_start" => ~T[12:00:00],
+      "departure_end" => ~T[14:00:00],
+      "return_start" => ~T[18:00:00],
+      "return_end" => ~T[20:00:00],
       "alert_priority_type" => "low",
       "trip_type" => "one_way"
     }

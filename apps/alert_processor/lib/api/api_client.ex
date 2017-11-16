@@ -30,7 +30,7 @@ defmodule AlertProcessor.ApiClient do
   """
   @spec facilities() :: {:ok, [map]} | {:error, String.t}
   def facilities do
-    "/facilities?fields[facility]=type"
+    "/facilities"
     |> get()
     |> parse_response()
   end

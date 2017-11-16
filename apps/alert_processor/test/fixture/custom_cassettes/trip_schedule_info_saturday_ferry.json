@@ -6,7 +6,7 @@
       "method": "get",
       "options": [],
       "request_body": "",
-      "url": "https://dev.api.mbtace.com/schedules?filter[stop]=Boat-Charlestown,Boat-Long&direction_id=&fields[schedule]=departure_time,arrival_time&filter[route]=&date=2017-08-19&include=trip,stop&fields[trip]=name"
+      "url": "http://localhost:4000/schedules?filter[stop]=Boat-Charlestown,Boat-Long&direction_id=&fields[schedule]=departure_time,arrival_time&filter[route]=&date=2017-08-19&include=trip,stop&fields[trip]=name"
     },
     "response": {
       "body": "
