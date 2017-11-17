@@ -11,6 +11,9 @@ defmodule AlertProcessor.Helpers.DateTimeHelper do
   alias Calendar.Date, as: D
   alias Calendar.Strftime
 
+  @spec time_without_zone(String.t) :: Time.t
+  def time_without_zone(date), do: date |> NaiveDateTime.from_iso8601! |> NaiveDateTime.to_time
+
   @spec datetime_to_date_and_time(DateTime.t) :: {Date.t, Time.t}
   def datetime_to_date_and_time(datetime) do
     date = DateTime.to_date(datetime)

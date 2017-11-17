@@ -168,8 +168,7 @@ defmodule AlertProcessor.Subscription.CommuterRailMapper do
         }
       } = schedule
 
-      time = departure_time |> String.slice(11..18) |> Time.from_iso8601!
-      {{includes_info[stop_id], includes_info[trip_id]}, time}
+      {{includes_info[stop_id], includes_info[trip_id]}, DateTimeHelper.time_without_zone(departure_time)}
     end
   end
 end
