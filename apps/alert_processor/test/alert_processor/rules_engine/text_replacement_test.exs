@@ -87,6 +87,57 @@ defmodule AlertProcessor.TextReplacementTest do
 
       assert TextReplacement.replace_text(alert, [sub]) == Map.merge(alert, expected)
     end
+
+    test "if subscription matches alert and the origin station's id differs from its name, replace text" do
+      sub = %Subscription{
+        destination: "place-south",
+        informed_entities: [
+          %AlertProcessor.Model.InformedEntity{
+            activities: ["BOARD"],
+            stop: "Four Corners / Geneva"
+          }
+        ],
+        origin: "Four Corners / Geneva"
+      }
+
+      alert = %Alert{
+        description: "Affected trips: Fairmount Train 752 (9:25 PM from Fairmount)",
+        header: "Fairmount Train 752 (9:25 pm from Fairmount) has departed Fairmount 20-40 minutes late and will operate at a reduced speed due to a mechanical issue.",
+        id: "115346",
+        informed_entities: [
+          %InformedEntity{
+            activities: ["BOARD", "EXIT", "RIDE"],
+            route: "CR-Fairmount",
+            route_type: 2,
+            schedule: [
+              %{
+                 departure_time: "2017-10-30T21:25:00-04:00",
+                 stop_id: "Fairmount",
+                 trip_id: "CR-Weekday-Aug14th-17-NR-180"
+               },
+               %{
+                departure_time: "2017-10-30T22:17:00-04:00",
+                stop_id: "Four Corners / Geneva",
+                trip_id: "CR-Weekday-Aug14th-17-NR-180"
+               },
+              %{
+                departure_time: "2017-10-30T22:28:00-04:00",
+                stop_id: "South Station",
+                trip_id: "CR-Weekday-Aug14th-17-NR-180"
+              }
+            ],
+            trip: "180"
+          }
+        ],
+      }
+
+      expected = %{
+        header: "Fairmount Train 752 (22:17 pm from Four Corners/Geneva) has departed Fairmount 20-40 minutes late and will operate at a reduced speed due to a mechanical issue.",
+        description: "Affected trips: Fairmount Train 752 (22:17 pm from Four Corners/Geneva)"
+      }
+
+      assert TextReplacement.replace_text(alert, [sub]) == Map.merge(alert, expected)
+    end
   end
 
   describe "parse_target/1" do
