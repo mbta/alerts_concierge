@@ -11,9 +11,7 @@ defmodule AlertProcessor.SentAlertFilter do
   """
   @spec filter([Subscription.t], Keyword.t) :: [Subscription.t]
   def filter(subscriptions, alert: alert, notifications: notifications) do
-    SystemMetrics.Tracer.trace(fn() ->
-      do_filter(subscriptions, alert, notifications)
-    end, "sent_alert_filter")
+    do_filter(subscriptions, alert, notifications)
   end
 
   defp do_filter(subscriptions, %Alert{id: alert_id, last_push_notification: lpn}, notifications) do

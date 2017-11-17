@@ -25,7 +25,6 @@ defmodule ConciergeSite.Mixfile do
   def application do
     [mod: {ConciergeSite, []},
      extra_applications: [
-       :system_metrics,
        :elixir_make,
        :ex2ms,
        :public_key,
@@ -62,7 +61,6 @@ defmodule ConciergeSite.Mixfile do
       {:postgrex, ">= 0.0.0"},
       {:phoenix_html, "~> 2.6"},
       {:phoenix_live_reload, "~> 1.0", only: :dev},
-      {:system_metrics, in_umbrella: true},
       {:gettext, "~> 0.11"},
       {:cowboy, "~> 1.0"},
       {:logger_logentries_backend, github: "paulswartz/logger_logentries_backend"},

@@ -17,9 +17,7 @@ defmodule AlertProcessor.SubscriptionFilterEngine do
     notifications = Notification.most_recent_for_subscriptions_and_alerts(subscriptions, alerts)
 
     for alert <- alerts do
-      SystemMetrics.Tracer.trace(fn() ->
-        process_alert(alert, subscriptions, notifications)
-      end, "single_alert_processing")
+      process_alert(alert, subscriptions, notifications)
     end
   end
   @doc """
