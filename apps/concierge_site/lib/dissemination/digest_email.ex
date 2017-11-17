@@ -7,7 +7,7 @@ defmodule ConciergeSite.Dissemination.DigestEmail do
   require EEx
 
   @from ConfigHelper.get_string(:send_from_email, :concierge_site)
-  @template_dir String.replace(Application.get_env(:concierge_site, :mail_template_dir), "/apps/concierge_site/apps/concierge_site/", "/apps/concierge_site/")
+  @template_dir Application.get_env(:concierge_site, :mail_template_dir)
 
   EEx.function_from_file(
     :def,

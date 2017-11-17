@@ -4,7 +4,7 @@ defmodule ConciergeSite.Helpers.MailHelper do
   digest emails
   """
 
-  @template_dir String.replace(Application.get_env(:concierge_site, :mail_template_dir), "/apps/concierge_site/apps/concierge_site/", "/apps/concierge_site/")
+  @template_dir Application.get_env(:concierge_site, :mail_template_dir)
 
   alias AlertProcessor.Model.{Alert, InformedEntity}
   alias ConciergeSite.Auth.Token

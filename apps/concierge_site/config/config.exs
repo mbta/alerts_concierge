@@ -61,7 +61,7 @@ config :guardian_db, GuardianDb,
   schema_name: "guardian_tokens",
   sweep_interval: 120
 
-config :concierge_site, mail_template_dir: Path.join(~w(#{System.cwd!} apps concierge_site generated_templates))
+config :concierge_site, mail_template_dir: Path.join(~w(#{__DIR__} /../ generated_templates))
 
 # Import environment specific config. This must remain at the bottom
 # of this file so it overrides the configuration defined above.
