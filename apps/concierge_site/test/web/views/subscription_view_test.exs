@@ -23,7 +23,7 @@ defmodule ConciergeSite.SubscriptionViewTest do
       sub4 = %Subscription{origin: "Revere Beach", destination: "Bowdoin", type: :subway, informed_entities: [%InformedEntity{route: "Blue", route_type: 1}], relevant_days: [:weekday], start_time: ~T[12:00:00], end_time: ~T[14:00:00]}
       sub5 = %Subscription{origin: "Packards Corner", destination: "Park Street", type: :subway, informed_entities: [%InformedEntity{route: "Green-B", route_type: 1}], relevant_days: [:weekday], start_time: ~T[12:00:00], end_time: ~T[14:00:00]}
       sub6 = %Subscription{origin: "Milton", destination: "Ashmont", type: :subway, informed_entities: [%InformedEntity{route: "Mattapan", route_type: 1}], relevant_days: [:weekday], start_time: ~T[12:00:00], end_time: ~T[14:00:00]}
-      assert %{amenity: [], ferry: [], bus: [], commuter_rail: [], subway: [^sub1, ^sub3, ^sub6, ^sub2, ^sub5, ^sub4]} = SubscriptionView.sorted_subscriptions([sub1, sub2, sub3, sub4, sub5, sub6])
+      assert %{amenity: [], ferry: [], bus: [], commuter_rail: [], subway: [^sub1, ^sub3, ^sub2, ^sub5, ^sub4, ^sub6]} = SubscriptionView.sorted_subscriptions([sub1, sub2, sub3, sub4, sub5, sub6])
     end
 
     test "sorted_subscriptions sorts by earliest start_time" do

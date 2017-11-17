@@ -2,8 +2,7 @@ defmodule ConciergeSite.SubwaySubscriptionView do
   use ConciergeSite.Web, :view
   import AlertProcessor.Helpers.StringHelper, only: [capitalize_first: 1]
   import ConciergeSite.TimeHelper,
-    only: [travel_time_options: 0, format_time_string: 1,
-           time_option_local_strftime: 1]
+    only: [travel_time_options: 0, format_time_string: 1, time_to_string: 1]
   import ConciergeSite.SubscriptionHelper,
     only: [joined_day_list: 1, atomize_keys: 1, progress_link_class: 3,
            do_query_string_params: 2, selected_relevant_days: 1]

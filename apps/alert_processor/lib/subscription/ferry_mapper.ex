@@ -162,8 +162,7 @@ defmodule AlertProcessor.Subscription.FerryMapper do
         }
       } = schedule
 
-      {:ok, departure_datetime, _} = DateTime.from_iso8601(departure_time)
-      {{includes_info[stop_id], includes_info[trip_id]}, departure_datetime}
+      {{includes_info[stop_id], includes_info[trip_id]}, DateTimeHelper.time_without_zone(departure_time)}
     end
   end
 end

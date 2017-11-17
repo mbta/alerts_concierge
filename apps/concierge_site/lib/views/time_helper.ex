@@ -4,7 +4,6 @@ defmodule ConciergeSite.TimeHelper do
   """
 
   alias Calendar.Time, as: T
-  alias Calendar.DateTime, as: DT
   alias Calendar.Strftime
   alias AlertProcessor.Helpers.DateTimeHelper
   alias AlertProcessor.Model.{Subscription, User}
@@ -14,7 +13,7 @@ defmodule ConciergeSite.TimeHelper do
   fifteen-minute intervals
   """
   def travel_time_options do
-   10_800
+    10_800
     |> Stream.iterate(&(&1 + 900))
     |> Stream.map(&(rem(&1, 86_400)))
     |> Stream.map(&T.from_second_in_day/1)
@@ -39,21 +38,23 @@ defmodule ConciergeSite.TimeHelper do
   """
   @spec format_time(Time.t) :: String.t
   def format_time(time) do
-    local_time = DateTimeHelper.utc_time_to_local(time)
-    {:ok, output} = Strftime.strftime(local_time, "%l:%M%P")
+    {:ok, output} = Strftime.strftime(time, "%l:%M%P")
     output
   end
 
   @doc """
-  Converts a utc timestamp to local time stringifiied in the H:M:S format
+  Converts a Time.t to a string with the H:M:S format
   """
-  @spec time_option_local_strftime(Time.t | nil) :: String.t | nil
-  def time_option_local_strftime(nil), do: nil
-  def time_option_local_strftime(timestamp) do
-    timestamp
-    |> DateTimeHelper.utc_time_to_local()
-    |> Strftime.strftime!("%H:%M:%S")
-  end
+  @spec time_to_string(Time.t | nil) :: String.t | nil
+  def time_to_string(nil), do: nil
+  def time_to_string(time), do: Strftime.strftime!(time, "%H:%M:%S")
+
+  @doc """
+  Converts a string with the H:M:S format to a Time.t
+  """
+  @spec string_to_time(String.t | nil) :: String.t | nil
+  def string_to_time(nil), do: nil
+  def string_to_time(time), do: Time.from_iso8601!(time)
 
   @doc """
   Converts timestamp into integer value adjusting late night, after
@@ -70,24 +71,10 @@ defmodule ConciergeSite.TimeHelper do
     end
   end
 
-  @spec time_shift_zone(Time.t, String.t, String.t) :: Time.t
-  def time_shift_zone(time, current_zone, target_timezone) do
-    erl_time = T.to_erl(time)
-    erl_date = Date.utc_today()
-
-    erl_date
-    |> DT.from_date_and_time_and_zone!(erl_time, current_zone)
-    |> DT.shift_zone!(target_timezone)
-    |> DT.to_time()
-  end
-
   @spec subscription_during_do_not_disturb?(Subscription.t, User.t) :: boolean
   def subscription_during_do_not_disturb?(_, %User{do_not_disturb_start: nil, do_not_disturb_end: nil}), do: false
   def subscription_during_do_not_disturb?(%Subscription{type: :amenity}, _), do: false
-  def subscription_during_do_not_disturb?(%Subscription{start_time: sub_start_time, end_time: sub_end_time}, %User{do_not_disturb_start: dnd_start, do_not_disturb_end: dnd_end}) do
-    start_time = time_shift_zone(sub_start_time, "Etc/UTC", "America/New_York")
-    end_time = time_shift_zone(sub_end_time, "Etc/UTC", "America/New_York")
-
+  def subscription_during_do_not_disturb?(%Subscription{start_time: start_time, end_time: end_time}, %User{do_not_disturb_start: dnd_start, do_not_disturb_end: dnd_end}) do
     if normalized_time_value(dnd_start) > normalized_time_value(dnd_end) do
       normalized_time_value(end_time) > normalized_time_value(dnd_start) || normalized_time_value(dnd_end) > normalized_time_value(start_time)
     else

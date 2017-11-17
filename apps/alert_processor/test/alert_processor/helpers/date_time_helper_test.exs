@@ -8,6 +8,10 @@ defmodule AlertProcessor.Helpers.DateTimeHelperTest do
   @thursday 4
   @time_of_day ~T[21:00:00]
 
+  test "time_without_zone/1" do
+    assert ~T[12:10:00.000] = DTH.time_without_zone("2015-01-23T12:10:00.000+02:30")
+  end
+
   test "seconds_until_next_digest/3 returns seconds between now and a specific day/time" do
     tuesday_8pm_utc = {~D[2017-05-16], ~T[20:00:00]}
     seconds = DTH.seconds_until_next_digest(@interval,

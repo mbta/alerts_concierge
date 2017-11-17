@@ -21,8 +21,8 @@ defmodule AlertProcessor.Factory do
     %Subscription{
       relevant_days: [],
       alert_priority_type: :medium,
-      start_time: ~T[14:00:00],
-      end_time: ~T[18:00:00]
+      start_time: ~T[10:00:00],
+      end_time: ~T[14:00:00]
     }
   end
 

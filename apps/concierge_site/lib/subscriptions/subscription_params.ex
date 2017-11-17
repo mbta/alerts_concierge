@@ -3,7 +3,6 @@ defmodule ConciergeSite.Subscriptions.SubscriptionParams do
   Functions for processing user input during the subscription flow
   """
   import ConciergeSite.Subscriptions.ParamsValidator
-  alias AlertProcessor.Helpers.DateTimeHelper
 
   @spec prepare_for_update_changeset(map) :: map
   def prepare_for_update_changeset(params) do
@@ -18,8 +17,8 @@ defmodule ConciergeSite.Subscriptions.SubscriptionParams do
 
       {:ok, %{"alert_priority_type" => String.to_existing_atom(params["alert_priority_type"]),
         "relevant_days" => relevant_days,
-        "end_time" => DateTimeHelper.timestamp_to_utc_datetime(params["departure_end"]),
-        "start_time" => DateTimeHelper.timestamp_to_utc_datetime(params["departure_start"])}}
+        "end_time" => params["departure_end"],
+        "start_time" => params["departure_start"]}}
     else
       {:error, full_error_message_iodata(errors)}
     end

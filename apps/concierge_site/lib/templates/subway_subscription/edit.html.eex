@@ -33,7 +33,7 @@
                    :departure_start,
                    travel_time_options(),
                    class: "travel-time-select",
-                   selected: time_option_local_strftime(@changeset.data.start_time) %>
+                   selected: time_to_string(@changeset.data.start_time) %>
         <label for="subscription_departure_end" class="travel-time-connector">
           to
         </label>
@@ -41,7 +41,7 @@
                    :departure_end,
                    travel_time_options(),
                    class: "travel-time-select",
-                   selected: time_option_local_strftime(@changeset.data.end_time) %>
+                   selected: time_to_string(@changeset.data.end_time) %>
       </div>
     </div>
     <div class="update-button-container">

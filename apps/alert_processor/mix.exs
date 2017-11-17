@@ -59,6 +59,8 @@ defmodule AlertProcessor.Mixfile do
   # Type `mix help deps` for examples and options.
   defp deps do
     [
+      {:bamboo, "~> 0.8", only: [:test]},
+      {:bamboo_smtp, "~> 1.3.0", only: [:test]},
       {:calendar, "~> 0.16.1"},
       {:comeonin, "~> 3.0"},
       {:cowboy, "~> 1.0"},
@@ -79,7 +81,8 @@ defmodule AlertProcessor.Mixfile do
       {:scrivener_ecto, "~> 1.0"},
       {:sweet_xml, "~> 0.6"},
       {:system_metrics, in_umbrella: true},
-      {:edeliver, "1.4.3"}
+      {:edeliver, "1.4.3"},
+      {:logger_logentries_backend, github: "paulswartz/logger_logentries_backend"}
     ]
   end
 

@@ -64,7 +64,8 @@ defmodule ConciergeSite.Mixfile do
       {:phoenix_live_reload, "~> 1.0", only: :dev},
       {:system_metrics, in_umbrella: true},
       {:gettext, "~> 0.11"},
-      {:cowboy, "~> 1.0"}
+      {:cowboy, "~> 1.0"},
+      {:logger_logentries_backend, github: "paulswartz/logger_logentries_backend"},
     ]
   end
 

@@ -104,14 +104,14 @@ defmodule ConciergeSite.Subscriptions.CommuterRailParamsTest do
         "return_start" => nil,
         "return_end" => nil
       } = CommuterRailParams.prepare_for_mapper(@params)
-      assert DateTime.to_time(ds) == ~T[12:21:00]
-      assert DateTime.to_time(de) == ~T[14:10:00]
+      assert ds == ~T[08:21:00]
+      assert de == ~T[10:10:00]
     end
 
     test "it adjusts the actual departure_start and departure_end timestamps based on trips selected" do
       assert %{"departure_start" => ds, "departure_end" => de} = CommuterRailParams.prepare_for_mapper(@params)
-      assert DateTime.to_time(ds) == ~T[12:21:00]
-      assert DateTime.to_time(de) == ~T[14:10:00]
+      assert ds == ~T[08:21:00]
+      assert de == ~T[10:10:00]
     end
 
     test "it transform single relevant days value into array with same value" do
@@ -147,16 +147,16 @@ defmodule ConciergeSite.Subscriptions.CommuterRailParamsTest do
         "return_start" => rs,
         "return_end" => re
       } = CommuterRailParams.prepare_for_mapper(@params)
-      assert DateTime.to_time(ds) == ~T[12:21:00]
-      assert DateTime.to_time(de) == ~T[14:10:00]
-      assert DateTime.to_time(rs) == ~T[18:43:00]
-      assert DateTime.to_time(re) == ~T[18:48:00]
+      assert ds == ~T[08:21:00]
+      assert de == ~T[10:10:00]
+      assert rs == ~T[14:43:00]
+      assert re == ~T[14:48:00]
     end
 
     test "it adjusts the actual departure_start and departure_end timestamps based on trips selected" do
       assert %{"departure_start" => ds, "departure_end" => de} = CommuterRailParams.prepare_for_mapper(@params)
-      assert DateTime.to_time(ds) == ~T[12:21:00]
-      assert DateTime.to_time(de) == ~T[14:10:00]
+      assert ds == ~T[08:21:00]
+      assert de == ~T[10:10:00]
     end
 
     test "it transform single relevant days value into array with same value" do
@@ -165,8 +165,8 @@ defmodule ConciergeSite.Subscriptions.CommuterRailParamsTest do
 
     test "it sets return_start and return_end to correct times" do
       assert %{"return_start" => rs, "return_end" => re} = CommuterRailParams.prepare_for_mapper(@params)
-      assert DateTime.to_time(rs) == ~T[18:43:00]
-      assert DateTime.to_time(re) == ~T[18:48:00]
+      assert rs == ~T[14:43:00]
+      assert re == ~T[14:48:00]
     end
   end
 end

@@ -11,6 +11,9 @@ defmodule AlertProcessor.Helpers.DateTimeHelper do
   alias Calendar.Date, as: D
   alias Calendar.Strftime
 
+  @spec time_without_zone(String.t) :: Time.t
+  def time_without_zone(date), do: date |> NaiveDateTime.from_iso8601! |> NaiveDateTime.to_time
+
   @spec datetime_to_date_and_time(DateTime.t) :: {Date.t, Time.t}
   def datetime_to_date_and_time(datetime) do
     date = DateTime.to_date(datetime)
@@ -47,46 +50,6 @@ defmodule AlertProcessor.Helpers.DateTimeHelper do
   def seconds_of_day(timestamp) do
     {hour, minute, second} = Time.to_erl(timestamp)
     (hour * 3600) + (minute * 60) + second
-  end
-
-  @doc """
-  converts 24hr format timestamp to utc time using optional
-  timezone, otherwise uses America/New_York
-  """
-  @spec timestamp_to_utc(String.t, String.t) :: Time.t | {:error, any}
-  def timestamp_to_utc(timestamp, time_zone \\ "America/New_York") do
-    with utc_datetime <- timestamp_to_utc_datetime(timestamp, time_zone),
-         {:ok, utc_timestamp} <- DateTime.to_time(utc_datetime) do
-      utc_timestamp
-    end
-  end
-
-  @doc """
-  converts 24hr format timestamp to utc datetime using optional
-  timezone, otherwise uses America/New_York
-  """
-  @spec timestamp_to_utc_datetime(String.t, String.t) :: DateTime.t | {:error, any}
-  def timestamp_to_utc_datetime(timestamp, time_zone \\ "America/New_York") do
-    with {:ok, local_time} <- Time.from_iso8601(timestamp),
-         local_date <- D.today!(time_zone),
-         {:ok, local_datetime} <- DT.from_date_and_time_and_zone(local_date, local_time, time_zone),
-         {:ok, utc_datetime} <- DT.shift_zone(local_datetime, "UTC") do
-      utc_datetime
-    end
-  end
-
-  @doc """
-  convert utc time to local time using optional timezone,
-  otherwise uses America/New_York
-  """
-  @spec utc_time_to_local(Time.t, String.t) :: Time.t | {:error, any}
-  def utc_time_to_local(timestamp, timezone \\ "America/New_York") do
-    with utc_date <- D.today!("UTC"),
-         {:ok, utc_datetime} <- DT.from_date_and_time_and_zone(utc_date, timestamp, "UTC"),
-         {:ok, local_datetime} <- DT.shift_zone(utc_datetime, timezone),
-         {:ok, local_timestamp} <- DateTime.to_time(local_datetime) do
-      local_timestamp
-    end
   end
 
   @spec format_date(NaiveDateTime.t, String.t) :: any

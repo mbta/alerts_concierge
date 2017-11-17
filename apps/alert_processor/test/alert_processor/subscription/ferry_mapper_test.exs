@@ -10,8 +10,8 @@ defmodule AlertProcessor.Subscription.FerryMapperTest do
       "destination" => "Boat-Hingham",
       "trips" => ["Boat-F1-Boat-Long-18:05:00-weekday-0", "Boat-F1-Boat-Long-21:10:00-weekday-0"],
       "relevant_days" => ["weekday"],
-      "departure_start" => DateTime.from_naive!(~N[2017-07-20 12:00:00], "Etc/UTC"),
-      "departure_end" => DateTime.from_naive!(~N[2017-07-20 14:00:00], "Etc/UTC"),
+      "departure_start" => ~T[12:00:00],
+      "departure_end" => ~T[14:00:00],
       "return_start" => nil,
       "return_end" => nil,
       "alert_priority_type" => "low",
@@ -121,10 +121,10 @@ defmodule AlertProcessor.Subscription.FerryMapperTest do
       "trips" => ["Boat-F1-Boat-Long-18:05:00-weekday-0", "Boat-F1-Boat-Long-21:10:00-weekday-0"],
       "return_trips" => ["Boat-F1-Boat-Hingham-21:00:00-weekday-1"],
       "relevant_days" => ["weekday"],
-      "departure_start" => DateTime.from_naive!(~N[2017-07-20 12:00:00], "Etc/UTC"),
-      "departure_end" => DateTime.from_naive!(~N[2017-07-20 14:00:00], "Etc/UTC"),
-      "return_start" => DateTime.from_naive!(~N[2017-07-20 18:00:00], "Etc/UTC"),
-      "return_end" => DateTime.from_naive!(~N[2017-07-20 20:00:00], "Etc/UTC"),
+      "departure_start" => ~T[12:00:00],
+      "departure_end" => ~T[14:00:00],
+      "return_start" => ~T[18:00:00],
+      "return_end" => ~T[20:00:00],
       "alert_priority_type" => "low",
       "amenities" => ["elevator"]
     }
@@ -431,13 +431,13 @@ defmodule AlertProcessor.Subscription.FerryMapperTest do
     test "maps schedule info between two stations on weekday" do
       use_cassette "trip_schedule_info_weekday_ferry", custom: true, clear_mock: true, match_requests_on: [:query] do
         trip_schedule_info_map = FerryMapper.trip_schedule_info_map("Boat-Charlestown", "Boat-Long", :weekday, @test_date)
-        assert Enum.all?(trip_schedule_info_map, &match?({{"Boat-Charlestown", _}, %DateTime{}}, &1) || match?({{"Boat-Long", _}, %DateTime{}}, &1))
+        assert Enum.all?(trip_schedule_info_map, &match?({{"Boat-Charlestown", _}, %Time{}}, &1) || match?({{"Boat-Long", _}, %Time{}}, &1))
       end
     end
 
     test "maps schedule info between two stations on saturday" do
       use_cassette "trip_schedule_info_saturday_ferry", custom: true, clear_mock: true, match_requests_on: [:query] do
-        trip_schedule_info_map = FerryMapper.trip_schedule_info_map("Boat-Charlestown", "Boat-Long", :saturday, Calendar.Date.from_ordinal!(2017, 231))
+        trip_schedule_info_map = FerryMapper.trip_schedule_info_map("Boat-Charlestown", "Boat-Long", :saturday, Calendar.Date.from_ordinal!(2017, 315))
         assert %{
           {"Boat-Charlestown", "Boat-F4-Boat-Charlestown-12:15:00-weekend-1"} => _,
           {"Boat-Charlestown", "Boat-F4-Boat-Long-11:30:00-weekend-0"} => _,
@@ -456,10 +456,10 @@ defmodule AlertProcessor.Subscription.FerryMapperTest do
       "trips" => ["Boat-F1-Boat-Long-18:05:00-weekday-0", "Boat-F1-Boat-Long-21:10:00-weekday-0"],
       "return_trips" => ["Boat-F1-Boat-Hingham-21:00:00-weekday-1"],
       "relevant_days" => ["weekday"],
-      "departure_start" => DateTime.from_naive!(~N[2017-07-20 12:00:00], "Etc/UTC"),
-      "departure_end" => DateTime.from_naive!(~N[2017-07-20 14:00:00], "Etc/UTC"),
-      "return_start" => DateTime.from_naive!(~N[2017-07-20 18:00:00], "Etc/UTC"),
-      "return_end" => DateTime.from_naive!(~N[2017-07-20 20:00:00], "Etc/UTC"),
+      "departure_start" => ~T[12:00:00],
+      "departure_end" => ~T[14:00:00],
+      "return_start" => ~T[18:00:00],
+      "return_end" => ~T[20:00:00],
       "alert_priority_type" => "low",
       "amenities" => ["elevator"]
     }
@@ -494,8 +494,8 @@ defmodule AlertProcessor.Subscription.FerryMapperTest do
 
       params = %{
         "alert_priority_type" => :high,
-        "end_time" => DateTime.from_naive!(~N[2017-07-20 11:15:00], "Etc/UTC"),
-        "start_time" => DateTime.from_naive!(~N[2017-07-20 11:25:00], "Etc/UTC"),
+        "end_time" => ~T[11:15:00],
+        "start_time" => ~T[11:25:00],
         "trips" => ["Boat-F4-Boat-Charlestown-11:15:00-weekday-1"]
       }
 
