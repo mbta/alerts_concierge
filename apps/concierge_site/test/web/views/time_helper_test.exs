@@ -4,6 +4,11 @@ defmodule ConciergeSite.TimeHelperTest do
   alias AlertProcessor.Model.{Subscription, User}
   alias ConciergeSite.TimeHelper
 
+  test "string_to_time/1" do
+    assert nil == TimeHelper.string_to_time(nil)
+    assert ~T[04:00:00] == TimeHelper.string_to_time("04:00:00")
+  end
+
   test "travel_time_options/0 returns list of formatted 15 min increments" do
     expected = [
     {"03:00 AM", "03:00:00"}, {"03:15 AM", "03:15:00"},
