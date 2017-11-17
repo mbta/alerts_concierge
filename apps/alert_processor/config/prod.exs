@@ -4,6 +4,7 @@ config :alert_processor, database_url: {:system, "DATABASE_URL_PROD"}
 # Do not print debug messages in production
 config :logger,
   level: :info,
+  truncate: :infinity,
   backends: [{Logger.Backend.Logentries, :logentries}, :console]
 
 config :logger, :logentries,
