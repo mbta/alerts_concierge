@@ -24,7 +24,6 @@ defmodule AlertProcessor.Mixfile do
   def application do
     [mod: {AlertProcessor, []},
       extra_applications: [
-        :system_metrics,
         :elixir_make,
         :ex2ms,
         :plug,
@@ -80,7 +79,6 @@ defmodule AlertProcessor.Mixfile do
       {:postgrex, ">= 0.0.0"},
       {:scrivener_ecto, "~> 1.0"},
       {:sweet_xml, "~> 0.6"},
-      {:system_metrics, in_umbrella: true},
       {:edeliver, "1.4.3"},
       {:logger_logentries_backend, github: "paulswartz/logger_logentries_backend"}
     ]
