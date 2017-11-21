@@ -1,22 +1,7 @@
-![CircleCI](https://circleci.com/gh/IntrepidPursuits/mbta-server.svg?style=svg&circle-token=57113c06febfb353ff040669f6082c296161cb2e)
+# Alert Processor
 
-# MbtaServer
+One of the applications within the Alerts Concierge project.
+This application processes and sends alerts to users.
 
-To start your Phoenix server:
-
-  * Install dependencies with `mix deps.get`
-  * Create and migrate your database with `mix ecto.create && mix ecto.migrate`
-  * Install Node.js dependencies with `cd assets && npm install`
-  * Start Phoenix endpoint with `mix phx.server`
-
-Now you can visit [`localhost:4000`](http://localhost:4000) from your browser.
-
-Ready to run in production? Please [check our deployment guides](http://www.phoenixframework.org/docs/deployment).
-
-## Learn more
-
-  * Official website: http://www.phoenixframework.org/
-  * Guides: http://phoenixframework.org/docs/overview
-  * Docs: https://hexdocs.pm/phoenix
-  * Mailing list: http://groups.google.com/group/phoenix-talk
-  * Source: https://github.com/phoenixframework/phoenix
+For information about setting up, running, and testing the application, see the
+root-level [README.md](../../README.md)
