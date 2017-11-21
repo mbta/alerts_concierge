@@ -21,15 +21,27 @@ defmodule AlertProcessor.DigestDateHelper do
 
   @spec calculate_date_group(Alert.t, map) :: Alert.t
   defp calculate_date_group(alert, digest_date_group) do
-    [:upcoming_weekend, :upcoming_week, :next_weekend, :future]
+    groups = [:upcoming_weekend, :upcoming_week, :next_weekend, :future]
+
+    alert.active_period
+    |> matching_groups(digest_date_group, groups)
     |> Enum.reduce(digest_date_group, fn(name, acc) ->
-      if active_period_matches?(alert.active_period, get_in(acc, [name, :timeframe])) do
-        {_res, acc} = get_and_update_in(acc, [name, :alert_ids], &{&1, &1 ++ [alert.id]})
-        acc
-      else
-        acc
-      end
+      {_res, acc} = get_and_update_in(acc, [name, :alert_ids], &{&1, &1 ++ [alert.id]})
+      acc
     end)
+  end
+
+  @spec matching_groups([map], map, [atom]) :: [map]
+  defp matching_groups([], _, _), do: []
+  defp matching_groups(_, _, []), do: []
+  defp matching_groups([period | ptail] = periods, ddg, [group | gtail]) do
+    timeframe = get_in(ddg, [group, :timeframe])
+
+    if active_period_within?(period, timeframe) do
+      [group | matching_groups(ptail, ddg, gtail)]
+    else
+      matching_groups(periods, ddg, gtail)
+    end
   end
 
   @spec determine_digest_group(DateTime.t) :: map
@@ -52,14 +64,6 @@ defmodule AlertProcessor.DigestDateHelper do
         alert_ids: []
       }
     }
-  end
-
-  @spec active_period_matches?({DateTime.t, DateTime.t}, {DateTime.t, DateTime.t})
-    :: boolean()
-  defp active_period_matches?(active_periods, digest_group) do
-    Enum.any?(active_periods, fn(ap) ->
-      active_period_within?(ap, digest_group)
-    end)
   end
 
   @spec active_period_within?(map, {DateTime.t, DateTime.t}) :: boolean()
