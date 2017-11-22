@@ -131,7 +131,7 @@ defmodule ConciergeSite.Subscriptions.FerryParamsTest do
       "origin" => "Boat-Hingham",
       "relevant_days" => "weekday",
       "return_start" => "14:00:00",
-      "return_trips" => ["Boat-F1-Boat-Long-21:10:00-weekday-0"],
+      "return_trips" => ["Boat-F1-Boat-Long-20:15:00-weekday-0"],
       "route_type" => "4",
       "trip_type" => "round_trip",
       "trips" => ["Boat-F1-Boat-Hingham-10:00:00-weekday-1", "Boat-F1-Boat-Hingham-12:00:00-weekday-1"],
@@ -149,8 +149,8 @@ defmodule ConciergeSite.Subscriptions.FerryParamsTest do
       } = FerryParams.prepare_for_mapper(@params)
       assert ds == ~T[10:00:00]
       assert de == ~T[12:55:00]
-      assert rs == ~T[21:10:00]
-      assert re == ~T[22:05:00]
+      assert rs == ~T[20:15:00]
+      assert re == ~T[20:55:00]
     end
 
     test "it adjusts the actual departure_start and departure_end timestamps based on trips selected" do
@@ -165,8 +165,8 @@ defmodule ConciergeSite.Subscriptions.FerryParamsTest do
 
     test "it sets return_start and return_end to nil" do
       assert %{"return_start" => rs, "return_end" => re} = FerryParams.prepare_for_mapper(@params)
-      assert rs == ~T[21:10:00]
-      assert re == ~T[22:05:00]
+      assert rs == ~T[20:15:00]
+      assert re == ~T[20:55:00]
     end
   end
 end
