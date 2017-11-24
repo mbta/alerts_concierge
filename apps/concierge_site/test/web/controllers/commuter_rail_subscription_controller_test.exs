@@ -110,7 +110,9 @@ defmodule ConciergeSite.CommuterRailSubscriptionControllerTest do
         "relevant_days" => "weekday",
         "departure_start" => "12:00:00",
         "alert_priority_type" => "low",
-        "trip_type" => "one_way"
+        "trip_type" => "one_way",
+        "route_id" => "CR-Haverhill",
+        "direction_id" => "0"
       }}
 
       conn = post(conn, "/subscriptions/commuter_rail", params)

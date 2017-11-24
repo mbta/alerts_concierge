@@ -287,7 +287,8 @@ defmodule AlertProcessor.Model.SubscriptionTest do
       "return_start" => ~T[18:00:00],
       "return_end" => ~T[20:00:00],
       "alert_priority_type" => "low",
-      "trip_type" => "one_way"
+      "trip_type" => "one_way",
+      "amenities" => []
     }
 
     test "creates subscription and informed entities from Ecto.Multi" do

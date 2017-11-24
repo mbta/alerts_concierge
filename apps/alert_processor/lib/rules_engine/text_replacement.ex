@@ -117,7 +117,7 @@ defmodule AlertProcessor.TextReplacement do
     |> Enum.reduce({%{}, %{}}, fn(informed_entity, {stop_time_trips, trip_schedules}) ->
       Enum.reduce(informed_entity.schedule, {stop_time_trips, trip_schedules}, fn(schedule, {stop_time_trips, trip_schedules}) ->
         case ServiceInfoCache.get_stop(schedule.stop_id) do
-          {:ok, {stop_name, _}} ->
+          {:ok, {stop_name, _, _}} ->
             departure_time = extract_time(schedule.departure_time)
             stop_time_trips = Map.put(stop_time_trips, {schedule.stop_id, departure_time}, schedule.trip_id)
             trip_schedules = Map.put(trip_schedules, {schedule.stop_id, schedule.trip_id}, {departure_time, stop_name})

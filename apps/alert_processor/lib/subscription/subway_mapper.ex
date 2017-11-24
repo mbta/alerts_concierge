@@ -16,32 +16,38 @@ defmodule AlertProcessor.Subscription.SubwayMapper do
   to be used for matching against alerts.
   """
   @spec map_subscriptions(map) :: {:ok, [Subscription.subscription_info]} | :error
-  def map_subscriptions(subscription_params) do
-    with {:ok, subscriptions} <- map_timeframe(subscription_params),
-         {:ok, subscriptions} <- map_priority(subscriptions, subscription_params),
-         subscriptions <- map_type(subscriptions, :subway)
-         do
-      map_entities(subscriptions, subscription_params)
-    else
-      _ -> :error
-    end
+  def map_subscriptions(%{"origin" => origin, "destination" => destination} = params) do
+    route = get_route_by_stops(origin, destination)
+
+    params = params
+    |> Map.put("route", route.route_id)
+    |> Map.put("direction", "")
+
+    subscriptions = params
+    |> create_subscriptions
+    |> map_subscription_direction_id(route)
+    |> map_priority(params)
+    |> map_type(:subway)
+
+    {:ok, map_entities(subscriptions, params, route)}
   end
 
-  defp map_entities(subscriptions, params) do
-    with {:ok, subway_info} = ServiceInfoCache.get_subway_info(),
-         %{"origin" => origin, "destination" => destination} <- params,
-         routes <- Enum.filter(
-           subway_info,
-           fn(%Route{stop_list: stop_list}) -> List.keymember?(stop_list, origin, 1) && List.keymember?(stop_list, destination, 1)
-         end),
-         subscription_infos <- map_amenities(subscriptions, params),
-         subscription_infos <- map_route_type(subscription_infos, routes),
-         subscription_infos <- map_routes(subscription_infos, params, routes),
-         subscription_infos <- map_stops(subscription_infos, params, routes),
-         subscription_infos <- filter_duplicate_entities(subscription_infos) do
-      {:ok, subscription_infos}
-    else
-      _ -> :error
-    end
+  defp map_entities(subscriptions, params, route) do
+    subscriptions
+    |> map_amenities(params)
+    |> map_route_type(route)
+    |> map_route(params, route)
+    |> map_stops(params, route)
+    |> filter_duplicate_entities
+  end
+
+  defp get_route_by_stops(origin, destination) do
+    {:ok, subway_info} = ServiceInfoCache.get_subway_info()
+    subway_info
+    |> Enum.filter(
+      fn(%Route{stop_list: stop_list}) ->
+        List.keymember?(stop_list, origin, 1) && List.keymember?(stop_list, destination, 1)
+      end)
+    |> List.first
   end
 end

@@ -12,7 +12,8 @@ defmodule AlertProcessor.Subscription.BusMapperTest do
     "return_start" => nil,
     "return_end" => nil,
     "alert_priority_type" => "low",
-    "trip_type" => "one_way"
+    "trip_type" => "one_way",
+    "amenities" => []
   }
 
   @round_trip_params %{
@@ -23,7 +24,8 @@ defmodule AlertProcessor.Subscription.BusMapperTest do
     "return_start" => ~T[18:00:00],
     "return_end" => ~T[20:00:00],
     "alert_priority_type" => "low",
-    "trip_type" => "round_trip"
+    "trip_type" => "round_trip",
+    "amenities" => []
   }
 
   describe "one way" do
@@ -109,7 +111,6 @@ defmodule AlertProcessor.Subscription.BusMapperTest do
         end)
       assert route_entity_count == 1
 
-
       route_entity_count =
         Enum.count(ie2, fn(informed_entity) ->
           match?(%InformedEntity{route: "16", route_type: 3, stop: nil, direction_id: nil}, informed_entity)
@@ -173,7 +174,8 @@ defmodule AlertProcessor.Subscription.BusMapperTest do
       "return_start" => ~T[18:00:00],
       "return_end" => ~T[20:00:00],
       "alert_priority_type" => "low",
-      "trip_type" => "round_trip"
+      "trip_type" => "round_trip",
+      "amenities" => []
     }
 
     test "it builds a multi struct to persist subscriptions and informed_entities" do

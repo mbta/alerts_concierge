@@ -15,34 +15,44 @@ defmodule AlertProcessor.Subscription.CommuterRailMapper do
   def get_trip_info_from_subscription(subscription), do: get_trip_info_from_subscription(subscription, &map_trip_options/3)
 
   @spec map_subscriptions(map) :: {:ok, [Subscription.subscription_info]} | :error
-  def map_subscriptions(subscription_params) do
-    with {:ok, subscriptions} <- map_timeframe(subscription_params),
-         {:ok, subscriptions} <- map_priority(subscriptions, subscription_params),
-         subscriptions <- map_type(subscriptions, :commuter_rail)
-         do
-      map_entities(subscriptions, subscription_params)
-    else
-      _ -> :error
-    end
+  def map_subscriptions(params) do
+    route = get_route_by_id(params["route_id"])
+
+    params = params
+    |> Map.put("route", route.route_id)
+    |> Map.put("direction", String.to_integer(params["direction_id"]))
+
+    subscriptions = params
+    |> create_subscriptions
+    |> map_priority(params)
+    |> map_type(:commuter_rail)
+
+    {:ok, map_entities(subscriptions, params, route)}
   end
 
-  defp map_entities(subscriptions, params) do
-    with {:ok, commuter_rail_info} = ServiceInfoCache.get_commuter_rail_info(),
-         %{"origin" => origin, "destination" => destination} <- params,
-         routes <- Enum.filter(
-           commuter_rail_info,
-           fn(%Route{stop_list: stop_list}) -> List.keymember?(stop_list, origin, 1) && List.keymember?(stop_list, destination, 1)
-         end),
-         subscription_infos <- map_amenities(subscriptions, params),
-         subscription_infos <- map_route_type(subscription_infos, routes),
-         subscription_infos <- map_routes(subscription_infos, params, routes),
-         subscription_infos <- map_stops(subscription_infos, params, routes),
-         subscription_infos <- map_trips(subscription_infos, params),
-         subscription_infos <- filter_duplicate_entities(subscription_infos) do
-      {:ok, subscription_infos}
-    else
-      _ -> :error
-    end
+  defp get_route_by_id(route_id) do
+    {:ok, cr_info} = ServiceInfoCache.get_commuter_rail_info()
+    Enum.find(cr_info, & &1.route_id == route_id)
+  end
+
+  defp get_route_by_stops(origin, destination) do
+    {:ok, cr_info} = ServiceInfoCache.get_commuter_rail_info()
+    cr_info
+    |> Enum.filter(
+      fn(%Route{stop_list: stop_list}) ->
+        List.keymember?(stop_list, origin, 1) && List.keymember?(stop_list, destination, 1)
+      end)
+    |> List.first
+  end
+
+  defp map_entities(subscriptions, params, route) do
+    subscriptions
+    |> map_amenities(params)
+    |> map_route_type(route)
+    |> map_route(params, route)
+    |> map_stops(params, route)
+    |> map_trips(params)
+    |> filter_duplicate_entities
   end
 
   @doc """
@@ -52,17 +62,15 @@ defmodule AlertProcessor.Subscription.CommuterRailMapper do
   """
   @spec map_trip_options(String.t, String.t, Subscription.relevant_day) :: :error | {:ok, [Trip.t]}
   def map_trip_options(origin, destination, relevant_days, today_date \\ Calendar.Date.today!("America/New_York")) do
-    {:ok, commuter_rail_info} = ServiceInfoCache.get_commuter_rail_info()
-    routes = Enum.filter(commuter_rail_info, fn(%Route{stop_list: stop_list}) -> List.keymember?(stop_list, origin, 1) && List.keymember?(stop_list, destination, 1) end)
-    route_ids = Enum.map(routes, &(&1.route_id))
-    case routes do
-      [] ->
+    route = get_route_by_stops(origin, destination)
+    case route do
+      nil ->
         :error
-      [route | _] ->
+      route ->
         direction_id = determine_direction_id(route, origin, destination)
         relevant_date = DateTimeHelper.determine_date(relevant_days, today_date)
 
-        case ApiClient.schedules(origin, destination, direction_id, route_ids, relevant_date) do
+        case ApiClient.schedules(origin, destination, direction_id, [route.route_id], relevant_date) do
           {:ok, schedules, trips} ->
             trip_name_map = map_trip_names(trips)
             {:ok, origin_stop} = ServiceInfoCache.get_stop(origin)
@@ -71,17 +79,6 @@ defmodule AlertProcessor.Subscription.CommuterRailMapper do
             {:ok, map_common_trips(schedules, trip_name_map, trip)}
           _ -> :error
         end
-    end
-  end
-
-  defp determine_direction_id(route, origin, destination) do
-    filtered_stops =
-      route.stop_list
-      |> Enum.filter(fn({_name, id}) -> Enum.member?([origin, destination], id) end)
-      |> Enum.map(fn({_name, id}) -> id end)
-    case filtered_stops do
-      [^origin, ^destination] -> 1
-      [^destination, ^origin] -> 0
     end
   end
 
