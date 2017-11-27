@@ -4,7 +4,7 @@ use Mix.Config
 # you can enable the server option below.
 config :concierge_site, ConciergeSite.Endpoint,
   http: [port: 4001],
-  server: false
+  server: true
 
 # Print only warnings and errors during test
 config :logger, level: :warn
@@ -14,3 +14,5 @@ config :guardian, Guardian, secret_key: "top_secret_key"
 config :concierge_site, ConciergeSite.Dissemination.Mailer,
   adapter: Bamboo.TestAdapter,
   deliver_later_strategy: Bamboo.ImmediateDeliveryStrategy
+
+config :concierge_site, :sql_sandbox, true
