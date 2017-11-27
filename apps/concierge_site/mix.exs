@@ -64,6 +64,7 @@ defmodule ConciergeSite.Mixfile do
       {:gettext, "~> 0.11"},
       {:cowboy, "~> 1.0"},
       {:logger_logentries_backend, github: "paulswartz/logger_logentries_backend"},
+      {:wallaby, "~> 0.15", only: :test}
     ]
   end
 
