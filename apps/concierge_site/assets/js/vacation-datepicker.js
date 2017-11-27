@@ -1,5 +1,6 @@
 const flatpickr = require("flatpickr");
 const moment = require("moment");
+const objectAssign = require('object-assign');
 
 export default function($) {
   $ = $ || window.jQuery;
@@ -13,11 +14,11 @@ export default function($) {
 
   const now = moment().format("MM/DD/Y");
 
-  const vacationStartConfig = Object.assign({}, flatpickrBaseConfig, {
+  const vacationStartConfig = objectAssign({}, flatpickrBaseConfig, {
     defaultDate: now
   });
 
-  const vacationEndConfig = Object.assign({}, flatpickrBaseConfig, {
+  const vacationEndConfig = objectAssign({}, flatpickrBaseConfig, {
     defaultDate: moment().add(7, "days").format("MM/DD/Y"),
     minDate: now
   });
