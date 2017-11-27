@@ -18,7 +18,11 @@ defmodule AlertProcessor.DigestDateHelperTest do
   @ap2 [
     %{
       start: DT.from_erl!({{2017, 05, 30}, {2, 30, 0}}, "America/New_York"),
-      end: DT.from_erl!({{2017, 06, 03}, {2, 30, 1}}, "America/New_York")
+      end: DT.from_erl!({{2017, 06, 01}, {2, 30, 1}}, "America/New_York")
+    },
+    %{
+      start: DT.from_erl!({{2017, 06, 03}, {2, 30, 0}}, "America/New_York"),
+      end: DT.from_erl!({{2017, 06, 04}, {2, 30, 1}}, "America/New_York")
     }
   ]
 
@@ -122,11 +126,11 @@ defmodule AlertProcessor.DigestDateHelperTest do
       },
       next_weekend: %{
         timeframe: _n_weekend,
-        alert_ids: ["5"]
+        alert_ids: []
       },
       future: %{
         timeframe: _fut,
-        alert_ids: ["5"]
+        alert_ids: []
       }
     } = digest_date_group
   end
