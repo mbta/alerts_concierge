@@ -30,6 +30,7 @@ config :alert_processor, opted_out_list_fetch_interval: {:system, "OPTED_OUT_LIS
 config :alert_processor, service_info_update_interval: {:system, "SERVICE_INFO_UPDATE_INTERVAL", "86400000"}
 config :alert_processor, alert_api_url: {:system, "ALERT_API_URL", "http://s3.amazonaws.com/mbta-realtime-test/alerts_enhanced.json"}
 config :alert_processor, api_url: {:system, "API_URL", "https://dev.api.mbtace.com/"}
+config :alert_processor, api_key: {:system, "API_KEY", nil}
 config :alert_processor, database_url: {:system, "DATABASE_URL_DEV", "postgresql://postgres:postgres@localhost:5432/alert_concierge_dev"}
 
 # Config for Rate Limiter. Scale: time period in ms. Limit: # of requests per time period. Send Rate: ms delay between send

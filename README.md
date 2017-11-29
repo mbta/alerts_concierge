@@ -17,6 +17,7 @@ functionality remain low and that MBTA can manage and improve the system.
   [asdf-nodejs](https://github.com/asdf-vm/asdf-nodejs) or
   [nvm](https://github.com/creationix/nvm) to manage Node.js versions)
 * Yarn ~1.3.2
+* MBTA API key (get one [here](https://dev.api.mbtace.com))
 
 ### Instructions
 
@@ -28,6 +29,7 @@ functionality remain low and that MBTA can manage and improve the system.
 * `elixir touch_templates.exs`
 * `cat .env.example | sed -e "s/__username__/$(logname)/g" > .env`
 * ``env `cat .env` mix ecto.setup``
+* `echo 'API_KEY=<YOUR_MBTA_API_KEY>' >> .env`
 
 #### Notes
 
