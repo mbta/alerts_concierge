@@ -13,7 +13,7 @@ defmodule AlertProcessor.ApiClient do
   """
   @spec get_alerts() :: {:ok, [map], [map]} | {:error, String.t}
   def get_alerts do
-   case get("/alerts/?include=facilities") do
+    case api_get("/alerts", include: "facilities") do
       {:ok, %{body: %{"errors" => errors}}} ->
         {:error, errors |> Enum.map_join(", ", &(&1["code"]))}
       {:ok, %{body: %{"included" => facilities, "data" => alerts}}} ->
@@ -31,7 +31,7 @@ defmodule AlertProcessor.ApiClient do
   @spec facilities() :: {:ok, [map]} | {:error, String.t}
   def facilities do
     "/facilities"
-    |> get()
+    |> api_get()
     |> parse_response()
   end
 
@@ -41,8 +41,8 @@ defmodule AlertProcessor.ApiClient do
   @spec routes([integer], [String.t]) :: {:ok, [map]} | {:error, String.t}
   def routes(types \\ [], fields \\ ["long_name", "type", "direction_names", "short_name"]) do
     # credo:disable-for-next-line Credo.Check.Readability.SpaceAfterCommas
-    "/routes?filter[type]=#{Enum.join(types, ",")}&fields[route]=#{Enum.join(fields, ",")}"
-    |> get()
+    "/routes"
+    |> api_get("filter[type]": Enum.join(types, ","), "fields[route]": Enum.join(fields, ","))
     |> parse_response()
   end
 
@@ -52,8 +52,8 @@ defmodule AlertProcessor.ApiClient do
   @spec trips(String.t, integer, [String.t]) :: {:ok, [map]} | {:error, String.t}
   def trips(route, direction_id, fields \\ ["headsign"]) do
     # credo:disable-for-next-line Credo.Check.Readability.SpaceAfterCommas
-    "/trips?route=#{route}&direction_id=#{direction_id}&fields[trip]=#{Enum.join(fields, ",")}"
-    |> get()
+    "/trips"
+    |> api_get(route: route, direction_id: direction_id, "fields[trip]": Enum.join(fields, ","))
     |> parse_response()
   end
 
@@ -63,9 +63,8 @@ defmodule AlertProcessor.ApiClient do
   @spec trips_with_service_info([String.t]) :: {:ok, [map], [map]} | {:error, String.t}
   def trips_with_service_info(routes) do
     # credo:disable-for-next-line Credo.Check.Readability.SpaceAfterCommas
-    "/trips?route=#{Enum.join(routes, ",")}&include=service"
-    |> URI.encode()
-    |> get()
+    "/trips"
+    |> api_get(route: Enum.join(routes, ","), include: "service")
     |> parse_response()
   end
 
@@ -74,8 +73,8 @@ defmodule AlertProcessor.ApiClient do
   """
   @spec route_stops(String.t) :: {:ok, [map]} | {:error, String.t}
   def route_stops(route) do
-    "/stops/?route=#{route}&direction_id=1"
-    |> get()
+    "/stops"
+    |> api_get(route: route, direction_id: "1")
     |> parse_response()
   end
 
@@ -85,8 +84,8 @@ defmodule AlertProcessor.ApiClient do
   @spec parent_stations() :: {:ok, [map]} | {:error, String.t}
   def parent_stations do
     # credo:disable-for-next-line Credo.Check.Readability.SpaceAfterCommas
-    "/stops?filter[route_type]=0,1,2"
-    |> get()
+    "/stops"
+    |> api_get("filter[route_type]": "0,1,2")
     |> parse_response()
   end
 
@@ -96,8 +95,8 @@ defmodule AlertProcessor.ApiClient do
   @spec route_shapes(String.t) :: {:ok, [map]} | {:error, String.t}
   def route_shapes(route) do
     # credo:disable-for-next-line Credo.Check.Readability.SpaceAfterCommas
-    "/shapes/?route=#{route}&direction_id=1&fields[shape]=priority"
-    |> get()
+    "/shapes"
+    |> api_get(route: route, direction_id: "1", "fields[shape]": "priority")
     |> parse_response()
   end
 
@@ -108,9 +107,8 @@ defmodule AlertProcessor.ApiClient do
   def schedules(origin, destination, direction_id, route_ids, date) do
     sorted_stations = Enum.sort_by([origin, destination], &String.downcase/1)
     # credo:disable-for-next-line Credo.Check.Readability.SpaceAfterCommas
-    "/schedules?filter[stop]=#{Enum.join(sorted_stations, ",")}&direction_id=#{direction_id}&fields[schedule]=departure_time,arrival_time&filter[route]=#{Enum.join(route_ids, ",")}&date=#{date}&include=trip,stop&fields[trip]=name"
-    |> URI.encode()
-    |> get()
+    "/schedules"
+    |> api_get("filter[stop]": Enum.join(sorted_stations, ","), direction_id: direction_id, "fields[schedule]": "departure_time,arrival_time", "filter[route]": Enum.join(route_ids, ","), date: date, include: "trip,stop", "fields[trip]": "name")
     |> parse_response()
   end
 
@@ -118,17 +116,16 @@ defmodule AlertProcessor.ApiClient do
   def schedules_for_stops(stations, date) when is_list(stations) do
     sorted_stations = Enum.sort_by(stations, &String.downcase/1)
     # credo:disable-for-next-line Credo.Check.Readability.SpaceAfterCommas
-    "/schedules?filter[stop]=#{Enum.join(sorted_stations, ",")}&fields[schedule]=departure_time,arrival_time&date=#{date}&include=trip&fields[trip]=name"
+    "/schedules"
     |> URI.encode()
-    |> get()
+    |> api_get("filter[stop]": Enum.join(sorted_stations, ","), "fields[schedule]": "departure_time,arrival_time", date: date, include: "trip", "fields[trip]": "name")
     |> parse_response()
   end
 
   @spec schedule_for_trip(Trip.id) :: {:ok, [map]} | {:error, String.t}
   def schedule_for_trip(trip_id) do
-    "/schedules?trip=#{trip_id}"
-    |> URI.encode()
-    |> get()
+    "/schedules"
+    |> api_get(trip: trip_id)
     |> parse_response()
   end
 
@@ -139,9 +136,9 @@ defmodule AlertProcessor.ApiClient do
   def subway_schedules_union(origin, destination) do
     # credo:disable-for-lines:3 Credo.Check.Readability.SpaceAfterCommas
     routes = "Red,Blue,Orange,Green-B,Green-C,Green-D,Green-E,Mattapan"
-    response = get(
-      "/schedules/?filter[route]=#{routes}&filter[stop]=#{origin},#{destination}&fields[stop]=parent_station&fields[schedule]=&include=stop"
-    )
+    response = "/schedules"
+    |> api_get("filter[route]": routes, "filter[stop]": "#{origin},#{destination}", "fields[stop]": "parent_station", "fields[schedule]": "", include: "stop")
+
     case response do
       {:ok, %{body: %{"data" => schedules, "included" => included}}} ->
         {:ok, schedules, included}
@@ -172,5 +169,16 @@ defmodule AlertProcessor.ApiClient do
 
   defp process_response_body(body) do
     Poison.decode!(body)
+  end
+
+  defp api_get(path, params \\ []) do
+    get(path, add_api_key([]), params: params)
+  end
+
+  defp add_api_key(headers) do
+    case ConfigHelper.get_string(:api_key) do
+      nil -> headers
+      key -> Keyword.put(headers, :"x-api-key", key)
+    end
   end
 end
