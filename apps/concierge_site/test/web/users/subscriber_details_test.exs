@@ -169,14 +169,14 @@ defmodule ConciergeSite.SubscriberDetailsTest do
       user = insert(:user)
       notification = insert(:notification, user: user, alert_id: "123", status: :sent, email: user.email)
       changelog = user |> SubscriberDetails.notification_timeline() |> changelog_to_binary()
-      assert changelog =~ "Email sent to: #{user.email} -- #{notification.service_effect} #{notification.header} #{notification.description}"
+      assert changelog =~ "Email sent to: #{user.email} (alert id 123) -- #{notification.service_effect} #{notification.header} #{notification.description}"
     end
 
     test "works for notification without description" do
       user = insert(:user)
       notification = insert(:notification, user: user, alert_id: "123", status: :sent, email: user.email, description: nil)
       changelog = user |> SubscriberDetails.notification_timeline() |> changelog_to_binary()
-      assert changelog =~ "Email sent to: #{user.email} -- #{notification.service_effect} #{notification.header} "
+      assert changelog =~ "Email sent to: #{user.email} (alert id 123) -- #{notification.service_effect} #{notification.header} "
     end
   end
 

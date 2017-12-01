@@ -254,13 +254,15 @@ defmodule ConciergeSite.SubscriberDetails do
   def notification_timeline(user) do
     user
     |> Notification.sent_to_user()
-    |> Enum.map(fn(%Notification{service_effect: service_effect, header: header, description: description, inserted_at: inserted_at} = notification) ->
+    |> Enum.map(fn(%Notification{service_effect: service_effect, header: header, description: description, inserted_at: inserted_at, alert_id: alert_id} = notification) ->
          {date, time} = date_and_time_values(inserted_at)
          {date, time, [
            notification_type(notification),
            " sent to: ",
            notification_contact(notification),
-           " -- ",
+           " (alert id ",
+           alert_id,
+           ") -- ",
            to_string(service_effect),
            " ",
            to_string(header),
