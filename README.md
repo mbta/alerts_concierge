@@ -13,7 +13,7 @@ functionality remain low and that MBTA can manage and improve the system.
 * Elixir 1.5.2 (you can use [asdf](https://github.com/asdf-vm/asdf) with
   [asdf-elixir](https://github.com/asdf-vm/asdf-elixir) to manage Elixir
   versions)
-* Node.js 7.10 (you can use [asdf](https://github.com/asdf-vm/asdf) with
+* Node.js 8.7.0 (you can use [asdf](https://github.com/asdf-vm/asdf) with
   [asdf-nodejs](https://github.com/asdf-vm/asdf-nodejs) or
   [nvm](https://github.com/creationix/nvm) to manage Node.js versions)
 * Yarn ~1.3.2

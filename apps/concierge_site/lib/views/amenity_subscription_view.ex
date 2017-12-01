@@ -46,20 +46,16 @@ defmodule ConciergeSite.AmenitySubscriptionView do
 
   defp number_of_stations(subscription) do
     subscription.informed_entities
-    |> Enum.filter_map(
-      &(!is_nil(&1.stop)),
-      &(&1.stop)
-    )
+    |> Enum.filter(&(!is_nil(&1.stop)))
+    |> Enum.map(&(&1.stop))
     |> Enum.uniq
     |> length
   end
 
   defp lines(subscription) do
     subscription.informed_entities
-    |> Enum.filter_map(
-      &(!is_nil(&1.route)),
-      &("#{&1.route} Line")
-    )
+    |> Enum.filter(&(!is_nil(&1.route)))
+    |> Enum.map(&("#{&1.route} Line"))
     |> Enum.uniq
     |> Enum.join(", ")
     |> List.wrap()
