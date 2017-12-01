@@ -40,6 +40,12 @@ configuration.
 
 ### Running tests
 
+#### Running all tests and code coverage
+
+* ``env  `cat .env` MIX_ENV=test mix test.all``
+
+#### Running only Elixir tests
+
 * ``env  `cat .env` mix test``
 
 ### Running the application
