@@ -132,29 +132,6 @@ defmodule ConciergeSite.SubscriptionControllerTest do
       assert html_response(conn, 200) =~ "Create New Subscription"
     end
 
-    test "GET /subscriptions/new has 'Edit Station Amenities' link if user already has one amenity", %{conn: conn} do
-      user = insert(:user)
-      amenity_entity = [
-        %InformedEntity{route_type: 4, facility_type: :elevator, route: "Green"}
-      ]
-
-      :subscription
-      |> build(user: user)
-      |> weekday_subscription()
-      |> amenity_subscription()
-      |> Repo.preload(:informed_entities)
-      |> Ecto.Changeset.change()
-      |> Ecto.Changeset.put_assoc(:informed_entities, amenity_entity)
-      |> Repo.insert()
-
-      conn =
-        user
-        |> guardian_login(conn)
-        |> get(subscription_path(conn, :new))
-
-      assert html_response(conn, 200) =~ "Edit Station Amenities"
-    end
-
     test "GET /subscriptions/:id/confirm_delete with a user who owns the subscription", %{conn: conn} do
       user = insert(:user)
       {:ok, subscription} = insert_bus_subscription_for_user(user)

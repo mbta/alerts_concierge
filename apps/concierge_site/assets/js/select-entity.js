@@ -1,5 +1,6 @@
 import filterSuggestions from './filter-suggestions';
 import {generateRouteList, generateStationList, onKeyDownOverrides, renderStationInput, selectedSuggestionClass, unmountStationSuggestions} from './station-select-helpers';
+import "babel-polyfill";
 
 export default function($) {
   $ = $ || window.jQuery;

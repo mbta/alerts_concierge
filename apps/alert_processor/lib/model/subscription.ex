@@ -81,7 +81,6 @@ defmodule AlertProcessor.Model.Subscription do
     |> validate_inclusion(:alert_priority_type, [:low, :medium, :high])
     |> validate_subset(:relevant_days, @valid_days)
     |> validate_length(:relevant_days, min: 1)
-    |> validate_only_one_amenity
   end
 
   @doc """
@@ -229,36 +228,6 @@ defmodule AlertProcessor.Model.Subscription do
       preload: [:informed_entities]
 
     Repo.all(query)
-  end
-
-  defp validate_only_one_amenity(changeset) do
-    type = get_field(changeset, :type)
-    user_id = get_field(changeset, :user_id)
-    if type == :amenity and AlertProcessor.Model.Subscription.amenity_exists(user_id) do
-      add_error(changeset, :type, "User can only have one amenity")
-    else
-      changeset
-    end
-  end
-
-  def amenity_query(user_id) do
-    from s in __MODULE__,
-      where: s.user_id == ^user_id and s.type == "amenity"
-  end
-
-  def amenity_exists(user_id) do
-    query = amenity_query(user_id)
-
-    case Repo.all(query) do
-      [_] -> true
-      [] -> false
-    end
-  end
-
-  def user_amenity(user) do
-    user.id
-    |> amenity_query()
-    |> Repo.one()
   end
 
   @doc """
