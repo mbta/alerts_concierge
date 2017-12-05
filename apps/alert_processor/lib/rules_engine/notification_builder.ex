@@ -34,25 +34,22 @@ defmodule AlertProcessor.NotificationBuilder do
         }
       end)
 
-    [next_subscription | rest_subscription] = sorted_subscriptions
-    [first_notification] = do_build_notifications(user, [next_subscription], alert, now)
-
     # get advanced notice time for subsequent updates
     advanced_notice_in_seconds = Alert.advanced_notice_in_seconds(alert)
 
     # create notifications for all remaining mapping subscriptions for current day
-    later_today_subscriptions =
-      Enum.reject(rest_subscription, fn(sub) ->
-        Time.compare(sub.start_time, DateTime.to_time(now)) == :lt
+    today_subscriptions =
+      Enum.reject(sorted_subscriptions, fn(sub) ->
+        Time.compare(sub.start_time, sub.end_time) == :lt && Time.compare(sub.end_time, DateTime.to_time(now)) == :lt
       end)
-    later_today_notifications = build_estimated_duration_notifications(user, later_today_subscriptions, alert, start_datetime, advanced_notice_in_seconds)
+    today_notifications = build_estimated_duration_notifications(user, today_subscriptions, alert, start_datetime, advanced_notice_in_seconds)
 
     tomorrow_notifications = build_estimated_duration_notifications(user, sorted_subscriptions, alert, DT.add!(start_datetime, 86_400), advanced_notice_in_seconds)
 
     day_after_tomorrow_notifications = build_estimated_duration_notifications(user, sorted_subscriptions, alert, DT.add!(start_datetime, 86_400 * 2), advanced_notice_in_seconds)
 
     filter_estimated_duration_notifications_by_estimated_duration(
-      [first_notification | later_today_notifications ++ tomorrow_notifications ++ day_after_tomorrow_notifications],
+      today_notifications ++ tomorrow_notifications ++ day_after_tomorrow_notifications,
       estimated_duration
     )
   end
