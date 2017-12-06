@@ -2,6 +2,7 @@ defmodule ConciergeSite.LoginTest do
   use ConciergeSite.FeatureCase, async: true
   alias AlertProcessor.{Model.User, Repo}
 
+  import ConciergeSite.FeatureTestHelper
   import Wallaby.Query, only: [css: 2, text_field: 1, button: 1]
 
   @email "test@example.com"
@@ -21,9 +22,7 @@ defmodule ConciergeSite.LoginTest do
 
     session
     |> visit("/")
-    |> fill_in(text_field("Email Address"), with: @email)
-    |> fill_in(text_field("Password"), with: @password)
-    |> click(button("Sign In"))
+    |> log_in(@email, @password)
     |> assert_has(css(".header-link", text: "My Account"))
   end
 
@@ -34,9 +33,7 @@ defmodule ConciergeSite.LoginTest do
 
     session
     |> visit("/")
-    |> fill_in(text_field("Email Address"), with: @email)
-    |> fill_in(text_field("Password"), with: "wrong password")
-    |> click(button("Sign In"))
+    |> log_in(@email, "wrong password")
     |> refute_has(css(".header-link", text: "My Account"))
     |> assert_has(css(".error-block", text: "Sorry, your login information was incorrect. Please try again."))
   end

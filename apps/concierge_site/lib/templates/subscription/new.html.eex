@@ -41,7 +41,7 @@
 
   <div class="service-options-container">
     <%= render "_service_option.html",
-              link_to: amenity_subscription_path(@conn, :new),
+              link_to: accessibility_subscription_path(@conn, :new),
               icon_class: "accessibility-icon",
               icon_src: static_url(@conn, "/images/accessibility.svg"),
               name: "Elevators and Accessibility" %>

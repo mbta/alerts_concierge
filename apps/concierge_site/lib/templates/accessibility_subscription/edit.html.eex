@@ -1,0 +1,18 @@
+<%= render ConciergeSite.SubscriptionView,
+           "_edit_subscription_header.html",
+           title: "Subscribe to station accessibility alerts",
+           subscription: @subscription %>
+
+<%= flash_error(@conn) %>
+
+<div class="subscription-step accessibility">
+  <div class="enter-trip-info">
+    <%= form_for @changeset, accessibility_subscription_path(@conn, :update, @subscription), [class: "single-submit-form trip-info-form multi-select-form accessibility", as: :subscription, method: :patch], fn f -> %>
+      <%= render "_accessibility_form.html", f: f, station_select_options: @station_select_options, selected_options: @selected_options, action: "edit" %>
+
+      <div class="trip-info-footer">
+        <%= submit "Update Subscription", class: "btn btn-primary btn-subscription-next" %>
+      </div>
+    <% end %>
+  </div>
+</div>

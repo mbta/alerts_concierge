@@ -102,6 +102,38 @@ defmodule AlertProcessor.Subscription.Mapper do
   defp map_amenity_activities(:parking_area), do: ["PARK_CAR"]
   defp map_amenity_activities(_), do: []
 
+  def map_accessibility(subscriptions, %{"origin" => origin, "accessibility" => accessibility}) do
+    Enum.map(subscriptions, fn(subscription) ->
+      {subscription, Enum.map(accessibility, fn(accessibility) ->
+        accessibility_type = String.to_existing_atom(accessibility)
+        %InformedEntity{stop: origin, facility_type: accessibility_type, activities: map_accessibility_activities(accessibility_type) }
+      end)}
+    end)
+  end
+  def map_accessibility([subscription], %{"accessibility" => accessibility, "routes" => routes, "stops" => stops}) do
+    [{subscription,
+      Enum.flat_map(accessibility, fn(accessibility) ->
+        accessibility_type = String.to_existing_atom(accessibility)
+        activities = map_accessibility_activities(accessibility_type)
+        entities = for facility_type <- accessibility_facility_types(accessibility_type), do: %InformedEntity{facility_type: facility_type, activities: activities}
+        route_entities = for route <- routes, entity <- entities, do: %{entity | route: String.capitalize(route)}
+        stop_entities = for stop <- stops, entity <- entities, do: %{entity | stop: stop}
+
+        route_entities ++ stop_entities
+      end)
+    }]
+  end
+  def map_accessibility(_, _), do: :error
+
+  def accessibility_facility_types(:elevator), do: [:elevator, :portable_boarding_lift, :elevated_subplatform]
+  def accessibility_facility_types(accessibility), do: [accessibility]
+
+  defp map_accessibility_activities(:elevator), do: ["USING_WHEELCHAIR"]
+  defp map_accessibility_activities(:portable_boarding_lift), do: ["USING_WHEELCHAIR"]
+  defp map_accessibility_activities(:elevated_subplatform), do: ["USING_WHEELCHAIR"]
+  defp map_accessibility_activities(:escalator), do: ["USING_ESCALATOR"]
+  defp map_accessibility_activities(_), do: []
+
   def map_route_type(subscription_infos, %Route{route_type: type}) do
     route_type_entities = [%InformedEntity{route_type: type, activities: InformedEntity.default_entity_activities()}]
 

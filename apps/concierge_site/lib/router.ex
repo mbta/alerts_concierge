@@ -96,6 +96,8 @@ defmodule ConciergeSite.Router do
     post "/ferry/new/preferences", FerrySubscriptionController, :preferences
     resources "/amenities", AmenitySubscriptionController,
       only: [:new, :create, :edit, :update]
+    resources "/accessibility", AccessibilitySubscriptionController,
+      only: [:new, :create, :edit, :update]
   end
 
   scope "/admin", ConciergeSite, as: :admin do
