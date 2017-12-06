@@ -38,7 +38,6 @@ defmodule AlertProcessor.Mixfile do
         :hackney,
         :httpoison,
         :logger,
-        :logger_logentries_backend,
         :poison,
         :poolboy,
         :postgrex,
@@ -79,8 +78,7 @@ defmodule AlertProcessor.Mixfile do
       {:postgrex, ">= 0.0.0"},
       {:scrivener_ecto, "~> 1.0"},
       {:sweet_xml, "~> 0.6"},
-      {:edeliver, "1.4.3"},
-      {:logger_logentries_backend, github: "paulswartz/logger_logentries_backend"}
+      {:edeliver, "1.4.3"}
     ]
   end
 
