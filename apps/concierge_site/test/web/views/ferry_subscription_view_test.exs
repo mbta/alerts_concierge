@@ -37,8 +37,8 @@ defmodule ConciergeSite.FerrySubscriptionViewTest do
 
   describe "trip_summary_details/3" do
     test "returns a summary for a one way ferry trip" do
-      origin = {"Charlestown Navy Yard", ""}
-      destination = {"Long Wharf, Boston", ""}
+      origin = {"Charlestown Navy Yard", "", {1, 1}}
+      destination = {"Long Wharf, Boston", "", {1, 1}}
 
       subscription_params = %{
         "trip_type" => "one_way",
@@ -53,8 +53,8 @@ defmodule ConciergeSite.FerrySubscriptionViewTest do
     end
 
     test "returns a summary for a round trip" do
-      origin = {"Charlestown Navy Yard", ""}
-      destination = {"Long Wharf, Boston", ""}
+      origin = {"Charlestown Navy Yard", "", {1, 1}}
+      destination = {"Long Wharf, Boston", "", {1, 1}}
 
       subscription_params = %{
         "trip_type" => "round_trip",

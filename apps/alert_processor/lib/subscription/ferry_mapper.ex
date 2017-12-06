@@ -15,34 +15,34 @@ defmodule AlertProcessor.Subscription.FerryMapper do
   def get_trip_info_from_subscription(subscription), do: get_trip_info_from_subscription(subscription, &map_trip_options/3)
 
   @spec map_subscriptions(map) :: {:ok, [Subscription.subscription_info]} | :error
-  def map_subscriptions(subscription_params) do
-    with {:ok, subscriptions} <- map_timeframe(subscription_params),
-         {:ok, subscriptions} <- map_priority(subscriptions, subscription_params),
-         subscriptions <- map_type(subscriptions, :ferry)
-         do
-      map_entities(subscriptions, subscription_params)
-    else
-      _ -> :error
-    end
+  def map_subscriptions(params) do
+    route = get_route_by_id(params["route_id"])
+
+    params = params
+    |> Map.put("route", route.route_id)
+    |> Map.put("direction", String.to_integer(params["direction_id"]))
+
+    subscriptions = params
+    |> create_subscriptions
+    |> map_priority(params)
+    |> map_type(:ferry)
+
+    {:ok, map_entities(subscriptions, params, route)}
   end
 
-  defp map_entities(subscriptions, params) do
-    with {:ok, ferry_info} = ServiceInfoCache.get_ferry_info(),
-         %{"origin" => origin, "destination" => destination} <- params,
-         routes <- Enum.filter(
-           ferry_info,
-           fn(%Route{stop_list: stop_list}) -> List.keymember?(stop_list, origin, 1) && List.keymember?(stop_list, destination, 1)
-         end),
-         subscription_infos <- map_amenities(subscriptions, params),
-         subscription_infos <- map_route_type(subscription_infos, routes),
-         subscription_infos <- map_routes(subscription_infos, params, routes),
-         subscription_infos <- map_stops(subscription_infos, params, routes),
-         subscription_infos <- map_trips(subscription_infos, params),
-         subscription_infos <- filter_duplicate_entities(subscription_infos) do
-      {:ok, subscription_infos}
-    else
-      _ -> :error
-    end
+  defp get_route_by_id(route_id) do
+    {:ok, ferry_info} = ServiceInfoCache.get_ferry_info()
+    Enum.find(ferry_info, & &1.route_id == route_id)
+  end
+
+  defp map_entities(subscriptions, params, route) do
+    subscriptions
+    |> map_amenities(params)
+    |> map_route_type(route)
+    |> map_route(params, route)
+    |> map_stops(params, route)
+    |> map_trips(params)
+    |> filter_duplicate_entities()
   end
 
   @doc """
@@ -70,17 +70,6 @@ defmodule AlertProcessor.Subscription.FerryMapper do
             {:ok, map_common_trips(schedules, trip)}
           _ -> :error
         end
-    end
-  end
-
-  defp determine_direction_id(route, origin, destination) do
-    filtered_stops =
-      route.stop_list
-      |> Enum.filter(fn({_name, id}) -> Enum.member?([origin, destination], id) end)
-      |> Enum.map(fn({_name, id}) -> id end)
-    case filtered_stops do
-      [^origin, ^destination] -> 1
-      [^destination, ^origin] -> 0
     end
   end
 

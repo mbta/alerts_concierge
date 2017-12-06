@@ -15,7 +15,9 @@ defmodule AlertProcessor.Subscription.FerryMapperTest do
       "return_start" => nil,
       "return_end" => nil,
       "alert_priority_type" => "low",
-      "amenities" => ["elevator"]
+      "amenities" => ["elevator"],
+      "route_id" => "Boat-F1",
+      "direction_id" => "0"
     }
 
     test "constructs subscription with severity" do
@@ -65,7 +67,8 @@ defmodule AlertProcessor.Subscription.FerryMapperTest do
     end
 
     test "constructs subscription with route in other direction" do
-      reverse_trip_params = Map.merge(@one_way_params, %{"destination" => "Boat-Long", "origin" => "Boat-Hingham"})
+      reverse_trip_params = Map.merge(@one_way_params, %{"destination" => "Boat-Long", "origin" => "Boat-Hingham",
+                                                         "direction_id" => "1"})
       {:ok, [{_sub, informed_entities}]} = FerryMapper.map_subscriptions(reverse_trip_params)
       route_entity_count =
         Enum.count(informed_entities, fn(informed_entity) ->
@@ -126,7 +129,9 @@ defmodule AlertProcessor.Subscription.FerryMapperTest do
       "return_start" => ~T[18:00:00],
       "return_end" => ~T[20:00:00],
       "alert_priority_type" => "low",
-      "amenities" => ["elevator"]
+      "amenities" => ["elevator"],
+      "route_id" => "Boat-F1",
+      "direction_id" => "0"
     }
 
     test "constructs subscription with severity" do
@@ -461,7 +466,9 @@ defmodule AlertProcessor.Subscription.FerryMapperTest do
       "return_start" => ~T[18:00:00],
       "return_end" => ~T[20:00:00],
       "alert_priority_type" => "low",
-      "amenities" => ["elevator"]
+      "amenities" => ["elevator"],
+      "route_id" => "Boat-F1",
+      "direction_id" => "0"
     }
 
     test "it builds a multi struct to persist subscriptions and informed_entities" do

@@ -20,7 +20,9 @@ defmodule ConciergeSite.SubscriberDetailsTest do
       "return_start" => nil,
       "return_end" => nil,
       "alert_priority_type" => "low",
-      "amenities" => ["elevator"]
+      "amenities" => ["elevator"],
+      "route_id" => "CR-Lowell",
+      "direction_id" => "0"
     }
     {:ok, subscription_infos} = CommuterRailMapper.map_subscriptions(one_way_params)
     multi = CommuterRailMapper.build_subscription_transaction(subscription_infos, user, user.id)

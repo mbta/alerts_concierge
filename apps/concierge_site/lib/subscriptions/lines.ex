@@ -13,7 +13,9 @@ defmodule ConciergeSite.Subscriptions.Lines do
   """
   @spec station_list_select_options([%Route{}]) :: [{String.t, list}]
   def station_list_select_options(routes) do
-    Enum.map(routes, fn(route) -> {Route.name(route), route.stop_list} end)
+    Enum.map(routes, fn(route) ->
+      {Route.name(route), Enum.map(route.stop_list, fn(stop) -> {elem(stop, 0), elem(stop, 1)} end)}
+    end)
   end
 
   @doc """
@@ -26,10 +28,10 @@ defmodule ConciergeSite.Subscriptions.Lines do
         station_list = Enum.flat_map(stations, fn station -> station.stop_list end)
 
         for {key, station_id} <- selected_station_ids do
-          {name, _id} = Enum.find(
+          {name, _id, _latlong} = Enum.find(
             station_list,
             {station_id, station_id},
-            fn {_name, station_list_id} -> station_id == station_list_id end
+            fn {_name, station_list_id, _latlong} -> station_id == station_list_id end
           )
           {key, name}
         end

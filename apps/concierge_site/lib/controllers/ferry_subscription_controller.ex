@@ -63,6 +63,8 @@ defmodule ConciergeSite.FerrySubscriptionController do
 
     with :ok <- FerryParams.validate_info_params(subscription_params),
       {:ok, trips} <- FerryMapper.populate_trip_options(subscription_params) do
+      subscription_params = Map.merge(subscription_params, get_route_and_direction_from_trip(trips))
+
       render conn, "ferry.html",
         token: token,
         subscription_params: subscription_params,
@@ -71,6 +73,11 @@ defmodule ConciergeSite.FerrySubscriptionController do
       {:error, message} ->
         handle_invalid_info_submission(conn, subscription_params, token, message)
     end
+  end
+
+  defp get_route_and_direction_from_trip (%{departure_trips: [%{direction_id: direction_id,
+                                            route: %{route_id: route_id}} | _]}) do
+    %{"route_id" => route_id, "direction_id" => direction_id}
   end
 
   def preferences(conn, params, user, _claims) do

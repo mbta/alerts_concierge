@@ -113,7 +113,9 @@ defmodule ConciergeSite.FerrySubscriptionControllerTest do
         "relevant_days" => "weekday",
         "departure_start" => "09:00:00",
         "alert_priority_type" => "low",
-        "trip_type" => "one_way"
+        "trip_type" => "one_way",
+        "route_id" => "Boat-F1",
+        "direction_id" => "0"
       }}
 
       conn = post(conn, "/subscriptions/ferry", params)

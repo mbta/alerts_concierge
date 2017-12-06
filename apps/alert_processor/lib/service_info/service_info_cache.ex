@@ -184,7 +184,7 @@ defmodule AlertProcessor.ServiceInfoCache do
 
   defp get_stop_from_state(stop_id, state) do
     Enum.find_value(state, fn(%Route{stop_list: stop_list}) ->
-      Enum.find(stop_list, fn({_name, id}) ->
+      Enum.find(stop_list, fn({_name, id, _latlong}) ->
         id == stop_id
       end)
     end)
@@ -316,8 +316,9 @@ defmodule AlertProcessor.ServiceInfoCache do
     {:ok, route_stops} = ApiClient.route_stops(route_id)
 
     route_stops
-    |> Enum.map(fn(%{"attributes" => %{"name" => name}, "id" => id}) ->
-      {name, id}
+    |> Enum.map(fn(%{"attributes" => %{"name" => name, "latitude" => latitude, "longitude" => longitude},
+                     "id" => id}) ->
+      {name, id, {latitude, longitude}}
     end)
   end
 
@@ -357,7 +358,7 @@ defmodule AlertProcessor.ServiceInfoCache do
 
   defp parse_branches(route, stop_list, branches) do
     Enum.map(branches, fn(branch) ->
-      stops = Enum.filter(stop_list, fn({_name, stop_id}) -> Enum.member?(branch, stop_id) end)
+      stops = Enum.filter(stop_list, fn({_name, stop_id, _latlong}) -> Enum.member?(branch, stop_id) end)
       Map.put(route, :stop_list, stops)
     end)
   end

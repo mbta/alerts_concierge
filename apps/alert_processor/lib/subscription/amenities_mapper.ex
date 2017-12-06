@@ -65,21 +65,17 @@ defmodule AlertProcessor.Subscription.AmenitiesMapper do
   to be used for matching against alerts.
   """
   @spec map_subscriptions(map) :: {:ok, [Subscription.subscription_info]} | :error
-  def map_subscriptions(subscription_params) do
-    params =
-      subscription_params
-      |> remove_empty_strings()
-      |> map_stop_names()
-      |> set_alert_priority()
+  def map_subscriptions(params) do
+    params = params
+    |> remove_empty_strings()
+    |> map_stop_names()
+    |> set_alert_priority()
 
-    with {:ok, subscriptions} <- map_timeframe(params),
-         {:ok, subscriptions} <- map_priority(subscriptions, params),
-         subscriptions <- map_type(subscriptions, :amenity)
-         do
-      map_entities(subscriptions, params)
-    else
-      _ -> :error
-    end
+    params
+    |> map_timeframe
+    |> map_priority(params)
+    |> map_type(:amenity)
+    |> map_entities(params)
   end
 
   defp set_alert_priority(params) do
@@ -117,12 +113,10 @@ defmodule AlertProcessor.Subscription.AmenitiesMapper do
   end
 
   defp map_timeframe(%{"relevant_days" => relevant_days}) do
-    {:ok, [
-      %Subscription{
-        start_time: ~T[00:00:00],
-        end_time: ~T[23:59:59],
-        relevant_days: Enum.map(relevant_days, &String.to_existing_atom/1)
-      }
-    ]}
+    [%Subscription{
+      start_time: ~T[00:00:00],
+      end_time: ~T[23:59:59],
+      relevant_days: Enum.map(relevant_days, &String.to_existing_atom/1)
+    }]
   end
 end
