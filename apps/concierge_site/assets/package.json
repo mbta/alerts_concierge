@@ -7,6 +7,7 @@
     "test": "mocha --require ./test/testHelper.js"
   },
   "dependencies": {
+    "babel-polyfill": "^6.26.0",
     "bootstrap": "^4.0.0-alpha.6",
     "flatpickr": "^3.0.6",
     "font-awesome": "^4.7.0",

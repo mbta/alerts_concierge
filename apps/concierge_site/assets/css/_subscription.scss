@@ -112,12 +112,32 @@
   }
 }
 
-.mbta-icon {
+.accessibility-icon {
+  background-color: $brand-accessibility;
   display: flex;
   justify-content: center;
   align-items: center;
-  height: 100%;
-  top: 0;
+
+  img {
+    height: 1.125rem;
+    margin-left: 0.3rem;
+  }
+}
+
+.parking-icon {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  img {
+    height: 1.5rem;
+  }
+}
+
+.bike-storage-icon {
+  display: flex;
+  justify-content: center;
+  align-items: center;
 
   img {
     height: 1.5rem;

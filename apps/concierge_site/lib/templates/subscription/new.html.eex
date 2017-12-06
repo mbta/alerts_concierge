@@ -34,11 +34,29 @@
                icon_src: static_url(@conn, "/images/ferry.svg"),
                name: "Ferry" %>
 
+  </div>
+</div>
+<div class="subscription-step select-service">
+  <p class="select-service-subheader">What station features do you use?</p>
+
+  <div class="service-options-container">
     <%= render "_service_option.html",
-              link_to: @amenity_url,
-              icon_class: "mbta-icon",
-              icon_src: static_url(@conn, "/images/m-b-t-a.svg"),
-              name: @amenity_name %>
+              link_to: amenity_subscription_path(@conn, :new),
+              icon_class: "accessibility-icon",
+              icon_src: static_url(@conn, "/images/accessibility.svg"),
+              name: "Elevators and Accessibility" %>
+
+    <%= render "_service_option.html",
+              link_to: amenity_subscription_path(@conn, :new),
+              icon_class: "parking-icon",
+              icon_src: static_url(@conn, "/images/parking.svg"),
+              name: "Parking" %>
+
+    <%= render "_service_option.html",
+              link_to: amenity_subscription_path(@conn, :new),
+              icon_class: "bike-storage-icon",
+              icon_src: static_url(@conn, "/images/bike_storage.svg"),
+              name: "Bike Storage" %>
 
   </div>
 </div>
