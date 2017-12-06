@@ -1,0 +1,44 @@
+FROM elixir:1.5
+
+WORKDIR /root
+
+# Configure Git to use HTTPS in order to avoid issues with the internal MBTA network
+RUN git config --global url.https://github.com/.insteadOf git://github.com/
+
+# Install Hex+Rebar
+RUN mix local.hex --force && \
+  mix local.rebar --force
+
+# Install node/npm
+# Instructions from https://nodejs.org/en/download/package-manager/#debian-and-ubuntu-based-linux-distributions
+RUN curl -sL https://deb.nodesource.com/setup_6.x | bash - && \
+    apt-get install -y nodejs && \
+    npm install -g brunch
+
+# Clean up
+RUN apt-get clean
+
+COPY . /alerts_concierge
+WORKDIR /alerts_concierge
+
+ENV MIX_ENV=prod TERM=xterm LANG="C.UTF-8" REPLACE_OS_VARS=true
+RUN mix do deps.get, deps.compile
+
+WORKDIR /alerts_concierge/apps/concierge_site/mail_inlining
+RUN npm install
+
+WORKDIR /alerts_concierge
+RUN elixir touch_templates.exs
+# RUN /bin/bash -c "source .env"
+
+WORKDIR /alerts_concierge/apps/concierge_site/assets
+RUN npm rebuild node-sass
+RUN npm install && brunch build --production
+
+WORKDIR /alerts_concierge
+RUN MIX_ENV=prod mix compile
+RUN MIX_ENV=prod mix phx.digest
+RUN MIX_ENV=prod mix release --profile=concierge_site:prod --verbose
+EXPOSE 4000
+
+CMD ["releases/concierge_site/bin/concierge_site", "foreground"]
