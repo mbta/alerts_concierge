@@ -8,7 +8,7 @@ defmodule AlertProcessor.Model.Subscription do
   import Ecto.Query
 
   @type id :: String.t
-  @type subscription_type :: :bus | :subway | :commuter_rail | :boat | :amenity
+  @type subscription_type :: :bus | :subway | :commuter_rail | :boat | :amenity | :accessibility
   @type subscription_info :: {__MODULE__.t, [InformedEntity.t]}
   @type relevant_day :: :weekday | :saturday | :sunday
   @type direction :: 0 | 1
@@ -362,7 +362,7 @@ defmodule AlertProcessor.Model.Subscription do
   for String.to_existing_atom calls.
   """
   def subscription_types do
-    [:bus, :subway, :commuter_rail, :boat, :amenity]
+    [:bus, :subway, :commuter_rail, :boat, :amenity, :accessibility]
   end
 
   def subscription_type_from_route_type(route_type) do

@@ -1,19 +1,19 @@
-defmodule ConciergeSite.AmenitySubscriptionView do
+defmodule ConciergeSite.AccessibilitySubscriptionView do
   use ConciergeSite.Web, :view
   alias AlertProcessor.Model.Subscription
   import ConciergeSite.SubscriptionHelper,
     only: [relevant_days: 1]
 
   @doc """
-  Returns string with ampersand separated list of facilty types for an amenity subscription
+  Returns string with ampersand separated list of facilty types for an accessibility subscription
   """
-  @spec amenity_facility_type(Subscription.t) :: String.t
-  def amenity_facility_type(subscription) do
+  @spec accessibility_facility_type(Subscription.t) :: String.t
+  def accessibility_facility_type(subscription) do
     subscription.informed_entities
     |> Enum.map(&(&1.facility_type))
     |> Enum.uniq
-    |> Enum.map(fn(amenity) ->
-      amenity
+    |> Enum.map(fn(accessibility) ->
+      accessibility
       |> Atom.to_string()
       |> String.replace("_", " ")
       |> String.capitalize()
@@ -23,12 +23,12 @@ defmodule ConciergeSite.AmenitySubscriptionView do
   end
 
   @doc """
-  Returns human readable description of amenity schedule
+  Returns human readable description of accessibility schedule
   # of stations, which lines, and days of travel
   Example: 2 stations + Green line, Weekdays
   """
-  @spec amenity_schedule(Subscription.t) :: iolist
-  def amenity_schedule(subscription) do
+  @spec accessibility_schedule(Subscription.t) :: iolist
+  def accessibility_schedule(subscription) do
     entity_info = Enum.join(pretty_station_count(subscription) ++ lines(subscription), " + ")
     [
       entity_info,

@@ -1,6 +1,6 @@
-defmodule ConciergeSite.AmenitySubscriptionViewTest do
+defmodule ConciergeSite.AccessibilitySubscriptionViewTest do
   use ExUnit.Case
-  alias ConciergeSite.AmenitySubscriptionView
+  alias ConciergeSite.AccessibilitySubscriptionView
   alias AlertProcessor.Model.{Subscription, InformedEntity}
 
   @informed_entities [
@@ -19,21 +19,21 @@ defmodule ConciergeSite.AmenitySubscriptionViewTest do
     relevant_days: [:saturday, :weekday]
   }
 
-  describe "amenity_facility_type/1" do
-    test "it returns and separated list of amenities" do
+  describe "accessibility_facility_type/1" do
+    test "it returns and separated list of accessibility" do
       result =
         @subscription
-        |> AmenitySubscriptionView.amenity_facility_type()
+        |> AccessibilitySubscriptionView.accessibility_facility_type()
         |> IO.iodata_to_binary
       assert result == "Elevator and Escalator"
     end
   end
 
-  describe "amenity_schedule/1" do
+  describe "accessibility_schedule/1" do
     test "it returns the schedule details" do
       result =
         @subscription
-        |> AmenitySubscriptionView.amenity_schedule()
+        |> AccessibilitySubscriptionView.accessibility_schedule()
         |> IO.iodata_to_binary
 
       assert result == "1 station + Green Line on Saturdays, Weekdays"
@@ -48,7 +48,7 @@ defmodule ConciergeSite.AmenitySubscriptionViewTest do
       sub = Map.put(@subscription, :informed_entities, ies)
       result =
         sub
-        |> AmenitySubscriptionView.amenity_schedule()
+        |> AccessibilitySubscriptionView.accessibility_schedule()
         |> IO.iodata_to_binary
 
       assert result == "2 stations + Green Line on Saturdays, Weekdays"
@@ -62,7 +62,7 @@ defmodule ConciergeSite.AmenitySubscriptionViewTest do
 
       result =
         subscription
-        |> AmenitySubscriptionView.amenity_schedule()
+        |> AccessibilitySubscriptionView.accessibility_schedule()
         |> IO.iodata_to_binary
 
       assert result == "Green Line on Saturdays"
@@ -76,7 +76,7 @@ defmodule ConciergeSite.AmenitySubscriptionViewTest do
 
       result =
         subscription
-        |> AmenitySubscriptionView.amenity_schedule()
+        |> AccessibilitySubscriptionView.accessibility_schedule()
         |> IO.iodata_to_binary
 
       assert result == "1 station on Saturdays"
