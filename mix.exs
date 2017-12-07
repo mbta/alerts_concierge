@@ -27,7 +27,6 @@ defmodule AlertsConcierge.Mixfile do
     [
       {:credo, "~> 0.7", only: [:dev, :test]},
       {:excoveralls, "~> 0.5", only: [:dev, :test]},
-      {:logger_logentries_backend, github: "paulswartz/logger_logentries_backend"},
       {:edeliver, "1.4.3"},
       {:distillery, "~> 1.4", runtime: false}
     ]
