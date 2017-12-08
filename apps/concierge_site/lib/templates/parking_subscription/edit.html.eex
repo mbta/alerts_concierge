@@ -1,0 +1,18 @@
+<%= render ConciergeSite.SubscriptionView,
+           "_edit_subscription_header.html",
+           title: "Subscribe to station parking alerts",
+           subscription: @subscription %>
+
+<%= flash_error(@conn) %>
+
+<div class="subscription-step parking">
+  <div class="enter-trip-info">
+    <%= form_for @changeset, parking_subscription_path(@conn, :update, @subscription), [class: "single-submit-form trip-info-form multi-select-form parking", as: :subscription, method: :patch], fn f -> %>
+      <%= render "_parking_form.html", f: f, station_select_options: @station_select_options, selected_options: @selected_options, action: "edit" %>
+
+      <div class="trip-info-footer">
+        <%= submit "Update Subscription", class: "btn btn-primary btn-subscription-next" %>
+      </div>
+    <% end %>
+  </div>
+</div>

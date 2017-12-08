@@ -6,7 +6,8 @@ defmodule ConciergeSite.SubscriptionView do
 
   alias AlertProcessor.{Model, ServiceInfoCache}
   alias Model.{InformedEntity, Route, Subscription}
-  alias ConciergeSite.{AmenitySubscriptionView, AccessibilitySubscriptionView, BusSubscriptionView, SubscriptionHelper, TimeHelper}
+  alias ConciergeSite.{AmenitySubscriptionView, AccessibilitySubscriptionView, ParkingSubscriptionView,
+    BusSubscriptionView, SubscriptionHelper, TimeHelper}
 
   import SubscriptionHelper,
     only: [direction_id: 1, relevant_days: 1]
@@ -14,6 +15,8 @@ defmodule ConciergeSite.SubscriptionView do
     only: [amenity_facility_type: 1, amenity_schedule: 1]
   import AccessibilitySubscriptionView,
     only: [accessibility_facility_type: 1, accessibility_schedule: 1]
+  import ParkingSubscriptionView,
+    only: [parking_schedule: 1]
 
   @type subscription_info :: %{
     amenity: [Subscription.t],
@@ -45,12 +48,12 @@ defmodule ConciergeSite.SubscriptionView do
         {route.order, relevant_days_key, start_time_value}
       end)
       |> Enum.group_by(& &1.type)
-    Map.merge(%{amenity: [], accessibility: [], ferry: [], bus: [], commuter_rail: [], subway: []}, subscription_map)
+    Map.merge(%{amenity: [], accessibility: [], parking: [], ferry: [], bus: [], commuter_rail: [], subway: []}, subscription_map)
   end
 
   def subscription_info(subscription, station_display_names \\ nil, departure_time_map \\ nil)
   def subscription_info(%{type: type} = subscription, station_display_names, departure_time_map) do
-    if Enum.member?([:amenity, :accessibility, :bus, :commuter_rail, :ferry, :subway], type) do
+    if Enum.member?([:amenity, :accessibility, :parking, :bus, :commuter_rail, :ferry, :subway], type) do
       do_subscription_info(subscription, station_display_names, departure_time_map)
     else
       ""
@@ -74,6 +77,18 @@ defmodule ConciergeSite.SubscriptionView do
       [
         content_tag :div, class: "subscription-route" do
           "Accessibility Features"
+        end,
+        content_tag :div, class: "subscription-details" do
+          route_body(subscription, nil, nil)
+        end
+      ]
+    end
+  end
+  defp do_subscription_info(%{type: :parking} = subscription, _, _) do
+    content_tag :div, class: "subscription-info" do
+      [
+        content_tag :div, class: "subscription-route" do
+          "Parking"
         end,
         content_tag :div, class: "subscription-details" do
           route_body(subscription, nil, nil)
@@ -114,6 +129,7 @@ defmodule ConciergeSite.SubscriptionView do
 
   def route_header(%{type: :amenity}), do: "Station Amenities"
   def route_header(%{type: :accessibility}), do: "Accessibility"
+  def route_header(%{type: :parking}), do: "Parking"
   def route_header(%{type: :bus} = subscription, _) do
     route_entity_count = Subscription.route_count(subscription)
     if route_entity_count > 1 do
@@ -154,6 +170,13 @@ defmodule ConciergeSite.SubscriptionView do
       end,
       content_tag :div, class: "subscription-amenity-schedule" do
         accessibility_schedule(subscription)
+      end
+    ]
+  end
+  defp route_body(%{type: :parking} = subscription, _, _) do
+    [
+      content_tag :div, class: "subscription-amenity-schedule" do
+        parking_schedule(subscription)
       end
     ]
   end
@@ -235,6 +258,7 @@ defmodule ConciergeSite.SubscriptionView do
 
   def parse_route(%Subscription{type: :amenity}), do: %{order: 1}
   def parse_route(%Subscription{type: :accessibility}), do: %{order: 1}
+  def parse_route(%Subscription{type: :parking}), do: %{order: 1}
   def parse_route(subscription) do
     {:ok, route} = subscription |> parse_route_id() |> ServiceInfoCache.get_route()
     route

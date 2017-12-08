@@ -98,6 +98,8 @@ defmodule ConciergeSite.Router do
       only: [:new, :create, :edit, :update]
     resources "/accessibility", AccessibilitySubscriptionController,
       only: [:new, :create, :edit, :update]
+    resources "/parking", ParkingSubscriptionController,
+      only: [:new, :create, :edit, :update]
   end
 
   scope "/admin", ConciergeSite, as: :admin do
