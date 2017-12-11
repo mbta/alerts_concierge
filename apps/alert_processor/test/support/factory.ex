@@ -160,6 +160,20 @@ defmodule AlertProcessor.Factory do
     ]
   end
 
+  def parking_subscription(%Subscription{} = subscription) do
+    %{subscription |
+      alert_priority_type: :low,
+      type: :amenity
+     }
+  end
+
+  def parking_subscription_entities() do
+    [
+      %InformedEntity{route_type: 4, facility_type: :elevator, route: "Green"},
+      %InformedEntity{route_type: 4, facility_type: :escalator, stop: "place-nqncy"}
+    ]
+  end
+
   def user_factory do
     %User{
       email: sequence(:email, &"email-#{&1}@example.com"),

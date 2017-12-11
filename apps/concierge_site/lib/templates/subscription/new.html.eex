@@ -47,7 +47,7 @@
               name: "Elevators and Accessibility" %>
 
     <%= render "_service_option.html",
-              link_to: amenity_subscription_path(@conn, :new),
+              link_to: parking_subscription_path(@conn, :new),
               icon_class: "parking-icon",
               icon_src: static_url(@conn, "/images/parking.svg"),
               name: "Parking" %>
