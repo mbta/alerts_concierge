@@ -147,6 +147,19 @@ defmodule AlertProcessor.Subscription.Mapper do
   end
   def map_parking(_, _), do: :error
 
+  def map_bike_storage(subscriptions, %{"origin" => origin}) do
+    Enum.map(subscriptions, fn(subscription) ->
+      {subscription, [%InformedEntity{stop: origin, facility_type: :bike_storage, activities: ["STORE_BIKE"]}]}
+    end)
+  end
+  def map_bike_storage([subscription], %{"stops" => stops}) do
+    entity = %InformedEntity{facility_type: :bike_storage, activities: ["STORE_BIKE"]}
+    stop_entities = for stop <- stops, do: %{entity | stop: stop}
+
+    [{subscription, stop_entities}]
+  end
+  def map_bike_storage(_, _), do: :error
+
   def map_route_type(subscription_infos, %Route{route_type: type}) do
     route_type_entities = [%InformedEntity{route_type: type, activities: InformedEntity.default_entity_activities()}]
 

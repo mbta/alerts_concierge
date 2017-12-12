@@ -6,3 +6,4 @@
   <%= render "_amenity_subscription_info.html", conn: @conn, subscriptions: customer_subscription_map[:amenity], render_links: @render_links %>
   <%= render "_accessibility_subscription_info.html", conn: @conn, subscriptions: customer_subscription_map[:accessibility], render_links: @render_links %>
   <%= render "_parking_subscription_info.html", conn: @conn, subscriptions: customer_subscription_map[:parking], render_links: @render_links %>
+  <%= render "_bike_storage_subscription_info.html", conn: @conn, subscriptions: customer_subscription_map[:bike_storage], render_links: @render_links %>

@@ -14,11 +14,10 @@ defmodule ConciergeSite.BikeStorageSubscriptionTest do
     session
     |> log_in(user)
     |> click(css("a", text: "Bike Storage"))
-    |> click(checkbox("Bike Storage"))
     |> fill_in(text_field("station"), with: "Alewife")
     |> click(checkbox("Weekdays"))
     |> click(button("Create Subscription"))
     |> assert_has(css(".header-text", text: "My Subscriptions"))
-    |> assert_has(css(".subscription-details", text: "Bike storage"))
+    |> assert_has(css(".subscription-route", text: "Bike Storage"))
   end
 end

@@ -53,7 +53,7 @@
               name: "Parking" %>
 
     <%= render "_service_option.html",
-              link_to: amenity_subscription_path(@conn, :new),
+              link_to: bike_storage_subscription_path(@conn, :new),
               icon_class: "bike-storage-icon",
               icon_src: static_url(@conn, "/images/bike_storage.svg"),
               name: "Bike Storage" %>
