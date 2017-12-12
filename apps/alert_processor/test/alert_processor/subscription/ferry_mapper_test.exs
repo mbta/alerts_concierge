@@ -15,7 +15,6 @@ defmodule AlertProcessor.Subscription.FerryMapperTest do
       "return_start" => nil,
       "return_end" => nil,
       "alert_priority_type" => "low",
-      "amenities" => ["elevator"],
       "route_id" => "Boat-F1",
       "direction_id" => "0"
     }
@@ -41,15 +40,6 @@ defmodule AlertProcessor.Subscription.FerryMapperTest do
       assert subscription.start_time == ~T[12:00:00]
       assert subscription.end_time == ~T[14:00:00]
       assert subscription.relevant_days == [:weekday]
-    end
-
-    test "constructs subscription with amenities" do
-      {:ok, [{_sub, informed_entities}]} = FerryMapper.map_subscriptions(@one_way_params)
-      amenity_informed_entities_count =
-        Enum.count(informed_entities, fn(informed_entity) ->
-          match?(%InformedEntity{facility_type: :elevator, stop: "Boat-Long"}, informed_entity)
-        end)
-      assert amenity_informed_entities_count == 1
     end
 
     test "constructs subscription with route" do
@@ -129,7 +119,6 @@ defmodule AlertProcessor.Subscription.FerryMapperTest do
       "return_start" => ~T[18:00:00],
       "return_end" => ~T[20:00:00],
       "alert_priority_type" => "low",
-      "amenities" => ["elevator"],
       "route_id" => "Boat-F1",
       "direction_id" => "0"
     }
@@ -162,20 +151,6 @@ defmodule AlertProcessor.Subscription.FerryMapperTest do
       assert sub2.start_time == ~T[18:00:00]
       assert sub2.end_time == ~T[20:00:00]
       assert sub2.relevant_days == [:weekday]
-    end
-
-    test "constructs subscription with amenities" do
-      {:ok, [{_sub1, ie1}, {_sub2, ie2}]} = FerryMapper.map_subscriptions(@round_trip_params)
-      amenity_informed_entities_count =
-        Enum.count(ie1, fn(informed_entity) ->
-          match?(%InformedEntity{facility_type: :elevator, stop: "Boat-Long"}, informed_entity)
-        end)
-      assert amenity_informed_entities_count == 1
-      amenity_informed_entities_count =
-        Enum.count(ie2, fn(informed_entity) ->
-          match?(%InformedEntity{facility_type: :elevator, stop: "Boat-Long"}, informed_entity)
-        end)
-      assert amenity_informed_entities_count == 1
     end
 
     test "constructs subscription with route" do
@@ -466,7 +441,6 @@ defmodule AlertProcessor.Subscription.FerryMapperTest do
       "return_start" => ~T[18:00:00],
       "return_end" => ~T[20:00:00],
       "alert_priority_type" => "low",
-      "amenities" => ["elevator"],
       "route_id" => "Boat-F1",
       "direction_id" => "0"
     }

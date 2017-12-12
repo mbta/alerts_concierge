@@ -97,7 +97,6 @@ defmodule ConciergeSite.Subscriptions.FerryParamsTest do
 
     test "it preps params for one way parameters" do
       assert %{
-        "amenities" => [],
         "departure_start" => ds,
         "departure_end" => de,
         "relevant_days" => ["weekday"],
@@ -140,7 +139,6 @@ defmodule ConciergeSite.Subscriptions.FerryParamsTest do
 
     test "it preps params for round trip parameters" do
       assert %{
-        "amenities" => [],
         "departure_start" => ds,
         "departure_end" => de,
         "relevant_days" => ["weekday"],

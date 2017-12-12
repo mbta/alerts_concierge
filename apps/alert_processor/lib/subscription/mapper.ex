@@ -68,40 +68,6 @@ defmodule AlertProcessor.Subscription.Mapper do
     end)
   end
 
-  def map_amenities(subscriptions, %{"origin" => origin, "amenities" => amenities}) do
-    Enum.map(subscriptions, fn(subscription) ->
-      {subscription, Enum.map(amenities, fn(amenity) ->
-        amenity_type = String.to_existing_atom(amenity)
-        %InformedEntity{stop: origin, facility_type: amenity_type, activities: map_amenity_activities(amenity_type) }
-      end)}
-    end)
-  end
-  def map_amenities([subscription], %{"amenities" => amenities, "routes" => routes, "stops" => stops}) do
-    [{subscription,
-      Enum.flat_map(amenities, fn(amenity) ->
-        amenity_type = String.to_existing_atom(amenity)
-        activities = map_amenity_activities(amenity_type)
-        entities = for facility_type <- amenity_facility_types(amenity_type), do: %InformedEntity{facility_type: facility_type, activities: activities}
-        route_entities = for route <- routes, entity <- entities, do: %{entity | route: String.capitalize(route)}
-        stop_entities = for stop <- stops, entity <- entities, do: %{entity | stop: stop}
-
-        route_entities ++ stop_entities
-      end)
-    }]
-  end
-  def map_amenities(_, _), do: :error
-
-  def amenity_facility_types(:elevator), do: [:elevator, :portable_boarding_lift, :elevated_subplatform]
-  def amenity_facility_types(amenity), do: [amenity]
-
-  defp map_amenity_activities(:elevator), do: ["USING_WHEELCHAIR"]
-  defp map_amenity_activities(:portable_boarding_lift), do: ["USING_WHEELCHAIR"]
-  defp map_amenity_activities(:elevated_subplatform), do: ["USING_WHEELCHAIR"]
-  defp map_amenity_activities(:escalator), do: ["USING_ESCALATOR"]
-  defp map_amenity_activities(:bike_storage), do: ["STORE_BIKE"]
-  defp map_amenity_activities(:parking_area), do: ["PARK_CAR"]
-  defp map_amenity_activities(_), do: []
-
   def map_accessibility(subscriptions, %{"origin" => origin, "accessibility" => accessibility}) do
     Enum.map(subscriptions, fn(subscription) ->
       {subscription, Enum.map(accessibility, fn(accessibility) ->
@@ -160,11 +126,11 @@ defmodule AlertProcessor.Subscription.Mapper do
   end
   def map_bike_storage(_, _), do: :error
 
-  def map_route_type(subscription_infos, %Route{route_type: type}) do
+  def map_route_type(subscriptions, %Route{route_type: type}) do
     route_type_entities = [%InformedEntity{route_type: type, activities: InformedEntity.default_entity_activities()}]
 
-    Enum.map(subscription_infos, fn({subscription, informed_entities}) ->
-      {subscription, informed_entities ++ route_type_entities}
+    Enum.map(subscriptions, fn(subscription) ->
+      {subscription, route_type_entities}
     end)
   end
 

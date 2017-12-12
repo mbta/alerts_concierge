@@ -13,7 +13,6 @@ defmodule AlertProcessor.Subscription.SubwayMapperTest do
     "return_start" => nil,
     "return_end" => nil,
     "alert_priority_type" => "low",
-    "amenities" => ["elevator"]
   }
 
   @round_trip_params %{
@@ -25,7 +24,6 @@ defmodule AlertProcessor.Subscription.SubwayMapperTest do
     "return_start" => ~T[18:00:00],
     "return_end" => ~T[20:00:00],
     "alert_priority_type" => "low",
-    "amenities" => ["elevator"]
   }
 
   @green_line_one_way_params %{
@@ -37,7 +35,6 @@ defmodule AlertProcessor.Subscription.SubwayMapperTest do
     "return_start" => nil,
     "return_end" => nil,
     "alert_priority_type" => "low",
-    "amenities" => []
   }
 
   @roaming_params Map.put(@one_way_params, "roaming", "true")
@@ -64,15 +61,6 @@ defmodule AlertProcessor.Subscription.SubwayMapperTest do
       assert subscription.start_time == ~T[12:00:00]
       assert subscription.end_time == ~T[14:00:00]
       assert subscription.relevant_days == [:weekday, :saturday]
-    end
-
-    test "constructs subscription with amenities" do
-      {:ok, [{_sub, informed_entities}]} = SubwayMapper.map_subscriptions(@one_way_params)
-      amenity_informed_entities_count =
-        Enum.count(informed_entities, fn(informed_entity) ->
-          match?(%InformedEntity{facility_type: :elevator, stop: "place-davis"}, informed_entity)
-        end)
-      assert amenity_informed_entities_count == 1
     end
 
     test "constructs subscription with route" do
@@ -182,20 +170,6 @@ defmodule AlertProcessor.Subscription.SubwayMapperTest do
       assert sub2.start_time == ~T[18:00:00]
       assert sub2.end_time == ~T[20:00:00]
       assert sub2.relevant_days == [:weekday, :saturday]
-    end
-
-    test "constructs subscription with amenities" do
-      {:ok, [{_sub1, ie1}, {_sub2, ie2}]} = SubwayMapper.map_subscriptions(@round_trip_params)
-      amenity_informed_entities_count =
-        Enum.count(ie1, fn(informed_entity) ->
-          match?(%InformedEntity{facility_type: :elevator, stop: "place-davis"}, informed_entity)
-        end)
-      assert amenity_informed_entities_count == 1
-      amenity_informed_entities_count =
-        Enum.count(ie2, fn(informed_entity) ->
-          match?(%InformedEntity{facility_type: :elevator, stop: "place-davis"}, informed_entity)
-        end)
-      assert amenity_informed_entities_count == 1
     end
 
     test "constructs subscription with route" do
@@ -359,15 +333,6 @@ defmodule AlertProcessor.Subscription.SubwayMapperTest do
       assert subscription.relevant_days == [:weekday, :sunday]
     end
 
-    test "constructs subscription without amenities" do
-      {:ok, [{_sub, informed_entities}]} = SubwayMapper.map_subscriptions(@green_line_one_way_params)
-      amenity_informed_entities_count =
-        Enum.count(informed_entities, fn(informed_entity) ->
-          match?(%InformedEntity{facility_type: :elevator}, informed_entity)
-        end)
-      assert amenity_informed_entities_count == 0
-    end
-
     test "constructs subscription with route" do
       {:ok, [{_sub, informed_entities}]} = SubwayMapper.map_subscriptions(@green_line_one_way_params)
       route_entity_count =
@@ -453,15 +418,6 @@ defmodule AlertProcessor.Subscription.SubwayMapperTest do
       assert subscription.start_time == ~T[12:00:00]
       assert subscription.end_time == ~T[14:00:00]
       assert subscription.relevant_days == [:weekday, :saturday]
-    end
-
-    test "constructs subscription with amenities" do
-      {:ok, [{_sub, informed_entities}]} = SubwayMapper.map_subscriptions(@roaming_params)
-      amenity_informed_entities_count =
-        Enum.count(informed_entities, fn(informed_entity) ->
-          match?(%InformedEntity{facility_type: :elevator, stop: "place-davis"}, informed_entity)
-        end)
-      assert amenity_informed_entities_count == 1
     end
 
     test "constructs subscription with route and direction" do
@@ -582,7 +538,6 @@ defmodule AlertProcessor.Subscription.SubwayMapperTest do
       "return_start" => ~T[18:00:00],
       "return_end" => ~T[20:00:00],
       "alert_priority_type" => "low",
-      "amenities" => ["elevator"]
     }
 
     test "it builds a multi struct to persist subscriptions and informed_entities" do
@@ -593,8 +548,8 @@ defmodule AlertProcessor.Subscription.SubwayMapperTest do
 
       assert {{:subscription, 0}, {:run, function1}} = List.first(result)
       assert {{:new_informed_entity, 0, 0}, {:run, _}} = Enum.at(result, 1)
-      assert {{:subscription, 1}, {:run, function2}} = Enum.at(result, 11)
-      assert {{:new_informed_entity, 1, 0}, {:run, _}} = Enum.at(result, 12)
+      assert {{:subscription, 1}, {:run, function2}} = Enum.at(result, 10)
+      assert {{:new_informed_entity, 1, 0}, {:run, _}} = Enum.at(result, 11)
       {:ok, %{model: subscription1}} = function1.(nil)
       {:ok, %{model: subscription2}} = function2.(nil)
       assert subscription1.id != nil

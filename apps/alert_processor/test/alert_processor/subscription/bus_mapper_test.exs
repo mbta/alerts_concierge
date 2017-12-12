@@ -13,7 +13,6 @@ defmodule AlertProcessor.Subscription.BusMapperTest do
     "return_end" => nil,
     "alert_priority_type" => "low",
     "trip_type" => "one_way",
-    "amenities" => []
   }
 
   @round_trip_params %{
@@ -25,7 +24,6 @@ defmodule AlertProcessor.Subscription.BusMapperTest do
     "return_end" => ~T[20:00:00],
     "alert_priority_type" => "low",
     "trip_type" => "round_trip",
-    "amenities" => []
   }
 
   describe "one way" do
@@ -175,7 +173,6 @@ defmodule AlertProcessor.Subscription.BusMapperTest do
       "return_end" => ~T[20:00:00],
       "alert_priority_type" => "low",
       "trip_type" => "round_trip",
-      "amenities" => []
     }
 
     test "it builds a multi struct to persist subscriptions and informed_entities" do
