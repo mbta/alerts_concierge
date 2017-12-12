@@ -1,0 +1,13 @@
+<h1>Create New Subscription</h1>
+<%= flash_error(@conn) %>
+<div class="subscription-step bike_storage">
+  <div class="enter-trip-info">
+    <%= form_for @conn, bike_storage_subscription_path(@conn, :create), [class: "single-submit-form trip-info-form multi-select-form bike_storage", as: :subscription], fn f -> %>
+      <%= render "_bike_storage_form.html", f: f, station_select_options: @station_select_options, selected_options: @selected_options, action: "new" %>
+
+      <div class="trip-info-footer">
+        <%= submit "Create Subscription", class: "btn btn-primary btn-bike_storage-submit" %>
+      </div>
+    <% end %>
+  </div>
+</div>

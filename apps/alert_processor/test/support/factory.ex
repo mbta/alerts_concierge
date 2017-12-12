@@ -169,8 +169,22 @@ defmodule AlertProcessor.Factory do
 
   def parking_subscription_entities() do
     [
-      %InformedEntity{route_type: 4, facility_type: :elevator, route: "Green"},
-      %InformedEntity{route_type: 4, facility_type: :escalator, stop: "place-nqncy"}
+      %InformedEntity{route_type: 4, facility_type: :parking_area, route: "Green"},
+      %InformedEntity{route_type: 4, facility_type: :parking_area, stop: "place-nqncy"}
+    ]
+  end
+
+  def bike_storage_subscription(%Subscription{} = subscription) do
+    %{subscription |
+      alert_priority_type: :low,
+      type: :amenity
+     }
+  end
+
+  def bike_storage_subscription_entities() do
+    [
+      %InformedEntity{route_type: 4, facility_type: :bike_storage, route: "Green"},
+      %InformedEntity{route_type: 4, facility_type: :bike_storage, stop: "place-nqncy"}
     ]
   end
 
