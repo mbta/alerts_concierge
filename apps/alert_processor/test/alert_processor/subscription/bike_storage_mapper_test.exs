@@ -9,7 +9,7 @@ defmodule AlertProcessor.Subscription.BikeStorageMapperTest do
     "relevant_days" => ["weekday"]
   }
 
-  describe "bike_storage_area" do
+  describe "bike_storage" do
     test "creates expected entities" do
       {:ok, [{_subscription, informed_entities}]} = BikeStorageMapper.map_subscriptions(@params)
       north_station_entities_count =
