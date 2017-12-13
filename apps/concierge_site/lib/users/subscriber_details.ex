@@ -52,11 +52,13 @@ defmodule ConciergeSite.SubscriberDetails do
     }, acc, originating_user_email_map) do
       rest =
         case item_changes do
-          %{"type" => "amenity"} -> "amenity subscription " <> item_id
           %{"type" => "subway", "origin" => origin, "destination" => destination} -> "subway subscription " <> item_id <> " between " <> origin <> " and " <> destination
           %{"type" => "commuter_rail", "origin" => origin, "destination" => destination} -> "commuter_rail subscription " <> item_id <> " between " <> origin <> " and " <> destination
           %{"type" => "ferry", "origin" => origin, "destination" => destination} -> "ferry subscription " <> item_id <> " between " <> origin <> " and " <> destination
           %{"type" => "bus"} -> "bus subscription " <> item_id
+          %{"type" => "accessibility"} -> "accessibility subscription " <> item_id
+          %{"type" => "parking"} -> "parking subscription " <> item_id
+          %{"type" => "bike_storage"} -> "bike storage subscription " <> item_id
         end
         {date, time} = date_and_time_values(inserted_at)
         originator = originating_user_email_map[id] || "Unknown"
@@ -98,11 +100,13 @@ defmodule ConciergeSite.SubscriberDetails do
     }, acc, originating_user_email_map) do
       rest =
         case item_changes do
-          %{"type" => "amenity"} -> "amenity subscription " <> item_id
           %{"type" => "subway", "origin" => origin, "destination" => destination} -> "subway subscription " <> item_id <> " between " <> origin <> " and " <> destination
           %{"type" => "commuter_rail", "origin" => origin, "destination" => destination} -> "commuter_rail subscription " <> item_id <> " between " <> origin <> " and " <> destination
           %{"type" => "ferry", "origin" => origin, "destination" => destination} -> "ferry subscription " <> item_id <> " between" <> origin <> " and " <> destination
           %{"type" => "bus"} -> "bus subscription " <> item_id
+          %{"type" => "accessibility"} -> "accessibility subscription " <> item_id
+          %{"type" => "parking"} -> "parking subscription " <> item_id
+          %{"type" => "bike_storage"} -> "bike storage subscription " <> item_id
         end
         {date, time} = date_and_time_values(inserted_at)
         originator = originating_user_email_map[id] || "Unknown"

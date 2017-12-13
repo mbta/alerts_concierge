@@ -190,7 +190,6 @@ defmodule ConciergeSite.Subscriptions.SubwayParamsTest do
       }
 
       assert %{
-        "amenities" => [],
         "alert_priority_type" => "low",
         "departure_start" => ds,
         "departure_end" => de,
@@ -221,7 +220,6 @@ defmodule ConciergeSite.Subscriptions.SubwayParamsTest do
       }
 
       assert %{
-        "amenities" => [],
         "alert_priority_type" => "low",
         "departure_start" => ds,
         "departure_end" => de,
@@ -253,7 +251,6 @@ defmodule ConciergeSite.Subscriptions.SubwayParamsTest do
       }
 
       assert %{
-        "amenities" => [],
         "alert_priority_type" => "low",
         "departure_start" => ds,
         "departure_end" => de,

@@ -118,7 +118,6 @@ defmodule ConciergeSite.Subscriptions.SubwayParams do
       "departure_end" => Time.from_iso8601!(params["departure_end"]),
       "return_start" => nil,
       "return_end" => nil,
-      "amenities" => []
     }
 
     do_prepare_for_mapper(params, translated_params)
@@ -131,7 +130,6 @@ defmodule ConciergeSite.Subscriptions.SubwayParams do
       "departure_end" => Time.from_iso8601!(params["departure_end"]),
       "return_start" => Time.from_iso8601!(params["return_start"]),
       "return_end" => Time.from_iso8601!(params["return_end"]),
-      "amenities" => []
     }
 
     do_prepare_for_mapper(params, translated_params)
@@ -144,7 +142,6 @@ defmodule ConciergeSite.Subscriptions.SubwayParams do
       "departure_end" => Time.from_iso8601!(params["departure_end"]),
       "return_start" => nil,
       "return_end" => nil,
-      "amenities" => []
     }
 
     do_prepare_for_mapper(params, translated_params)

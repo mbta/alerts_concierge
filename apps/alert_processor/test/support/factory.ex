@@ -132,24 +132,10 @@ defmodule AlertProcessor.Factory do
     ]
   end
 
-  def amenity_subscription(%Subscription{} = subscription) do
-    %{subscription |
-      alert_priority_type: :low,
-      type: :amenity
-     }
-  end
-
-  def amenity_subscription_entities() do
-    [
-      %InformedEntity{route_type: 4, facility_type: :elevator, route: "Green"},
-      %InformedEntity{route_type: 4, facility_type: :escalator, stop: "place-nqncy"}
-    ]
-  end
-
   def accessibility_subscription(%Subscription{} = subscription) do
     %{subscription |
       alert_priority_type: :low,
-      type: :amenity
+      type: :accessibility
      }
   end
 
@@ -163,7 +149,7 @@ defmodule AlertProcessor.Factory do
   def parking_subscription(%Subscription{} = subscription) do
     %{subscription |
       alert_priority_type: :low,
-      type: :amenity
+      type: :parking
      }
   end
 
@@ -177,7 +163,7 @@ defmodule AlertProcessor.Factory do
   def bike_storage_subscription(%Subscription{} = subscription) do
     %{subscription |
       alert_priority_type: :low,
-      type: :amenity
+      type: :bike_storage
      }
   end
 

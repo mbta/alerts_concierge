@@ -59,7 +59,6 @@ defmodule AlertProcessor.Subscription.SnapshotTest do
         "return_end" => ~T[20:00:00],
         "alert_priority_type" => "low",
         "trip_type" => "one_way",
-        "amenities" => []
       }
       {:ok, future_date, _} = DateTime.from_iso8601("2118-01-01T01:01:01Z")
       user = build(:user) |> PaperTrail.insert!
@@ -92,7 +91,6 @@ defmodule AlertProcessor.Subscription.SnapshotTest do
         "return_start" => ~T[18:00:00],
         "return_end" => ~T[20:00:00],
         "alert_priority_type" => "low",
-        "amenities" => ["elevator"],
         "route_id" => "CR-Lowell",
         "direction_id" => "1"
       }

@@ -100,7 +100,6 @@ defmodule ConciergeSite.Subscriptions.CommuterRailParams do
     {return_start, return_end} = subscription_timestamps(trip_schedule_map, destination, origin, return_trips)
 
     Map.merge(params, %{
-      "amenities" => [],
       "departure_start" => departure_start,
       "departure_end" => departure_end,
       "relevant_days" => [relevant_days],
@@ -113,7 +112,6 @@ defmodule ConciergeSite.Subscriptions.CommuterRailParams do
     {departure_start, departure_end} = subscription_timestamps(trip_schedule_map, origin, destination, trips)
 
     Map.merge(params, %{
-      "amenities" => [],
       "departure_start" => departure_start,
       "departure_end" => departure_end,
       "relevant_days" => [relevant_days],

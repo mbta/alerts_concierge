@@ -8,7 +8,7 @@ defmodule AlertProcessor.Model.Subscription do
   import Ecto.Query
 
   @type id :: String.t
-  @type subscription_type :: :bus | :subway | :commuter_rail | :boat | :amenity | :accessibility
+  @type subscription_type :: :bus | :subway | :commuter_rail | :boat | :accessibility
   @type subscription_info :: {__MODULE__.t, [InformedEntity.t]}
   @type relevant_day :: :weekday | :saturday | :sunday
   @type direction :: 0 | 1
@@ -362,22 +362,12 @@ defmodule AlertProcessor.Model.Subscription do
   for String.to_existing_atom calls.
   """
   def subscription_types do
-    [:bus, :subway, :commuter_rail, :boat, :amenity, :accessibility]
+    [:bus, :subway, :commuter_rail, :boat, :accessibility, :parking, :bike_storage]
   end
 
   def subscription_type_from_route_type(route_type) do
     @subscription_type_values[route_type]
   end
-
-  @doc """
-  return string representation of subscription type.
-  """
-  @spec type_string(__MODULE__.t) :: String.t
-  def type_string(%__MODULE__{type: :amenity}), do: "Amenity"
-  def type_string(%__MODULE__{type: :bus}), do: "Bus"
-  def type_string(%__MODULE__{type: :commuter_rail}), do: "Commuter Rail"
-  def type_string(%__MODULE__{type: :ferry}), do: "Ferry"
-  def type_string(%__MODULE__{type: :subway}), do: "Subway"
 
   @spec subscription_trip_ids(__MODULE__.t) :: [Trip.id]
   def subscription_trip_ids(subscription) do

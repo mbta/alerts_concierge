@@ -42,7 +42,6 @@ defmodule AlertProcessor.Subscription.BusMapper do
 
   defp map_entities(subscriptions, params, route) do
     subscriptions
-    |> map_amenities(params)
     |> map_route_type(route)
     |> map_route(params, route)
     |> filter_duplicate_entities

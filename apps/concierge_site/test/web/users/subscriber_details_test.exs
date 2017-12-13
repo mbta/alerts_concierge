@@ -2,7 +2,7 @@ defmodule ConciergeSite.SubscriberDetailsTest do
   use ConciergeSite.DataCase
 
   alias AlertProcessor.Model.{Subscription, User}
-  alias AlertProcessor.Subscription.{AmenitiesMapper, CommuterRailMapper}
+  alias AlertProcessor.Subscription.CommuterRailMapper
   alias ConciergeSite.{SubscriberDetails, UserParams}
   import AlertProcessor.Factory
 
@@ -20,7 +20,6 @@ defmodule ConciergeSite.SubscriberDetailsTest do
       "return_start" => nil,
       "return_end" => nil,
       "alert_priority_type" => "low",
-      "amenities" => ["elevator"],
       "route_id" => "CR-Lowell",
       "direction_id" => "0"
     }
@@ -107,24 +106,6 @@ defmodule ConciergeSite.SubscriberDetailsTest do
       assert changelog =~ "#{user.email} removed trip 125 from subscription #{subscription.id}"
       assert changelog =~ "#{user.email} added trip 127 to subscription #{subscription.id}"
       assert changelog =~ "#{user.email} updated alert_priority_type from low to high, end_time from 12:00pm to 11:00am, start_time from 12:00pm to 10:00am for subscription #{subscription.id}"
-    end
-
-    test "maps updating amenities", %{user: user} do
-      params = %{
-        "amenities" => ["elevator"],
-        "stops" => ["place-north", "place-sstat"],
-        "routes" => ["red"],
-        "relevant_days" => ["weekday"]
-      }
-      {:ok, subscription_infos} = AmenitiesMapper.map_subscriptions(params)
-      multi = AmenitiesMapper.build_subscription_transaction(subscription_infos, user, user.id)
-      Repo.transaction(multi)
-      subscription = Repo.one(from s in Subscription, where: s.user_id == ^user.id and s.type == "amenity", preload: [:informed_entities])
-      {:ok, subscription_infos} = AmenitiesMapper.map_subscriptions(Map.put(params, "stops", ["place-sstat"]))
-      multi = AmenitiesMapper.build_subscription_update_transaction(subscription, subscription_infos, user.id)
-      Repo.transaction(multi)
-      changelog = user.id |> SubscriberDetails.changelog() |> changelog_to_binary()
-      assert changelog =~ "#{user.email} removed stop place-north from subscription #{subscription.id}"
     end
 
     test "maps deleting", %{user: user} do

@@ -16,7 +16,7 @@ defmodule AlertProcessor.TextReplacementTest do
       alert = %Alert{
         header: "test",
         description: "test",
-        informed_entities: amenity_subscription_entities()
+        informed_entities: []
       }
       subscription = %Subscription{}
 

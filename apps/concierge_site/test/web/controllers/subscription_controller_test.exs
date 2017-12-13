@@ -83,33 +83,6 @@ defmodule ConciergeSite.SubscriptionControllerTest do
       assert html_response(conn, 200) =~ "Outbound"
     end
 
-    test "GET /my-subscriptions with amenity subscriptions", %{conn: conn} do
-      user = insert(:user)
-      amenity_entities = [
-        %InformedEntity{route_type: 4, facility_type: :elevator, route: "Green"},
-        %InformedEntity{route_type: 4, facility_type: :escalator, stop: "place-nqncy"}
-      ]
-
-      :subscription
-      |> build(user: user)
-      |> weekday_subscription()
-      |> amenity_subscription()
-      |> Repo.preload(:informed_entities)
-      |> Ecto.Changeset.change()
-      |> Ecto.Changeset.put_assoc(:informed_entities, amenity_entities)
-      |> Repo.insert()
-
-      conn =
-        user
-        |> guardian_login(conn)
-        |> get(subscription_path(conn, :index))
-
-      assert html_response(conn, 200) =~ "My Subscriptions"
-      assert html_response(conn, 200) =~ "1 station + Green Line on Weekdays"
-      assert html_response(conn, 200) =~ "Escalator"
-      assert html_response(conn, 200) =~ "Elevator"
-    end
-
     test "GET /my-subscriptions redirects if no subscriptions", %{conn: conn}  do
       user = insert(:user)
 
