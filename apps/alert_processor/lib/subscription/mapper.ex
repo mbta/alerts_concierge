@@ -3,7 +3,8 @@ defmodule AlertProcessor.Subscription.Mapper do
   Module for common subscription mapping functions to be imported into
   mode-specific mapper modules.
   """
-  alias AlertProcessor.{Helpers.DateTimeHelper, Model.InformedEntity, Model.Route, Model.Subscription, Model.Trip, Model.User}
+  alias AlertProcessor.{Helpers.DateTimeHelper, Model.InformedEntity, Model.Route, Model.Subscription, Model.Trip, Model.User, Repo}
+  import Ecto.Query
   alias Ecto.Multi
   alias AlertProcessor.ServiceInfoCache
 
@@ -362,6 +363,53 @@ defmodule AlertProcessor.Subscription.Mapper do
     |> Multi.run({:subscription}, fn _ ->
          PaperTrail.update(subscription_changeset, originator: User.wrap_id(originator), meta: %{owner: subscription.user_id}, origin: origin)
        end)
+  end
+
+  @doc """
+  build_subscription_update_transaction/3 receives a the current subscription
+  and the update params and builds and Ecto.Multi transaction.
+
+  1. It updates the subscription data
+  2. It regenerates the informed entities for that subscription from the new data
+  """
+  def build_subscription_update_transaction(subscription, subscription_infos, originator) do
+    origin =
+      if subscription.user_id != User.wrap_id(originator).id do
+        "admin:update-subscription"
+      end
+    [{sub_changes, informed_entities}] = subscription_infos
+    params =
+      sub_changes
+      |> Map.put(:informed_entities, informed_entities)
+      |> Map.from_struct()
+
+    current_informed_entity_ids =
+      subscription.informed_entities
+      |> Enum.map(& &1.id)
+
+    query = from(ie in InformedEntity, where: ie.id in ^current_informed_entity_ids)
+    current_informed_entities = Repo.all(query)
+
+    multi = informed_entities
+    |> Enum.with_index()
+    |> Enum.reduce(Multi.new(), fn({ie, index}, acc) ->
+        ie_to_insert = Map.put(ie, :subscription_id, subscription.id)
+        Multi.run(acc, {:new_informed_entity, index}, fn _ ->
+          PaperTrail.insert(ie_to_insert, originator: User.wrap_id(originator), meta: %{owner: subscription.user_id})
+        end)
+      end)
+
+    current_informed_entities
+    |> Enum.with_index
+    |> Enum.reduce(multi, fn({ie, index}, acc) ->
+      Multi.run(acc, {:remove_current, index}, fn _ ->
+        PaperTrail.delete(ie, originator: User.wrap_id(originator), meta: %{owner: subscription.user_id})
+      end)
+    end)
+    |> Multi.run({:subscription}, fn _ ->
+      changeset = Subscription.update_changeset(subscription, params)
+      PaperTrail.update(changeset, originator: User.wrap_id(originator), meta: %{owner: subscription.user_id}, origin: origin)
+    end)
   end
 
   @spec populate_trip_options(map, map_trip_info_fn) :: {:ok, map} | {:error, String.t}

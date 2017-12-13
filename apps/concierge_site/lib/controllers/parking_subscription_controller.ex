@@ -3,8 +3,8 @@ defmodule ConciergeSite.ParkingSubscriptionController do
   use Guardian.Phoenix.Controller
   alias ConciergeSite.Subscriptions.{ParkingParams}
   alias ConciergeSite.Helpers.MultiSelectHelper
-  alias AlertProcessor.{ServiceInfoCache,
-    Subscription.ParkingMapper, Model.Subscription, Model.User}
+  alias AlertProcessor.{ServiceInfoCache, Subscription.ParkingMapper,
+    Subscription.Mapper, Model.Subscription, Model.User}
 
   def new(conn, _params, _user, _claims) do
     render_new_page(conn)
@@ -54,7 +54,7 @@ defmodule ConciergeSite.ParkingSubscriptionController do
     with subscription <- Subscription.one_for_user!(id, user.id, true),
       :ok <- ParkingParams.validate_info_params(sub_params),
       {:ok, subscription_infos} <- ParkingMapper.map_subscriptions(sub_params),
-      multi <- ParkingMapper.build_subscription_update_transaction(subscription, subscription_infos, Map.get(claims, "imp", user.id)),
+      multi <- Mapper.build_subscription_update_transaction(subscription, subscription_infos, Map.get(claims, "imp", user.id)),
       :ok <- Subscription.set_versioned_subscription(multi) do
         :ok = User.clear_holding_queue_for_user_id(user.id)
         redirect(conn, to: subscription_path(conn, :index))
