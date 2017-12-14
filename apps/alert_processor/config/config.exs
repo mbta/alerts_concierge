@@ -41,6 +41,9 @@ config :alert_processor,
   rate_limit: {:system, "RATE_LIMIT", "30"},
   send_rate: {:system, "SEND_RATE", "100"}
 
+# Config for db migration function
+config :alert_processor, :migration_task, AlertProcessor.ReleaseTasks.Dev
+
 # Import environment specific config. This must remain at the bottom
 # of this file so it overrides the configuration defined above.
 import_config "#{Mix.env}.exs"

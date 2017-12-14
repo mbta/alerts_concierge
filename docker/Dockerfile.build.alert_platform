@@ -1,4 +1,4 @@
-FROM elixir:1.4
+FROM elixir:1.5
 
 ENV REFRESHED_AT 2017-07-27
 # 2017-07-27 Initial Release
@@ -43,5 +43,6 @@ WORKDIR /alerts_concierge
 RUN MIX_ENV=prod mix compile
 RUN MIX_ENV=prod mix phx.digest
 
-RUN MIX_ENV=prod mix release --profile=alert_processor:prod
+# Do not build alert_processer as a separate binary
+# RUN MIX_ENV=prod mix release --profile=alert_processor:prod
 RUN MIX_ENV=prod mix release --profile=concierge_site:prod
