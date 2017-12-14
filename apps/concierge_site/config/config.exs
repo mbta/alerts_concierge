@@ -30,6 +30,7 @@ config :concierge_site, ConciergeSite.Dissemination.DummyMailer,
   deliver_later_strategy: ConciergeSite.Dissemination.DeliverLaterStrategy
 
 config :concierge_site, send_from_email: {:system, "SENDER_EMAIL_ADDRESS", "alert@mbta.com"}
+config :concierge_site, feedback_url: {:system, "FEEDBACK_URL", nil}
 
 # Configures Elixir's Logger
 config :logger, :console,

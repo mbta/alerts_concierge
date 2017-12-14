@@ -1,5 +1,6 @@
 $brand-primary: #1c77c3;
 $brand-primary-lightest: #cee0f4;
+$brand-primary-light-contrast: #a1c6ed;
 $brand-danger: #d0021b;
 $brand-success: #428608;
 $brand-navy-dark: #071d2e;
@@ -16,6 +17,7 @@ $gunmetal: #494f5c;
 $steel: #788094;
 
 $link-color: $brand-primary;
+$link-color-dark-background: $brand-primary-light-contrast;
 $link-hover-color: darken($link-color, 15%);
 $secondary-link-color: $cerulean;
 $secondary-link-hover-color: $pale-blue;

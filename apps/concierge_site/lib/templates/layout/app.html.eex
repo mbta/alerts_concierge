@@ -53,6 +53,9 @@
     </div>
     <footer class="footer">
       <p>&copy; Massachusetts Bay Transportation Authority, all rights reserved.</p>
+      <%= if @feedback_url do %>
+        <p><a href="<%= @feedback_url %>" target="_blank" class="footer-link">Send us your comments or questions</a></p>
+      <% end %>
     </footer>
     <script src="<%= static_path(@conn, "/js/app.js") %>"></script>
   </body>

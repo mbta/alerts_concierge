@@ -8,6 +8,7 @@ defmodule ConciergeSite.Router do
     plug :protect_from_forgery
     plug :put_secure_browser_headers
     plug ConciergeSite.Plugs.Authorized
+    plug ConciergeSite.Plugs.FeedbackPlug
   end
 
   pipeline :browser_auth do
