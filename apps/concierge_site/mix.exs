@@ -3,7 +3,7 @@ defmodule ConciergeSite.Mixfile do
 
   def project do
     [app: :concierge_site,
-     version: "0.0.58",
+     version: app_version("0.0.59"),
      build_path: "../../_build",
      config_path: "../../config/config.exs",
      deps_path: "../../deps",
@@ -64,6 +64,18 @@ defmodule ConciergeSite.Mixfile do
       {:cowboy, "~> 1.0"},
       {:wallaby, "~> 0.15", only: :test}
     ]
+  end
+
+  defp app_version(base) do
+    # get git version
+    try do
+      case System.cmd("git", ~w[rev-parse HEAD]) do
+        {hash, 0} -> "#{base}+#{String.trim(hash)}"
+        _ -> base
+      end
+    rescue
+      _ -> base
+    end
   end
 
   # Aliases are shortcuts or tasks specific to the current project.

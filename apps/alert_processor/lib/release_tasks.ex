@@ -18,3 +18,7 @@ defmodule AlertProcessor.ReleaseTasks do
 
   defp migrations_path(app), do: Application.app_dir(app, "priv/repo/migrations")
 end
+
+defmodule AlertProcessor.ReleaseTasks.Dev do
+  def migrate, do: nil
+end
