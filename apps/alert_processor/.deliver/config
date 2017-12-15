@@ -5,7 +5,7 @@ BUILD_AT=""
 LINK_VM_ARGS="/home/ubuntu/app/vm.args"
 APP="alert_processor"
 
-STAGING_HOSTS="ec2-34-201-0-106.compute-1.amazonaws.com"
+STAGING_HOSTS="ec2-34-205-43-57.compute-1.amazonaws.com"
 STAGING_USER="ubuntu"
 DELIVER_TO="/home/ubuntu/app"
 
