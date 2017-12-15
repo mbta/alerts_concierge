@@ -21,12 +21,8 @@ RUN apt-get clean
 
 COPY . /alerts_concierge
 
-WORKDIR /alerts_concierge/apps/concierge_site/mail_inlining
-RUN npm install
-
 WORKDIR /alerts_concierge
 
-RUN elixir touch_templates.exs
 RUN /bin/bash -c "source .env"
 
 RUN export MIX_ENV=prod

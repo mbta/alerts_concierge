@@ -1,24 +1,24 @@
-<div class="footer">
-  <div class="footer-copyright">
+<div class="footer" style="background-color: #092e4d; padding-bottom: 1rem; width: 100%; overflow: hidden;">
+  <div class="footer-copyright" style="font-size: 16px; line-height: 1.5; text-align: center; color: #ffffff; padding: 25px 50px 15px 50px;">
     &copy; Massachusetts Bay Transportation Authority, all rights reserved.
   </div>
 
   <table>
     <tr>
-      <td>
-        <a class="footer-link" href="<%= unsubscribe_url %>">Unsubscribe</a>
+      <td style="border-collapse: collapse;">
+        <a class="footer-link" href="<%= unsubscribe_url %>" style="font-size: .75rem; line-height: 1.6; text-align: center; color: #67a0d1; text-decoration: none;">Unsubscribe</a>
       </td>
-      <td class="footer-link-separator">
-        <div class="footer-link-separator-bullet" />
+      <td class="footer-link-separator" style="border-collapse: collapse; width: 10px; height: 10px;">
+        <div class="footer-link-separator-bullet" style="height: 5px; width: 5px; border-radius: 100%; background-color: #ffffff;">
+      </div></td>
+      <td style="border-collapse: collapse;">
+        <a class="footer-link" href="https://t.mbta.com/customer-support" style="font-size: .75rem; line-height: 1.6; text-align: center; color: #67a0d1; text-decoration: none;">Feedback</a>
       </td>
-      <td>
-        <a class="footer-link" href="https://t.mbta.com/customer-support">Feedback</a>
-      </td>
-      <td class="footer-link-separator">
-        <div class="footer-link-separator-bullet" />
-      </td>
-      <td>
-        <a class="footer-link" href="<%= manage_subscriptions_url %>">Edit Your Subscriptions</a>
+      <td class="footer-link-separator" style="border-collapse: collapse; width: 10px; height: 10px;">
+        <div class="footer-link-separator-bullet" style="height: 5px; width: 5px; border-radius: 100%; background-color: #ffffff;">
+      </div></td>
+      <td style="border-collapse: collapse;">
+        <a class="footer-link" href="<%= manage_subscriptions_url %>" style="font-size: .75rem; line-height: 1.6; text-align: center; color: #67a0d1; text-decoration: none;">Edit Your Subscriptions</a>
       </td>
     </tr>
   </table>

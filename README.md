@@ -25,8 +25,6 @@ functionality remain low and that MBTA can manage and improve the system.
 * `cd alerts_concierge`
 * `mix deps.get`
 * `sh -c "cd apps/concierge_site/assets ; yarn install"`
-* `sh -c "cd apps/concierge_site/mail_inlining ; yarn install"`
-* `elixir touch_templates.exs`
 * `cat .env.example | sed -e "s/__username__/$(logname)/g" > .env`
 * ``env `cat .env` mix ecto.setup``
 * `echo 'API_KEY=<YOUR_MBTA_API_KEY>' >> .env`

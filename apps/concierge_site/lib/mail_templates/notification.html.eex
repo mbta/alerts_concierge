@@ -1,29 +1,28 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html>
   <head>
-    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
     <title>MBTA Alert</title>
   </head>
-  <body leftmargin="0" marginwidth="0" topmargin="0" marginheight="0" offset="0">
+  <body leftmargin="0" marginwidth="0" topmargin="0" marginheight="0" offset="0" style="-webkit-text-size-adjust: none; margin: 0 auto; font-family: Arial, Helvetica Neue, Helvetica, sans-serif; padding: 0px 10px; overflow-y: scroll; max-width: 800px;">
     <%= ConciergeSite.Helpers.MailHelper.header() %>
-    <div class="notification-content">
-      <h1 class="notification-service-effect">
-        <span class="notification-logo">
-          <img src="<%= ConciergeSite.Helpers.MailHelper.logo_for_alert(notification.alert) %>"
-               alt="<%= ConciergeSite.Helpers.MailHelper.alt_text_for_alert(notification.alert) %>">
+    <div class="notification-content" style="padding: 32px 20px 24px 20px;">
+      <h1 class="notification-service-effect" style="margin: 0; padding: 0; font-size: 26px; font-weight: bold; text-align: center; color: #000000; vertical-align: middle;">
+        <span class="notification-logo" style="width: 24px; height: 24px;">
+          <img src="<%= ConciergeSite.Helpers.MailHelper.logo_for_alert(notification.alert) %>" alt="<%= ConciergeSite.Helpers.MailHelper.alt_text_for_alert(notification.alert) %>" style="border: 0; line-height: 100%; outline: none; text-decoration: none;">
         </span>
         <%= notification.service_effect %>
       </h1>
-      <p class="notification-header">
+      <p class="notification-header" style="margin: 0; padding: 0; font-size: 16px; line-height: 1.5; color: #1c1e23; padding-top: 24px;">
         <%= notification.header %>
       </p>
       <br>
       <%= if notification.description do %>
-        <p class="notification-description"><%= String.replace(notification.description, "\r\n", "<br/>") %></p>
+        <p class="notification-description" style="margin: 0; padding: 0; font-size: 16px; line-height: 1.5; color: #1c1e23;"><%= String.replace(notification.description, "\r\n", "<br/>") %></p>
       <% end %>
 
-      <p class="notification-link-wrapper">
-        <a class="notification-link" href="https://t.mbta.com/">View all alerts &rarr;</a>
+      <p class="notification-link-wrapper" style="margin: 0; padding: 0; text-align: right; padding-top: 10px;">
+        <a class="notification-link" href="https://t.mbta.com/" style="font-size: 16px; line-height: 1.5; color: #1c77c3; padding-top: 24px; text-decoration: none;">View all alerts &rarr;</a>
       </p>
     </div>
     <center>
