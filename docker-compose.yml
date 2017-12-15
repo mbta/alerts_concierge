@@ -1,0 +1,40 @@
+---
+version: '2.0'
+services:
+  db:
+    image: postgres:9.6
+    environment:
+      POSTGRES_USER: mbta
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: alert_concierge_dev
+  app:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile.application
+    environment:
+      ALERT_FETCH_INTERVAL: 60000
+      API_URL: https://dev.api.mbtace.com/
+      API_KEY: 03336608ce2249338e85f92792434f4e
+      ALERT_API_URL: http://s3.amazonaws.com/mbta-realtime-test-v2/alerts_enhanced.json
+      DATABASE_URL_TEST: postgresql://mbta:password@db:5432/alert_concierge_dev
+      DATABASE_URL_DEV: postgresql://mbta:password@db:5432/alert_concierge_dev
+      DATABASE_URL_PROD: postgresql://mbta:password@db:5432/alert_concierge_dev
+      UNSUBSCRIBED_LIST_FETCH_INTERVAL: 300000
+      GUARDIAN_AUTH_KEY: abc123
+      TEMP_STATE_KEY: top_secret_key_mix_phx_gen_secret
+      SERVICE_INFO_UPDATE_INTERVAL: 86400000
+      SENDER_EMAIL_ADDRESS: alert@mbta.com
+      APP_COOKIE: appcookie
+      SECRET_KEY_BASE: "2eQ4UYp2FGOVmzkk+eSUTAGaB41Zg4SQdWdaWU8vHXt5QXKnBoIVIvmMd+Sw4V3M"
+      SMTP_USERNAME:
+      SMTP_PASSWORD:
+      AWS_ACCESS_KEY:
+      AWS_SECRET_KEY:
+      HOST_URL: localhost
+      MIX_ENV: prod
+    ports:
+      - "80:4000"
+    links:
+      - db:db
+    depends_on:
+      - db
