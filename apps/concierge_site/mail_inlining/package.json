@@ -1,6 +1,0 @@
-{
-  "dependencies": {
-    "juice": "^4.1.0",
-    "yargs": "^8.0.1"
-  }
-}
