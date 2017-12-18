@@ -49,7 +49,8 @@ defmodule ConciergeSite.Dissemination.DigestEmailTest do
     assert body =~ "Service Effect"
     assert body =~ "https://t.mbta.com/"
     assert body =~ "This Weekend, May 26 - 27"
- end
+    assert body =~ "mbtafeedback.com"
+  end
 
   test "html_email/1 has all content and link for alerts page" do
     user = %User{email: "abc@123.com"}
@@ -63,5 +64,6 @@ defmodule ConciergeSite.Dissemination.DigestEmailTest do
     assert body =~ "Service Effect"
     assert body =~ "href=\"https://t.mbta.com/\""
     assert body =~ "This Weekend, May 26 - 27"
+    assert body =~ "mbtafeedback.com"
   end
 end

@@ -1,0 +1,4 @@
+Unsubscribe: <%= unsubscribe_url %>
+<%= if feedback_url do %> Feedback: <%= feedback_url %><% end %>
+
+Edit your subscription: <%= manage_subscriptions_url %>

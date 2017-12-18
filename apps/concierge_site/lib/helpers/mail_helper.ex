@@ -9,18 +9,26 @@ defmodule ConciergeSite.Helpers.MailHelper do
   alias AlertProcessor.Model.{Alert, InformedEntity}
   alias ConciergeSite.Auth.Token
   alias ConciergeSite.Router.Helpers
+  alias AlertProcessor.Helpers.ConfigHelper
   require EEx
 
   EEx.function_from_file(
     :def,
-    :footer,
+    :html_footer,
     Path.join(@template_dir, "_footer.html.eex"),
-    [:unsubscribe_url, :manage_subscriptions_url]
+    [:unsubscribe_url, :manage_subscriptions_url, :feedback_url]
   )
 
   EEx.function_from_file(
     :def,
-    :header,
+    :text_footer,
+    Path.join(@template_dir, "_footer.txt.eex"),
+    [:unsubscribe_url, :manage_subscriptions_url, :feedback_url]
+  )
+
+  EEx.function_from_file(
+    :def,
+    :html_header,
     Path.join(@template_dir, "_header.html.eex"),
     []
   )
@@ -142,5 +150,13 @@ defmodule ConciergeSite.Helpers.MailHelper do
   def manage_subscriptions_url(user) do
     {:ok, token, _permissions} = Token.issue(user, [:manage_subscriptions], {30, :days})
     Helpers.subscription_url(ConciergeSite.Endpoint, :index, token: token)
+  end
+
+  def feedback_url do
+    case ConfigHelper.get_string(:feedback_url, :concierge_site) do
+      "" -> nil
+      nil -> nil
+      url -> url
+    end
   end
 end
