@@ -35,8 +35,7 @@ RUN_ERL_LOG_MAXSIZE=100000000
 #### Install CloudWatch Agent
 
 ```
-curl https://s3.amazonaws.com/aws-cloudwatch/downloads/latest/awslogs-agent-setup.py -O
-sudo python ./awslogs-agent-setup.py --region us-east-1
+curl https://s3.amazonaws.com/aws-cloudwatch/downloads/latest/awslogs-agent-setup.py | sudo python ./awslogs-agent-setup.py --region us-east-1
 ```
 
 #### Cloudwatch Local Configuration
