@@ -5,29 +5,12 @@
     <title><%= subject %></title>
   </head>
   <body leftmargin="0" marginwidth="0" topmargin="0" marginheight="0" offset="0" style="-webkit-text-size-adjust: none; margin: 0 auto; font-family: Arial, Helvetica Neue, Helvetica, sans-serif; padding: 0px 10px; overflow-y: scroll; max-width: 800px;">
-    <%= ConciergeSite.Helpers.MailHelper.header() %>
+    <%= ConciergeSite.Helpers.MailHelper.html_header() %>
     <div class="email-contents" style="padding: 16px;">
       <p style="margin: 0; padding: 0; margin-bottom: 16px;"><%= body %></p>
     </div>
     <center>
-      <div class="footer" style="background-color: #092e4d; padding-bottom: 1rem; width: 100%; overflow: hidden;">
-        <div class="footer-copyright" style="font-size: 16px; line-height: 1.5; text-align: center; color: #ffffff; padding: 25px 50px 15px 50px;">
-          &copy; Massachusetts Bay Transportation Authority, all rights reserved.
-        </div>
-        <table>
-          <tr>
-            <td style="border-collapse: collapse;">
-              <a class="footer-link" href="https://t.mbta.com/customer-support" style="font-size: .75rem; line-height: 1.6; text-align: center; color: #67a0d1; text-decoration: none;">Feedback</a>
-            </td>
-            <td class="footer-link-separator" style="border-collapse: collapse; width: 10px; height: 10px;">
-              <div class="footer-link-separator-bullet" style="height: 5px; width: 5px; border-radius: 100%; background-color: #ffffff;">
-            </div></td>
-            <td style="border-collapse: collapse;">
-              <a class="footer-link" href="<%= manage_subscriptions_url %>" style="font-size: .75rem; line-height: 1.6; text-align: center; color: #67a0d1; text-decoration: none;">Edit Your Subscriptions</a>
-            </td>
-          </tr>
-        </table>
-      </div>
+      <%= ConciergeSite.Helpers.MailHelper.html_footer(unsubscribe_url, manage_subscriptions_url, feedback_url) %>
     </center>
   </body>
 </html>

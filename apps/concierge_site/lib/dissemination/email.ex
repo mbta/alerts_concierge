@@ -12,21 +12,22 @@ defmodule ConciergeSite.Dissemination.Email do
     :def,
     :password_reset_html_email,
     Path.join(@template_dir, "password_reset.html.eex"),
-    [:password_reset_id, :unsubscribe_url, :manage_subscriptions_url])
+    [:password_reset_id, :unsubscribe_url, :manage_subscriptions_url, :feedback_url])
   EEx.function_from_file(
     :def,
     :password_reset_text_email,
     Path.join(~w(#{System.cwd!} lib mail_templates password_reset.txt.eex)),
-    [:password_reset_id, :unsubscribe_url])
+    [:password_reset_id, :unsubscribe_url, :manage_subscriptions_url, :feedback_url])
 
   def password_reset_email(user, password_reset) do
     unsubscribe_url = MailHelper.unsubscribe_url(user)
     manage_subscriptions_url = MailHelper.manage_subscriptions_url(user)
+    feedback_url = MailHelper.feedback_url()
     base_email()
     |> to(user.email)
     |> subject("Reset Your MBTA Alerts Password")
-    |> html_body(password_reset_html_email(password_reset.id, unsubscribe_url, manage_subscriptions_url))
-    |> text_body(password_reset_text_email(password_reset.id, unsubscribe_url))
+    |> html_body(password_reset_html_email(password_reset.id, unsubscribe_url, manage_subscriptions_url, feedback_url))
+    |> text_body(password_reset_text_email(password_reset.id, unsubscribe_url, manage_subscriptions_url, feedback_url))
   end
 
   EEx.function_from_file(
@@ -52,43 +53,46 @@ defmodule ConciergeSite.Dissemination.Email do
     :def,
     :confirmation_html_email,
     Path.join(@template_dir, "confirmation.html.eex"),
-    [:unsubscribe_url, :disable_account_url, :manage_subscriptions_url])
+    [:unsubscribe_url, :disable_account_url, :manage_subscriptions_url, :feedback_url])
   EEx.function_from_file(
     :def,
     :confirmation_text_email,
     Path.join(~w(#{System.cwd!} lib mail_templates confirmation.txt.eex)),
-    [:unsubscribe_url, :disable_account_url])
+    [:unsubscribe_url, :disable_account_url, :manage_subscriptions_url, :feedback_url])
 
   def confirmation_email(user) do
     unsubscribe_url = MailHelper.unsubscribe_url(user)
     disable_account_url = MailHelper.disable_account_url(user)
     manage_subscriptions_url = MailHelper.manage_subscriptions_url(user)
+    feedback_url = MailHelper.feedback_url()
     base_email()
     |> to(user.email)
     |> subject("MBTA Alerts Account Confirmation")
-    |> html_body(confirmation_html_email(unsubscribe_url, disable_account_url, manage_subscriptions_url))
-    |> text_body(confirmation_text_email(unsubscribe_url, disable_account_url))
+    |> html_body(confirmation_html_email(unsubscribe_url, disable_account_url, manage_subscriptions_url, feedback_url))
+    |> text_body(confirmation_text_email(unsubscribe_url, disable_account_url, manage_subscriptions_url, feedback_url))
   end
 
   EEx.function_from_file(
     :def,
     :targeted_notification_html_email,
     Path.join(@template_dir, "targeted_notification.html.eex"),
-    [:subject, :body, :manage_subscriptions_url])
+    [:subject, :body, :unsubscribe_url, :manage_subscriptions_url, :feedback_url])
   EEx.function_from_file(
     :def,
     :targeted_notification_text_email,
     Path.join(~w(#{System.cwd!} lib mail_templates targeted_notification.txt.eex)),
-    [:body])
+    [:subject, :body, :unsubscribe_url, :manage_subscriptions_url, :feedback_url])
 
   def targeted_notification_email(user, subject, body) do
+    unsubscribe_url = MailHelper.unsubscribe_url(user)
     manage_subscriptions_url = MailHelper.manage_subscriptions_url(user)
+    feedback_url = MailHelper.feedback_url()
 
     base_email()
     |> to(user.email)
     |> subject(subject)
-    |> html_body(targeted_notification_html_email(subject, body, manage_subscriptions_url))
-    |> text_body(targeted_notification_text_email(body))
+    |> html_body(targeted_notification_html_email(subject, body, unsubscribe_url, manage_subscriptions_url, feedback_url))
+    |> text_body(targeted_notification_text_email(subject, body, unsubscribe_url, manage_subscriptions_url, feedback_url))
   end
 
   defp base_email do

@@ -172,4 +172,10 @@ defmodule ConcerigeSite.Helpers.MailHelperTest do
       assert url =~ ~r/my-subscriptions\?token=(.+)/
     end
   end
+
+  describe "feedback_url" do
+    test "fetches url from environment" do
+      assert MailHelper.feedback_url() == "http://mbtafeedback.com/"
+    end
+  end
 end

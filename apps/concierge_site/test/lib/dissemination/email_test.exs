@@ -12,6 +12,7 @@ defmodule ConciergeSite.Dissemination.EmailTest do
     assert email.subject == "Reset Your MBTA Alerts Password"
     assert email.html_body =~ "Please click the link below and follow the instructions on the page to reset your password"
     assert email.html_body =~ "/unsubscribe"
+    assert email.html_body =~ "mbtafeedback.com"
   end
 
   test "unknown password reset email" do
@@ -33,6 +34,7 @@ defmodule ConciergeSite.Dissemination.EmailTest do
     assert email.html_body =~ "Congratulations, you have successfully subscribed to receive MBTA alerts."
     assert email.html_body =~ "/unsubscribe"
     assert email.html_body =~ "/my-account/confirm_disable?token="
+    assert email.html_body =~ "mbtafeedback.com"
   end
 
   test "send targeted notification email" do
@@ -45,5 +47,6 @@ defmodule ConciergeSite.Dissemination.EmailTest do
     assert email.to == subscriber.email
     assert email.subject == subject
     assert email.html_body =~ body
+    assert email.html_body =~ "mbtafeedback.com"
   end
 end

@@ -10,4 +10,4 @@ T-Alerts Weekly Digest:
 The digest of upcoming events has been personalized to you based on your
 subscription, for full list: https://t.mbta.com/
 
-If you no longer wish to receive any emails please unsubscribe: <%= unsubscribe_url %>
+<%= ConciergeSite.Helpers.MailHelper.text_footer(unsubscribe_url, manage_subscriptions_url, feedback_url) %>
