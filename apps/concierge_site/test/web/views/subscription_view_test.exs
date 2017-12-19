@@ -262,4 +262,48 @@ defmodule ConciergeSite.SubscriptionViewTest do
     assert Regex.scan(~r/pm, Weekdays \| Departs from Boston \(Long Wharf\)/, binary) |> Enum.count == 1
     assert binary =~ "5:15pm, Weekdays | Departs from Boston (Long Wharf)"
   end
+
+  describe "subscription_edit_path/2" do
+    test "bus subscription edit path", %{conn: conn} do
+      subscription = %Subscription{type: :bus, id: "abc"}
+
+      assert SubscriptionView.subscription_edit_path(conn, subscription) == "/subscriptions/bus/abc/edit"
+    end
+
+    test "subway subscription edit path", %{conn: conn} do
+      subscription = %Subscription{type: :subway, id: "abc"}
+
+      assert SubscriptionView.subscription_edit_path(conn, subscription) == "/subscriptions/subway/abc/edit"
+    end
+
+    test "commuter rail subscription edit path", %{conn: conn} do
+      subscription = %Subscription{type: :commuter_rail, id: "abc"}
+
+      assert SubscriptionView.subscription_edit_path(conn, subscription) == "/subscriptions/commuter_rail/abc/edit"
+    end
+
+    test "ferry subscription edit path", %{conn: conn} do
+      subscription = %Subscription{type: :boat, id: "abc"}
+
+      assert SubscriptionView.subscription_edit_path(conn, subscription) == "/subscriptions/ferry/abc/edit"
+    end
+
+    test "accessibility subscription edit path", %{conn: conn} do
+      subscription = %Subscription{type: :accessibility, id: "abc"}
+
+      assert SubscriptionView.subscription_edit_path(conn, subscription) == "/subscriptions/accessibility/abc/edit"
+    end
+
+    test "parking subscription edit path", %{conn: conn} do
+      subscription = %Subscription{type: :parking, id: "abc"}
+
+      assert SubscriptionView.subscription_edit_path(conn, subscription) == "/subscriptions/parking/abc/edit"
+    end
+
+    test "bike storage subscription edit path", %{conn: conn} do
+      subscription = %Subscription{type: :bike_storage, id: "abc"}
+
+      assert SubscriptionView.subscription_edit_path(conn, subscription) == "/subscriptions/bike_storage/abc/edit"
+    end
+  end
 end
