@@ -1,4 +1,4 @@
-<h1>Account</h1>
+<h1 class="header-container">Account</h1>
 <%= flash_error(@conn) %>
 <%= flash_info(@conn) %>
 <div class="my-account-container">

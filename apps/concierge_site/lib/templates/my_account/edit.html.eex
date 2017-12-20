@@ -1,5 +1,5 @@
 <h1 class="header-container">
-  <div class="header-text">My Account</div>
+  My Account
   <%= link to: my_account_path(@conn, :confirm_disable), class: "header-link" do %>
     Disable Account <i class="fa fa-trash-o"></i>
   <% end %>

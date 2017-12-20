@@ -1,4 +1,4 @@
-<h1>Create Admin</h1>
+<h1 class="header-container">Create Admin</h1>
 <%= flash_error(@conn) %>
 <div class="login-container">
   <%= form_for @account_changeset,

@@ -1,4 +1,4 @@
-<h1>T-Alerts</h1>
+<h1 class="header-container">T-Alerts</h1>
 <div class="create-account-container">
   <h2 class="create-account-header">Account Information</h2>
   <%= form_for @account_changeset, account_path(@conn, :create), fn f -> %>

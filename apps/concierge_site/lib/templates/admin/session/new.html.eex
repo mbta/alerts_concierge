@@ -1,4 +1,4 @@
-<h1 class="login-header-text">T-Concierge Admin Account</h1>
+<h1 class="header-container">T-Concierge Admin Account</h1>
 <%= flash_error(@conn) %>
 <%= flash_info(@conn) %>
 <div class="login-container">

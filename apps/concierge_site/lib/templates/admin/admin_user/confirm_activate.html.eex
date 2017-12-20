@@ -1,10 +1,10 @@
-<h1>Confirm Admin Activation</h1>
+<h1 class="header-container">Confirm Admin Activation</h1>
 <%= flash_error(@conn) %>
 
 <div class="confirmation-page">
   <h2>Activate Admin Account?</h2>
   <p>
-    Are you sure that you'd like to activate 
+    Are you sure that you'd like to activate
     <%= @admin_user.email %>?
   </p>
   <%= form_for @conn,

@@ -1,4 +1,4 @@
-<h1>T-Alerts</h1>
+<h1 class="header-container">T-Alerts</h1>
 <div class="password-reset-container">
   <div class="form-header">
     <%= flash_error(@conn) %>
