@@ -7,6 +7,12 @@
     as well as advanced notice of planned service changes, by email or text message (SMS).
   </p>
   <p>
+    <a href="https://www.mbta.com/about-t-alerts-beta" target="_blank">
+      Learn more about T-Alerts
+      <%= fa("arrow-right") %>
+    </a>
+  </p>
+  <p>
     Sign in or sign up to manage your subscriptions and account.
   </p>
 
