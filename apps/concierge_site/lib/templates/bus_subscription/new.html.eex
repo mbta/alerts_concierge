@@ -1,9 +1,9 @@
-<h1 class="header-container">Create New Subscription</h1>
+<h1 class="header-container">Create a new alert subscription</h1>
 
 <%= render "_progress_bar.html", current_page: :trip_type, subscription_params: nil, conn: @conn %>
 
 <div class="subscription-step select-trip-type">
-  <h2 class="select-trip-type-header">What type of trip do you take?</h2>
+  <h2>What type of trip do you take?</h2>
 
   <div class="trip-type-options-container">
     <%= render "_trip_type_option.html",

@@ -136,4 +136,11 @@ defmodule ConciergeSite.SubwaySubscriptionViewTest do
       end
     end
   end
+
+  describe "field labels" do
+    test "field labels vary depending on roaming" do
+      assert SubwaySubscriptionView.origin_label("roaming") != SubwaySubscriptionView.origin_label("one_way")
+      assert SubwaySubscriptionView.destination_label("roaming") != SubwaySubscriptionView.destination_label("one_way")
+    end
+  end
 end

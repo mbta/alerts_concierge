@@ -1,4 +1,4 @@
-<h1 class="header-container">Create New Subscription</h1>
+<h1 class="header-container">Create a new alert subscription</h1>
 
 <%= render "_progress_bar.html", current_page: :preferences, subscription_params: @subscription_params, conn: @conn %>
 
