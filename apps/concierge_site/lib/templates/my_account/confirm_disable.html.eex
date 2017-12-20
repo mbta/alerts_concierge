@@ -1,4 +1,4 @@
-<h1>My Account</h1>
+<h1 class="header-container">My Account</h1>
 
 <div class="my-account-container">
   <div class="disable-account-content">

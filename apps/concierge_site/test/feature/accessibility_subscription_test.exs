@@ -18,7 +18,7 @@ defmodule ConciergeSite.AccessibilitySubscriptionTest do
     |> fill_in(text_field("station"), with: "Central")
     |> click(checkbox("Weekdays"))
     |> click(button("Create Subscription"))
-    |> assert_has(css(".header-text", text: "My Subscriptions"))
+    |> assert_has(css(".header-container", text: "My Subscriptions"))
     |> assert_has(css(".subscription-details", text: "Elevated subplatform, Elevator, and Portable boarding lift"))
   end
 end

@@ -1,5 +1,5 @@
 <h1 class="header-container">
-  <div class="header-text">Create New Subscription</div>
+  <div>Create New Subscription</div>
   <%= link to: my_account_path(@conn, :edit), class: "header-link" do %>
     My Account <i class="fa fa-gear"></i>
   <% end %>

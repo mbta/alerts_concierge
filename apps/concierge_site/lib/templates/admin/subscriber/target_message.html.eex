@@ -1,6 +1,4 @@
-<h1 class="header-container">
-  <div class="header-text">Create Test Message</div>
-</h1>
+<h1 class="header-container">Create Test Message</h1>
 
 <div class="container test-message-form">
   <div>What type of message would you like to send?</div>

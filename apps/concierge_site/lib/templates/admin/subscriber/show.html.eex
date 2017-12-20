@@ -1,4 +1,4 @@
-<h1><%= @subscriber.email %></h1>
+<h1 class="header-container"><%= @subscriber.email %></h1>
 
 <div class="container">
   <div class="row">

@@ -1,4 +1,4 @@
-<h1>Search by Alert</h1>
+<h1 class="header-container">Search by Alert</h1>
 <%= flash_error(@conn) %>
 <div class="admin-subscription-search">
   <h2 class="text-center">

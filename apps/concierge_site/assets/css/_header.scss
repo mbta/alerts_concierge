@@ -17,13 +17,6 @@
   }
 }
 
-.header-text {
-  padding-top: 1.75rem;
-  @include media-breakpoint-down(xs) {
-    font-size: $font-size-h1;
-  }
-}
-
 .mbta-beta-logo {
   height: 3rem;
 }

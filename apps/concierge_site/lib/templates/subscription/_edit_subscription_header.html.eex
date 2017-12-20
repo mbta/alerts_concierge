@@ -1,5 +1,5 @@
 <h1 class="header-container">
-  <div class="header-text"><%= @title %></div>
+  <div><%= @title %></div>
   <%= link to: subscription_path(ConciergeSite.Endpoint, :confirm_delete, @subscription), class: "header-link" do %>
     Delete Subscription <i class="fa fa-trash-o"></i>
   <% end %>

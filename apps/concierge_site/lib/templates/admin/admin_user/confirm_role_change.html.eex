@@ -1,7 +1,7 @@
-<h1>Confirm Role Change</h1>
+<h1 class="header-container">Confirm Role Change</h1>
 <div class="confirmation-page">
   <p>
-    Are you sure that you'd like to change the role for 
+    Are you sure that you'd like to change the role for
     <%= @admin_user.email %>?
   </p>
   <%= form_for @conn,

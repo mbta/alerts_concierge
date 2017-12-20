@@ -1,6 +1,4 @@
-<h1 class="header-container">
-  <div class="header-text"><%= @admin_user.email %></div>
-</h1>
+<h1 class="header-container"><%= @admin_user.email %></h1>
 
 <div class="admin-detail-view">
   <div class="admin-side-panel">
