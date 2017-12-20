@@ -14,7 +14,8 @@ RUN mix local.hex --force && \
 # Instructions from https://nodejs.org/en/download/package-manager/#debian-and-ubuntu-based-linux-distributions
 RUN curl -sL https://deb.nodesource.com/setup_6.x | bash - && \
     apt-get install -y nodejs && \
-    npm install -g brunch
+    npm install -g brunch && \
+    npm install -g yarn
 
 # Clean up
 RUN apt-get clean
@@ -32,7 +33,7 @@ RUN mix deps.compile
 WORKDIR /alerts_concierge/apps/concierge_site/assets
 
 RUN npm rebuild node-sass
-RUN npm install && brunch build --production
+RUN yarn install && brunch build --production
 
 WORKDIR /alerts_concierge
 
