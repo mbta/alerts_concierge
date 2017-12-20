@@ -8,6 +8,7 @@ defmodule ConciergeSite.SubscriptionView do
   alias Model.{InformedEntity, Route, Subscription}
   alias ConciergeSite.{AccessibilitySubscriptionView, ParkingSubscriptionView, BikeStorageSubscriptionView,
     BusSubscriptionView, SubscriptionHelper, TimeHelper}
+  alias ConciergeSite.Router.Helpers
 
   import SubscriptionHelper,
     only: [direction_id: 1, relevant_days: 1]
@@ -335,5 +336,27 @@ defmodule ConciergeSite.SubscriptionView do
     else
      _ -> false
     end
+  end
+
+  def subscription_edit_path(conn, %Subscription{type: :bus} = subscription) do
+    Helpers.bus_subscription_path(conn, :edit, subscription)
+  end
+  def subscription_edit_path(conn, %Subscription{type: :subway} = subscription) do
+    Helpers.subway_subscription_path(conn, :edit, subscription)
+  end
+  def subscription_edit_path(conn, %Subscription{type: :commuter_rail} = subscription) do
+    Helpers.commuter_rail_subscription_path(conn, :edit, subscription)
+  end
+  def subscription_edit_path(conn, %Subscription{type: :boat} = subscription) do
+    Helpers.ferry_subscription_path(conn, :edit, subscription)
+  end
+  def subscription_edit_path(conn, %Subscription{type: :accessibility} = subscription) do
+    Helpers.accessibility_subscription_path(conn, :edit, subscription)
+  end
+  def subscription_edit_path(conn, %Subscription{type: :parking} = subscription) do
+    Helpers.parking_subscription_path(conn, :edit, subscription)
+  end
+  def subscription_edit_path(conn, %Subscription{type: :bike_storage} = subscription) do
+    Helpers.bike_storage_subscription_path(conn, :edit, subscription)
   end
 end
