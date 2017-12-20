@@ -58,6 +58,18 @@ defmodule ConciergeSite.LayoutView do
         ]
     end
   end
+  def breadcrumbs(%Plug.Conn{path_info: ["login" | _]} = conn) do
+    [%{title: "Sign In", path: conn.request_path}]
+  end
+  def breadcrumbs(%Plug.Conn{path_info: ["reset-password" | _]} = conn) do
+    [%{title: "Reset Password", path: conn.request_path}]
+  end
+  def breadcrumbs(%Plug.Conn{path_info: ["intro"]} = conn) do
+    [%{title: "Create Account", path: conn.request_path}]
+  end
+  def breadcrumbs(%Plug.Conn{path_info: ["account" | _]} = conn) do
+    [%{title: "Get Started", path: conn.request_path}]
+  end
   def breadcrumbs(%Plug.Conn{path_info: ["admin", path]} = conn) do
     [%{title: breadcrumb_title_parse(path), path: conn.request_path}]
   end

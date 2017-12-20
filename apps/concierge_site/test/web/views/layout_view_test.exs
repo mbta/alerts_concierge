@@ -50,6 +50,38 @@ defmodule ConciergeSite.LayoutViewTest do
         %{title: "Subscription Search", path: "/admin/subscription_search/#{id}/new"}
       ]
     end
+
+    test "renders breadcrumbs for login path", %{conn: conn} do
+      conn = conn
+      |> Map.put(:path_info, ["login", "new"])
+      |> Map.put(:request_path, "/login/new")
+
+      assert LayoutView.breadcrumbs(conn) == [%{path: "/login/new", title: "Sign In"}]
+    end
+
+    test "renders breadcrumbs for reset password path", %{conn: conn} do
+      conn = conn
+      |> Map.put(:path_info, ["reset-password", "new"])
+      |> Map.put(:request_path, "/reset-password/new")
+
+      assert LayoutView.breadcrumbs(conn) == [%{path: "/reset-password/new", title: "Reset Password"}]
+    end
+
+    test "renders breadcrumbs for intro path", %{conn: conn} do
+      conn = conn
+      |> Map.put(:path_info, ["intro"])
+      |> Map.put(:request_path, "/intro")
+
+      assert LayoutView.breadcrumbs(conn) == [%{path: "/intro", title: "Create Account"}]
+    end
+
+    test "renders breadcrumbs for account path", %{conn: conn} do
+      conn = conn
+      |> Map.put(:path_info, ["account", "new"])
+      |> Map.put(:request_path, "/account/new")
+
+      assert LayoutView.breadcrumbs(conn) == [%{path: "/account/new", title: "Get Started"}]
+    end
   end
 
   describe "impersonation_banner/2" do
