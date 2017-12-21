@@ -8,7 +8,7 @@ defmodule ConciergeSite.SessionControllerTest do
 
   test "GET /login", %{conn: conn} do
     conn = get(conn, "/login/new")
-    assert html_response(conn, 200) =~ "Transportation alerts when you need them"
+    assert html_response(conn, 200) =~ "Welcome to the T-Alerts Beta Test"
   end
 
   test "POST /login", %{conn: conn} do
