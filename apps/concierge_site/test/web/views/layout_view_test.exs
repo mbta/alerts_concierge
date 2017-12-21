@@ -29,7 +29,7 @@ defmodule ConciergeSite.LayoutViewTest do
       assert LayoutView.breadcrumbs(conn) == [%{title: "Subscribers", path: "/admin/subscribers"}]
     end
 
-    test "renders breadcrumbs for Create a new alert subscriptions path",
+    test "renders breadcrumbs for Create New Subscriptions path",
          %{conn: conn} do
       conn =
         conn

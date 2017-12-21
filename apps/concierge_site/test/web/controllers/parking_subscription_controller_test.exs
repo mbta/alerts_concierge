@@ -10,7 +10,7 @@ defmodule ConciergeSite.ParkingSubscriptionControllerTest do
       conn = conn
       |> get("/subscriptions/parking/new")
 
-      assert html_response(conn, 200) =~ "Create a new alert subscription"
+      assert html_response(conn, 200) =~ "Create New Subscription"
     end
 
     test "POST /subscriptions/parking with valid params", %{conn: conn} do
@@ -42,7 +42,7 @@ defmodule ConciergeSite.ParkingSubscriptionControllerTest do
         |> get_flash("error")
         |> IO.iodata_to_binary()
 
-      assert html_response(conn, 200) =~ "Create a new alert subscription"
+      assert html_response(conn, 200) =~ "Create New Subscription"
       assert expected_error == error
     end
 
@@ -60,7 +60,7 @@ defmodule ConciergeSite.ParkingSubscriptionControllerTest do
         |> get_flash("error")
         |> IO.iodata_to_binary()
 
-      assert html_response(conn, 200) =~ "Create a new alert subscription"
+      assert html_response(conn, 200) =~ "Create New Subscription"
       assert html_response(conn, 200) =~ "North Quincy"
       assert html_response(conn, 200) =~ "Forest Hills"
       assert expected_error == error
