@@ -108,4 +108,10 @@ defmodule ConciergeSite.SubwaySubscriptionView do
 
   def default_severity_selection("roaming"), do: :high
   def default_severity_selection(_), do: :medium
+
+  def origin_label("roaming"), do: "Station 1"
+  def origin_label(_), do: "Origin"
+
+  def destination_label("roaming"), do: "Station 2"
+  def destination_label(_), do: "Destination"
 end

@@ -47,7 +47,7 @@ export default function($) {
   function attachSuggestionInput() {
     const inputEntityType = $(".subscription-select").data("entity-type");
 
-    $(".entity-select-sub-label").after(renderStationInput("a", inputEntityType, "subscription-select-entity-input", ""));
+    $(".entity-select-sub-label").after(renderStationInput(inputEntityType, "subscription-select-entity-input", ""));
   }
 
   function renderRouteSuggestion(route, index) {

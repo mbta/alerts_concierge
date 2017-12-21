@@ -167,17 +167,17 @@ export default function($) {
   }
 
   function attachSuggestionInputs() {
-    attachStationInput("an", "origin");
-    attachStationInput("a", "destination");
+    attachStationInput("origin");
+    attachStationInput("destination");
     $(".trip-info-footer").before(renderHiddenStationInputs());
   }
 
-  function attachStationInput(article, originDestination) {
+  function attachStationInput(originDestination) {
     const preselectedValue = fetchPreselectedOption(originDestination);
     if (preselectedValue && preselectedValue.val()) {
-      $(`label[for='${originDestination}']`).after(renderStationInput(article, originDestination, stationInputClass(originDestination), preselectedValue.text()));
+      $(`label[for='${originDestination}']`).after(renderStationInput("station", stationInputClass(originDestination), preselectedValue.text()));
     } else {
-      $(`label[for='${originDestination}']`).after(renderStationInput(article, originDestination, stationInputClass(originDestination), ""));
+      $(`label[for='${originDestination}']`).after(renderStationInput("station", stationInputClass(originDestination), ""));
     }
   }
 

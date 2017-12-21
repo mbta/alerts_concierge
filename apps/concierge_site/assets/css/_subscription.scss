@@ -16,13 +16,10 @@
   margin-bottom: 2.25rem;
 }
 
-.select-trip-type-header {
-  margin-bottom: 3.25rem;
-}
-
 .service-options-container,
 .trip-type-options-container {
   border: $border-width solid $border-color;
+  margin-top: 3.25rem;
 }
 
 .service-option,

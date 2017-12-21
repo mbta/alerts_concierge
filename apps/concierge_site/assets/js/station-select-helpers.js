@@ -1,6 +1,6 @@
-function renderStationInput(article, name, className, preselectedValue) {
+function renderStationInput(name, className, preselectedValue) {
     return `
-      <input type="text" name="${name}" placeholder="Enter ${article} ${name}" autocomplete="off" class="${className}" value="${preselectedValue}"/>
+    <input type="text" name="${name}" placeholder="Enter a ${name}" autocomplete="off" class="${className}" value="${preselectedValue}"/>
       <div class="suggestion-container"></div>
       <i class="fa fa-check-circle valid-checkmark-icon"></i>
     `
