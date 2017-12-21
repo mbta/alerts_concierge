@@ -25,7 +25,7 @@
     <hr class="account-creation-divider">
     <div class="account-creation-footer">
       <%= submit "Create Account", class: "btn btn-primary btn-create-account" %>
-      <p class="account-creation-privacy-policy">We will not sell or give away your email address or phone number. See our <%= link("Privacy Policy", to: "#") %> for details.</p>
+      <p class="account-creation-privacy-policy">We will not sell or give away your email address or phone number. See our <%= link("Privacy Policy", to: "https://www.mbta.com/policies/privacy-policy", target: "_blank") %> for details.</p>
       <p>Already have an account?  <%= link("Sign in.", to: session_path(@conn, :new)) %><p>
     </div>
   <% end %>
