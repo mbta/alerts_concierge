@@ -5,7 +5,7 @@
 <%= render "_progress_bar.html", current_page: :trip_type, subscription_params: nil, conn: @conn %>
 
 <div class="subscription-step select-trip-type">
-  <h2>Customize your subway trip</h2>
+  <h2>Tell us about your trip</h2>
 
   <p>Is this usually a 1-way trip or a round trip?</p>
 
@@ -14,15 +14,15 @@
   <div class="trip-type-options-container">
     <%= render "_trip_type_option.html",
                link_to: subway_subscription_path(@conn, :info, trip_type: "one_way"),
-               name: "One way" %>
+               name: "One Way" %>
 
     <%= render "_trip_type_option.html",
                link_to: subway_subscription_path(@conn, :info, trip_type: "round_trip"),
-               name: "Round trip" %>
+               name: "Round Trip" %>
 
     <%= render "_trip_type_option.html",
                link_to: subway_subscription_path(@conn, :info, trip_type: "roaming"),
-               name: "General travel" %>
+               name: "General Travel" %>
   </div>
 
   <%= link to: subscription_path(@conn, :new), class: "subscription-back-link" do %>

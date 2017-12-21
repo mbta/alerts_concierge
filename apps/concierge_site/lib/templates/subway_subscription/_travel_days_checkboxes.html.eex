@@ -1,5 +1,5 @@
 <div class="form-group select-days">
-  <div class="form-label edit-form-label">When do you usually take this trip?</div>
+  <div class="form-label edit-form-label">Travel Days</div>
   <%= error_tag @form, :relevant_days %>
   <div class="<%= @action %>-subscription-section-container">
     <label class="travel-day-label">
