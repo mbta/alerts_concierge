@@ -285,6 +285,9 @@ defmodule ConciergeSite.SubscriptionView do
     end
   end
 
+  defp parse_headsign(%{type: :subway, route: "Green-" <> _}) do
+    ""
+  end
   defp parse_headsign(%{type: :subway} = subscription) do
     case parse_direction(subscription) do
       nil ->
