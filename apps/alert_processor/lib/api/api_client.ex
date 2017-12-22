@@ -85,7 +85,7 @@ defmodule AlertProcessor.ApiClient do
   def parent_stations do
     # credo:disable-for-next-line Credo.Check.Readability.SpaceAfterCommas
     "/stops"
-    |> api_get("filter[route_type]": "0,1,2")
+    |> api_get()
     |> parse_response()
   end
 
