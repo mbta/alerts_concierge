@@ -20,7 +20,8 @@ config :concierge_site, ConciergeSite.Endpoint,
   secret_key_base: "${SECRET_KEY_BASE}",
   server: true,
   root: ".",
-  version: Mix.Project.config[:version]
+  version: Mix.Project.config[:version],
+  force_ssl: [host: nil, rewrite_on: [:x_forwarded_proto]]
 
 config :phoenix, :serve_endpoints, true
 # Do not print debug messages in production
