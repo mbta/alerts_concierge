@@ -13,5 +13,6 @@ defmodule ConciergeSite.PageControllerTest do
       |> guardian_login(conn, :access, perms: %{default: [:disable_account]})
       |> get("/account_disabled")
     assert html_response(conn, 200) =~ "Account Disabled"
+    assert get_resp_header(conn, "refresh") == ["5;url=/login/new"]
   end
 end

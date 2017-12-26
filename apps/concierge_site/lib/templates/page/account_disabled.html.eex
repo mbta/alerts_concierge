@@ -6,4 +6,10 @@
     and you will be unable to login into your account. Your account may be
     recovered by initiating a password reset.
   </p>
+  <p>
+  <%= link(to: session_path(@conn, :new)) do %>
+    Return to sign in page
+    <%= fa("arrow-right") %>
+  <% end %>
+  </p>
 <div>
