@@ -362,7 +362,7 @@ defmodule AlertProcessor.Model.Subscription do
   for String.to_existing_atom calls.
   """
   def subscription_types do
-    [:bus, :subway, :commuter_rail, :boat, :accessibility, :parking, :parking_area, :bike_storage, :elevated_subplatform]
+    [:bus, :subway, :commuter_rail, :boat, :accessibility, :parking, :parking_area, :bike_storage, :elevated_subplatform, :portable_boarding_lift]
   end
 
   def subscription_type_from_route_type(route_type) do
