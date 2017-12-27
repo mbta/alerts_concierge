@@ -450,22 +450,23 @@ defmodule AlertProcessor.Model.UserTest do
     end
   end
 
-  describe "put_users_on_indefinite_vacation" do
-    test "it sets list of users on vacation with an end time in the year 9999" do
+  describe "remove_users_phone_number" do
+    test "removes the phone numbers from the users" do
       user0 = insert(:user)
       user1 = insert(:user)
+
       {:ok,
         %{
           {:user, 0} => %{model: user_0},
           {:user, 1} => %{model: user_1},
         }
-      } = User.put_users_on_indefinite_vacation([user0.id, user1.id])
-      assert DateTime.compare(user_0.vacation_end, DateTime.from_naive!(~N[9999-12-25 23:59:59], "Etc/UTC")) == :eq
-      assert DateTime.compare(user_1.vacation_end, DateTime.from_naive!(~N[9999-12-25 23:59:59], "Etc/UTC")) == :eq
+      } = User.remove_users_phone_number([user0.id, user1.id], "sms-opt-out")
+      assert user_0.phone_number == nil
+      assert user_1.phone_number == nil
     end
 
     test "doesnt do anything if no users are passed" do
-      assert {:ok, %{}} = User.put_users_on_indefinite_vacation([])
+      assert {:ok, %{}} = User.remove_users_phone_number([], "sms-opt-out")
     end
   end
 
