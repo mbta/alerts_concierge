@@ -100,7 +100,7 @@ defmodule AlertProcessor.SmsOptOutWorker do
 
   @spec update_users_opted_out([User.id]) :: [User.id]
   defp update_users_opted_out(user_ids) do
-    User.put_users_on_indefinite_vacation(user_ids, "sms-opt-out")
+    User.remove_users_phone_number(user_ids, "sms-opt-out")
     Enum.map(user_ids, &HoldingQueue.remove_user_notifications/1)
   end
 end

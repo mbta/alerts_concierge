@@ -350,14 +350,14 @@ defmodule AlertProcessor.Model.User do
   @doc """
   Takes a list of user ids and puts on vacation mode ending in the year 9999
   """
-  def put_users_on_indefinite_vacation(user_ids, origin \\ "unknown") do
+  def remove_users_phone_number(user_ids, origin) do
     user_ids
     |> Enum.with_index()
     |> Enum.reduce(Multi.new(), fn({user_id, index}, acc) ->
           Multi.run(acc, {:user, index}, fn _ ->
             __MODULE__
             |> Repo.get(user_id)
-            |> update_vacation_changeset(%{vacation_start: DateTime.utc_now(), vacation_end: DateTime.from_naive!(~N[9999-12-25 23:59:59], "Etc/UTC")})
+            |> update_account_changeset(%{phone_number: nil})
             |> PaperTrail.update(origin: origin)
           end)
         end)
