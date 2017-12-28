@@ -133,10 +133,20 @@ defmodule AlertProcessor.Model.User do
       if struct.id != wrap_id(originator).id do
         "admin:update-subscriber-account"
       end
-    struct
-    |> update_account_changeset(params)
+
+    changeset = update_account_changeset(struct, params)
+
+    result = changeset
     |> PaperTrail.update(originator: wrap_id(originator), origin: origin, meta: %{subscriber_id: struct.id, subscriber_email: struct.email})
     |> normalize_papertrail_result()
+
+    case {result, changeset} do
+      {{:ok, updated_user}, %{changes: %{phone_number: _}}} ->
+        opt_in_phone_number(updated_user)
+        result
+      _ ->
+        result
+    end
   end
 
   @doc """
