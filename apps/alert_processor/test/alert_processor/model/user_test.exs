@@ -221,10 +221,28 @@ defmodule AlertProcessor.Model.UserTest do
       assert user.amber_alert_opt_in
     end
 
+    test "opts in phone number when phone number changed" do
+      user = insert(:user)
+      assert {:ok, user} = User.update_account(user, %{"phone_number" => "5550000000"}, user.id)
+      assert_received :opt_in_phone_number
+    end
+
+    test "does not opt in phone number when phone number not changed" do
+      user = insert(:user)
+      assert {:ok, user} = User.update_account(user, %{"amber_alert_opt_in" => "true"}, user.id)
+      refute_received :opt_in_phone_number
+    end
+
     test "does not update account" do
       user = insert(:user)
       assert {:error, changeset} = User.update_account(user, %{"amber_alert_opt_in" => "no way!"}, user.id)
       refute changeset.valid?
+    end
+
+    test "does not opt in phone number when does not save" do
+      user = insert(:user)
+      assert {:error, changeset} = User.update_account(user, %{"amber_alert_opt_in" => "no way!", "phone_number" => "5550000000"}, user.id)
+      refute_received :opt_in_phone_number
     end
 
     test "performed by admin" do
