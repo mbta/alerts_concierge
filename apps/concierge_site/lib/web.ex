@@ -44,6 +44,7 @@ defmodule ConciergeSite.Web do
       import ConciergeSite.PaginationHelpers
       import ConciergeSite.FontAwesomeHelpers
       import ConciergeSite.Gettext
+      import ConciergeSite.ViewHelpers
       import Bodyguard.ViewHelpers
     end
   end

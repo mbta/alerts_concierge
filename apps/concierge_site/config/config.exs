@@ -69,6 +69,10 @@ config :guardian_db, GuardianDb,
 
 config :concierge_site, mail_template_dir: Path.join(~w(#{__DIR__} /../ lib/mail_templates))
 
+# Google Tag Manager
+config :concierge_site, ConciergeSite.ViewHelpers,
+  google_tag_manager_id: System.get_env("GOOGLE_TAG_MANAGER_ID")
+
 # Import environment specific config. This must remain at the bottom
 # of this file so it overrides the configuration defined above.
 import_config "#{Mix.env}.exs"
