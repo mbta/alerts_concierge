@@ -5,7 +5,8 @@ defmodule ConciergeSite.Dissemination.Email do
   alias ConciergeSite.Helpers.MailHelper
   require EEx
 
-  @from ConfigHelper.get_string(:send_from_email, :concierge_site)
+  @from get_address({ConfigHelper.get_string(:send_from_name, :concierge_site),
+                     ConfigHelper.get_string(:send_from_email, :concierge_site)})
   @template_dir Application.get_env(:concierge_site, :mail_template_dir)
 
   EEx.function_from_file(
