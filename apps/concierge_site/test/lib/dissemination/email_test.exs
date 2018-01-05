@@ -49,4 +49,14 @@ defmodule ConciergeSite.Dissemination.EmailTest do
     assert email.html_body =~ body
     assert email.html_body =~ "mbtafeedback.com"
   end
+
+  test "from email contains name" do
+    subscriber = insert(:user, email: "testing@test.com")
+    subject = "Test Subject"
+    body = "This is the body of the test email"
+
+    email = Email.targeted_notification_email(subscriber, subject, body)
+
+    assert email.from == {"T-Alert", "alert@mbta.com"}
+  end
 end
