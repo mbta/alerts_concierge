@@ -108,7 +108,7 @@ defmodule AlertProcessor.Model.Alert do
         end
       priority_value(mode, effect_name, severity)
     end)
-    |> Enum.max
+    |> Enum.max(fn -> 1 end)
   end
 
   @doc """

@@ -32,6 +32,11 @@ defmodule AlertProcessor.Model.AlertTest do
       alert = %Alert{severity: :extreme, informed_entities: [@ie3]}
       assert Alert.severity_value(alert) == 4
     end
+
+    test "Alert without any informed entities" do
+      alert = %Alert{severity: :extreme, informed_entities: []}
+      assert Alert.severity_value(alert) == 1
+    end
   end
 
   describe "facility_alert?/1" do
