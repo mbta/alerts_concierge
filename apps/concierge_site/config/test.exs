@@ -16,3 +16,7 @@ config :concierge_site, ConciergeSite.Dissemination.Mailer,
   deliver_later_strategy: Bamboo.ImmediateDeliveryStrategy
 
 config :concierge_site, :sql_sandbox, true
+
+# Google Tag Manager
+config :concierge_site, ConciergeSite.ViewHelpers,
+  google_tag_manager_id: "GOOGLE_TAG_MANAGER_ID"

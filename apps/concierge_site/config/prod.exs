@@ -40,6 +40,9 @@ config :concierge_site, ConciergeSite.Dissemination.Mailer,
   username: "${SMTP_USERNAME}",
   password: "${SMTP_PASSWORD}"
 
+config :concierge_site, ConciergeSite.ViewHelpers,
+  google_tag_manager_id: "${GOOGLE_TAG_MANAGER_ID}"
+
 # ## SSL Support
 #
 # To get SSL working, you will need to add the `https` key
