@@ -26,7 +26,7 @@ defmodule ConciergeSite.LoginTest do
     |> assert_has(css(".header-link", text: "My Account"))
     |> assert_has(css(".log-out-link", count: 1))
     |> click(css(".log-out-link", count: 1))
-    |> assert_has(css(".login-header", text: "Welcome to the T-Alerts Beta Test"))
+    |> assert_has(css(".log-in-link", count: 1))
   end
 
   test "logging in with incorrect information", %{session: session} do
