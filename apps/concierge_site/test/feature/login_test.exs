@@ -15,7 +15,7 @@ defmodule ConciergeSite.LoginTest do
     |> assert_has(css(".login-header", text: "Welcome to the T-Alerts Beta Test"))
   end
 
-  test "logging in with an existing account", %{session: session} do
+  test "logging in with an existing account and logging out", %{session: session} do
     Repo.insert!(%User{email: @email,
                        role: "user",
                        encrypted_password: @encrypted_password})
@@ -24,6 +24,9 @@ defmodule ConciergeSite.LoginTest do
     |> visit("/")
     |> log_in(@email, @password)
     |> assert_has(css(".header-link", text: "My Account"))
+    |> assert_has(css(".log-out-link", count: 1))
+    |> click(css(".log-out-link", count: 1))
+    |> assert_has(css(".log-in-link", count: 1))
   end
 
   test "logging in with incorrect information", %{session: session} do

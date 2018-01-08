@@ -24,8 +24,4 @@
       <%= submit "Update Account", class: "btn btn-primary update-account" %>
     </div>
   <% end %>
-  <div class="log-out-link">
-    <%= button "Log Out", to: admin_session_path(@conn, :delete),
-      method: :delete, class: "btn btn-primary" %>
-  </div>
 </div>
