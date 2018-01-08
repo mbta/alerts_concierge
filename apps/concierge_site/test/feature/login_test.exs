@@ -44,11 +44,11 @@ defmodule ConciergeSite.LoginTest do
   test "creating an account", %{session: session} do
     session
     |> visit("/")
-    |> click(css("a", text: "Create one"))
+    |> click(css("a", text: "Create a T-Alerts account"))
     |> click(css("a", text: "Get Started"))
     |> fill_in(text_field("Email address"), with: @email)
     |> fill_in(text_field("New password"), with: @password)
-    |> fill_in(text_field("Re-enter new password"), with: @password)
+    |> fill_in(text_field("Re-enter password"), with: @password)
     |> click(button("Create Account"))
     |> assert_has(css(".header-link", text: "My Account"))
   end
