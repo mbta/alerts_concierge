@@ -46,7 +46,7 @@ defmodule ConciergeSite.LoginTest do
     |> visit("/")
     |> click(css("a", text: "Create one"))
     |> click(css("a", text: "Get Started"))
-    |> fill_in(text_field("Email Address"), with: @email)
+    |> fill_in(text_field("Email address"), with: @email)
     |> fill_in(text_field("New password"), with: @password)
     |> fill_in(text_field("Re-enter new password"), with: @password)
     |> click(button("Create Account"))
