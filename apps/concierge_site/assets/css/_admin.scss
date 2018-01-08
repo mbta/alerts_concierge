@@ -178,9 +178,15 @@
   padding-bottom: 0;
 }
 
-.nav-link > a {
-  text-decoration: none;
-  color: black;
+.nav-link {
+  a {
+    text-decoration: none;
+    color: black;
+  }
+
+  &:last-child {
+    margin-right: -.5rem;
+  }
 }
 
 .nav-active {

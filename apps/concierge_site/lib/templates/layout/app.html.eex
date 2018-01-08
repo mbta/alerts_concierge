@@ -26,23 +26,32 @@
       <nav class="navbar navbar-toggleable-sm navbar-default">
         <div class="container">
           <a href="https://t.mbta.com/"><%= img_tag(static_url(@conn, "/images/mbta-beta-logo.png"), class: "mbta-beta-logo navbar-brand") %></a>
-          <%= if is_admin?(@current_user) do %>
-            <div class="collapse navbar-collapse justify-content-end">
-              <ul class="nav navbar-nav">
+          <div class="collapse navbar-collapse justify-content-end">
+            <ul class="nav navbar-nav">
+              <%= if is_admin?(@current_user) do %>
                 <li class="nav-link <%= active_nav_class(@conn, "subscribers") %>">
-                  <%= link "Subscribers", to: "/admin/subscribers"%>
+                  <%= link "Subscribers", to: "/admin/subscribers", class: "btn btn-link" %>
                 </li>
                 <%= if is_app_admin?(@current_user) do %>
                   <li class="nav-link <%= active_nav_class(@conn, "admin_users") %>">
-                    <%= link "Admins", to: "/admin/admin_users"%>
+                    <%= link "Admins", to: "/admin/admin_users", class: "btn btn-link"%>
                   </li>
                 <% end %>
                 <li class="admin-navbar-email nav-link <%= active_nav_class(@conn, "my-account") %>">
-                  <%= link @current_user.email, to: "/admin/my-account/edit" %>
+                  <%= link @current_user.email, to: "/admin/my-account/edit", class: "btn btn-link" %>
                 </li>
-              </ul>
-            </div>
-          <% end %>
+              <% end %>
+              <%= if @current_user do %>
+                <li class="nav-link">
+                  <%= form_for @conn, session_path(@conn, :delete), [method: "delete", as: :custom_delete, _csrf_token: get_csrf_token()], fn _ -> %>
+                    <%= submit class: "btn btn-link log-out-link" do %>
+                      Log Out <i class="fa fa-sign-out"></i>
+                    <% end %>
+                  <% end %>
+                </li>
+              <% end %>
+            </ul>
+          </div>
         </div>
       </nav>
       <div class="bg-faded">

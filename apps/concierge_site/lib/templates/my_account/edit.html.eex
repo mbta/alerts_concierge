@@ -84,10 +84,4 @@
       <%= submit "Update Account Preferences", class: "btn btn-primary update-account" %>
     </div>
   <% end %>
-
-  <div class="log-out-link">
-    <%= form_for @conn, session_path(@conn, :delete), [method: "delete", as: :custom_delete, _csrf_token: get_csrf_token()], fn _ -> %>
-      <%= submit "Log Out", class: "btn btn-primary" %>
-    <% end %>
-  </div>
 </div>
