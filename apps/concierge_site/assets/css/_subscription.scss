@@ -4,7 +4,6 @@
     @include make-col-offset(2);
   }
 
-  text-align: center;
   padding-bottom: 2rem;
 }
 
@@ -12,14 +11,11 @@
   margin-bottom: 1rem;
 }
 
-.select-service-subheader {
-  margin-bottom: 2.25rem;
-}
-
 .service-options-container,
 .trip-type-options-container {
   border: $border-width solid $border-color;
-  margin-top: 3.25rem;
+  margin-top: 1.5rem;
+  text-align: center;
 }
 
 .service-option,
@@ -62,6 +58,7 @@
 
 .subscription-text {
   display: inline-block;
+  text-align: left;
   width: 67%;
 }
 

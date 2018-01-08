@@ -1,13 +1,12 @@
 <h1 class="header-container">
-  Create New Subscription
-  <%= link to: my_account_path(@conn, :edit), class: "header-link" do %>
-    My Account <i class="fa fa-gear"></i>
-  <% end %>
+  Create a new alert subscription
 </h1>
 
 <div class="subscription-step select-service">
-  <h2 class="select-service-header">Select a service:</h2>
-  <p class="select-service-subheader">What mode of transportation do you take?</p>
+  <h2 class="select-service-header">What would you like to receive alerts about?</h2>
+  <p>Select one of the options below to customize a new alert subscription.</p>
+
+  <p>We recommend starting with the mode of transit you use the most. Then, you can create alerts for other modes or station features.</p>
 
   <div class="service-options-container">
     <%= render "_service_option.html",
@@ -34,12 +33,6 @@
                icon_src: static_url(@conn, "/images/ferry.svg"),
                name: "Ferry" %>
 
-  </div>
-</div>
-<div class="subscription-step select-service">
-  <p class="select-service-subheader">What station features do you use?</p>
-
-  <div class="service-options-container">
     <%= render "_service_option.html",
               link_to: accessibility_subscription_path(@conn, :new),
               icon_class: "accessibility-icon",

@@ -41,20 +41,27 @@
                   <%= link @current_user.email, to: "/admin/my-account/edit", class: "btn btn-link" %>
                 </li>
               <% end %>
-              <li class="nav-link">
-                <%= if @current_user do %>
+              <%= if @current_user do %>
+                <li class="nav-link">
+                  <%= link to: my_account_path(@conn, :edit), class: "btn btn-link" do %>
+                    My Account <i class="fa fa-gear"></i>
+                  <% end %>
+                </li>
+                <li class="nav-link">
                   <%= form_for @conn, session_path(@conn, :delete), [method: "delete", as: :custom_delete,
                                       _csrf_token: get_csrf_token()], fn _ -> %>
                     <%= submit class: "btn btn-link log-out-link" do %>
                       Log Out <i class="fa fa-sign-out"></i>
                     <% end %>
                   <% end %>
-                <% else %>
+                </li>
+              <% else %>
+                <li class="nav-link">
                   <%= link to: session_path(@conn, :new), class: "btn btn-link log-in-link" do %>
                     Log In <i class="fa fa-sign-in"></i>
                   <% end %>
-                <% end %>
-              </li>
+                </li>
+              <% end %>
             </ul>
           </div>
         </div>
