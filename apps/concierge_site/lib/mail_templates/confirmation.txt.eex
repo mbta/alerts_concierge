@@ -1,7 +1,7 @@
-Congratulations, you have successfully subscribed to receive MBTA alerts.
+Congratulations, you have successfully subscribed to receive T-Alerts.
 To update your subscription preferences, please tap on the Edit your Subscriptions link below.
-To stop receiving email alerts, please click unsubscribe below.
+To stop receiving alerts, please click unsubscribe below.
 
-If you did NOT request an account to receive MBTA alerts, click here to disable the account: <%= disable_account_url %>
+If you did NOT request an account to receive T-Alerts, click this link to disable the account: <%= disable_account_url %>
 
 <%= ConciergeSite.Helpers.MailHelper.text_footer(unsubscribe_url, manage_subscriptions_url, feedback_url) %>
