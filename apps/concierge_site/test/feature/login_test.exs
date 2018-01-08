@@ -12,7 +12,7 @@ defmodule ConciergeSite.LoginTest do
   test "viewing the login page", %{session: session} do
     session
     |> visit("/")
-    |> assert_has(css(".login-header", text: "Welcome to the T-Alerts Beta Test"))
+    |> assert_has(css(".login-header", text: "Welcome to T-Alerts Beta"))
   end
 
   test "logging in with an existing account and logging out", %{session: session} do
