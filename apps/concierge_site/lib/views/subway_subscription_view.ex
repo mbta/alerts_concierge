@@ -1,6 +1,5 @@
 defmodule ConciergeSite.SubwaySubscriptionView do
   use ConciergeSite.Web, :view
-  import AlertProcessor.Helpers.StringHelper, only: [capitalize_first: 1]
   import ConciergeSite.TimeHelper,
     only: [travel_time_options: 0, format_time_string: 1, time_to_string: 1]
   import ConciergeSite.SubscriptionHelper,
@@ -40,34 +39,20 @@ defmodule ConciergeSite.SubwaySubscriptionView do
   Returns a summary of a subscription's associated trip days, times, and stops
   """
   @spec trip_summary_title(map, map) :: iodata
-  def trip_summary_title(%{"trip_type" => "one_way"} = params, station_names) do
-    [station_names["origin"],
-     " to ",
-     station_names["destination"],
-     ", ",
-     joined_day_list(params),
-     " ",
-     format_time_string(params["departure_start"]),
-     " - ",
-     format_time_string(params["departure_end"])]
-  end
-
-  def trip_summary_title(%{"trip_type" => "round_trip"} = params, station_names) do
-    ["Round trip ",
-     joined_day_list(params),
+  def trip_summary_title(params, station_names) do
+    [format_trip_type(params["trip_type"]),
      " travel between ",
      station_names["origin"],
      " and ",
-     station_names["destination"]]
+     station_names["destination"],
+     " on ",
+     joined_day_list(params)]
   end
 
-  def trip_summary_title(%{"trip_type" => "roaming"} = params, station_names) do
-    [params |> joined_day_list() |> capitalize_first(),
-     " general travel between ",
-     station_names["origin"],
-     " and ",
-     station_names["destination"]]
-  end
+  @spec format_trip_type(String.t) :: String.t
+  defp format_trip_type("one_way"), do: "One way"
+  defp format_trip_type("round_trip"), do: "Round trip"
+  defp format_trip_type("roaming"), do: "General"
 
   @doc """
   Returns a list of a subscription's associated times and stops
