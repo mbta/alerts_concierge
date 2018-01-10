@@ -20,7 +20,7 @@ defmodule ConciergeSite.BusSubscriptionControllerTest do
       |> guardian_login(conn)
       |> get("/subscriptions/bus/new")
 
-      assert html_response(conn, 200) =~ "What type of trip do you take?"
+      assert html_response(conn, 200) =~ "Customize your bus trip"
     end
 
     test "GET /subscriptions/bus/new/info", %{conn: conn}  do
@@ -51,7 +51,7 @@ defmodule ConciergeSite.BusSubscriptionControllerTest do
       |> guardian_login(conn)
       |> get("/subscriptions/bus/new/info", params)
 
-      assert html_response(conn, 200) =~ "Which bus routes do you take?"
+      assert html_response(conn, 200) =~ "Which bus routes do you usually take?"
       assert html_response(conn, 200) =~ "<option selected=\"selected\" value=\"741 - 0\">"
       assert html_response(conn, 200) =~ "<option selected=\"selected\" value=\"742 - 0\">"
       assert html_response(conn, 200) =~ "<option value=\"742 - 1\">"
@@ -73,7 +73,7 @@ defmodule ConciergeSite.BusSubscriptionControllerTest do
       |> guardian_login(conn)
       |> post("/subscriptions/bus/new/preferences", params)
 
-      assert html_response(conn, 200) =~ "Set your subscription preferences:"
+      assert html_response(conn, 200) =~ "Confirm your alert preferences"
       assert html_response(conn, 200) =~ "Route Silver Line SL1 inbound, Saturday  8:45 AM -  9:15 AM"
     end
 

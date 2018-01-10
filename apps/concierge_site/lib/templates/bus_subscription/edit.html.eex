@@ -23,7 +23,6 @@
                action: "edit" %>
 
     <div class="form-group travel-times">
-      <div class="form-label">When do you travel?</div>
       <div class="form-sub-label travel-times-sub-label">
         We will send you notifications for any service alerts that occur during
         your planned travel time.

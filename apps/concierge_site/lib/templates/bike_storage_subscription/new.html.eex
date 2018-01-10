@@ -6,7 +6,7 @@
       <%= render "_bike_storage_form.html", f: f, station_select_options: @station_select_options, selected_options: @selected_options, action: "new" %>
 
       <div class="trip-info-footer">
-        <%= submit "Create Subscription", class: "btn btn-primary btn-bike_storage-submit" %>
+        <%= submit "Create alert", class: "btn btn-primary btn-bike_storage-submit" %>
       </div>
     <% end %>
   </div>

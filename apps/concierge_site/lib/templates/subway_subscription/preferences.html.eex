@@ -27,7 +27,7 @@
     <% end %>
 
     <div class="trip-info-footer">
-      <%= submit "Create Subscription", class: "btn btn-primary btn-subscription-next" %>
+      <%= submit "Create alert", class: "btn btn-primary btn-subscription-next" %>
     </div>
   <% end %>
   <div class="back-link-container">

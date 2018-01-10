@@ -10,11 +10,11 @@
   <div class="trip-type-options-container">
     <%= render "_trip_type_option.html",
                link_to: commuter_rail_subscription_path(@conn, :info, trip_type: "one_way"),
-               name: "One Way" %>
+               name: "One way" %>
 
     <%= render "_trip_type_option.html",
                link_to: commuter_rail_subscription_path(@conn, :info, trip_type: "round_trip"),
-               name: "Round Trip" %>
+               name: "Round trip" %>
   </div>
 
   <%= link to: subscription_path(@conn, :new), class: "subscription-back-link" do %>

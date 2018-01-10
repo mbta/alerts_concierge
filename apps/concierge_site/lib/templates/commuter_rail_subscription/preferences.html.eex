@@ -19,7 +19,7 @@
     <%= hidden_form_inputs(:preferences, @subscription_params) %>
 
     <div class="trip-info-footer">
-      <%= submit "Create Subscription", class: "btn btn-primary btn-subscription-next" %>
+      <%= submit "Create alert", class: "btn btn-primary btn-subscription-next" %>
     </div>
   <% end %>
   <div class="back-link-container">

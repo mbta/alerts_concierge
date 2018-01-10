@@ -1,22 +1,22 @@
-<h1 class="header-container">Create New Subscription</h1>
+<h1 class="header-container">Create a new alert subscription</h1>
 
 <%= render "_progress_bar.html", current_page: :trip_info, subscription_params: @subscription_params, conn: @conn %>
 
 <div class="subscription-step enter-trip-info bus">
-  <h2 class="trip-info-header bus">Tell us about your trip</h2>
+  <h2 class="trip-info-header bus">Customize your bus trip</h2>
 
   <%= flash_error(@conn) %>
 
   <%= form_for @conn, bus_subscription_path(@conn, :preferences), [class: "single-submit-form trip-info-form multi-select-form bus", as: :subscription], fn f -> %>
     <div class="form-group select-entity">
-      <label for="route" class="entity-input-label form-label">Which bus routes do you take?</label>
+      <label for="route" class="entity-input-label form-label">Which bus routes do you usually take?</label>
       <%= if @subscription_params["trip_type"] == "round_trip" do %>
         <div class="form-sub-label">
           Choose the direction of your first trip. The other direction will be
           used for the return trip.
         </div>
       <% end %>
-      <div class="form-sub-label entity-select-sub-label">Enter as many routes as you would like.</div>
+      <div class="form-sub-label entity-select-sub-label">Note: You can add several routes, but we recommend adding the ones you take the most.</div>
       <div class="entity-select-group">
         <%= multiple_select f,
                   :routes,
@@ -38,11 +38,6 @@
                action: "new" %>
 
     <div class="form-group travel-times">
-      <div class="form-label">When do you travel?</div>
-      <div class="form-sub-label travel-times-sub-label">
-        We will send you notifications of disruptions as soon as we know they
-        may affect your trip.
-      </div>
       <%= render "_travel_time_select_lists.html", subscription_params: @subscription_params, f: f %>
     </div>
 
