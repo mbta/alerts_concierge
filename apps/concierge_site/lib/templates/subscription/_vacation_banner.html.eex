@@ -6,6 +6,6 @@
       <%= submit "Resume Alerts", class: "btn-link" %>
     <% end %>
   <% else %>
-    <%= link("Pause Alerts", to: "/my-account/vacation/edit") %>
+    <%= link("Hit the pause button.", to: "/my-account/vacation/edit") %>
   <% end %>
 </div>

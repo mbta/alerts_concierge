@@ -28,7 +28,7 @@ defmodule ConciergeSite.EditSubscriptionTest do
     session
     |> log_in(user)
     |> create_subscription("Weekdays")
-    |> click(link("Create a new subscription"))
+    |> click(link("Create a new alert"))
     |> create_subscription("Sunday") # create two subscriptions so we go back to the index page after deletion
     |> click(link("1 station on Weekdays"))
     |> click(link("Delete Subscription"))

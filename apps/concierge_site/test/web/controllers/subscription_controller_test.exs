@@ -50,7 +50,7 @@ defmodule ConciergeSite.SubscriptionControllerTest do
       |> guardian_login(conn)
       |> get(subscription_path(conn, :index))
 
-      assert html_response(conn, 200) =~ "My Subscriptions"
+      assert html_response(conn, 200) =~ "My Alerts"
       assert html_response(conn, 200) =~ "Subway"
       assert html_response(conn, 200) =~ "Davis"
       assert html_response(conn, 200) =~ "Harvard"
@@ -78,7 +78,7 @@ defmodule ConciergeSite.SubscriptionControllerTest do
         |> guardian_login(conn)
         |> get(subscription_path(conn, :index))
 
-      assert html_response(conn, 200) =~ "My Subscriptions"
+      assert html_response(conn, 200) =~ "My Alerts"
       assert html_response(conn, 200) =~ "57A"
       assert html_response(conn, 200) =~ "Outbound"
     end
