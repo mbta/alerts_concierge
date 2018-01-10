@@ -1,39 +1,24 @@
-<div class="form-label <%= @action %>-alert-type">Alert Type</div>
-<%= if @action == "new" do %>
-  <div class="form-sub-label priority-sub-label">
-    What kind of alerts would you like to receive? You can edit this
-    information at any time.
-  </div>
-<% end %>
+<div class="form-label <%= @action %>-alert-type">What kind of alerts would you like to receive?</div>
 <div class="priority-options <%= @action %>-form-section">
   <%= error_tag @form, :alert_priority_type %>
   <label class="priority-radio-option">
     <%= radio_button @form, :alert_priority_type, "high", checked: (@checked == :high) %>
     <div>
-      <div>High Priority Alerts only:</div>
-      <div class="form-sub-label">
-        Severe delays, cancellations, dock closures
-      </div>
+      <div>Only high-priority alerts. This includes severe delays, cancellations, and dock closures</div>
     </div>
   </label>
   <div class="priority-option-divider"></div>
   <label class="priority-radio-option">
     <%= radio_button @form, :alert_priority_type, "medium", checked: (@checked == :medium) %>
     <div>
-      <div>High and Medium Priority Alerts:</div>
-      <div class="form-sub-label">
-        All of the above plus moderate delays
-      </div>
+      <div>All high-priority alerts and moderate delays</div>
     </div>
   </label>
   <div class="priority-option-divider"></div>
   <label class="priority-radio-option">
     <%= radio_button @form, :alert_priority_type, "low", checked: (@checked == :low) %>
     <div>
-      <div>High, Medium, and Low Priority Alerts:</div>
-      <div class="form-sub-label">
-        All of the above plus minor delays
-      </div>
+      <div>All high-priority, moderate, and minor delays</div>
     </div>
   </label>
 </div>
