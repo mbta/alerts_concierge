@@ -16,7 +16,7 @@ defmodule ConciergeSite.ParkingSubscriptionTest do
     |> click(css("a", text: "Parking"))
     |> fill_in(text_field("station"), with: "South Station")
     |> click(checkbox("Weekdays"))
-    |> click(button("Create Subscription"))
+    |> click(button("Create alert"))
     |> assert_has(css(".header-container", text: "My Subscriptions"))
     |> assert_has(css(".subscription-route", text: "Parking"))
   end

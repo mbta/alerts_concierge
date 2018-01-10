@@ -1,5 +1,6 @@
 <div class="form-group select-days">
-  <div class="form-label edit-form-label">What days do you travel?</div>
+  <div class="form-label edit-form-label">What days do you normally park at these stations?</div>
+  <div class="form-sub-label accessibility-sub-label">If you park at different places depending on the day, you will need to create a separate alert for each location.</div>
   <%= error_tag @form, :relevant_days %>
   <div class="<%= @action %>-subscription-section-container">
     <label>
