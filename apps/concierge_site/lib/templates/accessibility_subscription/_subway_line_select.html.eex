@@ -1,5 +1,6 @@
 <div class="form-group select-days">
-  <div class="form-sub-label accessibility-sub-label">Sign up for all stations on a line at once.</div>
+  <label for="station" class="entity-input-label form-label">Or, choose the subway line you would like updates for.</label>
+  <div class="form-sub-label accessibility-sub-label">Note: you’ll receive alerts related to accessibility for every station on the line.</div>
   <%= error_tag @form, :relevant_lines %>
   <div class="<%= @action %>-subscription-section-container">
     <label>

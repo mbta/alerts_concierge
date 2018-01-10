@@ -11,7 +11,7 @@
       <%= render "_accessibility_form.html", f: f, station_select_options: @station_select_options, selected_options: @selected_options, action: "edit" %>
 
       <div class="trip-info-footer">
-        <%= submit "Update Subscription", class: "btn btn-primary btn-subscription-next" %>
+        <%= submit "Update alert", class: "btn btn-primary btn-subscription-next" %>
       </div>
     <% end %>
   </div>
