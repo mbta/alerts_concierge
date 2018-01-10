@@ -62,7 +62,8 @@ defmodule ConciergeSite.Mixfile do
       {:phoenix_live_reload, "~> 1.0", only: :dev},
       {:gettext, "~> 0.11"},
       {:cowboy, "~> 1.0"},
-      {:wallaby, "~> 0.15", only: :test}
+      {:wallaby, "~> 0.15", only: :test},
+      {:logster, "~> 0.4.0"}
     ]
   end
 
