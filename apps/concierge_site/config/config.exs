@@ -35,8 +35,10 @@ config :concierge_site, feedback_url: {:system, "FEEDBACK_URL", nil}
 
 # Configures Elixir's Logger
 config :logger, :console,
-  format: "$time $metadata[$level] $message\n",
+  format: "$date $time $metadata[$level] $message\n",
   metadata: [:request_id]
+# Include referrer in Logster request log
+config :logster, :allowed_headers, ["referer"]
 
 config :guardian, Guardian,
   allowed_algos: ["HS512"],

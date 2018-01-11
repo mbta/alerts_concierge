@@ -25,7 +25,7 @@ defmodule ConciergeSite.Endpoint do
   end
 
   plug Plug.RequestId
-  plug Plug.Logger
+  plug Logster.Plugs.Logger, formatter: ConciergeSite.Logster.SafeStringFormatter
 
   plug Plug.Parsers,
     parsers: [:urlencoded, :multipart, :json],
