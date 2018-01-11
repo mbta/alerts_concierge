@@ -24,11 +24,18 @@ config :concierge_site, ConciergeSite.Endpoint,
   force_ssl: [host: nil, rewrite_on: [:x_forwarded_proto]]
 
 config :phoenix, :serve_endpoints, true
+
 # Do not print debug messages in production
 config :logger,
   level: :info,
   truncate: :infinity,
+  handle_sasl_reports: true,
   backends: [:console]
+
+config :logger, :console,
+  level: :info,
+  format: "$dateT$time [$level]$levelpad node=$node $metadata$message\n",
+  metadata: [:request_id, :ip]
 
 config :concierge_site, ConciergeSite.Dissemination.Mailer,
   adapter: Bamboo.SMTPAdapter,
