@@ -50,7 +50,7 @@ defmodule ConciergeSite.SubwaySubscriptionView do
   end
 
   @spec format_trip_type(String.t) :: String.t
-  defp format_trip_type("one_way"), do: "One way"
+  defp format_trip_type("one_way"), do: "One-way"
   defp format_trip_type("round_trip"), do: "Round trip"
   defp format_trip_type("roaming"), do: "General"
 

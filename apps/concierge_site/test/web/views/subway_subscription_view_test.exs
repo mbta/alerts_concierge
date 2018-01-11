@@ -103,7 +103,7 @@ defmodule ConciergeSite.SubwaySubscriptionViewTest do
           |> SubwaySubscriptionView.trip_summary_title(station_names)
           |> IO.iodata_to_binary()
 
-        assert trip_summary_title == "One way travel between Boston Univ. East and Boston Univ. West on weekdays"
+        assert trip_summary_title == "One-way travel between Boston Univ. East and Boston Univ. West on weekdays"
       end
     end
   end

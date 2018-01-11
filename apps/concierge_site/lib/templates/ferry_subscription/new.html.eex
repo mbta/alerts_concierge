@@ -5,12 +5,12 @@
 <div class="subscription-step select-trip-type">
   <h2>Customize your ferry trip</h2>
 
-  <p>Is this usually a 1-way trip or a round trip?</p>
+  <p>Is this usually a one-way trip or a round trip?</p>
 
   <div class="trip-type-options-container">
     <%= render "_trip_type_option.html",
                link_to: ferry_subscription_path(@conn, :info, trip_type: "one_way"),
-               name: "One way" %>
+               name: "One-way" %>
 
     <%= render "_trip_type_option.html",
                link_to: ferry_subscription_path(@conn, :info, trip_type: "round_trip"),

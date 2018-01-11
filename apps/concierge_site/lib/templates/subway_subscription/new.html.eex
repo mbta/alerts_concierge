@@ -7,14 +7,14 @@
 <div class="subscription-step select-trip-type">
   <h2>Customize your subway trip</h2>
 
-  <p>Is this usually a 1-way trip or a round trip?</p>
+  <p>Is this usually a one-way trip or a round trip?</p>
 
   <p class="font-italic">Note: If it’s neither, select, “General Travel”</p>
 
   <div class="trip-type-options-container">
     <%= render "_trip_type_option.html",
                link_to: subway_subscription_path(@conn, :info, trip_type: "one_way"),
-               name: "One way" %>
+               name: "One-way" %>
 
     <%= render "_trip_type_option.html",
                link_to: subway_subscription_path(@conn, :info, trip_type: "round_trip"),
