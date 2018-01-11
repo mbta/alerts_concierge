@@ -79,7 +79,7 @@ defmodule ConciergeSite.LayoutView do
   def breadcrumbs(%Plug.Conn{path_info: [_path, _endpoint, "confirm_delete"]} = conn) do
     [
       %{title: "Edit Alerts", path: subscription_path(conn, :index)},
-      %{title: "Confirm Delete Subscription", path: conn.request_path}
+      %{title: "Confirm Delete Alert", path: conn.request_path}
     ]
   end
   def breadcrumbs(%Plug.Conn{path_info: ["subscriptions", _endpoint, "new"]} = conn) do

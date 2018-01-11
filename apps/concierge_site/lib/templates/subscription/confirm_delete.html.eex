@@ -1,10 +1,10 @@
 <h1 class="header-container">Station amenity alerts</h1>
 <div class="subscription-step">
-  <h2>Delete Subscription?</h2>
+  <h2>Delete Alert?</h2>
   <%= flash_error(@conn) %>
-  <p>Are you sure that you'd like to delete this T-Alert subscription? This action cannot be undone.</p>
+  <p>Are you sure that you'd like to delete this alert? This action cannot be undone.</p>
   <%= form_for @conn, subscription_path(@conn, :delete, @subscription), [as: :subscription, method: :delete, class: "single-submit-form"], fn _f -> %>
-    <%= submit("Yes, delete this subscription", class: "btn btn-primary btn-wide") %>
+    <%= submit("Yes, delete this alert", class: "btn btn-primary btn-wide") %>
   <% end %>
   <%= link("Cancel", to: subscription_edit_path(@conn, @subscription)) %>
 </div>

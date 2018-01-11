@@ -102,7 +102,7 @@ defmodule ConciergeSite.SubscriptionControllerTest do
         |> guardian_login(conn)
         |> get(subscription_path(conn, :new))
 
-      assert html_response(conn, 200) =~ "Create a new alert subscription"
+      assert html_response(conn, 200) =~ "Create a new alert"
     end
 
     test "GET /subscriptions/:id/confirm_delete with a user who owns the subscription", %{conn: conn} do
@@ -113,7 +113,7 @@ defmodule ConciergeSite.SubscriptionControllerTest do
       |> guardian_login(conn)
       |> get(subscription_path(conn, :confirm_delete, subscription))
 
-      assert html_response(conn, 200) =~ "Delete Subscription?"
+      assert html_response(conn, 200) =~ "Delete Alert?"
     end
 
     test "GET /subscriptions/:id/confirm_delete with a user who does not own the subscription", %{conn: conn} do

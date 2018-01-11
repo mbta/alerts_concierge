@@ -1,4 +1,4 @@
-<h1 class="header-container">Create a new alert subscription</h1>
+<h1 class="header-container">Create a new alert</h1>
 
 <%= render "_progress_bar.html", current_page: :ferry, subscription_params: @subscription_params, conn: @conn %>
 

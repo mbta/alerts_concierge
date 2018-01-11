@@ -65,7 +65,7 @@ defmodule ConciergeSite.AccessibilitySubscriptionController do
         |> redirect(to: accessibility_subscription_path(conn, :edit, id))
       _ ->
         conn
-        |> put_flash(:error, "There was an error saving the subscription. Please try again.")
+        |> put_flash(:error, "There was an error saving the alert. Please try again.")
         |> redirect(to: accessibility_subscription_path(conn, :edit, id))
     end
   end

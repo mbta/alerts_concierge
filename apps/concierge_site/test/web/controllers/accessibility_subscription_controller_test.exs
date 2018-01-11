@@ -10,7 +10,7 @@ defmodule ConciergeSite.AccessibilitySubscriptionControllerTest do
       conn = conn
       |> get("/subscriptions/accessibility/new")
 
-      assert html_response(conn, 200) =~ "Create a new alert subscription"
+      assert html_response(conn, 200) =~ "Create a new alert"
     end
 
     test "POST /subscriptions/accessibility with valid params", %{conn: conn} do
@@ -46,7 +46,7 @@ defmodule ConciergeSite.AccessibilitySubscriptionControllerTest do
         |> get_flash("error")
         |> IO.iodata_to_binary()
 
-      assert html_response(conn, 200) =~ "Create a new alert subscription"
+      assert html_response(conn, 200) =~ "Create a new alert"
       assert expected_error == error
     end
 
@@ -66,7 +66,7 @@ defmodule ConciergeSite.AccessibilitySubscriptionControllerTest do
         |> get_flash("error")
         |> IO.iodata_to_binary()
 
-      assert html_response(conn, 200) =~ "Create a new alert subscription"
+      assert html_response(conn, 200) =~ "Create a new alert"
       assert html_response(conn, 200) =~ "North Quincy"
       assert html_response(conn, 200) =~ "Forest Hills"
       assert expected_error == error

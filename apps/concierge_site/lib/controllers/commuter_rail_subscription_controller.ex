@@ -114,7 +114,7 @@ defmodule ConciergeSite.CommuterRailSubscriptionController do
         redirect(conn, to: subscription_path(conn, :index))
       :error ->
         conn
-        |> put_flash(:error, "There was an error saving the subscription. Please try again.")
+        |> put_flash(:error, "There was an error saving the alert. Please try again.")
         |> render("new.html")
     end
   end
