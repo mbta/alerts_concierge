@@ -27,42 +27,57 @@
         <div class="container">
           <a href="https://t.mbta.com/"><%= img_tag(static_url(@conn, "/images/mbta-beta-logo.png"), class: "mbta-beta-logo navbar-brand") %></a>
           <div class="collapse navbar-collapse justify-content-end">
-            <ul class="nav navbar-nav">
-              <%= if is_admin?(@current_user) do %>
-                <li class="nav-link <%= active_nav_class(@conn, "subscribers") %>">
-                  <%= link "Subscribers", to: "/admin/subscribers", class: "btn btn-link" %>
-                </li>
-                <%= if is_app_admin?(@current_user) do %>
-                  <li class="nav-link <%= active_nav_class(@conn, "admin_users") %>">
-                    <%= link "Admins", to: "/admin/admin_users", class: "btn btn-link"%>
-                  </li>
-                <% end %>
-                <li class="admin-navbar-email nav-link <%= active_nav_class(@conn, "my-account") %>">
-                  <%= link @current_user.email, to: "/admin/my-account/edit", class: "btn btn-link" %>
-                </li>
-              <% end %>
-              <%= if @current_user do %>
-                <li class="nav-link">
-                  <%= link to: my_account_path(@conn, :edit), class: "btn btn-link" do %>
-                    My Account <i class="fa fa-gear"></i>
-                  <% end %>
-                </li>
-                <li class="nav-link">
-                  <%= form_for @conn, session_path(@conn, :delete), [method: "delete", as: :custom_delete,
-                                      _csrf_token: get_csrf_token()], fn _ -> %>
-                    <%= submit class: "btn btn-link log-out-link" do %>
-                      Log Out <i class="fa fa-sign-out"></i>
+
+            <div>
+              <a href="#main-menu" role="button" id="main-menu-toggle" class="menu__toggle" aria-expanded="false"
+                 aria-controls="main-menu" aria-label="Open menu">
+                <span class="sr-only">Open</span><i class="fa fa-bars" aria-hidden="true"></i> Menu
+              </a>
+
+              <nav id="main-menu" role="navigation" class="main__menu" aria-expanded="false" aria-label="Menu">
+                <a href="#main-menu-toggle" role="button" class="menu__close main__menu--link" aria-expanded="false"
+                   aria-controls="main-menu" aria-label="Close main menu">
+                  <span class="fa fa-close" aria-hidden="true"></span> Close
+                </a>
+                <ul class="main__menu--list">
+                  <%= if is_admin?(@current_user) do %>
+                    <li>
+                      <%= link "Subscribers", to: "/admin/subscribers", class: "main__menu--link" %>
+                    </li>
+                    <%= if is_app_admin?(@current_user) do %>
+                      <li>
+                        <%= link "Admins", to: "/admin/admin_users", class: "main__menu--link"%>
+                      </li>
                     <% end %>
+                    <li>
+                      <%= link @current_user.email, to: "/admin/my-account/edit", class: "main__menu--link" %>
+                    </li>
                   <% end %>
-                </li>
-              <% else %>
-                <li class="nav-link">
-                  <%= link to: session_path(@conn, :new), class: "btn btn-link log-in-link" do %>
-                    Log In <i class="fa fa-sign-in"></i>
+                  <%= if @current_user do %>
+                    <li>
+                      <%= link to: my_account_path(@conn, :edit), class: "main__menu--link" do %>
+                        My Account <i class="fa fa-gear"></i>
+                      <% end %>
+                    </li>
+                    <li>
+                      <%= form_for @conn, session_path(@conn, :delete), [method: "delete", as: :custom_delete,
+                                          _csrf_token: get_csrf_token()], fn _ -> %>
+                        <%= submit class: "main__menu--link btn-link log-out-link" do %>
+                          Log Out <i class="fa fa-sign-out"></i>
+                        <% end %>
+                      <% end %>
+                    </li>
+                  <% else %>
+                    <li>
+                      <%= link to: session_path(@conn, :new), class: "main__menu--link log-in-link" do %>
+                        Log In <i class="fa fa-sign-in"></i>
+                      <% end %>
+                    </li>
                   <% end %>
-                </li>
-              <% end %>
-            </ul>
+                </ul>
+              </nav>
+              <a href="#main-menu-toggle" class="menu__backdrop" tabindex="-1" aria-hidden="true" hidden></a>
+            </div>
           </div>
         </div>
       </nav>

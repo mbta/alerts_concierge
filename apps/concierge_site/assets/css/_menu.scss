@@ -1,0 +1,114 @@
+.menu__toggle {
+  color: $gray-dark;
+  font-size: 1.1rem;
+  line-height: 1.1rem;
+  padding: 1rem;
+  position: fixed;
+  right: 2px;
+  top: 2px;
+}
+
+.menu__toggle:hover,
+.menu__toggle:focus {
+  color: $brand-navy-dark;
+}
+
+.main__menu {
+  height: 100%;
+  right: -200px;
+  overflow: hidden;
+  position: absolute;
+  top: 0;
+	transition: right 0.2s ease;
+	z-index: 999;
+}
+
+.main__menu--list {
+  background-color: $gray-lightest;
+  list-style: none;
+  margin: 0;
+  min-height: 100%;
+  padding: 2.5rem 0 0;
+  width: 200px;
+}
+
+.main__menu--link {
+  display: block;
+  font-size: 1.1rem;
+  padding: .5rem .75rem;
+  text-decoration: none;
+
+  &:hover,
+  &:focus {
+    text-decoration: underline;
+  }
+}
+
+.menu__close {
+  border: 0;
+  position: absolute;
+  right: 0;
+  top: 0;
+}
+
+/*
+ On small devices, allow it to toggle...
+ :target for non-JavaScript
+*/
+.main__menu:target,
+.main__menu[aria-expanded="true"] {
+  right: 0;
+  outline: none;
+}
+
+.main__menu:target .menu__close,
+.main__menu[aria-expanded="true"] .menu__close {
+  z-index: 1001;
+}
+
+.main__menu:target .main__menu--list,
+.main__menu[aria-expanded="true"] .main__menu--list {
+  position: relative;
+  z-index: 1000;
+}
+
+.main__menu:target + .menu__backdrop,
+.main__menu[aria-expanded="true"] + .menu__backdrop {
+  content: "";
+  cursor: default;
+  display: block;
+  height: 100%;
+  left: 0;
+  position: absolute;
+  top: 0;
+  width: 100%;
+  z-index: 998;
+}
+
+.main__menu,
+.main__menu:target + .menu__backdrop,
+.main__menu[aria-expanded="true"] + .menu__backdrop {
+  position: fixed;
+}
+
+@include media-breakpoint-up(md) {
+  .menu__toggle,
+  .menu__close {
+    display: none;
+  }
+
+  .main__menu {
+    position: relative;
+		right: auto;
+		top: auto;
+		height: auto;
+  }
+
+  .main__menu--list {
+    display: flex;
+    padding: 0;
+    height: auto;
+    width: auto;
+    background: none;
+  }
+}

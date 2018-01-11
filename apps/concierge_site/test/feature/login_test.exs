@@ -23,9 +23,11 @@ defmodule ConciergeSite.LoginTest do
     session
     |> visit("/")
     |> log_in(@email, @password)
-    |> assert_has(css(".btn-link", text: "My Account"))
+    |> click(css(".menu__toggle", count: 1))
+    |> assert_has(css(".main__menu--link", text: "My Account"))
     |> assert_has(css(".log-out-link", count: 1))
     |> click(css(".log-out-link", count: 1))
+    |> click(css(".menu__toggle", count: 1))
     |> assert_has(css(".log-in-link", count: 1))
   end
 
@@ -37,7 +39,7 @@ defmodule ConciergeSite.LoginTest do
     session
     |> visit("/")
     |> log_in(@email, "wrong password")
-    |> refute_has(css(".btn-link", text: "My Account"))
+    |> refute_has(css(".main__menu--link", text: "My Account"))
     |> assert_has(css(".error-block", text: "Sorry, your login information was incorrect. Please try again."))
   end
 
@@ -50,6 +52,7 @@ defmodule ConciergeSite.LoginTest do
     |> fill_in(text_field("New password"), with: @password)
     |> fill_in(text_field("Re-enter password"), with: @password)
     |> click(button("Create Account"))
-    |> assert_has(css(".btn-link", text: "My Account"))
+    |> click(css(".menu__toggle", count: 1))
+    |> assert_has(css(".main__menu--link", text: "My Account"))
   end
 end
