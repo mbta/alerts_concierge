@@ -23,17 +23,24 @@ defmodule ConciergeSite.Mixfile do
   #
   # Type `mix help compile.app` for more information.
   def application do
+    apps = [
+      :elixir_make,
+      :ex2ms,
+      :public_key,
+      :crypto,
+      :bamboo,
+      :logger,
+      :runtime_tools
+    ]
+
+    apps = if Mix.env == :prod do
+      [:sasl | apps]
+    else
+      apps
+    end
+
     [mod: {ConciergeSite, []},
-     extra_applications: [
-       :elixir_make,
-       :ex2ms,
-       :public_key,
-       :crypto,
-       :bamboo,
-       :logger,
-       :runtime_tools
-       ]
-     ]
+     extra_applications: apps]
   end
 
   # Specifies which paths to compile per environment.
