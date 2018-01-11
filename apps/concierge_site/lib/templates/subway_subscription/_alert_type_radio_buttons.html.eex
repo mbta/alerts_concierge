@@ -6,21 +6,21 @@
   <label class="priority-radio-option">
     <%= radio_button @form, :alert_priority_type, "high", checked: (@checked == :high) %>
     <div>
-      <div>Only high-priority alerts. This includes severe delays, shuttle buses, and service suspension alerts.</div>
+      <div>Only the most severe alerts, this includes extreme delays, shuttle buses, and service suspension alerts</div>
     </div>
   </label>
   <div class="priority-option-divider"></div>
   <label class="priority-radio-option">
     <%= radio_button @form, :alert_priority_type, "medium", checked: (@checked == :medium) %>
     <div>
-      <div>All high-priority alerts and moderate delays.</div>
+      <div>Most alerts, including high-priority and moderate delays</div>
     </div>
   </label>
   <div class="priority-option-divider"></div>
   <label class="priority-radio-option">
     <%= radio_button @form, :alert_priority_type, "low", checked: (@checked == :low) %>
     <div>
-      <div>All high-priority, moderate, and minor delays.</div>
+      <div>All alerts, including high-priority, moderate, and minor delays</div>
     </div>
   </label>
 </div>
