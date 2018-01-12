@@ -3,7 +3,7 @@
   <%= form_for @account_changeset, account_path(@conn, :create), fn f -> %>
     <div class="form-group <%= if :email in @errors, do: "has-danger" %>">
       <%= label f, :email, "Email address", class: "form-label" %>
-      <%= label f, :email, "You’ll use this email address to sign into your account.", class: "form-sub-label" %>
+      <div class="form-sub-label">You’ll use this email address to sign into your account.</div>
       <%= error_tag f, :email %>
       <%= email_input f, :email, placeholder: "your@email.com", class: "form-control form-control-success form-control-danger", required: true  %>
       <span></span>
@@ -16,7 +16,7 @@
 
     <div class="form-group toggleable <%= if :phone_number in @errors, do: "has-danger" %>">
       <%= label f, :phone_number, "Phone number", class: "form-label" %>
-      <%= label f, :phone_number, "To receive text alerts, your device must be able to receive SMS text messages.", class: "form-sub-label" %>
+      <div class="form-sub-label">To receive text alerts, your device must be able to receive SMS text messages.</div>
       <%= error_tag f, :phone_number %>
       <%= telephone_input f, :phone_number, placeholder: "###-###-####", class: "form-control form-control-success form-control-danger" %>
       <span></span>
