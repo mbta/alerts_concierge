@@ -56,7 +56,7 @@ defmodule ConciergeSite.SubwaySubscriptionViewTest do
           |> SubwaySubscriptionView.trip_summary_title(station_names)
           |> IO.iodata_to_binary()
 
-        assert trip_summary_title == "Round trip Saturday, Sunday, or weekday travel between Boston Univ. East and Boston Univ. West"
+        assert trip_summary_title == "Round trip travel between Boston Univ. East and Boston Univ. West on Saturday, Sunday, or weekday"
       end
     end
 
@@ -80,7 +80,7 @@ defmodule ConciergeSite.SubwaySubscriptionViewTest do
           |> SubwaySubscriptionView.trip_summary_title(station_names)
           |> IO.iodata_to_binary()
 
-        assert trip_summary_title == "Weekday general travel between Boston Univ. East and Boston Univ. West"
+        assert trip_summary_title == "General travel between Boston Univ. East and Boston Univ. West on weekday"
       end
     end
 
@@ -103,7 +103,7 @@ defmodule ConciergeSite.SubwaySubscriptionViewTest do
           |> SubwaySubscriptionView.trip_summary_title(station_names)
           |> IO.iodata_to_binary()
 
-        assert trip_summary_title == "Boston Univ. East to Boston Univ. West, weekdays  8:45 AM -  9:15 AM"
+        assert trip_summary_title == "One-way travel between Boston Univ. East and Boston Univ. West on weekdays"
       end
     end
   end

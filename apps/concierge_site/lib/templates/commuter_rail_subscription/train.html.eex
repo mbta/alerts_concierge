@@ -1,16 +1,14 @@
-<h1 class="header-container">Create New Subscription</h1>
+<h1 class="header-container">Create a new alert</h1>
 
 <%= render "_progress_bar.html", current_page: :train, subscription_params: @subscription_params, conn: @conn %>
 
 <div class="subscription-step select-trip-number">
-  <h2>Choose your trains</h2>
+  <h2>Customize your Commuter Rail trip</h2>
 
   <%= flash_error(@conn) %>
 
-  <p class="trip-select-subheader">
-    Based on your departure time, we think you might be interested in the
-    following trains. Select the trains you'd like to receive notifications
-    about.
+  <p>
+    Which trains do you usually take?
   </p>
 
   <%= form_for @conn, commuter_rail_subscription_path(@conn, :preferences), [class: "trip-form commuter-rail", as: :subscription], fn f -> %>

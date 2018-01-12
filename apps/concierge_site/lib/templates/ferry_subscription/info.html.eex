@@ -1,15 +1,14 @@
-<h1 class="header-container">Create New Subscription</h1>
+<h1 class="header-container">Create a new alert</h1>
 
 <%= render "_progress_bar.html", current_page: :trip_info, subscription_params: @subscription_params, conn: @conn %>
 
 <div class="subscription-step enter-trip-info">
-  <h2>Tell us about your trip</h2>
+  <h2>Customize your ferry trip</h2>
 
   <%= flash_error(@conn) %>
 
   <p>
-    We will use this information to send you the alerts that are most relevant
-    to you.
+    Where do you usually start and end your ferry trip?
   </p>
 
   <%= form_for @conn, ferry_subscription_path(@conn, :ferry), [class: "trip-info-form single-select-form ferry", as: :subscription], fn f -> %>
@@ -20,19 +19,21 @@
                  @station_list_select_options,
                  class: "subscription-select subscription-select-origin no-js",
                  prompt: "Select a station",
-                 selected: @subscription_params["origin"] %>
+                 selected: @subscription_params["origin"],
+                 data: [location_type: "ferry dock"] %>
     </div>
     <div class="form-group select-station">
       <label for="destination" class="entity-input-label form-label">Destination</label>
       <div class="form-sub-label entity-select-sub-label">
-        Both origin and destination stations must be on the same line.
+        Note: Docks must be on the same ferry route
       </div>
       <%= select f,
                  :destination,
                  @station_list_select_options,
                  class: "subscription-select subscription-select-destination no-js",
                  prompt: "Select a station",
-                 selected: @subscription_params["destination"] %>
+                 selected: @subscription_params["destination"],
+                 data: [location_type: "ferry dock"] %>
     </div>
     <div class="form-group select-days">
       <div class="form-label">Travel Days</div>
@@ -40,11 +41,7 @@
     </div>
 
     <div class="form-group travel-times">
-      <div class="form-label">When do you travel?</div>
-      <div class="form-sub-label travel-times-sub-label">
-        We will send you notifications of disruptions as soon as we know they
-        may affect your trip.
-      </div>
+      <div class="form-label">When do you usually take the ferry?</div>
       <%= render "_travel_time_select_lists.html", subscription_params: @subscription_params %>
     </div>
 

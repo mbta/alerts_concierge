@@ -74,41 +74,41 @@ defmodule ConciergeSite.LayoutView do
     [%{title: breadcrumb_title_parse(path), path: conn.request_path}]
   end
   def breadcrumbs(%Plug.Conn{path_info: [_path, _endpoint, _, "edit"]} = conn) do
-    [%{title: "Edit Subscriptions", path: subscription_path(conn, :index)}]
+    [%{title: "Edit Alerts", path: subscription_path(conn, :index)}]
   end
   def breadcrumbs(%Plug.Conn{path_info: [_path, _endpoint, "confirm_delete"]} = conn) do
     [
-      %{title: "Edit Subscriptions", path: subscription_path(conn, :index)},
-      %{title: "Confirm Delete Subscription", path: conn.request_path}
+      %{title: "Edit Alerts", path: subscription_path(conn, :index)},
+      %{title: "Confirm Delete Alert", path: conn.request_path}
     ]
   end
   def breadcrumbs(%Plug.Conn{path_info: ["subscriptions", _endpoint, "new"]} = conn) do
     [
-      %{title: "New Subscriptions", path: subscription_path(conn, :new)},
+      %{title: "New Alerts", path: subscription_path(conn, :new)},
       %{title: "Trip Type", path: conn.request_path}
     ]
   end
   def breadcrumbs(%Plug.Conn{path_info: ["subscriptions", _endpoint, _, "info"]} = conn) do
     [
-      %{title: "New Subscriptions", path: subscription_path(conn, :new)},
+      %{title: "New Alerts", path: subscription_path(conn, :new)},
       %{title: "Trip Info", path: conn.request_path}
     ]
   end
   def breadcrumbs(%Plug.Conn{path_info: ["subscriptions", _endpoint, _, "train"]} = conn) do
     [
-      %{title: "New Subscriptions", path: subscription_path(conn, :new)},
+      %{title: "New Alerts", path: subscription_path(conn, :new)},
       %{title: "Trains", path: conn.request_path}
     ]
   end
   def breadcrumbs(%Plug.Conn{path_info: ["subscriptions", _endpoint, _, "ferry"]} = conn) do
     [
-      %{title: "New Subscriptions", path: subscription_path(conn, :new)},
+      %{title: "New Alerts", path: subscription_path(conn, :new)},
       %{title: "Ferries", path: conn.request_path}
     ]
   end
   def breadcrumbs(%Plug.Conn{path_info: ["subscriptions", _endpoint, _, "preferences"]} = conn) do
     [
-      %{title: "New Subscriptions", path: subscription_path(conn, :new)},
+      %{title: "New Alerts", path: subscription_path(conn, :new)},
       %{title: "Preferences", path: conn.request_path}
     ]
   end
@@ -125,7 +125,7 @@ defmodule ConciergeSite.LayoutView do
     ]
   end
   def breadcrumbs(%Plug.Conn{path_info: [_path, "new"]} = conn) do
-    [%{title: "New Subscriptions", path: conn.request_path}]
+    [%{title: "New Alerts", path: conn.request_path}]
   end
   def breadcrumbs(%Plug.Conn{path_info: [path, "confirm_disable"]} = conn) do
     [

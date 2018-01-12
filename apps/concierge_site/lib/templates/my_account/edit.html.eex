@@ -8,12 +8,11 @@
 <div class="my-account-container">
   <%= flash_error(@conn) %>
   <%= flash_info(@conn) %>
-  <h2>My Information</h2>
+  <h2>My Account Information</h2>
   <div class="my-account-section">
     <div class="form-label">Email Address</div>
     <div class="form-sub-label email-sub-label">
-      Your contact information is used to deliver requested updates or to access
-      your subscriber preferences.
+      We will send requested alerts and planned service information to your email address. You will log into your account with this email address.
     </div>
     <div class="user-email"><%= @user.email %></div>
 
@@ -25,20 +24,26 @@
   </div>
 
   <%= form_for @changeset, my_account_path(@conn, :update), fn f -> %>
-    <h2>SMS Messaging</h2>
+    <h2>Text Message Settings</h2>
     <%= error_tag f, :phone_number %>
     <div class="my-account-section">
       <div class="my-account-section-prompt">
-        Would you like to receive alerts via SMS?
+        We will automatically send your alerts to your email address. Would you like to receive text alerts instead?
       </div>
-      <%= radio_button f, :sms_toggle, "true", checked: sms_messaging_checked?(@user), class: "my-account-radio-button toggle_show" %>
-      <label for="user_sms_toggle_true" class="my-account-radio-label">Yes</label>
-      <%= radio_button f, :sms_toggle, "false", checked: !sms_messaging_checked?(@user), class: "my-account-radio-button toggle_hide" %>
-      <label for="user_sms_toggle_false" class="my-account-radio-label">No - I'd prefer emails.</label>
+      <label for="user_sms_toggle_true" class="my-account-radio-label">
+        <%= radio_button f, :sms_toggle, "true", checked: sms_messaging_checked?(@user),
+                                                 class: "my-account-radio-button toggle_show" %>
+        Yes - only send me text alerts
+      </label>
+      <label for="user_sms_toggle_false" class="my-account-radio-label">
+        <%= radio_button f, :sms_toggle, "false", checked: !sms_messaging_checked?(@user),
+                                                  class: "my-account-radio-button toggle_hide" %>
+        No - only send me email alerts
+      </label>
       <div class="wireless-number-section supporting-info-section toggleable">
-        <label for="user_phone_number" class="form-label">Wireless Number</label>
+        <label for="user_phone_number" class="form-label">Phone Number</label>
         <div class="form-sub-label">
-          Please enter your wireless number to receive T-Alerts via SMS:
+          To receive text alerts, your device must be able to receive SMS text messages.
         </div>
         <%= telephone_input f, :phone_number, placeholder: "###-###-####", class: "large-input", value: @user.phone_number %>
       </div>
@@ -47,17 +52,14 @@
     <h2>Do Not Disturb</h2>
     <div class="my-account-section">
       <div class="my-account-section-prompt">
-      Would you like to set a Do Not Disturb period?
+      Is there a time of day you do not want to receive alerts?
       </div>
       <%= radio_button f, :dnd_toggle, "true", checked: do_not_disturb_checked?(@user), class: "my-account-radio-button toggle_show" %>
       <label for="user_dnd_toggle_true" class="my-account-radio-label">Yes</label>
       <%= radio_button f, :dnd_toggle, "false", checked: !do_not_disturb_checked?(@user), class: "my-account-radio-button toggle_hide" %>
       <label for="user_dnd_toggle_false" class="my-account-radio-label">No</label>
       <div class="do-not-disturb-time-section supporting-info-section toggleable">
-        <div class="form-label">Set Time</div>
-        <div class="form-sub-label">
-          Designate time periods during which you would rather not receive T-Alerts:
-        </div>
+        <div class="form-label">What time would you like to turn off T-Alerts?</div>
         <%= select f, :do_not_disturb_start, travel_time_options(), class: "travel-time-select", selected: do_not_disturb_start_selected_value(@user) %>
         <div class="travel-time-connector">
           to
@@ -81,7 +83,7 @@
       </label>
     </div>
     <div class="my-account-footer">
-      <%= submit "Update Account Preferences", class: "btn btn-primary update-account" %>
+      <%= submit "Update account preferences", class: "btn btn-primary update-account" %>
     </div>
   <% end %>
 </div>

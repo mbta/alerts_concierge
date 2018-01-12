@@ -1,8 +1,5 @@
 <h1 class="header-container">
-  My Subscriptions
-  <%= link to: my_account_path(@conn, :edit), class: "header-link" do %>
-    My Account <i class="fa fa-gear"></i>
-  <% end %>
+  My Alerts
 </h1>
 
 <%= flash_info(@conn) %>
@@ -13,5 +10,5 @@
 
 <div class="my-subscriptions-container">
   <%= render "_subscriptions.html", conn: @conn, subscriptions: @subscriptions, station_display_names: @station_display_names, departure_time_map: @departure_time_map, render_links: true %>
-  <%= link("Create a new subscription", to: subscription_path(@conn, :new), class: "btn btn-primary btn-create-new-sub") %>
+  <%= link("Create a new alert", to: subscription_path(@conn, :new), class: "btn btn-primary btn-create-new-sub") %>
 </div>

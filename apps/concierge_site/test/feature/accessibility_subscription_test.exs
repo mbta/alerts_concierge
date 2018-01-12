@@ -14,11 +14,11 @@ defmodule ConciergeSite.AccessibilitySubscriptionTest do
     session
     |> log_in(user)
     |> click(css("a", text: "Elevators and Accessibility"))
-    |> click(checkbox("Elevators and step-free access"))
+    |> click(checkbox("Elevators and ramps"))
     |> fill_in(text_field("station"), with: "Central")
     |> click(checkbox("Weekdays"))
-    |> click(button("Create Subscription"))
-    |> assert_has(css(".header-container", text: "My Subscriptions"))
+    |> click(button("Create alert"))
+    |> assert_has(css(".header-container", text: "My Alerts"))
     |> assert_has(css(".subscription-details", text: "Elevated subplatform, Elevator, and Portable boarding lift"))
   end
 end

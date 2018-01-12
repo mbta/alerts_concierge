@@ -23,7 +23,6 @@
                action: "edit" %>
 
     <div class="form-group travel-times">
-      <div class="form-label">When do you travel?</div>
       <div class="form-sub-label travel-times-sub-label">
         We will send you notifications for any service alerts that occur during
         your planned travel time.
@@ -50,7 +49,7 @@
       </div>
     </div>
     <div class="update-button-container">
-      <%= submit "Update this Subscription", class: "btn btn-primary update-subscription" %>
+      <%= submit "Update this alert", class: "btn btn-primary update-subscription" %>
     </div>
   <% end %>
 </div>

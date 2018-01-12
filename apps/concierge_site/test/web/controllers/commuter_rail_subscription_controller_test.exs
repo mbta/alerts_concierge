@@ -10,7 +10,7 @@ defmodule ConciergeSite.CommuterRailSubscriptionControllerTest do
     test "GET /subscriptions/commuter_rail/new", %{conn: conn} do
       conn = get(conn, "/subscriptions/commuter_rail/new")
 
-      assert html_response(conn, 200) =~ "What type of trip do you take?"
+      assert html_response(conn, 200) =~ "Customize your Commuter Rail trip"
     end
 
     test "GET /subscriptions/commuter_rail/new/info", %{conn: conn} do
@@ -30,7 +30,7 @@ defmodule ConciergeSite.CommuterRailSubscriptionControllerTest do
 
       conn = post(conn, "/subscriptions/commuter_rail/new/train", params)
 
-      assert html_response(conn, 200) =~ "Choose your trains"
+      assert html_response(conn, 200) =~ "Customize your Commuter Rail trip"
       assert html_response(conn, 200) =~ "Rowley"
       refute html_response(conn, 200) =~ "Train 160 | Newburyport 7:55am"
     end
@@ -47,7 +47,7 @@ defmodule ConciergeSite.CommuterRailSubscriptionControllerTest do
 
       conn = post(conn, "/subscriptions/commuter_rail/new/train", params)
 
-      assert html_response(conn, 200) =~ "Choose your trains"
+      assert html_response(conn, 200) =~ "Customize your Commuter Rail trip"
       assert html_response(conn, 200) =~ "Train 155 | Rowley 8:32am"
       assert html_response(conn, 200) =~ "Train 160 | Newburyport 7:55am"
     end
@@ -64,7 +64,7 @@ defmodule ConciergeSite.CommuterRailSubscriptionControllerTest do
 
       conn = post(conn, "/subscriptions/commuter_rail/new/preferences", params)
 
-      assert html_response(conn, 200) =~ "Set your subscription preferences:"
+      assert html_response(conn, 200) =~ "Confirm your alert preferences"
     end
 
     test "POST /subscriptions/commuter_rail/new/preferences with invalid params for one way", %{conn: conn} do
@@ -79,8 +79,8 @@ defmodule ConciergeSite.CommuterRailSubscriptionControllerTest do
 
       conn = post(conn, "/subscriptions/commuter_rail/new/preferences", params)
 
-      assert html_response(conn, 200) =~ "Choose your trains"
-      assert html_response(conn, 200) =~ "lease select at least one trip."
+      assert html_response(conn, 200) =~ "Customize your Commuter Rail trip"
+      assert html_response(conn, 200) =~ "Please select at least one trip."
     end
 
     test "POST /subscriptions/commuter_rail/new/preferences with invalid params for round trip", %{conn: conn} do
@@ -97,7 +97,7 @@ defmodule ConciergeSite.CommuterRailSubscriptionControllerTest do
 
       conn = post(conn, "/subscriptions/commuter_rail/new/preferences", params)
 
-      assert html_response(conn, 200) =~ "Choose your trains"
+      assert html_response(conn, 200) =~ "Customize your Commuter Rail trip"
       assert html_response(conn, 200) =~ "Please select at least one trip."
       assert html_response(conn, 200) =~ "Please select at least one return trip."
     end

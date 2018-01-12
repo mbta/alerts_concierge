@@ -16,8 +16,8 @@ defmodule ConciergeSite.BikeStorageSubscriptionTest do
     |> click(css("a", text: "Bike Storage"))
     |> fill_in(text_field("station"), with: "Alewife")
     |> click(checkbox("Weekdays"))
-    |> click(button("Create Subscription"))
-    |> assert_has(css(".header-container", text: "My Subscriptions"))
+    |> click(button("Create alert"))
+    |> assert_has(css(".header-container", text: "My Alerts"))
     |> assert_has(css(".subscription-route", text: "Bike Storage"))
   end
 end

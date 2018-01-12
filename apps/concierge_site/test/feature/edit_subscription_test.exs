@@ -18,7 +18,7 @@ defmodule ConciergeSite.EditSubscriptionTest do
     |> click(link("Accessibility Features"))
     |> click(checkbox("Weekdays"))
     |> click(checkbox("Sunday"))
-    |> click(button("Update Subscription"))
+    |> click(button("Update alert"))
     |> assert_has(css(".subscription-amenity-schedule", text: "1 station on Sundays"))
   end
 
@@ -28,12 +28,12 @@ defmodule ConciergeSite.EditSubscriptionTest do
     session
     |> log_in(user)
     |> create_subscription("Weekdays")
-    |> click(link("Create a new subscription"))
-    |> create_subscription("Sunday") # create two subscriptions so we go back to the index page afte rdeletion
+    |> click(link("Create a new alert"))
+    |> create_subscription("Sunday") # create two subscriptions so we go back to the index page after deletion
     |> click(link("1 station on Weekdays"))
-    |> click(link("Delete Subscription"))
-    |> click(button("Yes, delete this subscription"))
-    |> assert_has(css(".alert-success", text: "Subscription deleted"))
+    |> click(link("Delete alert"))
+    |> click(button("Yes, delete this alert"))
+    |> assert_has(css(".alert-success", text: "Alert deleted"))
     |> refute_has(css(".subscription-amenity-schedule", text: "1 station on Weekdays"))
     |> assert_has(css(".subscription-amenity-schedule", text: "1 station on Sundays"))
   end
@@ -41,9 +41,9 @@ defmodule ConciergeSite.EditSubscriptionTest do
   defp create_subscription(session, days \\ "Weekdays") do
     session
     |> click(css("a", text: "Elevators and Accessibility"))
-    |> click(checkbox("Elevators and step-free access"))
+    |> click(checkbox("Elevators and ramps"))
     |> fill_in(text_field("station"), with: "Central")
     |> click(checkbox(days))
-    |> click(button("Create Subscription"))
+    |> click(button("Create alert"))
   end
 end

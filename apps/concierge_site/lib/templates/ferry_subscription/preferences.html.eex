@@ -1,9 +1,9 @@
-<h1 class="header-container">Create New Subscription</h1>
+<h1 class="header-container">Create a new alert</h1>
 
 <%= render "_progress_bar.html", current_page: :preferences, subscription_params: @subscription_params, conn: @conn %>
 
 <div class="subscription-step trip-preferences">
-  <h2 class="preferences-subtitle">Set your preferences for your trip:</h2>
+  <h2 class="preferences-subtitle">Confirm your ferry alert preferences</h2>
   <div class="trip-summary">
     <%= trip_summary_details(@subscription_params, @origin, @destination) %>
   </div>
@@ -19,7 +19,7 @@
     <%= hidden_form_inputs(:preferences, @subscription_params) %>
 
     <div class="trip-info-footer">
-      <%= submit "Create Subscription", class: "btn btn-primary btn-subscription-next" %>
+      <%= submit "Create alert", class: "btn btn-primary btn-subscription-next" %>
     </div>
   <% end %>
   <div class="back-link-container">

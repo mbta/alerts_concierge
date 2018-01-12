@@ -1,4 +1,4 @@
-<h1 class="header-container">Create New Subscription</h1>
+<h1 class="header-container">Create a new parking alert</h1>
 <%= flash_error(@conn) %>
 <div class="subscription-step parking">
   <div class="enter-trip-info">
@@ -6,7 +6,7 @@
       <%= render "_parking_form.html", f: f, station_select_options: @station_select_options, selected_options: @selected_options, action: "new" %>
 
       <div class="trip-info-footer">
-        <%= submit "Create Subscription", class: "btn btn-primary btn-parking-submit" %>
+        <%= submit "Create alert", class: "btn btn-primary btn-parking-submit" %>
       </div>
     <% end %>
   </div>

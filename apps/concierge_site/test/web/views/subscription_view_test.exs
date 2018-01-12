@@ -175,7 +175,7 @@ defmodule ConciergeSite.SubscriptionViewTest do
     subscriptions = [commuter_rail, ferry]
 
     conn = Map.merge(conn, %{private: %{
-        phoenix_flash: %{"info" => "Subscription deleted"},
+        phoenix_flash: %{"info" => "Alert deleted"},
         phoenix_endpoint: ConciergeSite.Endpoint
       }
     })
@@ -193,7 +193,7 @@ defmodule ConciergeSite.SubscriptionViewTest do
     rendered = ConciergeSite.SubscriptionView.render("index.html", assigns)
     binary = Phoenix.HTML.safe_to_string(rendered)
 
-    assert binary =~ "We won’t send you notifications during your ‘Do Not Disturb’ period. Right now your Do Not Disturb period overlaps with one of your subscriptions."
+    assert binary =~ "We won’t send you notifications during your ‘Do Not Disturb’ period. Right now your Do Not Disturb period overlaps with one of your alerts."
     assert binary =~ "Commuter Rail"
     assert binary =~ "Anderson/Woburn"
     assert binary =~ "North Station"
@@ -230,7 +230,7 @@ defmodule ConciergeSite.SubscriptionViewTest do
     subscriptions = [commuter_rail, ferry]
 
     conn = Map.merge(conn, %{private: %{
-        phoenix_flash: %{"info" => "Subscription deleted"},
+        phoenix_flash: %{"info" => "Alert deleted"},
         phoenix_endpoint: ConciergeSite.Endpoint
       }
     })

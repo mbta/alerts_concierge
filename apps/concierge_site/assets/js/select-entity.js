@@ -174,11 +174,17 @@ export default function($) {
 
   function attachStationInput(originDestination) {
     const preselectedValue = fetchPreselectedOption(originDestination);
+    const locationType = getLoctionType(originDestination);
     if (preselectedValue && preselectedValue.val()) {
-      $(`label[for='${originDestination}']`).after(renderStationInput("station", stationInputClass(originDestination), preselectedValue.text()));
+      $(`label[for='${originDestination}']`).after(renderStationInput(locationType, stationInputClass(originDestination), preselectedValue.text()));
     } else {
-      $(`label[for='${originDestination}']`).after(renderStationInput("station", stationInputClass(originDestination), ""));
+      $(`label[for='${originDestination}']`).after(renderStationInput(locationType, stationInputClass(originDestination), ""));
     }
+  }
+
+  function getLoctionType (originDestination) {
+    const locationType = $(`select[name="subscription[${originDestination}]"]`).data("locationType");
+    return locationType ? locationType : "station";
   }
 
   function fetchPreselectedOption(originDestination) {

@@ -12,10 +12,10 @@ defmodule ConciergeSite.LoginTest do
   test "viewing the login page", %{session: session} do
     session
     |> visit("/")
-    |> assert_has(css(".login-header", text: "Welcome to the T-Alerts Beta Test"))
+    |> assert_has(css(".login-header", text: "Welcome to T-Alerts Beta"))
   end
 
-  test "logging in with an existing account and logging out", %{session: session} do
+  test "loggin in with an existing account and logging out", %{session: session} do
     Repo.insert!(%User{email: @email,
                        role: "user",
                        encrypted_password: @encrypted_password})
@@ -23,9 +23,11 @@ defmodule ConciergeSite.LoginTest do
     session
     |> visit("/")
     |> log_in(@email, @password)
-    |> assert_has(css(".header-link", text: "My Account"))
+    |> click(css(".menu__toggle", count: 1))
+    |> assert_has(css(".main__menu--link", text: "My Account"))
     |> assert_has(css(".log-out-link", count: 1))
     |> click(css(".log-out-link", count: 1))
+    |> click(css(".menu__toggle", count: 1))
     |> assert_has(css(".log-in-link", count: 1))
   end
 
@@ -37,19 +39,20 @@ defmodule ConciergeSite.LoginTest do
     session
     |> visit("/")
     |> log_in(@email, "wrong password")
-    |> refute_has(css(".header-link", text: "My Account"))
+    |> refute_has(css(".main__menu--link", text: "My Account"))
     |> assert_has(css(".error-block", text: "Sorry, your login information was incorrect. Please try again."))
   end
 
   test "creating an account", %{session: session} do
     session
     |> visit("/")
-    |> click(css("a", text: "Create one"))
+    |> click(css("a", text: "Create a T-Alerts account"))
     |> click(css("a", text: "Get Started"))
-    |> fill_in(text_field("Email Address"), with: @email)
+    |> fill_in(text_field("Email address"), with: @email)
     |> fill_in(text_field("New password"), with: @password)
-    |> fill_in(text_field("Re-enter new password"), with: @password)
+    |> fill_in(text_field("Re-enter password"), with: @password)
     |> click(button("Create Account"))
-    |> assert_has(css(".header-link", text: "My Account"))
+    |> click(css(".menu__toggle", count: 1))
+    |> assert_has(css(".main__menu--link", text: "My Account"))
   end
 end

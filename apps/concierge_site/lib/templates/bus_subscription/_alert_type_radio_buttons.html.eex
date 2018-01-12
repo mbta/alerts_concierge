@@ -4,30 +4,21 @@
     <label class="priority-radio-option">
       <%= radio_button @form, :alert_priority_type, "high", checked: (@checked == :high) %>
       <div>
-        <div>High-priority alerts only:</div>
-        <div class="form-sub-label">
-          Severe delays, detours, suspension of service
-        </div>
+        <div>Only the most severe alerts, including extreme delays, detours, and service suspension</div>
       </div>
     </label>
     <div class="priority-option-divider"></div>
     <label class="priority-radio-option">
       <%= radio_button @form, :alert_priority_type, "medium", checked: (@checked == :medium) %>
       <div>
-        <div>High- and medium-priority alerts:</div>
-        <div class="form-sub-label">
-          All of the above plus moderate delays, bus stop closures
-        </div>
+        <div>Most alerts, including all high-priority alerts, moderate delays, and bus stop closures</div>
       </div>
     </label>
     <div class="priority-option-divider"></div>
     <label class="priority-radio-option">
       <%= radio_button @form, :alert_priority_type, "low", checked: (@checked == :low) %>
       <div>
-        <div>High-, medium-, and low-priority alerts:</div>
-        <div class="form-sub-label">
-          All of the above plus minor delays
-        </div>
+        <div>All alerts, including high-priority, moderate, and minor delays</div>
       </div>
     </label>
   </div>

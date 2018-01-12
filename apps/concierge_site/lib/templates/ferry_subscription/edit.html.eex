@@ -15,7 +15,7 @@
                 action: "edit" %>
 
     <div class="update-button-container">
-      <%= submit "Update this Subscription", class: "btn btn-primary update-subscription" %>
+      <%= submit "Update this alert", class: "btn btn-primary update-subscription" %>
     </div>
   <% end %>
 </div>

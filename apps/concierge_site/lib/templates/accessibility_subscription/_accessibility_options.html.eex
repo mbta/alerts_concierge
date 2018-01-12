@@ -1,5 +1,6 @@
 <div class="form-group select-days">
-  <div class="form-label edit-form-label">What station features do you use?</div>
+  <h2>Customize your escalator/elevator alert</h2>
+  <div class="form-label edit-form-label">Which station features do you use?</div>
   <div class="form-sub-label accessibility-option-sub-label">Choose all that apply</div>
   <%= error_tag @form, :accessibility %>
   <div class="<%= @action %>-subscription-section-container">
@@ -11,7 +12,7 @@
                    unchecked_value: nil,
                    class: "subscription-day-checkbox",
                    checked: Enum.member?(@checked, "elevator") %>
-      Elevators and step-free access
+      Elevators and ramps
     </label>
     <br/>
     <label>

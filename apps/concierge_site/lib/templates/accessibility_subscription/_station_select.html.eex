@@ -1,6 +1,6 @@
 <div class="form-group select-entity">
-  <label for="station" class="entity-input-label form-label">What stations do you use?</label>
-  <div class="form-sub-label entity-select-sub-label">Enter as many stations as you would like.</div>
+  <label for="station" class="entity-input-label form-label">What stations would you like to receive alerts for?</label>
+  <div class="form-sub-label entity-select-sub-label">You can add multiple stations.</div>
   <div class="entity-select-group">
     <%= multiple_select @form,
               :stops,

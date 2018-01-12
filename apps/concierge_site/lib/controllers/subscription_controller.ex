@@ -53,11 +53,11 @@ defmodule ConciergeSite.SubscriptionController do
       {:ok, _} ->
         :ok = User.clear_holding_queue_for_user_id(user.id)
         conn
-        |> put_flash(:info, "Subscription deleted")
+        |> put_flash(:info, "Alert deleted")
         |> redirect(to: subscription_path(conn, :index))
       {:error, _} ->
         conn
-        |> put_flash(:error, "Subscription could not be deleted. Please try again.")
+        |> put_flash(:error, "Alert could not be deleted. Please try again.")
         |> render("confirm_delete.html", subscription: subscription)
     end
   end

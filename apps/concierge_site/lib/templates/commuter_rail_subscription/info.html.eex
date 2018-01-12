@@ -1,15 +1,13 @@
-<h1 class="header-container">Create New Subscription</h1>
+<h1 class="header-container">Create a new alert</h1>
 
 <%= render "_progress_bar.html", current_page: :trip_info, subscription_params: @subscription_params, conn: @conn %>
 
 <div class="subscription-step enter-trip-info">
-  <h2>Tell us about your trip</h2>
+  <h2>Customize your Commuter Rail trip</h2>
 
   <%= flash_error(@conn) %>
 
-  <p>
-    We will use this information to send you the alerts that are most relevant to you.
-  </p>
+  <p>What stations do you normally travel between?</p>
 
   <%= form_for @conn, commuter_rail_subscription_path(@conn, :train), [class: "trip-info-form single-select-form commuter-rail", as: :subscription], fn f -> %>
     <input type="hidden" name="mode" value="commuter-rail">
@@ -24,9 +22,7 @@
     </div>
     <div class="form-group select-station">
       <label for="destination" class="entity-input-label form-label">Destination</label>
-      <div class="form-sub-label entity-select-sub-label">
-        Both origin and destination stations must be on the same line.
-      </div>
+      <div class="form-sub-label entity-select-sub-label">Note: Stations must be on the same Commuter Rail line</div>
       <%= select f,
                  :destination,
                  @station_list_select_options,
@@ -35,15 +31,11 @@
                  selected: @subscription_params["destination"] %>
     </div>
     <div class="form-group select-days">
-      <div class="form-label">Travel Days</div>
+      <div class="form-label">When do you usually take this trip?</div>
       <%= select f, :relevant_days, [{"Weekdays", "weekday"}, {"Saturday", "saturday"}, {"Sunday", "sunday"}], required: true, class: "relevant-days-select", selected: @subscription_params["relevant_days"] %>
     </div>
 
     <div class="form-group travel-times">
-      <div class="form-label">When do you travel?</div>
-      <div class="form-sub-label travel-times-sub-label">
-        You'll choose specific trains on the next page.
-      </div>
       <%= render "_travel_time_select_lists.html", subscription_params: @subscription_params %>
     </div>
 
