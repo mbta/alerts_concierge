@@ -31,7 +31,7 @@ defmodule ConciergeSite.EditSubscriptionTest do
     |> click(link("Create a new alert"))
     |> create_subscription("Sunday") # create two subscriptions so we go back to the index page after deletion
     |> click(link("1 station on Weekdays"))
-    |> click(link("Delete Alert"))
+    |> click(link("Delete alert"))
     |> click(button("Yes, delete this alert"))
     |> assert_has(css(".alert-success", text: "Alert deleted"))
     |> refute_has(css(".subscription-amenity-schedule", text: "1 station on Weekdays"))
