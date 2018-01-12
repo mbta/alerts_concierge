@@ -6,7 +6,7 @@
       </label>
       <%= select @form, :departure_start, travel_time_options(), class: "travel-time-select", selected: @subscription_params["departure_start"] || "10:30:00" %>
       <label for="subscription_roaming_end" class="travel-time-connector">
-        to
+        Arrival time:
       </label>
       <%= select @form, :departure_end, travel_time_options(), class: "travel-time-select", selected: @subscription_params["departure_end"] || "14:30:00" %>
     </div>
@@ -34,7 +34,7 @@
     </label>
     <%= select @form, :return_start, travel_time_options(), class: "travel-time-select", selected: @subscription_params["return_start"] || "17:00:00" %>
     <label for="subscription_return_end" class="travel-time-connector">
-      to
+      Arrival time:
     </label>
     <%= select @form, :return_end, travel_time_options(), class: "travel-time-select", selected: @subscription_params["return_end"] || "17:30:00" %>
   </div>
