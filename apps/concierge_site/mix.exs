@@ -34,7 +34,7 @@ defmodule ConciergeSite.Mixfile do
     ]
 
     apps = if Mix.env == :prod do
-      [:sasl | apps]
+      [:sasl, :ehmon, :diskusage_logger | apps]
     else
       apps
     end
@@ -70,7 +70,9 @@ defmodule ConciergeSite.Mixfile do
       {:gettext, "~> 0.11"},
       {:cowboy, "~> 1.0"},
       {:wallaby, "~> 0.15", only: :test},
-      {:logster, "~> 0.4.0"}
+      {:logster, "~> 0.4.0"},
+      {:ehmon, git: "https://github.com/heroku/ehmon.git", tag: "v4", only: :prod},
+      {:diskusage_logger, "~> 0.2.0", only: :prod}
     ]
   end
 
