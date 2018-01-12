@@ -8,7 +8,7 @@
   <%= flash_error(@conn) %>
 
   <p>
-    Which train do you usually take?
+    Which trains do you usually take?
   </p>
 
   <%= form_for @conn, commuter_rail_subscription_path(@conn, :preferences), [class: "trip-form commuter-rail", as: :subscription], fn f -> %>
