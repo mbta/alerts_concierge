@@ -181,19 +181,19 @@ defmodule AlertProcessor.Model.Alert do
     Enum.any?(ies, &InformedEntity.entity_type(&1) == :amenity)
   end
 
-  def advanced_notice_in_seconds(%__MODULE__{duration_certainty: {:estimated, estimated_duration}, severity: :minor}) do
+  def advance_notice_in_seconds(%__MODULE__{duration_certainty: {:estimated, estimated_duration}, severity: :minor}) do
     Enum.min([3600, estimated_duration])
   end
-  def advanced_notice_in_seconds(%__MODULE__{duration_certainty: {:estimated, estimated_duration}, severity: :moderate}) do
+  def advance_notice_in_seconds(%__MODULE__{duration_certainty: {:estimated, estimated_duration}, severity: :moderate}) do
     Enum.min([7200, estimated_duration])
   end
-  def advanced_notice_in_seconds(%__MODULE__{duration_certainty: {:estimated, estimated_duration}, severity: :severe}) do
+  def advance_notice_in_seconds(%__MODULE__{duration_certainty: {:estimated, estimated_duration}, severity: :severe}) do
     Enum.min([14_400, estimated_duration])
   end
-  def advanced_notice_in_seconds(%__MODULE__{duration_certainty: {:estimated, estimated_duration}, severity: :extreme}) do
+  def advance_notice_in_seconds(%__MODULE__{duration_certainty: {:estimated, estimated_duration}, severity: :extreme}) do
     Enum.min([14_400, estimated_duration])
   end
-  def advanced_notice_in_seconds(%__MODULE__{}) do
+  def advance_notice_in_seconds(%__MODULE__{}) do
     86_400
   end
 

@@ -34,19 +34,19 @@ defmodule AlertProcessor.NotificationBuilder do
         }
       end)
 
-    # get advanced notice time for subsequent updates
-    advanced_notice_in_seconds = Alert.advanced_notice_in_seconds(alert)
+    # get advance notice time for subsequent updates
+    advance_notice_in_seconds = Alert.advance_notice_in_seconds(alert)
 
     # create notifications for all remaining mapping subscriptions for current day
     today_subscriptions =
       Enum.reject(sorted_subscriptions, fn(sub) ->
         Time.compare(sub.start_time, sub.end_time) == :lt && Time.compare(sub.end_time, DateTime.to_time(now)) == :lt
       end)
-    today_notifications = build_estimated_duration_notifications(user, today_subscriptions, alert, start_datetime, advanced_notice_in_seconds)
+    today_notifications = build_estimated_duration_notifications(user, today_subscriptions, alert, start_datetime, advance_notice_in_seconds)
 
-    tomorrow_notifications = build_estimated_duration_notifications(user, sorted_subscriptions, alert, DT.add!(start_datetime, 86_400), advanced_notice_in_seconds)
+    tomorrow_notifications = build_estimated_duration_notifications(user, sorted_subscriptions, alert, DT.add!(start_datetime, 86_400), advance_notice_in_seconds)
 
-    day_after_tomorrow_notifications = build_estimated_duration_notifications(user, sorted_subscriptions, alert, DT.add!(start_datetime, 86_400 * 2), advanced_notice_in_seconds)
+    day_after_tomorrow_notifications = build_estimated_duration_notifications(user, sorted_subscriptions, alert, DT.add!(start_datetime, 86_400 * 2), advance_notice_in_seconds)
 
     filter_estimated_duration_notifications_by_estimated_duration(
       today_notifications ++ tomorrow_notifications ++ day_after_tomorrow_notifications,
@@ -60,11 +60,11 @@ defmodule AlertProcessor.NotificationBuilder do
     |> List.wrap
   end
 
-  defp build_estimated_duration_notifications(user, subscriptions, alert, now, advanced_notice_in_seconds) do
+  defp build_estimated_duration_notifications(user, subscriptions, alert, now, advance_notice_in_seconds) do
     Enum.flat_map(subscriptions, fn(sub) ->
       subscription_start_datetime = time_to_datetime(sub.start_time, now)
       if Enum.member?(sub.relevant_days, DateTimeHelper.determine_relevant_day_of_week(subscription_start_datetime)) do
-        do_build_notifications(user, [sub], alert, DT.subtract!(time_to_datetime(sub.start_time, now), advanced_notice_in_seconds), 0)
+        do_build_notifications(user, [sub], alert, DT.subtract!(time_to_datetime(sub.start_time, now), advance_notice_in_seconds), 0)
       else
         []
       end
