@@ -53,6 +53,7 @@ defmodule AlertProcessor.AlertParser do
     |> parse_informed_entities(informed_entity, facilities_map)
     |> Map.put(:created_at, parse_datetime(created_timestamp))
     |> Map.put(:description, parse_translation(alert_data["description_text"]))
+    |> Map.put(:url, parse_translation(alert_data["url"]))
     |> Map.put(:effect_name, StringHelper.split_capitalize(effect_detail, "_"))
     |> Map.put(:header, parse_translation(header_text))
     |> Map.put(:id, to_string(id))

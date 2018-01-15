@@ -11,6 +11,7 @@ defmodule AlertProcessor.Model.NotificationTest do
     header: "Short header",
     service_effect: "There is a delay",
     description: "The delay is for 1 hour at south station",
+    url: "http://www.example.com/alert-info",
     send_after: DateTime.utc_now,
     alert_id: "12345678",
     status: :sent
@@ -58,6 +59,13 @@ defmodule AlertProcessor.Model.NotificationTest do
 
   test "create_changeset/2 does not require a description", %{valid_attrs: valid_attrs} do
     attrs = Map.delete(valid_attrs, :description)
+    changeset = Notification.create_changeset(%Notification{}, attrs)
+
+    assert changeset.valid?
+  end
+
+  test "create_changeset/2 does not require a url", %{valid_attrs: valid_attrs} do
+    attrs = Map.delete(valid_attrs, :url)
     changeset = Notification.create_changeset(%Notification{}, attrs)
 
     assert changeset.valid?

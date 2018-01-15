@@ -18,6 +18,7 @@ defmodule ConciergeSite.Dissemination.NotificationEmailTest do
     service_effect: "Red line delay",
     header: "Red line inbound from Alewife station closure",
     description: "There is a fire in at south station so it is closed",
+    url: "http://www.example.com/alert-info",
     alert: @alert
   }
 
@@ -29,6 +30,7 @@ defmodule ConciergeSite.Dissemination.NotificationEmailTest do
     assert body =~ "Red line delay"
     assert body =~ "Red line inbound from Alewife station closure"
     assert body =~ "There is a fire in at south station so it is closed"
+    assert body =~ "More information: http://www.example.com/alert-info"
  end
 
   test "html_email/1 has all content and link for alerts page" do
@@ -39,6 +41,7 @@ defmodule ConciergeSite.Dissemination.NotificationEmailTest do
     assert body =~ "Red line delay"
     assert body =~ "Red line inbound from Alewife station closure"
     assert body =~ "href=\"https://t.mbta.com/\""
+    assert body =~ "http://www.example.com/alert-info"
   end
 
   describe "email_subject/1" do

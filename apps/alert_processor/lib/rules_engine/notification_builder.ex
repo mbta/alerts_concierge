@@ -103,6 +103,7 @@ defmodule AlertProcessor.NotificationBuilder do
               header: alert.header,
               service_effect: alert.service_effect,
               description: alert.description,
+              url: alert.url,
               phone_number: user.phone_number,
               email: user.email,
               status: :unsent,

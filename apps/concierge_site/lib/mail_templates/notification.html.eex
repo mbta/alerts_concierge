@@ -21,6 +21,12 @@
         <p class="notification-description" style="margin: 0; padding: 0; font-size: 16px; line-height: 1.5; color: #1c1e23;"><%= String.replace(notification.description, "\r\n", "<br/>") %></p>
       <% end %>
 
+      <%= if notification.url do %>
+        <p class="notification-url" style="margin: 0; padding: 0; font-size: 16px; line-height: 1.5; color: #1c1e23; padding-top: 10px;">
+          <a class="notification-url-link" href="<%= notification.url %>" style="font-size: 16px; line-height: 1.5; color: #1c77c3; text-decoration: none;">More information</a>
+        </p>
+      <% end %>
+
       <p class="notification-link-wrapper" style="margin: 0; padding: 0; text-align: right; padding-top: 10px;">
         <a class="notification-link" href="https://t.mbta.com/" style="font-size: 16px; line-height: 1.5; color: #1c77c3; padding-top: 24px; text-decoration: none;">View all alerts &rarr;</a>
       </p>
