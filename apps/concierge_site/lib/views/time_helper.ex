@@ -8,6 +8,8 @@ defmodule ConciergeSite.TimeHelper do
   alias AlertProcessor.Helpers.DateTimeHelper
   alias AlertProcessor.Model.{Subscription, User}
 
+  @all_day_subscription_types [:accessibility, :parking, :bike_storage]
+
   @doc """
   Returns stringified times to populate a dropdown list of a full day of times at
   fifteen-minute intervals
@@ -73,6 +75,7 @@ defmodule ConciergeSite.TimeHelper do
 
   @spec subscription_during_do_not_disturb?(Subscription.t, User.t) :: boolean
   def subscription_during_do_not_disturb?(_, %User{do_not_disturb_start: nil, do_not_disturb_end: nil}), do: false
+  def subscription_during_do_not_disturb?(%Subscription{type: type}, _) when type in @all_day_subscription_types, do: false
   def subscription_during_do_not_disturb?(%Subscription{start_time: start_time, end_time: end_time}, %User{do_not_disturb_start: dnd_start, do_not_disturb_end: dnd_end}) do
     if normalized_time_value(dnd_start) > normalized_time_value(dnd_end) do
       normalized_time_value(end_time) > normalized_time_value(dnd_start) || normalized_time_value(dnd_end) > normalized_time_value(start_time)

@@ -62,6 +62,10 @@ defmodule ConciergeSite.TimeHelperTest do
       refute TimeHelper.subscription_during_do_not_disturb?(%Subscription{start_time: ~T[15:00:00], end_time: ~T[17:00:00]}, %User{do_not_disturb_start: ~T[09:00:00], do_not_disturb_end: ~T[14:00:00]})
     end
 
+    test "returns false if subscription is an accessibility, parking, or bike storage subscription" do
+      refute TimeHelper.subscription_during_do_not_disturb?(%Subscription{start_time: ~T[05:00:00], end_time: ~T[06:00:00], type: :accessibility}, %User{do_not_disturb_start: ~T[05:00:00], do_not_disturb_end: ~T[07:00:00]})
+    end
+
     test "handles overnight dnd periods" do
       assert TimeHelper.subscription_during_do_not_disturb?(%Subscription{start_time: ~T[18:00:00], end_time: ~T[22:00:00]}, %User{do_not_disturb_start: ~T[17:00:00], do_not_disturb_end: ~T[02:00:00]})
     end
