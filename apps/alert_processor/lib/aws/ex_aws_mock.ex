@@ -8,7 +8,7 @@ defmodule ExAws.Mock do
   @doc """
   request/1 takes the operation to be sent via the aws api and returns a tuple.
   """
-  @spec request(Map, List) :: {:ok, Map}
+  @spec request(ExAws.Operation.t, []) :: {:ok, term} | {:error, term}
   def request(operation, []) do
     send self(), operation.action
     case operation.action do
