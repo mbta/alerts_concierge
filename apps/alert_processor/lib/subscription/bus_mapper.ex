@@ -15,7 +15,7 @@ defmodule AlertProcessor.Subscription.BusMapper do
   arrays of subscription(s) and informed entities to creat in the database
   to be used for matching against alerts.
   """
-  @spec map_subscription(map) :: {:ok, [Subscription.t], [InformedEntity.t]} | :error
+  @spec map_subscription(map) :: {:ok, [Subscription.t]}
   def map_subscription(%{"routes" => routes} = params) do
     params = Map.delete(params, "routes")
     subscription_infos = Enum.flat_map(routes, fn(route_and_direction) ->
