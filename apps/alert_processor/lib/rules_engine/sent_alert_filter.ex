@@ -9,7 +9,7 @@ defmodule AlertProcessor.SentAlertFilter do
   that have not already recieved a notification for the alert, or that have already recieved a notification
   but with an older last_push_notification
   """
-  @spec filter([Subscription.t], Keyword.t) :: [Subscription.t]
+  @spec filter([Subscription.t], Keyword.t) :: {[Subscription.t], [Subscription.t]}
   def filter(subscriptions, alert: alert, notifications: notifications) do
     do_filter(subscriptions, alert, notifications)
   end
