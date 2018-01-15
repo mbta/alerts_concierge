@@ -350,7 +350,7 @@ defmodule ConciergeSite.SubscriptionView do
   def subscription_edit_path(conn, %Subscription{type: :commuter_rail} = subscription) do
     Helpers.commuter_rail_subscription_path(conn, :edit, subscription)
   end
-  def subscription_edit_path(conn, %Subscription{type: :boat} = subscription) do
+  def subscription_edit_path(conn, %Subscription{type: :ferry} = subscription) do
     Helpers.ferry_subscription_path(conn, :edit, subscription)
   end
   def subscription_edit_path(conn, %Subscription{type: :accessibility} = subscription) do
