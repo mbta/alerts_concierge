@@ -283,7 +283,7 @@ defmodule ConciergeSite.SubscriptionViewTest do
     end
 
     test "ferry subscription edit path", %{conn: conn} do
-      subscription = %Subscription{type: :boat, id: "abc"}
+      subscription = %Subscription{type: :ferry, id: "abc"}
 
       assert SubscriptionView.subscription_edit_path(conn, subscription) == "/subscriptions/ferry/abc/edit"
     end
