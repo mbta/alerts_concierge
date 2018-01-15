@@ -31,7 +31,7 @@ defmodule AlertProcessor.DigestDateHelper do
     end)
   end
 
-  @spec matching_groups([map], map, [atom]) :: [map]
+  @spec matching_groups([map], map, [atom]) :: [atom]
   defp matching_groups([], _, _), do: []
   defp matching_groups(_, _, []), do: []
   defp matching_groups([period | ptail] = periods, ddg, [group | gtail]) do
