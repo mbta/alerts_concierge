@@ -100,7 +100,6 @@ defmodule AlertProcessor.Subscription.Snapshot do
     {:ok, alert}
   end
 
-  defp serialize_informed_entities(nil), do: []
   defp serialize_informed_entities(informed_entities) do
     Enum.map(informed_entities, fn(ie) ->
       InformedEntity
