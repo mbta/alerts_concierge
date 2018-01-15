@@ -7,10 +7,10 @@ defmodule AlertProcessor.Model.User do
     email: String.t,
     phone_number: String.t,
     role: String.t,
-    vacation_start: DateTime.t,
-    vacation_end: DateTime.t,
-    do_not_disturb_start: Time.t,
-    do_not_disturb_end: Time.t,
+    vacation_start: DateTime.t | nil,
+    vacation_end: DateTime.t | nil,
+    do_not_disturb_start: Time.t | nil,
+    do_not_disturb_end: Time.t | nil,
     amber_alert_opt_in: boolean()
   }
 
