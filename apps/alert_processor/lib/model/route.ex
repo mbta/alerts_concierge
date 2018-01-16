@@ -16,7 +16,7 @@ defmodule AlertProcessor.Model.Route do
   @type route_id :: String.t
   @type route_type :: 0 | 1 | 2 | 3 | 4
   @type stop_id :: String.t
-  @type stop :: {String.t, stop_id}
+  @type stop :: {String.t, stop_id, {float(), float()}}
 
   @type t :: %__MODULE__{
     direction_names: [String.t],
