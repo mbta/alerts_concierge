@@ -11,7 +11,7 @@ defmodule ConciergeSite.Admin.ImpersonateSessionController do
       User.log_admin_action(:impersonate_subscriber, admin, user)
       conn
       |> Guardian.Plug.sign_out()
-      |> Guardian.Plug.sign_in(user, :access, perms: %{default: Guardian.Permissions.max}, imp: admin.id)
+      |> Guardian.Plug.sign_in(user, :access, %{perms: %{default: Guardian.Permissions.max}, imp: admin.id})
       |> redirect(to: "/my-subscriptions")
     else
       render_unauthorized(conn)
