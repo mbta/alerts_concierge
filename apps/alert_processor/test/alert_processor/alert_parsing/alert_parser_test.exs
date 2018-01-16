@@ -198,4 +198,12 @@ defmodule AlertProcessor.AlertParserTest do
       assert (36 * 60 * 60) == DateTime.to_unix(end_datetime) - DateTime.to_unix(created_at_datetime)
     end
   end
+
+  test "correctly parses an alert with a url" do
+    use_cassette "estimated_url_alert", custom: true, clear_mock: true, match_requests_on: [:query] do
+      {:ok, [alert], feed_timestamp} = AlertProcessor.AlertsClient.get_alerts()
+      result = AlertParser.parse_alert(alert, %{}, feed_timestamp)
+      assert result.url == "http://www.example.com/alert-info"
+    end
+  end
 end

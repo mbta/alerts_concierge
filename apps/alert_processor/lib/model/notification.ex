@@ -11,6 +11,7 @@ defmodule AlertProcessor.Model.Notification do
     send_after: DateTime.t | nil,
     service_effect: String.t | nil,
     description: String.t | nil,
+    url: String.t | nil,
     header: String.t,
     phone_number: String.t | nil,
     email: String.t | nil,
@@ -34,6 +35,7 @@ defmodule AlertProcessor.Model.Notification do
     field :send_after, :utc_datetime
     field :service_effect, :string
     field :description, :string
+    field :url, :string
     field :header, :string
     field :phone_number, :string
     field :email, :string
@@ -53,7 +55,7 @@ defmodule AlertProcessor.Model.Notification do
     )
   end
 
-  @permitted_fields ~w(alert_id user_id send_after description service_effect header phone_number email status last_push_notification)a
+  @permitted_fields ~w(alert_id user_id send_after description url service_effect header phone_number email status last_push_notification)a
   @required_fields ~w(alert_id user_id header service_effect)a
 
   @doc """

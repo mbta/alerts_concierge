@@ -5,7 +5,7 @@ defmodule AlertProcessor.Model.Alert do
   alias AlertProcessor.{Model.InformedEntity, Model.Subscription, Helpers.DateTimeHelper, TimeFrameComparison}
 
   defstruct [:active_period, :effect_name, :id, :header, :informed_entities,
-             :severity, :last_push_notification, :service_effect, :description,
+             :severity, :last_push_notification, :service_effect, :description, :url,
              :timeframe, :recurrence, :duration_certainty, :created_at]
 
   @type informed_entity :: [
@@ -29,10 +29,11 @@ defmodule AlertProcessor.Model.Alert do
     last_push_notification: DateTime.t,
     service_effect: String.t,
     description: String.t,
+    url: String.t | nil,
     timeframe: String.t,
     recurrence: String.t,
     duration_certainty: {:estimated, pos_integer} | :known,
-    created_at: DateTime.t,
+    created_at: DateTime.t
   }
 
   @route_types %{
