@@ -3,9 +3,9 @@
   font-size: 1.1rem;
   line-height: 1.1rem;
   padding: 1rem;
-  position: fixed;
-  right: 2px;
-  top: 2px;
+  position: absolute;
+  right: -1rem;
+  top: -.5rem;
 }
 
 .menu__toggle:hover,
