@@ -206,4 +206,22 @@ defmodule AlertProcessor.AlertParserTest do
       assert result.url == "http://www.example.com/alert-info"
     end
   end
+
+  describe "remove_ignored/1" do
+    test "remove alert when last_push_notification_timestamp is not available"  do
+      assert AlertParser.remove_ignored([%{}]) == []
+    end
+
+    test "remove alert when last_push_notification_timestamp is nil" do
+      assert AlertParser.remove_ignored([%{"last_push_notification_timestamp" => nil}]) == []
+    end
+
+    test "remove alert when last_push_notification_timestamp is an empty string" do
+      assert AlertParser.remove_ignored([%{"last_push_notification_timestamp" => ""}]) == []
+    end
+
+    test "do not remove alert when last_push_notification_timestamp is set" do
+      assert length(AlertParser.remove_ignored([%{"last_push_notification_timestamp" => 1507661322}])) == 1
+    end
+  end
 end

@@ -31,9 +31,15 @@ defmodule AlertProcessor.AlertParser do
   end
 
   defp parse_alerts({alerts, facilities_map, feed_timestamp}) do
-    for alert_json <- alerts, alert = parse_alert(alert_json, facilities_map, feed_timestamp), into: %{} do
+    for alert_json <- remove_ignored(alerts), alert = parse_alert(alert_json, facilities_map, feed_timestamp), into: %{} do
       {alert.id, alert}
     end
+  end
+
+  def remove_ignored(alerts) do
+    alerts
+    |> Enum.filter(& Map.has_key?(&1, "last_push_notification_timestamp"))
+    |> Enum.reject(& to_string(Map.get(&1, "last_push_notification_timestamp")) == "")
   end
 
   def parse_alert(%{
@@ -45,7 +51,8 @@ defmodule AlertProcessor.AlertParser do
       "header_text" => header_text,
       "informed_entity" => informed_entity,
       "service_effect_text" => service_effect_text,
-      "severity" => severity
+      "severity" => severity,
+      "last_push_notification_timestamp" => last_push_notification_timestamp
     } = alert_data, facilities_map, feed_timestamp) do
     %Alert{}
     |> parse_duration_certainty(duration_certainty, active_period, feed_timestamp)
@@ -58,7 +65,7 @@ defmodule AlertProcessor.AlertParser do
     |> Map.put(:header, parse_translation(header_text))
     |> Map.put(:id, to_string(id))
     |> Map.put(:service_effect, parse_translation(service_effect_text))
-    |> Map.put(:last_push_notification, alert_data |> Map.get_lazy("last_push_notification_timestamp", fn -> Map.get(alert_data, "created_timestamp") end) |> parse_datetime())
+    |> Map.put(:last_push_notification, parse_datetime(last_push_notification_timestamp))
     |> Map.put(:severity, parse_severity(severity))
     |> Map.put(:timeframe, parse_translation(alert_data["timeframe_text"]))
     |> Map.put(:recurrence, parse_translation(alert_data["recurrence_text"]))
