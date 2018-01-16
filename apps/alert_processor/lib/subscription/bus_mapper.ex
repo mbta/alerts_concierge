@@ -6,7 +6,7 @@ defmodule AlertProcessor.Subscription.BusMapper do
 
   import AlertProcessor.Subscription.Mapper
   alias AlertProcessor.ServiceInfoCache
-  alias AlertProcessor.Model.{InformedEntity, Subscription}
+  alias AlertProcessor.Model.Subscription
 
   defdelegate build_subscription_transaction(subscriptions, user, originator), to: AlertProcessor.Subscription.Mapper
 
