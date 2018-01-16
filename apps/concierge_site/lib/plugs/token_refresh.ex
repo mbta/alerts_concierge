@@ -16,7 +16,7 @@ defmodule ConciergeSite.Plugs.TokenRefresh do
          true <- token_expires_within_fifteen_minutes?(claims) do
 
       current_user = current_resource(conn)
-      sign_in(conn, current_user, :access, perms: map_permissions(claims["pem"]))
+      sign_in(conn, current_user, :access, %{perms: map_permissions(claims["pem"])})
     else
       _ -> conn
     end
