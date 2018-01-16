@@ -4,7 +4,7 @@ defmodule ConciergeSite.Subscriptions.SubscriptionParams do
   """
   import ConciergeSite.Subscriptions.ParamsValidator
 
-  @spec prepare_for_update_changeset(map) :: map
+  @spec prepare_for_update_changeset(map) :: {:ok, map} | {:error, iodata}
   def prepare_for_update_changeset(params) do
     {params, errors} = validate_endtime_after_starttime({params, []})
 
