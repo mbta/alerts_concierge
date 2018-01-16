@@ -43,7 +43,7 @@
       <div class="wireless-number-section supporting-info-section toggleable">
         <label for="user_phone_number" class="form-label">Phone Number</label>
         <div class="form-sub-label">
-          To receive text alerts, your device must be able to receive SMS text messages.
+          To receive text alerts, your device must be able to receive text messages.
         </div>
         <%= telephone_input f, :phone_number, placeholder: "###-###-####", class: "large-input", value: @user.phone_number %>
       </div>
