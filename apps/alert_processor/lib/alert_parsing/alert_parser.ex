@@ -36,10 +36,20 @@ defmodule AlertProcessor.AlertParser do
     end
   end
 
+  @spec remove_ignored([map]) :: [map]
   def remove_ignored(alerts) do
     alerts
-    |> Enum.filter(& Map.has_key?(&1, "last_push_notification_timestamp"))
-    |> Enum.reject(& to_string(Map.get(&1, "last_push_notification_timestamp")) == "")
+    |> filter_invalid_key_value("last_push_notification_timestamp")
+    |> filter_invalid_key_value("active_period")
+  end
+
+  @spec filter_invalid_key_value([map], String.t) :: [map]
+  defp filter_invalid_key_value(alerts, key) do
+    alerts
+    |> Enum.filter(& Map.has_key?(&1, key))
+    |> Enum.reject(& Map.get(&1, key) == "")
+    |> Enum.reject(& Map.get(&1, key) == nil)
+    |> Enum.reject(& Map.get(&1, key) == [])
   end
 
   def parse_alert(%{
