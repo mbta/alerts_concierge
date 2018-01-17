@@ -208,20 +208,38 @@ defmodule AlertProcessor.AlertParserTest do
   end
 
   describe "remove_ignored/1" do
+    @valid_alert %{"active_period" => [%{"start" => 1507661322}], "last_push_notification_timestamp" => 1507661322}
+
     test "remove alert when last_push_notification_timestamp is not available"  do
-      assert AlertParser.remove_ignored([%{}]) == []
+      assert AlertParser.remove_ignored([Map.delete(@valid_alert, "last_push_notification_timestamp")]) == []
     end
 
     test "remove alert when last_push_notification_timestamp is nil" do
-      assert AlertParser.remove_ignored([%{"last_push_notification_timestamp" => nil}]) == []
+      assert AlertParser.remove_ignored([%{@valid_alert | "last_push_notification_timestamp" => nil}]) == []
     end
 
     test "remove alert when last_push_notification_timestamp is an empty string" do
-      assert AlertParser.remove_ignored([%{"last_push_notification_timestamp" => ""}]) == []
+      assert AlertParser.remove_ignored([%{@valid_alert | "last_push_notification_timestamp" => ""}]) == []
     end
 
-    test "do not remove alert when last_push_notification_timestamp is set" do
-      assert length(AlertParser.remove_ignored([%{"last_push_notification_timestamp" => 1507661322}])) == 1
+    test "do not remove alert when last_push_notification_timestamp and active_period are set" do
+      assert length(AlertParser.remove_ignored([@valid_alert])) == 1
+    end
+
+    test "remove alert when active_period is not available"  do
+      assert AlertParser.remove_ignored([Map.delete(@valid_alert, "active_period")]) == []
+    end
+
+    test "remove alert when active_period is nil" do
+      assert AlertParser.remove_ignored([%{@valid_alert | "active_period" => nil}]) == []
+    end
+
+    test "remove alert when active_period is an empty string" do
+      assert AlertParser.remove_ignored([%{@valid_alert | "active_period" => ""}]) == []
+    end
+
+    test "remove alert when active_period is an empty list" do
+      assert AlertParser.remove_ignored([%{@valid_alert | "active_period" => []}]) == []
     end
   end
 end
