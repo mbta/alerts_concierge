@@ -45,11 +45,16 @@ defmodule AlertProcessor.AlertParser do
 
   @spec filter_invalid_key_value([map], String.t) :: [map]
   defp filter_invalid_key_value(alerts, key) do
+    filter_fun = fn
+      %{^key => ""} -> false
+      %{^key => nil} -> false
+      %{^key => []} -> false
+      %{^key => _} -> true
+      _ -> false
+    end
+
     alerts
-    |> Enum.filter(& Map.has_key?(&1, key))
-    |> Enum.reject(& Map.get(&1, key) == "")
-    |> Enum.reject(& Map.get(&1, key) == nil)
-    |> Enum.reject(& Map.get(&1, key) == [])
+    |> Enum.filter(filter_fun)
   end
 
   def parse_alert(%{
