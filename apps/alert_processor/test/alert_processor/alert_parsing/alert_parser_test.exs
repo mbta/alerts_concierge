@@ -5,6 +5,7 @@ defmodule AlertProcessor.AlertParserTest do
   import AlertProcessor.Factory
   alias AlertProcessor.{AlertCache, AlertParser, Model, Repo}
   alias Model.{InformedEntity, SavedAlert}
+  alias Calendar.DateTime, as: DT
 
   setup_all do
     {:ok, _} = Application.ensure_all_started(:alert_processor)
@@ -159,12 +160,34 @@ defmodule AlertProcessor.AlertParserTest do
     end
   end
 
+  test "correctly calculates active period" do
+    use_cassette "known_alert", custom: true, clear_mock: true, match_requests_on: [:query] do
+      {:ok, [alert], feed_timestamp} = AlertProcessor.AlertsClient.get_alerts()
+      result = AlertParser.parse_alert(alert, %{}, feed_timestamp)
+      assert %AlertProcessor.Model.Alert{
+        active_period: [%{start: start_datetime, end: end_datetime}],
+        created_at: created_at_datetime,
+        duration_certainty: :known,
+        effect_name: "Delay",
+        header: "Red Line experiencing minor delays",
+        id: "115513",
+        informed_entities: _informed_entities,
+        service_effect: "Minor Red Line delay",
+        severity: :minor,
+      } = result
+
+      assert start_datetime == DT.from_erl!({{2017, 10, 10}, {13, 44, 54}}, "America/New_York")
+      assert end_datetime == DT.from_erl!({{2017, 10, 10}, {18, 50, 34}}, "America/New_York")
+      assert created_at_datetime == DT.from_erl!({{2017, 10, 10}, {17, 44, 59}}, "Etc/UTC")
+    end
+  end
+
   test "correctly parses estimated timeframe alert" do
     use_cassette "estimated_alert", custom: true, clear_mock: true, match_requests_on: [:query] do
       {:ok, [alert], feed_timestamp} = AlertProcessor.AlertsClient.get_alerts()
       result = AlertParser.parse_alert(alert, %{}, feed_timestamp)
       assert %AlertProcessor.Model.Alert{
-        active_period: [%{start: _start_datetime, end: end_datetime}],
+        active_period: [%{start: start_datetime, end: end_datetime}],
         created_at: created_at_datetime,
         duration_certainty: {:estimated, 14400},
         effect_name: "Delay",
@@ -174,6 +197,9 @@ defmodule AlertProcessor.AlertParserTest do
         service_effect: "Minor Red Line delay",
         severity: :minor,
       } = result
+
+      assert start_datetime == DT.from_erl!({{2017, 10, 10}, {13, 44, 54}}, "America/New_York")
+      assert end_datetime == DT.from_erl!({{2017, 10, 12}, {1, 44, 59}}, "America/New_York")
       assert 1507661434 == feed_timestamp
       assert (36 * 60 * 60) == DateTime.to_unix(end_datetime) - DateTime.to_unix(created_at_datetime)
     end

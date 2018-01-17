@@ -146,4 +146,24 @@ defmodule AlertProcessor.Helpers.DateTimeHelperTest do
       assert :saturday = DTH.determine_relevant_day_of_week(sunday)
     end
   end
+
+  describe "parse_unix_timestamp/2" do
+    test "parses a unix timestamp with the default time zone" do
+      {:ok, datetime} = DTH.parse_unix_timestamp(1500306651)
+      assert datetime == DT.from_erl!({{2017, 7, 17}, {11, 50, 51}}, "America/New_York")
+    end
+
+    test "parses a unix timestamp with the given time zone" do
+      {:ok, datetime} = DTH.parse_unix_timestamp(1500306651, "Etc/UTC")
+      assert datetime == DT.from_erl!({{2017, 7, 17}, {15, 50, 51}}, "Etc/UTC")
+    end
+
+    test "returns :error when the timestamp can't be parsed" do
+      assert :error == DTH.parse_unix_timestamp(-218937198213123)
+    end
+
+    test "returns :error when the given time zone can't be parsed" do
+      assert :error == DTH.parse_unix_timestamp(1500306651, "not a time zone")
+    end
+  end
 end

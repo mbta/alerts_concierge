@@ -6,7 +6,7 @@ defmodule AlertProcessor.AlertParser do
   require Logger
   alias AlertProcessor.{AlertCache, AlertsClient, ApiClient,
     Helpers.StringHelper, HoldingQueue, Parser, ServiceInfoCache,
-    SubscriptionFilterEngine}
+    SubscriptionFilterEngine, Helpers.DateTimeHelper}
   alias AlertProcessor.Model.{Alert, InformedEntity, Notification, SavedAlert}
 
   @behaviour Parser
@@ -102,8 +102,8 @@ defmodule AlertProcessor.AlertParser do
   defp parse_duration_certainty(alert, _, _, _), do: %{alert | duration_certainty: :known}
 
   defp parse_active_periods(%Alert{duration_certainty: {:estimated, _}} = alert, [%{"start" => start_timestamp, "end" => _end_timestamp}], created_timestamp) do
-    start_datetime = parse_datetime(start_timestamp)
-    end_datetime = parse_datetime(created_timestamp + (36 * 60 * 60))
+    {:ok, start_datetime} = DateTimeHelper.parse_unix_timestamp(start_timestamp)
+    {:ok, end_datetime} = DateTimeHelper.parse_unix_timestamp(created_timestamp + (36 * 60 * 60))
 
     %{alert | active_period: [%{start: start_datetime, end: end_datetime}]}
   end
@@ -114,7 +114,7 @@ defmodule AlertProcessor.AlertParser do
   defp parse_active_period(active_period) do
     active_period
     |> Map.new(fn({k, v}) ->
-        with {:ok, datetime} <- DateTime.from_unix(v) do
+        with {:ok, datetime} <- DateTimeHelper.parse_unix_timestamp(v) do
           {String.to_existing_atom(k), datetime}
         else
           _ -> {String.to_existing_atom(k), nil}
