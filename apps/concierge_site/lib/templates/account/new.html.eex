@@ -9,14 +9,14 @@
       <span></span>
     </div>
     <%= render ConciergeSite.PasswordView, "_password_entry_form_section.html", f: f, changeset: @account_changeset %>
-    <h2 class="create-account-header">SMS Messaging</h2>
-    <p>Would you like to receive alerts via SMS? If not, we will send you alerts via the email address you provided. You may always update this preference later.</p>
+    <h2 class="create-account-header">Text Message Settings</h2>
+    <p>Would you like to receive alerts as text messages? If not, we will send you alerts via the email address you provided. You may always update this preference later.</p>
     <%= radio_button f, :sms_toggle, true, class: "radio toggle_show" %> Yes<br>
     <%= radio_button f, :sms_toggle, false, class: "radio toggle_hide" %> No<br>
 
     <div class="form-group toggleable <%= if :phone_number in @errors, do: "has-danger" %>">
       <%= label f, :phone_number, "Phone number", class: "form-label" %>
-      <div class="form-sub-label">To receive text alerts, your device must be able to receive SMS text messages.</div>
+      <div class="form-sub-label">To receive text alerts, your device must be able to receive text messages.</div>
       <%= error_tag f, :phone_number %>
       <%= telephone_input f, :phone_number, placeholder: "###-###-####", class: "form-control form-control-success form-control-danger" %>
       <span></span>
