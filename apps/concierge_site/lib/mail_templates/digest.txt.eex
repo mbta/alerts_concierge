@@ -8,6 +8,6 @@ T-Alerts Weekly Digest:
 <% end %>
 
 The digest of upcoming events has been personalized to you based on your
-subscription, for full list: https://t.mbta.com/
+subscription, for full list: https://www.mbta.com/
 
 <%= ConciergeSite.Helpers.MailHelper.text_footer(unsubscribe_url, manage_subscriptions_url, feedback_url) %>

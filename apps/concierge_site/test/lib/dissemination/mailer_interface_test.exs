@@ -66,7 +66,7 @@ defmodule ConciergeSite.Dissemination.MailerInterfaceTest do
       assert sent_email.to == [{nil, user.email}]
       assert sent_email.text_body =~ "This is a Test"
       assert sent_email.text_body =~ "Service Effect"
-      assert sent_email.text_body =~ "https://t.mbta.com/"
+      assert sent_email.text_body =~ "https://www.mbta.com/"
       assert sent_email.text_body =~ "This Weekend, May 26 - 27"
     end
   end
