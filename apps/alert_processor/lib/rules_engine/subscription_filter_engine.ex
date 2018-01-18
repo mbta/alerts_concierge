@@ -30,13 +30,11 @@ defmodule AlertProcessor.SubscriptionFilterEngine do
     {subscriptions_to_test, subscriptions_to_auto_resend} = SentAlertFilter.filter(subscriptions,
                                                                                    alert: alert,
                                                                                    notifications: notifications)
-
-    subscriptions_to_send = subscriptions_to_test
+    subscriptions_to_test
     |> InformedEntityFilter.filter(alert: alert)
     |> SeverityFilter.filter(alert: alert)
     |> ActivePeriodFilter.filter(alert: alert)
-
-    subscriptions_to_send ++ subscriptions_to_auto_resend
+    |> Kernel.++(subscriptions_to_auto_resend)
   end
 
   @spec schedule_distinct_notifications(Alert.t, [Subscription.t]) :: {:ok, [Notification.t]} | :error
