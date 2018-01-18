@@ -4,6 +4,7 @@ defmodule AlertProcessor.Helpers.DateTimeHelper do
   multi-step datetime functions.
   """
   @seconds_in_a_day 86_400
+  @time_zone "America/New_York"
 
   alias Calendar.Date, as: D
   alias Calendar.DateTime, as: DT
@@ -53,9 +54,9 @@ defmodule AlertProcessor.Helpers.DateTimeHelper do
   end
 
   @spec format_date(NaiveDateTime.t, String.t) :: any
-  def format_date(datetime, timezone \\ "America/New_York") do
+  def format_date(datetime, time_zone \\ @time_zone) do
     with {:ok, utc_datetime} <- DateTime.from_naive(datetime, "Etc/UTC"),
-         {:ok, local_datetime} <- DT.shift_zone(utc_datetime, timezone),
+         {:ok, local_datetime} <- DT.shift_zone(utc_datetime, time_zone),
          {:ok, output} <- Strftime.strftime(local_datetime, "%m-%d-%Y") do
       output
     end
@@ -96,9 +97,9 @@ defmodule AlertProcessor.Helpers.DateTimeHelper do
   Returns a tuple of the datetime of the upcoming weekend.
   If called on a weekend, will go back to start of current weekend.
   """
-  @spec upcoming_weekend(DateTime.t | nil) :: {DateTime.t, DateTime.t}
-  def upcoming_weekend(time \\ nil) do
-    today = time || DT.now!("America/New_York")
+  @spec upcoming_weekend(DateTime.t | nil, String.t) :: {DateTime.t, DateTime.t}
+  def upcoming_weekend(time \\ nil, time_zone \\ @time_zone) do
+    today = time || DT.now!(time_zone)
 
     start_time = today
     |> Map.merge(%{
@@ -149,11 +150,11 @@ defmodule AlertProcessor.Helpers.DateTimeHelper do
     {start_time, end_time}
   end
 
-  @spec future(DateTime.t | nil) :: {DateTime.t, DateTime.t}
-  def future(time \\ nil) do
+  @spec future(DateTime.t | nil, String.t) :: {DateTime.t, DateTime.t}
+  def future(time \\ nil, time_zone \\ @time_zone) do
     {_start, end_of_next_weekend} = next_weekend(time)
     start_time = DT.add!(end_of_next_weekend, 1)
-    end_time = DT.from_erl!({{3000, 01, 01}, {0, 0, 0}}, "America/New_York")
+    end_time = DT.from_erl!({{3000, 01, 01}, {0, 0, 0}}, time_zone)
     {start_time, end_time}
   end
 
@@ -185,8 +186,8 @@ defmodule AlertProcessor.Helpers.DateTimeHelper do
     Calendar.Date.advance!(today_date, 7 - day_of_week)
   end
 
-  def determine_relevant_day_of_week(datetime, local_datetime \\ "America/New_York") do
-    {:ok, adjusted_datetime} = DT.shift_zone(datetime, local_datetime)
+  def determine_relevant_day_of_week(datetime, time_zone \\ @time_zone) do
+    {:ok, adjusted_datetime} = DT.shift_zone(datetime, time_zone)
     day_of_week = Date.day_of_week(adjusted_datetime)
     time = DateTime.to_time(adjusted_datetime)
     do_determine_relevant_day_of_week(time, day_of_week)
@@ -219,5 +220,15 @@ defmodule AlertProcessor.Helpers.DateTimeHelper do
 
   defp in_current_service_date?(time) do
     Time.compare(time, ~T[03:00:00]) == :gt
+  end
+
+  @spec parse_unix_timestamp(integer, String.t) :: {:ok, DateTime.t} | :error
+  def parse_unix_timestamp(timestamp, time_zone \\ @time_zone) do
+    with {:ok, datetime} <- DateTime.from_unix(timestamp),
+         {:ok, datetime} <- DT.shift_zone(datetime, time_zone) do
+      {:ok, datetime}
+    else
+      _ -> :error
+    end
   end
 end
