@@ -25,7 +25,7 @@
     <header class="header">
       <nav class="navbar navbar-toggleable-sm navbar-default">
         <div class="container">
-          <a href="https://t.mbta.com/"><%= img_tag(static_url(@conn, "/images/mbta-beta-logo.png"), class: "mbta-beta-logo navbar-brand") %></a>
+          <a href="https://www.mbta.com/"><%= img_tag(static_url(@conn, "/images/mbta-beta-logo.png"), class: "mbta-beta-logo navbar-brand") %></a>
           <div class="collapse navbar-collapse justify-content-end">
 
             <div>

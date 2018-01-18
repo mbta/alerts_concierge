@@ -47,7 +47,7 @@ defmodule ConciergeSite.Dissemination.DigestEmailTest do
     assert email.to == user.email
     assert body =~ "This is a Test"
     assert body =~ "Service Effect"
-    assert body =~ "https://t.mbta.com/"
+    assert body =~ "https://www.mbta.com/"
     assert body =~ "This Weekend, May 26 - 27"
     assert body =~ "mbtafeedback.com"
   end
@@ -62,7 +62,7 @@ defmodule ConciergeSite.Dissemination.DigestEmailTest do
     assert email.to == user.email
     assert body =~ "This is a Test"
     assert body =~ "Service Effect"
-    assert body =~ "href=\"https://t.mbta.com/\""
+    assert body =~ "href=\"https://www.mbta.com/\""
     assert body =~ "This Weekend, May 26 - 27"
     assert body =~ "mbtafeedback.com"
   end

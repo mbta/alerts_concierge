@@ -28,7 +28,7 @@
       <% end %>
 
       <p class="notification-link-wrapper" style="margin: 0; padding: 0; text-align: right; padding-top: 10px;">
-        <a class="notification-link" href="https://t.mbta.com/" style="font-size: 16px; line-height: 1.5; color: #1c77c3; padding-top: 24px; text-decoration: none;">View all alerts &rarr;</a>
+        <a class="notification-link" href="https://www.mbta.com/" style="font-size: 16px; line-height: 1.5; color: #1c77c3; padding-top: 24px; text-decoration: none;">View all alerts &rarr;</a>
       </p>
     </div>
     <center>

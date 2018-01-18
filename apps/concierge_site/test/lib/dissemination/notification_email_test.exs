@@ -40,7 +40,7 @@ defmodule ConciergeSite.Dissemination.NotificationEmailTest do
     assert email.to == @email
     assert body =~ "Red line delay"
     assert body =~ "Red line inbound from Alewife station closure"
-    assert body =~ "href=\"https://t.mbta.com/\""
+    assert body =~ "href=\"https://www.mbta.com/\""
     assert body =~ "http://www.example.com/alert-info"
   end
 

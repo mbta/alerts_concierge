@@ -56,7 +56,7 @@
         </div>
 
         <div class="digest-footer-link-wrapper" style="width: 290px; height: 40px;">
-          <a class="digest-footer-link" href="https://t.mbta.com/" style="width: 290px; height: 40px; text-decoration: none;">
+          <a class="digest-footer-link" href="https://www.mbta.com/" style="width: 290px; height: 40px; text-decoration: none;">
             <div class="digest-footer-button" style="width: 244px; padding: 6px 0px; border-radius: 5px; vertical-align: middle; background-color: #1c77c3; font-size: 16px; line-height: 1.75; text-align: center; color: #ffffff;">
               View All Alerts
             </div>
