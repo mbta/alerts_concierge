@@ -26,7 +26,7 @@ defmodule AlertProcessor.AlertParser do
 
       SavedAlert.save!(alerts)
       HoldingQueue.remove_notifications(alert_ids_to_clear_notifications)
-      SubscriptionFilterEngine.schedule_all_subscription_notifications(alerts_needing_notifications)
+      SubscriptionFilterEngine.schedule_all_notifications(alerts_needing_notifications)
     end
   end
 

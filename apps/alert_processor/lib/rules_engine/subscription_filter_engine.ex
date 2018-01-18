@@ -7,18 +7,18 @@ defmodule AlertProcessor.SubscriptionFilterEngine do
     Repo, Scheduler, SentAlertFilter, SeverityFilter}
   alias Model.{Alert, Notification, Subscription}
 
-  @spec schedule_all_subscription_notifications([Alert.t]) :: Keyword.t
-  def schedule_all_subscription_notifications(alerts) do
-    subscriptions = Subscription
+  @spec schedule_all_notifications([Alert.t]) :: Keyword.t
+  def schedule_all_notifications(alerts) do
+    all_subscriptions = Subscription
     |> Repo.all()
     |> Repo.preload(:user)
     |> Repo.preload(:informed_entities)
 
-    notifications = Notification.most_recent_for_subscriptions_and_alerts(subscriptions, alerts)
+    notifications = Notification.most_recent_for_subscriptions_and_alerts(all_subscriptions, alerts)
 
     for alert <- alerts do
-      subscriptions = determine_recipients(alert, subscriptions, notifications)
-      schedule_distinct_notifications(alert, subscriptions)
+      matched_subscriptions = determine_recipients(alert, all_subscriptions, notifications)
+      schedule_distinct_notifications(alert, matched_subscriptions)
     end
   end
 
