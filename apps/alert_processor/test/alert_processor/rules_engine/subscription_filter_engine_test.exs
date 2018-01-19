@@ -1,7 +1,7 @@
 defmodule AlertProcessor.SubscriptionFilterEngineTest do
   use AlertProcessor.DataCase
   import AlertProcessor.Factory
-  import AlertProcessor.Helpers.DateTimeHelper, only: [naive_to_local: 1]
+  import AlertProcessor.DateHelper
   alias AlertProcessor.{Model.Alert, Model.InformedEntity, Model.Subscription, SubscriptionFilterEngine}
 
   setup_all do
@@ -78,11 +78,11 @@ defmodule AlertProcessor.SubscriptionFilterEngineTest do
         last_push_notification: date_2017_01_18__09_00
       }
 
-      alert_evening = struct(alert_morning, %{active_period: [%{start: date_2017_01_18__16_00,
-                                                                end: date_2017_01_18__17_00}], id: "2"})
+      alert_evening = %{alert_morning | active_period: [%{start: date_2017_01_18__16_00,
+                                                                end: date_2017_01_18__17_00}], id: "2"}
 
-      alert_late = struct(alert_morning, %{active_period: [%{start: date_2017_01_18__20_00,
-                                                             end: date_2017_01_18__21_00}], id: "3"})
+      alert_late = %{alert_morning | active_period: [%{start: date_2017_01_18__20_00,
+                                                             end: date_2017_01_18__21_00}], id: "3"}
 
       user_morning = insert(:user, phone_number: nil, email: "redline|weekdays|low|morning@test.com")
       subscription_morning = :subscription
