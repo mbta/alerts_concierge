@@ -124,9 +124,10 @@ defmodule AlertProcessor.NotificationBuilder do
       vacation_end: ve,
       do_not_disturb_start: dnd_start,
       do_not_disturb_end: dnd_end
-  }, active_period, now, notification_time \\ @notification_time) do
+  }, {active_start, active_end}, now, notification_time \\ @notification_time) do
 
-    with :ok <- not_expired(active_period, now),
+    with active_period <- {convert_active_period_to_utc(active_start), convert_active_period_to_utc(active_end)},
+      :ok <- not_expired(active_period, now),
       {:ok, send_time} <- send_immediately(active_period, now, notification_time),
       {:ok, send_time} <- outside_vacation_dates(active_period, send_time, vs, ve),
       {:ok, send_time} <- outside_do_not_disturb(active_period, send_time, dnd_start, dnd_end)
@@ -245,4 +246,8 @@ defmodule AlertProcessor.NotificationBuilder do
   defp before_or_equal(first_dt, second_dt) do
     !DT.after?(first_dt, second_dt)
   end
+
+  @spec convert_active_period_to_utc(DateTime.t | nil) :: DateTime.t | nil
+  defp convert_active_period_to_utc(nil), do: nil
+  defp convert_active_period_to_utc(datetime), do: DT.shift_zone!(datetime, "Etc/UTC")
 end
