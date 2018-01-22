@@ -15,7 +15,7 @@ defmodule AlertProcessor.NotificationBuilderTest do
     two_days_from_now = DT.add!(now, 172_800)
     three_days_from_now = DT.add!(now, 172_800)
 
-    time = %{
+    utc_time = %{
       now: now,
       thirty_minutes_from_now: thirty_minutes_from_now,
       two_days_ago: two_days_ago,
@@ -26,94 +26,99 @@ defmodule AlertProcessor.NotificationBuilderTest do
       three_days_from_now: three_days_from_now
     }
 
-    {:ok, time: time}
+    est_time = for {key, val} <- utc_time, into: %{} do
+      {key, DT.shift_zone!(val, "America/New_York")}
+    end
+
+    {:ok, utc_time: utc_time, est_time: est_time}
   end
 
-  test "build notifications for each active period of an alert", %{time: time} do
+  test "build notifications for each active period of an alert", %{utc_time: utc_time, est_time: est_time} do
     user = insert(:user)
     sub = insert(:subscription, user: user)
     alert = %Alert{
       id: "1",
       header: nil,
-      active_period: [%{start: time.two_days_from_now, end: time.three_days_from_now}]
+      active_period: [%{start: est_time.two_days_from_now, end: est_time.three_days_from_now}]
     }
 
-    [notification] = NotificationBuilder.build_notifications({user, [sub]}, alert, time.now)
-    assert DT.same_time?(notification.send_after, time.one_day_from_now)
+    [notification] = NotificationBuilder.build_notifications({user, [sub]}, alert, utc_time.now)
+    assert DT.same_time?(notification.send_after, utc_time.one_day_from_now)
+    assert notification.send_after.time_zone == "Etc/UTC"
   end
 
-  test "do not build expired notifications", %{time: time} do
+  test "do not build expired notifications", %{utc_time: utc_time, est_time: est_time} do
     user = insert(:user)
     sub = insert(:subscription, user: user)
     alert = %Alert{
       id: "1",
       header: nil,
-      active_period: [%{start: time.two_days_ago, end: time.one_day_ago}]
+      active_period: [%{start: est_time.two_days_ago, end: est_time.one_day_ago}]
     }
 
-    assert Enum.empty? NotificationBuilder.build_notifications({user, [sub]}, alert, time.now)
+    assert Enum.empty? NotificationBuilder.build_notifications({user, [sub]}, alert, utc_time.now)
   end
 
-  test "set send after to current time for immediate alerts", %{time: time} do
+  test "set send after to current time for immediate alerts", %{utc_time: utc_time, est_time: est_time} do
     user = insert(:user)
     sub = insert(:subscription, user: user)
     alert = %Alert{
       id: "1",
       header: nil,
-      active_period: [%{start: time.thirty_minutes_from_now, end: time.one_day_from_now}]
+      active_period: [%{start: est_time.thirty_minutes_from_now, end: est_time.one_day_from_now}]
     }
 
-    [notification] = NotificationBuilder.build_notifications({user, [sub]}, alert, time.now)
-    assert DT.same_time?(notification.send_after, time.now)
+    [notification] = NotificationBuilder.build_notifications({user, [sub]}, alert, utc_time.now)
+    assert DT.same_time?(notification.send_after, utc_time.now)
   end
 
-  test "set send after to 24 hours before start of active period", %{time: time} do
+  test "set send after to 24 hours before start of active period", %{utc_time: utc_time, est_time: est_time} do
     user = insert(:user)
     sub = insert(:subscription, user: user)
     alert = %Alert{
       id: "1",
       header: nil,
-      active_period: [%{start: time.two_days_from_now, end: time.three_days_from_now}]
+      active_period: [%{start: est_time.two_days_from_now, end: est_time.three_days_from_now}]
     }
 
-    [notification] = NotificationBuilder.build_notifications({user, [sub]}, alert, time.now)
-    assert DT.same_time?(notification.send_after, time.one_day_from_now)
+    [notification] = NotificationBuilder.build_notifications({user, [sub]}, alert, utc_time.now)
+    assert DT.same_time?(notification.send_after, utc_time.one_day_from_now)
   end
 
-  test "do not send notification if send_time - active_period end is inside vacation period", %{time: time} do
-    user = insert(:user, vacation_start: time.now, vacation_end: time.two_days_from_now)
+  test "do not send notification if send_time - active_period end is inside vacation period", %{utc_time: utc_time, est_time: est_time} do
+    user = insert(:user, vacation_start: utc_time.now, vacation_end: utc_time.two_days_from_now)
     sub = insert(:subscription, user: user)
     alert = %Alert{
       id: "1",
       header: nil,
-      active_period: [%{start: time.thirty_minutes_from_now, end: time.one_day_from_now}]
+      active_period: [%{start: est_time.thirty_minutes_from_now, end: est_time.one_day_from_now}]
     }
 
-    assert Enum.empty? NotificationBuilder.build_notifications({user, [sub]}, alert, time.now)
+    assert Enum.empty? NotificationBuilder.build_notifications({user, [sub]}, alert, utc_time.now)
   end
 
-  test "send notification at end of vacation period if active_period overlaps", %{time: time} do
-    user = insert(:user, vacation_start: time.now, vacation_end: time.one_day_from_now)
+  test "send notification at end of vacation period if active_period overlaps", %{utc_time: utc_time, est_time: est_time} do
+    user = insert(:user, vacation_start: utc_time.now, vacation_end: utc_time.one_day_from_now)
     sub = insert(:subscription, user: user)
     alert = %Alert{
       id: "1",
       header: nil,
-      active_period: [%{start: time.thirty_minutes_from_now, end: time.three_days_from_now}]
+      active_period: [%{start: est_time.thirty_minutes_from_now, end: est_time.three_days_from_now}]
     }
 
-    [notification] = NotificationBuilder.build_notifications({user, [sub]}, alert, time.now)
-    assert DT.same_time?(notification.send_after, time.one_day_from_now)
+    [notification] = NotificationBuilder.build_notifications({user, [sub]}, alert, utc_time.now)
+    assert DT.same_time?(notification.send_after, utc_time.one_day_from_now)
     assert %DateTime{time_zone: "Etc/UTC"} = notification.send_after
   end
 
-  test "do not send notification if send_time -> active_period end is inside blackout period", %{time: time} do
+  test "do not send notification if send_time -> active_period end is inside blackout period", %{utc_time: utc_time, est_time: est_time} do
     do_not_disturb_start =
-      time.now
+      utc_time.now
       |> DT.shift_zone!("America/New_York")
       |> DT.to_time()
 
     do_not_disturb_end =
-      time.one_hour_from_now
+      utc_time.one_hour_from_now
       |> DT.shift_zone!("America/New_York")
       |> DT.to_time()
 
@@ -127,20 +132,20 @@ defmodule AlertProcessor.NotificationBuilderTest do
     alert = %Alert{
       id: "1",
       header: nil,
-      active_period: [%{start: time.now, end: time.thirty_minutes_from_now}]
+      active_period: [%{start: est_time.now, end: est_time.thirty_minutes_from_now}]
     }
 
-    assert Enum.empty?  NotificationBuilder.build_notifications({user, [sub]}, alert, time.now)
+    assert Enum.empty?  NotificationBuilder.build_notifications({user, [sub]}, alert, utc_time.now)
   end
 
-  test "send notification at end of blackout period if active_period overlaps", %{time: time} do
+  test "send notification at end of blackout period if active_period overlaps", %{utc_time: utc_time, est_time: est_time} do
     do_not_disturb_start =
-      time.now
+      utc_time.now
       |> DT.shift_zone!("America/New_York")
       |> DT.to_time()
 
     do_not_disturb_end =
-      time.one_hour_from_now
+      utc_time.one_hour_from_now
       |> DT.shift_zone!("America/New_York")
       |> DT.to_time()
 
@@ -154,11 +159,11 @@ defmodule AlertProcessor.NotificationBuilderTest do
     alert = %Alert{
       id: "1",
       header: nil,
-      active_period: [%{start: time.now, end: time.one_day_from_now}]
+      active_period: [%{start: est_time.now, end: est_time.one_day_from_now}]
     }
 
-    [notification] = NotificationBuilder.build_notifications({user, [sub]}, alert, time.now)
-    assert DT.same_time?(notification.send_after, time.one_hour_from_now)
+    [notification] = NotificationBuilder.build_notifications({user, [sub]}, alert, utc_time.now)
+    assert DT.same_time?(notification.send_after, utc_time.one_hour_from_now)
   end
 
 
@@ -228,7 +233,7 @@ defmodule AlertProcessor.NotificationBuilderTest do
     assert %DateTime{time_zone: "Etc/UTC"} = notification.send_after
   end
 
-  test "handles estimated timeframes", %{time: time} do
+  test "handles estimated timeframes", %{utc_time: utc_time, est_time: est_time} do
     three_hours = 60 * 60 * 3
     thirty_six_hours = 60 * 60 * 36
     user = insert(:user)
@@ -242,14 +247,14 @@ defmodule AlertProcessor.NotificationBuilderTest do
       header: "header",
       severity: :minor,
       active_period: [%{
-        start: DT.add!(time.now, 60),
-        end: DT.add!(time.now, thirty_six_hours)
+        start: DT.add!(est_time.now, 60),
+        end: DT.add!(est_time.now, thirty_six_hours)
       }],
       duration_certainty: {:estimated, three_hours},
-      created_at: time.now
+      created_at: utc_time.now
     }
 
-    [s4_notification_2, s1_notification, s4_notification_1] = NotificationBuilder.build_notifications({user, [sub1, sub3, sub2, sub4]}, alert, time.now)
+    [s4_notification_2, s1_notification, s4_notification_1] = NotificationBuilder.build_notifications({user, [sub1, sub3, sub2, sub4]}, alert, utc_time.now)
 
     sub1_id = sub1.id
     sub4_id = sub4.id
@@ -258,8 +263,8 @@ defmodule AlertProcessor.NotificationBuilderTest do
     assert %{notification_subscriptions: [%{subscription_id: ^sub1_id}]} = s1_notification
     assert %{notification_subscriptions: [%{subscription_id: ^sub4_id}]} = s4_notification_1
 
-    assert DT.same_time?(DT.add!(time.now, (86_400 * 2) - 655 - (12 * 60 * 60)), s4_notification_2.send_after)
-    assert DT.same_time?(DT.add!(time.now, 86_400 - 655 - (3 * 60 * 60)), s1_notification.send_after)
-    assert DT.same_time?(DT.add!(time.now, 86_400 - 655 - (12 * 60 * 60)), s4_notification_1.send_after)
+    assert DT.same_time?(DT.add!(utc_time.now, (86_400 * 2) - 655 - (12 * 60 * 60)), s4_notification_2.send_after)
+    assert DT.same_time?(DT.add!(utc_time.now, 86_400 - 655 - (3 * 60 * 60)), s1_notification.send_after)
+    assert DT.same_time?(DT.add!(utc_time.now, 86_400 - 655 - (12 * 60 * 60)), s4_notification_1.send_after)
   end
 end
