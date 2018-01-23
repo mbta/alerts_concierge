@@ -68,6 +68,7 @@ defmodule AlertProcessor.NotificationWorkerTest do
     SendingQueue.enqueue(notification)
     :timer.sleep(101)
 
+    assert_receive {:trace, ^pid, :receive, {:sent_notification_email, _}}
     assert_number_of_notifications_persisted_for_user(1, user)
   end
 
@@ -96,6 +97,22 @@ defmodule AlertProcessor.NotificationWorkerTest do
     end
 
     assert capture_log(a) =~ "Sending rate exceeded for user: #{user.id}"
+  end
+
+  test "Notification is invalid", %{notification: notification} do
+    user = insert :user
+    notification = Map.put(notification, :user, user)
+    notification = Map.put(notification, :service_effect, nil)
+
+    SendingQueue.start_link()
+    {:ok, pid} = NotificationWorker.start_link([name: :notification_worker_test])
+    :erlang.trace(pid, true, [:receive])
+
+    SendingQueue.enqueue(notification)
+    :timer.sleep(101)
+
+    refute_receive {:trace, ^pid, :receive, {:sent_notification_email, _}}
+    assert_number_of_notifications_persisted_for_user(0, user)
   end
 
   defp assert_number_of_notifications_persisted_for_user(count, user) do
