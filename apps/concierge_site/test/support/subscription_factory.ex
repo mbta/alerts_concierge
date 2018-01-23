@@ -1,0 +1,27 @@
+defmodule ConciergeSite.SubscriptionFactory do
+  @moduledoc """
+  Standard interface for generating subscriptions
+  """
+
+  alias AlertProcessor.Subscription.SubwayMapper
+  alias AlertProcessor.Subscription.BusMapper
+  alias AlertProcessor.Subscription.CommuterRailMapper
+  alias AlertProcessor.Subscription.FerryMapper
+
+  def subscription(:subway, params) do
+    SubwayMapper.map_subscriptions(params)
+  end
+  def subscription(:bus, params) do
+    BusMapper.map_subscription(params)
+  end
+  def subscription(:commuter_rail, params) do
+    %{"trip_type" => "one_way", "return_end" => nil, "return_start" => nil}
+    |> Map.merge(params)
+    |> CommuterRailMapper.map_subscriptions()
+  end
+  def subscription(:ferry, params) do
+    %{"trip_type" => "one_way", "return_end" => nil, "return_start" => nil}
+    |> Map.merge(params)
+    |> FerryMapper.map_subscriptions()
+  end
+end
