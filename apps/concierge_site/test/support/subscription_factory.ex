@@ -7,6 +7,7 @@ defmodule ConciergeSite.SubscriptionFactory do
   alias AlertProcessor.Subscription.BusMapper
   alias AlertProcessor.Subscription.CommuterRailMapper
   alias AlertProcessor.Subscription.FerryMapper
+  alias AlertProcessor.Model.User
 
   def subscription(:subway, params) do
     SubwayMapper.map_subscriptions(params)
@@ -33,7 +34,7 @@ defmodule ConciergeSite.SubscriptionFactory do
     with {:ok, subscriptions_and_informed_entities} <- response do
       subscriptions_and_informed_entities
       |> Enum.map(fn {subscription, informed_entities} ->
-        %{subscription | informed_entities: informed_entities}
+        %{subscription | informed_entities: informed_entities, user: %User{}}
       end)
     end
   end
