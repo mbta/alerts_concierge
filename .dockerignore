@@ -1,13 +1,13 @@
-/_build
-/cover
+_build
+cover
 erl_crash.dump
 deps
 *.ez
 npm-debug.log
-/priv/static/
+priv/static/
 .deliver/releases/
-/devops/
-/test/fixture/vcr_cassettes/*
+devops/
+test/fixture/vcr_cassettes/*
 .iex.exs
 .DS_Store
 excoveralls.json
@@ -23,7 +23,7 @@ docker
 releases
 
 # Static artifacts if you're using Phoenix if it's an umbrella app change the paths
-/apps/alert_processor/assets/node_modules
-/apps/alert_processor/priv
-/apps/concierge_site/assets/node_modules
-/apps/concierge_site/priv
+apps/alert_processor/assets/node_modules
+apps/alert_processor/priv/static
+apps/concierge_site/assets/node_modules
+apps/concierge_site/priv/static
