@@ -72,7 +72,10 @@ defmodule ConciergeSite.Mixfile do
       {:wallaby, "~> 0.15", only: :test},
       {:logster, "~> 0.4.0"},
       {:ehmon, git: "https://github.com/heroku/ehmon.git", tag: "v4", only: :prod},
-      {:diskusage_logger, "~> 0.2.0", only: :prod}
+      {:diskusage_logger, "~> 0.2.0", only: :prod},
+      {:logger_splunk_backend, git: "https://github.com/mbta/logger_splunk_backend"},
+      {:httpoison, "~> 0.1", override: true},
+      {:poison, "~> 2.0", override: true}
     ]
   end
 
