@@ -65,10 +65,6 @@ defmodule ConciergeSite.AlertFactory do
   end
 
   def alert(:not_route, subscription, activities, trips) do
-    subscription = %{subscription | route: "Not"}
-    @base_alert
-    |> severity(subscription)
-    |> add_informed_entity(subscription, activities, trips)
-    |> active_period(subscription)
+    alert(:all, %{subscription | route: "Not"}, activities, trips)
   end
 end
