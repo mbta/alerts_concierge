@@ -30,16 +30,12 @@
       <div class="my-account-section-prompt">
         We will automatically send your alerts to your email address. Would you like to receive text alerts instead?
       </div>
-      <label for="user_sms_toggle_true" class="my-account-radio-label">
-        <%= radio_button f, :sms_toggle, "true", checked: sms_messaging_checked?(@user),
-                                                 class: "my-account-radio-button toggle_show" %>
-        Yes - only send me text alerts
-      </label>
-      <label for="user_sms_toggle_false" class="my-account-radio-label">
-        <%= radio_button f, :sms_toggle, "false", checked: !sms_messaging_checked?(@user),
-                                                  class: "my-account-radio-button toggle_hide" %>
-        No - only send me email alerts
-      </label>
+
+      <%= radio_button f, :sms_toggle, "true", checked: sms_messaging_checked?(@user), class: "my-account-radio-button toggle_show" %>
+      <label for="user_sms_toggle_true" class="my-account-radio-label">Yes - only send me text alerts</label>
+      <%= radio_button f, :sms_toggle, "false", checked: !sms_messaging_checked?(@user), class: "my-account-radio-button toggle_hide" %>
+      <label for="user_sms_toggle_false" class="my-account-radio-label">No - only send me email alerts</label>
+
       <div class="wireless-number-section supporting-info-section toggleable">
         <label for="user_phone_number" class="form-label">Phone Number</label>
         <div class="form-sub-label">
