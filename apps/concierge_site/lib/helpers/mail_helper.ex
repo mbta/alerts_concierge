@@ -134,7 +134,7 @@ defmodule ConciergeSite.Helpers.MailHelper do
   end
 
   def unsubscribe_url(user) do
-    {:ok, token, _permissions} = Token.issue(user, [:unsubscribe])
+    {:ok, token, _permissions} = Token.issue(user, [:unsubscribe], {30, :days})
     Helpers.unsubscribe_url(ConciergeSite.Endpoint, :unsubscribe, token)
   end
 
