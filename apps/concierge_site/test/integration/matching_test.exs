@@ -17,71 +17,73 @@ defmodule ConciergeSite.Integration.Matching do
                                                                    "origin" => "place-harsq", "roaming" => "true"}))
 
     test "all same: stop, direction, time, activity and severity" do
-      assert alert(informed_entity: [subway_entity()]) |> notify?(@subscription)
+      assert_notify alert(informed_entity: [subway_entity()]), @subscription
     end
 
     test "same route_type" do
-      assert alert(informed_entity: [subway_entity(route_id: nil, direction_id: nil, stop_id: nil)])|> notify?(@subscription)
+      assert_notify alert(informed_entity: [subway_entity(route_id: nil, direction_id: nil, stop_id: nil)]), @subscription
     end
 
     test "same route_id and route_type" do
-      assert alert(informed_entity: [subway_entity(direction_id: nil, stop_id: nil)]) |> notify?(@subscription)
+      assert_notify alert(informed_entity: [subway_entity(direction_id: nil, stop_id: nil)]), @subscription
     end
 
     test "same route_id, route_type and direction" do
-      assert alert(informed_entity: [subway_entity(stop_id: nil)]) |> notify?(@subscription)
+      assert_notify alert(informed_entity: [subway_entity(stop_id: nil)]), @subscription
     end
 
     test "similar: different time" do
-      refute alert(active_period: @alert_later_period, informed_entity: [subway_entity()]) |> notify?(@subscription)
+      refute_notify alert(active_period: @alert_later_period, informed_entity: [subway_entity()]), @subscription
     end
 
     test "similar: different days (same time)" do
-      refute alert(active_period: @alert_weekend_period, informed_entity: [subway_entity()]) |> notify?(@subscription)
+      refute_notify alert(active_period: @alert_weekend_period, informed_entity: [subway_entity()]), @subscription
     end
 
     test "similar: not severe enough" do
-      refute alert(severity: severity_by_priority("low"), informed_entity: [subway_entity()]) |> notify?(@subscription)
+      refute_notify alert(severity: severity_by_priority("low"), informed_entity: [subway_entity()]), @subscription
     end
 
     test "similar: more severe" do
-      assert alert(severity: severity_by_priority("high"), informed_entity: [subway_entity()]) |> notify?(@subscription)
+      assert_notify alert(severity: severity_by_priority("high"), informed_entity: [subway_entity()]), @subscription
     end
 
     test "similar: different activity" do
-      refute alert(informed_entity: [subway_entity(activities: ["NO_MATCH"])]) |> notify?(@subscription)
+      refute_notify alert(informed_entity: [subway_entity(activities: ["NO_MATCH"])]), @subscription
     end
 
     test "similar: different route_type" do
-      refute alert(informed_entity: [subway_entity(route_type: 2)]) |> notify?(@subscription)
+      refute_notify alert(informed_entity: [subway_entity(route_type: 2)]), @subscription
     end
 
     test "similar: different route" do
-      refute alert(informed_entity: [subway_entity(route_id: "Blue")]) |> notify?(@subscription)
+      refute_notify alert(informed_entity: [subway_entity(route_id: "Blue")]), @subscription
     end
 
     test "similar: different direction" do
-      refute alert(informed_entity: [subway_entity(direction_id: 1)]) |> notify?(@subscription)
+      refute_notify alert(informed_entity: [subway_entity(direction_id: 1)]), @subscription
     end
 
     test "similar: different stop -- not in between" do
-      refute alert(informed_entity: [subway_entity(stop_id: "place-asmnl")]) |> notify?(@subscription)
+      refute_notify alert(informed_entity: [subway_entity(stop_id: "place-asmnl")]), @subscription
     end
 
     test "similar: different stop -- in between" do
-      refute alert(informed_entity: [subway_entity(stop_id: "place-cntsq")]) |> notify?(@subscription)
+      refute_notify alert(informed_entity: [subway_entity(stop_id: "place-cntsq")]), @subscription
     end
 
     test "similar: different direction (roaming)" do
-      assert alert(informed_entity: [subway_entity(direction_id: 1)]) |> notify?(@subscription_roaming)
+      assert_notify alert(informed_entity: [subway_entity(direction_id: 1)]), @subscription_roaming
     end
 
     test "similar: different stop -- in between (roaming)" do
-      assert alert(informed_entity: [subway_entity(stop_id: "place-cntsq")]) |> notify?(@subscription_roaming)
+      assert_notify alert(informed_entity: [subway_entity(stop_id: "place-cntsq")]), @subscription_roaming
     end
   end
 
-  defp notify?(alert, subscription), do: length(determine_recipients(alert, [subscription], [])) > 0
+  defp assert_notify(alert, subscription), do: assert notify?(alert, subscription)
+  defp refute_notify(alert, subscription), do: refute notify?(alert, subscription)
+  defp notify?(alert, subscription), do: determine_recipients(alert, [subscription], []) != []
 
   defp alert(overrides) do
     %{"severity" => severity_by_priority(@base["alert_priority_type"]), "active_period" => @alert_active_period}
