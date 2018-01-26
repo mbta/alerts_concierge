@@ -31,12 +31,8 @@ defmodule ConciergeSite.SubscriptionFactory do
   end
 
   defp to_subscription (response) do
-    with {:ok, subscriptions_and_informed_entities} <- response do
-      subscriptions_and_informed_entities
-      |> Enum.map(fn {subscription, informed_entities} ->
-        %{subscription | informed_entities: informed_entities, user: %User{}}
-      end)
-      |> List.first()
+    with {:ok, [{subscription, informed_entities} | _]} <- response do
+      %{subscription | informed_entities: informed_entities, user: %User{}}
     end
   end
 end
