@@ -141,10 +141,6 @@ defmodule ConciergeSite.Integration.Matching do
       assert_notify alert(informed_entity: [cr_entity()]), @subscription
     end
 
-    test "same route_id and route_type" do
-      assert_notify alert(informed_entity: [cr_entity(trip_id: nil)]), @subscription
-    end
-
     test "similar: different time" do
       refute_notify alert(active_period: @alert_later_period, informed_entity: [cr_entity()]), @subscription
     end
@@ -164,6 +160,52 @@ defmodule ConciergeSite.Integration.Matching do
     test "similar: different trip_id" do
       trip = %{"direction_id" => 1, "route_id" => "CR-Haverhill", "trip_id" => "CR-Weekday-Fall-17-227"}
       refute_notify alert(informed_entity: [cr_entity(trip: trip)]), @subscription
+    end
+  end
+
+  describe "ferry subscription" do
+    @subscription subscription(:ferry, Map.merge(@base, %{
+      "destination" => "Boat-Long",
+      "direction_id" => "1",
+      "origin" => "Boat-Charlestown",
+      "route_id" => "Boat-F4",
+      "trips" => ["Boat-F4-Boat-Charlestown-08:00:00-weekday-1"]}))
+
+    test "all same: trip, direction, time, activity and severity" do
+      assert_notify alert(informed_entity: [ferry_entity()]), @subscription
+    end
+
+    test "similar: different time" do
+      refute_notify alert(active_period: @alert_later_period, informed_entity: [ferry_entity()]), @subscription
+    end
+
+    test "similar: different days (same time)" do
+      refute_notify alert(active_period: @alert_weekend_period, informed_entity: [ferry_entity()]), @subscription
+    end
+
+    test "similar: not severe enough" do
+      refute_notify alert(severity: severity_by_priority("low"), informed_entity: [ferry_entity()]), @subscription
+    end
+
+    test "similar: more severe" do
+      assert_notify alert(severity: severity_by_priority("high"), informed_entity: [ferry_entity()]), @subscription
+    end
+
+    test "similar: different activity" do
+      refute_notify alert(informed_entity: [ferry_entity(activities: ["NO_MATCH"])]), @subscription
+    end
+
+    test "similar: different route_type" do
+      refute_notify alert(informed_entity: [ferry_entity(route_type: 1)]), @subscription
+    end
+
+    test "similar: different route" do
+      refute_notify alert(informed_entity: [ferry_entity(route_id: "Boat-F1")]), @subscription
+    end
+
+    test "similar: different trip_id" do
+      trip = %{"direction_id" => 1, "route_id" => "Boat-F4", "trip_id" => "Boat-F4-1900-Long-Weekday"}
+      refute_notify alert(informed_entity: [ferry_entity(trip: trip)]), @subscription
     end
   end
 
@@ -196,6 +238,19 @@ defmodule ConciergeSite.Integration.Matching do
         "direction_id" => 1,
         "route_id" => "CR-Haverhill",
         "trip_id" => "CR-Weekday-Fall-17-288"
+      }}
+    |> Map.merge(Map.new(overrides, fn {k, v} -> {Atom.to_string(k), v} end))
+  end
+
+  defp ferry_entity(overrides \\ []) do
+    %{
+      "route_type" => 4,
+      "route_id" => "Boat-F4",
+      "activities" => ["BOARD"],
+      "trip" => %{
+        "direction_id" => 1,
+        "route_id" => "Boat-F4",
+        "trip_id" => "Boat-F4-Boat-Charlestown-08:00:00-weekday-1"
       }}
     |> Map.merge(Map.new(overrides, fn {k, v} -> {Atom.to_string(k), v} end))
   end
