@@ -81,6 +81,54 @@ defmodule ConciergeSite.Integration.Matching do
     end
   end
 
+  describe "bus subscription" do
+    @subscription subscription(:bus, Map.merge(@base, %{"routes" => ["57A - 0"]}))
+
+    test "all same: route, direction, time, activity and severity" do
+      assert_notify alert(informed_entity: [bus_entity()]), @subscription
+    end
+
+    test "same route_type" do
+      assert_notify alert(informed_entity: [bus_entity(route_id: nil, direction_id: nil)]), @subscription
+    end
+
+    test "same route_id and route_type" do
+      assert_notify alert(informed_entity: [bus_entity(direction_id: nil)]), @subscription
+    end
+
+    test "similar: different time" do
+      refute_notify alert(active_period: @alert_later_period, informed_entity: [bus_entity()]), @subscription
+    end
+
+    test "similar: different days (same time)" do
+      refute_notify alert(active_period: @alert_weekend_period, informed_entity: [bus_entity()]), @subscription
+    end
+
+    test "similar: not severe enough" do
+      refute_notify alert(severity: severity_by_priority("low"), informed_entity: [bus_entity()]), @subscription
+    end
+
+    test "similar: more severe" do
+      assert_notify alert(severity: severity_by_priority("high"), informed_entity: [bus_entity()]), @subscription
+    end
+
+    test "similar: different activity" do
+      refute_notify alert(informed_entity: [bus_entity(activities: ["NO_MATCH"])]), @subscription
+    end
+
+    test "similar: different route_type" do
+      refute_notify alert(informed_entity: [bus_entity(route_type: 1)]), @subscription
+    end
+
+    test "similar: different route" do
+      refute_notify alert(informed_entity: [bus_entity(route_id: "57B")]), @subscription
+    end
+
+    test "similar: different direction" do
+      refute_notify alert(informed_entity: [bus_entity(direction_id: 1)]), @subscription
+    end
+  end
+
   defp assert_notify(alert, subscription), do: assert notify?(alert, subscription)
   defp refute_notify(alert, subscription), do: refute notify?(alert, subscription)
   defp notify?(alert, subscription), do: determine_recipients(alert, [subscription], []) != []
@@ -93,6 +141,11 @@ defmodule ConciergeSite.Integration.Matching do
 
   defp subway_entity(overrides \\ []) do
     %{"route_type" => 1, "route_id" => "Red", "direction_id" => 0, "stop_id" => "place-harsq", "activities" => ["BOARD"]}
+    |> Map.merge(Map.new(overrides, fn {k, v} -> {Atom.to_string(k), v} end))
+  end
+
+  defp bus_entity(overrides \\ []) do
+    %{"route_type" => 3, "route_id" => "57A", "direction_id" => 0, "activities" => ["BOARD"]}
     |> Map.merge(Map.new(overrides, fn {k, v} -> {Atom.to_string(k), v} end))
   end
 end
