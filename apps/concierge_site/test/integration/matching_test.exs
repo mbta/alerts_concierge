@@ -52,7 +52,7 @@ defmodule ConciergeSite.Integration.Matching do
       refute notify?(alert, @subscription)
     end
 
-    test "similar, different days (same time)" do
+    test "similar: different days (same time)" do
       alert = alert(%{"severity" => @alert_severity, "active_period" => @alert_weekend_period,
                       "informed_entity" => [@alert_entity]})
       refute notify?(alert, @subscription)
@@ -79,44 +79,44 @@ defmodule ConciergeSite.Integration.Matching do
     end
 
     # Vary Location
-    test "similar, different route_type" do
+    test "similar: different route_type" do
       alert = alert(%{"severity" => @alert_severity, "active_period" => @alert_active_period,
                       "informed_entity" => [%{@alert_entity | "route_type" => 2}]})
       refute notify?(alert, @subscription)
     end
 
-    test "similar, different route" do
+    test "similar: different route" do
       alert = alert(%{"severity" => @alert_severity, "active_period" => @alert_active_period,
                       "informed_entity" => [%{@alert_entity | "route_id" => "Blue"}]})
       refute notify?(alert, @subscription)
     end
 
-    test "similar, different direction" do
+    test "similar: different direction" do
       alert = alert(%{"severity" => @alert_severity, "active_period" => @alert_active_period,
                       "informed_entity" => [%{@alert_entity | "direction_id" => 1}]})
       refute notify?(alert, @subscription)
     end
 
-    test "similar, different stop -- not in between" do
+    test "similar: different stop -- not in between" do
       alert = alert(%{"severity" => @alert_severity, "active_period" => @alert_active_period,
                       "informed_entity" => [%{@alert_entity | "stop_id" => "place-asmnl"}]})
       refute notify?(alert, @subscription)
     end
 
-    test "similar, different stop -- in between" do
+    test "similar: different stop -- in between" do
       alert = alert(%{"severity" => @alert_severity, "active_period" => @alert_active_period,
                       "informed_entity" => [%{@alert_entity | "stop_id" => "place-cntsq"}]})
       refute notify?(alert, @subscription)
     end
 
     # Roaming
-    test "similar, different direction (roaming)" do
+    test "similar: different direction (roaming)" do
       alert = alert(%{"severity" => @alert_severity, "active_period" => @alert_active_period,
                       "informed_entity" => [%{@alert_entity | "direction_id" => 1}]})
       assert notify?(alert, @subscription_roaming)
     end
 
-    test "similar, different stop -- in between (roaming)" do
+    test "similar: different stop -- in between (roaming)" do
       alert = alert(%{"severity" => @alert_severity, "active_period" => @alert_active_period,
                       "informed_entity" => [%{@alert_entity | "stop_id" => "place-cntsq"}]})
       assert notify?(alert, @subscription_roaming)
