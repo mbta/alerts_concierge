@@ -217,8 +217,8 @@ defmodule AlertProcessor.Model.UserTest do
   describe "update_account" do
     test "updates account" do
       user = insert(:user)
-      assert {:ok, user} = User.update_account(user, %{"amber_alert_opt_in" => "true"}, user.id)
-      assert user.amber_alert_opt_in
+      assert {:ok, user} = User.update_account(user, %{"phone_number" => "5550000000"}, user.id)
+      assert user.phone_number == "5550000000"
     end
 
     test "opts in phone number when phone number changed" do
@@ -229,27 +229,27 @@ defmodule AlertProcessor.Model.UserTest do
 
     test "does not opt in phone number when phone number not changed" do
       user = insert(:user)
-      assert {:ok, _} = User.update_account(user, %{"amber_alert_opt_in" => "true"}, user.id)
+      assert {:ok, _} = User.update_account(user, %{"do_not_disturb_start" => ~T[23:00:00], "do_not_disturb_end" => ~T[05:00:00]}, user.id)
       refute_received :opt_in_phone_number
     end
 
     test "does not update account" do
       user = insert(:user)
-      assert {:error, changeset} = User.update_account(user, %{"amber_alert_opt_in" => "no way!"}, user.id)
+      assert {:error, changeset} = User.update_account(user, %{"phone_number" => "not a phone number"}, user.id)
       refute changeset.valid?
     end
 
     test "does not opt in phone number when does not save" do
       user = insert(:user)
-      assert {:error, _} = User.update_account(user, %{"amber_alert_opt_in" => "no way!", "phone_number" => "5550000000"}, user.id)
+      assert {:error, _} = User.update_account(user, %{"do_not_disturb_start" => "not a date", "phone_number" => "5550000000"}, user.id)
       refute_received :opt_in_phone_number
     end
 
     test "performed by admin" do
       admin_user = insert(:user, role: "application_administration")
       user = insert(:user)
-      assert {:ok, user} = User.update_account(user, %{"amber_alert_opt_in" => "true"}, admin_user.id)
-      assert user.amber_alert_opt_in
+      assert {:ok, user} = User.update_account(user, %{"phone_number" => "5550000000"}, admin_user.id)
+      assert user.phone_number == "5550000000"
       assert %{
         item_id: item_id,
         item_type: "User",
