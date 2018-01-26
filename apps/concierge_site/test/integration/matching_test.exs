@@ -129,6 +129,44 @@ defmodule ConciergeSite.Integration.Matching do
     end
   end
 
+  describe "commuter rail subscription" do
+    @subscription subscription(:commuter_rail, Map.merge(@base, %{
+      "destination" => "place-north",
+      "direction_id" => "1",
+      "origin" => "Melrose Highlands",
+      "route_id" => "CR-Haverhill",
+      "trips" => ["288"]}))
+
+    test "all same: trip, direction, time, activity and severity" do
+      assert_notify alert(informed_entity: [cr_entity()]), @subscription
+    end
+
+    test "same route_id and route_type" do
+      assert_notify alert(informed_entity: [cr_entity(trip_id: nil)]), @subscription
+    end
+
+    test "similar: different time" do
+      refute_notify alert(active_period: @alert_later_period, informed_entity: [cr_entity()]), @subscription
+    end
+
+    test "similar: different days (same time)" do
+      refute_notify alert(active_period: @alert_weekend_period, informed_entity: [cr_entity()]), @subscription
+    end
+
+    test "similar: not severe enough" do
+      refute_notify alert(severity: severity_by_priority("low"), informed_entity: [cr_entity()]), @subscription
+    end
+
+    test "similar: more severe" do
+      assert_notify alert(severity: severity_by_priority("high"), informed_entity: [cr_entity()]), @subscription
+    end
+
+    test "similar: different trip_id" do
+      trip = %{"direction_id" => 1, "route_id" => "CR-Haverhill", "trip_id" => "CR-Weekday-Fall-17-227"}
+      refute_notify alert(informed_entity: [cr_entity(trip: trip)]), @subscription
+    end
+  end
+
   defp assert_notify(alert, subscription), do: assert notify?(alert, subscription)
   defp refute_notify(alert, subscription), do: refute notify?(alert, subscription)
   defp notify?(alert, subscription), do: determine_recipients(alert, [subscription], []) != []
@@ -146,6 +184,19 @@ defmodule ConciergeSite.Integration.Matching do
 
   defp bus_entity(overrides \\ []) do
     %{"route_type" => 3, "route_id" => "57A", "direction_id" => 0, "activities" => ["BOARD"]}
+    |> Map.merge(Map.new(overrides, fn {k, v} -> {Atom.to_string(k), v} end))
+  end
+
+  defp cr_entity(overrides \\ []) do
+    %{
+      "route_type" => 2,
+      "route_id" => "CR-Haverhill",
+      "activities" => ["BOARD"],
+      "trip" => %{
+        "direction_id" => 1,
+        "route_id" => "CR-Haverhill",
+        "trip_id" => "CR-Weekday-Fall-17-288"
+      }}
     |> Map.merge(Map.new(overrides, fn {k, v} -> {Atom.to_string(k), v} end))
   end
 end
