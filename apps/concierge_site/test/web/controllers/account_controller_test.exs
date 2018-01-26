@@ -15,8 +15,7 @@ defmodule ConciergeSite.AccountControllerTest do
         "password_confirmation" => "password1",
         "do_not_disturb_start" => "16:30:00",
         "do_not_disturb_end" => "18:30:00",
-        "phone_number" => "5551234567",
-        "amber_alert_opt_in" => "false"
+        "phone_number" => "5551234567"
       }}
 
       conn = post(conn, "/account", params)
@@ -31,8 +30,7 @@ defmodule ConciergeSite.AccountControllerTest do
         "password_confirmation" => "password1",
         "do_not_disturb_start" => "16:30:00",
         "do_not_disturb_end" => "18:30:00",
-        "phone_number" => "5551234567",
-        "amber_alert_opt_in" => "false"
+        "phone_number" => "5551234567"
       }}
 
       post(conn, "/account", params)
@@ -46,8 +44,7 @@ defmodule ConciergeSite.AccountControllerTest do
         "password_confirmation" => "password1",
         "do_not_disturb_start" => "16:30:00",
         "do_not_disturb_end" => "18:30:00",
-        "phone_number" => "",
-        "amber_alert_opt_in" => "false"
+        "phone_number" => ""
       }}
 
       post(conn, "/account", params)
@@ -64,8 +61,7 @@ defmodule ConciergeSite.AccountControllerTest do
         "password" => "",
         "do_not_disturb_start" => "16:30:00",
         "do_not_disturb_end" => "18:30:00",
-        "phone_number" => "5551234567",
-        "amber_alert_opt_in" => "false"
+        "phone_number" => "5551234567"
       }}
 
       conn = post(conn, "/account", params)
@@ -84,8 +80,7 @@ defmodule ConciergeSite.AccountControllerTest do
         "password_confirmation" => "password1",
         "do_not_disturb_start" => "16:30:00",
         "do_not_disturb_end" => "18:30:00",
-        "phone_number" => "5551234567",
-        "amber_alert_opt_in" => "false"
+        "phone_number" => "5551234567"
       }}
 
       conn = post(conn, "/account", params)

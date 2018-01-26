@@ -22,8 +22,7 @@ defmodule ConciergeSite.MyAccountControllerTest do
         "do_not_disturb_start" => "16:30:00",
         "do_not_disturb_end" => "18:30:00",
         "phone_number" => "5551234567",
-        "sms_toggle" => "true",
-        "amber_alert_opt_in" => "false"
+        "sms_toggle" => "true"
       }}
 
       conn = user
@@ -36,7 +35,6 @@ defmodule ConciergeSite.MyAccountControllerTest do
       assert updated_user.phone_number == "5551234567"
       assert updated_user.do_not_disturb_end == ~T[18:30:00.000000]
       assert updated_user.do_not_disturb_start == ~T[16:30:00.000000]
-      assert updated_user.amber_alert_opt_in == false
       assert :error = HoldingQueue.pop()
     end
 
@@ -46,8 +44,7 @@ defmodule ConciergeSite.MyAccountControllerTest do
         "do_not_disturb_end" => "23:45:00",
         "do_not_disturb_start" => "19:30:00",
         "phone_number" => "abc123",
-        "sms_toggle" => "true",
-        "amber_alert_opt_in" => "true"
+        "sms_toggle" => "true"
       }}
 
       conn = user
