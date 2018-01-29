@@ -2,6 +2,7 @@ defmodule ConciergeSite.Integration.Matching do
   use ExUnit.Case
   import ConciergeSite.SubscriptionFactory
   import ConciergeSite.AlertFactory, only: [active_period: 3, severity_by_priority: 1]
+  import ConciergeSite.NotificationFactory
   import AlertProcessor.SubscriptionFilterEngine, only: [determine_recipients: 3]
 
   @base %{"alert_priority_type" => "medium", "departure_end" => ~T[08:30:00], "departure_start" => ~T[08:00:00],
@@ -209,9 +210,35 @@ defmodule ConciergeSite.Integration.Matching do
     end
   end
 
-  defp assert_notify(alert, subscription), do: assert notify?(alert, subscription)
-  defp refute_notify(alert, subscription), do: refute notify?(alert, subscription)
-  defp notify?(alert, subscription), do: determine_recipients(alert, [subscription], []) != []
+  describe "sent notification" do
+    @subscription subscription(:subway, Map.merge(@base, %{"destination" => "place-brdwy",
+                                                           "origin" => "place-harsq", "roaming" => "false"}))
+
+    test "matches: no notification sent" do
+      alert = alert(informed_entity: [subway_entity()])
+
+      assert_notify alert, @subscription, []
+    end
+
+    test "does not match: notification already sent" do
+      alert = alert(informed_entity: [subway_entity()])
+      notification = notification(alert, [@subscription])
+
+      refute_notify alert, @subscription, [notification]
+    end
+
+    test "matches: notification already sent but last push time changed" do
+      alert = alert(informed_entity: [subway_entity()])
+      notification = notification(:earlier, alert, [@subscription])
+
+      [new_notification] = determine_recipients(alert, [@subscription], [notification])
+      refute notification == new_notification
+    end
+  end
+
+  defp assert_notify(alert, subscription, notifications \\ []), do: assert notify?(alert, subscription, notifications)
+  defp refute_notify(alert, subscription, notifications \\ []), do: refute notify?(alert, subscription, notifications)
+  defp notify?(alert, subscription, notifications), do: determine_recipients(alert, [subscription], notifications) != []
 
   defp alert(overrides) do
     %{"severity" => severity_by_priority(@base["alert_priority_type"]), "active_period" => @alert_active_period}
