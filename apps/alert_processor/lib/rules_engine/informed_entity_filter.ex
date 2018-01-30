@@ -47,6 +47,7 @@ defmodule AlertProcessor.InformedEntityFilter do
   defp entity_match?(%{trip: trip_id} = alert, %{trip: subscription_trip_id} = subscription) when not is_nil(trip_id) do
     trip_id == subscription_trip_id and
     alert.route_type == subscription.route_type and
+    alert.route == subscription.route and
     activity_overlap?(alert.activities, subscription.activities)
   end
   defp entity_match?(%{facility_type: ft, route: route, stop: stop, activities: activities},
