@@ -48,6 +48,7 @@ defmodule AlertProcessor.InformedEntityFilter do
     trip_id == subscription_trip_id and
     alert.route_type == subscription.route_type and
     alert.route == subscription.route and
+    alert.direction_id == subscription.direction_id and
     activity_overlap?(alert.activities, subscription.activities)
   end
   defp entity_match?(%{facility_type: ft, route: route, stop: stop, activities: activities},

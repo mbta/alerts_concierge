@@ -174,6 +174,11 @@ defmodule ConciergeSite.Integration.Matching do
       refute_notify alert(informed_entity: [cr_entity(route_id: "CR-Fitchburg")]), @subscription
     end
 
+    test "similar: different direction" do
+      trip = %{"direction_id" => 0, "route_id" => "CR-Haverhill", "trip_id" => "CR-Weekday-Fall-17-288"}
+      refute_notify alert(informed_entity: [cr_entity(direction_id: 0, trip: trip)]), @subscription
+    end
+
     test "similar: different trip_id" do
       trip = %{"direction_id" => 1, "route_id" => "CR-Haverhill", "trip_id" => "CR-Weekday-Fall-17-227"}
       refute_notify alert(informed_entity: [cr_entity(trip: trip)]), @subscription
