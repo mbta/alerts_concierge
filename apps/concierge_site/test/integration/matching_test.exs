@@ -236,6 +236,28 @@ defmodule ConciergeSite.Integration.Matching do
     end
   end
 
+  describe "estimated duration" do
+    @weekday_subscription subscription(:subway, Map.merge(@base, %{"destination" => "place-brdwy",
+                                                           "origin" => "place-harsq", "roaming" => "false"}))
+
+    @saturday_subscription subscription(:subway, Map.merge(@base, %{"destination" => "place-brdwy", "relevant_days" => ["saturday"],
+                                                           "origin" => "place-harsq", "roaming" => "false"}))
+
+    test "matches: estimated duration alert within 36 hours of created time" do
+      [%{"start" => start_timestamp}] = @alert_weekend_period
+      alert = alert(active_period: @alert_weekend_period, informed_entity: [subway_entity()], created_timestamp: start_timestamp, duration_certainty: "ESTIMATED")
+
+      assert_notify alert, @weekday_subscription
+    end
+
+    test "does not match: estimated duration alert after 36 hours of created time" do
+      [%{"start" => start_timestamp}] = @alert_weekend_period
+      alert = alert(active_period: @alert_weekend_period, informed_entity: [subway_entity()], created_timestamp: start_timestamp, duration_certainty: "ESTIMATED")
+
+      refute_notify alert, @saturday_subscription
+    end
+  end
+
   defp assert_notify(alert, subscription, notifications \\ []), do: assert notify?(alert, subscription, notifications)
   defp refute_notify(alert, subscription, notifications \\ []), do: refute notify?(alert, subscription, notifications)
   defp notify?(alert, subscription, notifications), do: determine_recipients(alert, [subscription], notifications) != []
