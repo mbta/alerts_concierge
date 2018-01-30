@@ -189,6 +189,7 @@ defmodule AlertProcessor.AlertParser do
   end
 
   defp parse_trip(nil, %{"route_type" => 2}), do: %{}
+  defp parse_trip(nil, %{"route_type" => 4}), do: %{}
   defp parse_trip(%{"trip_id" => trip_id}, %{"route_type" => 2}) do
     with {:ok, schedule} <- ApiClient.schedule_for_trip(trip_id),
     {:ok, trip_name} <- ServiceInfoCache.get_trip_name(trip_id),

@@ -197,6 +197,10 @@ defmodule ConciergeSite.Integration.Matching do
       assert_notify alert(informed_entity: [ferry_entity()]), @subscription
     end
 
+    test "same route_type" do
+      assert_notify alert(informed_entity: [ferry_entity(route_id: nil, trip: nil)]), @subscription
+    end
+
     test "similar: different time" do
       refute_notify alert(active_period: @alert_later_period, informed_entity: [ferry_entity()]), @subscription
     end
