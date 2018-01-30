@@ -48,7 +48,7 @@ defmodule AlertProcessor.Subscription.CommuterRailMapperTest do
         Enum.count(informed_entities, fn(informed_entity) ->
           match?(%InformedEntity{route: "CR-Lowell", route_type: 2, stop: nil, direction_id: nil}, informed_entity)
         end)
-      assert route_entity_count == 1
+      assert route_entity_count == 3
       route_entity_count =
         Enum.count(informed_entities, fn(informed_entity) ->
           match?(%InformedEntity{route: "CR-Lowell", route_type: 2, stop: nil, direction_id: 1}, informed_entity)
@@ -63,7 +63,7 @@ defmodule AlertProcessor.Subscription.CommuterRailMapperTest do
         Enum.count(informed_entities, fn(informed_entity) ->
           match?(%InformedEntity{route: "CR-Lowell", route_type: 2, stop: nil, direction_id: nil}, informed_entity)
         end)
-      assert route_entity_count == 1
+      assert route_entity_count == 3
       route_entity_count =
         Enum.count(informed_entities, fn(informed_entity) ->
           match?(%InformedEntity{route: "CR-Lowell", route_type: 2, stop: nil, direction_id: 0}, informed_entity)
@@ -221,7 +221,7 @@ defmodule AlertProcessor.Subscription.CommuterRailMapperTest do
         Enum.count(ie1, fn(informed_entity) ->
           match?(%InformedEntity{route: "CR-Lowell", route_type: 2, stop: nil, direction_id: nil}, informed_entity)
         end)
-      assert route_entity_count == 1
+      assert route_entity_count == 3
       route_entity_count =
         Enum.count(ie1, fn(informed_entity) ->
           match?(%InformedEntity{route: "CR-Lowell", route_type: 2, stop: nil, direction_id: 0}, informed_entity)

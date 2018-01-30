@@ -131,7 +131,7 @@ defmodule AlertProcessor.InformedEntityFilterTest do
     InformedEntity |> struct(@ie4) |> Map.merge(%{subscription_id: sub3.id}) |> insert
     InformedEntity |> struct(@ie2) |> Map.merge(%{subscription_id: sub4.id}) |> insert
     InformedEntity |> struct(@ie5) |> Map.merge(%{subscription_id: sub5.id}) |> insert
-    InformedEntity |> struct(%{trip: "775", subscription_id: sub6.id}) |> insert
+    InformedEntity |> struct(@ie6) |> Map.merge(%{trip: "775", subscription_id: sub6.id}) |> insert
     InformedEntity |> struct(@ie8) |> Map.merge(%{subscription_id: sub7.id}) |> insert
 
     [sub1, sub2, sub3, sub4, sub5, sub6, sub7] = Subscription

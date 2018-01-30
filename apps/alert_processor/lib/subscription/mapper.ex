@@ -279,15 +279,19 @@ defmodule AlertProcessor.Subscription.Mapper do
     end
   end
 
-  def map_trips([{sub1, ie1}, {sub2, ie2}], %{"trips" => trips, "return_trips" => return_trips}) do
-    trip_entities = Enum.map(trips, & %InformedEntity{trip: &1, activities: InformedEntity.default_entity_activities()})
+  def map_trips([{sub1, ie1}, {sub2, ie2}], %{"trips" => trips, "return_trips" => return_trips}, route) do
+    trip_entities = Enum.map(trips, & %InformedEntity{trip: &1, activities: InformedEntity.default_entity_activities(),
+                                                                route: route.route_id,
+                                                                route_type: route.route_type})
     return_trip_entities = Enum.map(return_trips, & %InformedEntity{trip: &1})
 
     [{sub1, ie1 ++ trip_entities}, {sub2, ie2 ++ return_trip_entities}]
   end
-  def map_trips([{subscription, informed_entities}], %{"trips" => trips}) do
-    trip_entities = Enum.map(trips, & %InformedEntity{trip: &1, activities: InformedEntity.default_entity_activities()})
-
+  def map_trips([{subscription, informed_entities}], %{"trips" => trips}, route) do
+    trip_entities = Enum.map(trips, & %InformedEntity{trip: &1,
+                                                      activities: InformedEntity.default_entity_activities(),
+                                                      route: route.route_id,
+                                                      route_type: route.route_type})
     [{subscription, informed_entities ++ trip_entities}]
   end
 

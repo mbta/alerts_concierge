@@ -103,7 +103,7 @@ defmodule AlertProcessor.AlertParserTest do
     user = insert(:user)
 
     subscription_factory()
-    |> Map.put(:informed_entities, [%InformedEntity{trip: "775", activities: InformedEntity.default_entity_activities()}])
+    |> Map.put(:informed_entities, [%InformedEntity{trip: "775", route_type: 2, activities: InformedEntity.default_entity_activities()}])
     |> Map.merge(%{type: :commuter_rail, user: user, relevant_days: [:weekday], start_time: ~T[00:00:00], end_time: ~T[23:59:59]})
     |> insert()
 
