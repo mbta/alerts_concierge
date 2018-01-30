@@ -225,6 +225,11 @@ defmodule ConciergeSite.Integration.Matching do
       refute_notify alert(informed_entity: [ferry_entity(route_id: "Boat-F1")]), @subscription
     end
 
+    test "similar: different direction" do
+      trip = %{"direction_id" => 0, "route_id" => "Boat-F4", "trip_id" => "Boat-F4-Boat-Charlestown-08:00:00-weekday-1"}
+      refute_notify alert(informed_entity: [ferry_entity(direction_id: 0, trip: trip)]), @subscription
+    end
+
     test "similar: different trip_id" do
       trip = %{"direction_id" => 1, "route_id" => "Boat-F4", "trip_id" => "Boat-F4-1900-Long-Weekday"}
       refute_notify alert(informed_entity: [ferry_entity(trip: trip)]), @subscription
