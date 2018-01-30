@@ -162,6 +162,10 @@ defmodule ConciergeSite.Integration.Matching do
       assert_notify alert(severity: severity_by_priority("high"), informed_entity: [cr_entity()]), @subscription
     end
 
+    test "similar: different activity" do
+      refute_notify alert(informed_entity: [cr_entity(activities: ["NO_MATCH"])]), @subscription
+    end
+
     test "similar: different trip_id" do
       trip = %{"direction_id" => 1, "route_id" => "CR-Haverhill", "trip_id" => "CR-Weekday-Fall-17-227"}
       refute_notify alert(informed_entity: [cr_entity(trip: trip)]), @subscription
