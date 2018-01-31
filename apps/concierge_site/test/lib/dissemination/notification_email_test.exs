@@ -19,7 +19,8 @@ defmodule ConciergeSite.Dissemination.NotificationEmailTest do
     header: "Red line inbound from Alewife station closure",
     description: "There is a fire in at south station so it is closed",
     url: "http://www.example.com/alert-info",
-    alert: @alert
+    alert: @alert,
+    last_push_notification: ~N[2017-01-18 14:00:00]
   }
 
   test "text_email/1 has all necessary content" do
@@ -31,7 +32,8 @@ defmodule ConciergeSite.Dissemination.NotificationEmailTest do
     assert body =~ "Red line inbound from Alewife station closure"
     assert body =~ "There is a fire in at south station so it is closed"
     assert body =~ "More information: http://www.example.com/alert-info"
- end
+    assert body =~ "Last Updated: Jan 18 2017 02:00 PM"
+  end
 
   test "html_email/1 has all content and link for alerts page" do
     email = NotificationEmail.notification_email(@notification)
@@ -42,6 +44,7 @@ defmodule ConciergeSite.Dissemination.NotificationEmailTest do
     assert body =~ "Red line inbound from Alewife station closure"
     assert body =~ "href=\"https://www.mbta.com/\""
     assert body =~ "http://www.example.com/alert-info"
+    assert body =~ "Last Updated: Jan 18 2017 02:00 PM"
   end
 
   describe "email_subject/1" do
