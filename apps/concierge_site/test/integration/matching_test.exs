@@ -22,15 +22,22 @@ defmodule ConciergeSite.Integration.Matching do
     end
 
     test "same route_type" do
-      assert_notify alert(informed_entity: [subway_entity(route_id: nil, direction_id: nil, stop_id: nil)]), @subscription
+      subway_entity = subway_entity()
+      |> Map.delete("route_id")
+      |> Map.delete("direction_id")
+      |> Map.delete("stop_id")
+      assert_notify alert(informed_entity: [subway_entity]), @subscription
     end
 
     test "same route_id and route_type" do
-      assert_notify alert(informed_entity: [subway_entity(direction_id: nil, stop_id: nil)]), @subscription
+      subway_entity = subway_entity()
+      |> Map.delete("direction_id")
+      |> Map.delete("stop_id")
+      assert_notify alert(informed_entity: [subway_entity]), @subscription
     end
 
     test "same route_id, route_type and direction" do
-      assert_notify alert(informed_entity: [subway_entity(stop_id: nil)]), @subscription
+      assert_notify alert(informed_entity: [Map.delete(subway_entity(), "stop_id")]), @subscription
     end
 
     test "similar: different time" do
@@ -90,11 +97,14 @@ defmodule ConciergeSite.Integration.Matching do
     end
 
     test "same route_type" do
-      assert_notify alert(informed_entity: [bus_entity(route_id: nil, direction_id: nil)]), @subscription
+      bus_entity = bus_entity()
+      |> Map.delete("route_id")
+      |> Map.delete("direction_id")
+      assert_notify alert(informed_entity: [bus_entity]), @subscription
     end
 
     test "same route_id and route_type" do
-      assert_notify alert(informed_entity: [bus_entity(direction_id: nil)]), @subscription
+      assert_notify alert(informed_entity: [Map.delete(bus_entity(), "direction_id")]), @subscription
     end
 
     test "similar: different time" do
@@ -142,6 +152,17 @@ defmodule ConciergeSite.Integration.Matching do
       assert_notify alert(informed_entity: [cr_entity()]), @subscription
     end
 
+    test "same route_type" do
+      cr_entity = cr_entity()
+      |> Map.delete("route_id")
+      |> Map.delete("trip")
+      assert_notify alert(informed_entity: [cr_entity]), @subscription
+    end
+
+    test "same route_id and route_type" do
+      assert_notify alert(informed_entity: [Map.delete(cr_entity(), "trip")]), @subscription
+    end
+
     test "similar: different time" do
       refute_notify alert(active_period: @alert_later_period, informed_entity: [cr_entity()]), @subscription
     end
@@ -156,6 +177,23 @@ defmodule ConciergeSite.Integration.Matching do
 
     test "similar: more severe" do
       assert_notify alert(severity: severity_by_priority("high"), informed_entity: [cr_entity()]), @subscription
+    end
+
+    test "similar: different activity" do
+      refute_notify alert(informed_entity: [cr_entity(activities: ["NO_MATCH"])]), @subscription
+    end
+
+    test "similar: different route_type" do
+      refute_notify alert(informed_entity: [cr_entity(route_type: 1)]), @subscription
+    end
+
+    test "similar: different route" do
+      refute_notify alert(informed_entity: [cr_entity(route_id: "CR-Fitchburg")]), @subscription
+    end
+
+    test "similar: different direction" do
+      trip = %{"direction_id" => 0, "route_id" => "CR-Haverhill", "trip_id" => "CR-Weekday-Fall-17-288"}
+      refute_notify alert(informed_entity: [cr_entity(direction_id: 0, trip: trip)]), @subscription
     end
 
     test "similar: different trip_id" do
@@ -174,6 +212,17 @@ defmodule ConciergeSite.Integration.Matching do
 
     test "all same: trip, direction, time, activity and severity" do
       assert_notify alert(informed_entity: [ferry_entity()]), @subscription
+    end
+
+    test "same route_type" do
+      ferry_entity = ferry_entity()
+      |> Map.delete("trip")
+      |> Map.delete("route_id")
+      assert_notify alert(informed_entity: [ferry_entity]), @subscription
+    end
+
+    test "same route_id and route_type" do
+      assert_notify alert(informed_entity: [Map.delete(ferry_entity(), "trip")]), @subscription
     end
 
     test "similar: different time" do
@@ -202,6 +251,11 @@ defmodule ConciergeSite.Integration.Matching do
 
     test "similar: different route" do
       refute_notify alert(informed_entity: [ferry_entity(route_id: "Boat-F1")]), @subscription
+    end
+
+    test "similar: different direction" do
+      trip = %{"direction_id" => 0, "route_id" => "Boat-F4", "trip_id" => "Boat-F4-Boat-Charlestown-08:00:00-weekday-1"}
+      refute_notify alert(informed_entity: [ferry_entity(direction_id: 0, trip: trip)]), @subscription
     end
 
     test "similar: different trip_id" do

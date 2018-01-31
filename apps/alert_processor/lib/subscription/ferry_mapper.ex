@@ -40,7 +40,7 @@ defmodule AlertProcessor.Subscription.FerryMapper do
     |> map_route_type(route)
     |> map_route(params, route)
     |> map_stops(params, route)
-    |> map_trips(params)
+    |> map_trips(params, route)
     |> filter_duplicate_entities()
   end
 

@@ -44,8 +44,12 @@ defmodule AlertProcessor.InformedEntityFilter do
     |> Enum.uniq()
   end
 
-  defp entity_match?(%{trip: trip_id}, %{trip: subscription_trip_id}) when not is_nil(trip_id) do
-    trip_id == subscription_trip_id
+  defp entity_match?(%{trip: trip_id} = alert, %{trip: subscription_trip_id} = subscription) when not is_nil(trip_id) do
+    trip_id == subscription_trip_id and
+    alert.route_type == subscription.route_type and
+    alert.route == subscription.route and
+    alert.direction_id == subscription.direction_id and
+    activity_overlap?(alert.activities, subscription.activities)
   end
   defp entity_match?(%{facility_type: ft, route: route, stop: stop, activities: activities},
     %{facility_type: sub_ft, route: sub_route, activities: sub_activities, stop: sub_stop}) when not is_nil(ft) and not is_nil(sub_ft) do
