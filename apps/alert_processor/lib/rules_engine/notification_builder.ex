@@ -40,7 +40,7 @@ defmodule AlertProcessor.NotificationBuilder do
     # create notifications for all remaining mapping subscriptions for current day
     today_subscriptions =
       Enum.reject(sorted_subscriptions, fn(sub) ->
-        Time.compare(sub.start_time, sub.end_time) == :lt && Time.compare(sub.end_time, DateTime.to_time(now)) == :lt
+        Time.compare(sub.start_time, sub.end_time) == :lt && Time.compare(sub.end_time, datetime_to_time(now)) == :lt
       end)
     today_notifications = build_estimated_duration_notifications(user, today_subscriptions, alert, start_datetime, advance_notice_in_seconds)
 
@@ -241,6 +241,13 @@ defmodule AlertProcessor.NotificationBuilder do
     erl_date
     |> DT.from_date_and_time_and_zone!(erl_time, "America/New_York")
     |> DT.shift_zone!("Etc/UTC")
+  end
+
+  @spec datetime_to_time(DateTime.t) :: Time.t
+  defp datetime_to_time(datetime) do
+    datetime
+    |> DT.shift_zone!("America/New_York")
+    |> DateTime.to_time
   end
 
   defp before_or_equal(first_dt, second_dt) do

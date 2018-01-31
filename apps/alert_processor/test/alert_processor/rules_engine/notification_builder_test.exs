@@ -254,7 +254,7 @@ defmodule AlertProcessor.NotificationBuilderTest do
       created_at: utc_time.now
     }
 
-    [s4_notification_2, s1_notification, s4_notification_1] = NotificationBuilder.build_notifications({user, [sub1, sub3, sub2, sub4]}, alert, utc_time.now)
+    [s4_notification_2, s1_notification, s4_notification_1, s2_notification] = NotificationBuilder.build_notifications({user, [sub1, sub3, sub2, sub4]}, alert, utc_time.now)
 
     sub1_id = sub1.id
     sub4_id = sub4.id
@@ -263,6 +263,7 @@ defmodule AlertProcessor.NotificationBuilderTest do
     assert %{notification_subscriptions: [%{subscription_id: ^sub1_id}]} = s1_notification
     assert %{notification_subscriptions: [%{subscription_id: ^sub4_id}]} = s4_notification_1
 
+    assert DT.same_time?(DT.add!(utc_time.now, 60), s2_notification.send_after)
     assert DT.same_time?(DT.add!(utc_time.now, (86_400 * 2) - 655 - (12 * 60 * 60)), s4_notification_2.send_after)
     assert DT.same_time?(DT.add!(utc_time.now, 86_400 - 655 - (3 * 60 * 60)), s1_notification.send_after)
     assert DT.same_time?(DT.add!(utc_time.now, 86_400 - 655 - (12 * 60 * 60)), s4_notification_1.send_after)
