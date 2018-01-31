@@ -4,6 +4,10 @@
 
 <%= notification.description %>
 
+<%= if notification.last_push_notification do %>
+  Last Updated: <%= ConciergeSite.Helpers.DateHelper.format_datetime(notification.last_push_notification) %>
+<% end %>
+
 More information: <%= notification.url %>
 
 <%= ConciergeSite.Helpers.MailHelper.text_footer(unsubscribe_url, manage_subscriptions_url, feedback_url) %>

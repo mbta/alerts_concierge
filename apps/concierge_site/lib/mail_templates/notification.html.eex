@@ -21,6 +21,10 @@
         <p class="notification-description" style="margin: 0; padding: 0; font-size: 16px; line-height: 1.5; color: #1c1e23;"><%= String.replace(notification.description, "\r\n", "<br/>") %></p>
       <% end %>
 
+      <%= if notification.last_push_notification do %>
+        <p>Last Updated: <%= ConciergeSite.Helpers.DateHelper.format_datetime(notification.last_push_notification) %></p>
+      <% end %>
+
       <%= if notification.url do %>
         <p class="notification-url" style="margin: 0; padding: 0; font-size: 16px; line-height: 1.5; color: #1c1e23; padding-top: 10px;">
           <a class="notification-url-link" href="<%= notification.url %>" style="font-size: 16px; line-height: 1.5; color: #1c77c3; text-decoration: none;">More information</a>
