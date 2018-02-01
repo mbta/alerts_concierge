@@ -7,7 +7,7 @@ defmodule ConciergeSite.Integration.Matching do
 
   @base %{"alert_priority_type" => "medium", "departure_end" => ~T[08:30:00], "departure_start" => ~T[08:00:00],
           "relevant_days" => ["weekday"], "return_start" => nil, "return_end" => nil}
-  @alert_active_period [active_period(@base["departure_start"], @base["departure_end"], :monday)]
+  @alert_active_period [active_period(@base["departure_start"], @base["departure_end"], :tuesday)]
   @alert_weekend_period [active_period(@base["departure_start"], @base["departure_end"], :sunday)]
   @alert_later_period [active_period(~T[09:00:00], ~T[09:30:00], :monday)]
 
@@ -280,40 +280,49 @@ defmodule ConciergeSite.Integration.Matching do
       "stops" => ["place-chncl", "place-aqucl"]})
 
     test "all same: activity, route, stop" do
-      assert_notify alert(informed_entity: [entity(:accessibility, stop_id: "place-chncl")]), @subscription
+      assert_notify alert(active_period: @alert_weekend_period,
+                          informed_entity: [entity(:accessibility, stop_id: "place-chncl")]), @subscription
     end
 
     test "similar: activity, route" do
-      assert_notify alert(informed_entity: [entity(:accessibility)]), @subscription
+      assert_notify alert(active_period: @alert_weekend_period,
+                          informed_entity: [entity(:accessibility)]), @subscription
     end
 
     test "similar: activity, stop" do
       entity = :accessibility
       |> entity(stop_id: "place-chncl")
       |> Map.delete("route_id")
-      assert_notify alert(informed_entity: [entity]), @subscription
+      assert_notify alert(active_period: @alert_weekend_period, informed_entity: [entity]), @subscription
     end
 
     test "similar: only activity" do
       entity = :accessibility
       |> entity()
       |> Map.delete("route_id")
-      refute_notify alert(informed_entity: [entity]), @subscription
+      refute_notify alert(active_period: @alert_weekend_period, informed_entity: [entity]), @subscription
     end
 
     test "similar: different route" do
-      refute_notify alert(informed_entity: [entity(:accessibility, route_id: "blue")]), @subscription
+      refute_notify alert(active_period: @alert_weekend_period,
+                          informed_entity: [entity(:accessibility, route_id: "blue")]), @subscription
     end
 
     test "similar: different stop" do
       entity = :accessibility
       |> entity(stop_id: "place-ogmnl") # Orange Line, Oak Grove
       |> Map.delete("route_id")
-      refute_notify alert(informed_entity: [entity]), @subscription
+      refute_notify alert(active_period: @alert_weekend_period, informed_entity: [entity]), @subscription
     end
 
     test "similar: different activity" do
-      refute_notify alert(informed_entity: [entity(:accessibility, activities: ["BOARD"])]), @subscription
+      refute_notify alert(active_period: @alert_weekend_period,
+                          informed_entity: [entity(:accessibility, activities: ["BOARD"])]), @subscription
+    end
+
+    test "all same: different days" do
+      refute_notify alert(active_period: @alert_active_period,
+                          informed_entity: [entity(:accessibility, stop_id: "place-chncl")]), @subscription
     end
 
   end

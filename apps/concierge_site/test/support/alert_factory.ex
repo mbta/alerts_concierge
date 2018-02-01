@@ -38,7 +38,12 @@ defmodule ConciergeSite.AlertFactory do
 
   def alert_time(time), do: timestamp() + (time.hour * 60 * 60) + (time.minute * 60) + time.second
 
-  def active_period(start_time, end_time, :monday), do: %{"start" => alert_time(start_time), "end" => alert_time(end_time)}
+  def active_period(start_time, end_time, :monday) do
+    %{"start" => alert_time(start_time), "end" => alert_time(end_time)}
+  end
+  def active_period(start_time, end_time, :tuesday) do
+    %{"start" => alert_time(start_time) + @one_day, "end" => alert_time(end_time) + @one_day}
+  end
   def active_period(start_time, end_time, :sunday) do
     %{"start" => alert_time(start_time) + (@one_day * 6), "end" => alert_time(end_time) + (@one_day * 6)}
   end
