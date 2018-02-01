@@ -3,11 +3,9 @@ defmodule ConciergeSite.SubscriptionFactory do
   Standard interface for generating subscriptions
   """
 
-  alias AlertProcessor.Subscription.SubwayMapper
-  alias AlertProcessor.Subscription.BusMapper
-  alias AlertProcessor.Subscription.CommuterRailMapper
-  alias AlertProcessor.Subscription.FerryMapper
   alias AlertProcessor.Model.User
+  alias AlertProcessor.Subscription.{SubwayMapper, BusMapper, CommuterRailMapper, FerryMapper, AccessibilityMapper,
+                                     BikeStorageMapper, ParkingMapper}
 
   def subscription(:subway, params) do
     SubwayMapper.map_subscriptions(params)
@@ -27,6 +25,18 @@ defmodule ConciergeSite.SubscriptionFactory do
     %{"trip_type" => "one_way", "return_end" => nil, "return_start" => nil}
     |> Map.merge(params)
     |> FerryMapper.map_subscriptions()
+    |> to_subscription
+  end
+  def subscription(:bike, params) do
+    BikeStorageMapper.map_subscriptions(params)
+    |> to_subscription
+  end
+  def subscription(:parking, params) do
+    ParkingMapper.map_subscriptions(params)
+    |> to_subscription
+  end
+  def subscription(:accessibility, params) do
+    AccessibilityMapper.map_subscriptions(params)
     |> to_subscription
   end
 
