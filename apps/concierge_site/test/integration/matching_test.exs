@@ -357,6 +357,38 @@ defmodule ConciergeSite.Integration.Matching do
     end
   end
 
+  describe "bike storage subscriptions" do
+    @subscription subscription(:bike, %{"relevant_days" => ["sunday", "sunday"],
+                                           "stops" => ["place-harsq", "place-ogmnl"]})
+
+    test "all same: activity, stop, day -- not possible to send because there are no bike storage facilities in data" do
+      refute_notify alert(active_period: @alert_weekend_period,
+                          informed_entity: [entity(:bike)]), @subscription
+    end
+
+    test "similar: only activity" do
+      entity = :bike
+      |> entity()
+      |> Map.delete("stop_id")
+      refute_notify alert(active_period: @alert_weekend_period, informed_entity: [entity]), @subscription
+    end
+
+    test "similar: different stop" do
+      refute_notify alert(active_period: @alert_weekend_period,
+                          informed_entity: [entity(:bike, stop_id: "place-aqucl")]), @subscription
+    end
+
+    test "similar: different activity" do
+      refute_notify alert(active_period: @alert_weekend_period,
+                          informed_entity: [entity(:bike, activities: ["BOARD"])]), @subscription
+    end
+
+    test "all same: different days" do
+      refute_notify alert(active_period: @alert_active_period,
+                          informed_entity: [entity(:bike)]), @subscription
+    end
+  end
+
   describe "sent notification" do
     @subscription subscription(:subway, Map.merge(@base, %{"destination" => "place-brdwy",
                                                            "origin" => "place-harsq", "roaming" => "false"}))
@@ -469,6 +501,14 @@ defmodule ConciergeSite.Integration.Matching do
   defp entity(:parking, overrides) do
     params = %{
       "activities" => ["PARK_CAR"],
+      "stop_id" => "place-harsq",
+      "route_id" => "Red",
+      "route_type" => 1}
+    override(params, overrides)
+  end
+  defp entity(:bike, overrides) do
+    params = %{
+      "activities" => ["STORE_BIKE"],
       "stop_id" => "place-harsq",
       "route_id" => "Red",
       "route_type" => 1}
