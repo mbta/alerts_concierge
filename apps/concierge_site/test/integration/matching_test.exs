@@ -273,23 +273,22 @@ defmodule ConciergeSite.Integration.Matching do
   end
 
   describe "accessibility subscriptions" do
-    @subscription subscription(:accessibility, %{
-      "accessibility" => ["", "elevator", "", "escalator"],
-      "relevant_days" => ["", "", "saturday", "", "sunday"],
-      "routes" => ["", "red", "", "", "green", ""],
-      "stops" => ["place-chncl", "place-aqucl"]})
+    @subscription subscription(:accessibility, %{"accessibility" => ["elevator", "escalator"],
+                                                 "relevant_days" => ["saturday", "sunday"],
+                                                 "routes" => ["red", "green"],
+                                                 "stops" => ["place-chncl", "place-aqucl"]})
 
-    test "all same: activity, route, stop" do
+    test "all same: activity, route, stop, day" do
       assert_notify alert(active_period: @alert_weekend_period,
                           informed_entity: [entity(:accessibility, stop_id: "place-chncl")]), @subscription
     end
 
-    test "similar: activity, route" do
+    test "similar: activity, route, day" do
       assert_notify alert(active_period: @alert_weekend_period,
                           informed_entity: [entity(:accessibility)]), @subscription
     end
 
-    test "similar: activity, stop" do
+    test "similar: activity, stop, day" do
       entity = :accessibility
       |> entity(stop_id: "place-chncl")
       |> Map.delete("route_id")
@@ -320,11 +319,42 @@ defmodule ConciergeSite.Integration.Matching do
                           informed_entity: [entity(:accessibility, activities: ["BOARD"])]), @subscription
     end
 
-    test "all same: different days" do
+    test "all same: different day" do
       refute_notify alert(active_period: @alert_active_period,
                           informed_entity: [entity(:accessibility, stop_id: "place-chncl")]), @subscription
     end
+  end
 
+  describe "parking subscriptions" do
+    @subscription subscription(:parking, %{"relevant_days" => ["sunday", "sunday"],
+                                           "stops" => ["place-harsq", "place-ogmnl"]})
+
+    test "all same: activity, stop, day -- not possible to send because there are no parking facilities in data" do
+      refute_notify alert(active_period: @alert_weekend_period,
+                          informed_entity: [entity(:parking)]), @subscription
+    end
+
+    test "similar: only activity" do
+      entity = :parking
+      |> entity()
+      |> Map.delete("stop_id")
+      refute_notify alert(active_period: @alert_weekend_period, informed_entity: [entity]), @subscription
+    end
+
+    test "similar: different stop" do
+      refute_notify alert(active_period: @alert_weekend_period,
+                          informed_entity: [entity(:parking, stop_id: "place-aqucl")]), @subscription
+    end
+
+    test "similar: different activity" do
+      refute_notify alert(active_period: @alert_weekend_period,
+                          informed_entity: [entity(:parking, activities: ["BOARD"])]), @subscription
+    end
+
+    test "all same: different days" do
+      refute_notify alert(active_period: @alert_active_period,
+                          informed_entity: [entity(:parking)]), @subscription
+    end
   end
 
   describe "sent notification" do
@@ -433,8 +463,15 @@ defmodule ConciergeSite.Integration.Matching do
       "activities" => ["USING_WHEELCHAIR"],
       "route_id" => "Red",
       "route_type" => 1,
-      "facility_id" => "349" # place-alfcl
-    }
+      "facility_id" => "349"} # place-alfcl
+    override(params, overrides)
+  end
+  defp entity(:parking, overrides) do
+    params = %{
+      "activities" => ["PARK_CAR"],
+      "stop_id" => "place-harsq",
+      "route_id" => "Red",
+      "route_type" => 1}
     override(params, overrides)
   end
 
