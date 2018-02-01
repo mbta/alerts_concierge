@@ -44,7 +44,7 @@ defmodule AlertProcessor.Subscription.Diagnostic do
       {:ok, snapshots} <- Snapshot.get_snapshots_by_datetime(user, datetime),
       {:ok, alert} <- DiagnosticQuery.get_alert(alert_id),
       {:ok, alert_versions} <- DiagnosticQuery.get_alert_versions(alert, datetime),
-      {:ok, alert_snapshot} <- Snapshot.serialize_alert_versions(alert_versions) do
+      {:ok, alert_snapshot} <- Snapshot.serialize_alert_versions(alert_versions, datetime) do
         result = snapshots
         |> Enum.map(fn(snap) ->
           build_diagnosis(alert_snapshot, notifications, [snap])
