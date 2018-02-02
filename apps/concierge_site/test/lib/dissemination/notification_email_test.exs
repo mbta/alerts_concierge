@@ -20,7 +20,8 @@ defmodule ConciergeSite.Dissemination.NotificationEmailTest do
     description: "There is a fire in at south station so it is closed",
     url: "http://www.example.com/alert-info",
     alert: @alert,
-    last_push_notification: ~N[2017-01-18 14:00:00]
+    last_push_notification: %DateTime{year: 2017, month: 1, day: 18, zone_abbr: "UTC", hour: 19, minute: 0, second: 0,
+                                      microsecond: {0, 0}, utc_offset: 0, std_offset: 0, time_zone: "Etc/UTC"}
   }
 
   test "text_email/1 has all necessary content" do
