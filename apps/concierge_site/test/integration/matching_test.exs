@@ -207,6 +207,10 @@ defmodule ConciergeSite.Integration.Matching do
       trip = %{"direction_id" => 1, "route_id" => "CR-Haverhill", "trip_id" => "CR-Weekday-Fall-17-227"}
       refute_notify alert(informed_entity: [entity(:commuter_rail, trip: trip)]), @subscription
     end
+
+    test "unknown effect detail does not effect matching or cause an error" do
+      assert_notify alert(effect_detail: "TEST", informed_entity: [entity(:commuter_rail)]), @subscription
+    end
   end
 
   describe "ferry subscription" do
