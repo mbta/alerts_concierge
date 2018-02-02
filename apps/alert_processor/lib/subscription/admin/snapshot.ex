@@ -89,14 +89,14 @@ defmodule AlertProcessor.Subscription.Snapshot do
     end)
   end
 
-  def serialize_alert_versions(alert_versions) do
+  def serialize_alert_versions(alert_versions, datetime) do
     alert =
       alert_versions
       |> Enum.sort_by(&(&1.inserted_at), &NaiveDT.before?/2)
       |> Enum.reduce(%{activities: []}, fn(%{item_changes: changes}, acc) ->
         Map.merge(acc, changes["data"])
       end)
-      |> AlertParser.parse_alert(ServiceInfoCache.get_facility_map(), nil)
+      |> AlertParser.parse_alert(ServiceInfoCache.get_facility_map(), DateTime.to_unix(datetime))
     {:ok, alert}
   end
 
