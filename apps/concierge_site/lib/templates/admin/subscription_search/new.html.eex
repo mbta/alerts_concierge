@@ -41,6 +41,19 @@
       </div>
     <% else %>
       <%= alert_title(@diagnoses.all) %>
+
+      <div class="alert-json-row">
+        <div id="alert-json" class="alert-json-info hidden">
+          <pre>
+            <%= Poison.encode!(@unparsed_alert, pretty: true) %>
+          </pre>
+        </div>
+
+        <div data-target-sub-id="alert-json" class="diagnostic-result-toggle">
+          <span class="diagnostic-toggle-text alert-json">+ View JSON</span><span class="diagnostic-toggle-text alert-json hidden">- Hide JSON</span>
+        </div>
+      </div>
+
       <%= unless Enum.empty?(@diagnoses.succeeded) do %>
         <div class="diagnostic-subscription-match-title">
           <i class="fa fa-check-circle fa-2x sub-match-title success"></i>
@@ -77,7 +90,7 @@
                 <p><%= informed_entity_result(diagnosis) %></p>
               </div>
               <div data-target-sub-id="<%= diagnosis.subscription.id %>" class="diagnostic-result-toggle">
-                <span class="diagnostic-toggle-text <%= diagnosis.subscription.id %>">+ View Details</span><span class="diagnostic-toggle-text <%= diagnosis.subscription.id %> hidden">+ Hide Details</span>
+                <span class="diagnostic-toggle-text <%= diagnosis.subscription.id %>">+ View Details</span><span class="diagnostic-toggle-text <%= diagnosis.subscription.id %> hidden">- Hide Details</span>
               </div>
             </div>
           <% end %>

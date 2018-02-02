@@ -119,9 +119,10 @@ defmodule AlertProcessor.Subscription.DiagnosticTest do
       |> Notification.create_changeset(notification_params)
       |> Repo.insert!
 
-      {:ok, [result]} = Diagnostic.diagnose_alert(user, params)
+      {:ok, [result], %{"id" => alert_id}} = Diagnostic.diagnose_alert(user, params)
 
       assert result.passed_sent_alert_filter? == false
+      assert alert_id == "114166"
     end
 
     test "alert did not match sent alert", %{user: user, alert: alert} do
@@ -136,8 +137,9 @@ defmodule AlertProcessor.Subscription.DiagnosticTest do
         "alert_id" => alert.alert_id
       }
 
-      {:ok, [result]} = Diagnostic.diagnose_alert(user, params)
+      {:ok, [result], %{"id" => alert_id}} = Diagnostic.diagnose_alert(user, params)
       assert result.passed_sent_alert_filter? == true
+      assert alert_id == "114166"
     end
 
     test "alert matched active period", %{alert: alert, user: user} do
@@ -152,8 +154,9 @@ defmodule AlertProcessor.Subscription.DiagnosticTest do
         "alert_id" => alert.alert_id
       }
 
-      {:ok, [result]} = Diagnostic.diagnose_alert(user, params)
+      {:ok, [result], %{"id" => alert_id}} = Diagnostic.diagnose_alert(user, params)
       assert result.passed_active_period_filter? == true
+      assert alert_id == "114166"
     end
 
     test "alert did not match active period", %{user: user} do
@@ -183,8 +186,9 @@ defmodule AlertProcessor.Subscription.DiagnosticTest do
         "alert_id" => alert.alert_id
       }
 
-      {:ok, [result]} = Diagnostic.diagnose_alert(user, params)
+      {:ok, [result], %{"id" => alert_id}} = Diagnostic.diagnose_alert(user, params)
       assert result.passed_active_period_filter? == false
+      assert alert_id == "114166"
     end
 
     test "alert severity is greater or equal to subscription", %{user: user} do
@@ -212,8 +216,9 @@ defmodule AlertProcessor.Subscription.DiagnosticTest do
         "alert_id" => alert.alert_id
       }
 
-      {:ok, [result]} = Diagnostic.diagnose_alert(user, params)
+      {:ok, [result], %{"id" => alert_id}} = Diagnostic.diagnose_alert(user, params)
       assert result.passed_severity_filter? == true
+      assert alert_id == "114166"
     end
 
     test "alert did not match severity", %{user: user} do
@@ -238,8 +243,9 @@ defmodule AlertProcessor.Subscription.DiagnosticTest do
         "alert_id" => alert.alert_id
       }
 
-      {:ok, [result]} = Diagnostic.diagnose_alert(user, params)
+      {:ok, [result], %{"id" => alert_id}} = Diagnostic.diagnose_alert(user, params)
       assert result.passed_severity_filter? == false
+      assert alert_id == "114166"
     end
 
     test "alert matched vacation period" do
@@ -282,8 +288,9 @@ defmodule AlertProcessor.Subscription.DiagnosticTest do
         "alert_id" => alert.alert_id
       }
 
-      {:ok, [result]} = Diagnostic.diagnose_alert(user, params)
+      {:ok, [result], %{"id" => alert_id}} = Diagnostic.diagnose_alert(user, params)
       assert result.passes_vacation_period? == false
+      assert alert_id == "114166"
     end
 
     test "alert did not match vacation period" do
@@ -324,8 +331,9 @@ defmodule AlertProcessor.Subscription.DiagnosticTest do
         "alert_id" => alert.alert_id
       }
 
-      {:ok, [result]} = Diagnostic.diagnose_alert(user, params)
+      {:ok, [result], %{"id" => alert_id}} = Diagnostic.diagnose_alert(user, params)
       assert result.passes_vacation_period? == true
+      assert alert_id == "114166"
     end
 
     test "alert did not match do not disturb" do
@@ -366,8 +374,9 @@ defmodule AlertProcessor.Subscription.DiagnosticTest do
         "alert_id" => alert.alert_id
       }
 
-      {:ok, [result]} = Diagnostic.diagnose_alert(user, params)
+      {:ok, [result], %{"id" => alert_id}} = Diagnostic.diagnose_alert(user, params)
       assert result.passes_do_not_disturb? == true
+      assert alert_id == "114166"
     end
 
     test "with no valid id", %{user: user} do
@@ -414,9 +423,10 @@ defmodule AlertProcessor.Subscription.DiagnosticTest do
         "alert_id" => alert.alert_id
       }
 
-      {:ok, [result]} = Diagnostic.diagnose_alert(user, params)
+      {:ok, [result], %{"id" => alert_id}} = Diagnostic.diagnose_alert(user, params)
 
       assert result.passed_informed_entity_filter? == false
+      assert alert_id == alert.alert_id
     end
 
     test "breaks out detailed matches", %{alert: alert} do
@@ -446,7 +456,7 @@ defmodule AlertProcessor.Subscription.DiagnosticTest do
         "alert_id" => alert.alert_id
       }
 
-      {:ok, [result]} = Diagnostic.diagnose_alert(user, params)
+      {:ok, [result], %{"id" => alert_id}} = Diagnostic.diagnose_alert(user, params)
 
       assert result.matches_any_route_type? == false
       assert result.matches_any_route? == false
@@ -454,6 +464,7 @@ defmodule AlertProcessor.Subscription.DiagnosticTest do
       assert result.matches_any_facility? == false
       assert result.matches_any_stop? == false
       assert result.matches_any_trip? == false
+      assert alert_id == "114166"
     end
   end
 end
