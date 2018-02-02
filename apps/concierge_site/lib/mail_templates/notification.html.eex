@@ -22,7 +22,7 @@
       <% end %>
 
       <%= if notification.last_push_notification do %>
-        <p>Last Updated: <%= ConciergeSite.Helpers.DateHelper.format_datetime(notification.last_push_notification) %></p>
+        <p>Last Updated: <%= ConciergeSite.Helpers.DateHelper.format_datetime(notification.last_push_notification, :local) %></p>
       <% end %>
 
       <%= if notification.url do %>
