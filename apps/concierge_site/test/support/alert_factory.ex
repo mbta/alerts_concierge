@@ -11,13 +11,16 @@ defmodule ConciergeSite.AlertFactory do
   def alert(alert_data) do
     use_cassette "facilities_alerts", custom: true, clear_mock: true, match_requests_on: [:query] do
       with {:ok, facilities_map} <- ServiceInfoCache.get_facility_map() do
-        parse_alert(ensure_alert_data_keys(alert_data), facilities_map, timestamp())
+        alert_data
+        |> ensure_alert_data_keys()
+        |> parse_alert(facilities_map, timestamp())
       end
     end
   end
 
   defp ensure_alert_data_keys(alert_data) do
-    %{"id" => "1",
+    base = %{
+      "id" => "1",
       "active_period" => [inclusive_active_period()],
       "created_timestamp" => timestamp(),
       "duration_certainty" => "KNOWN",
@@ -26,7 +29,7 @@ defmodule ConciergeSite.AlertFactory do
       "service_effect_text" => [%{"translation" => %{"text" => "Service Effect", "language" => "en"}}],
       "severity" => inclusive_severity(),
       "last_push_notification_timestamp" => timestamp()}
-    |> Map.merge(alert_data)
+    Map.merge(base, alert_data)
   end
 
   defp inclusive_active_period(), do: %{"start" => timestamp(), "end" => timestamp() + (100 * 365 * 24 * 60 * 60)}
@@ -35,7 +38,12 @@ defmodule ConciergeSite.AlertFactory do
 
   def alert_time(time), do: timestamp() + (time.hour * 60 * 60) + (time.minute * 60) + time.second
 
-  def active_period(start_time, end_time, :monday), do: %{"start" => alert_time(start_time), "end" => alert_time(end_time)}
+  def active_period(start_time, end_time, :monday) do
+    %{"start" => alert_time(start_time), "end" => alert_time(end_time)}
+  end
+  def active_period(start_time, end_time, :tuesday) do
+    %{"start" => alert_time(start_time) + @one_day, "end" => alert_time(end_time) + @one_day}
+  end
   def active_period(start_time, end_time, :sunday) do
     %{"start" => alert_time(start_time) + (@one_day * 6), "end" => alert_time(end_time) + (@one_day * 6)}
   end
