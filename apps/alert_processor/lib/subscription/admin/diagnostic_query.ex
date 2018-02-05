@@ -7,7 +7,8 @@ defmodule AlertProcessor.Subscription.DiagnosticQuery do
     notification_query = from n in Notification,
       where: n.user_id == ^user_id,
       where: n.alert_id == ^alert_id,
-      select: n
+      select: n,
+      preload: [:subscriptions]
 
     Repo.all(notification_query)
   end
