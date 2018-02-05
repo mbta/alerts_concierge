@@ -12,7 +12,6 @@ defmodule ConciergeSite.SubscriptionController do
         redirect(conn, to: subscription_path(conn, :new))
       subscriptions ->
         {:ok, station_display_names} = DisplayInfo.station_names_for_subscriptions(subscriptions)
-        {:ok, departure_time_map} = DisplayInfo.departure_times_for_subscriptions(subscriptions)
 
         dnd_overlap =
           Enum.any?(subscriptions, fn(subscription) ->
@@ -23,7 +22,7 @@ defmodule ConciergeSite.SubscriptionController do
           dnd_overlap: dnd_overlap,
           subscriptions: subscriptions,
           station_display_names: station_display_names,
-          departure_time_map: departure_time_map,
+          departure_time_map: %{},
           vacation_start: user.vacation_start,
           vacation_end: user.vacation_end
     end

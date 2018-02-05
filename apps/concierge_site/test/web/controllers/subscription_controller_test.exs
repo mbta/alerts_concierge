@@ -58,14 +58,11 @@ defmodule ConciergeSite.SubscriptionControllerTest do
       assert html_response(conn, 200) =~ "Commuter Rail"
       assert html_response(conn, 200) =~ "Anderson/Woburn"
       assert html_response(conn, 200) =~ "North Station"
-      assert html_response(conn, 200) =~ "Train 331, Weekdays | Departs North Station at 5:10pm"
-      assert html_response(conn, 200) =~ "Train 221, Weekdays | Departs North Station at 6:55pm"
+      assert html_response(conn, 200) =~ "Weekdays from 10:00am to  2:00pm"
 
       assert html_response(conn, 200) =~ "Ferry"
       assert html_response(conn, 200) =~ "Boston (Long Wharf)"
       assert html_response(conn, 200) =~ "Charlestown"
-      assert html_response(conn, 200) =~ "5:00pm, Weekdays | Departs from Boston (Long Wharf)"
-      assert html_response(conn, 200) =~ "5:15pm, Weekdays | Departs from Boston (Long Wharf)"
     end
 
     test "GET /my-subscriptions with bus subscriptions", %{conn: conn} do
