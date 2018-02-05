@@ -8,12 +8,13 @@ defmodule ConciergeSite.Admin.SubscriptionSearchController do
   def create(conn, %{"user_id" => user_id, "search" => search_params}, admin, _claims) do
     with true <- AdminUserPolicy.can?(admin, :show_user_subscriptions),
       {:ok, user} <- get_user(user_id),
-      {:ok, diagnoses} <- Diagnostic.diagnose_alert(user, search_params),
+      {:ok, diagnoses, unparsed_alert_snapshot} <- Diagnostic.diagnose_alert(user, search_params),
       sorted_diagnoses <- Diagnostic.sort(diagnoses),
       subscriptions <- Enum.map(sorted_diagnoses.all, &(&1.subscription)),
       {:ok, station_display_names} <- DisplayInfo.station_names_for_subscriptions(subscriptions),
       {:ok, departure_time_map} <- DisplayInfo.departure_times_for_subscriptions(subscriptions) do
-        render conn, :new, user: user, diagnoses: sorted_diagnoses, station_display_names: station_display_names, departure_time_map: departure_time_map
+        render conn, :new, user: user, diagnoses: sorted_diagnoses, station_display_names: station_display_names,
+                           departure_time_map: departure_time_map, unparsed_alert: unparsed_alert_snapshot
     else
       {:error, :no_user} ->
         conn
