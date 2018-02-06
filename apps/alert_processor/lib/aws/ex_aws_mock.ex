@@ -29,6 +29,9 @@ defmodule ExAws.Mock do
                 request_id: "123"
               }
             }}
+          "error" ->
+            {:error, {:http_error, 400, %{code: "Throttling", detail: "", message: "Rate exceeded",
+                                          request_id: "531e7c21-0317-5eba-a114-2efd4caef900", type: "Sender"}}}
           _ ->
             {:ok, %{
               body: %{

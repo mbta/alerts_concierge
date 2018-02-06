@@ -1,6 +1,7 @@
 defmodule AlertProcessor.SmsOptOutWorkerTest do
   use AlertProcessor.DataCase
   import AlertProcessor.Factory
+  import ExUnit.CaptureLog
   alias AlertProcessor.Model.User
   alias AlertProcessor.SmsOptOutWorker
 
@@ -27,5 +28,12 @@ defmodule AlertProcessor.SmsOptOutWorkerTest do
     reloaded_user = Repo.one(from u in User, where: u.id == ^user.id)
     assert reloaded_user.phone_number == nil
     assert new_state == ["9999999999", "5555555555"]
+  end
+
+  test "worker recovers gracefully from AWS error messages" do
+    fetch_error = fn ->
+      assert ["123"] == SmsOptOutWorker.fetch_opted_out_list("error", ["123"])
+    end
+    assert capture_log(fetch_error) =~ "Unable to request SMS opted out list from AWS due to error"
   end
 end
