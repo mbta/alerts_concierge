@@ -15,7 +15,8 @@ export default function($) {
   const now = moment().format("MM/DD/Y");
 
   const vacationStartConfig = objectAssign({}, flatpickrBaseConfig, {
-    defaultDate: now
+    defaultDate: now,
+    minDate: now
   });
 
   const vacationEndConfig = objectAssign({}, flatpickrBaseConfig, {
