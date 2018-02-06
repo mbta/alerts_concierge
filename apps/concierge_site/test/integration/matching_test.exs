@@ -1,5 +1,6 @@
 defmodule ConciergeSite.Integration.Matching do
   use ExUnit.Case
+  import ExUnit.CaptureLog
   import ConciergeSite.SubscriptionFactory
   import ConciergeSite.AlertFactory, only: [active_period: 3, severity_by_priority: 1]
   import ConciergeSite.NotificationFactory
@@ -88,6 +89,20 @@ defmodule ConciergeSite.Integration.Matching do
 
     test "similar: different stop -- in between (roaming)" do
       assert_notify alert(informed_entity: [entity(:subway, stop_id: "place-cntsq")]), @subscription_roaming
+    end
+
+    test "closed notification can not be parsed" do
+      timestamp = 1517948137
+      alert = %{"informed_entity" => [entity(:subway)], "closed_timestamp" => timestamp, "severity" => 0, "id" => 1,
+               "created_timestamp" => timestamp, "duration_certainty" => "KNOWN", "effect_detail" => "SERVICE_CHANGE",
+               "header_text" => [%{"translation" => %{"text" => "Header Text", "language" => "en"}}],
+               "service_effect_text" => [%{"translation" => %{"text" => "Service Effect", "language" => "en"}}],
+               "last_push_notification_timestamp" => timestamp}
+
+      parse_error = fn ->
+        assert nil == ConciergeSite.AlertFactory.alert(alert, [ensure_keys: false])
+      end
+      assert capture_log(parse_error) =~ "Failed to parse alert"
     end
   end
 
