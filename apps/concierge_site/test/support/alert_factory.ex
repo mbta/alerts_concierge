@@ -8,17 +8,18 @@ defmodule ConciergeSite.AlertFactory do
 
   @one_day 86_400
 
-  def alert(alert_data) do
+  def alert(alert_data, opts \\ [ensure_keys: true]) do
     use_cassette "facilities_alerts", custom: true, clear_mock: true, match_requests_on: [:query] do
       with {:ok, facilities_map} <- ServiceInfoCache.get_facility_map() do
         alert_data
-        |> ensure_alert_data_keys()
+        |> ensure_alert_data_keys(opts[:ensure_keys])
         |> parse_alert(facilities_map, timestamp())
       end
     end
   end
 
-  defp ensure_alert_data_keys(alert_data) do
+  defp ensure_alert_data_keys(alert_data, false), do: alert_data
+  defp ensure_alert_data_keys(alert_data, true) do
     base = %{
       "id" => "1",
       "active_period" => [inclusive_active_period()],
