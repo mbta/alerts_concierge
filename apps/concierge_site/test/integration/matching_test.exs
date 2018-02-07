@@ -444,6 +444,27 @@ defmodule ConciergeSite.Integration.Matching do
     end
   end
 
+  describe "overnight timeframes" do
+    test "late night and early morning" do
+      subscription = subscription(:subway, Map.merge(@base, %{"destination" => "place-brdwy",
+                                                              "origin" => "place-harsq", "roaming" => "false",
+                                                              "departure_start" => ~T[23:00:00],
+                                                              "departure_end" => ~T[01:00:00]}))
+      late_alert = alert(informed_entity: [entity(:subway)],
+                         active_period: [active_period(~T[23:00:00], ~T[23:59:59], :monday)])
+
+      early_alert = alert(informed_entity: [entity(:subway)],
+                          active_period: [active_period(~T[00:00:00], ~T[01:00:00], :tuesday)])
+
+      mid_alert = alert(informed_entity: [entity(:subway)],
+                        active_period: [active_period(~T[02:00:00], ~T[03:00:00], :monday)])
+
+      assert_notify(late_alert, subscription)
+      assert_notify(early_alert, subscription)
+      refute_notify(mid_alert, subscription)
+    end
+  end
+
   defp assert_notify(alert, subscription, notifications \\ []), do: assert notify?(alert, subscription, notifications)
   defp refute_notify(alert, subscription, notifications \\ []), do: refute notify?(alert, subscription, notifications)
   defp notify?(alert, subscription, notifications), do: determine_recipients(alert, [subscription], notifications) != []
