@@ -110,6 +110,20 @@ defmodule AlertProcessor.Helpers.DateTimeHelperTest do
     end
   end
 
+  describe "format_time" do
+    test "returns time in %l:%M%P format in provided timezone" do
+      assert DTH.format_time(~N[2017-08-28 12:00:00], "America/New_York") == " 8:00am"
+    end
+
+    test "returns time in %l:%M%P format defaulting to Amerca/New_York" do
+      assert DTH.format_time(~N[2017-08-28 12:00:00]) == " 8:00am"
+    end
+
+    test "returns time in %l:%M%P format and adjusts time based on timezone" do
+      assert DTH.format_time(~N[2017-08-28 02:00:00]) == "10:00pm"
+    end
+  end
+
   describe "determine_relevant_day_of_week" do
     test "handles weekday" do
       friday = DT.from_erl!({{2017, 10, 13}, {12, 0, 0}}, "Etc/UTC")

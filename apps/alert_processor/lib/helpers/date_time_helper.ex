@@ -53,11 +53,20 @@ defmodule AlertProcessor.Helpers.DateTimeHelper do
     (hour * 3600) + (minute * 60) + second
   end
 
-  @spec format_date(NaiveDateTime.t, String.t) :: any
+  @spec format_date(NaiveDateTime.t, String.t) :: String.t
   def format_date(datetime, time_zone \\ @time_zone) do
     with {:ok, utc_datetime} <- DateTime.from_naive(datetime, "Etc/UTC"),
          {:ok, local_datetime} <- DT.shift_zone(utc_datetime, time_zone),
          {:ok, output} <- Strftime.strftime(local_datetime, "%m-%d-%Y") do
+      output
+    end
+  end
+
+  @spec format_time(NaiveDateTime.t, String.t) :: String.t
+  def format_time(datetime, time_zone \\ @time_zone) do
+    with {:ok, utc_datetime} <- DateTime.from_naive(datetime, "Etc/UTC"),
+         {:ok, local_datetime} <- DT.shift_zone(utc_datetime, time_zone),
+         {:ok, output} <- Strftime.strftime(local_datetime, "%l:%M%P") do
       output
     end
   end
