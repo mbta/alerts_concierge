@@ -286,7 +286,7 @@ defmodule ConciergeSite.SubscriberDetails do
 
   defp date_and_time_values(inserted_at) do
     date = DateTimeHelper.format_date(inserted_at)
-    time = inserted_at |> NaiveDateTime.to_time() |> TimeHelper.format_time()
+    time = inserted_at |> DateTimeHelper.format_time()
     {date, time}
   end
 
