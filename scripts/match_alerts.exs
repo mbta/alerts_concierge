@@ -56,10 +56,14 @@ defmodule MatchAlerts do
     }
 
     IO.puts "Begin Matching"
+    start_notification_count = number_of_sent_notifications()
+    end_notification_count = start_notification_count + number
     AlertProcessor.SubscriptionFilterEngine.schedule_all_notifications([matching_alert, non_matching_alert])
+
     IO.puts "Wait for Notification Writes"
-    check_sent_notifications(0, number)
-    IO.puts "Re-Match Previouslt Sent Alert"
+    check_sent_notifications(start_notification_count, end_notification_count)
+
+    IO.puts "Re-Match Previously Sent Alert"
     AlertProcessor.SubscriptionFilterEngine.schedule_all_notifications([matching_alert])
   end
 
