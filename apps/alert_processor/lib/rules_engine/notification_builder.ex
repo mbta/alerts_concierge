@@ -100,6 +100,7 @@ defmodule AlertProcessor.NotificationBuilder do
           notification = %Notification{
               alert_id: alert.id,
               user: user,
+              user_id: user.id,
               header: alert.header,
               service_effect: alert.service_effect,
               description: alert.description,
