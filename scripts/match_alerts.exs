@@ -55,8 +55,11 @@ defmodule MatchAlerts do
       url: nil
     }
 
+    IO.puts "Begin Matching"
     AlertProcessor.SubscriptionFilterEngine.schedule_all_notifications([matching_alert, non_matching_alert])
+    IO.puts "Wait for Notification Writes"
     check_sent_notifications(0, number)
+    IO.puts "Re-Match Previouslt Sent Alert"
     AlertProcessor.SubscriptionFilterEngine.schedule_all_notifications([matching_alert])
   end
 
@@ -80,7 +83,7 @@ defmodule MatchAlerts do
 end
 
 opts = OptionParser.parse(System.argv(),
-  switches: [help: :boolean , match: :boolean],
+  switches: [help: :boolean , match: :integer],
   aliases: [h: :help, m: :match, d: :delete])
 
 case opts do
