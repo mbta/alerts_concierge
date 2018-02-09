@@ -1,7 +1,7 @@
 defmodule AlertProcessor.NotificationBuilderTest do
   use AlertProcessor.DataCase
   import AlertProcessor.Factory
-  alias AlertProcessor.{Model, NotificationBuilder}
+  alias AlertProcessor.{Model, NotificationBuilder, Model.Notification}
   alias Model.Alert
   alias Calendar.DateTime, as: DT
 
@@ -31,6 +31,38 @@ defmodule AlertProcessor.NotificationBuilderTest do
     end
 
     {:ok, utc_time: utc_time, est_time: est_time}
+  end
+
+  test "build notification struct", %{utc_time: utc_time, est_time: est_time} do
+    user = insert(:user)
+    sub = insert(:subscription, user: user)
+    alert = %Alert{
+      id: "1",
+      header: nil,
+      active_period: [%{start: est_time.two_days_from_now, end: est_time.three_days_from_now}]
+    }
+
+    [notification] = NotificationBuilder.build_notifications({user, [sub]}, alert, utc_time.now)
+    expected_notification = %Notification{
+      alert_id: "1",
+      user: user,
+      user_id: user.id,
+      header: nil,
+      service_effect: nil,
+      description: nil,
+      url: alert.url,
+      phone_number: user.phone_number,
+      email: user.email,
+      status: :unsent,
+      send_after: utc_time.one_day_from_now,
+      last_push_notification: alert.last_push_notification,
+      alert: alert,
+      notification_subscriptions: [%AlertProcessor.Model.NotificationSubscription{
+        subscription_id: sub.id
+      }]
+    }
+
+    assert expected_notification == notification
   end
 
   test "build notifications for each active period of an alert", %{utc_time: utc_time, est_time: est_time} do
