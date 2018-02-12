@@ -46,7 +46,7 @@ defmodule CreateUsers do
   defp create_user(count) do
     params = %{
       email: "send-alerts-test-#{count}@example.com",
-      phone_number: nil,
+      phone_number: "5555555555",
       do_not_disturb_start: ~T[22:00:00],
       do_not_disturb_end: ~T[07:00:00],
       encrypted_password: "$2b$12$BwbCgTrrnXytfn733NZvV.RkLpMyO8Ga/zON5mSZAFz4/50kYYDhK" # p@ssw0rd
