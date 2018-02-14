@@ -68,6 +68,7 @@ defmodule AlertProcessor.ActivePeriodFilter do
     |> List.flatten
   end
 
+  defp do_translate_subscription_day(date, start_time, end_time) when start_time == end_time, do: []
   defp do_translate_subscription_day(date, start_time, end_time) when start_time < end_time do
     [%{start: make_datetime(date.year, date.month, date.day, start_time.hour, start_time.minute, 0),
          end: make_datetime(date.year, date.month, date.day, end_time.hour, end_time.minute, 0)}]
