@@ -32,17 +32,27 @@ defmodule AlertProcessor.TimeFrameComparison do
 
   @spec timeframes_match?(time_period, time_period) :: boolean
   defp timeframes_match?(active_period, subscription_time_period) do
-    !MapSet.disjoint?(range_map(active_period), range_map(subscription_time_period))
+    any_overlap?(range_map(active_period), range_map(subscription_time_period))
   end
 
-  def range_map(%{start: start_seconds, end: end_seconds}) when end_seconds > start_seconds do
+  defp range_map(%{start: start_seconds, end: end_seconds}) when end_seconds > start_seconds do
     start_minute = Integer.floor_div(start_seconds, 60) * 60
     end_minute = Integer.floor_div(end_seconds, 60) * 60
-    MapSet.new(Enum.take_every(start_minute..end_minute, 60))
+
+    [{start_minute, end_minute}]
   end
-  def range_map(%{start: start_seconds, end: end_seconds}) do
+  defp range_map(%{start: start_seconds, end: end_seconds}) do
     start_minute = Integer.floor_div(start_seconds, 60) * 60
     end_minute = Integer.floor_div(end_seconds, 60) * 60
-    MapSet.union(MapSet.new(Enum.take_every(0..end_minute, 60)), MapSet.new(Enum.take_every(start_minute..86_399, 60)))
+
+    [{0, end_minute}, {start_minute, 86_399}]
+  end
+
+  defp any_overlap?(active_periods, subscription_periods) do
+    Enum.any?(active_periods, fn ({aps, ape}) ->
+      Enum.any?(subscription_periods, fn ({sps, spe}) ->
+        aps < spe && sps < ape
+      end)
+    end)
   end
 end
