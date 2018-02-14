@@ -124,9 +124,5 @@ defmodule AlertProcessor.ActivePeriodFilter do
     [make_datetime(start_date.year, start_date.month, start_date.day, 0, 0, 0)]
   end
 
-  defp alert_days_of_week(dates) do
-    dates
-    |> Enum.map(&Date.day_of_week(&1))
-    |> MapSet.new
-  end
+  defp alert_days_of_week(dates), do: MapSet.new(dates, &Date.day_of_week/1)
 end
