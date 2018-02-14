@@ -16,7 +16,7 @@ defmodule ConciergeSite.MyAccountControllerTest do
 
     test "PATCH /my-account/ with valid params", %{conn: conn, user: user} do
       notification = build(:notification, user_id: user.id, send_after: DateTime.from_unix!(4_078_579_247))
-      :ok = HoldingQueue.enqueue(notification)
+      :ok = HoldingQueue.list_enqueue([notification])
       params = %{"user" => %{
         "dnd_toggle" => "true",
         "do_not_disturb_start" => "16:30:00",

@@ -95,7 +95,7 @@ defmodule ConciergeSite.ParkingSubscriptionControllerTest do
 
     test "PATCH /subscriptions/parking/:id", %{conn: conn, user: user} do
       notification = build(:notification, user_id: user.id, send_after: DateTime.from_unix!(4_078_579_247))
-      :ok = HoldingQueue.enqueue(notification)
+      :ok = HoldingQueue.list_enqueue([notification])
       subscription =
         subscription_factory()
         |> Map.put(:informed_entities, parking_subscription_entities())

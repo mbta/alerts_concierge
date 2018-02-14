@@ -26,11 +26,11 @@ defmodule AlertProcessor.HoldingQueue do
   end
 
   @doc """
-  Add notification to holding queue
+  Add list of notifications to holding queue
   """
-  @spec enqueue(Notification.t) :: :ok
-  def enqueue(name \\ __MODULE__, %Notification{} = notification) do
-    GenServer.call(name, {:push, notification})
+  @spec list_enqueue([Notification.t]) :: :ok
+  def list_enqueue(name \\ __MODULE__, notifications) do
+    GenServer.call(name, {:list_push, notifications})
   end
 
   @doc """
@@ -75,8 +75,8 @@ defmodule AlertProcessor.HoldingQueue do
     [notification | newstate] = notifications
     {:reply, {:ok, notification}, newstate}
   end
-  def handle_call({:push, notification}, _from, notifications) do
-    newstate = [notification | notifications]
+  def handle_call({:list_push, new_notifications}, _from, notifications) do
+    newstate = new_notifications ++ notifications
     {:reply, :ok, Enum.uniq_by(newstate, & {&1.user_id, &1.alert_id, &1.send_after})}
   end
   def handle_call({:remove, removed_alert_ids}, _from, notifications) do
