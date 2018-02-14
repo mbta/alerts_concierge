@@ -65,10 +65,9 @@ defmodule AlertProcessor.ActivePeriodFilter do
     |> Enum.filter(&MapSet.member?(subscription_days_of_week, Date.day_of_week(&1)))
     |> Enum.map(& do_translate_subscription_day(&1, start_time, end_time))
     |> adjust_for_overnight(subscription_days_of_week, start_time > end_time)
-    |> List.flatten
   end
 
-  defp do_translate_subscription_day(date, start_time, end_time) when start_time == end_time, do: []
+  defp do_translate_subscription_day(_date, start_time, end_time) when start_time == end_time, do: []
   defp do_translate_subscription_day(date, start_time, end_time) when start_time < end_time do
     [%{start: make_datetime(date.year, date.month, date.day, start_time.hour, start_time.minute, 0),
          end: make_datetime(date.year, date.month, date.day, end_time.hour, end_time.minute, 0)}]
@@ -88,9 +87,9 @@ defmodule AlertProcessor.ActivePeriodFilter do
   defp adjust_for_overnight(dates, subscription_days_of_week, true) do
     first_day = Enum.take(subscription_days_of_week, 1)
     last_day = Enum.take(subscription_days_of_week, -1)
-    Enum.map(dates, &do_adjust_for_overnight(&1, Date.day_of_week(List.first(&1).start), first_day, last_day))
+    Enum.flat_map(dates, &do_adjust_for_overnight(&1, Date.day_of_week(List.first(&1).start), first_day, last_day))
   end
-  defp adjust_for_overnight(dates, _subscription_days_of_week, false), do: dates
+  defp adjust_for_overnight(dates, _subscription_days_of_week, false), do: List.flatten(dates)
 
   defp do_adjust_for_overnight(date, day_of_week, first_day, _last_day) when day_of_week == first_day do
     Enum.drop(date, 1)
