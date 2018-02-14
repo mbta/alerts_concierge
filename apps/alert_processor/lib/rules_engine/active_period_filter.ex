@@ -110,19 +110,12 @@ defmodule AlertProcessor.ActivePeriodFilter do
 
   defp periods_to_dates(periods), do: Enum.flat_map(periods, &do_periods_to_dates(&1))
 
-  defp do_periods_to_dates(%{start: %{month: sm, day: sd} = start_date, end: %{month: em, day: ed} = end_date}) when {sm, sd} != {em, ed} do
-    gregorian_start_day = :calendar.date_to_gregorian_days({start_date.year, start_date.month, start_date.day})
-    gregorian_end_day = :calendar.date_to_gregorian_days({end_date.year, end_date.month, end_date.day})
-    gregorian_start_day..gregorian_end_day
-    |> Enum.map(fn(gregorian_day) ->
-      gregorian_day
-      |> :calendar.gregorian_days_to_date()
-      |> Date.from_erl!()
-    end)
+  defp do_periods_to_dates(%{start: %{day: start_day} = start_date, end: %{day: end_day} = end_date}) when start_day != end_day do
+    start_date
+    |> Date.range(end_date)
+    |> Enum.map(& &1)
   end
-  defp do_periods_to_dates(%{start: start_date}) do
-    [make_datetime(start_date.year, start_date.month, start_date.day, 0, 0, 0)]
-  end
+  defp do_periods_to_dates(%{start: start_date}), do: [start_date]
 
   defp alert_days_of_week(dates), do: MapSet.new(dates, &Date.day_of_week/1)
 end
