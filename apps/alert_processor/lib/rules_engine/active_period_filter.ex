@@ -91,13 +91,9 @@ defmodule AlertProcessor.ActivePeriodFilter do
   end
   defp adjust_for_overnight(dates, _subscription_days_of_week, false), do: List.flatten(dates)
 
-  defp do_adjust_for_overnight(date, day_of_week, first_day, _last_day) when day_of_week == first_day do
-    Enum.drop(date, 1)
-  end
-  defp do_adjust_for_overnight(date, day_of_week, _first_day, last_day) when day_of_week == last_day do
-    Enum.drop(date, -1)
-  end
-  defp do_adjust_for_overnight(date, _day_of_week, _first_day, _last_day), do: date
+  defp do_adjust_for_overnight([_ | rest_dates], day_of_week, day_of_week, _), do: rest_dates
+  defp do_adjust_for_overnight(dates, day_of_week, _, day_of_week), do: Enum.drop(dates, -1)
+  defp do_adjust_for_overnight(dates, _, _, _), do: dates
 
   defp subscription_days_of_week(relevant_days, overnight?) do
     relevant_days
