@@ -20,7 +20,7 @@ defmodule AlertProcessor.QueueWorkerTest do
 
     assert HoldingQueue.pop(hq_pid) == :error
     assert SendingQueue.pop(sq_pid) == :error
-    HoldingQueue.enqueue(hq_pid, notification)
+    HoldingQueue.list_enqueue(hq_pid, [notification])
 
     :timer.sleep(100)
 
@@ -36,13 +36,13 @@ defmodule AlertProcessor.QueueWorkerTest do
     assert HoldingQueue.pop(hq_pid) == :error
     assert SendingQueue.pop(sq_pid) == :error
 
-    HoldingQueue.enqueue(hq_pid, notification)
+    HoldingQueue.list_enqueue(hq_pid, [notification])
     :timer.sleep(50)
 
     assert SendingQueue.pop(sq_pid) == {:ok, notification}
     assert HoldingQueue.pop(hq_pid) == :error
 
-    HoldingQueue.enqueue(hq_pid, later_notification)
+    HoldingQueue.list_enqueue(hq_pid, [later_notification])
     :timer.sleep(50)
 
     assert SendingQueue.pop(sq_pid) == {:ok, later_notification}

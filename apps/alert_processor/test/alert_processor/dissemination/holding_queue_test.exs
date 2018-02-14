@@ -29,9 +29,24 @@ defmodule AlertProcessor.HoldingQueueTest do
 
   test "Alert can be added to the queue", %{test: test, fn: future_notification} do
     HoldingQueue.start_link([], [name: test])
-    HoldingQueue.enqueue(test, future_notification)
+    HoldingQueue.list_enqueue(test, [future_notification])
 
     assert HoldingQueue.pop(test) == {:ok, future_notification}
+  end
+
+  test "Multiple alerts can be added to the queue", %{test: test} do
+    HoldingQueue.start_link([], [name: test])
+
+    notification1 = %Notification{alert_id: "1"}
+    notification2 = %Notification{alert_id: "2"}
+    notification3 = %Notification{alert_id: "3"}
+
+    HoldingQueue.list_enqueue(test, [notification1])
+    HoldingQueue.list_enqueue(test, [notification2, notification3])
+
+    assert HoldingQueue.pop(test) == {:ok, notification2}
+    assert HoldingQueue.pop(test) == {:ok, notification3}
+    assert HoldingQueue.pop(test) == {:ok, notification1}
   end
 
   test "messages_to_send/1 retains all notifications for the future", %{test: test} do
@@ -91,8 +106,7 @@ defmodule AlertProcessor.HoldingQueueTest do
     notification1 = %Notification{alert_id: "1", user_id: user.id, user: user, alert: alert1, send_after: send_after}
     notification2 = %Notification{alert_id: "1", user_id: user.id, user: user, alert: alert2, send_after: send_after}
     HoldingQueue.start_link([], [name: test])
-    HoldingQueue.enqueue(test, notification1)
-    HoldingQueue.enqueue(test, notification2)
+    HoldingQueue.list_enqueue(test, [notification2, notification1])
 
     {:ok, notification} = HoldingQueue.pop(test)
     assert notification == notification2

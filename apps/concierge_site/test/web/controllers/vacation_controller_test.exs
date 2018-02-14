@@ -16,7 +16,7 @@ defmodule ConciergeSite.VacationControllerTest do
 
     test "PATCH /my-account/vacation with a valid submission", %{conn: conn, user: user} do
       notification = build(:notification, user_id: user.id, send_after: DateTime.from_unix!(4_078_579_247))
-      :ok = HoldingQueue.enqueue(notification)
+      :ok = HoldingQueue.list_enqueue([notification])
       params = %{"user" => %{
         "vacation_start" => "09/01/2017",
         "vacation_end" => "09/01/2035"

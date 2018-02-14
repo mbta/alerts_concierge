@@ -24,6 +24,6 @@ defmodule AlertProcessor.Scheduler do
 
   @spec enqueue_notifications([Notification.t]) :: :ok
   defp enqueue_notifications(notifications) do
-    Enum.each(notifications, &HoldingQueue.enqueue/1)
+    HoldingQueue.list_enqueue(notifications)
   end
 end

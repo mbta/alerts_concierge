@@ -131,7 +131,7 @@ defmodule ConciergeSite.SubscriptionControllerTest do
       user = insert(:user)
       {:ok, subscription} = insert_bus_subscription_for_user(user)
       notification = build(:notification, user_id: user.id, send_after: DateTime.from_unix!(4_078_579_247))
-      :ok = HoldingQueue.enqueue(notification)
+      :ok = HoldingQueue.list_enqueue([notification])
 
       conn = user
       |> guardian_login(conn)
