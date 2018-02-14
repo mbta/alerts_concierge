@@ -16,29 +16,28 @@ defmodule AlertProcessor.ActivePeriodFilter do
   end
 
   defp do_filter(subscriptions, %{active_period: active_period}) do
-    now = DateTime.utc_now()
-    Enum.filter(subscriptions, &check_active_period(now, active_period, &1))
-  end
-
-  def check_active_period(now, periods, %{start_time: start_time, end_time: end_time, relevant_days: relevant_days}) do
-    # don't match an alert that is too far in the future
-    if check_too_distant_exclusion(List.first(periods), now) do
+    if check_too_distant_exclusion(List.first(active_period), DateTime.utc_now()) do
       false
     else
-      period_dates = periods_to_dates(periods)
-      alert_days_of_week = alert_days_of_week(period_dates)
-      subscription_days_of_week = subscription_days_of_week(relevant_days, start_time > end_time)
+      Enum.filter(subscriptions, &check_active_period(active_period, &1))
+    end
+  end
 
-      # exclude period based on relevant days
-      if check_day_of_week_exclusion(alert_days_of_week, subscription_days_of_week) do
-        false
-      else
-        # make subscription times relative to period
-        subscription_periods = translate_subscription_days(period_dates, subscription_days_of_week, start_time, end_time)
+  def check_active_period(periods, %{start_time: start_time, end_time: end_time, relevant_days: relevant_days}) do
+    # a single period can span multiple days
+    period_dates = periods_to_dates(periods)
+    alert_days_of_week = alert_days_of_week(period_dates)
+    subscription_days_of_week = subscription_days_of_week(relevant_days, start_time > end_time)
 
-        # check if any period overlaps
-        Enum.any?(periods, &check_overlapping_periods(&1, subscription_periods))
-      end
+    # exclude period based on relevant days
+    if check_day_of_week_exclusion(alert_days_of_week, subscription_days_of_week) do
+      false
+    else
+      # make subscription times relative to period
+      subscription_periods = translate_subscription_days(period_dates, subscription_days_of_week, start_time, end_time)
+
+      # check if any period overlaps
+      Enum.any?(periods, &check_overlapping_periods(&1, subscription_periods))
     end
   end
 
