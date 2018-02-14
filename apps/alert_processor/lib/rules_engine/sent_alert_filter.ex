@@ -15,23 +15,30 @@ defmodule AlertProcessor.SentAlertFilter do
   end
 
   defp do_filter(subscriptions, %Alert{id: alert_id, last_push_notification: lpn}, notifications) do
-    {notifications_to_resend, notifications_to_not_resend} =
-      Enum.split_with(notifications, fn(n) ->
-        alert_id == n.alert_id && n.status == :sent && new?(lpn, n.last_push_notification)
-      end)
+    sent_matching_notifications =
+      Enum.filter(notifications, fn (n) -> alert_id == n.alert_id && n.status == :sent end)
 
-    {subscriptions_to_auto_resend, subscriptions_to_consider} =
-      Enum.split_with(subscriptions, fn(subscription) ->
-        Enum.any?(notifications_to_resend, fn(notification) ->
-          notification.alert_id == alert_id && notification.status == :sent && Enum.any?(notification.subscriptions, fn(sub) -> sub.id == subscription.id end)
-        end)
-      end)
+    resend_subscription_id_set = sent_matching_notifications
+    |> Enum.filter(fn (n) -> new?(lpn, n.last_push_notification) end)
+    |> Enum.flat_map(fn (n) -> n.subscriptions end)
+    |> MapSet.new(fn (n) -> n.id end)
+
+    subscriptions_to_auto_resend =
+      Enum.filter(subscriptions, fn (s) -> MapSet.member?(resend_subscription_id_set, s.id) end)
+
+    subscription_ids = MapSet.new(subscriptions, fn (s) -> s.id end)
+
+    has_been_sent_user_id_set = sent_matching_notifications
+    |> Enum.filter(fn (n) ->
+      case n.subscriptions do
+        [] -> true
+        subs -> Enum.any?(subs, fn (s) -> MapSet.member?(subscription_ids, s.id) end)
+      end
+    end)
+    |> MapSet.new(fn (n) -> n.user_id end)
 
     subscriptions_to_test =
-      Enum.reject(subscriptions_to_consider, fn(sub) ->
-        Enum.any?(notifications_to_not_resend, & &1.user_id == sub.user.id && &1.alert_id == alert_id && &1.status == :sent) ||
-        Enum.any?(subscriptions_to_auto_resend, & &1.user_id == sub.user_id)
-      end)
+      Enum.reject(subscriptions, fn (s) -> MapSet.member?(has_been_sent_user_id_set, s.user_id) end)
 
     {subscriptions_to_test, subscriptions_to_auto_resend}
   end
