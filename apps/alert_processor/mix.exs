@@ -59,7 +59,7 @@ defmodule AlertProcessor.Mixfile do
     [
       {:bamboo, "~> 0.8", only: [:test]},
       {:bamboo_smtp, "~> 1.3.0", only: [:test]},
-      {:calendar, "~> 0.16.1"},
+      {:calendar, "~> 0.17.2"},
       {:comeonin, "~> 3.0"},
       {:cowboy, "~> 1.0"},
       {:dialyxir, "~> 0.5.0", only: [:dev]},
