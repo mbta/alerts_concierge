@@ -13,6 +13,14 @@ defmodule AlertProcessor.AlertParserTest do
     :ok
   end
 
+  setup do
+    :subscription_filter
+    |> ConCache.ets
+    |> :ets.tab2list
+    |> Enum.each(fn({key, _}) -> ConCache.delete(:subscription_filter, key) end)
+    :ok
+  end
+
   test "process_alerts/1" do
     user = insert(:user, phone_number: nil)
     :subscription
@@ -20,11 +28,11 @@ defmodule AlertProcessor.AlertParserTest do
     |> weekday_subscription
     |> PaperTrail.insert
     use_cassette "old_alerts", custom: true, clear_mock: true, match_requests_on: [:query] do
-      assert [{:ok, _} | _t] = AlertParser.process_alerts
+      assert {_, [{:ok, _} | _t]} = AlertParser.process_alerts
       assert length(Repo.all(SavedAlert)) > 0
     end
     use_cassette "new_alerts", custom: true, clear_mock: true, match_requests_on: [:query] do
-      assert [{:ok, _} | _t] = AlertParser.process_alerts
+      assert {_, [{:ok, _} | _t]} = AlertParser.process_alerts
     end
   end
 
@@ -64,8 +72,8 @@ defmodule AlertProcessor.AlertParserTest do
     insert(:notification, alert_id: "114166", last_push_notification: ~N[2017-06-19 20:02:14], user: user4, email: user4.email, phone_number: user4.phone_number, status: "sent", send_after: ~N[2017-04-25 10:00:00])
 
     use_cassette "unruly_passenger_alert", custom: true, clear_mock: true, match_requests_on: [:query] do
-      [{:ok, notifications} | _] = AlertParser.process_alerts
-      [notification | []] = notifications
+      {_, result} = AlertParser.process_alerts
+      [notification] = Enum.reduce(result, [], fn({:ok, x}, acc) -> acc ++ x end)
       assert notification.header == "Board Needham Line on opposite track due to unruly passenger"
       assert notification.service_effect == "Needham Line track change"
     end
@@ -79,7 +87,8 @@ defmodule AlertProcessor.AlertParserTest do
     |> PaperTrail.insert
 
     use_cassette "facilities_alerts", custom: true, clear_mock: true, match_requests_on: [:query] do
-      result = AlertParser.process_alerts
+      {_, result} = AlertParser.process_alerts
+
       [notification] = Enum.reduce(result, [], fn({:ok, x}, acc) -> acc ++ x end)
       assert notification.header == "Escalator 343 DAVIS SQUARE - Unpaid Lobby to Holland Street unavailable today"
     end
@@ -108,7 +117,7 @@ defmodule AlertProcessor.AlertParserTest do
     |> insert()
 
     use_cassette "trip_alerts", custom: true, clear_mock: true, match_requests_on: [:query] do
-      result = AlertParser.process_alerts()
+      {_, result} = AlertParser.process_alerts()
       [notification] = Enum.reduce(result, [], fn({:ok, x}, acc) -> acc ++ x end)
       assert notification.header == "Fairmount Line Train 775 (5:00 pm from South Station) cancelled today due to congestion"
       assert notification.email == user.email
@@ -147,7 +156,7 @@ defmodule AlertProcessor.AlertParserTest do
     |> insert()
 
     use_cassette "bus_stop_alert", custom: true, clear_mock: true, match_requests_on: [:query] do
-      result = AlertParser.process_alerts()
+      {_, result} = AlertParser.process_alerts()
       [notification] = Enum.reduce(result, [], fn({:ok, x}, acc) -> acc ++ x end)
       assert notification.header == "Malcolm X Blvd @ King St (inbound) stop moving"
       assert notification.alert_id == "115718"
@@ -156,7 +165,7 @@ defmodule AlertProcessor.AlertParserTest do
 
   test "correctly parses entities without activities" do
     use_cassette "no_activities_alerts", custom: true, clear_mock: true, match_requests_on: [:query] do
-      assert [{:ok, []} | _] = AlertParser.process_alerts()
+      assert {_, [{:ok, []} | _]} = AlertParser.process_alerts()
     end
   end
 
