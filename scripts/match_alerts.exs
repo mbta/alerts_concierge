@@ -26,41 +26,45 @@ defmodule MatchAlerts do
     end_time = %DateTime{year: now.year, month: now.month, day: now.day, zone_abbr: "EST", hour: 23, minute: 59, second: 0,
                          microsecond: {0, 0}, utc_offset: -5, std_offset: 0, time_zone: "America/New_York"}
 
-    alerts = Enum.flat_map(1..number_of_alerts, fn (count) ->
-      [
-        %Alert{
-          active_period: [%{end: end_time, start: start_time}],
-          created_at: now,
-          duration_certainty: :known,
-          effect_name: "Service Change",
-          header: "Header Text",
-          id: "matching-#{count}",
-          informed_entities: [%InformedEntity{
-            activities: ["BOARD"], direction_id: 0, inserted_at: nil, route: "Red", route_type: 1, stop: "place-alfcl"}],
-          last_push_notification: now,
-          recurrence: nil,
-          service_effect: "Service Effect",
-          severity: :moderate,
-          timeframe: nil,
-          url: nil},
-        %Alert{
-          active_period: [%{end: end_time, start: start_time}],
-          created_at: now,
-          duration_certainty: :known,
-          effect_name: "Service Change",
-          header: "Header Text",
-          id: "non-matching-#{count}",
-          informed_entities: [%InformedEntity{
-            activities: ["BOARD"], direction_id: 0, inserted_at: nil, route: "Blue", route_type: 1, stop: "place-wondl"}],
-          last_push_notification: now,
-          recurrence: nil,
-          service_effect: "Service Effect",
-          severity: :moderate,
-          timeframe: nil,
-          url: nil
-        }
-      ]
-    end)
+    alerts = if number_of_alerts == 0 do
+      []
+    else
+      Enum.flat_map(1..number_of_alerts, fn (count) ->
+        [
+          %Alert{
+            active_period: [%{end: end_time, start: start_time}],
+            created_at: now,
+            duration_certainty: :known,
+            effect_name: "Service Change",
+            header: "Header Text",
+            id: "matching-#{count}",
+            informed_entities: [%InformedEntity{
+              activities: ["BOARD"], direction_id: 0, inserted_at: nil, route: "Red", route_type: 1, stop: "place-alfcl"}],
+            last_push_notification: now,
+            recurrence: nil,
+            service_effect: "Service Effect",
+            severity: :moderate,
+            timeframe: nil,
+            url: nil},
+          %Alert{
+            active_period: [%{end: end_time, start: start_time}],
+            created_at: now,
+            duration_certainty: :known,
+            effect_name: "Service Change",
+            header: "Header Text",
+            id: "non-matching-#{count}",
+            informed_entities: [%InformedEntity{
+              activities: ["BOARD"], direction_id: 0, inserted_at: nil, route: "Blue", route_type: 1, stop: "place-wondl"}],
+            last_push_notification: now,
+            recurrence: nil,
+            service_effect: "Service Effect",
+            severity: :moderate,
+            timeframe: nil,
+            url: nil
+          }
+        ]
+      end)
+    end
 
     IO.puts "Begin Matching"
     start_notification_count = number_of_sent_notifications()
