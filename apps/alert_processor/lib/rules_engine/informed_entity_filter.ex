@@ -20,21 +20,20 @@ defmodule AlertProcessor.InformedEntityFilter do
   end
 
   defp do_filter(subscriptions, %Alert{informed_entities: informed_entities}) do
-    normal_subscriptions = Enum.filter(subscriptions, fn(sub) ->
-      alert_ies = Enum.map(
-        informed_entities,
-        fn(ie) ->
-          ie_struct = Map.merge(%InformedEntity{}, ie)
-          Map.take(ie_struct, InformedEntity.queryable_fields)
-        end)
+    alert_ies = Enum.map(
+      informed_entities,
+      fn(ie) ->
+        ie_struct = Map.merge(%InformedEntity{}, ie)
+        Map.take(ie_struct, InformedEntity.queryable_fields)
+      end)
 
+    normal_subscriptions = Enum.filter(subscriptions, fn(sub) ->
       sub.informed_entities
-      |> Enum.map(
+      |> Enum.any?(
         fn(sub_ie) ->
           ie = Map.take(sub_ie, InformedEntity.queryable_fields)
           Enum.any?(alert_ies, & entity_match?(&1, ie))
         end)
-      |> Enum.any?
     end)
 
     admin_subscriptions = admin_subscriptions(subscriptions, informed_entities)
