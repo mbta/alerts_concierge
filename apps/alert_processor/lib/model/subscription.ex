@@ -434,4 +434,8 @@ defmodule AlertProcessor.Model.Subscription do
   def route_count(subscription) do
     Enum.count(subscription.informed_entities, &InformedEntity.entity_type(&1) == :route && &1.direction_id != nil)
   end
+
+  def get_last_inserted_timestamp() do
+    Repo.one(from s in __MODULE__, order_by: [desc: s.updated_at], select: s.updated_at, limit: 1)
+  end
 end
