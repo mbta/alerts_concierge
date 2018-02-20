@@ -22,10 +22,23 @@ defmodule ConciergeSite.Subscriptions.BusRoutes do
   end
 
   @spec route_list_select_option(%Route{}, String.t) :: {String.t, String.t}
-  def route_list_select_option(route, "0") do
-    {"Route #{Route.name(route)} - Outbound", "#{route.route_id} - 0"}
+  def route_list_select_option(route, direction_id_str) do
+    {
+      "Route #{Route.name(route)} - #{headsign(route, direction_id_str)}",
+      "#{route.route_id} - #{direction_id_str}"
+    }
   end
-  def route_list_select_option(route, "1") do
-    {"Route #{Route.name(route)} - Inbound", "#{route.route_id} - 1"}
+
+  defp headsign(%Route{headsigns: %{0 => signs}}, "0") do
+    Enum.join(signs, ", ")
+  end
+  defp headsign(%Route{headsigns: %{1 => signs}}, "1") do
+    Enum.join(signs, ", ")
+  end
+  defp headsign(_, "0") do
+    "Outbound"
+  end
+  defp headsign(_, "1") do
+    "Inbound"
   end
 end
