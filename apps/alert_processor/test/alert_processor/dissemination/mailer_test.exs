@@ -24,6 +24,10 @@ end
 defmodule AlertProcessor.Dissemination.ResponseServer do
   use GenServer
 
+  def init(args) do
+    {:ok, args}
+  end
+
   def handle_call(msg, _from, state) do
     {:reply, {:ok, msg}, state}
   end
