@@ -9,12 +9,3 @@
 #
 # We recommend using the bang functions (`insert!`, `update!`
 # and so on) as they will fail if something goes wrong.
-alias AlertProcessor.{Model.User, Repo}
-
-encrypted_password = Comeonin.Bcrypt.hashpwsalt("password1")
-users = [
-  %User{email: "test_email1@example.com", role: "user", password: "password1", encrypted_password: encrypted_password},
-  %User{email: "test_email2@example.com", phone_number: "5555551234", role: "user", password: "password1", encrypted_password: encrypted_password}
-]
-
-users |> Enum.each(&Repo.insert!/1)
