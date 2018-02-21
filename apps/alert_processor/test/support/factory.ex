@@ -26,15 +26,6 @@ defmodule AlertProcessor.Factory do
     }
   end
 
-  def admin_subscription_factory do
-    %Subscription{
-      relevant_days: [:weekday, :saturday, :sunday],
-      alert_priority_type: :low,
-      start_time: ~T[00:00:00],
-      end_time: ~T[23:59:59]
-    }
-  end
-
   def weekday_subscription(%Subscription{} = subscription) do
     Map.put(subscription, :relevant_days, [:weekday | subscription.relevant_days])
   end

@@ -1,6 +1,6 @@
 defmodule ConciergeSite.Admin.MyAccountControllerTest do
   use ConciergeSite.ConnCase
-  alias AlertProcessor.{Model.Subscription, Model.User, Repo}
+  alias AlertProcessor.{Model.User, Repo}
 
   describe "admin user" do
     setup :insert_admin
@@ -44,33 +44,6 @@ defmodule ConciergeSite.Admin.MyAccountControllerTest do
 
       assert html_response(conn, 200) =~ "Account could not be updated"
     end
-
-    test "PATCH /admin/my-account with valid params creates mode subscriptions", %{conn: conn} do
-      user = insert(:user, role: "application_administration")
-      params = %{
-        "user" => %{
-          "phone_number" => "5551234567",
-          "sms_toggle" => "true"
-        },
-        "mode_subscriptions" => %{
-          "bus" => "true",
-          "commuter_rail" => "false",
-          "ferry" => "true",
-          "subway" => "false"
-        }
-      }
-
-      conn =
-        user
-        |> guardian_login(conn, :token, @application_admin_token_params)
-        |> patch(admin_my_account_path(conn, :update, params))
-
-      updated_user = Repo.get(User, user.id)
-
-      assert Subscription.full_mode_subscription_types_for_user(updated_user) == [:bus, :ferry]
-      assert html_response(conn, 302) =~ "admin/my-account/edit"
-      assert updated_user.phone_number == "5551234567"
-    end
   end
 
   describe "regular user" do
@@ -86,18 +59,10 @@ defmodule ConciergeSite.Admin.MyAccountControllerTest do
     end
 
     test "PATCH /admin/my-account", %{conn: conn, user: user} do
-      params = %{
-        "user" => %{
-          "phone_number" => "5551234567",
-          "sms_toggle" => "true"
-        },
-        "mode_subscriptions" => %{
-          "bus" => "false",
-          "commuter_rail" => "false",
-          "ferry" => "false",
-          "subway" => "false"
-        }
-      }
+      params = %{"user" => %{
+        "phone_number" => "5551234567",
+        "sms_toggle" => "true"
+      }}
 
       conn =
         user
@@ -116,18 +81,10 @@ defmodule ConciergeSite.Admin.MyAccountControllerTest do
     end
 
     test "PATCH /admin/my-account", %{conn: conn} do
-      params = %{
-        "user" => %{
-          "phone_number" => "5551234567",
-          "sms_toggle" => "true"
-        },
-        "mode_subscriptions" => %{
-          "bus" => "false",
-          "commuter_rail" => "false",
-          "ferry" => "false",
-          "subway" => "false"
-        }
-      }
+      params = %{"user" => %{
+        "phone_number" => "5551234567",
+        "sms_toggle" => "true"
+      }}
 
       conn = patch(conn, admin_my_account_path(conn, :update, params))
 

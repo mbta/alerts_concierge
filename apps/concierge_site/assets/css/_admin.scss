@@ -167,9 +167,8 @@
 }
 
 .admin-navbar-email {
-  @include media-breakpoint-up(md) {
-    margin-left: 3rem;
-  }
+  padding-top: .5rem;
+  padding-left: 3rem;
 
   font-weight: bold;
 }
@@ -248,23 +247,6 @@
   }
 
   width: 100%;
-}
-
-.mode-checkbox-label {
-  display: block;
-}
-
-.mode-checkbox {
-  margin-right: 1rem;
-}
-
-.mode-subscription-section {
-  border-bottom: 1px solid $pale-grey;
-  margin-bottom: 1.5rem;
-}
-
-.admin-account-section {
-  padding-bottom: 1.5rem;
 }
 
 .confirmation-page {
