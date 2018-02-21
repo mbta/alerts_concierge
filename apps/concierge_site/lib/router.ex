@@ -129,6 +129,26 @@ defmodule ConciergeSite.Router do
     get "/admin_users/:id/confirm_activate", Admin.AdminUserController, :confirm_activate
   end
 
+  scope "/v2", ConciergeSite, as: :v2 do
+    pipe_through :browser
+
+    get "/", V2.PageController, :index
+    resources "/login", V2.SessionController, only: [:new, :create, :delete], singleton: true
+    resources "/account", V2.AccountController, only: [:new, :create]
+  end
+
+  scope "/v2", ConciergeSite, as: :v2 do
+    pipe_through [:browser, :browser_auth, :subscription_auth]
+
+    get "/account/options", V2.AccountController, :options
+    resources "/trip", V2.TripController, only: [:new, :create, :edit, :update] do
+      resources "/leg", V2.LegController, only: [:new, :create]
+      get "/times", V2.TripController, :new_times
+      post "/times", V2.TripController, :create_times
+      get "/accessibility", V2.TripController, :accessibility
+    end
+  end
+
   if Mix.env == :dev do
     forward "/sent_emails", Bamboo.EmailPreviewPlug
   end
