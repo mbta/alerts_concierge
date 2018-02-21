@@ -11,7 +11,7 @@ defmodule AlertProcessor.Repo.Migrations.Trips do
       add :end_time, :time, null: false
       add :notification_time, :time, null: false
       add :station_features, {:array, :string}, null: false, default: []
-      add :inserted_at, :utc_datetime, null: false
+      timestamps(type: :utc_datetime)
     end
 
     create index(:trips, [:user_id])
