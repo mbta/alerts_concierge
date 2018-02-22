@@ -2,7 +2,7 @@ defmodule AlertProcessor.Subscription.FerryMapperTest do
   use AlertProcessor.DataCase
   use ExVCR.Mock, adapter: ExVCR.Adapter.Hackney
   import AlertProcessor.Factory
-  alias AlertProcessor.{Model.InformedEntity, Model.Trip, Subscription.FerryMapper}
+  alias AlertProcessor.{Model.InformedEntity, Model.TripInfo, Subscription.FerryMapper}
 
   describe "map_subscriptions one way" do
     @one_way_params %{
@@ -236,14 +236,14 @@ defmodule AlertProcessor.Subscription.FerryMapperTest do
     test "returns inbound results for origin destination" do
       use_cassette "long_wharf_to_hingham_schedules", custom: true, clear_mock: true, match_requests_on: [:query] do
         {:ok, trips} = FerryMapper.map_trip_options("Boat-Long", "Boat-Hingham", :weekday, @test_date)
-        assert Enum.all?(trips, &match?(&1, %Trip{destination: {"Hingham (Hewitt's Cove)", "Boat-Hingham"}, direction_id: 0, origin: {"Boston (Long Wharf)", "Boat-Long"}}))
+        assert Enum.all?(trips, &match?(&1, %TripInfo{destination: {"Hingham (Hewitt's Cove)", "Boat-Hingham"}, direction_id: 0, origin: {"Boston (Long Wharf)", "Boat-Long"}}))
       end
     end
 
     test "returns outbound results for origin destination" do
       use_cassette "hingham_to_long_wharf_schedules", custom: true, clear_mock: true, match_requests_on: [:query] do
         {:ok, trips} = FerryMapper.map_trip_options("Boat-Hingham", "Boat-Long", :weekday, @test_date)
-        assert Enum.all?(trips, &match?(&1, %Trip{destination: {"Boston (Long Wharf)", "Boat-Long"}, direction_id: 1, origin: {"Hingham (Hewitt's Cove)", "Boat-Hingham"}}))
+        assert Enum.all?(trips, &match?(&1, %TripInfo{destination: {"Boston (Long Wharf)", "Boat-Long"}, direction_id: 1, origin: {"Hingham (Hewitt's Cove)", "Boat-Hingham"}}))
       end
     end
 
@@ -287,7 +287,7 @@ defmodule AlertProcessor.Subscription.FerryMapperTest do
       }
       {:ok, %{departure_trips: departure_trips}} = FerryMapper.populate_trip_options(params)
       selected_trips = Enum.filter(departure_trips, & &1.selected)
-      assert [%Trip{departure_time: ~T[10:00:00], selected: true}] = selected_trips
+      assert [%TripInfo{departure_time: ~T[10:00:00], selected: true}] = selected_trips
     end
 
     test "one_way with trip_ids returns trip options with preselected trips" do
@@ -301,8 +301,8 @@ defmodule AlertProcessor.Subscription.FerryMapperTest do
       {:ok, %{departure_trips: departure_trips}} = FerryMapper.populate_trip_options(params)
       selected_trips = Enum.filter(departure_trips, & &1.selected)
       assert [
-        %Trip{trip_number: "Boat-F1-Boat-Hingham-13:00:00-weekday-1", selected: true},
-        %Trip{trip_number: "Boat-F1-Boat-Hingham-15:00:00-weekday-1", selected: true}
+        %TripInfo{trip_number: "Boat-F1-Boat-Hingham-13:00:00-weekday-1", selected: true},
+        %TripInfo{trip_number: "Boat-F1-Boat-Hingham-15:00:00-weekday-1", selected: true}
       ] = selected_trips
     end
 
@@ -347,10 +347,10 @@ defmodule AlertProcessor.Subscription.FerryMapperTest do
       selected_trips = Enum.filter(departure_trips, & &1.selected)
       selected_return_trips = Enum.filter(return_trips, & &1.selected)
       assert [
-        %Trip{trip_number: "Boat-F1-Boat-Hingham-10:00:00-weekday-1", selected: true},
+        %TripInfo{trip_number: "Boat-F1-Boat-Hingham-10:00:00-weekday-1", selected: true},
       ] = selected_trips
       assert [
-        %Trip{trip_number: "Boat-F1-Boat-Long-15:40:00-weekday-0", selected: true}
+        %TripInfo{trip_number: "Boat-F1-Boat-Long-15:40:00-weekday-0", selected: true}
       ] = selected_return_trips
     end
 
@@ -371,12 +371,12 @@ defmodule AlertProcessor.Subscription.FerryMapperTest do
       selected_trips = Enum.filter(departure_trips, & &1.selected)
       selected_return_trips = Enum.filter(return_trips, & &1.selected)
       assert [
-        %Trip{trip_number: "Boat-F1-Boat-Hingham-13:00:00-weekday-1", selected: true},
-        %Trip{trip_number: "Boat-F1-Boat-Hingham-15:00:00-weekday-1", selected: true}
+        %TripInfo{trip_number: "Boat-F1-Boat-Hingham-13:00:00-weekday-1", selected: true},
+        %TripInfo{trip_number: "Boat-F1-Boat-Hingham-15:00:00-weekday-1", selected: true}
       ] = selected_trips
       assert [
-        %Trip{trip_number: "Boat-F1-Boat-Long-14:00:00-weekday-0", selected: true},
-        %Trip{trip_number: "Boat-F1-Boat-Long-16:30:00-weekday-0", selected: true}
+        %TripInfo{trip_number: "Boat-F1-Boat-Long-14:00:00-weekday-0", selected: true},
+        %TripInfo{trip_number: "Boat-F1-Boat-Long-16:30:00-weekday-0", selected: true}
       ] = selected_return_trips
     end
 

@@ -1,6 +1,6 @@
 defmodule ConciergeSite.FerrySubscriptionView do
   use ConciergeSite.Web, :view
-  alias AlertProcessor.Model.Trip
+  alias AlertProcessor.Model.TripInfo
   import ConciergeSite.SubscriptionHelper,
     only: [progress_link_class: 3, do_query_string_params: 2,
            do_hidden_form_inputs: 2, formatted_day: 1]
@@ -42,7 +42,7 @@ defmodule ConciergeSite.FerrySubscriptionView do
   def params_for_step(:preferences), do: ["alert_priority_type" | params_for_step(:ferry)]
   def params_for_step(_), do: []
 
-  @spec trip_option(Trip.t, :depart | :return) :: Phoenix.HTML.safe
+  @spec trip_option(TripInfo.t, :depart | :return) :: Phoenix.HTML.safe
   def trip_option(trip, trip_type) do
     content_tag :div, class: trip_option_classes(trip) do
       [

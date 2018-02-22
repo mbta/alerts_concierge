@@ -3,12 +3,12 @@ defmodule AlertProcessor.Subscription.Mapper do
   Module for common subscription mapping functions to be imported into
   mode-specific mapper modules.
   """
-  alias AlertProcessor.{Helpers.DateTimeHelper, Model.InformedEntity, Model.Route, Model.Subscription, Model.Trip, Model.User, Repo}
+  alias AlertProcessor.{Helpers.DateTimeHelper, Model.InformedEntity, Model.Route, Model.Subscription, Model.TripInfo, Model.User, Repo}
   import Ecto.Query
   alias Ecto.Multi
   alias AlertProcessor.ServiceInfoCache
 
-  @type map_trip_info_fn :: (String.t, String.t, Subscription.relevant_day -> :error | {:ok, [Trip.t]})
+  @type map_trip_info_fn :: (String.t, String.t, Subscription.relevant_day -> :error | {:ok, [TripInfo.t]})
 
   def create_subscriptions(%{"return_start" => nil, "return_end" => nil} = params), do: [do_create_subscription(params)]
   def create_subscriptions(%{"origin" => origin, "destination" => destination} = params) do
@@ -454,7 +454,7 @@ defmodule AlertProcessor.Subscription.Mapper do
     end
   end
 
-  @spec get_trip_info(Route.stop_id, Route.stop_id, Subscription.relevant_day, [Trip.id] | String.t, map_trip_info_fn) :: {:ok, [Trip.t]} | :error
+  @spec get_trip_info(Route.stop_id, Route.stop_id, Subscription.relevant_day, [TripInfo.id] | String.t, map_trip_info_fn) :: {:ok, [TripInfo.t]} | :error
   def get_trip_info(origin, destination, relevant_days, selected_trip_numbers, map_trip_options_fn) when is_list(selected_trip_numbers) do
     case map_trip_options_fn.(origin, destination, relevant_days) do
       {:ok, trips} ->
@@ -497,7 +497,7 @@ defmodule AlertProcessor.Subscription.Mapper do
     abs(departure_start - departure_time)
   end
 
-  @spec get_trip_info_from_subscription(Subscription.t, map_trip_info_fn) :: {:ok, [Trip.t]} | :error
+  @spec get_trip_info_from_subscription(Subscription.t, map_trip_info_fn) :: {:ok, [TripInfo.t]} | :error
   def get_trip_info_from_subscription(subscription, map_trip_options_fn) do
     with [relevant_days] <- subscription.relevant_days,
          selected_trips <- Subscription.subscription_trip_ids(subscription) do
