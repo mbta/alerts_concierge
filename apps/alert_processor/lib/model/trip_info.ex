@@ -1,4 +1,4 @@
-defmodule AlertProcessor.Model.Trip do
+defmodule AlertProcessor.Model.TripInfo do
   @moduledoc """
   Module used for storing information
   about trips for displaying

@@ -5,7 +5,7 @@ defmodule AlertProcessor.Subscription.FerryMapper do
   """
 
   import AlertProcessor.Subscription.Mapper
-  alias AlertProcessor.{ApiClient, Helpers.DateTimeHelper, Model.Route, Model.Subscription, Model.Trip, ServiceInfoCache}
+  alias AlertProcessor.{ApiClient, Helpers.DateTimeHelper, Model.Route, Model.Subscription, Model.TripInfo, ServiceInfoCache}
 
   defdelegate build_subscription_transaction(subscriptions, user, originator), to: AlertProcessor.Subscription.Mapper
   defdelegate build_update_subscription_transaction(subscription, user, originator), to: AlertProcessor.Subscription.Mapper
@@ -49,7 +49,7 @@ defmodule AlertProcessor.Subscription.FerryMapper do
   which consists of a trip number and the description text to be displayed to the user for selecting
   specific trips for their subscription.
   """
-  @spec map_trip_options(String.t, String.t, Subscription.relevant_day) :: :error | {:ok, [Trip.t]}
+  @spec map_trip_options(String.t, String.t, Subscription.relevant_day) :: :error | {:ok, [TripInfo.t]}
   def map_trip_options(origin, destination, relevant_days, today_date \\ Calendar.Date.today!("America/New_York")) do
     {:ok, ferry_info} = ServiceInfoCache.get_ferry_info()
     routes = Enum.filter(ferry_info, fn(%Route{stop_list: stop_list}) -> List.keymember?(stop_list, origin, 1) && List.keymember?(stop_list, destination, 1) end)
@@ -65,7 +65,7 @@ defmodule AlertProcessor.Subscription.FerryMapper do
           {:ok, schedules, _trips} ->
             {:ok, origin_stop} = ServiceInfoCache.get_stop(origin)
             {:ok, destination_stop} = ServiceInfoCache.get_stop(destination)
-            trip = %Trip{origin: origin_stop, destination: destination_stop, direction_id: direction_id}
+            trip = %TripInfo{origin: origin_stop, destination: destination_stop, direction_id: direction_id}
             {:ok, map_common_trips(schedules, trip)}
           _ -> :error
         end
@@ -102,14 +102,14 @@ defmodule AlertProcessor.Subscription.FerryMapper do
 
         %{trip | arrival_time: map_schedule_time(arrival_timestamp), departure_time: map_schedule_time(departure_timestamp), trip_number: generalized_trip_id, route: route}
       end)
-    |> Enum.sort_by(fn(%Trip{departure_time: departure_time}) -> {~T[05:00:00] > departure_time, departure_time} end)
+    |> Enum.sort_by(fn(%TripInfo{departure_time: departure_time}) -> {~T[05:00:00] > departure_time, departure_time} end)
   end
 
   defp map_schedule_time(schedule_datetime) do
     schedule_datetime |> NaiveDateTime.from_iso8601! |> NaiveDateTime.to_time()
   end
 
-  @spec trip_schedule_info_map(String.t, String.t, Subscription.relevant_day) :: %{optional({Route.stop_id, Trip.id}) => DateTime.t}
+  @spec trip_schedule_info_map(String.t, String.t, Subscription.relevant_day) :: %{optional({Route.stop_id, TripInfo.id}) => DateTime.t}
   def trip_schedule_info_map(origin, destination, relevant_days, today_date \\ Calendar.Date.today!("America/New_York")) do
     relevant_date = DateTimeHelper.determine_date(relevant_days, today_date)
     {:ok, data, includes} = ApiClient.schedules(origin, destination, nil, [], relevant_date)

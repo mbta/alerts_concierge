@@ -5,7 +5,7 @@ defmodule ConciergeSite.CommuterRailSubscriptionView do
            do_hidden_form_inputs: 2, formatted_day: 1]
   import ConciergeSite.TimeHelper,
     only: [travel_time_options: 0]
-  alias AlertProcessor.Model.Trip
+  alias AlertProcessor.Model.TripInfo
 
   @type trip_type :: :one_way | :round_trip
   @type step :: :trip_type | :trip_info | :train | :preferences
@@ -43,7 +43,7 @@ defmodule ConciergeSite.CommuterRailSubscriptionView do
   def params_for_step(:preferences), do: ["alert_priority_type" | params_for_step(:train)]
   def params_for_step(_), do: []
 
-  @spec trip_option(Trip.t, :depart | :return) :: Phoenix.HTML.safe
+  @spec trip_option(TripInfo.t, :depart | :return) :: Phoenix.HTML.safe
   def trip_option(trip, trip_type) do
     content_tag :div, class: trip_option_classes(trip) do
       [

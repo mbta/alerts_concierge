@@ -4,7 +4,7 @@ defmodule AlertProcessor.ApiClient do
   """
   use HTTPoison.Base
 
-  alias AlertProcessor.Model.{Route, Trip}
+  alias AlertProcessor.Model.{Route, TripInfo}
   alias AlertProcessor.Helpers.ConfigHelper
 
   @doc """
@@ -122,7 +122,7 @@ defmodule AlertProcessor.ApiClient do
     |> parse_response()
   end
 
-  @spec schedule_for_trip(Trip.id) :: {:ok, [map]} | {:error, String.t}
+  @spec schedule_for_trip(TripInfo.id) :: {:ok, [map]} | {:error, String.t}
   def schedule_for_trip(trip_id) do
     "/schedules"
     |> api_get(trip: trip_id)
