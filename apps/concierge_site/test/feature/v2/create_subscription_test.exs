@@ -30,7 +30,7 @@ defmodule ConciergeSite.V2.CreateSubscriptionTest do
   test "new leg", %{session: session, user: user} do
     session
     |> log_in(user)
-    |> visit("/v2/trip/:id/leg/new")
+    |> visit("/v2/trip/leg/new")
     |> assert_has(css("#main", text: "new leg"))
   end
 
@@ -46,6 +46,13 @@ defmodule ConciergeSite.V2.CreateSubscriptionTest do
     |> assert_has(css("#main", text: "new session"))
   end
 
+  test "trip index", %{session: session, user: user} do
+    session
+    |> log_in(user)
+    |> visit("/v2/trips")
+    |> assert_has(css("#main", text: "trip index"))
+  end
+
   test "new trip", %{session: session, user: user} do
     session
     |> log_in(user)
@@ -56,21 +63,21 @@ defmodule ConciergeSite.V2.CreateSubscriptionTest do
   test "edit trip", %{session: session, user: user} do
     session
     |> log_in(user)
-    |> visit("/v2/trip/:id/edit")
+    |> visit("/v2/trips/:id/edit")
     |> assert_has(css("#main", text: "edit trip"))
   end
 
   test "trip times", %{session: session, user: user} do
     session
     |> log_in(user)
-    |> visit("/v2/trip/:id/times")
+    |> visit("/v2/trip/times")
     |> assert_has(css("#main", text: "new trip times"))
   end
 
   test "trip accessibility", %{session: session, user: user} do
     session
     |> log_in(user)
-    |> visit("/v2/trip/:id/accessibility")
+    |> visit("/v2/trip/accessibility")
     |> assert_has(css("#main", text: "accessibility"))
   end
 end
