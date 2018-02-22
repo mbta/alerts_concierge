@@ -37,6 +37,10 @@ defmodule ConciergeSite.Router do
     plug Guardian.Plug.EnsurePermissions, handler: ConciergeSite.Admin.SessionController, admin: [:customer_support]
   end
 
+  pipeline :v2_layout do
+    plug :put_layout, {ConciergeSite.V2.LayoutView, :app}
+  end
+
   scope "/", ConciergeSite do
     pipe_through :browser
 
@@ -130,7 +134,7 @@ defmodule ConciergeSite.Router do
   end
 
   scope "/v2", ConciergeSite, as: :v2 do
-    pipe_through :browser
+    pipe_through [:browser, :v2_layout]
 
     get "/", V2.PageController, :index
     resources "/login", V2.SessionController, only: [:new, :create, :delete], singleton: true
@@ -138,7 +142,7 @@ defmodule ConciergeSite.Router do
   end
 
   scope "/v2", ConciergeSite, as: :v2 do
-    pipe_through [:browser, :browser_auth, :subscription_auth]
+    pipe_through [:browser, :browser_auth, :subscription_auth, :v2_layout]
 
     get "/account/options", V2.AccountController, :options
     resources "/trips", V2.TripController, only: [:index, :edit, :update, :delete]
