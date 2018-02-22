@@ -27,7 +27,7 @@ defmodule AlertProcessor.InformedEntityFilter do
         Map.take(ie_struct, InformedEntity.queryable_fields)
       end)
 
-    normal_subscriptions = Enum.filter(subscriptions, fn(sub) ->
+    Enum.filter(subscriptions, fn(sub) ->
       sub.informed_entities
       |> Enum.any?(
         fn(sub_ie) ->
@@ -35,12 +35,6 @@ defmodule AlertProcessor.InformedEntityFilter do
           Enum.any?(alert_ies, & entity_match?(&1, ie))
         end)
     end)
-
-    admin_subscriptions = admin_subscriptions(subscriptions, informed_entities)
-
-    normal_subscriptions
-    |> Kernel.++(admin_subscriptions)
-    |> Enum.uniq()
   end
 
   defp entity_match?(%{trip: trip_id} = alert, %{trip: subscription_trip_id} = subscription) when not is_nil(trip_id) do
@@ -68,24 +62,5 @@ defmodule AlertProcessor.InformedEntityFilter do
 
   defp activity_overlap?(activities, other_activities) do
     Enum.any?(activities, &Enum.member?(other_activities, &1))
-  end
-
-  defp admin_subscriptions(subscriptions, informed_entities) do
-    route_types =
-      informed_entities
-      |> Enum.filter(&Map.has_key?(&1, :route_type))
-      |> Enum.map(&Subscription.subscription_type_from_route_type(Map.get(&1, :route_type)))
-
-    case route_types do
-      [] ->
-        []
-      _ ->
-        subscriptions
-        |> Enum.filter(fn(sub) ->
-          sub.user.role == "application_administration" &&
-          Enum.member?(route_types, Atom.to_string(sub.type)) &&
-          length(sub.informed_entities) == 0
-        end)
-    end
   end
 end

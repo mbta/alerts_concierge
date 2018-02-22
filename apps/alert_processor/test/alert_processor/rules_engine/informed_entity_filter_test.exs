@@ -171,26 +171,6 @@ defmodule AlertProcessor.InformedEntityFilterTest do
     assert [sub5, sub7] == InformedEntityFilter.filter(all_subscriptions, alert: @alert5)
   end
 
-  test "matches admin mode subscription", %{sub1: sub1, sub2: sub2} do
-    user = insert(:user, role: "application_administration")
-    admin_sub =
-      :admin_subscription
-      |> insert(type: :bus, user: user)
-      |> Repo.preload(:user)
-      |> Repo.preload(:informed_entities)
-    assert [admin_sub] == InformedEntityFilter.filter([admin_sub, sub1, sub2], alert: @alert4)
-  end
-
-  test "doesnt match non application admin mode subscription", %{sub1: sub1, sub2: sub2} do
-    user = insert(:user, role: "customer_support")
-    admin_sub =
-      :admin_subscription
-      |> insert(type: :bus, user: user)
-      |> Repo.preload(:user)
-      |> Repo.preload(:informed_entities)
-    assert [] == InformedEntityFilter.filter([admin_sub, sub1, sub2], alert: @alert4)
-  end
-
   test "matches trips", %{sub6: sub6, all_subscriptions: all_subscriptions} do
     assert [sub6] == InformedEntityFilter.filter(all_subscriptions, alert: @alert6)
   end

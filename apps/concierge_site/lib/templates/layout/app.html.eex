@@ -49,9 +49,7 @@
                         <%= link "Admins", to: "/admin/admin_users", class: "main__menu--link"%>
                       </li>
                     <% end %>
-                    <li>
-                      <%= link @current_user.email, to: "/admin/my-account/edit", class: "main__menu--link" %>
-                    </li>
+                    <span class="admin-navbar-email"><%= @current_user.email %></span>
                   <% end %>
                   <%= if @current_user do %>
                     <li>
