@@ -1,0 +1,18 @@
+.header__container {
+  height: 3rem;
+
+  @include media-breakpoint-down(sm) {
+    background-color: $brand-primary;
+  }
+}
+
+.header__logo {
+  display: block;
+  fill: $gray-dark;
+  height: 3rem;
+  width: 12rem;
+
+  @include media-breakpoint-down(sm) {
+    fill: $white;
+  }
+}
