@@ -26,6 +26,7 @@ import selectTrip from './select-trip';
 import formHelpers from './form-helpers';
 import vacationDatepicker from './vacation-datepicker';
 import subscriptionSearch from './subscription-search';
+import selectRoute from "./select-route";
 
 selectEntity();
 selectMultipleEntity();
@@ -33,5 +34,6 @@ selectTrip();
 formHelpers();
 vacationDatepicker();
 subscriptionSearch();
+selectRoute();
 
 document.body.className = document.body.className.replace("no-js", "js");
