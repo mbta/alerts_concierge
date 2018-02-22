@@ -3,7 +3,8 @@ defmodule AlertProcessor.Model.Subscription do
   Set of criteria on which a user wants to be sent alerts.
   """
 
-  alias AlertProcessor.{Helpers.DateTimeHelper, Model.InformedEntity, Model.TripInfo, Model.User, Repo, TimeFrameComparison}
+  alias AlertProcessor.{Helpers.DateTimeHelper, Model.InformedEntity, Model.TripInfo,
+    Model.User, Model.Trip, Repo, TimeFrameComparison}
   import Ecto.Query
 
   @type id :: String.t
@@ -14,9 +15,11 @@ defmodule AlertProcessor.Model.Subscription do
   @type t :: %__MODULE__{
     alert_priority_type: atom,
     user_id: String.t | nil,
+    trip_id: String.t | nil,
     relevant_days: [relevant_day] | nil,
     start_time: Time.t | nil,
     end_time: Time.t | nil,
+    notification_time: Time.t | nil,
     origin: String.t | nil,
     destination: String.t | nil,
     type: subscription_type | nil,
@@ -25,7 +28,8 @@ defmodule AlertProcessor.Model.Subscription do
     origin_lat: float | nil,
     origin_long: float | nil,
     destination_lat: float | nil,
-    destination_long: float | nil
+    destination_long: float | nil,
+    rank: integer | nil
   }
 
   @alert_priority_type_values %{
@@ -51,11 +55,13 @@ defmodule AlertProcessor.Model.Subscription do
 
   schema "subscriptions" do
     belongs_to :user, User, type: :binary_id
+    belongs_to :trip, Trip, type: :binary_id
     has_many :informed_entities, InformedEntity
     field :alert_priority_type, AlertProcessor.AtomType
     field :relevant_days, {:array, AlertProcessor.AtomType}
     field :start_time, :time, null: false
     field :end_time, :time, null: false
+    field :notification_time, :time
     field :origin, :string
     field :destination, :string
     field :type, AlertProcessor.AtomType
@@ -65,11 +71,13 @@ defmodule AlertProcessor.Model.Subscription do
     field :origin_long, :float
     field :destination_lat, :float
     field :destination_long, :float
+    field :rank, :integer
 
     timestamps()
   end
 
-  @permitted_fields ~w(alert_priority_type user_id relevant_days start_time end_time type)a
+  @permitted_fields ~w(alert_priority_type user_id trip_id relevant_days start_time
+    end_time notification_time type rank)a
   @required_fields ~w(alert_priority_type user_id start_time end_time)a
   @update_permitted_fields ~w(alert_priority_type relevant_days start_time end_time)a
   @valid_days ~w(weekday saturday sunday)a
