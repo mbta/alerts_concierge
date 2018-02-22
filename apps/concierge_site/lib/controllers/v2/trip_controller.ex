@@ -1,6 +1,10 @@
 defmodule ConciergeSite.V2.TripController do
   use ConciergeSite.Web, :controller
 
+  def index(conn, _params) do
+    render conn, "index.html"
+  end
+
   def new(conn, _params) do
     render conn, "new.html"
   end
@@ -27,5 +31,9 @@ defmodule ConciergeSite.V2.TripController do
 
   def accessibility(conn, _params) do
     render conn, "accessibility.html"
+  end
+
+  def delete(conn, _params) do
+    redirect(conn, to: v2_trip_path(conn, :index))
   end
 end
