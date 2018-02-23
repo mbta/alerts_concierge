@@ -6,15 +6,23 @@ defmodule ConciergeSite.RouteSelectHelper do
   alias AlertProcessor.Model.Route
   import Phoenix.HTML.Tag, only: [content_tag: 3]
 
-  @spec render() :: Phoenix.HTML.safe
-  def render() do
-    content_tag :select, data: [type: "route"], class: "form-control" do
+  @spec render(atom, atom) :: Phoenix.HTML.safe
+  def render(input_name, field) do
+    content_tag :select, attributes(input_name, field) do
       [default_option(),
        option_group("Subway", get_routes(:subway)),
        option_group("Commuter Rail", get_routes(:cr)),
        option_group("Ferry", get_routes(:ferry)),
        option_group("Bus", get_routes(:bus))]
     end
+  end
+
+  @spec attributes(atom, atom) :: keyword(String.t)
+  defp attributes(input_name, field) do
+    [data: [type: "route"],
+     class: "form-control",
+     id: "#{input_name}_#{field}",
+     name: "#{input_name}[#{field}]"]
   end
 
   @spec default_option() :: Phoenix.HTML.safe
