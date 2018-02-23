@@ -1,0 +1,15 @@
+html {
+  font-size: $base-font-size;
+
+  @include media-breakpoint-up(xxl) {
+    font-size: $base-font-size-xxl;
+  }
+}
+
+body {
+  line-height: 1.25rem;
+}
+
+.heading__hero {
+  font-size: 2rem;
+}
