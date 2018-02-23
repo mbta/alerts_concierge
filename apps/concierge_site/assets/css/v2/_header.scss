@@ -1,5 +1,5 @@
 .header__container {
-  height: 3rem;
+  height: 3.5rem;
 
   @include media-breakpoint-down(sm) {
     background-color: $brand-primary;
@@ -10,6 +10,7 @@
   display: block;
   fill: $gray-dark;
   height: 3rem;
+  margin-top: .25rem;
   width: 12rem;
 
   @include media-breakpoint-down(sm) {

@@ -37,7 +37,7 @@ defmodule ConciergeSite.V2.CreateSubscriptionTest do
   test "home page", %{session: session} do
     session
     |> visit("/v2/")
-    |> assert_has(css("#main", text: "page index"))
+    |> assert_has(css("#main", text: "Welcome to T-Alerts!"))
   end
 
   test "new session", %{session: session} do
