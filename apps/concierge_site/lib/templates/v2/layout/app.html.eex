@@ -11,7 +11,7 @@
     <link rel="icon" href="<%= static_url(@conn, "/images/mbta-logo-t-favicon.png") %>" sizes="32x32" type="image/png">
     <link rel="icon" href="<%= static_url(@conn, "/favicon.ico") %>" sizes="16x16" type="image/vnd.microsoft.icon">
     <title>T-Alerts</title>
-    <link rel="stylesheet" href="<%= static_path(@conn, "/css/app.css") %>">
+    <link rel="stylesheet" href="<%= static_path(@conn, "/css/app_v2.css") %>">
 
     <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
     new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
@@ -27,7 +27,7 @@
         <%= render "_logo.html", assigns %>
       </div>
     </header>
-    <div class="container page-content">
+    <div class="container page__content">
       <main id="main" tabindex="-1">
       <%= render @view_module, @view_template, assigns %>
       </main>
