@@ -1,0 +1,21 @@
+.footer__container {
+  background-color: #092e4d;
+  color: white;
+  font-size: $font-size-xs;
+  height: 8rem;
+  width: 100%;
+  padding-top: 2rem;
+  overflow: hidden;
+  text-align: center;
+}
+
+.footer__link {
+  color: $link-color-dark-background;
+
+  &:hover,
+  &:active,
+  &:focus {
+    color: $link-color-dark-background;
+    text-decoration: underline;
+  }
+}
