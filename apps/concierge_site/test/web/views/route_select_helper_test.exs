@@ -1,4 +1,4 @@
-defmodule ConciergeSite.TimeHelperTest do
+defmodule ConciergeSite.RouteSelectHelperTest do
   @moduledoc false
   use ExUnit.Case
   alias ConciergeSite.RouteSelectHelper
