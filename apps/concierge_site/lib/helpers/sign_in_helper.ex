@@ -6,6 +6,7 @@ defmodule ConciergeSite.SignInHelper do
   import ConciergeSite.Router.Helpers
   import Phoenix.Controller, only: [redirect: 2]
   alias AlertProcessor.Model.User
+  alias AlertProcessor.Model.Trip
 
   @endpoint ConciergeSite.Endpoint
 
@@ -62,6 +63,14 @@ defmodule ConciergeSite.SignInHelper do
       admin_my_account_path(@endpoint, :edit)
     else
       my_account_path(@endpoint, :edit)
+    end
+  end
+
+  defp redirect_path(user, :v2_default) do
+    if Trip.get_trips_by_user(user.id) == [] do
+      v2_account_path(@endpoint, :new)
+    else
+      v2_trip_path(@endpoint, :index)
     end
   end
 end

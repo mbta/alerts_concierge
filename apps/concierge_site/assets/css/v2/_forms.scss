@@ -1,0 +1,24 @@
+.form__label {
+  font-weight: bold;
+}
+
+.form__input {
+  padding: .75rem;
+}
+
+.error-block-container {
+  background-color: $form-error-message;
+  margin-top: .5rem;
+
+  span {
+    display: block;
+    margin: .5rem;
+    padding: .4rem;
+
+    &:before {
+      @include fa-icon();
+      content: $fa-var-exclamation-circle;
+      margin-right: .25rem;
+    }
+  }
+}

@@ -5,6 +5,7 @@ defmodule AlertProcessor.Model.Trip do
   """
 
   alias AlertProcessor.Model.{Notification, User}
+  alias AlertProcessor.Repo
 
   @type relevant_day :: :monday | :tuesday | :wednesday | :thursday | :friday | :saturday | :sunday
   @type station_feature :: :accessibility | :parking | :bike_storage
@@ -22,6 +23,7 @@ defmodule AlertProcessor.Model.Trip do
 
   use Ecto.Schema
   import Ecto.Changeset
+  import Ecto.Query
 
   @primary_key {:id, :binary_id, autogenerate: true}
 
@@ -58,4 +60,6 @@ defmodule AlertProcessor.Model.Trip do
     |> validate_subset(:station_features, @valid_station_features)
     |> validate_inclusion(:alert_priority_type, @valid_alert_priority_types)
   end
+
+  def get_trips_by_user(user_id), do: Repo.all(from t in __MODULE__, where: t.user_id == ^user_id)
 end

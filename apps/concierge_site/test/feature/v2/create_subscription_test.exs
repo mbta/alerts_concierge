@@ -43,7 +43,7 @@ defmodule ConciergeSite.V2.CreateSubscriptionTest do
   test "new session", %{session: session} do
     session
     |> visit("/v2/login/new")
-    |> assert_has(css("#main", text: "new session"))
+    |> assert_has(css("#main", text: "Sign in"))
   end
 
   test "trip index", %{session: session, user: user} do

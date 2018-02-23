@@ -7,3 +7,8 @@ html {
 .heading__hero {
   font-size: 2.25rem;
 }
+
+.heading__title {
+  font-size: 1.75rem;
+  border-bottom: 5px solid $brand-primary;
+}
