@@ -3,8 +3,10 @@ defmodule AlertProcessor.Model.TripTest do
   use AlertProcessor.DataCase
   import AlertProcessor.Factory
 
-  alias AlertProcessor.Model.Trip
+  alias AlertProcessor.{Model.Trip, Model.User, Repo}
 
+  @password "password1"
+  @encrypted_password Comeonin.Bcrypt.hashpwsalt(@password)
   @base_attrs %{
     alert_priority_type: :low,
     relevant_days: [:monday],
@@ -67,5 +69,15 @@ defmodule AlertProcessor.Model.TripTest do
     changeset = Trip.create_changeset(%Trip{}, attrs)
 
     refute changeset.valid?
+  end
+
+  test "get_trips_by_user/1" do
+    user = Repo.insert!(%User{email: "test@email.com", role: "user", encrypted_password: @encrypted_password})
+    Repo.insert!(%Trip{user_id: user.id, alert_priority_type: :low, relevant_days: [:monday], start_time: ~T[12:00:00],
+                       end_time: ~T[18:00:00], notification_time: ~T[11:00:00], station_features: [:accessibility]})
+
+    assert [trip] = Trip.get_trips_by_user(user.id)
+    assert trip.user_id == user.id
+    assert [] == Trip.get_trips_by_user("ba51f08c-ad36-4dd5-a81a-557168c42f51")
   end
 end
