@@ -1,1 +1,22 @@
-new session
+<h1 class="heading__title my-4">Sign in</h1>
+<%= flash_error(@conn) %>
+
+<p>Don't have an account? <a href="/v2/account/new">Sign up</a></p>
+
+<%= form_for @login_changeset, v2_session_path(@conn, :create), fn f -> %>
+  <div class="form-group my-4">
+    <%= label f, :email, "Email login", class: "form__label" %>
+    <%= error_tag f, :email %>
+    <%= email_input f, :email, placeholder: "your@email.com", class: "form-control form__input", required: true %>
+    <span></span>
+  </div>
+  <div class="form-group my-4">
+    <%= label f, :password, "Password", class: "form__label" %>
+    <%= error_tag f, :password %>
+    <%= password_input f, :password, placeholder: "Enter your password", class: "form-control form__input", pattern: password_regex_string(), required: true %>
+    <span></span>
+  </div>
+  <div class="my-5">
+    <%= submit "Go to my account", class: "btn btn-primary btn btn-block" %>
+  </div>
+<% end %>
