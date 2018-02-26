@@ -28,10 +28,10 @@ defmodule ConciergeSite.Subscriptions.Lines do
         station_list = Enum.flat_map(stations, fn station -> station.stop_list end)
 
         for {key, station_id} <- selected_station_ids do
-          {name, _id, _latlong} = Enum.find(
+          {name, _id, _latlong, _wheelchair} = Enum.find(
             station_list,
             {station_id, station_id},
-            fn {_name, station_list_id, _latlong} -> station_id == station_list_id end
+            fn {_name, station_list_id, _latlong, _wheelchair} -> station_id == station_list_id end
           )
           {key, name}
         end

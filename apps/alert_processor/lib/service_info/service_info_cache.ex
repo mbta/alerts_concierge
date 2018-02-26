@@ -76,6 +76,10 @@ defmodule AlertProcessor.ServiceInfoCache do
     GenServer.call(name, :get_facility_map)
   end
 
+  def get_stops_with_icons(name \\ __MODULE__) do
+    GenServer.call(name, :get_stops_with_icons)
+  end
+
   @doc """
   Update service info and then reschedule next time to process.
   """
@@ -159,6 +163,10 @@ defmodule AlertProcessor.ServiceInfoCache do
     {:reply, {:ok, facility_map}, state}
   end
 
+  def handle_call(:get_stops_with_icons, _from, %{stops_with_icons: stops} = state) do
+    {:reply, {:ok, stops}, state}
+  end
+
   defp parse_headsign(relevant_routes, direction_id) do
     case relevant_routes do
       [%Route{route_id: "Green-" <> _} | _t] ->
@@ -184,7 +192,7 @@ defmodule AlertProcessor.ServiceInfoCache do
 
   defp get_stop_from_state(stop_id, state) do
     Enum.find_value(state, fn(%Route{stop_list: stop_list}) ->
-      Enum.find(stop_list, fn({_name, id, _latlong}) ->
+      Enum.find(stop_list, fn({_name, id, _latlong, _wheelchair}) ->
         id == stop_id
       end)
     end)
@@ -195,10 +203,43 @@ defmodule AlertProcessor.ServiceInfoCache do
       Enum.flat_map(@service_types, fn(service_type) ->
         fetch_service_info(service_type)
       end)
-    for info_type <- @info_types, into: %{routes: route_state} do
+
+    stops_with_icons = stops_with_icons(route_state)
+
+    info_state = for info_type <- @info_types, into: %{routes: route_state} do
       {info_type, fetch_service_info(info_type)}
     end
+
+    Map.put(info_state, :stops_with_icons, stops_with_icons)
   end
+
+  defp stops_with_icons(routes) do
+    Enum.reduce(routes, %{}, fn(%Route{stop_list: stop_list, route_type: route_type, route_id: route_id}, acc) ->
+      stops = if route_type == 3, do: fetch_stops(nil, route_id), else: stop_list
+      stop_map = for {_, stop_id, _, wheelchair_boarding} <- stops, into: %{}  do
+        {stop_id, [modes: MapSet.new([stop_mode_icon(route_id, route_type)]),
+                   accessible: accessible(wheelchair_boarding)]}
+      end
+      Map.merge(acc, stop_map, fn(_key, historic, new) ->
+        [modes: MapSet.union(historic[:modes], new[:modes]), accessible: historic[:accessible]]
+      end)
+    end)
+  end
+
+  defp stop_mode_icon("Red", _), do: :red
+  defp stop_mode_icon("Orange", _), do: :orange
+  defp stop_mode_icon("Blue", _), do: :blue
+  defp stop_mode_icon("Green-B", _), do: :green
+  defp stop_mode_icon("Green-C", _), do: :green
+  defp stop_mode_icon("Green-D", _), do: :green
+  defp stop_mode_icon("Green-E", _), do: :green
+  defp stop_mode_icon("Mattapan", _), do: :mattapan
+  defp stop_mode_icon(_, 2), do: :cr
+  defp stop_mode_icon(_, 3), do: :bus
+  defp stop_mode_icon(_, 4), do: :ferry
+
+  defp accessible(1), do: true
+  defp accessible(_), do: false
 
   defp fetch_service_info(:subway_full_routes), do: fetch_subway({:split_red_line_branches, false})
   defp fetch_service_info(:subway), do: fetch_subway({:split_red_line_branches, true})
@@ -316,9 +357,10 @@ defmodule AlertProcessor.ServiceInfoCache do
     {:ok, route_stops} = ApiClient.route_stops(route_id)
 
     route_stops
-    |> Enum.map(fn(%{"attributes" => %{"name" => name, "latitude" => latitude, "longitude" => longitude},
+    |> Enum.map(fn(%{"attributes" => %{"name" => name, "latitude" => latitude, "longitude" => longitude,
+                                       "wheelchair_boarding" => wheelchair_boarding},
                      "id" => id}) ->
-      {name, id, {latitude, longitude}}
+      {name, id, {latitude, longitude}, wheelchair_boarding}
     end)
   end
 
@@ -358,7 +400,7 @@ defmodule AlertProcessor.ServiceInfoCache do
 
   defp parse_branches(route, stop_list, branches) do
     Enum.map(branches, fn(branch) ->
-      stops = Enum.filter(stop_list, fn({_name, stop_id, _latlong}) -> Enum.member?(branch, stop_id) end)
+      stops = Enum.filter(stop_list, fn({_name, stop_id, _latlong, _wheelchar}) -> Enum.member?(branch, stop_id) end)
       Map.put(route, :stop_list, stops)
     end)
   end

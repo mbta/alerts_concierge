@@ -75,8 +75,8 @@ defmodule ConciergeSite.FerrySubscriptionView do
   end
 
   defp trip_option_description(trip) do
-    {origin_name, _, _} = trip.origin
-    {destination_name, _, _} = trip.destination
+    {origin_name, _, _, _} = trip.origin
+    {destination_name, _, _, _} = trip.destination
 
     [
       origin_name,
@@ -94,7 +94,7 @@ defmodule ConciergeSite.FerrySubscriptionView do
     String.trim(time_string)
   end
 
-  def trip_summary_details(%{"trip_type" => "one_way", "trips" => trips, "relevant_days" => relevant_days}, {origin_name, _, _}, {destination_name, _, _}) do
+  def trip_summary_details(%{"trip_type" => "one_way", "trips" => trips, "relevant_days" => relevant_days}, {origin_name, _, _, _}, {destination_name, _, _, _}) do
     [
       trip_summary_details_day_ferry_count(relevant_days, trips),
         " from ",
@@ -104,7 +104,7 @@ defmodule ConciergeSite.FerrySubscriptionView do
     ]
   end
 
-  def trip_summary_details(%{"trip_type" => "round_trip", "trips" => trips, "return_trips" => return_trips, "relevant_days" => relevant_days}, {origin_name, _, _}, {destination_name, _, _}) do
+  def trip_summary_details(%{"trip_type" => "round_trip", "trips" => trips, "return_trips" => return_trips, "relevant_days" => relevant_days}, {origin_name, _, _, _}, {destination_name, _, _, _}) do
     [
       content_tag(:div, [
         trip_summary_details_day_ferry_count(relevant_days, trips),

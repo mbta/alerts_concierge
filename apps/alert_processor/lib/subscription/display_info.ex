@@ -19,7 +19,7 @@ defmodule AlertProcessor.Subscription.DisplayInfo do
       end)
       |> Enum.uniq()
       |> Map.new(fn(stop_id) ->
-        {:ok, {name, _id, _latlong}} = ServiceInfoCache.get_stop(stop_id)
+        {:ok, {name, _id, _latlong, _wheelchair}} = ServiceInfoCache.get_stop(stop_id)
         {stop_id, name}
       end)
     {:ok, display_names}
