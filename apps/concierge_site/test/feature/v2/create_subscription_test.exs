@@ -3,7 +3,7 @@ defmodule ConciergeSite.V2.CreateSubscriptionTest do
 
   import AlertProcessor.Factory
   import ConciergeSite.FeatureTestHelper
-  import Wallaby.Query, only: [css: 2]
+  import Wallaby.Query
 
   @password "p@ssw0rd"
   @encrypted_password Comeonin.Bcrypt.hashpwsalt(@password)
@@ -13,11 +13,13 @@ defmodule ConciergeSite.V2.CreateSubscriptionTest do
     {:ok, user: user}
   end
 
-  test "new account", %{session: session, user: user} do
+  test "new account", %{session: session} do
     session
-    |> log_in(user)
     |> visit("/v2/account/new")
-    |> assert_has(css("#main", text: "new account"))
+    |> fill_in(text_field("user_email"), with: "test@test.com")
+    |> fill_in(text_field("user_password"), with: @password)
+    |> click(button("Create my account"))
+    |> assert_has(css("#main", text: "account options"))
   end
 
   test "account options", %{session: session, user: user} do
@@ -40,10 +42,22 @@ defmodule ConciergeSite.V2.CreateSubscriptionTest do
     |> assert_has(css("#main", text: "Welcome to T-Alerts!"))
   end
 
-  test "new session", %{session: session} do
+  test "new session", %{session: session, user: user} do
     session
     |> visit("/v2/login/new")
-    |> assert_has(css("#main", text: "Sign in"))
+    |> fill_in(text_field("user_email"), with: user.email)
+    |> fill_in(text_field("user_password"), with: @password)
+    |> click(button("Go to my account"))
+    |> assert_has(css("#main", text: "account options"))
+  end
+
+  test "failed login", %{session: session, user: user} do
+    session
+    |> visit("/v2/login/new")
+    |> fill_in(text_field("user_email"), with: user.email)
+    |> fill_in(text_field("user_password"), with: "Password1!")
+    |> click(button("Go to my account"))
+    |> assert_has(css("#main", text: "Sorry, your login information was incorrect"))
   end
 
   test "trip index", %{session: session, user: user} do

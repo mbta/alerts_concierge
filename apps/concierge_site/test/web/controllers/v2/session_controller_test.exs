@@ -15,7 +15,7 @@ defmodule ConciergeSite.V2.SessionControllerTest do
     user = Repo.insert!(%User{email: "test@email.com", role: "user", encrypted_password: @encrypted_password})
     params = %{"user" => %{"email" => user.email,"password" => @password}}
     conn = post(conn, v2_session_path(conn, :create), params)
-    assert html_response(conn, 302) =~ "<a href=\"/v2/account/new\">"
+    assert html_response(conn, 302) =~ "/v2/account/options"
   end
 
   test "POST /v2/login with trips", %{conn: conn} do
