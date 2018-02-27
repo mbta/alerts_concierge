@@ -1,1 +1,20 @@
-new account
+<h1 class="heading__title my-4">Create account</h1>
+<%= flash_error(@conn) %>
+
+<p>Already have an account? <%= link("Sign in", to: v2_session_path(@conn, :new)) %></p>
+
+<%= form_for @account_changeset, v2_account_path(@conn, :create), fn f -> %>
+  <div class="form-group my-4">
+    <%= label f, :email, "Email address", class: "form__label" %>
+    <%= error_tag f, :email %>
+    <%= email_input f, :email, placeholder: "your@email.com", class: "form-control", required: true %>
+  </div>
+  <div class="form-group my-4">
+    <%= label f, :password, "Password", class: "form__label" %>
+    <%= error_tag f, :password %>
+    <%= password_input f, :password, placeholder: "Enter your password", class: "form-control", pattern: password_regex_string(), required: true %>
+  </div>
+  <div class="my-5">
+    <%= submit "Create my account", class: "btn btn-primary btn-login btn-block" %>
+  </div>
+<% end %>
