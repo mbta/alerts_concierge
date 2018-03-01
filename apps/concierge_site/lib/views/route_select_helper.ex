@@ -6,23 +6,24 @@ defmodule ConciergeSite.RouteSelectHelper do
   alias AlertProcessor.Model.Route
   import Phoenix.HTML.Tag, only: [content_tag: 3]
 
-  @spec render(atom, atom) :: Phoenix.HTML.safe
-  def render(input_name, field) do
-    content_tag :select, attributes(input_name, field) do
+  @spec render(atom, atom, keyword) :: Phoenix.HTML.safe
+  def render(input_name, field, attrs \\ []) do
+    content_tag :select, attributes(input_name, field, attrs) do
       [default_option(),
-       option_group("Subway", get_routes(:subway)),
-       option_group("Commuter Rail", get_routes(:cr)),
-       option_group("Ferry", get_routes(:ferry)),
-       option_group("Bus", get_routes(:bus))]
+       option_group("Subway", :subway),
+       option_group("Commuter Rail", :cr),
+       option_group("Ferry", :ferry),
+       option_group("Bus", :bus)]
     end
   end
 
-  @spec attributes(atom, atom) :: keyword(String.t)
-  defp attributes(input_name, field) do
+  @spec attributes(atom, atom, keyword) :: keyword(String.t)
+  defp attributes(input_name, field, attrs) do
     [data: [type: "route"],
      class: "form-control",
      id: "#{input_name}_#{field}",
      name: "#{input_name}[#{field}]"]
+    |> Keyword.merge(attrs)
   end
 
   @spec default_option() :: Phoenix.HTML.safe
@@ -32,15 +33,20 @@ defmodule ConciergeSite.RouteSelectHelper do
     end
   end
 
-  @spec option_group(String.t, [route_row]) :: Phoenix.HTML.safe
-  defp option_group(label, options) do
+  @spec option_group(String.t, atom) :: Phoenix.HTML.safe
+  defp option_group(label, mode) do
+    options = get_routes(mode)
     content_tag :optgroup, label: label do
       for {icon, id, name} <- options do
-        content_tag :option, value: id, data: [icon: icon] do
+        content_tag :option, value: value(id, name, mode), data: [icon: icon] do
           name
         end
       end
     end
+  end
+
+  defp value(id, name, mode) do
+    "#{id}~~#{name}~~#{mode}"
   end
 
   @spec get_routes(atom) :: [route_row]

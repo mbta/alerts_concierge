@@ -1,0 +1,23 @@
+<h2>Round Trip</h2>
+<%= @round_trip %>
+
+<h2>Legs</h2>
+<ol>
+<%= for leg <- Enum.reverse(@legs) do %>
+  <li><%= leg %></li>
+<% end %>
+</ol>
+
+<h2>Origins</h2>
+<ol>
+<%= for origin <- Enum.reverse(@origins) do %>
+  <li><%= origin %></li>
+<% end %>
+</ol>
+
+<h2>Destinations</h2>
+<ol>
+<%= for destination <- Enum.reverse(@destinations) do %>
+  <li><%= destination %></li>
+<% end %>
+</ol>

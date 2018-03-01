@@ -147,9 +147,8 @@ defmodule ConciergeSite.Router do
     get "/account/options", V2.AccountController, :options
     resources "/trips", V2.TripController, only: [:index, :edit, :update, :delete]
     resources "/trip", V2.TripController, only: [:new, :create], singleton: true do
-      resources "/leg", V2.LegController, only: [:new, :create]
-      get "/times", V2.TripController, :new_times
-      post "/times", V2.TripController, :create_times
+      post "/leg", V2.TripController, :leg
+      post "/times", V2.TripController, :times
       get "/accessibility", V2.TripController, :accessibility
     end
   end

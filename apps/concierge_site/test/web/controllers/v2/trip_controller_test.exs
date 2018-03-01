@@ -45,31 +45,116 @@ defmodule ConciergeSite.V2.TripControllerTest do
     |> guardian_login(conn)
     |> get(v2_trip_path(conn, :new))
 
-    assert html_response(conn, 200) =~ "new trip"
+    assert html_response(conn, 200) =~ "Is this usually a round trip?"
+    assert html_response(conn, 200) =~ "Which route or line do you connect to?"
   end
 
   test "POST /v2/trip", %{conn: conn, user: user} do
     conn = user
     |> guardian_login(conn)
-    |> post(v2_trip_path(conn, :create, %{}))
+    |> post(v2_trip_path(conn, :create), %{})
 
-    assert html_response(conn, 200) =~ "new trip"
+    assert html_response(conn, 200) =~ "Is this usually a round trip?"
+    assert html_response(conn, 200) =~ "Which route or line do you connect to?"
   end
 
-  test "GET /v2/trip/times", %{conn: conn, user: user} do
+  test "POST /v2/trip/leg to create new trip leg", %{conn: conn, user: user} do
+    trip = %{
+      destination: "place-pktrm",
+      new_leg: "true",
+      origin: "place-alfcl",
+      round_trip: "true",
+      route: "Green~~Green Line~~subway",
+      saved_leg: "Red"
+    }
+
     conn = user
     |> guardian_login(conn)
-    |> get(v2_trip_trip_path(conn, :new_times))
+    |> post(v2_trip_trip_path(conn, :leg), %{trip: trip})
 
-    assert html_response(conn, 200) =~ "new trip times"
+    assert html_response(conn, 200) =~ "Where do you get on the Green Line?"
+    assert html_response(conn, 200) =~ "Do you make a connection to another route or line?"
+  end
+
+  test "POST /v2/trip/leg to create new trip leg with existing trip legs", %{conn: conn, user: user} do
+    trip = %{
+      destination: "place-pktrm",
+      new_leg: "true",
+      origin: "place-alfcl",
+      round_trip: "true",
+      route: "Green~~Green Line~~subway",
+      saved_leg: "Red",
+      legs: ["Blue"],
+      origins: ["place-wondl"],
+      destinations: ["place-state"]
+    }
+
+    conn = user
+    |> guardian_login(conn)
+    |> post(v2_trip_trip_path(conn, :leg), %{trip: trip})
+
+    assert html_response(conn, 200) =~ "Where do you get on the Green Line?"
+    assert html_response(conn, 200) =~ "Do you make a connection to another route or line?"
+  end
+
+  test "POST /v2/trip/leg to finish trip", %{conn: conn, user: user} do
+    trip = %{
+      destination: "place-pktrm",
+      new_leg: "false",
+      origin: "place-alfcl",
+      round_trip: "true",
+      saved_leg: "Red"
+    }
+
+    conn = user
+    |> guardian_login(conn)
+    |> post(v2_trip_trip_path(conn, :leg), %{trip: trip})
+
+    assert html_response(conn, 200) =~ "true"
+    assert html_response(conn, 200) =~ "Red"
+    assert html_response(conn, 200) =~ "place-alfcl"
+    assert html_response(conn, 200) =~ "place-pktrm"
+  end
+
+  test "POST /v2/trip/leg to create first leg", %{conn: conn, user: user} do
+    trip = %{
+      from_new_trip: "true",
+      round_trip: "true",
+      route: "Red~~Red Line~~subway"
+    }
+
+    conn = user
+    |> guardian_login(conn)
+    |> post(v2_trip_trip_path(conn, :leg), %{trip: trip})
+
+    assert html_response(conn, 200) =~ "Where do you get on the Red Line?"
+    assert html_response(conn, 200) =~ "Do you make a connection to another route or line?"
+  end
+
+  test "POST /v2/trip/leg with errors", %{conn: conn, user: user} do
+    conn = user
+    |> guardian_login(conn)
+    |> post(v2_trip_trip_path(conn, :leg), %{trip: %{}})
+
+    assert html_response(conn, 200) =~ "There was an error creating your trip. Please try again."
   end
 
   test "POST /v2/trip/times", %{conn: conn, user: user} do
+    trip = %{
+      destinations: ["place-pktrm"],
+      legs: ["Red"],
+      origins: ["place-alfcl"],
+      round_trip: "true"
+    }
+
     conn = user
     |> guardian_login(conn)
-    |> post(v2_trip_trip_path(conn, :create_times, %{}))
+    |> post(v2_trip_trip_path(conn, :times), %{trip: trip})
 
-    assert html_response(conn, 200) =~ "new trip times"
+    assert html_response(conn, 200) =~ "true"
+    assert html_response(conn, 200) =~ "Red"
+    assert html_response(conn, 200) =~ "place-alfcl"
+    assert html_response(conn, 200) =~ "place-pktrm"
   end
 
   test "GET /v2/trip/accessibility", %{conn: conn, user: user} do
