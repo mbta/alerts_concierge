@@ -1,6 +1,6 @@
 defmodule ConciergeSite.StopSelectHelper do
 
-  @type stop_row :: [id: String.t, name: String.t, modes: [String.t], accessible: boolean]
+  @type stop_row :: [id: String.t, name: String.t, modes: MapSet.t, accessible: boolean]
 
   alias AlertProcessor.ServiceInfoCache
   import Phoenix.HTML.Tag, only: [content_tag: 3]
@@ -19,11 +19,11 @@ defmodule ConciergeSite.StopSelectHelper do
     end
   end
 
-  @spec render_option(stop_row) :: Phoenix.HTML.Tag
+  @spec render_option(stop_row) :: Phoenix.HTML.safe
   defp render_option([id: id, name: name, modes: modes, accessible: accessible]) do
-    [content_tag :option, value: id, data: option_data(modes, accessible) do
+    content_tag :option, value: id, data: option_data(modes, accessible) do
       name
-    end]
+    end
   end
 
   @spec option_data([integer], boolean) :: Keyword.t

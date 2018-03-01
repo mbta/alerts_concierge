@@ -43,7 +43,8 @@ defmodule ConciergeSite.CommuterRailSubscriptionView do
   def params_for_step(:preferences), do: ["alert_priority_type" | params_for_step(:train)]
   def params_for_step(_), do: []
 
-  @spec trip_option(TripInfo.t, :depart | :return) :: Phoenix.HTML.safe
+  @spec trip_option(:error | TripInfo.t, :depart | :return) :: Phoenix.HTML.safe
+  def trip_option(:error, _), do: ""
   def trip_option(trip, trip_type) do
     content_tag :div, class: trip_option_classes(trip) do
       [
