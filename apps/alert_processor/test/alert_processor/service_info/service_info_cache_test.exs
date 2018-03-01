@@ -149,4 +149,12 @@ defmodule AlertProcessor.ServiceInfoCacheTest do
       "815" => "ELEVATOR", "800" => "ELEVATOR", "963" => "ELEVATOR"
     }} = ServiceInfoCache.get_facility_map(pid)
   end
+
+  test "get_stops_with_icons", %{pid: pid} do
+    {:ok, stops_with_icons} = ServiceInfoCache.get_stops_with_icons(pid)
+    assert stops_with_icons["1154"] == [modes: MapSet.new([:bus]), accessible: false]
+    assert stops_with_icons["place-north"] == [modes: MapSet.new([:bus, :cr, :green, :orange]), accessible: true]
+    assert stops_with_icons["Waltham"] == [modes: MapSet.new([:cr]), accessible: true]
+    assert stops_with_icons["Boat-Logan"] == [modes: MapSet.new([:ferry]), accessible: true]
+  end
 end
