@@ -50,7 +50,7 @@ defmodule ConciergeSite.StopSelectHelper do
          {:ok, %{stop_list: c_stops}} = ServiceInfoCache.get_route("Green-C"),
          {:ok, %{stop_list: d_stops}} = ServiceInfoCache.get_route("Green-D"),
          {:ok, %{stop_list: e_stops}} = ServiceInfoCache.get_route("Green-E") do
-      b_stops ++ c_stops ++ d_stops ++ e_stops
+      Enum.uniq_by(b_stops ++ c_stops ++ d_stops ++ e_stops, & &1)
     end
   end
   defp get_stop_list(route_id), do: with {:ok, %{stop_list: stops}} = ServiceInfoCache.get_route(route_id), do: stops
