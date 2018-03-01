@@ -6,6 +6,12 @@
   padding: .75rem;
 }
 
+.form__input--inline {
+  margin-left: .75rem;
+  margin-right: .75rem;
+  padding: .25rem;
+}
+
 .error-block-container {
   background-color: $form-error-message;
   margin-top: .5rem;

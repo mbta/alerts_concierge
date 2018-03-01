@@ -19,14 +19,16 @@ defmodule ConciergeSite.V2.CreateSubscriptionTest do
     |> fill_in(text_field("user_email"), with: "test@test.com")
     |> fill_in(text_field("user_password"), with: @password)
     |> click(button("Create my account"))
-    |> assert_has(css("#main", text: "account options"))
+    |> assert_has(css("#main", text: "Customize my settings"))
   end
 
   test "account options", %{session: session, user: user} do
     session
     |> log_in(user)
     |> visit("/v2/account/options")
-    |> assert_has(css("#main", text: "account options"))
+    |> assert_has(css("#main", text: "Customize my settings"))
+    |> click(button("Next"))
+    |> assert_has(css("#main", text: "Personalize Subscription"))
   end
 
   test "home page", %{session: session} do
@@ -41,7 +43,7 @@ defmodule ConciergeSite.V2.CreateSubscriptionTest do
     |> fill_in(text_field("user_email"), with: user.email)
     |> fill_in(text_field("user_password"), with: @password)
     |> click(button("Go to my account"))
-    |> assert_has(css("#main", text: "account options"))
+    |> assert_has(css("#main", text: "Customize my settings"))
   end
 
   test "failed login", %{session: session, user: user} do

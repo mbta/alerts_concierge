@@ -46,7 +46,7 @@
 
   <div class="form-group my-4">
     <%= label form, :route, "Which route or line do you connect to?", class: "form__label" %>
-    <%= ConciergeSite.RouteSelectHelper.render(:trip, :route, disabled: true, data: [toggle: "multiselect", type: "route"]) %>
+    <%= ConciergeSite.RouteSelectHelper.render(:trip, :route, disabled: true, data: [toggle: "input", type: "route"]) %>
   </div>
 
   <div class="my-5">
