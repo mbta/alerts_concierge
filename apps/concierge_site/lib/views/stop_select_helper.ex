@@ -36,8 +36,10 @@ defmodule ConciergeSite.StopSelectHelper do
   @spec get_stops_by_route(String.t) :: [stop_row]
   defp get_stops_by_route(route_id) do
     {:ok, stops_with_icons} = ServiceInfoCache.get_stops_with_icons()
-    route_stops = get_stop_list(route_id)
-    for {name, id, _, _} <- route_stops do
+    route_stops = route_id
+    |> get_stop_list()
+    |> Enum.sort_by(fn({name, _, _, _}) -> name end)
+    route_stops_with_details = for {name, id, _, _} <- route_stops do
       stops_with_icons[id]
       |> Keyword.put(:name, name)
       |> Keyword.put(:id, id)
