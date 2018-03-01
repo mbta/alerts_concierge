@@ -22,7 +22,7 @@ function formatRoute(route) {
   if (!icon) {
     return truncateName(route.text, NAME_LIMIT);
   }
-  return $(`<span>${getIcon(icon)} ${truncateName(route.text, NAME_LIMIT)}</span>`);
+  return $(`<span>${getIcon(icon)("float-left")} ${truncateName(route.text, NAME_LIMIT)}</span>`);
 };
 
 function truncateName(name, limit) {

@@ -210,8 +210,8 @@ defmodule AlertProcessor.Subscription.Mapper do
           {true, [0, 1]}
         _ ->
           case stop_list
-            |> Enum.filter(fn({_name, id, _latlong}) -> Enum.member?([origin, destination], id) end)
-            |> Enum.map(fn({_name, id, _latlong}) -> id end) do
+            |> Enum.filter(fn({_name, id, _latlong, _wheelchair}) -> Enum.member?([origin, destination], id) end)
+            |> Enum.map(fn({_name, id, _latlong, _wheelchair}) -> id end) do
             [^origin, ^destination] -> {false, [1]}
             [^destination, ^origin] -> {false, [0]}
           end
@@ -250,10 +250,10 @@ defmodule AlertProcessor.Subscription.Mapper do
 
   defp map_stops_in_range(%Route{route_id: route, route_type: type, stop_list: stop_list}, origin, destination) do
     stop_list
-    |> Enum.drop_while(fn({_k, v, _latlong}) -> v != origin && v != destination end)
+    |> Enum.drop_while(fn({_k, v, _latlong, _wheelchair}) -> v != origin && v != destination end)
     |> Enum.reverse()
-    |> Enum.drop_while(fn({_k, v, _latlong}) -> v != origin && v != destination end)
-    |> Enum.map(fn({_k, stop, _latlong}) ->
+    |> Enum.drop_while(fn({_k, v, _latlong, _wheelchair}) -> v != origin && v != destination end)
+    |> Enum.map(fn({_k, stop, _latlong, _wheelchair}) ->
       %InformedEntity{route: route, route_type: type, stop: stop}
     end)
     |> Enum.uniq()
@@ -262,8 +262,8 @@ defmodule AlertProcessor.Subscription.Mapper do
   def determine_direction_id(route, origin, destination) do
     filtered_stops =
       route.stop_list
-      |> Enum.filter(fn({_name, id, _latlong}) -> Enum.member?([origin, destination], id) end)
-      |> Enum.map(fn({_name, id, _latlong}) -> id end)
+      |> Enum.filter(fn({_name, id, _latlong, _wheelchair}) -> Enum.member?([origin, destination], id) end)
+      |> Enum.map(fn({_name, id, _latlong, _wheelchair}) -> id end)
     case filtered_stops do
       [^origin, ^destination] -> 1
       [^destination, ^origin] -> 0
@@ -272,8 +272,8 @@ defmodule AlertProcessor.Subscription.Mapper do
 
   defp map_direction_id(stop_list, origin, destination) do
     case stop_list
-      |> Enum.filter(fn({_name, id, _latlong}) -> Enum.member?([origin, destination], id) end)
-      |> Enum.map(fn({_name, id, _latlong}) -> id end) do
+      |> Enum.filter(fn({_name, id, _latlong, _wheelchair}) -> Enum.member?([origin, destination], id) end)
+      |> Enum.map(fn({_name, id, _latlong, _wheelchair}) -> id end) do
         [^origin, ^destination] -> 1
         [^destination, ^origin] -> 0
     end

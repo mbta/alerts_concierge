@@ -41,8 +41,8 @@ defmodule ConciergeSite.CommuterRailSubscriptionViewTest do
         "relevant_days" => "weekday",
         "trips" => ["123", "345"]
       }
-      destination = {"Newburyport", "Newburyport", {1, 1}}
-      origin = {"North Station", "place-north", {1, 1}}
+      destination = {"Newburyport", "Newburyport", {1, 1}, 1}
+      origin = {"North Station", "place-north", {1, 1}, 1}
       details = CommuterRailSubscriptionView.trip_summary_details(params, origin, destination)
       assert IO.iodata_to_binary(details) == "2 weekday trains from North Station to Newburyport"
     end
@@ -54,8 +54,8 @@ defmodule ConciergeSite.CommuterRailSubscriptionViewTest do
         "trips" => ["123", "345"],
         "return_trips" => ["234"]
       }
-      destination = {"Newburyport", "Newburyport", {1, 1}}
-      origin = {"North Station", "place-north", {1, 1}}
+      destination = {"Newburyport", "Newburyport", {1, 1}, 1}
+      origin = {"North Station", "place-north", {1, 1}, 1}
 
       [safe: depart, safe: return] =
         CommuterRailSubscriptionView.trip_summary_details(params, origin, destination)

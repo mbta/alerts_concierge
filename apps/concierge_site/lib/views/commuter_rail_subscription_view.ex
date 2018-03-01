@@ -43,7 +43,8 @@ defmodule ConciergeSite.CommuterRailSubscriptionView do
   def params_for_step(:preferences), do: ["alert_priority_type" | params_for_step(:train)]
   def params_for_step(_), do: []
 
-  @spec trip_option(TripInfo.t, :depart | :return) :: Phoenix.HTML.safe
+  @spec trip_option(:error | TripInfo.t, :depart | :return) :: Phoenix.HTML.safe
+  def trip_option(:error, _), do: ""
   def trip_option(trip, trip_type) do
     content_tag :div, class: trip_option_classes(trip) do
       [
@@ -76,8 +77,8 @@ defmodule ConciergeSite.CommuterRailSubscriptionView do
   end
 
   defp trip_option_description(trip) do
-    {origin_name, _, _} = trip.origin
-    {destination_name, _, _} = trip.destination
+    {origin_name, _, _, _} = trip.origin
+    {destination_name, _, _, _} = trip.destination
 
     [
       "Train ",
@@ -101,7 +102,7 @@ defmodule ConciergeSite.CommuterRailSubscriptionView do
   end
 
 
-  def trip_summary_details(%{"trip_type" => "one_way", "trips" => trips, "relevant_days" => relevant_days}, {origin_name, _, _}, {destination_name, _, _}) do
+  def trip_summary_details(%{"trip_type" => "one_way", "trips" => trips, "relevant_days" => relevant_days}, {origin_name, _, _, _}, {destination_name, _, _, _}) do
     [
       trip_summary_details_day_train_count(relevant_days, trips),
         " from ",
@@ -111,7 +112,7 @@ defmodule ConciergeSite.CommuterRailSubscriptionView do
     ]
   end
 
-  def trip_summary_details(%{"trip_type" => "round_trip", "trips" => trips, "return_trips" => return_trips, "relevant_days" => relevant_days}, {origin_name, _, _}, {destination_name, _, _}) do
+  def trip_summary_details(%{"trip_type" => "round_trip", "trips" => trips, "return_trips" => return_trips, "relevant_days" => relevant_days}, {origin_name, _, _, _}, {destination_name, _, _, _}) do
     [
       content_tag(:div, [
         trip_summary_details_day_train_count(relevant_days, trips),
