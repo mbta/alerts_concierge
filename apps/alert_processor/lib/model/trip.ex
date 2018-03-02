@@ -4,7 +4,7 @@ defmodule AlertProcessor.Model.Trip do
   and some other metadata, like whether it's a round trip or not.
   """
 
-  alias AlertProcessor.Model.{Notification, User}
+  alias AlertProcessor.Model.{Subscription, User}
   alias AlertProcessor.Repo
 
   @type relevant_day :: :monday | :tuesday | :wednesday | :thursday | :friday | :saturday | :sunday
@@ -17,8 +17,11 @@ defmodule AlertProcessor.Model.Trip do
     relevant_days: [relevant_day] | nil,
     start_time: Time.t | nil,
     end_time: Time.t | nil,
+    return_start_time: Time.t | nil,
+    return_end_time: Time.t | nil,
     notification_time: Time.t | nil,
-    station_features: [station_feature] | nil
+    station_features: [station_feature] | nil,
+    roundtrip: boolean
   }
 
   use Ecto.Schema
@@ -29,14 +32,17 @@ defmodule AlertProcessor.Model.Trip do
 
   schema "trips" do
     belongs_to :user, User, type: :binary_id
-    has_many :subscriptions, Notification
+    has_many :subscriptions, Subscription
 
     field :alert_priority_type, AlertProcessor.AtomType, null: false
     field :relevant_days, {:array, AlertProcessor.AtomType}, null: false
     field :start_time, :time, null: false
     field :end_time, :time, null: false
+    field :return_start_time, :time, null: true
+    field :return_end_time, :time, null: true
     field :notification_time, :time, null: false
     field :station_features, {:array, AlertProcessor.AtomType}, null: false
+    field :roundtrip, :boolean, null: false
 
     timestamps()
   end
@@ -61,5 +67,8 @@ defmodule AlertProcessor.Model.Trip do
     |> validate_inclusion(:alert_priority_type, @valid_alert_priority_types)
   end
 
-  def get_trips_by_user(user_id), do: Repo.all(from t in __MODULE__, where: t.user_id == ^user_id)
+  def get_trips_by_user(user_id) do
+    subscriptions_query = from s in Subscription, where: s.return_trip == false, order_by: s.rank
+    Repo.all(from t in __MODULE__, where: t.user_id == ^user_id, preload: [subscriptions: ^subscriptions_query])
+  end
 end
