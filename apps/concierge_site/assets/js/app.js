@@ -29,6 +29,7 @@ import subscriptionSearch from './subscription-search';
 import selectRoute from "./select-route";
 import selectStop from "./select-stop";
 import toggleInput from "./toggle-input";
+import helpText from "./help-text";
 
 selectEntity();
 selectMultipleEntity();
@@ -39,5 +40,6 @@ subscriptionSearch();
 selectRoute();
 selectStop();
 toggleInput();
+helpText();
 
 document.body.className = document.body.className.replace("no-js", "js");
