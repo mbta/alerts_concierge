@@ -68,7 +68,7 @@ defmodule ConciergeSite.SignInHelper do
 
   defp redirect_path(user, :v2_default) do
     if Trip.get_trips_by_user(user.id) == [] do
-      v2_account_path(@endpoint, :options)
+      v2_account_path(@endpoint, :options_new)
     else
       v2_trip_path(@endpoint, :index)
     end

@@ -11,7 +11,7 @@ export default function($) {
 
 function toggleFn($) {
   return function () {
-    var input = $("select[data-toggle='multiselect']")
+    var input = $(":input[data-toggle='input']")
 
     if ($(this).val() === "true") {
       input.prop("disabled", false)

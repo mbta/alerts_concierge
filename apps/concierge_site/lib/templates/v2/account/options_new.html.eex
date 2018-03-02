@@ -1,0 +1,28 @@
+<h1 class="heading__title my-4">Customize my settings</h1>
+<%= flash_error(@conn) %>
+
+<%= form_for @changeset, v2_account_path(@conn, :options_create), [as: :user, method: :post], fn form -> %>
+  <div class="form-group my-4">
+    <%= label form, :sms_toggle, "How would you like to receive alerts?", class: "form__label" %>
+    <%= error_tag form, :phone_number %>
+    <div class="radio">
+      <label>
+        <%= radio_button form, :sms_toggle, "false", required: true, checked: !@sms_toggle, data: [toggle: "controller"] %>
+        Email
+      </label>
+    </div>
+    <div class="radio">
+      <label>
+        <%= radio_button form, :sms_toggle, "true", required: true, checked: @sms_toggle, data: [toggle: "controller"] %>
+        Text
+      </label>
+      <%= telephone_input form, :phone_number, placeholder: "###-###-####", class: "form__input--inline", data: [toggle: "input"] %>
+    </div>
+  </div>
+
+  <div class="my-5">
+    <%= submit "Next", class: "btn btn-primary btn-login btn-block" %>
+    <br>
+    <a href="javascript:history.back()">&lt; Back</a>
+  </div>
+<% end %>

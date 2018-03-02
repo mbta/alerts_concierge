@@ -144,7 +144,8 @@ defmodule ConciergeSite.Router do
   scope "/v2", ConciergeSite, as: :v2 do
     pipe_through [:browser, :browser_auth, :subscription_auth, :v2_layout]
 
-    get "/account/options", V2.AccountController, :options
+    get "/account/options", V2.AccountController, :options_new
+    post "/account/options", V2.AccountController, :options_create
     resources "/trips", V2.TripController, only: [:index, :edit, :update, :delete]
     resources "/trip", V2.TripController, only: [:new, :create], singleton: true do
       post "/leg", V2.TripController, :leg
