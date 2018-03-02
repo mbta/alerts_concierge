@@ -28,6 +28,7 @@ import vacationDatepicker from './vacation-datepicker';
 import subscriptionSearch from './subscription-search';
 import selectRoute from "./select-route";
 import selectStop from "./select-stop";
+import toggleInput from "./toggle-input";
 
 selectEntity();
 selectMultipleEntity();
@@ -37,5 +38,6 @@ vacationDatepicker();
 subscriptionSearch();
 selectRoute();
 selectStop();
+toggleInput();
 
 document.body.className = document.body.className.replace("no-js", "js");
