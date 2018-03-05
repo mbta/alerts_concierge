@@ -29,7 +29,8 @@ defmodule AlertProcessor.Model.Subscription do
     origin_long: float | nil,
     destination_lat: float | nil,
     destination_long: float | nil,
-    rank: integer | nil
+    rank: integer | nil,
+    return_trip: boolean | nil
   }
 
   @alert_priority_type_values %{
@@ -72,6 +73,7 @@ defmodule AlertProcessor.Model.Subscription do
     field :destination_lat, :float
     field :destination_long, :float
     field :rank, :integer
+    field :return_trip, :boolean
 
     timestamps()
   end
