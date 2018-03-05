@@ -1,4 +1,5 @@
-<h1 class="heading__title my-4">Personalize Subscription</h1>
+<%= render ConciergeSite.V2.LayoutView, "_steps.html", step: "two" %>
+<h1 class="heading__title">Personalize Subscription</h1>
 <%= flash_error(@conn) %>
 
 <p>Once we get to know more about your commute, we can customize alerts just for you.</p>

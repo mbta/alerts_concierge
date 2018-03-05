@@ -1,0 +1,9 @@
+<div class="steps__wrapper my-3">
+  <div data-step="<%= @step %>" class="steps__container">
+    <div class="step__line--empty"></div>
+    <div class="step__line--filled"></div>
+    <span class="steps__step steps__step--one"></span>
+    <span class="steps__step steps__step--two"></span>
+    <span class="steps__step steps__step--three"></span>
+  </div>
+</div>

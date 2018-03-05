@@ -1,4 +1,5 @@
-<h1 class="heading__title my-4">Personalize Subscription</h1>
+<%= render ConciergeSite.V2.LayoutView, "_steps.html", step: "two" %>
+<h1 class="heading__title">Personalize Subscription</h1>
 
 <%= form_for @conn, v2_trip_trip_path(@conn, :leg), [as: :trip, method: :post], fn form -> %>
   <%= if @mode != "bus" do %>
