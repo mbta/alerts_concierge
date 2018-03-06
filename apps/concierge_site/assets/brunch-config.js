@@ -82,7 +82,9 @@ exports.config = {
     enabled: true,
     globals: {
       $: 'jquery',
-      jQuery: 'jquery'
+      jQuery: 'jquery',
+      Tether: 'tether',
+      bootstrap: 'bootstrap'
     },
     static: [
       "node_modules/select2/dist/js/select2.js"
