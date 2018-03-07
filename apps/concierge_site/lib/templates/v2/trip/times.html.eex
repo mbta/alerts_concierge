@@ -1,3 +1,4 @@
+<%= render ConciergeSite.V2.LayoutView, "_steps.html", step: "two" %>
 <h2>Round Trip</h2>
 <%= @round_trip %>
 

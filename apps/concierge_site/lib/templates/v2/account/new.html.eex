@@ -1,4 +1,5 @@
-<h1 class="heading__title my-4">Create account</h1>
+<%= render ConciergeSite.V2.LayoutView, "_steps.html", step: "one" %>
+<h1 class="heading__title">Create account</h1>
 <%= flash_error(@conn) %>
 
 <p>Already have an account? <%= link("Sign in", to: v2_session_path(@conn, :new)) %></p>
