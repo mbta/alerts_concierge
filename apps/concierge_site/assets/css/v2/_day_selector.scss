@@ -1,0 +1,76 @@
+.day-selector {
+  .invisible-no-js {
+    display: none;
+  }
+
+  .invisible-js {
+    display: none;
+  }
+
+  label.btn {
+    box-shadow: none !important;
+    border-color: $brand-primary;
+    border-radius: 0;
+    font-size: $font-size-xs;
+
+    @include media-breakpoint-up(sm) {
+      font-size: $font-size-base;
+    }
+
+    &:hover {
+      cursor: pointer;
+    }
+  }
+
+  .title-part {
+    padding-bottom: 4px;
+    padding-left: 9px;
+
+    @include media-breakpoint-up(sm) {
+      padding-left: 15px;
+    }
+
+    .day-header {
+      width: 49px;
+      display: inline-block;
+      font-size: $font-size-xs;
+
+      @include media-breakpoint-up(sm) {
+        width: 69px;
+        font-size: $font-size-sm;
+      }
+    }
+  }
+
+  .day-part {
+    label.btn {
+      width: 50px;
+      color: $brand-primary;
+      margin-bottom: 0;
+
+      @include media-breakpoint-up(sm) {
+        width: 70px;
+      }
+    }
+  }
+  .group-part {
+    label.btn {
+      border-top: 0;
+      border-radius: 0;
+    }
+    .btn-weekdays {
+      width: 246px;
+
+      @include media-breakpoint-up(sm) {
+        width: 346px;
+      }
+    }
+    .btn-weekend {
+      width: 99px;
+
+      @include media-breakpoint-up(sm) {
+        width: 139px;
+      }
+    }
+  }
+}

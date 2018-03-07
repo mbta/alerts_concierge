@@ -30,6 +30,7 @@ import selectRoute from "./select-route";
 import selectStop from "./select-stop";
 import toggleInput from "./toggle-input";
 import helpText from "./help-text";
+import daySelector from "./day-selector";
 
 selectEntity();
 selectMultipleEntity();
@@ -41,5 +42,6 @@ selectRoute();
 selectStop();
 toggleInput();
 helpText();
+daySelector();
 
 document.body.className = document.body.className.replace("no-js", "js");
