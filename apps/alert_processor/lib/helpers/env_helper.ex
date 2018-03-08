@@ -5,11 +5,11 @@ defmodule AlertProcessor.Helpers.EnvHelper do
   end
 
   def is_env?(env_name) do
-    mix_is_loaded? && Mix.env() == env_name
+    mix_is_loaded?() && Mix.env() == env_name
   end
 
   def env do
-    if mix_is_loaded? do
+    if mix_is_loaded?() do
       Mix.env()
     end
   end
