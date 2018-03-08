@@ -27,9 +27,11 @@
       </div>
     </header>
     <div class="container page__content">
-      <main id="main" tabindex="-1">
-      <%= render @view_module, @view_template, assigns %>
-      </main>
+      <div class="row justify-content-md-center">
+        <main id="main" class="col-md-8" tabindex="-1">
+        <%= render @view_module, @view_template, assigns %>
+        </main>
+      </div>
     </div>
     <footer class="footer__container">
       <p>&copy; Massachusetts Bay Transportation Authority, all rights reserved.</p>

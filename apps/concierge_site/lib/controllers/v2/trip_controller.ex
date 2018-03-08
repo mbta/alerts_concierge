@@ -1,27 +1,30 @@
 defmodule ConciergeSite.V2.TripController do
   use ConciergeSite.Web, :controller
+  use Guardian.Phoenix.Controller
+  alias AlertProcessor.Model.Trip
 
-  def index(conn, _params) do
-    render conn, "index.html"
+  def index(conn, _params, user, _claims) do
+    trips = Trip.get_trips_by_user(user.id)
+    render conn, "index.html", trips: trips
   end
 
-  def new(conn, _params) do
+  def new(conn, _params, _user, _claims) do
     render conn, "new.html"
   end
 
-  def create(conn, _params) do
+  def create(conn, _params, _user, _claims) do
     render conn, "new.html"
   end
 
-  def edit(conn, _params) do
+  def edit(conn, _params, _user, _claims) do
     render conn, "edit.html"
   end
 
-  def update(conn, _params) do
+  def update(conn, _params, _user, _claims) do
     render conn, "edit.html"
   end
 
-  def leg(conn, %{"trip" => trip}) do
+  def leg(conn, %{"trip" => trip}, _user, _claims) do
     case trip do
       %{"route" => route, "saved_leg" => saved_leg, "origin" => origin,
         "destination" => destination, "round_trip" => round_trip, "new_leg" => "true"} ->
@@ -54,16 +57,16 @@ defmodule ConciergeSite.V2.TripController do
   end
 
   def times(conn, %{"trip" => %{"legs" => legs, "origins" => origins,
-    "destinations" => destinations, "round_trip" => round_trip}}) do
+    "destinations" => destinations, "round_trip" => round_trip}}, _user, _claims) do
     render conn, "times.html", legs: legs, origins: origins, destinations: destinations,
       round_trip: round_trip
   end
 
-  def accessibility(conn, _params) do
+  def accessibility(conn, _params, _user, _claims) do
     render conn, "accessibility.html"
   end
 
-  def delete(conn, _params) do
+  def delete(conn, _params, _user, _claims) do
     redirect(conn, to: v2_trip_path(conn, :index))
   end
 

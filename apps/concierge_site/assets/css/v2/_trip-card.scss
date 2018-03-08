@@ -1,0 +1,39 @@
+.trip__card {
+  display: block;
+  padding: .75rem;
+  border-color: $steel;
+  color: $black;
+
+  &:hover,
+  &:active,
+  &:focus {
+    color: $brand-primary;
+    text-decoration: none;
+  }
+}
+
+.trip__card--route {
+  display: inline-block;
+  font-weight: bold;
+  margin-bottom: .25rem;
+}
+
+.trip__card--route-deliminator {
+  display: inline-block;
+  padding: 0 .5rem 0 .25rem;
+}
+
+.trip__card--route-icon {
+  position: relative;
+  display: inline-block;
+  width: 30px;
+  height: 20px;
+
+  svg {
+    position: absolute;
+  }
+}
+
+.trip__card--type, .trip__card--times {
+  font-size: 1rem;
+}

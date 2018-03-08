@@ -26,13 +26,13 @@ defmodule ConciergeSite.TimeHelper do
   @doc """
   Takes a time string in format HH:MM:SS and returns HH:MM AM/PM
   """
-  def format_time_string(time_string) do
+  def format_time_string(time_string, format \\ "%l:%M %p") do
     time_string
     |> String.split(":")
     |> Enum.map(&String.to_integer/1)
     |> List.to_tuple
     |> Time.from_erl!
-    |> Strftime.strftime!("%l:%M %p")
+    |> Strftime.strftime!(format)
   end
 
   @doc """
