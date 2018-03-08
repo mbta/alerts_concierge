@@ -13,7 +13,7 @@ defmodule ConciergeSite.V2.TripControllerTest do
     |> guardian_login(conn)
     |> get(v2_trip_path(conn, :index))
 
-    assert html_response(conn, 200) =~ "trip index"
+    assert html_response(conn, 200) =~ "My account"
   end
 
   test "GET /v2/trips/:id/edit", %{conn: conn, user: user} do
