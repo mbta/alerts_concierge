@@ -7,6 +7,8 @@ defmodule AlertProcessor.ServiceInfoCache do
   use GenServer
   alias AlertProcessor.Helpers.{ConfigHelper, StringHelper}
   alias AlertProcessor.{ApiClient, Model.Route}
+  alias AlertProcessor.ServiceInfo.CacheFile
+
   require Logger
 
   @service_types [:bus, :commuter_rail, :ferry, :subway]
@@ -18,6 +20,7 @@ defmodule AlertProcessor.ServiceInfoCache do
   # service info has been implemented.
   @timeout 75_000
 
+
   @doc false
   def start_link(opts \\ [name: __MODULE__]) do
     GenServer.start_link(__MODULE__, nil, opts)
@@ -27,9 +30,8 @@ defmodule AlertProcessor.ServiceInfoCache do
   Initialize GenServer and schedule recurring service info fetching.
   """
   def init(_) do
-    send(self(), :initialize_cache)
     schedule_work()
-    {:ok, []}
+    {:ok, load_initial_service_info()}
   end
 
   def initialize_cache do
@@ -97,23 +99,13 @@ defmodule AlertProcessor.ServiceInfoCache do
   end
 
   @doc """
-  Initialize the cache.
-  """
-  def handle_info(:initialize_cache, _state) do
-    Logger.info("Initializing service info cache at #{now_string()}")
-    service_info = fetch_and_cache_service_info()
-    Logger.info("Initialized service info cache at #{now_string()}")
-    {:noreply, service_info}
-  end
-
-  @doc """
   Update service info and then reschedule next time to process.
   """
   def handle_info(:work, _) do
     schedule_work()
-    service_info_cache = fetch_and_cache_service_info()
+    service_info = fetch_and_cache_service_info()
     Logger.info("Service info cache refreshed at #{now_string()}")
-    {:noreply, service_info_cache}
+    {:noreply, service_info}
   end
 
   def handle_call(:get_subway_info, _from, %{routes: route_state} = state) do
@@ -224,20 +216,45 @@ defmodule AlertProcessor.ServiceInfoCache do
     end)
   end
 
+  defp fetch_parallel(names) when is_list(names) do
+    names
+    |> Enum.map(fn name ->
+      {name, Task.async(fn -> fetch_service_info(name) end)}
+    end)
+    |> Enum.map(fn {name, task} ->
+      {name, Task.await(task, @timeout+100)}
+    end)
+  end
+
+  defp load_initial_service_info do
+    case CacheFile.load_service_info() do
+      {:ok, state} when is_map(state) ->
+        Logger.info("Loading initial service info from cached file")
+        state
+      _ ->
+        Logger.info("Loading initial service info from APIs")
+        fetch_and_cache_service_info()
+    end
+  end
 
   defp fetch_and_cache_service_info do
     route_state =
-      Enum.flat_map(@service_types, fn(service_type) ->
-        fetch_service_info(service_type)
-      end)
+      @service_types
+      |> fetch_parallel
+      |> Keyword.values
+      |> List.flatten
 
-    stops_with_icons = stops_with_icons(route_state)
+    state =
+      @info_types
+      |> fetch_parallel
+      |> Enum.into(%{
+        routes: route_state,
+        stops_with_icons: stops_with_icons(route_state)
+      })
 
-    info_state = for info_type <- @info_types, into: %{routes: route_state} do
-      {info_type, fetch_service_info(info_type)}
-    end
+    CacheFile.save_service_info(state)
 
-    Map.put(info_state, :stops_with_icons, stops_with_icons)
+    state
   end
 
   defp stops_with_icons(routes) do
