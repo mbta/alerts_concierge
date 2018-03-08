@@ -12,6 +12,12 @@ defmodule AlertProcessor.ServiceInfoCache do
   @service_types [:bus, :commuter_rail, :ferry, :subway]
   @info_types [:parent_stop_info, :subway_full_routes, :ferry_general_ids, :commuter_rail_trip_ids, :facility_map]
 
+  # This exists to keep services that make calls to ServerInfoCache from crashing
+  # while the service is loading.
+  # This is a bandaid and should be removed when a better method for initializing
+  # service info has been implemented.
+  @timeout 75_000
+
   @doc false
   def start_link(opts \\ [name: __MODULE__]) do
     GenServer.start_link(__MODULE__, nil, opts)
@@ -21,63 +27,83 @@ defmodule AlertProcessor.ServiceInfoCache do
   Initialize GenServer and schedule recurring service info fetching.
   """
   def init(_) do
-    {:ok, fetch_and_cache_service_info()}
+    send(self(), :initialize_cache)
+    schedule_work()
+    {:ok, []}
+  end
+
+  def initialize_cache do
+    GenServer.cast(__MODULE__, :initialize_cache)
   end
 
   def get_subway_info(name \\ __MODULE__) do
-    GenServer.call(name, :get_subway_info)
+    GenServer.call(name, :get_subway_info, @timeout)
   end
 
   def get_subway_full_routes(name \\ __MODULE__) do
-    GenServer.call(name, :get_subway_full_routes)
+    GenServer.call(name, :get_subway_full_routes, @timeout)
   end
 
   def get_bus_info(name \\ __MODULE__) do
-    GenServer.call(name, :get_bus_info)
+    GenServer.call(name, :get_bus_info, @timeout)
   end
 
   def get_commuter_rail_info(name \\ __MODULE__) do
-    GenServer.call(name, :get_commuter_rail_info)
+    GenServer.call(name, :get_commuter_rail_info, @timeout)
   end
 
   def get_ferry_info(name \\ __MODULE__) do
-    GenServer.call(name, :get_ferry_info)
+    GenServer.call(name, :get_ferry_info, @timeout)
   end
 
   def get_stop(name \\ __MODULE__, stop_id) do
-    GenServer.call(name, {:get_stop, stop_id})
+    GenServer.call(name, {:get_stop, stop_id}, @timeout)
   end
 
   def get_direction_name(name \\ __MODULE__, route, direction_id) do
-    GenServer.call(name, {:get_direction_name, route, direction_id})
+    GenServer.call(name, {:get_direction_name, route, direction_id}, @timeout)
   end
 
   def get_headsign(name \\ __MODULE__, origin, destination, direction_id) do
-    GenServer.call(name, {:get_headsign, origin, destination, direction_id})
+    GenServer.call(name, {:get_headsign, origin, destination, direction_id}, @timeout)
   end
 
   def get_route(name \\ __MODULE__, route) do
-    GenServer.call(name, {:get_route, route})
+    GenServer.call(name, {:get_route, route}, @timeout)
   end
 
   def get_parent_stop_id(name \\ __MODULE__, stop_id) do
-    GenServer.call(name, {:get_parent_stop_id, stop_id})
+    GenServer.call(name, {:get_parent_stop_id, stop_id}, @timeout)
   end
 
   def get_generalized_trip_id(name \\ __MODULE__, trip_id) do
-    GenServer.call(name, {:get_generalized_trip_id, trip_id})
+    GenServer.call(name, {:get_generalized_trip_id, trip_id}, @timeout)
   end
 
   def get_trip_name(name \\ __MODULE__, trip_id) do
-    GenServer.call(name, {:get_trip_name, trip_id})
+    GenServer.call(name, {:get_trip_name, trip_id}, @timeout)
   end
 
   def get_facility_map(name \\ __MODULE__) do
-    GenServer.call(name, :get_facility_map)
+    GenServer.call(name, :get_facility_map, @timeout)
   end
 
   def get_stops_with_icons(name \\ __MODULE__) do
-    GenServer.call(name, :get_stops_with_icons)
+    GenServer.call(name, :get_stops_with_icons, @timeout)
+  end
+
+  defp now_string do
+    DateTime.to_iso8601(DateTime.utc_now)
+  end
+
+  @doc """
+  Initialize the cache.
+  """
+  def handle_info(:initialize_cache, _state) do
+    Logger.info("Initializing service info cache at #{now_string()}")
+    service_info = fetch_and_cache_service_info()
+    Logger.info("Initialized service info cache at #{now_string()}")
+    {:noreply, service_info}
   end
 
   @doc """
@@ -86,7 +112,7 @@ defmodule AlertProcessor.ServiceInfoCache do
   def handle_info(:work, _) do
     schedule_work()
     service_info_cache = fetch_and_cache_service_info()
-    Logger.info("Service info cache refreshed")
+    Logger.info("Service info cache refreshed at #{now_string()}")
     {:noreply, service_info_cache}
   end
 
@@ -197,6 +223,7 @@ defmodule AlertProcessor.ServiceInfoCache do
       end)
     end)
   end
+
 
   defp fetch_and_cache_service_info do
     route_state =
