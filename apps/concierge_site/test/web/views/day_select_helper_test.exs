@@ -19,5 +19,9 @@ defmodule ConciergeSite.DaySelectHelperTest do
 
     assert html =~ "<input autocomplete=\"off\" checked=\"checked\" name=\"foo[days][]\" type=\"checkbox\" value=\"monday\">"
     assert html =~ "<input autocomplete=\"off\" name=\"foo[days][]\" type=\"checkbox\" value=\"tuesday\">"
+
+    html_2 = Phoenix.HTML.safe_to_string(DaySelectHelper.render(:foo, [:monday]))
+
+    assert html == html_2
   end
 end

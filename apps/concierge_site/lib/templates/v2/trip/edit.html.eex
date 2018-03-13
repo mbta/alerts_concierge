@@ -1,1 +1,58 @@
-edit trip
+<h1 class="heading__title">Edit Subscription</h1>
+<%= flash_error(@conn) %>
+
+<div class="my-4">
+  <%= ConciergeSite.TripCardHelper.render(@conn, @trip) %>
+</div>
+
+<div class="my-4 text-center">
+  <%= link to: "/" do %>
+    <i aria-hidden="true" class="fa fa-trash"></i>
+    Delete this subscription
+  <% end %>
+</div>
+
+<%= form_for @conn, v2_trip_path(@conn, :update, @trip), [as: :trip], fn form -> %>
+  <div class="form-group my-4">
+    <%= label form, :notification_time_drift, "When would you like to start receiving alerts for your trips?", class: "form__label" %>
+    <p>
+      <%= select form, :notification_time_drift, ["30 minutes", "1 hour", "2 hours"], class: "custom-select" %>
+      <em> before my trip</em>
+    </p>
+  </div>
+
+  <div class="form-group my-4">
+    <%= label form, :days, "What days do you take this trip?", class: "form__label" %>
+    <%= ConciergeSite.DaySelectHelper.render(:trip, @trip.relevant_days) %>
+  </div>
+
+  <div class="form-group my-4">
+    <span class="form__label">My first trip is usually at this time:</span>
+    <div class="form-group form-inline form__group--inline">
+      <%= label form, :start_time, "Departing around", class: "form__label--inline" %>
+      <%= text_input form, :start_time, type: "time", class: "form-control form__time--inline", required: true, value: Time.truncate(@trip.start_time, :second) %>
+    </div>
+    <div class="form-group form-inline form__group--inline">
+      <%= label form, :end_time, "Arriving around", class: "form__label--inline" %>
+      <%= text_input form, :end_time, type: "time", class: "form-control form__time--inline", required: true, value: Time.truncate(@trip.end_time, :second) %>
+    </div>
+  </div>
+
+  <%= if @trip.roundtrip do %>
+  <div class="form-group my-4">
+    <span class="form__label">My return trip is usually at this time:</span>
+    <div class="form-group form-inline form__group--inline">
+      <%= label form, :return_start_time, "Departing around", class: "form__label--inline" %>
+      <%= text_input form, :return_start_time, type: "time", class: "form-control form__time--inline", required: true, value: Time.truncate(@trip.return_start_time, :second) %>
+    </div>
+    <div class="form-group form-inline form__group--inline">
+      <%= label form, :return_end_time, "Arriving around", class: "form__label--inline" %>
+      <%= text_input form, :return_end_time, type: "time", class: "form-control form__time--inline", required: true, value: Time.truncate(@trip.return_end_time, :second) %>
+    </div>
+  </div>
+<% end %>
+
+  <div class="my-5">
+    <%= submit "Update subscription", class: "btn btn-primary btn-login btn-block" %>
+  </div>
+<% end %>

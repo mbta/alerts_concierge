@@ -63,10 +63,11 @@ defmodule ConciergeSite.V2.CreateSubscriptionTest do
   end
 
   test "edit trip", %{session: session, user: user} do
+    trip = insert(:trip, %{user_id: user.id})
     session
     |> log_in(user)
-    |> visit("/v2/trips/:id/edit")
-    |> assert_has(css("#main", text: "edit trip"))
+    |> visit("/v2/trips/#{trip.id}/edit")
+    |> assert_has(css("#main", text: "Edit Subscription"))
   end
 
   test "trip accessibility", %{session: session, user: user} do

@@ -3,6 +3,8 @@ defmodule ConciergeSite.V2.TripController do
   use Guardian.Phoenix.Controller
   alias AlertProcessor.Model.Trip
 
+  action_fallback ConciergeSite.V2.FallbackController
+
   def index(conn, _params, user, _claims) do
     trips = Trip.get_trips_by_user(user.id)
     render conn, "index.html", trips: trips
@@ -16,12 +18,20 @@ defmodule ConciergeSite.V2.TripController do
     render conn, "new.html"
   end
 
-  def edit(conn, _params, _user, _claims) do
-    render conn, "edit.html"
+  def edit(conn, %{"id" => id}, user, _claims) do
+    with {:trip, %Trip{} = trip} <- {:trip, Trip.find_by_id(id)},
+         {:authorized, true} <- {:authorized, user.id == trip.user_id} do
+      render(conn, "edit.html", trip: trip)
+    else
+      {:trip, nil} ->
+        {:error, :not_found}
+      {:authorized, false} ->
+        {:error, :not_found}
+    end
   end
 
-  def update(conn, _params, _user, _claims) do
-    render conn, "edit.html"
+  def update(conn, %{"id" => id}, _user, _claims) do
+    render conn, "edit.html", trip: Trip.find_by_id(id)
   end
 
   def leg(conn, %{"trip" => trip}, _user, _claims) do
