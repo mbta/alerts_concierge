@@ -10,7 +10,7 @@ defmodule AlertProcessor.Model.Subscription do
   @type id :: String.t
   @type subscription_type :: :bus | :subway | :commuter_rail | :ferry | :accessibility | :parking | :bike_storage
   @type subscription_info :: {__MODULE__.t, [InformedEntity.t]}
-  @type relevant_day :: :weekday | :saturday | :sunday
+  @type relevant_day :: :weekday | :monday | :tuesday | :wednesday | :thursday | :friday | :saturday | :sunday
   @type direction :: 0 | 1
   @type t :: %__MODULE__{
     alert_priority_type: atom,
@@ -280,59 +280,21 @@ defmodule AlertProcessor.Model.Subscription do
   """
   @spec timeframe_map(__MODULE__.t) :: TimeFrameComparison.timeframe_map
   def timeframe_map(subscription) do
-    Enum.reduce(subscription.relevant_days, %{}, fn(relevant_day, acc) ->
+    relevant_days = weekday_to_days(subscription.relevant_days)
+    Enum.reduce(relevant_days, %{}, fn(relevant_day, acc) ->
       overnight_timeframe = Time.compare(subscription.start_time, subscription.end_time) != :lt
       map_timeframe(relevant_day, overnight_timeframe, subscription.start_time, subscription.end_time, acc)
     end)
   end
 
-  defp map_timeframe(:weekday, true, start_time, end_time, acc) do
+  defp map_timeframe(day, true, start_time, end_time, acc) do
     acc
-    |> Map.update(:monday, map_timeframe_range(start_time, ~T[23:59:59]), fn(_) ->
+    |> Map.update(day, map_timeframe_range(start_time, ~T[23:59:59]), fn(_) ->
          map_timeframe_range(start_time, end_time)
        end)
-    |> Map.put(:tuesday, map_timeframe_range(start_time, end_time))
-    |> Map.put(:wednesday, map_timeframe_range(start_time, end_time))
-    |> Map.put(:thursday, map_timeframe_range(start_time, end_time))
-    |> Map.put(:friday, map_timeframe_range(start_time, end_time))
-    |> Map.update(:saturday, map_timeframe_range(~T[00:00:00], end_time), fn(_) ->
+    |> Map.update(next_timeframe(day), map_timeframe_range(~T[00:00:00], end_time), fn(_) ->
          map_timeframe_range(start_time, end_time)
        end)
-  end
-  defp map_timeframe(:saturday, true, start_time, end_time, acc) do
-    acc
-    |> Map.update(:saturday, map_timeframe_range(start_time, ~T[23:59:59]), fn(_) ->
-         map_timeframe_range(start_time, end_time)
-       end)
-    |> Map.update(:sunday, map_timeframe_range(~T[00:00:00], end_time), fn(_) ->
-         map_timeframe_range(start_time, end_time)
-       end)
-  end
-  defp map_timeframe(:sunday, true, start_time, end_time, acc) do
-    acc
-    |> Map.update(:sunday, map_timeframe_range(start_time, ~T[23:59:59]), fn(_) ->
-         map_timeframe_range(start_time, end_time)
-       end)
-    |> Map.update(:monday, map_timeframe_range(~T[00:00:00], end_time), fn(_) ->
-         map_timeframe_range(start_time, end_time)
-       end)
-  end
-  defp map_timeframe(:weekday, false, start_time, end_time, acc) do
-    if after_midnight?(start_time) do
-      acc
-      |> Map.put(:tuesday, map_timeframe_range(start_time, end_time))
-      |> Map.put(:wednesday, map_timeframe_range(start_time, end_time))
-      |> Map.put(:thursday, map_timeframe_range(start_time, end_time))
-      |> Map.put(:friday, map_timeframe_range(start_time, end_time))
-      |> Map.put(:saturday, map_timeframe_range(start_time, end_time))
-    else
-      acc
-      |> Map.put(:monday, map_timeframe_range(start_time, end_time))
-      |> Map.put(:tuesday, map_timeframe_range(start_time, end_time))
-      |> Map.put(:wednesday, map_timeframe_range(start_time, end_time))
-      |> Map.put(:thursday, map_timeframe_range(start_time, end_time))
-      |> Map.put(:friday, map_timeframe_range(start_time, end_time))
-    end
   end
   defp map_timeframe(relevant_day, false, start_time, end_time, acc) do
     if after_midnight?(start_time) do
@@ -351,7 +313,18 @@ defmodule AlertProcessor.Model.Subscription do
     local_timestamp != :gt
   end
 
-  defp next_timeframe(:weekday), do: :saturday
+  defp weekday_to_days(relevant_days) do
+    Enum.flat_map(relevant_days, fn
+      :weekday -> [:monday, :tuesday, :wednesday, :thursday, :friday]
+      day -> [day]
+    end)
+  end
+
+  defp next_timeframe(:monday), do: :tuesday
+  defp next_timeframe(:tuesday), do: :wednesday
+  defp next_timeframe(:wednesday), do: :thursday
+  defp next_timeframe(:thursday), do: :friday
+  defp next_timeframe(:friday), do: :saturday
   defp next_timeframe(:saturday), do: :sunday
   defp next_timeframe(:sunday), do: :monday
 
