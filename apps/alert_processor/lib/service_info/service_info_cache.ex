@@ -7,10 +7,18 @@ defmodule AlertProcessor.ServiceInfoCache do
   use GenServer
   alias AlertProcessor.Helpers.{ConfigHelper, StringHelper}
   alias AlertProcessor.{ApiClient, Model.Route}
+  alias AlertProcessor.ServiceInfo.CacheFile
   require Logger
 
   @service_types [:bus, :commuter_rail, :ferry, :subway]
   @info_types [:parent_stop_info, :subway_full_routes, :ferry_general_ids, :commuter_rail_trip_ids, :facility_map]
+
+  # This exists to keep services that make calls to ServerInfoCache from crashing
+  # while the service is loading.
+  # This is a bandaid and should be removed when a better method for initializing
+  # service info has been implemented.
+  @timeout 75_000
+
 
   @doc false
   def start_link(opts \\ [name: __MODULE__]) do
@@ -21,63 +29,72 @@ defmodule AlertProcessor.ServiceInfoCache do
   Initialize GenServer and schedule recurring service info fetching.
   """
   def init(_) do
-    {:ok, fetch_and_cache_service_info()}
+    schedule_work()
+    {:ok, load_initial_service_info()}
+  end
+
+  def initialize_cache do
+    GenServer.cast(__MODULE__, :initialize_cache)
   end
 
   def get_subway_info(name \\ __MODULE__) do
-    GenServer.call(name, :get_subway_info)
+    GenServer.call(name, :get_subway_info, @timeout)
   end
 
   def get_subway_full_routes(name \\ __MODULE__) do
-    GenServer.call(name, :get_subway_full_routes)
+    GenServer.call(name, :get_subway_full_routes, @timeout)
   end
 
   def get_bus_info(name \\ __MODULE__) do
-    GenServer.call(name, :get_bus_info)
+    GenServer.call(name, :get_bus_info, @timeout)
   end
 
   def get_commuter_rail_info(name \\ __MODULE__) do
-    GenServer.call(name, :get_commuter_rail_info)
+    GenServer.call(name, :get_commuter_rail_info, @timeout)
   end
 
   def get_ferry_info(name \\ __MODULE__) do
-    GenServer.call(name, :get_ferry_info)
+    GenServer.call(name, :get_ferry_info, @timeout)
   end
 
   def get_stop(name \\ __MODULE__, stop_id) do
-    GenServer.call(name, {:get_stop, stop_id})
+    GenServer.call(name, {:get_stop, stop_id}, @timeout)
   end
 
   def get_direction_name(name \\ __MODULE__, route, direction_id) do
-    GenServer.call(name, {:get_direction_name, route, direction_id})
+    GenServer.call(name, {:get_direction_name, route, direction_id}, @timeout)
   end
 
   def get_headsign(name \\ __MODULE__, origin, destination, direction_id) do
-    GenServer.call(name, {:get_headsign, origin, destination, direction_id})
+    GenServer.call(name, {:get_headsign, origin, destination, direction_id}, @timeout)
   end
 
   def get_route(name \\ __MODULE__, route) do
-    GenServer.call(name, {:get_route, route})
+    GenServer.call(name, {:get_route, route}, @timeout)
   end
 
   def get_parent_stop_id(name \\ __MODULE__, stop_id) do
-    GenServer.call(name, {:get_parent_stop_id, stop_id})
+    GenServer.call(name, {:get_parent_stop_id, stop_id}, @timeout)
   end
 
   def get_generalized_trip_id(name \\ __MODULE__, trip_id) do
-    GenServer.call(name, {:get_generalized_trip_id, trip_id})
+    GenServer.call(name, {:get_generalized_trip_id, trip_id}, @timeout)
   end
 
   def get_trip_name(name \\ __MODULE__, trip_id) do
-    GenServer.call(name, {:get_trip_name, trip_id})
+    GenServer.call(name, {:get_trip_name, trip_id}, @timeout)
   end
 
   def get_facility_map(name \\ __MODULE__) do
-    GenServer.call(name, :get_facility_map)
+    GenServer.call(name, :get_facility_map, @timeout)
   end
 
   def get_stops_with_icons(name \\ __MODULE__) do
-    GenServer.call(name, :get_stops_with_icons)
+    GenServer.call(name, :get_stops_with_icons, @timeout)
+  end
+
+  defp now_string do
+    DateTime.to_iso8601(DateTime.utc_now)
   end
 
   @doc """
@@ -85,9 +102,9 @@ defmodule AlertProcessor.ServiceInfoCache do
   """
   def handle_info(:work, _) do
     schedule_work()
-    service_info_cache = fetch_and_cache_service_info()
-    Logger.info("Service info cache refreshed")
-    {:noreply, service_info_cache}
+    service_info = fetch_and_cache_service_info()
+    Logger.info("Service info cache refreshed at #{now_string()}")
+    {:noreply, service_info}
   end
 
   def handle_call(:get_subway_info, _from, %{routes: route_state} = state) do
@@ -198,19 +215,44 @@ defmodule AlertProcessor.ServiceInfoCache do
     end)
   end
 
+  defp fetch_parallel(names) when is_list(names) do
+    names
+    |> Enum.map(fn name ->
+      {name, Task.async(fn -> fetch_service_info(name) end)}
+    end)
+    |> Enum.map(fn {name, task} ->
+      {name, Task.await(task, @timeout+100)}
+    end)
+  end
+
+  defp load_initial_service_info do
+    Logger.info("Loading initial service info from cached file")
+    case CacheFile.load_service_info() do
+      {:ok, state} when is_map(state) ->
+        Logger.info("Loading initial service info from cached file")
+        state
+      _ ->
+        Logger.info("Loading initial service info from APIs")
+        state = fetch_and_cache_service_info()
+        Logger.info("Loaded initial service info from APIs")
+        CacheFile.save_service_info(state)
+        state
+    end
+  end
+
   defp fetch_and_cache_service_info do
     route_state =
-      Enum.flat_map(@service_types, fn(service_type) ->
-        fetch_service_info(service_type)
-      end)
+      @service_types
+      |> fetch_parallel
+      |> Keyword.values
+      |> List.flatten
 
-    stops_with_icons = stops_with_icons(route_state)
-
-    info_state = for info_type <- @info_types, into: %{routes: route_state} do
-      {info_type, fetch_service_info(info_type)}
-    end
-
-    Map.put(info_state, :stops_with_icons, stops_with_icons)
+      @info_types
+      |> fetch_parallel
+      |> Enum.into(%{
+        routes: route_state,
+        stops_with_icons: stops_with_icons(route_state)
+      })
   end
 
   defp stops_with_icons(routes) do

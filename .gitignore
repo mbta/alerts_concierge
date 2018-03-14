@@ -15,3 +15,6 @@ npm-debug.log
 .DS_Store
 excoveralls.json
 releases
+
+# dev and test cache files for faster loading
+*.terms
