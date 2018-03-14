@@ -4,7 +4,7 @@ defmodule AlertProcessor.Model.Trip do
   and some other metadata, like whether it's a round trip or not.
   """
 
-  alias AlertProcessor.Model.{Subscription, User}
+  alias AlertProcessor.Model.{Trip, Subscription, User}
   alias AlertProcessor.Repo
 
   @type relevant_day :: :monday | :tuesday | :wednesday | :thursday | :friday | :saturday | :sunday
@@ -32,7 +32,7 @@ defmodule AlertProcessor.Model.Trip do
 
   schema "trips" do
     belongs_to :user, User, type: :binary_id
-    has_many :subscriptions, Subscription
+    has_many :subscriptions, Subscription, on_delete: :delete_all
 
     field :alert_priority_type, AlertProcessor.AtomType, null: false
     field :relevant_days, {:array, AlertProcessor.AtomType}, null: false
@@ -70,5 +70,22 @@ defmodule AlertProcessor.Model.Trip do
   def get_trips_by_user(user_id) do
     subscriptions_query = from s in Subscription, where: s.return_trip == false, order_by: s.rank
     Repo.all(from t in __MODULE__, where: t.user_id == ^user_id, preload: [subscriptions: ^subscriptions_query])
+  end
+
+  @doc """
+  Deletes a trip and associated subscriptions.
+
+  ## Examples
+
+      iex> delete(trip)
+      {:ok, %Trip{}}
+
+      iex> delete(trip)
+      {:error, %Ecto.Changeset{}}
+
+  """
+  @spec delete(Trip.t) :: {:ok, Trip.t} | {:error, Ecto.Changeset.t}
+  def delete(%Trip{} = trip) do
+    Repo.delete(trip)
   end
 end
