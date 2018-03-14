@@ -227,13 +227,17 @@ defmodule AlertProcessor.ServiceInfoCache do
   end
 
   defp load_initial_service_info do
+    Logger.info("Loading initial service info from cached file")
     case CacheFile.load_service_info() do
       {:ok, state} when is_map(state) ->
         Logger.info("Loading initial service info from cached file")
         state
       _ ->
         Logger.info("Loading initial service info from APIs")
-        fetch_and_cache_service_info()
+        state = fetch_and_cache_service_info()
+        Logger.info("Loaded initial service info from APIs")
+        CacheFile.save_service_info(state)
+        state
     end
   end
 
@@ -244,17 +248,12 @@ defmodule AlertProcessor.ServiceInfoCache do
       |> Keyword.values
       |> List.flatten
 
-    state =
       @info_types
       |> fetch_parallel
       |> Enum.into(%{
         routes: route_state,
         stops_with_icons: stops_with_icons(route_state)
       })
-
-    CacheFile.save_service_info(state)
-
-    state
   end
 
   defp stops_with_icons(routes) do

@@ -17,5 +17,4 @@ excoveralls.json
 releases
 
 # dev and test cache files for faster loading
-dev_cache.terms
-test_cache.terms
+*.terms
