@@ -84,6 +84,7 @@ defmodule AlertProcessor.AlertParser do
     |> Map.put(:severity, parse_severity(severity))
     |> Map.put(:timeframe, parse_translation(alert_data["timeframe_text"]))
     |> Map.put(:recurrence, parse_translation(alert_data["recurrence_text"]))
+    |> Map.put(:closed_timestamp, parse_datetime_or_nil(alert_data["closed_timestamp"]))
   end
   def parse_alert(alert, _, _) do
     Logger.warn("Failed to parse alert: #{Poison.encode!(alert)}")
@@ -94,6 +95,9 @@ defmodule AlertProcessor.AlertParser do
     {:ok, dt} = DateTime.from_unix(datetime)
     dt
   end
+
+  defp parse_datetime_or_nil(nil), do: nil
+  defp parse_datetime_or_nil(datetime), do: parse_datetime(datetime)
 
   defp parse_duration_certainty(alert, "ESTIMATED", [%{"start" => _start_timestamp, "end" => end_timestamp}], feed_timestamp) do
     estimated_duration = round((end_timestamp - feed_timestamp) / 900) * 900
