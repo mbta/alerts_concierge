@@ -3,7 +3,7 @@ defmodule AlertProcessor.Model.SubscriptionTest do
   use AlertProcessor.DataCase
   import AlertProcessor.Factory
 
-  alias AlertProcessor.Model.Subscription
+  alias AlertProcessor.Model.{Subscription, InformedEntity}
   alias AlertProcessor.Subscription.{BusMapper, Mapper}
 
   @base_attrs %{
@@ -449,6 +449,16 @@ defmodule AlertProcessor.Model.SubscriptionTest do
       } = PaperTrail.get_version(subscription)
       assert item_id == subscription.id
       assert owner_id == user.id
+    end
+
+    test "deletes associated informed entities" do
+      user = insert(:user)
+      subscription = insert(:subscription, %{user_id: user.id})
+      insert(:informed_entity, %{subscription_id: subscription.id})
+      informed_entities = Repo.all(InformedEntity)
+      assert length(informed_entities) > 0
+      Subscription.delete_subscription(subscription, user.id)
+      assert Repo.all(InformedEntity) == []
     end
   end
 
