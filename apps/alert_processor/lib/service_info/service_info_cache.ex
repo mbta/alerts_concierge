@@ -8,7 +8,6 @@ defmodule AlertProcessor.ServiceInfoCache do
   alias AlertProcessor.Helpers.{ConfigHelper, StringHelper}
   alias AlertProcessor.{ApiClient, Model.Route}
   alias AlertProcessor.ServiceInfo.CacheFile
-
   require Logger
 
   @service_types [:bus, :commuter_rail, :ferry, :subway]

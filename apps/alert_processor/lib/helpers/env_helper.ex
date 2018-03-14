@@ -11,7 +11,6 @@ defmodule AlertProcessor.Helpers.EnvHelper do
     Code.ensure_loaded?(Mix)
   end
 
-
   @doc """
   Returns true if the current Mix.env matches the given item else returns false
 

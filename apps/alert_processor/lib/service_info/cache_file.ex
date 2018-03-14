@@ -7,7 +7,6 @@ defmodule AlertProcessor.ServiceInfo.CacheFile do
   @dev_filename "dev_cache.terms"
   @test_filename "test_cache.terms"
 
-
   @doc """
   Given a filename generates a filepath for saving cache info file.
   """
