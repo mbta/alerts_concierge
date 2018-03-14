@@ -9,6 +9,7 @@ defmodule ConciergeSite.TripCardHelper do
   def render(conn, %Trip{subscriptions: subscriptions, roundtrip: roundtrip, relevant_days: relevant_days,
                    start_time: start_time, end_time: end_time, return_start_time: return_start_time,
                    return_end_time: return_end_time, id: id}) do
+
     link to: ConciergeSite.Router.Helpers.v2_trip_path(conn, :edit, id), class: "card trip__card" do
       [
         routes(subscriptions),
@@ -22,6 +23,7 @@ defmodule ConciergeSite.TripCardHelper do
   @spec routes([Subscription.t]) :: [Phoenix.HTML.safe]
   defp routes(subscriptions) do
     subscriptions
+    |> Enum.reject(& &1.return_trip)
     |> Enum.map(fn (subscription) ->
       [
         content_tag :span, class: "trip__card--route-icon" do
@@ -40,8 +42,9 @@ defmodule ConciergeSite.TripCardHelper do
   end
 
   @spec icon(atom, String.t) :: Phoenix.HTML.safe
+  defp icon(_, "Mattapan"), do: ConciergeSite.IconViewHelper.icon(:mattapan)
   defp icon(:subway, route), do: ConciergeSite.IconViewHelper.icon(String.to_atom(String.downcase(route)))
-  defp icon(:commuter_rail, _), do: ConciergeSite.IconViewHelper.icon(:commuter_rail)
+  defp icon(:cr, _), do: ConciergeSite.IconViewHelper.icon(:commuter_rail)
   defp icon(:bus, _), do: ConciergeSite.IconViewHelper.icon(:bus)
   defp icon(:ferry, _), do: ConciergeSite.IconViewHelper.icon(:ferry)
 

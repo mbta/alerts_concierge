@@ -11,7 +11,7 @@ defmodule AlertProcessor.Model.Subscription do
   @type id :: String.t
   @type subscription_type :: :bus | :subway | :commuter_rail | :ferry | :accessibility | :parking | :bike_storage
   @type subscription_info :: {__MODULE__.t, [InformedEntity.t]}
-  @type relevant_day :: :weekday | :monday | :tuesday | :wednesday | :thursday | :friday | :saturday | :sunday
+  @type relevant_day :: :weekday | :saturday | :sunday | :monday | :tuesday | :wednesday | :thursday | :friday
   @type direction :: 0 | 1
   @type t :: %__MODULE__{
     alert_priority_type: atom,
@@ -20,7 +20,6 @@ defmodule AlertProcessor.Model.Subscription do
     relevant_days: [relevant_day] | nil,
     start_time: Time.t | nil,
     end_time: Time.t | nil,
-    notification_time: Time.t | nil,
     origin: String.t | nil,
     destination: String.t | nil,
     type: subscription_type | nil,
@@ -63,7 +62,6 @@ defmodule AlertProcessor.Model.Subscription do
     field :relevant_days, {:array, AlertProcessor.AtomType}
     field :start_time, :time, null: false
     field :end_time, :time, null: false
-    field :notification_time, :time
     field :origin, :string
     field :destination, :string
     field :type, AlertProcessor.AtomType
@@ -81,7 +79,7 @@ defmodule AlertProcessor.Model.Subscription do
   end
 
   @permitted_fields ~w(alert_priority_type user_id trip_id relevant_days start_time
-    end_time notification_time type rank)a
+    end_time type rank route return_trip)a
   @required_fields ~w(alert_priority_type user_id start_time end_time)a
   @update_permitted_fields ~w(alert_priority_type relevant_days start_time end_time)a
   @valid_days ~w(weekday monday tuesday wednesday thursday friday saturday sunday)a

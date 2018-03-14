@@ -2,7 +2,7 @@
 <h1 class="heading__title">Personalize Subscription</h1>
 
 <%= form_for @conn, v2_trip_trip_path(@conn, :leg), [as: :trip, method: :post], fn form -> %>
-  <%= if @mode != "bus" do %>
+  <%= if @saved_mode != "bus" do %>
     <div class="form-group my-4">
       <%= label form, :origin, "Where do you get on the #{@route_name}?", class: "form__label" %>
       <%= ConciergeSite.StopSelectHelper.render(@saved_leg, :trip, :origin) %>
@@ -34,6 +34,7 @@
 
   <%= hidden_input form, :round_trip, value: @round_trip %>
   <%= hidden_input form, :saved_leg, value: @saved_leg %>
+  <%= hidden_input form, :saved_mode, value: @saved_mode %>
 
   <%= for leg <- @legs do %>
     <%= hidden_input form, :legs, name: "trip[legs][]", value: leg %>
@@ -43,6 +44,9 @@
   <% end %>
   <%= for destination <- @destinations do %>
     <%= hidden_input form, :destinations, name: "trip[destinations][]", value: destination %>
+  <% end %>
+  <%= for mode <- @modes do %>
+    <%= hidden_input form, :modes, name: "trip[modes][]", value: mode %>
   <% end %>
 
   <div class="form-group my-4">

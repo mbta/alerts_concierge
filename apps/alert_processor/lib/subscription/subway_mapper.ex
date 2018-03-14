@@ -22,6 +22,7 @@ defmodule AlertProcessor.Subscription.SubwayMapper do
     params = params
     |> Map.put("route", route.route_id)
     |> Map.put("direction", "")
+    |> Map.put("return_trip", false)
 
     subscriptions = params
     |> create_subscriptions

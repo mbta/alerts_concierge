@@ -14,7 +14,7 @@ defmodule AlertProcessor.Subscription.Mapper do
   def create_subscriptions(%{"origin" => origin, "destination" => destination} = params) do
     return_params = %{params | "destination" => origin, "origin" => destination,
                                "departure_start" => params["return_start"], "departure_end" => params["return_end"],
-                               "direction" => flip_direction(params["direction"])}
+                               "direction" => flip_direction(params["direction"]), "return_trip" => true}
     [do_create_subscription(params), do_create_subscription(return_params)]
   end
   def create_subscription(_), do: :error
@@ -31,7 +31,8 @@ defmodule AlertProcessor.Subscription.Mapper do
       origin: params["origin"],
       destination: params["destination"],
       route: params["route"],
-      direction_id: params["direction"]
+      direction_id: params["direction"],
+      return_trip: params["return_trip"]
     }
     case {get_latlong_from_stop(params["origin"]), get_latlong_from_stop(params["destination"])} do
       {nil, nil} -> subscription

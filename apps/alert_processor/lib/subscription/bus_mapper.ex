@@ -28,6 +28,7 @@ defmodule AlertProcessor.Subscription.BusMapper do
       |> Map.put("direction", direction)
       |> Map.put("origin", nil)
       |> Map.put("destination", nil)
+      |> Map.put("return_trip", false)
 
       subscriptions = params
       |> create_subscriptions

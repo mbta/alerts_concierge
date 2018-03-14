@@ -87,6 +87,7 @@ defmodule ConciergeSite.SubwaySubscriptionController do
 
   def create(conn, params, user, {:ok, claims}) do
     subway_params = SubwayParams.prepare_for_mapper(params["subscription"])
+
     {:ok, subscription_infos} = SubwayMapper.map_subscriptions(subway_params)
 
     multi = SubwayMapper.build_subscription_transaction(subscription_infos, user, Map.get(claims, "imp", user.id))
