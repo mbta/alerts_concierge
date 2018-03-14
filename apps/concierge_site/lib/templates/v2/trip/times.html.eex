@@ -1,24 +1,81 @@
 <%= render ConciergeSite.V2.LayoutView, "_steps.html", step: "two" %>
-<h2>Round Trip</h2>
-<%= @round_trip %>
+<h1 class="heading__title">Personalize my subscription</h1>
+<%= flash_error(@conn) %>
 
-<h2>Legs</h2>
-<ol>
-<%= for leg <- Enum.reverse(@legs) do %>
-  <li><%= leg %></li>
-<% end %>
-</ol>
+<%= form_for @conn, v2_trip_path(@conn, :create), [as: :trip, method: :post], fn form -> %>
+  <div class="form-group my-4">
+    <%= label form, :days, "What days do you take this trip?", class: "form__label" %>
+    <%= ConciergeSite.DaySelectHelper.render(:trip, ["monday", "tuesday", "wednesday", "thursday", "friday", "weekdays"]) %>
+  </div>
 
-<h2>Origins</h2>
-<ol>
-<%= for origin <- Enum.reverse(@origins) do %>
-  <li><%= origin %></li>
-<% end %>
-</ol>
+  <div class="form-group my-4">
+    <span class="form__label">What time do you usually take your first trip?</span>
+    <div class="form-group form-inline form__group--inline">
+      <%= label form, :start_time, "Departing around", class: "form__label--inline" %>
+      <%= text_input form, :start_time, type: "time", class: "form-control form__time--inline", required: true, value: "08:00" %>
+    </div>
+    <div class="form-group form-inline form__group--inline">
+      <%= label form, :end_time, "Arriving around", class: "form__label--inline" %>
+      <%= text_input form, :end_time, type: "time", class: "form-control form__time--inline", required: true, value: "09:00" %>
+    </div>
+  </div>
 
-<h2>Destinations</h2>
-<ol>
-<%= for destination <- Enum.reverse(@destinations) do %>
-  <li><%= destination %></li>
+  <%= if @round_trip do %>
+    <div class="form-group my-4">
+      <span class="form__label">What time do you usually take your return trip?</span>
+      <div class="form-group form-inline form__group--inline">
+        <%= label form, :return_start_time, "Departing around", class: "form__label--inline" %>
+        <%= text_input form, :return_start_time, type: "time", class: "form-control form__time--inline", required: true, value: "17:00" %>
+      </div>
+      <div class="form-group form-inline form__group--inline">
+        <%= label form, :return_end_time, "Arriving around", class: "form__label--inline" %>
+        <%= text_input form, :return_end_time, type: "time", class: "form-control form__time--inline", required: true, value: "18:00" %>
+      </div>
+    </div>
+  <% end %>
+
+  <%= hidden_input form, :round_trip, value: @round_trip %>
+  <%= for leg <- @legs do %>
+    <%= hidden_input form, :legs, name: "trip[legs][]", value: leg %>
+  <% end %>
+  <%= for origin <- @origins do %>
+    <%= hidden_input form, :origins, name: "trip[origins][]", value: origin %>
+  <% end %>
+  <%= for destination <- @destinations do %>
+    <%= hidden_input form, :destinations, name: "trip[destinations][]", value: destination %>
+  <% end %>
+
+  <div class="form-group my-4">
+    <%= label form, :station_features, "Would you like alerts about any of these station features?", class: "form__label" %>
+    <div class="form-check">
+      <label>
+        <%= checkbox form, :elevator %>
+        Elevators and ramps
+      </label>
+    </div>
+    <div class="form-check">
+      <label>
+        <%= checkbox form, :escalator %>
+        Escalators
+      </label>
+    </div>
+    <div class="form-check">
+      <label>
+        <%= checkbox form, :parking %>
+        Parking
+      </label>
+    </div>
+    <div class="form-check">
+      <label>
+        <%= checkbox form, :bike_storage %>
+        Bike Storage
+      </label>
+    </div>
+  </div>
+
+  <div class="my-5">
+    <%= submit "Next", class: "btn btn-primary btn-login btn-block" %>
+    <br>
+    <a href="javascript:history.back()">&lt; Back</a>
+  </div>
 <% end %>
-</ol>

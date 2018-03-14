@@ -5,9 +5,10 @@ defmodule ConciergeSite.DaySelectHelper do
   @short_days ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"]
 
   @spec render(atom) :: Phoenix.HTML.safe
-  def render(input_name) do
+  def render(input_name, checked \\ []) do
+    checked_set = MapSet.new(checked)
     content_tag :div, class: "day-selector", data: [selector: "date"] do
-      [title(), day(input_name), group()]
+      [title(), day(input_name, checked_set), group(checked_set)]
     end
   end
 
@@ -17,33 +18,37 @@ defmodule ConciergeSite.DaySelectHelper do
     end
   end
 
-  defp day(input_name) do
+  defp day(input_name, checked_set) do
     content_tag :div, class: "day-part" do
       content_tag :div, class: "btn-group btn-group-toggle" do
-        Enum.map(@days, & label(input_name, &1))
+        Enum.map(@days, & label(input_name, &1, Enum.member?(checked_set, &1)))
       end
     end
   end
 
-  defp label(input_name, day) do
-    content_tag :label, class: "btn btn-secondary" do
-      [tag(:input, type: "checkbox", autocomplete: "off", value: day, name: "#{input_name}[days][]"),
+  defp label(input_name, day, selected?) do
+    content_tag :label, class: label_class(selected?) do
+      [tag(:input, type: "checkbox", autocomplete: "off", value: day,
+           name: "#{input_name}[days][]", checked: selected?),
        content_tag(:i, "", class: "fa fa-check")]
     end
   end
 
-  defp group do
+  defp label_class(true), do: "btn btn-secondary active"
+  defp label_class(_), do: "btn btn-secondary"
+
+  defp group(checked_set) do
     content_tag :div, class: "group-part invisible-no-js" do
       content_tag :div, class: "btn-group btn-group-toggle" do
-        [content_tag :label, class: "btn btn-secondary btn-weekdays" do
-          [tag(:input, type: "checkbox", autocomplete: "off", value: "weekdays"),
-           "Weekdays"]
-        end,
-          content_tag :label, class: "btn btn-secondary btn-weekend" do
-            [tag(:input, type: "checkbox", autocomplete: "off", value: "weekend"),
-             "Weekend"]
-          end]
+        Enum.map(["weekdays", "weekend"], & group_label(&1, Enum.member?(checked_set, &1)))
       end
+    end
+  end
+
+  defp group_label(name, selected?) do
+    content_tag :label, class: "#{label_class(selected?)} btn-#{name}" do
+      [tag(:input, type: "checkbox", autocomplete: "off", value: name, checked: selected?),
+       String.capitalize(name)]
     end
   end
 end
