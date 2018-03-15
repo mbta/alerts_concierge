@@ -195,36 +195,67 @@ defmodule AlertProcessor.Helpers.DateTimeHelper do
     Calendar.Date.advance!(today_date, 7 - day_of_week)
   end
 
-  def determine_relevant_day_of_week(datetime, time_zone \\ @time_zone) do
+  def within_relevant_day_of_week?(relevant_days, datetime) do
+    Enum.any?(determine_relevant_days_of_week(datetime), fn day ->
+      Enum.member?(relevant_days, day)
+    end)
+  end
+
+  defp determine_relevant_days_of_week(datetime, time_zone \\ @time_zone) do
     {:ok, adjusted_datetime} = DT.shift_zone(datetime, time_zone)
     day_of_week = Date.day_of_week(adjusted_datetime)
     time = DateTime.to_time(adjusted_datetime)
-    do_determine_relevant_day_of_week(time, day_of_week)
+    do_determine_relevant_days_of_week(time, day_of_week)
   end
 
-  defp do_determine_relevant_day_of_week(time, 7) do
-    if in_current_service_date?(time) do
-      :sunday
-    else
-      :saturday
-    end
-  end
-  defp do_determine_relevant_day_of_week(time, 6) do
+  defp do_determine_relevant_days_of_week(time, 1) do
     if in_current_service_date?(time)do
-      :saturday
+      [:weekday, :monday]
     else
-      :weekday
+      [:sunday]
     end
   end
-  defp do_determine_relevant_day_of_week(time, 1) do
+  defp do_determine_relevant_days_of_week(time, 2) do
+    if in_current_service_date?(time)do
+      [:weekday, :tuesday]
+    else
+      [:weekday, :monday]
+    end
+  end
+  defp do_determine_relevant_days_of_week(time, 3) do
+    if in_current_service_date?(time)do
+      [:weekday, :wednesday]
+    else
+      [:weekday, :tuesday]
+    end
+  end
+  defp do_determine_relevant_days_of_week(time, 4) do
+    if in_current_service_date?(time)do
+      [:weekday, :thursday]
+    else
+      [:weekday, :wednesday]
+    end
+  end
+  defp do_determine_relevant_days_of_week(time, 5) do
+    if in_current_service_date?(time)do
+      [:weekday, :friday]
+    else
+      [:weekday, :thursday]
+    end
+  end
+  defp do_determine_relevant_days_of_week(time, 6) do
+    if in_current_service_date?(time)do
+      [:saturday]
+    else
+      [:weekday, :friday]
+    end
+  end
+  defp do_determine_relevant_days_of_week(time, 7) do
     if in_current_service_date?(time) do
-      :weekday
+      [:sunday]
     else
-      :sunday
+      [:saturday]
     end
-  end
-  defp do_determine_relevant_day_of_week(_, _) do
-    :weekday
   end
 
   defp in_current_service_date?(time) do

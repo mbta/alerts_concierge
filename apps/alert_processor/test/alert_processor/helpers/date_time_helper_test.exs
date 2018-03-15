@@ -124,40 +124,107 @@ defmodule AlertProcessor.Helpers.DateTimeHelperTest do
     end
   end
 
-  describe "determine_relevant_day_of_week" do
+  describe "within_relevant_day_of_week?" do
     test "handles weekday" do
       friday = DT.from_erl!({{2017, 10, 13}, {12, 0, 0}}, "Etc/UTC")
-      assert :weekday = DTH.determine_relevant_day_of_week(friday)
+      assert DTH.within_relevant_day_of_week?([:weekday], friday)
+      refute DTH.within_relevant_day_of_week?([:saturday], friday)
     end
 
     test "handles weekday early morning" do
       friday = DT.from_erl!({{2017, 10, 13}, {6, 0, 0}}, "Etc/UTC")
-      assert :weekday = DTH.determine_relevant_day_of_week(friday)
+      assert DTH.within_relevant_day_of_week?([:weekday], friday)
+      refute DTH.within_relevant_day_of_week?([:saturday], friday)
     end
 
-    test "handles monday early morning" do
-      monday = DT.from_erl!({{2017, 10, 9}, {6, 0, 0}}, "Etc/UTC")
-      assert :sunday = DTH.determine_relevant_day_of_week(monday)
+    test "handles weekend early morning" do
+      saturday = DT.from_erl!({{2017, 10, 14}, {6, 0, 0}}, "Etc/UTC")
+      assert DTH.within_relevant_day_of_week?([:weekday], saturday)
+      refute DTH.within_relevant_day_of_week?([:saturday], saturday)
+    end
+
+    test "handles monday" do
+      monday = DT.from_erl!({{2017, 10, 9}, {12, 0, 0}}, "Etc/UTC")
+      assert DTH.within_relevant_day_of_week?([:monday], monday)
+      refute DTH.within_relevant_day_of_week?([:sunday], monday)
+    end
+
+    test "handles tuesday" do
+      tuesday = DT.from_erl!({{2017, 10, 10}, {12, 0, 0}}, "Etc/UTC")
+      assert DTH.within_relevant_day_of_week?([:tuesday], tuesday)
+      refute DTH.within_relevant_day_of_week?([:monday], tuesday)
+    end
+
+    test "handles wednesday" do
+      wednesday = DT.from_erl!({{2017, 10, 11}, {12, 0, 0}}, "Etc/UTC")
+      assert DTH.within_relevant_day_of_week?([:wednesday], wednesday)
+      refute DTH.within_relevant_day_of_week?([:tuesday], wednesday)
+    end
+
+    test "handles thursday" do
+      thursday = DT.from_erl!({{2017, 10, 12}, {12, 0, 0}}, "Etc/UTC")
+      assert DTH.within_relevant_day_of_week?([:thursday], thursday)
+      refute DTH.within_relevant_day_of_week?([:wednesday], thursday)
+    end
+
+    test "handles friday" do
+      friday = DT.from_erl!({{2017, 10, 13}, {12, 0, 0}}, "Etc/UTC")
+      assert DTH.within_relevant_day_of_week?([:friday], friday)
+      refute DTH.within_relevant_day_of_week?([:thursday], friday)
     end
 
     test "handles saturday" do
       saturday = DT.from_erl!({{2017, 10, 14}, {12, 0, 0}}, "Etc/UTC")
-      assert :saturday = DTH.determine_relevant_day_of_week(saturday)
-    end
-
-    test "handles saturday early morning" do
-      saturday = DT.from_erl!({{2017, 10, 14}, {6, 30, 0}}, "Etc/UTC")
-      assert :weekday = DTH.determine_relevant_day_of_week(saturday)
+      assert DTH.within_relevant_day_of_week?([:saturday], saturday)
+      refute DTH.within_relevant_day_of_week?([:friday], saturday)
     end
 
     test "handles sunday" do
       sunday = DT.from_erl!({{2017, 10, 15}, {12, 0, 0}}, "Etc/UTC")
-      assert :sunday = DTH.determine_relevant_day_of_week(sunday)
+      assert DTH.within_relevant_day_of_week?([:sunday], sunday)
+      refute DTH.within_relevant_day_of_week?([:saturday], sunday)
+    end
+
+    test "handles monday early morning" do
+      monday = DT.from_erl!({{2017, 10, 9}, {6, 0, 0}}, "Etc/UTC")
+      refute DTH.within_relevant_day_of_week?([:monday], monday)
+      assert DTH.within_relevant_day_of_week?([:sunday], monday)
+    end
+
+    test "handles tuesday early morning" do
+      tuesday = DT.from_erl!({{2017, 10, 10}, {6, 0, 0}}, "Etc/UTC")
+      refute DTH.within_relevant_day_of_week?([:tuesday], tuesday)
+      assert DTH.within_relevant_day_of_week?([:monday], tuesday)
+    end
+
+    test "handles wednesday early morning" do
+      wednesday = DT.from_erl!({{2017, 10, 11}, {6, 0, 0}}, "Etc/UTC")
+      refute DTH.within_relevant_day_of_week?([:wednesday], wednesday)
+      assert DTH.within_relevant_day_of_week?([:tuesday], wednesday)
+    end
+
+    test "handles thursday early morning" do
+      thursday = DT.from_erl!({{2017, 10, 12}, {6, 0, 0}}, "Etc/UTC")
+      refute DTH.within_relevant_day_of_week?([:thursday], thursday)
+      assert DTH.within_relevant_day_of_week?([:wednesday], thursday)
+    end
+
+    test "handles friday early morning" do
+      friday = DT.from_erl!({{2017, 10, 13}, {6, 0, 0}}, "Etc/UTC")
+      refute DTH.within_relevant_day_of_week?([:friday], friday)
+      assert DTH.within_relevant_day_of_week?([:thursday], friday)
+    end
+
+    test "handles saturday early morning" do
+      saturday = DT.from_erl!({{2017, 10, 14}, {6, 0, 0}}, "Etc/UTC")
+      refute DTH.within_relevant_day_of_week?([:saturday], saturday)
+      assert DTH.within_relevant_day_of_week?([:friday], saturday)
     end
 
     test "handles sunday early morning" do
-      sunday = DT.from_erl!({{2017, 10, 15}, {5, 30, 0}}, "Etc/UTC")
-      assert :saturday = DTH.determine_relevant_day_of_week(sunday)
+      sunday = DT.from_erl!({{2017, 10, 15}, {6, 0, 0}}, "Etc/UTC")
+      refute DTH.within_relevant_day_of_week?([:sunday], sunday)
+      assert DTH.within_relevant_day_of_week?([:saturday], sunday)
     end
   end
 
