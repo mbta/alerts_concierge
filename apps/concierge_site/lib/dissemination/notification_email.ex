@@ -2,7 +2,7 @@ defmodule ConciergeSite.Dissemination.NotificationEmail do
   @moduledoc "Bamboo Mailer interface"
   import Bamboo.Email
   import AlertProcessor.Helpers.StringHelper, only: [capitalize_first: 1]
-  alias AlertProcessor.Model.{Alert, Notification}
+  alias AlertProcessor.Model.Notification
   alias AlertProcessor.Helpers.ConfigHelper
   alias ConciergeSite.Helpers.MailHelper
   require EEx
@@ -43,15 +43,31 @@ defmodule ConciergeSite.Dissemination.NotificationEmail do
   end
 
   def email_subject(notification) do
-    alert = notification.alert
-    IO.iodata_to_binary([email_prefix(alert), notification.service_effect, email_suffix(alert)])
+    {_, subject} = {notification, ""}
+    |> subject_body()
+    |> subject_prefix()
+    |> subject_suffix()
+    |> subject_closed()
+
+    subject
   end
 
-  defp email_prefix(%Alert{timeframe: nil}),
-    do: ""
-  defp email_prefix(%Alert{timeframe: timeframe}),
-    do: [capitalize_first(timeframe), ": "]
+  defp subject_body({%Notification{service_effect: effect} = notification, subject}) do
+    {notification, "#{subject}#{effect}"}
+  end
 
-  defp email_suffix(%Alert{recurrence: nil}), do: ""
-  defp email_suffix(%Alert{recurrence: recurrence}), do: [" ", recurrence]
+  defp subject_prefix({%Notification{alert: %{timeframe: nil}}, _} = pair), do: pair
+  defp subject_prefix({%Notification{alert: %{timeframe: timeframe}} = notification, subject}) do
+    {notification, "#{capitalize_first(timeframe)}: #{subject}"}
+  end
+
+  defp subject_suffix({%Notification{alert: %{recurrence: nil}}, _} = pair), do: pair
+  defp subject_suffix({%Notification{alert: %{recurrence: recurrence}} = notification, subject}) do
+    {notification, "#{subject} #{recurrence}"}
+  end
+
+  defp subject_closed({%Notification{closed_timestamp: nil}, _} = pair), do: pair
+  defp subject_closed({notification, subject}) do
+    {notification, "All clear (re: #{subject})"}
+  end
 end

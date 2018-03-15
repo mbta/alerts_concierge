@@ -21,7 +21,8 @@ defmodule ConciergeSite.Dissemination.NotificationEmailTest do
     url: "http://www.example.com/alert-info",
     alert: @alert,
     last_push_notification: %DateTime{year: 2017, month: 1, day: 18, zone_abbr: "UTC", hour: 19, minute: 0, second: 0,
-                                      microsecond: {0, 0}, utc_offset: 0, std_offset: 0, time_zone: "Etc/UTC"}
+      microsecond: {0, 0}, utc_offset: 0, std_offset: 0, time_zone: "Etc/UTC"},
+    closed_timestamp: nil
   }
 
   test "text_email/1 has all necessary content" do
@@ -76,6 +77,14 @@ defmodule ConciergeSite.Dissemination.NotificationEmailTest do
     test "without timeframe or recurrence" do
       subject = NotificationEmail.email_subject(@notification)
       assert subject == "Red line delay"
+    end
+
+    test "closed alert" do
+      alert = %{@alert | timeframe: "starting September 1", recurrence: "on weekends"}
+      notification = %{@notification | alert: alert, closed_timestamp: DateTime.utc_now()}
+      subject = NotificationEmail.email_subject(notification)
+
+      assert subject == "All clear (re: Starting September 1: Red line delay on weekends)"
     end
   end
 end
