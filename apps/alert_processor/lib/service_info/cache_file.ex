@@ -1,4 +1,12 @@
 defmodule AlertProcessor.ServiceInfo.CacheFile do
+  @moduledoc """
+  This module holds the logic for loading and saving cache files
+  in dev and test environments with the goal of decreasing startup
+  time so devs can work more quickly.
+
+  If expected API payloads change the cache files should be deleted/removed
+  to allowing caching of the changes.
+  """
   alias AlertProcessor.Helpers.EnvHelper
   require Logger
 
