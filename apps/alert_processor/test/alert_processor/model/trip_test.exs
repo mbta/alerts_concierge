@@ -112,9 +112,53 @@ defmodule AlertProcessor.Model.TripTest do
     end
   end
 
-  test "find_by_id/1 returns trip for valid id", %{user: user} do
-    trip = insert(:trip, %{user_id: user.id})
+  test "find_by_id/1 returns trip for valid id" do
+    trip = insert(:trip)
     found_trip = Trip.find_by_id(trip.id)
     assert found_trip.id == trip.id
+  end
+
+  describe "update/2" do
+    test "returns valid changeset with valid params" do
+      trip_details = %{
+        relevant_days: [:monday],
+        start_time: ~T[12:00:00],
+        end_time: ~T[13:30:00],
+        return_start_time: ~T[18:00:00],
+        return_end_time: ~T[18:30:00],
+        alert_time_difference_in_minutes: 60
+      }
+      trip = insert(:trip, trip_details)
+      params = %{
+        start_time: ~T[13:00:00],
+        end_time: ~T[13:30:00],
+        return_start_time: ~T[15:00:00],
+        return_end_time: ~T[15:30:00],
+        relevant_days: [:tuesday],
+        alert_time_difference_in_minutes: 30
+      }
+      {:ok, %Trip{} = _} = Trip.update(trip, params)
+      updated_trip = Trip.find_by_id(trip.id)
+      assert updated_trip.start_time == ~T[13:00:00.000000]
+      assert updated_trip.end_time == ~T[13:30:00.000000]
+      assert updated_trip.return_start_time == ~T[15:00:00.000000]
+      assert updated_trip.return_end_time == ~T[15:30:00.000000]
+      assert updated_trip.relevant_days == [:tuesday]
+      assert updated_trip.alert_time_difference_in_minutes == 30
+    end
+
+    test "errors if updated without any days" do
+      trip = insert(:trip)
+      params = %{relevant_days: []}
+      assert {:error, %Ecto.Changeset{} = changeset} = Trip.update(trip, params)
+      assert :relevant_days in Keyword.keys(changeset.errors)
+    end
+
+    test "errors if invalid alert_time_difference_in_minutes" do
+      trip = insert(:trip)
+      params = %{alert_time_difference_in_minutes: 10}
+      assert {:error, %Ecto.Changeset{} = changeset} = Trip.update(trip, params)
+      assert :alert_time_difference_in_minutes in Keyword.keys(changeset.errors)
+    end
   end
 end

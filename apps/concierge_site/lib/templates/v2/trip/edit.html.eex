@@ -1,5 +1,6 @@
 <h1 class="heading__title">Edit Subscription</h1>
 <%= flash_error(@conn) %>
+<%= flash_info(@conn) %>
 
 <div class="my-4">
   <%= ConciergeSite.TripCardHelper.render(@conn, @trip) %>
@@ -12,17 +13,18 @@
   <% end %>
 </div>
 
-<%= form_for @conn, v2_trip_path(@conn, :update, @trip), [as: :trip], fn form -> %>
+<%= form_for @changeset, v2_trip_path(@conn, :update, @trip), [as: :trip], fn form -> %>
   <div class="form-group my-4">
-    <%= label form, :notification_time_drift, "When would you like to start receiving alerts for your trips?", class: "form__label" %>
+    <%= label form, :alert_time_difference_in_minutes, "When would you like to start receiving alerts for your trips?", class: "form__label" %>
     <p>
-      <%= select form, :notification_time_drift, ["30 minutes", "1 hour", "2 hours"], class: "custom-select" %>
-      <em> before my trip</em>
+      <%= select form, :alert_time_difference_in_minutes, ["30", "60", "120"],
+          selected: @trip.alert_time_difference_in_minutes, class: "custom-select" %>
+      <em> minutes before my trip</em>
     </p>
   </div>
 
   <div class="form-group my-4">
-    <%= label form, :days, "What days do you take this trip?", class: "form__label" %>
+    <%= label form, :relevant_days, "What days do you take this trip?", class: "form__label" %>
     <%= ConciergeSite.DaySelectHelper.render(:trip, @trip.relevant_days) %>
   </div>
 

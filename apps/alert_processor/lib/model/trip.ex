@@ -59,6 +59,15 @@ defmodule AlertProcessor.Model.Trip do
   @valid_relevant_days ~w(monday tuesday wednesday thursday friday saturday sunday)a
   @valid_station_features ~w(accessibility parking bike_storage)a
   @valid_alert_priority_types ~w(low high)a
+  @valid_alert_time_difference_in_minutes [30, 60, 120]
+  @update_permitted_fields ~w(
+    relevant_days
+    start_time
+    end_time
+    return_start_time
+    return_end_time
+    alert_time_difference_in_minutes
+  )a
 
   @doc """
   Changeset for creating a trip
@@ -72,6 +81,46 @@ defmodule AlertProcessor.Model.Trip do
     |> validate_length(:relevant_days, min: 1)
     |> validate_subset(:station_features, @valid_station_features)
     |> validate_inclusion(:alert_priority_type, @valid_alert_priority_types)
+  end
+
+  @doc """
+  Changeset for updating a trip.
+
+  Only allowed to update the following:
+  * relevant_days
+  * start_time
+  * end_time
+  * return_start_time
+  * return_end_time
+  * alert_time_difference_in_minutes
+
+  """
+  @spec update_changeset(__MODULE__.t, map) :: Ecto.Changeset.t
+  def update_changeset(struct, params \\ %{}) do
+    struct
+    |> cast(params, @update_permitted_fields)
+    |> validate_subset(:relevant_days, @valid_relevant_days)
+    |> validate_length(:relevant_days, min: 1)
+    |> validate_inclusion(:alert_time_difference_in_minutes, @valid_alert_time_difference_in_minutes)
+  end
+
+  @doc """
+  Updates a trip.
+
+  ## Examples
+
+      iex> update(trip, %{field: new_value})
+      {:ok, %Trip{}}
+
+      iex> update(trip, %{field: bad_value})
+      {:error, %Ecto.Changeset{}}
+
+  """
+  @spec update(__MODULE__.t, map) :: {:ok, __MODULE__.t} | {:error, Ecto.Changeset.t}
+  def update(%__MODULE__{} = trip, params) do
+    trip
+    |> update_changeset(params)
+    |> Repo.update()
   end
 
   def get_trips_by_user(user_id) do

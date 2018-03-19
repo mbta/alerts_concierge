@@ -19,7 +19,7 @@ defmodule ConciergeSite.V2.TripControllerTest do
 
   describe "GET /v2/trips/:id/edit" do
     test "with valid trip", %{conn: conn, user: user} do
-      trip = insert(:trip, %{user_id: user.id})
+      trip = insert(:trip, %{user: user})
       conn =
         user
         |> guardian_login(conn)
@@ -40,7 +40,7 @@ defmodule ConciergeSite.V2.TripControllerTest do
 
     test "returns 404 if user doesn't own trip", %{conn: conn, user: user} do
       sneaky_user = insert(:user, email: "sneaky_user@emailprovider.com")
-      trip = insert(:trip, user_id: user.id)
+      trip = insert(:trip, user: user)
       conn =
         sneaky_user
         |> guardian_login(conn)
@@ -51,12 +51,22 @@ defmodule ConciergeSite.V2.TripControllerTest do
   end
 
   test "PATCH /v2/trips/:id", %{conn: conn, user: user} do
-    trip = insert(:trip, %{user_id: user.id})
+    trip = insert(:trip, %{user: user})
+    params = [
+      trip: %{
+        relevant_days: [:tuesday, :thursday],
+        start_time: "13:30",
+        end_time: "14:00",
+        return_start_time: "15:30",
+        return_end_time: "16:00",
+        alert_time_difference_in_minutes: 30
+      }
+    ]
     conn = user
     |> guardian_login(conn)
-    |> patch(v2_trip_path(conn, :update, trip.id, %{}))
+    |> patch(v2_trip_path(conn, :update, trip.id, params))
 
-    assert html_response(conn, 200) =~ "Edit Subscription"
+    assert html_response(conn, 200) =~ "Trip updated."
   end
 
   describe "DELETE /v2/trips/:id" do
