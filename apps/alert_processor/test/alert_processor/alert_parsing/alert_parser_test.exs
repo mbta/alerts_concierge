@@ -183,6 +183,7 @@ defmodule AlertProcessor.AlertParserTest do
         informed_entities: _informed_entities,
         service_effect: "Minor Red Line delay",
         severity: :minor,
+        closed_timestamp: nil
       } = result
 
       assert start_datetime == DT.from_erl!({{2017, 10, 10}, {13, 44, 54}}, "America/New_York")
@@ -205,6 +206,7 @@ defmodule AlertProcessor.AlertParserTest do
         informed_entities: _informed_entities,
         service_effect: "Minor Red Line delay",
         severity: :minor,
+        closed_timestamp: nil
       } = result
 
       assert start_datetime == DT.from_erl!({{2017, 10, 10}, {13, 44, 54}}, "America/New_York")
@@ -228,6 +230,7 @@ defmodule AlertProcessor.AlertParserTest do
         informed_entities: _informed_entities,
         service_effect: "Minor Red Line delay",
         severity: :minor,
+        closed_timestamp: nil
       } = result
       assert 1507661322 == feed_timestamp
       assert (36 * 60 * 60) == DateTime.to_unix(end_datetime) - DateTime.to_unix(created_at_datetime)
@@ -239,6 +242,27 @@ defmodule AlertProcessor.AlertParserTest do
       {:ok, [alert], feed_timestamp} = AlertProcessor.AlertsClient.get_alerts()
       result = AlertParser.parse_alert(alert, %{}, feed_timestamp)
       assert result.url == "http://www.example.com/alert-info"
+    end
+  end
+
+  test "correctly pulls the closed timestamp when present" do
+    use_cassette "closed_alert", custom: true, clear_mock: true, match_requests_on: [:query] do
+      {:ok, [alert], feed_timestamp} = AlertProcessor.AlertsClient.get_alerts()
+      result = AlertParser.parse_alert(alert, %{}, feed_timestamp)
+      assert %AlertProcessor.Model.Alert{
+        active_period: [%{start: _start_datetime, end: _end_datetime}],
+        created_at: _created_at_datetime,
+        duration_certainty: :known,
+        effect_name: "Delay",
+        header: "Red Line experiencing minor delays",
+        id: "115513",
+        informed_entities: _informed_entities,
+        service_effect: "Minor Red Line delay",
+        severity: :minor,
+        closed_timestamp: closed_timestamp
+      } = result
+
+      assert closed_timestamp == DT.from_erl!({{2017, 10, 10}, {17, 50, 59}}, "Etc/UTC")
     end
   end
 
