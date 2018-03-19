@@ -59,7 +59,8 @@ defmodule AlertProcessor.NotificationBuilderTest do
       alert: alert,
       notification_subscriptions: [%AlertProcessor.Model.NotificationSubscription{
         subscription_id: sub.id
-      }]
+      }],
+      closed_timestamp: alert.closed_timestamp
     }
 
     assert expected_notification == notification

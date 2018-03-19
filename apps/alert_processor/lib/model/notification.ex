@@ -17,7 +17,8 @@ defmodule AlertProcessor.Model.Notification do
     email: String.t | nil,
     status: atom,
     last_push_notification: DateTime.t | nil,
-    alert: Alert.t | nil
+    alert: Alert.t | nil,
+    closed_timestamp: DateTime.t | nil
  }
 
   use Ecto.Schema
@@ -42,6 +43,7 @@ defmodule AlertProcessor.Model.Notification do
     field :status, AlertProcessor.AtomType
     field :last_push_notification, :utc_datetime
     field :alert, :string, virtual: true
+    field :closed_timestamp, :utc_datetime
 
     timestamps()
   end
@@ -55,7 +57,8 @@ defmodule AlertProcessor.Model.Notification do
     )
   end
 
-  @permitted_fields ~w(alert_id user_id send_after description url service_effect header phone_number email status last_push_notification)a
+  @permitted_fields ~w(alert_id user_id send_after description url service_effect
+    header phone_number email status last_push_notification closed_timestamp)a
   @required_fields ~w(alert_id user_id header service_effect)a
 
   @doc """

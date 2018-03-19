@@ -111,7 +111,8 @@ defmodule AlertProcessor.NotificationBuilder do
               send_after: time,
               last_push_notification: alert.last_push_notification,
               alert: alert,
-              notification_subscriptions: Enum.map(subscriptions, & %AlertProcessor.Model.NotificationSubscription{subscription_id: &1.id})
+              notification_subscriptions: Enum.map(subscriptions, & %AlertProcessor.Model.NotificationSubscription{subscription_id: &1.id}),
+              closed_timestamp: alert.closed_timestamp
             }
           [notification | result]
       end

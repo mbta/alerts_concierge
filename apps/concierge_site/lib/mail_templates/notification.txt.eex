@@ -1,8 +1,18 @@
+<%= if notification.closed_timestamp do %>
+All clear (re: <%= notification.service_effect %>)
+
+The issue described below has ended:
+
+  <%= notification.header %>
+
+  <%= notification.description %>
+<% else %>
 <%= notification.service_effect %>
 
 <%= notification.header %>
 
 <%= notification.description %>
+<% end %>
 
 <%= if notification.last_push_notification do %>
   Last Updated: <%= ConciergeSite.Helpers.DateHelper.format_datetime(notification.last_push_notification, :local) %>
