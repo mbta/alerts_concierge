@@ -29,7 +29,7 @@ defmodule AlertProcessor.NotificationBuilder do
         subscription_start_datetime = time_to_datetime(subscription.start_time, now)
         {
           DateTime.compare(subscription_start_datetime, now) == :lt,
-          Enum.member?(subscription.relevant_days, AlertProcessor.Helpers.DateTimeHelper.determine_relevant_day_of_week(subscription_start_datetime)),
+          DateTimeHelper.within_relevant_day_of_week?(subscription.relevant_days, subscription_start_datetime),
           DateTime.to_unix(subscription_start_datetime)
         }
       end)
@@ -63,7 +63,7 @@ defmodule AlertProcessor.NotificationBuilder do
   defp build_estimated_duration_notifications(user, subscriptions, alert, now, advance_notice_in_seconds) do
     Enum.flat_map(subscriptions, fn(sub) ->
       subscription_start_datetime = time_to_datetime(sub.start_time, now)
-      if Enum.member?(sub.relevant_days, DateTimeHelper.determine_relevant_day_of_week(subscription_start_datetime)) do
+      if DateTimeHelper.within_relevant_day_of_week?(sub.relevant_days, subscription_start_datetime) do
         do_build_notifications(user, [sub], alert, DT.subtract!(time_to_datetime(sub.start_time, now), advance_notice_in_seconds), 0)
       else
         []

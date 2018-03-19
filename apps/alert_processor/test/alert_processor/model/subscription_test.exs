@@ -80,6 +80,18 @@ defmodule AlertProcessor.Model.SubscriptionTest do
       } == timeframe_map
     end
 
+    test "maps timeframe for monday" do
+      subscription = %Subscription{
+        start_time: ~T[10:00:00],
+        end_time: ~T[16:00:00],
+        relevant_days: [:monday]
+      }
+      timeframe_map = Subscription.timeframe_map(subscription)
+      assert %{
+        monday: %{start: 36_000, end: 57_600}
+      } == timeframe_map
+    end
+
     test "maps timeframe for saturday" do
       subscription = %Subscription{
         start_time: ~T[10:00:00],
