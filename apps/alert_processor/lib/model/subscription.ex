@@ -67,6 +67,7 @@ defmodule AlertProcessor.Model.Subscription do
     field :destination, :string
     field :type, AlertProcessor.AtomType
     field :route, :string
+    field :route_type, :integer
     field :direction_id, :integer
     field :origin_lat, :float
     field :origin_long, :float
