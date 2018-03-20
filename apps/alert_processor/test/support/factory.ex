@@ -188,8 +188,8 @@ defmodule AlertProcessor.Factory do
       relevant_days: [:monday],
       start_time: ~T[12:00:00],
       end_time: ~T[18:00:00],
-      notification_time: ~T[11:00:00],
-      station_features: [:accessibility]
+      station_features: [:accessibility],
+      alert_time_difference_in_minutes: 60
     }
   end
 end

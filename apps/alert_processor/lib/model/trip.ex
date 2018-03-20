@@ -19,9 +19,9 @@ defmodule AlertProcessor.Model.Trip do
     end_time: Time.t | nil,
     return_start_time: Time.t | nil,
     return_end_time: Time.t | nil,
-    notification_time: Time.t | nil,
     station_features: [station_feature] | nil,
-    roundtrip: boolean
+    roundtrip: boolean,
+    alert_time_difference_in_minutes: integer
   }
 
   use Ecto.Schema
@@ -40,15 +40,22 @@ defmodule AlertProcessor.Model.Trip do
     field :end_time, :time, null: false
     field :return_start_time, :time, null: true
     field :return_end_time, :time, null: true
-    field :notification_time, :time, null: false
     field :station_features, {:array, AlertProcessor.AtomType}, null: false
     field :roundtrip, :boolean, null: false
+    field :alert_time_difference_in_minutes, :integer, default: 60
 
     timestamps()
   end
 
-  @required_fields ~w(user_id alert_priority_type relevant_days start_time end_time
-    notification_time station_features)a
+  @required_fields ~w(
+    user_id
+    alert_priority_type
+    relevant_days
+    start_time
+    end_time
+    station_features
+    alert_time_difference_in_minutes
+  )a
   @valid_relevant_days ~w(monday tuesday wednesday thursday friday saturday sunday)a
   @valid_station_features ~w(accessibility parking bike_storage)a
   @valid_alert_priority_types ~w(low high)a
