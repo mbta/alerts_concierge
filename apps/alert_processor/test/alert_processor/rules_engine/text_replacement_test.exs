@@ -81,8 +81,8 @@ defmodule AlertProcessor.TextReplacementTest do
       }
 
       expected = %{
-        header: "Newburyport Train 180 (22:17 pm from Chelsea) has departed Newburyport 20-40 minutes late and will operate at a reduced speed due to a mechanical issue.",
-        description: "Affected trips: Newburyport Train 180 (22:17 pm from Chelsea)"
+        header: "Newburyport Train 180 (22:17 pm from Chelsea - Bellingham Sq) has departed Newburyport 20-40 minutes late and will operate at a reduced speed due to a mechanical issue.",
+        description: "Affected trips: Newburyport Train 180 (22:17 pm from Chelsea - Bellingham Sq)"
       }
 
       assert TextReplacement.replace_text(alert, [sub]) == Map.merge(alert, expected)
