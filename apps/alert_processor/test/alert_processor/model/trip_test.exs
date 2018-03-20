@@ -2,8 +2,8 @@ defmodule AlertProcessor.Model.TripTest do
   @moduledoc false
   use AlertProcessor.DataCase
   import AlertProcessor.Factory
-
-  alias AlertProcessor.{Model.Trip, Model.User, Repo}
+  alias AlertProcessor.Repo
+  alias AlertProcessor.Model.{Trip, User, Subscription}
 
   @password "password1"
   @encrypted_password Comeonin.Bcrypt.hashpwsalt(@password)
@@ -79,5 +79,37 @@ defmodule AlertProcessor.Model.TripTest do
     assert [trip] = Trip.get_trips_by_user(user.id)
     assert trip.user_id == user.id
     assert [] == Trip.get_trips_by_user("ba51f08c-ad36-4dd5-a81a-557168c42f51")
+  end
+
+  describe "delete/1" do
+    test "returns `{:ok, Trip.t}` with valid trip", %{user: user, valid_attrs: valid_attrs} do
+      trip =
+        %Trip{}
+        |> Trip.create_changeset(valid_attrs)
+        |> Repo.insert!
+      assert [%Trip{}] = Trip.get_trips_by_user(user.id)
+      assert {:ok, %Trip{}} = Trip.delete(trip)
+      assert [] = Trip.get_trips_by_user(user.id)
+    end
+
+    test "deletes a trip's subscriptions", %{user: user, valid_attrs: trip_attrs} do
+      trip =
+        %Trip{}
+        |> Trip.create_changeset(trip_attrs)
+        |> Repo.insert!()
+      subscription_attrs = %{
+        user_id: user.id,
+        trip_id: trip.id,
+        alert_priority_type: :low,
+        start_time: ~T[12:00:00],
+        end_time: ~T[18:00:00]
+      }
+      %Subscription{}
+      |> Subscription.create_changeset(subscription_attrs)
+      |> Repo.insert!()
+      assert [_] = Repo.all(Subscription)
+      Trip.delete(trip)
+      assert [] = Repo.all(Subscription)
+    end
   end
 end
