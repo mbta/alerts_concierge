@@ -21,7 +21,8 @@ defmodule AlertProcessor.ServiceInfoCacheTest do
       %Route{route_id: "Mattapan", long_name: "Mattapan Trolley", route_type: 0, direction_names: ["Outbound", "Inbound"], stop_list: [{_, _, _, _}| _]},
       %Route{route_id: "Orange", long_name: "Orange Line", route_type: 1, direction_names: ["Southbound", "Northbound"], stop_list: [{_, _, _, _}| _]},
       %Route{route_id: "Red", long_name: "Red Line", route_type: 1, direction_names: ["Southbound", "Northbound"], stop_list: [{"Ashmont", "place-asmnl", _, _}| _]},
-      %Route{route_id: "Red", long_name: "Red Line", route_type: 1, direction_names: ["Southbound", "Northbound"], stop_list: [{"Braintree", "place-brntn", _, _}| _]}
+      %Route{route_id: "Red", long_name: "Red Line", route_type: 1, direction_names: ["Southbound", "Northbound"], stop_list: [{"Braintree", "place-brntn", _, _}| _]},
+      %Route{route_id: "Red", long_name: "Red Line", route_type: 1, direction_names: ["Southbound", "Northbound"], stop_list: [{"JFK/Umass", "place-jfk", _, _}| _]}
     ] = Enum.sort_by(route_info, &(&1.route_id))
   end
 
@@ -70,7 +71,7 @@ defmodule AlertProcessor.ServiceInfoCacheTest do
     {:ok, route_info} = ServiceInfoCache.get_ferry_info(pid)
     assert [
       %AlertProcessor.Model.Route{direction_names: ["Outbound", "Inbound"], headsigns: nil, long_name: "Charlestown Ferry", order: 0, route_id: "Boat-F4", route_type: 4, short_name: "", stop_list: [{"Charlestown", "Boat-Charlestown", {42.373334, -71.05416}, 1}, {"Boston (Long Wharf)", "Boat-Long", {42.360018, -71.050247}, 1}]},
-      %AlertProcessor.Model.Route{direction_names: ["Outbound", "Inbound"], headsigns: nil, long_name: "Hingham/Hull Ferry", order: 1, route_id: "Boat-F1", route_type: 4, short_name: "", stop_list: [{"Hingham", "Boat-Hingham", {42.252643, -70.919875}, 1}, {"Boston (Rowes Wharf)", "Boat-Rowes", {42.355721, -71.049897}, 1}, {"Hull", "Boat-Hull", {42.303251, -70.920215}, 1}, {"Logan Airport", "Boat-Logan", {42.359789, -71.02734}, 1}, {"Boston (Long Wharf)", "Boat-Long", {42.360018, -71.050247}, 1}]}
+      %AlertProcessor.Model.Route{direction_names: ["Outbound", "Inbound"], headsigns: nil, long_name: "Hingham/Hull Ferry", order: 1, route_id: "Boat-F1", route_type: 4, short_name: "", stop_list: [{"Hingham", "Boat-Hingham", {42.252643, -70.919875}, 1}, {"Boston (Rowes Wharf)", "Boat-Rowes", {42.355721, -71.049897}, 1}, {"George's Island", "Boat-George", {42.319742, -70.930427}, 1}, {"Hull", "Boat-Hull", {42.303251, -70.920215}, 1}, {"Logan Airport", "Boat-Logan", {42.359789, -71.02734}, 1}, {"Boston (Long Wharf)", "Boat-Long", {42.360018, -71.050247}, 1}]}
     ] = route_info
   end
 
@@ -95,7 +96,7 @@ defmodule AlertProcessor.ServiceInfoCacheTest do
     assert {:ok, "Braintree"} == ServiceInfoCache.get_headsign(pid, "place-davis", "place-brntn", 0)
     assert {:ok, "Alewife"} == ServiceInfoCache.get_headsign(pid, "place-asmnl", "place-davis", 1)
     assert {:ok, "Alewife"} == ServiceInfoCache.get_headsign(pid, "place-brntn", "place-davis", 1)
-    assert {:ok, "Ashmont or Braintree"} == ServiceInfoCache.get_headsign(pid, "place-davis", "place-pktrm", 0)
+    assert {:ok, "Ashmont, Braintree, or JFK/Umass"} == ServiceInfoCache.get_headsign(pid, "place-davis", "place-pktrm", 0)
     assert {:ok, "Alewife"} == ServiceInfoCache.get_headsign(pid, "place-pktrm", "place-davis", 1)
     assert {:ok, "C"} == ServiceInfoCache.get_headsign(pid, "place-north", "place-clmnl", 0)
     assert {:ok, "C"} == ServiceInfoCache.get_headsign(pid, "place-clmnl", "place-north", 1)
