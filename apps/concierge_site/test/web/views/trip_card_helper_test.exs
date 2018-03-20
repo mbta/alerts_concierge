@@ -10,7 +10,7 @@ defmodule ConciergeSite.TripCardHelperTest do
   test "render/2", %{conn: conn} do
     user = Repo.insert!(%User{email: "test@email.com", role: "user", encrypted_password: @encrypted_password})
     trip = Repo.insert!(%Trip{user_id: user.id, alert_priority_type: :low, relevant_days: [:monday], start_time: ~T[09:00:00],
-                       end_time: ~T[10:00:00], notification_time: ~T[08:00:00], roundtrip: false})
+                       end_time: ~T[10:00:00], roundtrip: false})
     trip_with_subscriptions = %{trip | subscriptions: [
       add_subscription_for_trip(trip, %{type: :subway, route: "Red", origin: "place-alfcl", destination: "place-portr",
                                         direction_id: 0, rank: 1}),
@@ -60,8 +60,14 @@ defmodule ConciergeSite.TripCardHelperTest do
   defp add_subscription_for_trip(trip, params) do
     Repo.insert!(%Subscription{user_id: trip.user_id, trip_id: trip.id, alert_priority_type: trip.alert_priority_type,
                                relevant_days: trip.relevant_days, start_time: trip.start_time, end_time: trip.end_time,
-                               notification_time: trip.notification_time, type: params.type, route: params.route,
+                               notification_time: notification_time(trip), type: params.type, route: params.route,
                                origin: params[:origin], destination: params[:destination],
                                direction_id: params.direction_id, rank: params.rank})
+  end
+
+  defp notification_time(%{start_time: start_time}) do
+    hour = start_time.hour - 1
+    {:ok, time} = Time.new(hour, start_time.minute, start_time.second)
+    time
   end
 end

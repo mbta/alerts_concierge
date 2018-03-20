@@ -12,7 +12,6 @@ defmodule AlertProcessor.Model.TripTest do
     relevant_days: [:monday],
     start_time: ~T[12:00:00],
     end_time: ~T[18:00:00],
-    notification_time: ~T[11:00:00],
     station_features: [:accessibility]
   }
 
@@ -74,7 +73,7 @@ defmodule AlertProcessor.Model.TripTest do
   test "get_trips_by_user/1" do
     user = Repo.insert!(%User{email: "test@email.com", role: "user", encrypted_password: @encrypted_password})
     Repo.insert!(%Trip{user_id: user.id, alert_priority_type: :low, relevant_days: [:monday], start_time: ~T[12:00:00],
-                       end_time: ~T[18:00:00], notification_time: ~T[11:00:00], station_features: [:accessibility]})
+                       end_time: ~T[18:00:00], station_features: [:accessibility]})
 
     assert [trip] = Trip.get_trips_by_user(user.id)
     assert trip.user_id == user.id
