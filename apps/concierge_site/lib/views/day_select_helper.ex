@@ -6,11 +6,19 @@ defmodule ConciergeSite.DaySelectHelper do
 
   @spec render(atom) :: Phoenix.HTML.safe
   def render(input_name, checked \\ []) do
-    checked_set = MapSet.new(checked)
+    checked_set = checked |> ensure_days_as_string() |> MapSet.new()
     content_tag :div, class: "day-selector", data: [selector: "date"] do
       [title(), day(input_name, checked_set), group(checked_set)]
     end
   end
+
+  defp ensure_days_as_string([]), do: []
+
+  defp ensure_days_as_string(days), do: Enum.map(days, &ensure_day_as_string/1)
+
+  defp ensure_day_as_string(day) when is_atom(day), do: Atom.to_string(day)
+
+  defp ensure_day_as_string(day) when is_binary(day), do: day
 
   defp title do
     content_tag :div, class: "title-part" do

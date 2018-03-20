@@ -112,4 +112,10 @@ defmodule AlertProcessor.Model.TripTest do
       assert [] = Repo.all(Subscription)
     end
   end
+
+  test "find_by_id/1 returns trip for valid id", %{user: user} do
+    trip = insert(:trip, %{user_id: user.id})
+    found_trip = Trip.find_by_id(trip.id)
+    assert found_trip.id == trip.id
+  end
 end

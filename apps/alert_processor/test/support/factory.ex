@@ -2,7 +2,7 @@ defmodule AlertProcessor.Factory do
   @moduledoc false
   use ExMachina.Ecto, repo: AlertProcessor.Repo
 
-  alias AlertProcessor.Model.{InformedEntity, Notification, Subscription, User, PasswordReset}
+  alias AlertProcessor.Model.{InformedEntity, Notification, Subscription, User, PasswordReset, Trip}
   alias Calendar.DateTime
 
   def informed_entity_factory do
@@ -179,6 +179,17 @@ defmodule AlertProcessor.Factory do
       expired_at: DateTime.add!(DateTime.now_utc, 3600),
       redeemed_at: nil,
       user: build(:user)
+    }
+  end
+
+  def trip_factory do
+    %Trip{
+      alert_priority_type: :low,
+      relevant_days: [:monday],
+      start_time: ~T[12:00:00],
+      end_time: ~T[18:00:00],
+      notification_time: ~T[11:00:00],
+      station_features: [:accessibility]
     }
   end
 end

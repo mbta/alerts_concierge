@@ -16,20 +16,46 @@ defmodule ConciergeSite.V2.TripControllerTest do
     assert html_response(conn, 200) =~ "My account"
   end
 
-  test "GET /v2/trips/:id/edit", %{conn: conn, user: user} do
-    conn = user
-    |> guardian_login(conn)
-    |> get(v2_trip_path(conn, :edit, "id"))
+  describe "GET /v2/trips/:id/edit" do
+    test "with valid trip", %{conn: conn, user: user} do
+      trip = insert(:trip, %{user_id: user.id})
+      conn =
+        user
+        |> guardian_login(conn)
+        |> get(v2_trip_path(conn, :edit, trip.id))
 
-    assert html_response(conn, 200) =~ "edit trip"
+      assert html_response(conn, 200) =~ "Edit Subscription"
+    end
+
+    test "returns 404 with non-existent trip", %{conn: conn, user: user} do
+      non_existent_trip_id = "ba51f08c-ad36-4dd5-a81a-557168c42f51"
+      conn =
+        user
+        |> guardian_login(conn)
+        |> get(v2_trip_path(conn, :edit, non_existent_trip_id))
+
+      assert html_response(conn, 404) =~ "cannot be found"
+    end
+
+    test "returns 404 if user doesn't own trip", %{conn: conn, user: user} do
+      sneaky_user = insert(:user, email: "sneaky_user@emailprovider.com")
+      trip = insert(:trip, user_id: user.id)
+      conn =
+        sneaky_user
+        |> guardian_login(conn)
+        |> get(v2_trip_path(conn, :edit, trip.id))
+
+      assert html_response(conn, 404) =~ "cannot be found"
+    end
   end
 
   test "PATCH /v2/trips/:id", %{conn: conn, user: user} do
+    trip = insert(:trip, %{user_id: user.id})
     conn = user
     |> guardian_login(conn)
-    |> patch(v2_trip_path(conn, :update, "id", %{}))
+    |> patch(v2_trip_path(conn, :update, trip.id, %{}))
 
-    assert html_response(conn, 200) =~ "edit trip"
+    assert html_response(conn, 200) =~ "Edit Subscription"
   end
 
   test "DELETE /v2/trips/:id", %{conn: conn, user: user} do

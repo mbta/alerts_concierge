@@ -88,4 +88,13 @@ defmodule AlertProcessor.Model.Trip do
   def delete(%Trip{} = trip) do
     Repo.delete(trip)
   end
+
+  def find_by_id(id) do
+    query =
+      from t in __MODULE__,
+        left_join: s in assoc(t, :subscriptions),
+        where: t.id == ^id,
+        preload: [subscriptions: s]
+    Repo.one(query)
+  end
 end
