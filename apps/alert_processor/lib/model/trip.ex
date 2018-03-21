@@ -105,7 +105,7 @@ defmodule AlertProcessor.Model.Trip do
   end
 
   @doc """
-  Updates a trip.
+  Updates a trip and it's associated subscriptions.
 
   ## Examples
 
@@ -118,9 +118,12 @@ defmodule AlertProcessor.Model.Trip do
   """
   @spec update(__MODULE__.t, map) :: {:ok, __MODULE__.t} | {:error, Ecto.Changeset.t}
   def update(%__MODULE__{} = trip, params) do
-    trip
-    |> update_changeset(params)
-    |> Repo.update()
+    update_result =
+      trip
+      |> update_changeset(params)
+      |> Repo.update()
+    sync_subscriptions(update_result)
+    update_result
   end
 
   def get_trips_by_user(user_id) do
@@ -152,5 +155,13 @@ defmodule AlertProcessor.Model.Trip do
         where: t.id == ^id,
         preload: [subscriptions: s]
     Repo.one(query)
+  end
+
+  defp sync_subscriptions({:error, _}), do: :ignore
+  defp sync_subscriptions({:ok, %Trip{} = trip}) do
+    trip = Repo.preload(trip, :subscriptions)
+    for subscription <- trip.subscriptions do
+      Subscription.sync_with_trip(subscription, trip)
+    end
   end
 end

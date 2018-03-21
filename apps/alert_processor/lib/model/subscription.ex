@@ -3,8 +3,9 @@ defmodule AlertProcessor.Model.Subscription do
   Set of criteria on which a user wants to be sent alerts.
   """
 
-  alias AlertProcessor.{Helpers.DateTimeHelper, Model.InformedEntity, Model.TripInfo,
-    Model.User, Model.Trip, Repo, TimeFrameComparison}
+  alias AlertProcessor.{Repo, TimeFrameComparison}
+  alias AlertProcessor.Model.{InformedEntity, TripInfo, User, Trip, Subscription}
+  alias AlertProcessor.Helpers.DateTimeHelper
   import Ecto.Query
 
   @type id :: String.t
@@ -83,7 +84,7 @@ defmodule AlertProcessor.Model.Subscription do
     end_time notification_time type rank)a
   @required_fields ~w(alert_priority_type user_id start_time end_time)a
   @update_permitted_fields ~w(alert_priority_type relevant_days start_time end_time)a
-  @valid_days ~w(weekday saturday sunday)a
+  @valid_days ~w(weekday monday tuesday wednesday thursday friday saturday sunday)a
 
   @doc """
   Changeset for persisting a Subscription
@@ -118,6 +119,14 @@ defmodule AlertProcessor.Model.Subscription do
     |> update_changeset(params)
     |> PaperTrail.update(originator: User.wrap_id(originator), meta: %{owner: struct.user_id}, origin: origin)
     |> normalize_papertrail_result()
+  end
+
+  @doc """
+  Syncs a subscription's attributes per a given trip.
+  """
+  @spec sync_with_trip(__MODULE__.t, Trip.t) :: {:ok, Subscription.t} :: {:error, Ecto.Changeset.t}
+  def sync_with_trip(%Subscription{} = subscription, %Trip{} = trip) do
+    Subscription.SyncWithTrip.perform(subscription, trip)
   end
 
   def delete_subscription(struct, originator) do

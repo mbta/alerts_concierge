@@ -119,7 +119,7 @@ defmodule AlertProcessor.Model.TripTest do
   end
 
   describe "update/2" do
-    test "returns valid changeset with valid params" do
+    test "updates a trip with valid params" do
       trip_details = %{
         relevant_days: [:monday],
         start_time: ~T[12:00:00],
@@ -159,6 +159,120 @@ defmodule AlertProcessor.Model.TripTest do
       params = %{alert_time_difference_in_minutes: 10}
       assert {:error, %Ecto.Changeset{} = changeset} = Trip.update(trip, params)
       assert :alert_time_difference_in_minutes in Keyword.keys(changeset.errors)
+    end
+
+    test "syncs a one-way trip's subscriptions" do
+      # When a trip is updated we want to make sure it's subscriptions are
+      # updated accordingly.
+      relevant_days = [:monday]
+      start_time = ~T[12:00:00.000000]
+      end_time = ~T[12:30:00.000000]
+      alert_time_difference_in_minutes = 60
+      trip_details = %{
+        relevant_days: relevant_days,
+        start_time: start_time,
+        end_time: end_time,
+        alert_time_difference_in_minutes: alert_time_difference_in_minutes
+      }
+      trip = insert(:trip, trip_details)
+      subscription_details_1 = %{
+        relevant_days: relevant_days,
+        start_time: start_time,
+        end_time: end_time,
+        origin: "some-origin",
+        destination: "some-destination",
+        trip: trip
+      }
+      subscription_details_2 = %{
+        relevant_days: relevant_days,
+        start_time: start_time,
+        end_time: end_time,
+        origin: "some-other-origin",
+        destination: "some-other-destination",
+        trip: trip
+      }
+      subscription_1 = insert(:subscription, subscription_details_1)
+      subscription_2 = insert(:subscription, subscription_details_2)
+      params = %{
+        relevant_days: [:tuesday],
+        start_time: ~T[13:00:00.000000],
+        end_time: ~T[13:30:00.000000],
+        alert_time_difference_in_minutes: 30
+      }
+
+      {:ok, %Trip{} = _} = Trip.update(trip, params)
+
+      updated_subscription_1 = Repo.get!(Subscription, subscription_1.id)
+      updated_subscription_2 = Repo.get!(Subscription, subscription_2.id)
+
+      for updated_subscription <- [updated_subscription_1, updated_subscription_2] do
+        assert updated_subscription.relevant_days == params.relevant_days
+        assert updated_subscription.start_time == params.start_time
+        assert updated_subscription.end_time == params.end_time
+      end
+    end
+
+    test "syncs a return trip's subscription correctly for round trips" do
+      # When a trip is updated we want to make sure it's "return_trip"
+      # subscription is updated correctly. Subscriptions with a return_trip
+      # value of true should have a start_time and end_time equal to the trip's
+      # return_start_time and return_end_time.
+      relevant_days = [:monday]
+      start_time = ~T[12:00:00.000000]
+      end_time = ~T[12:30:00.000000]
+      return_start_time = ~T[14:00:00.000000]
+      return_end_time = ~T[14:30:00.000000]
+      alert_time_difference_in_minutes = 60
+      trip_details = %{
+        relevant_days: relevant_days,
+        start_time: start_time,
+        end_time: end_time,
+        return_start_time: return_start_time,
+        return_end_time: return_end_time,
+        alert_time_difference_in_minutes: alert_time_difference_in_minutes
+      }
+      trip = insert(:trip, trip_details)
+      departure_subscription_details = %{
+        return_trip: false,
+        relevant_days: relevant_days,
+        start_time: start_time,
+        end_time: end_time,
+        origin: "some-origin",
+        destination: "some-destination",
+        trip: trip
+      }
+      return_subscription_details = %{
+        return_trip: true,
+        relevant_days: relevant_days,
+        start_time: return_start_time,
+        end_time: return_end_time,
+        origin: "some-other-origin",
+        destination: "some-other-destination",
+        trip: trip
+      }
+      departure_subscription = insert(:subscription, departure_subscription_details)
+      return_subscription = insert(:subscription, return_subscription_details)
+      params = %{
+        relevant_days: [:tuesday],
+        start_time: ~T[13:00:00.000000],
+        end_time: ~T[13:30:00.000000],
+        return_start_time: ~T[15:00:00.000000],
+        return_end_time: ~T[15:30:00.000000],
+        alert_time_difference_in_minutes: 30
+      }
+
+      {:ok, %Trip{} = _} = Trip.update(trip, params)
+
+      updated_departure_subscription = Repo.get!(Subscription, departure_subscription.id)
+      updated_return_subscription = Repo.get!(Subscription, return_subscription.id)
+
+      assert updated_departure_subscription.relevant_days == params.relevant_days
+      assert updated_departure_subscription.start_time == params.start_time
+      assert updated_departure_subscription.end_time == params.end_time
+
+      assert updated_return_subscription.relevant_days == params.relevant_days
+      assert updated_return_subscription.start_time == params.return_start_time
+      assert updated_return_subscription.end_time == params.return_end_time
     end
   end
 end

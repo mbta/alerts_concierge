@@ -46,6 +46,7 @@ defmodule ConciergeSite.V2.TripController do
         {:error, :not_found}
       {:error, %Ecto.Changeset{} = changeset} ->
         conn
+        |> put_status(:unprocessable_entity)
         |> put_flash(:error, "Trip could not be updated. Please see errors below.")
         |> render("edit.html", trip: Trip.find_by_id(id), changeset: changeset)
     end
