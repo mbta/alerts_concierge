@@ -76,8 +76,15 @@ defmodule ConciergeSite.V2.TripController do
     render conn, "accessibility.html"
   end
 
-  def delete(conn, _params, _user, _claims) do
-    redirect(conn, to: v2_trip_path(conn, :index))
+  def delete(conn, %{"id" => id}, user, _claims) do
+    with %Trip{} = trip <- Trip.find_by_id(id),
+         true <- user.id == trip.user_id,
+         {:ok, %Trip{}} <- Trip.delete(trip) do
+      redirect(conn, to: v2_trip_path(conn, :index))
+    else
+      _ ->
+        {:error, :not_found}
+    end
   end
 
   defp leg_list(%{"legs" => legs}), do: legs

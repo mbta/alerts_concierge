@@ -1,6 +1,7 @@
 defmodule ConciergeSite.V2.TripControllerTest do
   use ConciergeSite.ConnCase
   import AlertProcessor.Factory
+  alias AlertProcessor.Model.Trip
 
   setup do
     user = insert(:user)
@@ -58,12 +59,36 @@ defmodule ConciergeSite.V2.TripControllerTest do
     assert html_response(conn, 200) =~ "Edit Subscription"
   end
 
-  test "DELETE /v2/trips/:id", %{conn: conn, user: user} do
-    conn = user
-    |> guardian_login(conn)
-    |> delete(v2_trip_path(conn, :delete, "id"))
+  describe "DELETE /v2/trips/:id" do
+    test "deletes trip and redirects to trip index page", %{conn: conn, user: user} do
+      trip = insert(:trip, %{user: user})
+      conn = user
+             |> guardian_login(conn)
+             |> delete(v2_trip_path(conn, :delete, trip.id))
 
-    assert html_response(conn, 302) =~ v2_trip_path(conn, :index)
+      assert html_response(conn, 302) =~ v2_trip_path(conn, :index)
+      refute Trip.find_by_id(trip.id)
+    end
+
+    test "returns 404 with non-existent trip", %{conn: conn, user: user} do
+      non_existent_trip_id = Ecto.UUID.generate()
+      conn = user
+             |> guardian_login(conn)
+             |> delete(v2_trip_path(conn, :delete, non_existent_trip_id))
+
+      assert html_response(conn, 404) =~ "cannot be found"
+    end
+
+    test "returns 404 if user is not the owner of the trip", %{conn: conn, user: sneaky_user} do
+      owner = insert(:user)
+      trip = insert(:trip, %{user: owner})
+      conn = sneaky_user
+             |> guardian_login(conn)
+             |> delete(v2_trip_path(conn, :delete, trip.id))
+
+      assert html_response(conn, 404) =~ "cannot be found"
+      assert Trip.find_by_id(trip.id)
+    end
   end
 
   test "GET /v2/trip/new", %{conn: conn, user: user} do
