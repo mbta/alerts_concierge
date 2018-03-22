@@ -19,7 +19,7 @@ defmodule ConciergeSite.V2.TripControllerTest do
 
   describe "GET /v2/trips/:id/edit" do
     test "with valid trip", %{conn: conn, user: user} do
-      trip = insert(:trip, %{user_id: user.id})
+      trip = insert(:trip, %{user: user})
       conn =
         user
         |> guardian_login(conn)
@@ -40,7 +40,7 @@ defmodule ConciergeSite.V2.TripControllerTest do
 
     test "returns 404 if user doesn't own trip", %{conn: conn, user: user} do
       sneaky_user = insert(:user, email: "sneaky_user@emailprovider.com")
-      trip = insert(:trip, user_id: user.id)
+      trip = insert(:trip, user: user)
       conn =
         sneaky_user
         |> guardian_login(conn)
@@ -50,13 +50,59 @@ defmodule ConciergeSite.V2.TripControllerTest do
     end
   end
 
-  test "PATCH /v2/trips/:id", %{conn: conn, user: user} do
-    trip = insert(:trip, %{user_id: user.id})
-    conn = user
-    |> guardian_login(conn)
-    |> patch(v2_trip_path(conn, :update, trip.id, %{}))
+  describe "PATCH /v2/trips/:id" do
+    test "with HH:MM time format", %{conn: conn, user: user} do
+      # Time format comes through with `HH:MM` format after a user updates them
+      # in the trip edit page.
+      trip = insert(:trip, %{user: user})
+      params = [
+        trip: %{
+          relevant_days: [:tuesday, :thursday],
+          start_time: "13:30",
+          end_time: "14:00",
+          return_start_time: "15:30",
+          return_end_time: "16:00",
+          alert_time_difference_in_minutes: 30
+        }
+      ]
+      conn = user
+             |> guardian_login(conn)
+             |> patch(v2_trip_path(conn, :update, trip.id, params))
 
-    assert html_response(conn, 200) =~ "Edit Subscription"
+      assert html_response(conn, 200) =~ "Trip updated."
+    end
+
+    test "with HH:MM:SS time format", %{conn: conn, user: user} do
+      # Time is sent with `HH:MM:SS` format if the user doesn't update them.
+      # They come through with `HH:MM` format if they do update them. So we
+      # need to correctly handle both formats.
+      trip = insert(:trip, %{user: user})
+      params = [
+        trip: %{
+          relevant_days: [:tuesday, :thursday],
+          start_time: "13:30:00",
+          end_time: "14:00:00",
+          return_start_time: "15:30:00",
+          return_end_time: "16:00:00",
+          alert_time_difference_in_minutes: 30
+        }
+      ]
+      conn = user
+             |> guardian_login(conn)
+             |> patch(v2_trip_path(conn, :update, trip.id, params))
+
+      assert html_response(conn, 200) =~ "Trip updated."
+    end
+
+    test "with invalid relevant day", %{conn: conn, user: user} do
+      trip = insert(:trip, %{user: user})
+      params = [trip: %{relevant_days: [:invalid]}]
+      conn = user
+             |> guardian_login(conn)
+             |> patch(v2_trip_path(conn, :update, trip.id, params))
+
+      assert html_response(conn, 422) =~ "Trip could not be updated."
+    end
   end
 
   describe "DELETE /v2/trips/:id" do

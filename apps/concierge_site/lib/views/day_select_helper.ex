@@ -37,7 +37,7 @@ defmodule ConciergeSite.DaySelectHelper do
   defp label(input_name, day, selected?) do
     content_tag :label, class: label_class(selected?) do
       [tag(:input, type: "checkbox", autocomplete: "off", value: day,
-           name: "#{input_name}[days][]", checked: selected?),
+           name: "#{input_name}[relevant_days][]", checked: selected?),
        content_tag(:i, "", class: "fa fa-check")]
     end
   end

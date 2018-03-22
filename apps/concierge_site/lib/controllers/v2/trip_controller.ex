@@ -20,8 +20,9 @@ defmodule ConciergeSite.V2.TripController do
 
   def edit(conn, %{"id" => id}, user, _claims) do
     with {:trip, %Trip{} = trip} <- {:trip, Trip.find_by_id(id)},
-         {:authorized, true} <- {:authorized, user.id == trip.user_id} do
-      render(conn, "edit.html", trip: trip)
+         {:authorized, true} <- {:authorized, user.id == trip.user_id},
+         {:changeset, changeset} <- {:changeset, Trip.update_changeset(trip)} do
+      render(conn, "edit.html", trip: trip, changeset: changeset)
     else
       {:trip, nil} ->
         {:error, :not_found}
@@ -30,8 +31,25 @@ defmodule ConciergeSite.V2.TripController do
     end
   end
 
-  def update(conn, %{"id" => id}, _user, _claims) do
-    render conn, "edit.html", trip: Trip.find_by_id(id)
+  def update(conn, %{"id" => id, "trip" => trip_params}, user, _claims) do
+    with {:trip, %Trip{} = trip} <- {:trip, Trip.find_by_id(id)},
+         {:authorized, true} <- {:authorized, user.id == trip.user_id},
+         {:sanitized, sanitized_trip_params} <- {:sanitized, sanitize_trip_params(trip_params)},
+         {:ok, %Trip{} = updated_trip} <- Trip.update(trip, sanitized_trip_params) do
+      conn
+      |> put_flash(:info, "Trip updated.")
+      |> render("edit.html", trip: updated_trip, changeset: Trip.update_changeset(updated_trip))
+    else
+      {:trip, nil} ->
+        {:error, :not_found}
+      {:authorized, false} ->
+        {:error, :not_found}
+      {:error, %Ecto.Changeset{} = changeset} ->
+        conn
+        |> put_status(:unprocessable_entity)
+        |> put_flash(:error, "Trip could not be updated. Please see errors below.")
+        |> render("edit.html", trip: Trip.find_by_id(id), changeset: changeset)
+    end
   end
 
   def leg(conn, %{"trip" => trip}, _user, _claims) do
@@ -106,5 +124,31 @@ defmodule ConciergeSite.V2.TripController do
     destinations = [destination | destinations]
 
     {legs, origins, destinations}
+  end
+
+  defp sanitize_trip_params(trip_params) when is_map(trip_params) do
+    trip_params
+    |> Enum.map(&sanitize_trip_param/1)
+    |> Enum.into(%{})
+  end
+
+  defp sanitize_trip_param({"relevant_days" = key, relevant_days}) do
+    days_as_atoms = Enum.map(relevant_days, &String.to_existing_atom/1)
+    {key, days_as_atoms}
+  end
+
+  defp sanitize_trip_param({"alert_time_difference_in_minutes" = key, minutes}) do
+    {key, minutes}
+  end
+
+  @valid_time_keys ~w(start_time end_time return_start_time return_end_time alert_time)
+
+  defp sanitize_trip_param({time_key, time_value}) when time_key in @valid_time_keys do
+    time =
+      case String.split(time_value, ":") do
+        [hours, minutes] -> "#{hours}:#{minutes}:00"
+        [_hours, _minutes, _seconds] -> time_value
+      end
+    {time_key, Time.from_iso8601!(time)}
   end
 end

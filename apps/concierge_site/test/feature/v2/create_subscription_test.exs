@@ -63,7 +63,7 @@ defmodule ConciergeSite.V2.CreateSubscriptionTest do
   end
 
   test "edit trip", %{session: session, user: user} do
-    trip = insert(:trip, %{user_id: user.id})
+    trip = insert(:trip, %{user: user})
     session
     |> log_in(user)
     |> visit("/v2/trips/#{trip.id}/edit")

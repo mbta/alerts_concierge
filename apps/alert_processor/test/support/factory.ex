@@ -189,7 +189,8 @@ defmodule AlertProcessor.Factory do
       start_time: ~T[12:00:00],
       end_time: ~T[18:00:00],
       station_features: [:accessibility],
-      alert_time_difference_in_minutes: 60
+      alert_time_difference_in_minutes: 60,
+      user: build(:user)
     }
   end
 end
