@@ -6,7 +6,7 @@
 </div>
 
 <div class="my-4 text-center">
-  <%= link to: "/" do %>
+  <%= link to: v2_trip_path(@conn, :delete, @trip), method: :delete, data: [confirm: "Really?"] do %>
     <i aria-hidden="true" class="fa fa-trash"></i>
     Delete this subscription
   <% end %>
