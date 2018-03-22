@@ -6,7 +6,7 @@ defmodule AlertProcessor.Model.InformedEntity do
 
   alias AlertProcessor.Model.Subscription
 
-  @type facility_type :: :elevator | :escalator
+  @type facility_type :: :bike_storage | :electric_car_chargers | :elevator | :escalator | :parking_area | :pick_drop | :portable_boarding_lift | :tty_phone | :elevated_subplatform
   @type schedule :: %{
     departure_time: String.t,
     stop_id: String.t,
