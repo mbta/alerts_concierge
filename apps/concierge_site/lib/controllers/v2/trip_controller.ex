@@ -27,7 +27,7 @@ defmodule ConciergeSite.V2.TripController do
       "modes" => modes,
       "round_trip" => round_trip
     } = trip_params
-    days = Map.get(trip_params, "days", [])
+    days = Map.get(trip_params, "relevant_days", [])
     start_time = to_time(start_time)
     end_time = to_time(end_time)
     return_start_time = to_time(trip_params["return_start_time"])
