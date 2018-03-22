@@ -1,0 +1,56 @@
+.schedules__container {
+  background-color: #F0F1F4;
+  border-left: 1px solid $pale-grey;
+  border-right: 1px solid $pale-grey;
+  border-bottom: 1px solid $pale-grey;
+  display: none;
+}
+
+.schedules__header {
+  cursor: pointer;
+  margin: 0;
+  padding: $base-spacing / 2;
+  border-top: 1px solid $pale-grey;
+}
+
+.schedules__trips--container {
+  display: none;
+  margin: 0;
+  padding: 0;
+}
+
+.schedules__trips--leg {
+  position: relative;
+}
+
+.schedules__trips--leg[data-expanded="true"] {
+  .schedules__trips--container {
+    display: block;
+  }
+}
+
+.schedules__trips--item {
+  border-top: 1px solid $pale-grey;
+  clear: both;
+  padding: $base-spacing / 4 $base-spacing / 2;
+
+  svg {
+    float: left;
+    height: 22px;
+    width: 22px;
+  }
+}
+
+.schedules__toggle {
+  padding: $base-spacing / 2;
+  position: absolute;
+  text-decoration: none;
+  top: 0px;
+  right: 0px;
+
+  &:hover,
+  &:active,
+  &:focus {
+    text-decoration: none;
+  }
+}
