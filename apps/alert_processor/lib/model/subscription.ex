@@ -13,6 +13,7 @@ defmodule AlertProcessor.Model.Subscription do
   @type subscription_info :: {__MODULE__.t, [InformedEntity.t]}
   @type relevant_day :: :weekday | :saturday | :sunday | :monday | :tuesday | :wednesday | :thursday | :friday
   @type direction :: 0 | 1
+  @type facility_type :: :bike_storage | :electric_car_chargers | :elevator | :escalator | :parking_area | :pick_drop | :portable_boarding_lift | :tty_phone | :elevated_subplatform
   @type t :: %__MODULE__{
     alert_priority_type: atom,
     user_id: String.t | nil,
@@ -30,7 +31,8 @@ defmodule AlertProcessor.Model.Subscription do
     destination_lat: float | nil,
     destination_long: float | nil,
     rank: integer | nil,
-    return_trip: boolean | nil
+    return_trip: boolean | nil,
+    facility_types: [facility_type] | nil
   }
 
   @alert_priority_type_values %{
@@ -74,6 +76,7 @@ defmodule AlertProcessor.Model.Subscription do
     field :destination_long, :float
     field :rank, :integer
     field :return_trip, :boolean
+    field :facility_types, {:array, AlertProcessor.AtomType}
 
     timestamps()
   end
