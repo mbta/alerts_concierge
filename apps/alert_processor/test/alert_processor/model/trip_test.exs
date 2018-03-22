@@ -13,8 +13,7 @@ defmodule AlertProcessor.Model.TripTest do
     start_time: ~T[12:00:00],
     end_time: ~T[18:00:00],
     station_features: [:accessibility],
-    roundtrip: false,
-    user_id: "1"
+    roundtrip: false
   }
 
   setup do
