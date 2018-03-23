@@ -32,6 +32,27 @@ defmodule AlertProcessor.Subscription.SubwayMapper do
     {:ok, map_entities(subscriptions, params, route)}
   end
 
+  def subscription_to_informed_entities(%Subscription{} = sub) do
+    route = get_route_by_stops(sub.origin, sub.destination)
+    params = %{
+      "origin" => sub.origin,
+      "destination" => sub.destination,
+      "route" => route.route_id,
+      "direction" => "",
+      "alert_priority_type" => sub.alert_priority_type,
+    }
+
+    [sub]
+    |> map_subscription_direction_id(route)
+    |> map_priority(params)
+    |> map_type(:subway)
+    |> map_entities(params, route)
+    |> case do
+      [{_subscription, informed_entities}] ->
+        informed_entities
+    end
+  end
+
   defp map_entities(subscriptions, params, route) do
     subscriptions
     |> map_route_type(route)

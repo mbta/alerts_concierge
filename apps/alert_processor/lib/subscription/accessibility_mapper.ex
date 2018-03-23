@@ -28,6 +28,30 @@ defmodule AlertProcessor.Subscription.AccessibilityMapper do
     |> map_entities(params)
   end
 
+  def subscription_to_informed_entities(%Subscription{route: route_id} = sub) do
+    params = %{
+      "origin" => sub.origin,
+      "destination" => sub.destination,
+      "direction" => sub.direction_id,
+      "route" => route_id, 
+      "relevant_days" => sub.relevant_days,
+      "alert_priority_type" => sub.alert_priority_type,
+      "trips" => [],
+    }
+    |> map_stop_names()
+    |> set_alert_priority()
+    |> map_timeframe
+
+    [sub]
+    |> map_priority(params)
+    |> map_type(:accessibility)
+    |> map_entities(params)
+    |> case do
+      [{_subscription, informed_entities}] ->
+        informed_entities
+    end
+  end
+
   defp set_alert_priority(params) do
     Map.put(params, "alert_priority_type", "low")
   end

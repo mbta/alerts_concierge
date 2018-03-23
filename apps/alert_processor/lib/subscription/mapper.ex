@@ -58,7 +58,7 @@ defmodule AlertProcessor.Subscription.Mapper do
 
   def map_priority(subscriptions, %{"alert_priority_type" => alert_priority_type}) when is_list(subscriptions) do
     Enum.map(subscriptions, fn(subscription) ->
-      %{subscription | alert_priority_type: String.to_existing_atom(alert_priority_type)}
+      %{subscription | alert_priority_type: ensure_existing_atom(alert_priority_type)}
     end)
   end
   def map_priority(_, _), do: :error
@@ -67,6 +67,13 @@ defmodule AlertProcessor.Subscription.Mapper do
     Enum.map(subscriptions, fn(subscription) ->
       Map.put(subscription, :type, type)
     end)
+  end
+
+  defp ensure_existing_atom(str) when is_binary(str) do
+    String.to_existing_atom(str)
+  end
+  defp ensure_existing_atom(atom) when is_atom(atom) do
+    atom
   end
 
   def map_accessibility(subscriptions, %{"origin" => origin, "accessibility" => accessibility}) do
@@ -505,5 +512,13 @@ defmodule AlertProcessor.Subscription.Mapper do
     else
       _ -> :error
     end
+  end
+
+
+  def raise_on_nil(nil, message) when is_binary(message) do
+    raise message
+  end
+  def raise_on_nil(item, _message) do
+    item
   end
 end

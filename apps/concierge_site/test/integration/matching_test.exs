@@ -5,15 +5,26 @@ defmodule ConciergeSite.Integration.Matching do
   import ConciergeSite.NotificationFactory
   import AlertProcessor.SubscriptionFilterEngine, only: [determine_recipients: 3]
 
-  @base %{"alert_priority_type" => "medium", "departure_end" => ~T[08:30:00], "departure_start" => ~T[08:00:00],
-          "relevant_days" => ["weekday"], "return_start" => nil, "return_end" => nil}
+  @base %{
+    "alert_priority_type" => "medium",
+    "departure_end" => ~T[08:30:00],
+    "departure_start" => ~T[08:00:00],
+    "relevant_days" => ["weekday"],
+    "return_start" => nil,
+    "return_end" => nil,
+    
+  }
   @alert_active_period [active_period(@base["departure_start"], @base["departure_end"], :tuesday)]
   @alert_weekend_period [active_period(@base["departure_start"], @base["departure_end"], :sunday)]
   @alert_later_period [active_period(~T[09:00:00], ~T[09:30:00], :monday)]
 
   describe "subway subscription" do
-    @subscription subscription(:subway, Map.merge(@base, %{"destination" => "place-brdwy",
-                                                           "origin" => "place-harsq", "roaming" => "false"}))
+    @subscription subscription(:subway, Map.merge(@base, %{
+      "destination" => "place-brdwy",
+      "route_type" => 1,
+      "origin" => "place-harsq",
+      "roaming" => "false"
+    }))
     @subscription_roaming subscription(:subway, Map.merge(@base, %{"destination" => "place-brdwy",
                                                                    "origin" => "place-harsq", "roaming" => "true"}))
 
@@ -31,10 +42,11 @@ defmodule ConciergeSite.Integration.Matching do
     end
 
     test "same route_id and route_type" do
-      subway_entity = :subway
-      |> entity()
-      |> Map.delete("direction_id")
-      |> Map.delete("stop_id")
+      subway_entity = 
+        entity(:subway)
+        |> Map.delete("direction_id")
+        |> Map.delete("stop_id")
+      # assert subway_entity == %{}
       assert_notify alert(informed_entity: [subway_entity]), @subscription
     end
 
@@ -190,6 +202,7 @@ defmodule ConciergeSite.Integration.Matching do
       refute_notify alert(informed_entity: [entity(:commuter_rail, activities: ["NO_MATCH"])]), @subscription
     end
 
+    @tag current: true
     test "similar: different route_type" do
       refute_notify alert(informed_entity: [entity(:commuter_rail, route_type: 1)]), @subscription
     end

@@ -5,7 +5,15 @@ defmodule AlertProcessor.Subscription.CommuterRailMapper do
   """
 
   import AlertProcessor.Subscription.Mapper
-  alias AlertProcessor.{ApiClient, Helpers.DateTimeHelper, Model.Route, Model.Subscription, Model.TripInfo, ServiceInfoCache}
+  alias AlertProcessor.{
+    ApiClient,
+    Helpers.DateTimeHelper,
+    Model.Route,
+    Model.Subscription,
+    Model.TripInfo,
+    ServiceInfoCache,
+    Model.Subscription,
+  }
 
   defdelegate build_subscription_transaction(subscriptions, user, originator), to: AlertProcessor.Subscription.Mapper
   defdelegate build_update_subscription_transaction(subscription, user, originator), to: AlertProcessor.Subscription.Mapper
@@ -30,9 +38,32 @@ defmodule AlertProcessor.Subscription.CommuterRailMapper do
     {:ok, map_entities(subscriptions, params, route)}
   end
 
+  def subscription_to_informed_entities(%Subscription{route: route_id} = sub) do
+    route = get_route_by_id(route_id)
+    params = %{
+      "origin" => sub.origin,
+      "destination" => sub.destination,
+      "direction" => sub.direction_id,
+      "route" => route_id, 
+      "alert_priority_type" => sub.alert_priority_type,
+      "trips" => [],
+    }
+    
+    [sub]
+    |> map_priority(params)
+    |> map_type(:commuter_rail)
+    |> map_entities(params, route)
+    |> case do
+      [{_subscription, informed_entities}] ->
+        informed_entities
+    end
+  end
+
   defp get_route_by_id(route_id) do
     {:ok, cr_info} = ServiceInfoCache.get_commuter_rail_info()
-    Enum.find(cr_info, & &1.route_id == route_id)
+    cr_info
+    |> Enum.find(& &1.route_id == route_id)
+    |> raise_on_nil("Unknown route for route_id #{inspect route_id}")
   end
 
   defp get_route_by_stops(origin, destination) do
@@ -43,6 +74,7 @@ defmodule AlertProcessor.Subscription.CommuterRailMapper do
         List.keymember?(stop_list, origin, 1) && List.keymember?(stop_list, destination, 1)
       end)
     |> List.first
+    |> raise_on_nil("Unknown route for origin #{inspect origin} and destination #{inspect destination}")
   end
 
   defp map_entities(subscriptions, params, route) do

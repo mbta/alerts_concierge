@@ -191,4 +191,13 @@ defmodule AlertProcessor.Subscription.BusMapperTest do
       assert subscription2.id != nil
     end
   end
+
+  describe "subscription_to_informed_entities/1" do
+    test "returns the informed entities for valid :bus typed structs" do
+      {:ok, [{subscription, _ie}]} = BusMapper.map_subscription(@one_way_params)
+      entities = BusMapper.subscription_to_informed_entities(subscription)
+      assert length(entities) == 3
+      assert Enum.all?(entities, fn e -> match?(%InformedEntity{}, e) end)
+    end
+  end
 end

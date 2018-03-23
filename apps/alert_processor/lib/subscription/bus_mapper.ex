@@ -40,6 +40,28 @@ defmodule AlertProcessor.Subscription.BusMapper do
     {:ok, subscription_infos}
   end
 
+
+  def subscription_to_informed_entities(%Subscription{route: route_id} = sub) do
+    {:ok, route} = ServiceInfoCache.get_route(route_id)
+    params = %{
+      "origin" => nil,
+      "destination" =>  nil,
+      "direction" => sub.direction_id,
+      "route" => route_id, 
+      "alert_priority_type" => sub.alert_priority_type,
+      # "trips" => [],
+    }
+    
+    [sub]
+    |> map_priority(params)
+    |> map_type(:bus)
+    |> map_entities(params, route)
+    |> case do
+      [{_subscription, informed_entities}] ->
+        informed_entities
+    end
+  end
+
   defp map_entities(subscriptions, params, route) do
     subscriptions
     |> map_route_type(route)

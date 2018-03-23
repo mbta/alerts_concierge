@@ -3,40 +3,63 @@ defmodule ConciergeSite.SubscriptionFactory do
   Standard interface for generating subscriptions
   """
 
-  alias AlertProcessor.Model.User
-  alias AlertProcessor.Subscription.{SubwayMapper, BusMapper, CommuterRailMapper, FerryMapper, AccessibilityMapper,
-                                     BikeStorageMapper, ParkingMapper}
+  alias AlertProcessor.Model.{
+    User,
+    Subscription.RouteType,
+  }
+  alias AlertProcessor.Subscription.{
+    SubwayMapper,
+    BusMapper,
+    CommuterRailMapper,
+    FerryMapper,
+    AccessibilityMapper,
+    BikeStorageMapper,
+    ParkingMapper,
+  }
 
-  def subscription(:subway, params) do
-    SubwayMapper.map_subscriptions(params)
+  def subscription(:subway = name, params) do
+    params
+    |> Map.put("route_type", RouteType.name_to_number(name))    
+    |> SubwayMapper.map_subscriptions
     |> to_subscription
   end
-  def subscription(:bus, params) do
-    BusMapper.map_subscription(params)
+  def subscription(:bus = name, params) do
+    params
+    |> Map.put("route_type", RouteType.name_to_number(name))
+    |> BusMapper.map_subscription
     |> to_subscription
   end
-  def subscription(:commuter_rail, params) do
-    %{"trip_type" => "one_way", "return_end" => nil, "return_start" => nil}
+  def subscription(:commuter_rail = name, params) do
+    %{
+      "trip_type" => "one_way",
+      "return_end" => nil,
+      "return_start" => nil,
+    }
+    |> Map.put("route_type", RouteType.name_to_number(name))    
     |> Map.merge(params)
     |> CommuterRailMapper.map_subscriptions()
     |> to_subscription
   end
-  def subscription(:ferry, params) do
+  def subscription(:ferry = name, params) do
     %{"trip_type" => "one_way", "return_end" => nil, "return_start" => nil}
+    |> Map.put("route_type", RouteType.name_to_number(name))    
     |> Map.merge(params)
     |> FerryMapper.map_subscriptions()
     |> to_subscription
   end
   def subscription(:bike, params) do
-    BikeStorageMapper.map_subscriptions(params)
+    params
+    |> BikeStorageMapper.map_subscriptions
     |> to_subscription
   end
   def subscription(:parking, params) do
-    ParkingMapper.map_subscriptions(params)
+    params
+    |> ParkingMapper.map_subscriptions
     |> to_subscription
   end
   def subscription(:accessibility, params) do
-    AccessibilityMapper.map_subscriptions(params)
+    params
+    |> AccessibilityMapper.map_subscriptions
     |> to_subscription
   end
 

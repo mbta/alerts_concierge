@@ -5,7 +5,14 @@ defmodule AlertProcessor.Subscription.FerryMapper do
   """
 
   import AlertProcessor.Subscription.Mapper
-  alias AlertProcessor.{ApiClient, Helpers.DateTimeHelper, Model.Route, Model.Subscription, Model.TripInfo, ServiceInfoCache}
+  alias AlertProcessor.{
+    ApiClient,
+    Helpers.DateTimeHelper,
+    Model.Route,
+    Model.Subscription,
+    Model.TripInfo,
+    ServiceInfoCache
+  }
 
   defdelegate build_subscription_transaction(subscriptions, user, originator), to: AlertProcessor.Subscription.Mapper
   defdelegate build_update_subscription_transaction(subscription, user, originator), to: AlertProcessor.Subscription.Mapper
@@ -22,12 +29,34 @@ defmodule AlertProcessor.Subscription.FerryMapper do
     |> Map.put("route", route.route_id)
     |> Map.put("direction", String.to_integer(params["direction_id"]))
 
-    subscriptions = params
-    |> create_subscriptions
-    |> map_priority(params)
-    |> map_type(:ferry)
+    subscriptions =
+      params
+      |> create_subscriptions
+      |> map_priority(params)
+      |> map_type(:ferry)
 
     {:ok, map_entities(subscriptions, params, route)}
+  end
+
+  def subscription_to_informed_entities(%Subscription{route: route_id} = sub) do
+    route = get_route_by_id(route_id)
+    params = %{
+      "origin" => sub.origin,
+      "destination" => sub.destination,
+      "direction" => sub.direction_id,
+      "route" => route_id, 
+      "alert_priority_type" => sub.alert_priority_type,
+      "trips" => [] # THIS NEEDS TO CHANGE.
+    }
+    
+    [sub]
+    |> map_priority(params)
+    |> map_type(:ferry)
+    |> map_entities(params, route)
+    |> case do
+      [{_subscription, informed_entities}] ->
+        informed_entities
+    end
   end
 
   defp get_route_by_id(route_id) do

@@ -11,7 +11,9 @@ defmodule AlertProcessor.Subscription.MapperTest do
 
   describe "build_subscription_update_transaction" do
     test "it builds a multi struct to persist subscriptions and informed_entities" do
-      subscription = insert(:subscription, informed_entities: [%InformedEntity{stop: "place-north", facility_type: :bike_storage}])
+      subscription = insert(:subscription, informed_entities: [
+        %InformedEntity{stop: "place-north", facility_type: :bike_storage}
+      ])
       user = insert(:user)
       {:ok, subscription_infos} = BikeStorageMapper.map_subscriptions(@params)
       multi = Mapper.build_subscription_update_transaction(subscription, subscription_infos, user.id)

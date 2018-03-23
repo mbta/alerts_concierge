@@ -3,8 +3,20 @@ defmodule AlertProcessor.Model.Subscription do
   Set of criteria on which a user wants to be sent alerts.
   """
 
-  alias AlertProcessor.{Helpers.DateTimeHelper, Model.InformedEntity, Model.TripInfo,
-    Model.User, Model.Trip, Repo, TimeFrameComparison}
+  alias AlertProcessor.{
+    Subscription.SubwayMapper,
+    Subscription.FerryMapper,
+    Subscription.BusMapper,
+    Subscription.CommuterRailMapper,
+    Subscription.AccessibilityMapper,
+    Helpers.DateTimeHelper,
+    Model.InformedEntity,
+    Model.TripInfo,
+    Model.User,
+    Model.Trip,
+    Repo,
+    TimeFrameComparison
+  }
   import Ecto.Query
 
   @type id :: String.t
@@ -339,7 +351,8 @@ defmodule AlertProcessor.Model.Subscription do
 
   @spec subscription_trip_ids(__MODULE__.t) :: [TripInfo.id]
   def subscription_trip_ids(subscription) do
-    subscription.informed_entities
+    subscription
+    |> to_informed_entities()
     |> Enum.filter(fn(informed_entity) ->
          InformedEntity.entity_type(informed_entity) == :trip
        end)
@@ -357,4 +370,28 @@ defmodule AlertProcessor.Model.Subscription do
   def get_last_inserted_timestamp() do
     Repo.one(from s in __MODULE__, order_by: [desc: s.updated_at], select: s.updated_at, limit: 1)
   end
+
+  def ensure_atom(str) when is_binary(str) do
+    String.to_existing_atom(str)
+  end
+  def ensure_atom(atom) when is_atom(atom) do
+    atom
+  end
+  
+  def to_informed_entities(%__MODULE__{} = sub) do
+    module = case sub.type do
+      :subway         -> SubwayMapper
+      :light_rail     -> SubwayMapper
+      :heavy_rail     -> SubwayMapper
+      :ferry          -> FerryMapper
+      :commuter_rail  -> CommuterRailMapper
+      :bus            -> BusMapper
+      :accessibility  -> AccessibilityMapper
+      _ ->
+        raise "Unexpected Subscription type #{inspect sub.type}"
+    end
+    module.subscription_to_informed_entities(sub)
+  end
+
+
 end

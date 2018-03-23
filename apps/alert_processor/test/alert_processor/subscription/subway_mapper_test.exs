@@ -556,4 +556,13 @@ defmodule AlertProcessor.Subscription.SubwayMapperTest do
       assert subscription2.id != nil
     end
   end
+
+  describe "subscription_to_informed_entities/1" do
+    test "returns the informed entities for valid subway typed structs" do
+      {:ok, [{subscription, _ie}]} = SubwayMapper.map_subscriptions(@one_way_params)
+      entities = SubwayMapper.subscription_to_informed_entities(subscription)
+      assert length(entities) == 9
+      assert Enum.all?(entities, fn e -> match?(%InformedEntity{}, e) end)
+    end
+  end
 end

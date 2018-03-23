@@ -31,4 +31,5 @@ defmodule AlertProcessor.Model.Route do
 
   def name(%__MODULE__{long_name: "", short_name: name}), do: name
   def name(%__MODULE__{long_name: name}), do: name
+
 end

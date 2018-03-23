@@ -497,4 +497,13 @@ defmodule AlertProcessor.Subscription.FerryMapperTest do
       assert updated_subscription.id == subscription.id
     end
   end
+
+  describe "subscription_to_informed_entities/1" do
+    test "returns the informed entities for valid :ferry typed structs" do
+      {:ok, [{subscription, _ie}]} = FerryMapper.map_subscriptions(@one_way_params)
+      entities = FerryMapper.subscription_to_informed_entities(subscription)
+      assert length(entities) == 15
+      assert Enum.all?(entities, fn e -> match?(%InformedEntity{}, e) end)
+    end
+  end
 end

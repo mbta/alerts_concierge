@@ -3,7 +3,11 @@ defmodule AlertProcessor.InformedEntityFilter do
   Filter users based on informed entity records tied to subscriptions.
   """
 
-  alias AlertProcessor.Model.{Alert, InformedEntity, Subscription}
+  alias AlertProcessor.Model.{
+    Alert,
+    InformedEntity,
+    Subscription,
+  }
 
   @doc """
   filter/1 takes a tuple including a subquery which represents the
@@ -28,7 +32,8 @@ defmodule AlertProcessor.InformedEntityFilter do
       end)
 
     Enum.filter(subscriptions, fn(sub) ->
-      sub.informed_entities
+      sub
+      |> Subscription.to_informed_entities
       |> Enum.any?(
         fn(sub_ie) ->
           ie = Map.take(sub_ie, InformedEntity.queryable_fields)
