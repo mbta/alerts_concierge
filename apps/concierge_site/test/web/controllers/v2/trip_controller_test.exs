@@ -150,7 +150,7 @@ defmodule ConciergeSite.V2.TripControllerTest do
     test "subway", %{conn: conn, user: user} do
       trip = %{
         bike_storage: "false",
-        days: ["monday", "tuesday", "wednesday", "thursday", "friday"],
+        relevant_days: ["monday", "tuesday", "wednesday", "thursday", "friday"],
         destinations: ["place-pktrm"],
         elevator: "false",
         end_time: "09:00",
@@ -184,7 +184,7 @@ defmodule ConciergeSite.V2.TripControllerTest do
     test "bus", %{conn: conn, user: user} do
       trip = %{
         bike_storage: "false",
-        days: ["monday", "tuesday", "wednesday", "thursday", "friday"],
+        relevant_days: ["monday", "tuesday", "wednesday", "thursday", "friday"],
         destinations: [""],
         elevator: "false",
         end_time: "09:00",

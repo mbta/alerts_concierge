@@ -17,82 +17,10 @@ defmodule ConciergeSite.V2.TripController do
   end
 
   def create(conn, %{"trip" => trip_params}, user, {:ok, claims}) do
-    %{
-      "destinations" => destinations,
-      "end_time" => end_time,
-      "legs" => legs,
-      "origins" => origins,
-      "round_trip" => round_trip,
-      "start_time" => start_time,
-      "modes" => modes,
-      "round_trip" => round_trip
-    } = trip_params
-    days = Map.get(trip_params, "relevant_days", [])
-    start_time = to_time(start_time)
-    end_time = to_time(end_time)
-    return_start_time = to_time(trip_params["return_start_time"])
-    return_end_time = to_time(trip_params["return_end_time"])
-
-    subscriptions = Enum.zip([Enum.reverse(modes), Enum.reverse(legs), Enum.reverse(origins), Enum.reverse(destinations), Stream.iterate(0, &(&1+1))])
-    |> Enum.flat_map(fn {type, route_in, origin, destination, rank} ->
-      {route_id, direction} = determine_route(route_in)
-      {:ok, route} = ServiceInfoCache.get_route(route_id)
-      subscription = %Subscription{
-        alert_priority_type: "low",
-        user_id: user.id,
-        relevant_days: Enum.map(days, &String.to_existing_atom/1),
-        start_time: start_time,
-        end_time: end_time,
-        origin: origin,
-        destination: destination,
-        type: type,
-        route: route_id,
-        route_type: route.route_type,
-        direction_id: determine_direction_id(route.stop_list, direction, origin, destination),
-        rank: rank,
-        return_trip: false
-      }
-      subscription = case {get_latlong_from_stop(origin), get_latlong_from_stop(destination)} do
-        {nil, nil} -> subscription
-        {{origin_lat, origin_long}, {destination_lat, destination_long}} ->
-          %{subscription | origin_lat: origin_lat, origin_long: origin_long, destination_lat: destination_lat,
-                           destination_long: destination_long}
-      end
-
-      if round_trip == "true" do
-        return_subscription = %{
-          subscription |
-            start_time: return_start_time,
-            end_time: return_end_time,
-            origin: subscription.destination,
-            origin_lat: subscription.destination_lat,
-            origin_long: subscription.destination_long,
-            destination: subscription.origin,
-            destination_lat: subscription.origin_lat,
-            destination_long: subscription.origin_long,
-            direction_id: flip_direction(subscription.direction_id),
-            return_trip: true
-        }
-        [subscription, return_subscription]
-      else
-        [subscription]
-      end
-    end)
-
-    trip = %Trip{
-      user_id: user.id,
-      alert_priority_type: "low",
-      relevant_days: Enum.map(days, &String.to_existing_atom/1),
-      start_time: start_time,
-      end_time: end_time,
-      return_start_time: return_start_time,
-      return_end_time: return_end_time,
-      station_features: [],
-      roundtrip: round_trip == "true"
-    }
-
+    params = parse_input(trip_params)
+    subscriptions = input_to_subscriptions(user, params)
+    trip = input_to_trip(user, params)
     multi = build_trip_transaction(trip, subscriptions, user, Map.get(claims, "imp", user.id))
-
     case Subscription.set_versioned_subscription(multi) do
       :ok ->
         conn
@@ -252,6 +180,75 @@ defmodule ConciergeSite.V2.TripController do
            PaperTrail.insert(sub_to_insert, originator: User.wrap_id(originator), meta: %{owner: user.id}, origin: origin)
          end)
     end)
+  end
+
+  defp parse_input(params) do
+    params
+    |> Map.put("relevant_days", Map.get(params, "relevant_days", []))
+    |> Map.put("start_time", to_time(params["start_time"]))
+    |> Map.put("end_time", to_time(params["end_time"]))
+    |> Map.put("return_start_time", to_time(params["return_start_time"]))
+    |> Map.put("return_end_time", to_time(params["return_end_time"]))
+  end
+
+  defp input_to_subscriptions(user, params) do
+    Enum.zip([Enum.reverse(params["modes"]), Enum.reverse(params["legs"]), Enum.reverse(params["origins"]),
+              Enum.reverse(params["destinations"]), Stream.iterate(0, &(&1+1))])
+    |> Enum.flat_map(fn {type, route_in, origin, destination, rank} ->
+      {route_id, direction} = determine_route(route_in)
+      {:ok, route} = ServiceInfoCache.get_route(route_id)
+      %Subscription{
+        alert_priority_type: "low",
+        user_id: user.id,
+        relevant_days: Enum.map(params["relevant_days"], &String.to_existing_atom/1),
+        start_time: params["start_time"],
+        end_time: params["end_time"],
+        origin: origin,
+        destination: destination,
+        type: type,
+        route: route_id,
+        route_type: route.route_type,
+        direction_id: determine_direction_id(route.stop_list, direction, origin, destination),
+        rank: rank,
+        return_trip: false}
+      |> add_latlong_to_subscription(origin, destination)
+      |> add_return_subscription(params)
+    end)
+  end
+
+  defp add_return_subscription(subscription, %{"round_trip" => "true", "return_start_time" => return_start_time,
+                                               "return_end_time" => return_end_time}) do
+    return_subscription = %{
+      subscription | start_time: return_start_time, end_time: return_end_time, origin: subscription.destination,
+                     origin_lat: subscription.destination_lat, origin_long: subscription.destination_long,
+                     destination: subscription.origin, destination_lat: subscription.origin_lat,
+                     destination_long: subscription.origin_long, direction_id: flip_direction(subscription.direction_id),
+                     return_trip: true}
+    [subscription, return_subscription]
+  end
+  defp add_return_subscription(subscription, _), do: [subscription]
+
+  defp add_latlong_to_subscription(subscription, origin, destination) do
+    case {get_latlong_from_stop(origin), get_latlong_from_stop(destination)} do
+      {nil, nil} -> subscription
+      {{origin_lat, origin_long}, {destination_lat, destination_long}} ->
+        %{subscription | origin_lat: origin_lat, origin_long: origin_long, destination_lat: destination_lat,
+                         destination_long: destination_long}
+    end
+  end
+
+  defp input_to_trip(user, params) do
+    %Trip{
+      user_id: user.id,
+      alert_priority_type: "low",
+      relevant_days: Enum.map(params["relevant_days"], &String.to_existing_atom/1),
+      start_time: params["start_time"],
+      end_time: params["end_time"],
+      return_start_time: params["return_start_time"],
+      return_end_time: params["return_end_time"],
+      station_features: [],
+      roundtrip: params["round_trip"] == "true"
+    }
   end
 
   defp flip_direction(0), do: 1
