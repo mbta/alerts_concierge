@@ -47,15 +47,10 @@ defmodule AlertProcessor.Model.Trip do
     timestamps()
   end
 
-  @required_fields ~w(
-    user_id
-    alert_priority_type
-    relevant_days
-    start_time
-    end_time
-    station_features
-    alert_time_difference_in_minutes
-  )a
+  @permitted_fields ~w(user_id alert_priority_type relevant_days start_time end_time
+    station_features roundtrip return_start_time return_end_time)a
+  @required_fields ~w(user_id alert_priority_type relevant_days start_time end_time
+    station_features roundtrip)a
   @valid_relevant_days ~w(monday tuesday wednesday thursday friday saturday sunday)a
   @valid_station_features ~w(accessibility parking bike_storage)a
   @valid_alert_priority_types ~w(low high)a
@@ -75,7 +70,7 @@ defmodule AlertProcessor.Model.Trip do
   @spec create_changeset(__MODULE__.t, map) :: Ecto.Changeset.t
   def create_changeset(struct, params \\ %{}) do
     struct
-    |> cast(params, @required_fields)
+    |> cast(params, @permitted_fields)
     |> validate_required(@required_fields)
     |> validate_subset(:relevant_days, @valid_relevant_days)
     |> validate_length(:relevant_days, min: 1)

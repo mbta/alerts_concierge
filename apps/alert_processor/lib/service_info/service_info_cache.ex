@@ -156,6 +156,19 @@ defmodule AlertProcessor.ServiceInfoCache do
     end
   end
 
+  def handle_call({:get_route, "Green"}, _from, %{routes: route_state} = state) do
+    route = route_state
+    |> Enum.filter(fn(%{route_id: route_id}) ->
+      case route_id do
+        "Green-"<>_ -> true
+        _ -> false
+      end
+    end)
+    |> Enum.reduce(%Route{route_id: "Green"}, fn(route, acc) ->
+      %{acc | stop_list: acc.stop_list ++ route.stop_list}
+    end)
+    {:reply, {:ok, %{route | stop_list: Enum.uniq_by(route.stop_list, & &1)}}, state}
+  end
   def handle_call({:get_route, route}, _from, %{routes: route_state} = state) do
     route = Enum.find(route_state, fn(%{route_id: route_id}) -> route_id == route end)
     {:reply, {:ok, route}, state}

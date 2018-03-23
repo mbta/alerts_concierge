@@ -25,13 +25,13 @@ defmodule ConciergeSite.IconViewHelper do
     """)
   end
   def icon(:mattapan) do
-    """
+    raw("""
     <svg width="30" height="30" fill="#fff" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 50 50">
     <circle fill="#da291c" stroke="#da291c" stroke-width="1" r="20" cx="20" cy="20" transform="translate(1,1)"></circle>
     <g transform="translate(10,10) scale(1.4)">
     <path d="M2 13V2.995C2 2.445 2.456 2 3.002 2h9.996C13.55 2 14 2.456 14 2.995V13c0 .552-.456 1-1.002 1H3.002A.999.999 0 0 1 2 13zm2.667 1h6.666L12 16H4l.667-2zM4 1c0-.552.453-1 .997-1h6.006c.55 0 .997.444.997 1v1H4V1zm0 2.5c0 .268.224.5.5.5h7c.27 0 .5-.224.5-.5 0-.268-.224-.5-.5-.5h-7c-.27 0-.5.224-.5.5zM3 6v3c0 .556.452 1 1.01 1h1.98A1 1 0 0 0 7 9V6c0-.556-.452-1-1.01-1H4.01A1 1 0 0 0 3 6zm6 0v3c0 .556.452 1 1.01 1h1.98A1 1 0 0 0 13 9V6c0-.556-.452-1-1.01-1h-1.98A1 1 0 0 0 9 6zm-2 6c0 .556.448 1 1 1 .556 0 1-.448 1-1 0-.556-.448-1-1-1-.556 0-1 .448-1 1z"></path>
     </g></svg>
-    """
+    """)
   end
   def icon(:ferry) do
     raw("""

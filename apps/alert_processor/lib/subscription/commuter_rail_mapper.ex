@@ -21,6 +21,7 @@ defmodule AlertProcessor.Subscription.CommuterRailMapper do
     params = params
     |> Map.put("route", route.route_id)
     |> Map.put("direction", String.to_integer(params["direction_id"]))
+    |> Map.put("return_trip", false)
 
     subscriptions = params
     |> create_subscriptions

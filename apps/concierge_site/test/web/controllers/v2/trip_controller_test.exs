@@ -146,13 +146,69 @@ defmodule ConciergeSite.V2.TripControllerTest do
     assert html_response(conn, 200) =~ "Which route or line do you connect to?"
   end
 
-  test "POST /v2/trip", %{conn: conn, user: user} do
-    conn = user
-    |> guardian_login(conn)
-    |> post(v2_trip_path(conn, :create), %{})
+  describe "POST /v2/trip" do
+    test "subway", %{conn: conn, user: user} do
+      trip = %{
+        bike_storage: "false",
+        relevant_days: ["monday", "tuesday", "wednesday", "thursday", "friday"],
+        destinations: ["place-pktrm"],
+        elevator: "false",
+        end_time: "09:00",
+        escalator: "false",
+        legs: ["Red"],
+        modes: ["subway"],
+        origins: ["place-alfcl"],
+        parking: "false",
+        return_end_time: "18:00",
+        return_start_time: "17:00",
+        round_trip: "true",
+        start_time: "08:00"
+      }
 
-    assert html_response(conn, 200) =~ "Is this usually a round trip?"
-    assert html_response(conn, 200) =~ "Which route or line do you connect to?"
+      conn = user
+      |> guardian_login(conn)
+      |> post(v2_trip_path(conn, :create), %{trip: trip})
+
+      assert html_response(conn, 302) =~ v2_trip_path(conn, :index)
+
+      conn = get(conn, v2_trip_path(conn, :index))
+
+      assert html_response(conn, 200) =~ "Success! If at any time you need to edit the features, "
+      <> "stations, or lines you&#39;ve subscribed to, you can click in the box below."
+
+      assert html_response(conn, 200) =~ "<span class=\"trip__card--route\">Red</span>"
+      <> "<div class=\"trip__card--type my-2\">Round-trip, Weekdays</div>"
+      <> "<div class=\"trip__card--times\"> 8:00am -  9:00am /  5:00pm -  6:00pm</div>"
+    end
+
+    test "bus", %{conn: conn, user: user} do
+      trip = %{
+        bike_storage: "false",
+        relevant_days: ["monday", "tuesday", "wednesday", "thursday", "friday"],
+        destinations: [""],
+        elevator: "false",
+        end_time: "09:00",
+        escalator: "false",
+        legs: ["741 - 1"],
+        modes: ["bus"],
+        origins: [""],
+        parking: "false",
+        return_end_time: "18:00",
+        return_start_time: "17:00",
+        round_trip: "true",
+        start_time: "08:00"
+      }
+
+      conn = user
+      |> guardian_login(conn)
+      |> post(v2_trip_path(conn, :create), %{trip: trip})
+
+      assert html_response(conn, 302) =~ v2_trip_path(conn, :index)
+
+      conn = get(conn, v2_trip_path(conn, :index))
+
+      assert html_response(conn, 200) =~ "<span class=\"trip__card--route\">741</span>"
+    end
   end
 
   test "POST /v2/trip/leg to create new trip leg", %{conn: conn, user: user} do
@@ -162,7 +218,8 @@ defmodule ConciergeSite.V2.TripControllerTest do
       origin: "place-alfcl",
       round_trip: "true",
       route: "Green~~Green Line~~subway",
-      saved_leg: "Red"
+      saved_leg: "Red",
+      saved_mode: "subway"
     }
 
     conn = user
@@ -181,9 +238,11 @@ defmodule ConciergeSite.V2.TripControllerTest do
       round_trip: "true",
       route: "Green~~Green Line~~subway",
       saved_leg: "Red",
+      saved_mode: "subway",
       legs: ["Blue"],
       origins: ["place-wondl"],
-      destinations: ["place-state"]
+      destinations: ["place-state"],
+      modes: ["subway"]
     }
 
     conn = user
@@ -200,7 +259,8 @@ defmodule ConciergeSite.V2.TripControllerTest do
       new_leg: "false",
       origin: "place-alfcl",
       round_trip: "true",
-      saved_leg: "Red"
+      saved_leg: "Red",
+      saved_mode: "subway"
     }
 
     conn = user
@@ -241,7 +301,8 @@ defmodule ConciergeSite.V2.TripControllerTest do
       destinations: ["place-pktrm"],
       legs: ["Red"],
       origins: ["place-alfcl"],
-      round_trip: "true"
+      round_trip: "true",
+      modes: ["subway"]
     }
 
     conn = user

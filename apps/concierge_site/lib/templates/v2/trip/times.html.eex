@@ -44,6 +44,9 @@
   <%= for destination <- @destinations do %>
     <%= hidden_input form, :destinations, name: "trip[destinations][]", value: destination %>
   <% end %>
+  <%= for mode <- @modes do %>
+    <%= hidden_input form, :modes, name: "trip[modes][]", value: mode %>
+  <% end %>
 
   <div class="form-group my-4">
     <%= label form, :station_features, "Would you like alerts about any of these station features?", class: "form__label" %>

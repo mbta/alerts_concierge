@@ -1,12 +1,16 @@
 <h1 class="heading__title my-4">My account</h1>
+<%= flash_error(@conn) %>
+<%= flash_info(@conn) %>
 
 <div class="container container__inner">
   <div class="row justify-content-md-center">
     <div class="col-md-10 col-sm-12">
       <h2 class="heading__subtitle my-3">My subscriptions</h2>
-      <%= for trip <- @trips do
-        ConciergeSite.TripCardHelper.render(@conn, trip)
-      end %>
+      <%= for trip <- @trips do %>
+        <div class="trip__card--container">
+          <%= ConciergeSite.TripCardHelper.render(@conn, trip) %>
+        </div>
+      <% end %>
       <%= link("Subscribe to a new alert", to: v2_trip_path(@conn, :new), class: "btn btn-primary btn-block my-3") %>
     </div>
   </div>

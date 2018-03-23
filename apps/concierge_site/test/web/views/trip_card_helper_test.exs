@@ -23,7 +23,7 @@ defmodule ConciergeSite.TripCardHelperTest do
       add_subscription_for_trip(trip, %{type: :subway, route: "Mattapan", origin: "place-asmnl", destination: "place-matt",
                                         direction_id: 0, rank: 5}),
       add_subscription_for_trip(trip, %{type: :bus, route: "57A", direction_id: 0, rank: 6}),
-      add_subscription_for_trip(trip, %{type: :commuter_rail, route: "CR-Haverhill", origin: "Melrose Highlands",
+      add_subscription_for_trip(trip, %{type: :cr, route: "CR-Haverhill", origin: "Melrose Highlands",
                                         destination: "place-north", direction_id: 1, rank: 7}),
       add_subscription_for_trip(trip, %{type: :ferry, route: "Boat-F4", origin: "Boat-Long",
                                         destination: "Boat-Charlestown", direction_id: 0, rank: 8})]}
@@ -60,14 +60,7 @@ defmodule ConciergeSite.TripCardHelperTest do
   defp add_subscription_for_trip(trip, params) do
     Repo.insert!(%Subscription{user_id: trip.user_id, trip_id: trip.id, alert_priority_type: trip.alert_priority_type,
                                relevant_days: trip.relevant_days, start_time: trip.start_time, end_time: trip.end_time,
-                               notification_time: notification_time(trip), type: params.type, route: params.route,
-                               origin: params[:origin], destination: params[:destination],
-                               direction_id: params.direction_id, rank: params.rank})
-  end
-
-  defp notification_time(%{start_time: start_time}) do
-    hour = start_time.hour - 1
-    {:ok, time} = Time.new(hour, start_time.minute, start_time.second)
-    time
+                               type: params.type, route: params.route, origin: params[:origin],
+                               destination: params[:destination], direction_id: params.direction_id, rank: params.rank})
   end
 end
