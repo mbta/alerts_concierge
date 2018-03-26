@@ -143,6 +143,21 @@ defmodule AlertProcessor.Model.Trip do
     Repo.delete(trip)
   end
 
+  @doc """
+  Returns trip for the given trip id. Preloads associates subscriptions.
+
+  Return nil if no result was found. Raises if more than one entry.
+
+  ## Examples
+
+      iex> find_by_id(id)
+      %Trip{...}
+
+      iex> find_by_id(non_existent_id)
+      nil
+
+  """
+  @spec find_by_id(String.t) :: Trip.t | nil | no_return
   def find_by_id(id) do
     query =
       from t in __MODULE__,
