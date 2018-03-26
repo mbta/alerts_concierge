@@ -14,14 +14,53 @@ defmodule ConciergeSite.DaySelectHelperTest do
     assert html =~ "<input autocomplete=\"off\" type=\"checkbox\" value=\"weekdays\">"
   end
 
-  test "render/2" do
-    html = Phoenix.HTML.safe_to_string(DaySelectHelper.render(:foo, ["monday"]))
+  describe "render/2" do
+    test "with monday as string" do
+      html = Phoenix.HTML.safe_to_string(DaySelectHelper.render(:foo, ["monday"]))
 
-    assert html =~ "<input autocomplete=\"off\" checked=\"checked\" name=\"foo[relevant_days][]\" type=\"checkbox\" value=\"monday\">"
-    assert html =~ "<input autocomplete=\"off\" name=\"foo[relevant_days][]\" type=\"checkbox\" value=\"tuesday\">"
+      assert html =~ "<input autocomplete=\"off\" checked=\"checked\" name=\"foo[relevant_days][]\" type=\"checkbox\" value=\"monday\">"
+      assert html =~ "<input autocomplete=\"off\" name=\"foo[relevant_days][]\" type=\"checkbox\" value=\"tuesday\">"
+    end
 
-    html_2 = Phoenix.HTML.safe_to_string(DaySelectHelper.render(:foo, [:monday]))
+    test "with monday as atom" do
+      html = Phoenix.HTML.safe_to_string(DaySelectHelper.render(:foo, [:monday]))
 
-    assert html == html_2
+      assert html =~ "<input autocomplete=\"off\" checked=\"checked\" name=\"foo[relevant_days][]\" type=\"checkbox\" value=\"monday\">"
+      assert html =~ "<input autocomplete=\"off\" name=\"foo[relevant_days][]\" type=\"checkbox\" value=\"tuesday\">"
+    end
+
+    test "weekdays" do
+      weekdays = ~w(monday tuesday wednesday thursday friday)a
+      html = Phoenix.HTML.safe_to_string(DaySelectHelper.render(:foo, weekdays))
+
+      assert html =~ "<input autocomplete=\"off\" checked=\"checked\" name=\"foo[relevant_days][]\" type=\"checkbox\" value=\"monday\">"
+      assert html =~ "<input autocomplete=\"off\" checked=\"checked\" name=\"foo[relevant_days][]\" type=\"checkbox\" value=\"tuesday\">"
+      assert html =~ "<input autocomplete=\"off\" checked=\"checked\" name=\"foo[relevant_days][]\" type=\"checkbox\" value=\"thursday\">"
+      assert html =~ "<input autocomplete=\"off\" checked=\"checked\" name=\"foo[relevant_days][]\" type=\"checkbox\" value=\"friday\">"
+      assert html =~ "<input autocomplete=\"off\" checked=\"checked\" type=\"checkbox\" value=\"weekdays\">"
+    end
+
+    test "weekend" do
+      weekdays = ~w(saturday sunday)a
+      html = Phoenix.HTML.safe_to_string(DaySelectHelper.render(:foo, weekdays))
+
+      assert html =~ "<input autocomplete=\"off\" checked=\"checked\" name=\"foo[relevant_days][]\" type=\"checkbox\" value=\"saturday\">"
+      assert html =~ "<input autocomplete=\"off\" checked=\"checked\" name=\"foo[relevant_days][]\" type=\"checkbox\" value=\"sunday\">"
+      assert html =~ "<input autocomplete=\"off\" checked=\"checked\" type=\"checkbox\" value=\"weekend\">"
+    end
+
+    test "weekdays and weekend" do
+      weekdays = ~w(monday tuesday wednesday thursday friday saturday sunday)a
+      html = Phoenix.HTML.safe_to_string(DaySelectHelper.render(:foo, weekdays))
+
+      assert html =~ "<input autocomplete=\"off\" checked=\"checked\" name=\"foo[relevant_days][]\" type=\"checkbox\" value=\"monday\">"
+      assert html =~ "<input autocomplete=\"off\" checked=\"checked\" name=\"foo[relevant_days][]\" type=\"checkbox\" value=\"tuesday\">"
+      assert html =~ "<input autocomplete=\"off\" checked=\"checked\" name=\"foo[relevant_days][]\" type=\"checkbox\" value=\"thursday\">"
+      assert html =~ "<input autocomplete=\"off\" checked=\"checked\" name=\"foo[relevant_days][]\" type=\"checkbox\" value=\"friday\">"
+      assert html =~ "<input autocomplete=\"off\" checked=\"checked\" name=\"foo[relevant_days][]\" type=\"checkbox\" value=\"saturday\">"
+      assert html =~ "<input autocomplete=\"off\" checked=\"checked\" name=\"foo[relevant_days][]\" type=\"checkbox\" value=\"sunday\">"
+      assert html =~ "<input autocomplete=\"off\" checked=\"checked\" type=\"checkbox\" value=\"weekdays\">"
+      assert html =~ "<input autocomplete=\"off\" checked=\"checked\" type=\"checkbox\" value=\"weekend\">"
+    end
   end
 end

@@ -1,15 +1,25 @@
 defmodule ConciergeSite.DaySelectHelper do
   import Phoenix.HTML.Tag, only: [content_tag: 3, tag: 2]
 
-  @days ["monday", "tuesday", "wednesday", "thursday", "friday", "saturday", "sunday"]
+  @weekdays ["monday", "tuesday", "wednesday", "thursday", "friday"]
+  @weekend ["saturday", "sunday"]
+  @days @weekdays ++ @weekend
   @short_days ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"]
 
   @spec render(atom) :: Phoenix.HTML.safe
   def render(input_name, checked \\ []) do
-    checked_set = checked |> ensure_days_as_string() |> MapSet.new()
+    checked_set = prepare_checked_set(checked)
     content_tag :div, class: "day-selector", data: [selector: "date"] do
       [title(), day(input_name, checked_set), group(checked_set)]
     end
+  end
+
+  defp prepare_checked_set(checked) do
+    checked
+    |> ensure_days_as_string()
+    |> MapSet.new()
+    |> if_needed_add_weekday()
+    |> if_needed_add_weekend()
   end
 
   defp ensure_days_as_string([]), do: []
@@ -19,6 +29,22 @@ defmodule ConciergeSite.DaySelectHelper do
   defp ensure_day_as_string(day) when is_atom(day), do: Atom.to_string(day)
 
   defp ensure_day_as_string(day) when is_binary(day), do: day
+
+  defp if_needed_add_weekday(checked) do
+    if MapSet.subset?(MapSet.new(@weekdays), checked) do
+      MapSet.put(checked, "weekdays")
+    else
+      checked
+    end
+  end
+
+  defp if_needed_add_weekend(checked) do
+    if MapSet.subset?(MapSet.new(@weekend), checked) do
+      MapSet.put(checked, "weekend")
+    else
+      checked
+    end
+  end
 
   defp title do
     content_tag :div, class: "title-part" do
