@@ -55,10 +55,12 @@ DaySelector.prototype.htmlFromState = function() {
     if (this.state[day]) {
       clickLabel(this.labels[day]);
       check(this.inputs[day]);
+      addCheckIcon(this.inputs[day]);
     }
     else {
       unclickLabel(this.labels[day]);
       uncheck(this.inputs[day]);
+      removeCheckIcon(this.inputs[day]);
     }
   }
 
@@ -151,6 +153,14 @@ function check($input) {
 
 function uncheck($input) {
   $input.prop('checked', false);
+}
+
+function addCheckIcon($input) {
+  $input.siblings("i").addClass("fa fa-check");
+}
+
+function removeCheckIcon($input) {
+  $input.siblings("i").removeClass("fa fa-check");
 }
 
 function isClicked($label) {
