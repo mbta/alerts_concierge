@@ -47,6 +47,7 @@
       width: 50px;
       color: $brand-primary;
       margin-bottom: 0;
+      min-height: 44px;
 
       @include media-breakpoint-up(sm) {
         width: 70px;
