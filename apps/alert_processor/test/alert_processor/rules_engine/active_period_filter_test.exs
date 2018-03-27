@@ -116,6 +116,34 @@ defmodule AlertProcessor.ActivePeriodFilterTest do
       assert [subscription] ==
         ActivePeriodFilter.filter([subscription], alert: alert8)
     end
+
+    test "matches for for individual weekday (e.g. Monday)" do
+      alert = %Alert{
+        active_period: [
+          %{start: datetime_from_native(~N[2018-03-26 09:00:00]), # <- Monday
+            end: datetime_from_native(~N[2018-03-26 19:00:00])}, # <- Monday
+        ]
+      }
+      subscription = insert(:subscription, relevant_days: [:monday])
+
+      subscriptions = ActivePeriodFilter.filter([subscription], alert: alert)
+
+      assert subscriptions == [subscription]
+    end
+
+    test "does not match for for individual weekday (e.g. Tuesday)" do
+      alert = %Alert{
+        active_period: [
+          %{start: datetime_from_native(~N[2018-03-26 09:00:00]), # <- Monday
+            end: datetime_from_native(~N[2018-03-26 19:00:00])}, # <- Monday
+        ]
+      }
+      subscription = insert(:subscription, relevant_days: [:tuesday])
+
+      subscriptions = ActivePeriodFilter.filter([subscription], alert: alert)
+
+      assert subscriptions == []
+    end
   end
 
   describe "active period without end date" do
