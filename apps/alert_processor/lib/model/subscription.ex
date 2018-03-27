@@ -32,7 +32,7 @@ defmodule AlertProcessor.Model.Subscription do
     destination_long: float | nil,
     rank: integer | nil,
     return_trip: boolean | nil,
-    facility_types: [facility_type] | nil
+    facility_types: [facility_type] | []
   }
 
   @alert_priority_type_values %{

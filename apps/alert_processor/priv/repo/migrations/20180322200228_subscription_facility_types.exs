@@ -1,4 +1,4 @@
-defmodule :"Elixir.AlertProcessor.Repo.Migrations.Subscription-facility-types" do
+defmodule Elixir.AlertProcessor.Repo.Migrations.Subscription_facility_types do
   use Ecto.Migration
 
   def change do
