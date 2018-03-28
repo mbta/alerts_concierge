@@ -20,6 +20,9 @@ defmodule ConciergeSite.V2.TripControllerTest do
   describe "GET /v2/trips/:id/edit" do
     test "with valid trip", %{conn: conn, user: user} do
       trip = insert(:trip, %{user: user})
+      insert(:subscription, %{trip_id: trip.id, type: :cr, origin: "Readville", destination: "Newmarket", route: "CR-Fairmount"})
+      insert(:subscription, %{trip_id: trip.id, type: :subway, origin: "place-chncl", destination: "place-ogmnl", route: "Orange"})
+      insert(:subscription, %{trip_id: trip.id, type: :bus, route: "741"})
       conn =
         user
         |> guardian_login(conn)
@@ -296,23 +299,60 @@ defmodule ConciergeSite.V2.TripControllerTest do
     assert html_response(conn, 200) =~ "There was an error creating your trip. Please try again."
   end
 
-  test "POST /v2/trip/times", %{conn: conn, user: user} do
-    trip = %{
-      destinations: ["place-pktrm"],
-      legs: ["Red"],
-      origins: ["place-alfcl"],
-      round_trip: "true",
-      modes: ["subway"]
-    }
+  describe "POST /v2/trip/times" do
+    test "subway", %{conn: conn, user: user} do
+      trip = %{
+        destinations: ["place-pktrm"],
+        legs: ["Red"],
+        origins: ["place-alfcl"],
+        round_trip: "true",
+        modes: ["subway"]
+      }
 
-    conn = user
-    |> guardian_login(conn)
-    |> post(v2_trip_trip_path(conn, :times), %{trip: trip})
+      conn = user
+      |> guardian_login(conn)
+      |> post(v2_trip_trip_path(conn, :times), %{trip: trip})
 
-    assert html_response(conn, 200) =~ "true"
-    assert html_response(conn, 200) =~ "Red"
-    assert html_response(conn, 200) =~ "place-alfcl"
-    assert html_response(conn, 200) =~ "place-pktrm"
+      assert html_response(conn, 200) =~ "true"
+      assert html_response(conn, 200) =~ "Red"
+      assert html_response(conn, 200) =~ "place-alfcl"
+      assert html_response(conn, 200) =~ "place-pktrm"
+    end
+
+    test "cr", %{conn: conn, user: user} do
+      trip = %{
+        destinations: ["Newmarket"],
+        legs: ["CR-Fairmount"],
+        origins: ["Readville"],
+        round_trip: "true",
+        modes: ["cr"]
+      }
+
+      conn = user
+      |> guardian_login(conn)
+      |> post(v2_trip_trip_path(conn, :times), %{trip: trip})
+
+      assert html_response(conn, 200) =~ "true"
+      assert html_response(conn, 200) =~ "CR-Fairmount"
+      assert html_response(conn, 200) =~ "Newmarket"
+      assert html_response(conn, 200) =~ "Readville"
+    end
+
+    test "bus", %{conn: conn, user: user} do
+      trip = %{
+        destinations: [""],
+        legs: ["741"],
+        origins: [""],
+        round_trip: "true",
+        modes: ["bus"]
+      }
+
+      conn = user
+      |> guardian_login(conn)
+      |> post(v2_trip_trip_path(conn, :times), %{trip: trip})
+
+      assert html_response(conn, 200) =~ "true"
+    end
   end
 
   test "GET /v2/trip/accessibility", %{conn: conn, user: user} do
