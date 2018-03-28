@@ -240,10 +240,27 @@ defmodule AlertProcessor.AlertParser do
   def parse_severity(sev) when sev >= 5, do: :moderate
   def parse_severity(sev) when is_integer(sev), do: :minor
 
+  @doc """
+  Parses a `TranslatedString` type per the GTFS-realtime specification. For
+  more details please see:
+  https://developers.google.com/transit/gtfs-realtime/reference/#message_translatedstring
+
+  Note that it also accepts a list of translations, which is not a correct
+  `TranslatedString` type, but we need to support it since that's how the feed
+  we're working with works.
+
+  """
+  @spec parse_translation(map | list) :: String.t | nil
   def parse_translation(translations), do: do_parse_translation(translations)
 
   defp do_parse_translation(nil), do: nil
-  defp do_parse_translation(translations) do
+  defp do_parse_translation(%{"translation" => translations}) do
+    case Enum.find(translations, &(&1["language"] == "en")) do
+      %{"text" => text} -> text
+      _ -> nil
+    end
+  end
+  defp do_parse_translation(translations) when is_list(translations) do
     case Enum.find(translations, &(&1["translation"]["language"] == "en")) do
       %{"translation" => %{"language" => "en", "text" => text}} -> text
       _ -> nil
