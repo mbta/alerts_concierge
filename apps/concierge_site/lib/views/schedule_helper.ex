@@ -16,7 +16,7 @@ defmodule ConciergeSite.ScheduleHelper do
       content_tag :div, class: "schedules__trips--leg" do
         [
           content_tag :p, class: "schedules__header" do
-            "#{header(mode)} scheduled in this time for #{route}"
+            "#{header(mode)} scheduled at this time for #{route}"
           end,
           content_tag :ul, class: "schedules__trips--container" do
             for trip <- schedule do

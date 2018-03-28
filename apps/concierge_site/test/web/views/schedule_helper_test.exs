@@ -23,8 +23,8 @@ defmodule ConciergeSite.ScheduleHelperTest do
 
     html = Phoenix.HTML.safe_to_string(ScheduleHelper.render(schedules, "start_input", "end_input"))
 
-    assert html =~ "Commuter Rail trains scheduled in this time for CR-Worcester"
-    assert html =~ "Ferry boats scheduled in this time for Boat-F4"
+    assert html =~ "Commuter Rail trains scheduled at this time for CR-Worcester"
+    assert html =~ "Ferry boats scheduled at this time for Boat-F4"
     assert html =~ "Train 537, Auburndale, 11:58pm"
     assert html =~ "Boston (Long Wharf),  6:30am"
   end
