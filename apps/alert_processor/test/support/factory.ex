@@ -188,7 +188,7 @@ defmodule AlertProcessor.Factory do
       relevant_days: [:monday],
       start_time: ~T[12:00:00],
       end_time: ~T[18:00:00],
-      station_features: [:accessibility],
+      facility_types: [:elevator],
       alert_time_difference_in_minutes: 60,
       user: build(:user)
     }

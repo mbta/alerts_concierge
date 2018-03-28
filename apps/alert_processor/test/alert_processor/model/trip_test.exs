@@ -12,7 +12,7 @@ defmodule AlertProcessor.Model.TripTest do
     relevant_days: [:monday],
     start_time: ~T[12:00:00],
     end_time: ~T[18:00:00],
-    station_features: [:accessibility],
+    facility_types: [:elevator],
     roundtrip: false
   }
 
@@ -57,15 +57,15 @@ defmodule AlertProcessor.Model.TripTest do
     refute changeset.valid?
   end
 
-  test "create_changeset/2 allows empty station features list", %{valid_attrs: valid_attrs} do
-    attrs = Map.put(valid_attrs, :station_features, [])
+  test "create_changeset/2 allows empty facility types list", %{valid_attrs: valid_attrs} do
+    attrs = Map.put(valid_attrs, :facility_types, [])
     changeset = Trip.create_changeset(%Trip{}, attrs)
 
     assert changeset.valid?
   end
 
-  test "create_changeset/2 validates station features", %{valid_attrs: valid_attrs} do
-    attrs = Map.put(valid_attrs, :alert_priority_type, [:not_a_station_feature])
+  test "create_changeset/2 validates facility types", %{valid_attrs: valid_attrs} do
+    attrs = Map.put(valid_attrs, :facility_types, [:not_facility_types])
     changeset = Trip.create_changeset(%Trip{}, attrs)
 
     refute changeset.valid?
@@ -74,7 +74,7 @@ defmodule AlertProcessor.Model.TripTest do
   test "get_trips_by_user/1" do
     user = Repo.insert!(%User{email: "test@email.com", role: "user", encrypted_password: @encrypted_password})
     Repo.insert!(%Trip{user_id: user.id, alert_priority_type: :low, relevant_days: [:monday], start_time: ~T[12:00:00],
-                       end_time: ~T[18:00:00], station_features: [:accessibility]})
+                       end_time: ~T[18:00:00], facility_types: [:elevator]})
 
     assert [trip] = Trip.get_trips_by_user(user.id)
     assert trip.user_id == user.id
