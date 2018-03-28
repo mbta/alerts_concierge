@@ -31,6 +31,7 @@ import selectStop from "./select-stop";
 import toggleInput from "./toggle-input";
 import helpText from "./help-text";
 import daySelector from "./day-selector";
+import schedule from "./schedule";
 
 selectEntity();
 selectMultipleEntity();
@@ -43,5 +44,6 @@ selectStop();
 toggleInput();
 helpText();
 daySelector();
+schedule();
 
 document.body.className = document.body.className.replace("no-js", "js");

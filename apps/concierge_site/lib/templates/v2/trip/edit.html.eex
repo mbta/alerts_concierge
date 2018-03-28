@@ -38,6 +38,7 @@
       <%= label form, :end_time, "Arriving around", class: "form__label--inline" %>
       <%= text_input form, :end_time, type: "time", class: "form-control form__time--inline", required: true, value: Time.truncate(@trip.end_time, :second) %>
     </div>
+    <%= ConciergeSite.ScheduleHelper.render(@schedules, "trip_start_time", "trip_end_time") %>
   </div>
 
   <%= if @trip.roundtrip do %>
@@ -51,6 +52,7 @@
       <%= label form, :return_end_time, "Arriving around", class: "form__label--inline" %>
       <%= text_input form, :return_end_time, type: "time", class: "form-control form__time--inline", required: true, value: Time.truncate(@trip.return_end_time, :second) %>
     </div>
+    <%= ConciergeSite.ScheduleHelper.render(@return_schedules, "trip_return_start_time", "trip_return_end_time") %>
   </div>
 <% end %>
 
