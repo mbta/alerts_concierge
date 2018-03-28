@@ -29,17 +29,31 @@ function handleTimeChange(scheduleEl) {
   const startInputEl = document.getElementById(scheduleEl.dataset.start);
   const endInputEl = document.getElementById(scheduleEl.dataset.end);
   ['keyup', 'click'].forEach((eventType) => {
-    startInputEl.addEventListener(eventType, () => processSchedule(scheduleEl));
-    endInputEl.addEventListener(eventType, () => processSchedule(scheduleEl));
+    startInputEl.addEventListener(eventType, () => expandAndProcessSchedule(scheduleEl));
+    endInputEl.addEventListener(eventType, () => expandAndProcessSchedule(scheduleEl));
   });
 };
+
+function expandAndProcessSchedule(scheduleEl) {
+  const legs = [... scheduleEl.querySelectorAll(".schedules__trips--leg")];
+  legs.forEach((legEl) => {
+    const toggleEl = legEl.querySelector(".schedules__toggle");
+    doToggle(legEl, toggleEl, true);
+  });
+  processSchedule(scheduleEl);
+}
 
 function handleToggle(e, legEl, toggleEl, scheduleEl) {
   e.preventDefault();
   const expanded = !JSON.parse(legEl.dataset.expanded || "false");
+  doToggle(legEl, toggleEl, expanded);
+}
+
+function doToggle(legEl, toggleEl, expanded) {
   legEl.setAttribute("data-expanded", expanded);
-  toggleEl.className = (expanded) ? toggleUpClasses : toggleDownClasses;
-  processSchedule(scheduleEl);
+  if (toggleEl) {
+    toggleEl.className = (expanded) ? toggleUpClasses : toggleDownClasses;
+  }
 }
 
 function enableToggle(scheduleEl) {
