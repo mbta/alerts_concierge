@@ -1,6 +1,6 @@
 defmodule ConciergeSite.MyAccountControllerTest do
   use ConciergeSite.ConnCase
-  alias AlertProcessor.{HoldingQueue, Model, Repo}
+  alias AlertProcessor.{Model, Repo}
   alias Model.User
 
   describe "authorized" do
@@ -15,8 +15,6 @@ defmodule ConciergeSite.MyAccountControllerTest do
     end
 
     test "PATCH /my-account/ with valid params", %{conn: conn, user: user} do
-      notification = build(:notification, user_id: user.id, send_after: DateTime.from_unix!(4_078_579_247))
-      :ok = HoldingQueue.list_enqueue([notification])
       params = %{"user" => %{
         "dnd_toggle" => "true",
         "do_not_disturb_start" => "16:30:00",
@@ -35,7 +33,6 @@ defmodule ConciergeSite.MyAccountControllerTest do
       assert updated_user.phone_number == "5551234567"
       assert updated_user.do_not_disturb_end == ~T[18:30:00.000000]
       assert updated_user.do_not_disturb_start == ~T[16:30:00.000000]
-      assert :error = HoldingQueue.pop()
     end
 
     test "PATCH /my-account/ with invalid params", %{conn: conn, user: user} do

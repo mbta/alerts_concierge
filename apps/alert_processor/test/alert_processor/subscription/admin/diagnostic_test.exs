@@ -45,7 +45,8 @@ defmodule AlertProcessor.Subscription.DiagnosticTest do
       inserted_at: date,
       relevant_days: [:sunday],
       alert_priority_type: :medium,
-      type: :bus
+      type: :bus,
+      route_type: 3
     )
     create_changeset = Subscription.create_changeset(%Subscription{}, sub_params)
     inserted_sub = PaperTrail.insert!(create_changeset)
@@ -440,7 +441,8 @@ defmodule AlertProcessor.Subscription.DiagnosticTest do
         user: user,
         relevant_days: [:sunday],
         alert_priority_type: :high,
-        type: :ferry
+        type: :ferry,
+        route: "some route" # doesn't match the alert route
       )
       create_changeset = Subscription.create_changeset(%Subscription{}, sub_params)
       PaperTrail.insert!(create_changeset)

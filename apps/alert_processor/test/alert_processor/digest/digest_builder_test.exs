@@ -78,14 +78,18 @@ defmodule AlertProcessor.DigestBuilderTest do
   test "build_digests/1 returns all alerts for each user based on informed entity, including minor severity" do
     user1 = insert(:user)
     user2 = insert(:user)
-    sub1 = insert(:subscription, user: user1)
-    sub2 = insert(:subscription, user: user2)
-    @ie1
-    |> Map.merge(%{subscription_id: sub1.id})
-    |> insert
-    @ie2
-    |> Map.merge(%{subscription_id: sub2.id})
-    |> insert
+    sub1_details = [
+      route: "16",
+      route_type: 3,
+      user: user1,
+    ]
+    sub2_details = [
+      route: "8",
+      route_type: 3,
+      user: user2
+    ]
+    insert(:subscription, sub1_details)
+    insert(:subscription, sub2_details)
 
     digests = DigestBuilder.build_digests({[@alert1, @alert2], @ddg}, @digest_interval)
     expected = [%Digest{user: user1, alerts: [@alert1], digest_date_group: @ddg},
@@ -97,48 +101,24 @@ defmodule AlertProcessor.DigestBuilderTest do
   test "build_digest/1 does not return duplicate alerts for each user based on informed entity" do
     user1 = insert(:user)
     user2 = insert(:user)
-    sub1 = insert(:subscription, user: user1)
-    sub2 = insert(:subscription, user: user2)
-    @ie1
-    |> Map.merge(%{subscription_id: sub1.id})
-    |> insert
-    @ie2
-    |> Map.merge(%{subscription_id: sub2.id})
-    |> insert
+    sub1_details = [
+      route: "16",
+      route_type: 3,
+      user: user1,
+    ]
+    sub2_details = [
+      route: "8",
+      route_type: 3,
+      user: user2
+    ]
+    insert(:subscription, sub1_details)
+    insert(:subscription, sub2_details)
 
     digests = DigestBuilder.build_digests({[@alert1, @alert1, @alert2], @ddg}, @digest_interval)
     expected = [%Digest{user: user1, alerts: [@alert1], digest_date_group: @ddg},
                 %Digest{user: user2, alerts: [@alert2, @alert1], digest_date_group: @ddg}]
 
     assert digests == expected
-  end
-
-  test "build_digest/1 builds digests for users whose vacations end less than one week from now" do
-    now = DateTime.utc_now()
-    yesterday = DT.subtract!(now, 86_400)
-    six_days_from_now = DT.add!(now, 518_400)
-    two_weeks_from_now = DT.add!(now, 1_209_600)
-    short_vacation_user = insert(:user,
-      vacation_start: yesterday,
-      vacation_end: six_days_from_now
-    )
-
-    long_vacation_user = insert(:user,
-      vacation_start: yesterday,
-      vacation_end: two_weeks_from_now
-    )
-
-    sub1 = insert(:subscription, user: short_vacation_user)
-    sub2 = insert(:subscription, user: long_vacation_user)
-    @ie1
-    |> Map.merge(%{subscription_id: sub1.id})
-    |> insert
-    @ie2
-    |> Map.merge(%{subscription_id: sub2.id})
-    |> insert
-
-    digests = DigestBuilder.build_digests({[@alert1, @alert2], @ddg}, @digest_interval)
-    assert digests == [%Digest{user: short_vacation_user, alerts: [@alert1], digest_date_group: @ddg}]
   end
 
   test "build_digest/1 returns all alerts of :extreme severity, regardless of entities" do
@@ -156,11 +136,12 @@ defmodule AlertProcessor.DigestBuilderTest do
 
   test "build_digest/1 returns all subs with matching facilities" do
     user = insert(:user)
-    sub = insert(:subscription, user: user)
-
-    @facility_ie
-    |> Map.merge(%{subscription_id: sub.id})
-    |> insert()
+    subscription_details = [
+      facility_types: [:escalator],
+      origin: "place-nqncy",
+      user: user
+    ]
+    insert(:subscription, subscription_details)
 
     digests = DigestBuilder.build_digests({[@facility_alert], @ddg}, @digest_interval)
     expected = [%Digest{user: user, alerts: [@facility_alert], digest_date_group: @ddg}]
