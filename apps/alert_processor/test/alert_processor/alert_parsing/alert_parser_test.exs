@@ -301,4 +301,38 @@ defmodule AlertProcessor.AlertParserTest do
       assert AlertParser.remove_ignored([%{@valid_alert | "active_period" => []}]) == []
     end
   end
+
+  describe "parse_translation/1" do
+    test "parses list of translations" do
+      # Note that a list of translations is not correct per the GTFS-realtime
+      # spec but the feed we're working with does not currently follow the
+      # GTFS-realtime spec. For details take a look here:
+      # https://developers.google.com/transit/gtfs-realtime/reference/#message_translatedstring
+      text = "some text"
+      translation = [
+        %{
+          "translation" => %{
+            "text" => text,
+            "language" => "en"
+          }
+        }
+      ]
+      assert AlertParser.parse_translation(translation) == text
+    end
+
+    test "parses a translation map" do
+      # Parses a `TranslatedString` type per:
+      # https://developers.google.com/transit/gtfs-realtime/reference/#message_translatedstring
+      text = "some text"
+      translation = %{
+        "translation" => [
+          %{
+            "text" => text,
+            "language" => "en"
+          }
+        ]
+      }
+      assert AlertParser.parse_translation(translation) == text
+    end
+  end
 end
