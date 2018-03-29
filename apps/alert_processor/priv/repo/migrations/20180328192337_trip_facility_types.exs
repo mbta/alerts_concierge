@@ -4,7 +4,7 @@ defmodule AlertProcessor.Repo.Migrations.TripFacilityTypes do
   def change do
     alter table(:trips) do
       add :facility_types, {:array, :string}, null: false, default: []
-      remove :station_features
+      remove :stations_features
     end
   end
 end
