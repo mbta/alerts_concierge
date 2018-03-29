@@ -8,7 +8,7 @@ defmodule AlertProcessor.Model.Trip do
   alias AlertProcessor.Repo
 
   @type relevant_day :: :monday | :tuesday | :wednesday | :thursday | :friday | :saturday | :sunday
-  @type station_feature :: :accessibility | :parking | :bike_storage
+  @type facility_type :: :bike_storage | :electric_car_chargers | :elevator | :escalator | :parking_area | :pick_drop | :portable_boarding_lift | :tty_phone | :elevated_subplatform
   @type alert_priority_type :: :low | :high
 
   @type t :: %__MODULE__{
@@ -19,7 +19,7 @@ defmodule AlertProcessor.Model.Trip do
     end_time: Time.t | nil,
     return_start_time: Time.t | nil,
     return_end_time: Time.t | nil,
-    station_features: [station_feature] | nil,
+    facility_types: [facility_type] | [],
     roundtrip: boolean,
     alert_time_difference_in_minutes: integer
   }
@@ -40,7 +40,7 @@ defmodule AlertProcessor.Model.Trip do
     field :end_time, :time, null: false
     field :return_start_time, :time, null: true
     field :return_end_time, :time, null: true
-    field :station_features, {:array, AlertProcessor.AtomType}, null: false
+    field :facility_types, {:array, AlertProcessor.AtomType}, null: false
     field :roundtrip, :boolean, null: false
     field :alert_time_difference_in_minutes, :integer, default: 60
 
@@ -48,11 +48,11 @@ defmodule AlertProcessor.Model.Trip do
   end
 
   @permitted_fields ~w(user_id alert_priority_type relevant_days start_time end_time
-    station_features roundtrip return_start_time return_end_time)a
+    facility_types roundtrip return_start_time return_end_time)a
   @required_fields ~w(user_id alert_priority_type relevant_days start_time end_time
-    station_features roundtrip)a
+    facility_types roundtrip)a
   @valid_relevant_days ~w(monday tuesday wednesday thursday friday saturday sunday)a
-  @valid_station_features ~w(accessibility parking bike_storage)a
+  @valid_facility_types ~w(bike_storage electric_car_chargers elevator escalator parking_area pick_drop portable_boarding_lift tty_phone elevated_subplatform)a
   @valid_alert_priority_types ~w(low high)a
   @valid_alert_time_difference_in_minutes [30, 60, 120]
   @update_permitted_fields ~w(
@@ -74,7 +74,7 @@ defmodule AlertProcessor.Model.Trip do
     |> validate_required(@required_fields)
     |> validate_subset(:relevant_days, @valid_relevant_days)
     |> validate_length(:relevant_days, min: 1)
-    |> validate_subset(:station_features, @valid_station_features)
+    |> validate_subset(:facility_types, @valid_facility_types)
     |> validate_inclusion(:alert_priority_type, @valid_alert_priority_types)
   end
 

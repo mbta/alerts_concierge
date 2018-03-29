@@ -184,7 +184,7 @@ defmodule ConciergeSite.V2.TripController do
     |> Enum.with_index
     |> Enum.reduce(multi, fn({sub, index}, acc) ->
       sub_to_insert = sub
-      |> Map.merge(%{id: Ecto.UUID.generate, user_id: user.id, trip_id: trip.id})
+      |> Map.merge(%{id: Ecto.UUID.generate, user_id: user.id, trip_id: trip.id, facility_types: trip.facility_types})
       |> Subscription.create_changeset()
 
       acc
@@ -258,9 +258,20 @@ defmodule ConciergeSite.V2.TripController do
       end_time: params["end_time"],
       return_start_time: params["return_start_time"],
       return_end_time: params["return_end_time"],
-      station_features: [],
+      facility_types: input_to_facility_types(params),
       roundtrip: params["round_trip"] == "true"
     }
+  end
+
+  defp input_to_facility_types(params) do
+    ["bike_storage", "elevator", "escalator", "parking_area"]
+    |> Enum.reduce([], fn(type, acc) ->
+      if params[type] == "true" do
+        acc ++ [String.to_atom(type)]
+      else
+        acc
+      end
+    end)
   end
 
   defp flip_direction(0), do: 1
