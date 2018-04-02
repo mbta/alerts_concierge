@@ -33,7 +33,6 @@ defmodule ConciergeSite.Dissemination.NotificationEmailTest do
     assert body =~ "Red line delay"
     assert body =~ "Red line inbound from Alewife station closure"
     assert body =~ "There is a fire in at south station so it is closed"
-    assert body =~ "More information: http://www.example.com/alert-info"
     assert body =~ "Last Updated: Jan 18 2017 02:00 PM"
   end
 
@@ -55,8 +54,7 @@ defmodule ConciergeSite.Dissemination.NotificationEmailTest do
     assert email.to == @email
     assert body =~ "Red line delay"
     assert body =~ "Red line inbound from Alewife station closure"
-    assert body =~ "href=\"https://www.mbta.com/\""
-    assert body =~ "http://www.example.com/alert-info"
+    assert body =~ "href=\"https://www.mbta.com/alerts\""
     assert body =~ "Last Updated: Jan 18 2017 02:00 PM"
   end
 
