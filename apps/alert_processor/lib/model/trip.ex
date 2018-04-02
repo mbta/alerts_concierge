@@ -10,6 +10,7 @@ defmodule AlertProcessor.Model.Trip do
   @type relevant_day :: :monday | :tuesday | :wednesday | :thursday | :friday | :saturday | :sunday
   @type facility_type :: :bike_storage | :electric_car_chargers | :elevator | :escalator | :parking_area | :pick_drop | :portable_boarding_lift | :tty_phone | :elevated_subplatform
   @type alert_priority_type :: :low | :high
+  @type trip_type :: :commute | :accessibility
 
   @type t :: %__MODULE__{
     user_id: String.t | nil,
@@ -21,7 +22,8 @@ defmodule AlertProcessor.Model.Trip do
     return_end_time: Time.t | nil,
     facility_types: [facility_type] | [],
     roundtrip: boolean,
-    alert_time_difference_in_minutes: integer
+    alert_time_difference_in_minutes: integer,
+    trip_type: trip_type
   }
 
   use Ecto.Schema
@@ -43,6 +45,7 @@ defmodule AlertProcessor.Model.Trip do
     field :facility_types, {:array, AlertProcessor.AtomType}, null: false
     field :roundtrip, :boolean, null: false
     field :alert_time_difference_in_minutes, :integer, default: 60
+    field :trip_type, AlertProcessor.AtomType, null: false, default: :commute
 
     timestamps()
   end
