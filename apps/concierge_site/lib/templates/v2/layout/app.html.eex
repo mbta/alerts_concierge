@@ -40,5 +40,18 @@
       <% end %>
     </footer>
     <script src="<%= static_path(@conn, "/js/app.js") %>"></script>
+    <!-- Informizely code for site “mbta.com” -->
+    <script id=“_informizely_script_tag” type=“text/javascript”>
+    var IzWidget = IzWidget || {};
+    (function (d) {
+      var scriptElement = d.createElement(‘script’);
+      scriptElement.type = ‘text/javascript’; scriptElement.async = true;
+      scriptElement.src = “https://insitez.blob.core.windows.net/site/69f607f3-3826-4aa6-9f86-996a07670833.js“;
+      var node = d.getElementById(‘_informizely_script_tag’);
+      node.parentNode.insertBefore(scriptElement, node);
+    })(document);
+    </script>
+    <noscript><a href=“https://www.informizely.com/“>Informizely customer feedback surveys</a></noscript>
+    <!-- End Informizely code. -->
   </body>
 </html>
