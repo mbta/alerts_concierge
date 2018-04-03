@@ -125,6 +125,10 @@ defmodule ConciergeSite.V2.TripController do
     render conn, "accessibility.html"
   end
 
+  def type(conn, _params, _user, _claims) do
+    render conn, "type.html"
+  end
+
   def delete(conn, %{"id" => id}, user, _claims) do
     with %Trip{} = trip <- Trip.find_by_id(id),
          true <- user.id == trip.user_id,

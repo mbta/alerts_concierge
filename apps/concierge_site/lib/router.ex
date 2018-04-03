@@ -151,6 +151,7 @@ defmodule ConciergeSite.Router do
       post "/leg", V2.TripController, :leg
       post "/times", V2.TripController, :times
       get "/accessibility", V2.TripController, :accessibility
+      get "/type", V2.TripController, :type
     end
   end
 
