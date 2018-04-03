@@ -1,19 +1,30 @@
 .header__container {
+  border: 1px solid $pale-grey;
   height: 3.5rem;
-
-  @include media-breakpoint-down(sm) {
-    background-color: $brand-primary;
-  }
+  position: relative;
 }
 
 .header__logo {
   display: block;
-  fill: $gray-dark;
   height: 3rem;
   margin-top: .25rem;
   width: 12rem;
+}
 
-  @include media-breakpoint-down(sm) {
-    fill: $white;
-  }
+.header__right {
+  position: absolute;
+  top: 0;
+  right: 0;
+  display: flex;
+  height: 3.5rem;
+  align-items: center;
+  justify-content: center;
+}
+
+.header__beta {
+  margin: 0 1rem;
+}
+
+.header__logout {
+  margin-top: -.25rem;
 }
