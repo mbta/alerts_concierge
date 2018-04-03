@@ -18,6 +18,8 @@ The issue described below has ended:
   Last Updated: <%= ConciergeSite.Helpers.DateHelper.format_datetime(notification.last_push_notification, :local) %>
 <% end %>
 
-More information: <%= notification.url %>
+<%= if feedback_url do %> Feedback: <%= feedback_url %><% end %>
 
-<%= ConciergeSite.Helpers.MailHelper.text_footer(unsubscribe_url, manage_subscriptions_url, feedback_url) %>
+Edit subscription: <%= manage_subscriptions_url %>
+
+See all alers: https://www.mbta.com/alerts
