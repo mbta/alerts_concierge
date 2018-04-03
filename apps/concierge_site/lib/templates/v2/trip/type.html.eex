@@ -1,0 +1,5 @@
+<div>What kind of alerts would you like to setup?</div>
+
+<div><%= link("alerts for my commute", to: v2_trip_path(@conn, :new)) %></div>
+
+<div><%= link("alerts for accessibility", to: v2_trip_trip_path(@conn, :accessibility)) %></div>

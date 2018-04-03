@@ -1,1 +1,5 @@
 accessibility
+<%= form_for @conn, v2_trip_path(@conn, :create), [as: :trip, method: :post], fn form -> %>
+  <%= hidden_input form, :type, name: "trip[type]", value: "accessibilty" %>
+  <input type="submit" value="Save Trip" />
+<% end %>

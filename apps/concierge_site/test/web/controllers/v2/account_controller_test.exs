@@ -57,7 +57,7 @@ defmodule ConciergeSite.V2.AccountControllerTest do
 
     updated_user = Repo.get(User, user.id)
 
-    assert html_response(conn, 302) =~ "/v2/trip/new"
+    assert html_response(conn, 302) =~ "/v2/trip/type"
     assert updated_user.phone_number == "5555555555"
   end
 
@@ -75,7 +75,7 @@ defmodule ConciergeSite.V2.AccountControllerTest do
 
     updated_user = Repo.get!(User, user.id)
 
-    assert html_response(conn, 302) =~ "/v2/trip/new"
+    assert html_response(conn, 302) =~ "/v2/trip/type"
     assert updated_user.phone_number == nil
   end
 

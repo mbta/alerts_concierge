@@ -17,6 +17,12 @@ defmodule ConciergeSite.V2.TripController do
     render conn, "new.html"
   end
 
+  def create(conn, %{"trip" => %{"type" => "accessibilty"}}, _user, {:ok, _claims}) do
+    conn
+    |> put_flash(:info, "Success! Accessibility trip created.")
+    |> redirect(to: v2_trip_path(conn, :index))
+  end
+
   def create(conn, %{"trip" => trip_params}, user, {:ok, claims}) do
     params = parse_input(trip_params)
     subscriptions = input_to_subscriptions(user, params)
@@ -133,7 +139,9 @@ defmodule ConciergeSite.V2.TripController do
     with %Trip{} = trip <- Trip.find_by_id(id),
          true <- user.id == trip.user_id,
          {:ok, %Trip{}} <- Trip.delete(trip) do
-      redirect(conn, to: v2_trip_path(conn, :index))
+      conn
+      |> put_flash(:info, "Alert deleted.")
+      |> redirect(to: v2_trip_path(conn, :index))
     else
       _ ->
         {:error, :not_found}

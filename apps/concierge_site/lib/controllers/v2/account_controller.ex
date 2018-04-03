@@ -33,7 +33,7 @@ defmodule ConciergeSite.V2.AccountController do
       {:ok, user} ->
         :ok = User.clear_holding_queue_for_user_id(user.id)
         conn
-        |> redirect(to: v2_trip_path(conn, :new))
+        |> redirect(to: v2_trip_trip_path(conn, :type))
       {:error, changeset} ->
         conn
         |> put_flash(:error, "Preferences could not be saved. Please see errors below.")

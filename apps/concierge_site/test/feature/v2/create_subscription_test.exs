@@ -28,7 +28,7 @@ defmodule ConciergeSite.V2.CreateSubscriptionTest do
     |> visit("/v2/account/options")
     |> assert_has(css("#main", text: "Customize my settings"))
     |> click(button("Next"))
-    |> assert_has(css("#main", text: "Personalize Subscription"))
+    |> assert_has(css("#main", text: "What kind of alerts would you like to setup?"))
   end
 
   test "home page", %{session: session} do
