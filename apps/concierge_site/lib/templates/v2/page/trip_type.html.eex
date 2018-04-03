@@ -2,4 +2,4 @@
 
 <div><%= link("alerts for my commute", to: v2_trip_path(@conn, :new)) %></div>
 
-<div><%= link("alerts for accessibility", to: v2_trip_trip_path(@conn, :accessibility)) %></div>
+<div><%= link("alerts for accessibility", to: v2_accessibility_trip_path(@conn, :new)) %></div>

@@ -17,12 +17,6 @@ defmodule ConciergeSite.V2.TripController do
     render conn, "new.html"
   end
 
-  def create(conn, %{"trip" => %{"type" => "accessibilty"}}, _user, {:ok, _claims}) do
-    conn
-    |> put_flash(:info, "Success! Accessibility trip created.")
-    |> redirect(to: v2_trip_path(conn, :index))
-  end
-
   def create(conn, %{"trip" => trip_params}, user, {:ok, claims}) do
     params = parse_input(trip_params)
     subscriptions = input_to_subscriptions(user, params)
@@ -125,14 +119,6 @@ defmodule ConciergeSite.V2.TripController do
 
     render conn, "times.html", legs: legs, origins: origins, destinations: destinations,
       modes: modes, round_trip: round_trip, schedules: schedules, return_schedules: return_schedules
-  end
-
-  def accessibility(conn, _params, _user, _claims) do
-    render conn, "accessibility.html"
-  end
-
-  def type(conn, _params, _user, _claims) do
-    render conn, "type.html"
   end
 
   def delete(conn, %{"id" => id}, user, _claims) do
