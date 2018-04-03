@@ -11,7 +11,7 @@
           <%= ConciergeSite.TripCardHelper.render(@conn, trip) %>
         </div>
       <% end %>
-      <%= link("Subscribe to a new alert", to: v2_trip_path(@conn, :new), class: "btn btn-primary btn-block my-3") %>
+      <%= link("Subscribe to a new alert", to: v2_page_path(@conn, :trip_type), class: "btn btn-primary btn-block my-3") %>
     </div>
   </div>
 </div>

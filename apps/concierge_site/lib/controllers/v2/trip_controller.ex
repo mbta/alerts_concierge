@@ -121,15 +121,13 @@ defmodule ConciergeSite.V2.TripController do
       modes: modes, round_trip: round_trip, schedules: schedules, return_schedules: return_schedules
   end
 
-  def accessibility(conn, _params, _user, _claims) do
-    render conn, "accessibility.html"
-  end
-
   def delete(conn, %{"id" => id}, user, _claims) do
     with %Trip{} = trip <- Trip.find_by_id(id),
          true <- user.id == trip.user_id,
          {:ok, %Trip{}} <- Trip.delete(trip) do
-      redirect(conn, to: v2_trip_path(conn, :index))
+      conn
+      |> put_flash(:info, "Alert deleted.")
+      |> redirect(to: v2_trip_path(conn, :index))
     else
       _ ->
         {:error, :not_found}

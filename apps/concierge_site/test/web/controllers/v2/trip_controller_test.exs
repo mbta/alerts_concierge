@@ -354,12 +354,4 @@ defmodule ConciergeSite.V2.TripControllerTest do
       assert html_response(conn, 200) =~ "true"
     end
   end
-
-  test "GET /v2/trip/accessibility", %{conn: conn, user: user} do
-    conn = user
-    |> guardian_login(conn)
-    |> get(v2_trip_trip_path(conn, :accessibility))
-
-    assert html_response(conn, 200) =~ "accessibility"
-  end
 end

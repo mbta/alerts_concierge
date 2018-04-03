@@ -137,6 +137,7 @@ defmodule ConciergeSite.Router do
     pipe_through [:browser, :v2_layout]
 
     get "/", V2.PageController, :index
+    get "/trip_type", V2.PageController, :trip_type
     resources "/login", V2.SessionController, only: [:new, :create, :delete], singleton: true
     resources "/account", V2.AccountController, only: [:new, :create]
   end
@@ -150,8 +151,9 @@ defmodule ConciergeSite.Router do
     resources "/trip", V2.TripController, only: [:new, :create], singleton: true do
       post "/leg", V2.TripController, :leg
       post "/times", V2.TripController, :times
-      get "/accessibility", V2.TripController, :accessibility
+      get "/type", V2.TripController, :type
     end
+    resources "/accessibility_trips", V2.AccessibilityTripController, only: [:new, :create]
   end
 
   if Mix.env == :dev do
