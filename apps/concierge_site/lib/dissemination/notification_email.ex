@@ -5,6 +5,7 @@ defmodule ConciergeSite.Dissemination.NotificationEmail do
   alias AlertProcessor.Model.Notification
   alias AlertProcessor.Helpers.ConfigHelper
   alias ConciergeSite.Helpers.MailHelper
+  alias ConciergeSite.Router.Helpers, as: RouterHelpers
   require EEx
 
   @from {ConfigHelper.get_string(:send_from_name, :concierge_site),
@@ -15,26 +16,26 @@ defmodule ConciergeSite.Dissemination.NotificationEmail do
     :def,
     :html_email,
     Path.join(@template_dir, "notification.html.eex"),
-    [:notification, :unsubscribe_url, :manage_subscriptions_url, :feedback_url])
+    [:notification, :manage_subscriptions_url, :feedback_url, :comment_icon_url])
   EEx.function_from_file(
     :def,
     :text_email,
     Path.join(~w(#{System.cwd!} lib mail_templates notification.txt.eex)),
-    [:notification, :unsubscribe_url, :manage_subscriptions_url, :feedback_url])
+    [:notification, :manage_subscriptions_url, :feedback_url])
 
   @doc "notification_email/1 takes a notification and builds an email to be sent to user."
   @spec notification_email(Notification.t) :: Elixir.Bamboo.Email.t
   def notification_email(%Notification{user: user} = notification) do
-    unsubscribe_url = MailHelper.unsubscribe_url(user)
     manage_subscriptions_url = MailHelper.manage_subscriptions_url(user)
     feedback_url = MailHelper.feedback_url()
     notification_email_subject = email_subject(notification)
+    comment_icon_url = RouterHelpers.static_url(ConciergeSite.Endpoint, "/images/comment-icon.png")
 
     base_email()
     |> to(user.email)
     |> subject(notification_email_subject)
-    |> html_body(html_email(notification, unsubscribe_url, manage_subscriptions_url, feedback_url))
-    |> text_body(text_email(notification, unsubscribe_url, manage_subscriptions_url, feedback_url))
+    |> html_body(html_email(notification, manage_subscriptions_url, feedback_url, comment_icon_url))
+    |> text_body(text_email(notification, manage_subscriptions_url, feedback_url))
   end
 
   @spec base_email() :: Elixir.Bamboo.Email.t
