@@ -3,7 +3,7 @@ defmodule ConciergeSite.SubscriptionControllerTest do
 
   import AlertProcessor.Factory
   import Ecto.Query
-  alias AlertProcessor.{HoldingQueue, Model, Repo}
+  alias AlertProcessor.{Model, Repo}
   alias Model.{InformedEntity, Subscription}
 
   describe "authorized" do
@@ -130,8 +130,6 @@ defmodule ConciergeSite.SubscriptionControllerTest do
     test "DELETE /subscriptions/:id with a user who owns the subscription", %{conn: conn} do
       user = insert(:user)
       {:ok, subscription} = insert_bus_subscription_for_user(user)
-      notification = build(:notification, user_id: user.id, send_after: DateTime.from_unix!(4_078_579_247))
-      :ok = HoldingQueue.list_enqueue([notification])
 
       conn = user
       |> guardian_login(conn)
@@ -143,7 +141,6 @@ defmodule ConciergeSite.SubscriptionControllerTest do
       assert html_response(conn, 302) =~ "/my-subscriptions"
       assert subscription_count == 0
       assert informed_entity_count == 0
-      assert :error = HoldingQueue.pop()
     end
 
     test "DELETE /subscriptions/:id with a user who does not own the subscription", %{conn: conn} do

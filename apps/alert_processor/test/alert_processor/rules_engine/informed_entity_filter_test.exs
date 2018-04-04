@@ -1,191 +1,637 @@
 defmodule AlertProcessor.InformedEntityFilterTest do
   use AlertProcessor.DataCase
-  alias AlertProcessor.{InformedEntityFilter, Model}
-  alias Model.{Alert, InformedEntity, Subscription}
+  alias AlertProcessor.InformedEntityFilter
   import AlertProcessor.Factory
 
-  @ie1 %{
-    route: "16",
-    route_type: 3,
-    activities: InformedEntity.default_entity_activities()
-  }
+  describe "subscription_match?/2" do
+    test "returns true with route type match" do
+      route_type =  1
+      subscription_details = [
+        route_type: route_type,
+        direction_id: 0,
+        route: "some route",
+        origin: "some origin",
+        destination: "some destination",
+        facility_types: [],
+      ]
+      subscription = build(:subscription, subscription_details)
+      informed_entity_details = [
+        route_type: route_type,
+        direction_id: nil,
+        route: nil,
+        stop: nil,
+        activities: nil
+      ]
+      informed_entity = build(:informed_entity, informed_entity_details)
+      assert InformedEntityFilter.subscription_match?(subscription, informed_entity)
+    end
 
-  @ie2 %{
-    route: "8",
-    route_type: 3,
-    activities: InformedEntity.default_entity_activities()
-  }
+    test "returns false with route type mismatch" do
+      subscription_details = [
+        route_type: 1,
+        direction_id: 0,
+        route: "some route",
+        origin: "some origin",
+        destination: "some destination",
+        facility_types: [],
+      ]
+      subscription = build(:subscription, subscription_details)
+      informed_entity_details = [
+        route_type: 2,
+        direction_id: nil,
+        route: nil,
+        stop: nil,
+        activities: nil
+      ]
+      informed_entity = build(:informed_entity, informed_entity_details)
+      refute InformedEntityFilter.subscription_match?(subscription, informed_entity)
+    end
 
-  @ie3 %{
-    route: "1",
-    route_type: 3,
-    activities: InformedEntity.default_entity_activities()
-  }
+    test "returns true with direction_id match" do
+      subscription_details = [
+        route_type: 1,
+        direction_id: 0,
+        route: "some route",
+        origin: "some origin",
+        destination: "some destination",
+        facility_types: [],
+      ]
+      subscription = build(:subscription, subscription_details)
+      informed_entity_details = [
+        route_type: nil,
+        direction_id: 0,
+        route: nil,
+        stop: nil,
+        activities: nil
+      ]
+      informed_entity = build(:informed_entity, informed_entity_details)
+      assert InformedEntityFilter.subscription_match?(subscription, informed_entity)
+    end
 
-  @ie4 %{
-    route: "16",
-    route_type: 3,
-    stop: "123",
-    activities: InformedEntity.default_entity_activities()
-  }
+    test "returns false with direction_id mismatch" do
+      subscription_details = [
+        route_type: 1,
+        direction_id: 0,
+        route: "some route",
+        origin: "some origin",
+        destination: "some destination",
+        facility_types: [],
+      ]
+      subscription = build(:subscription, subscription_details)
+      informed_entity_details = [
+        route_type: nil,
+        direction_id: 1,
+        route: nil,
+        stop: nil,
+        activities: nil
+      ]
+      informed_entity = build(:informed_entity, informed_entity_details)
+      refute InformedEntityFilter.subscription_match?(subscription, informed_entity)
+    end
 
-  @ie5 %{
-    stop: "place-pktrm",
-    route: nil,
-    facility_type: :escalator,
-    activities: ["USING_ESCALATOR"]
-  }
+    test "returns true with route match" do
+      route = "some route"
+      subscription_details = [
+        route_type: 1,
+        direction_id: 0,
+        route: route,
+        origin: "some origin",
+        destination: "some destination",
+        facility_types: [],
+      ]
+      subscription = build(:subscription, subscription_details)
+      informed_entity_details = [
+        route_type: nil,
+        direction_id: nil,
+        route: route,
+        stop: nil,
+        activities: nil
+      ]
+      informed_entity = build(:informed_entity, informed_entity_details)
+      assert InformedEntityFilter.subscription_match?(subscription, informed_entity)
+    end
 
-  @ie6 %{
-    trip: "775",
-    route_type: 2,
-    route: "CR-Fairmount",
-    activities: InformedEntity.default_entity_activities()
-  }
+    test "returns false with route mismatch" do
+      subscription_details = [
+        route_type: 1,
+        direction_id: 0,
+        route: "some route",
+        origin: "some origin",
+        destination: "some destination",
+        facility_types: [],
+      ]
+      subscription = build(:subscription, subscription_details)
+      informed_entity_details = [
+        route_type: nil,
+        direction_id: nil,
+        route: "some other route",
+        stop: nil,
+        activities: nil
+      ]
+      informed_entity = build(:informed_entity, informed_entity_details)
+      refute InformedEntityFilter.subscription_match?(subscription, informed_entity)
+    end
 
-  @ie7 %{
-    route_type: 2,
-    route: "CR-Lowell",
-    stop: "Mishawum",
-    activities: ["BOARD", "EXIT"]
-  }
+    test "returns true with stop match (on origin)" do
+      stop = "some stop"
+      subscription_details = [
+        route_type: 1,
+        direction_id: 0,
+        route: "some route",
+        origin: stop,
+        destination: "some destination",
+        facility_types: [],
+      ]
+      subscription = build(:subscription, subscription_details)
+      informed_entity_details = [
+        route_type: nil,
+        direction_id: nil,
+        route: nil,
+        stop: stop,
+        activities: nil
+      ]
+      informed_entity = build(:informed_entity, informed_entity_details)
+      assert InformedEntityFilter.subscription_match?(subscription, informed_entity)
+    end
 
-  @ie8 %{
-    stop: nil,
-    route: "Red",
-    facility_type: :escalator,
-    activities: ["USING_ESCALATOR"]
-  }
+    test "returns true with stop match (on destination)" do
+      stop = "some stop"
+      subscription_details = [
+        route_type: 1,
+        direction_id: 0,
+        route: "some route",
+        origin: "some origin",
+        destination: stop,
+        facility_types: [],
+      ]
+      subscription = build(:subscription, subscription_details)
+      informed_entity_details = [
+        route_type: nil,
+        direction_id: nil,
+        route: nil,
+        stop: stop,
+        activities: nil
+      ]
+      informed_entity = build(:informed_entity, informed_entity_details)
+      assert InformedEntityFilter.subscription_match?(subscription, informed_entity)
+    end
 
-  @alert1 %Alert{
-    id: "1",
-    header: "test1",
-    informed_entities: [
-      @ie1,
-      @ie2
-    ]
-  }
+    test "returns false with stop mismatch" do
+      subscription_details = [
+        route_type: 1,
+        direction_id: 0,
+        route: "some route",
+        origin: "some origin",
+        destination: "some destination",
+        facility_types: [],
+      ]
+      subscription = build(:subscription, subscription_details)
+      informed_entity_details = [
+        route_type: nil,
+        direction_id: nil,
+        route: nil,
+        stop: "some stop that is not origin or destination",
+        activities: nil
+      ]
+      informed_entity = build(:informed_entity, informed_entity_details)
+      refute InformedEntityFilter.subscription_match?(subscription, informed_entity)
+    end
 
-  @alert2 %Alert{
-    id: "2",
-    header: "test2",
-    informed_entities: [
-      @ie2
-    ]
-  }
+    test "returns false with stop mismatch (bus subscription and BOARD activity)" do
+      # Bus subscriptions don't have an origin and destination
+      subscription_details = [
+        route_type: 3,
+        direction_id: 0,
+        route: "some route",
+        origin: nil,
+        destination: nil,
+        facility_types: [],
+      ]
+      subscription = build(:subscription, subscription_details)
+      informed_entity_details = [
+        route_type: nil,
+        direction_id: nil,
+        route: nil,
+        stop: "some stop",
+        activities: ["BOARD"]
+      ]
+      informed_entity = build(:informed_entity, informed_entity_details)
+      refute InformedEntityFilter.subscription_match?(subscription, informed_entity)
+    end
 
-  @alert3 %Alert{
-    id: "3",
-    header: "test3",
-    informed_entities: [
-      @ie3
-    ]
-  }
+    test "returns false with stop mismatch (bus subscription and EXIT activity)" do
+      # Bus subscriptions don't have an origin and destination
+      subscription_details = [
+        route_type: 3,
+        direction_id: 0,
+        route: "some route",
+        origin: nil,
+        destination: nil,
+        facility_types: [],
+      ]
+      subscription = build(:subscription, subscription_details)
+      informed_entity_details = [
+        route_type: nil,
+        direction_id: nil,
+        route: nil,
+        stop: "some stop",
+        activities: ["EXIT"]
+      ]
+      informed_entity = build(:informed_entity, informed_entity_details)
+      refute InformedEntityFilter.subscription_match?(subscription, informed_entity)
+    end
 
-  @alert4 %Alert{
-    id: "4",
-    header: "test4",
-    informed_entities: [
-      @ie4
-    ]
-  }
+    test "returns true with activities match (BOARD)" do
+      # An "activities BOARD match" happens when the alert's informed_entity
+      # activities includes "BOARD" and it's stop equals the subscription's
+      # origin value. It can also happen if the informed_entity's stop is nil.
+      stop = "some stop"
+      subscription_details = [
+        route_type: 1,
+        direction_id: 0,
+        route: "some route",
+        origin: stop,
+        destination: "some destination",
+        facility_types: [],
+      ]
+      subscription = build(:subscription, subscription_details)
+      informed_entity_details = [
+        route_type: nil,
+        direction_id: nil,
+        route: nil,
+        stop: stop,
+        activities: ["BOARD"]
+      ]
+      informed_entity = build(:informed_entity, informed_entity_details)
+      assert InformedEntityFilter.subscription_match?(subscription, informed_entity)
+    end
 
-  @alert5 %Alert{
-    id: "5",
-    header: "test5",
-    informed_entities: [
-      Map.put(@ie5, :route, "Red")
-    ]
-  }
+    test "returns true with activities match (BOARD) and informed_entity stop of nil" do
+      # An "activities BOARD match" happens when the alert's informed_entity
+      # activities includes "BOARD" and it's stop equals the subscription's
+      # origin value. It can also happen if the informed_entity's stop is nil.
+      stop = "some stop"
+      subscription_details = [
+        route_type: 1,
+        direction_id: 0,
+        route: "some route",
+        origin: stop,
+        destination: "some destination",
+        facility_types: [],
+      ]
+      subscription = build(:subscription, subscription_details)
+      informed_entity_details = [
+        route_type: nil,
+        direction_id: nil,
+        route: nil,
+        stop: nil,
+        activities: ["BOARD"]
+      ]
+      informed_entity = build(:informed_entity, informed_entity_details)
+      assert InformedEntityFilter.subscription_match?(subscription, informed_entity)
+    end
 
-  @alert6 %Alert{
-    id: "6",
-    header: "test6",
-    informed_entities: [
-      @ie6
-    ]
-  }
+    test "returns false with activities mismatch (BOARD)" do
+      # Note that the `informed_entity_details` below has "BOARD" in it's
+      # activities but the stop match is on the subscription's destination.
+      # This is not an activities match because users "EXIT" at destinations.
+      stop = "some stop"
+      subscription_details = [
+        route_type: 1,
+        direction_id: 0,
+        route: "some route",
+        origin: "some origin",
+        destination: stop,
+        facility_types: [],
+      ]
+      subscription = build(:subscription, subscription_details)
+      informed_entity_details = [
+        route_type: nil,
+        direction_id: nil,
+        route: nil,
+        stop: stop,
+        activities: ["BOARD"]
+      ]
+      informed_entity = build(:informed_entity, informed_entity_details)
+      refute InformedEntityFilter.subscription_match?(subscription, informed_entity)
+    end
 
-  @alert7 %Alert{
-    id: "7",
-    header: "test7",
-    informed_entities: [
-      @ie7
-    ]
-  }
+    test "returns true with activities match (EXIT)" do
+      # An "activities EXIT match" happens when the alert's informed_entity
+      # activities includes "EXIT" and it's stop equals the subscription's
+      # destination value.
+      stop = "some stop"
+      subscription_details = [
+        route_type: 1,
+        direction_id: 0,
+        route: "some route",
+        origin: "some origin",
+        destination: stop,
+        facility_types: [],
+      ]
+      subscription = build(:subscription, subscription_details)
+      informed_entity_details = [
+        route_type: nil,
+        direction_id: nil,
+        route: nil,
+        stop: stop,
+        activities: ["EXIT"]
+      ]
+      informed_entity = build(:informed_entity, informed_entity_details)
+      assert InformedEntityFilter.subscription_match?(subscription, informed_entity)
+    end
 
-  setup do
-    user1 = insert(:user)
-    user2 = insert(:user)
-    user3 = insert(:user)
-    user4 = insert(:user)
-    sub1 = insert(:subscription, user: user1)
-    sub2 = insert(:subscription, user: user2)
-    sub3 = insert(:subscription, user: user3)
-    sub4 = insert(:subscription, user: user1)
-    sub5 = insert(:subscription, user: user4)
-    sub6 = insert(:subscription, user: user1)
-    sub7 = insert(:subscription, user: user1)
-    InformedEntity |> struct(@ie1) |> Map.merge(%{subscription_id: sub1.id}) |> insert
-    InformedEntity |> struct(@ie1) |> Map.merge(%{subscription_id: sub2.id}) |> insert
-    InformedEntity |> struct(@ie4) |> Map.merge(%{subscription_id: sub3.id}) |> insert
-    InformedEntity |> struct(@ie2) |> Map.merge(%{subscription_id: sub4.id}) |> insert
-    InformedEntity |> struct(@ie5) |> Map.merge(%{subscription_id: sub5.id}) |> insert
-    InformedEntity |> struct(@ie6) |> Map.merge(%{trip: "775", subscription_id: sub6.id}) |> insert
-    InformedEntity |> struct(@ie8) |> Map.merge(%{subscription_id: sub7.id}) |> insert
+    test "returns true with activities match (EXIT) and informed_entity stop of nil" do
+      # An "activities EXIT match" happens when the alert's informed_entity
+      # activities includes "EXIT" and it's stop equals the subscription's
+      # destination value. It can also happen if the informed_entity's stop is nil.
+      stop = "some stop"
+      subscription_details = [
+        route_type: 1,
+        direction_id: 0,
+        route: "some route",
+        origin: "some origin",
+        destination: stop,
+        facility_types: [],
+      ]
+      subscription = build(:subscription, subscription_details)
+      informed_entity_details = [
+        route_type: nil,
+        direction_id: nil,
+        route: nil,
+        stop: nil,
+        activities: ["EXIT"]
+      ]
+      informed_entity = build(:informed_entity, informed_entity_details)
+      assert InformedEntityFilter.subscription_match?(subscription, informed_entity)
+    end
 
-    [sub1, sub2, sub3, sub4, sub5, sub6, sub7] = Subscription
-      |> Repo.all()
-      |> Repo.preload(:informed_entities)
-      |> Repo.preload(:user)
+    test "returns false with activities mismatch (EXIT)" do
+      # Note that the `informed_entity_details` below has "EXIT" in it's
+      # activities but the stop match is on the subscription's origin.
+      # This is not an activities match because users "BOARD" at origins.
+      stop = "some stop"
+      subscription_details = [
+        route_type: 1,
+        direction_id: 0,
+        route: "some route",
+        origin: stop,
+        destination: "some destination",
+        facility_types: [],
+      ]
+      subscription = build(:subscription, subscription_details)
+      informed_entity_details = [
+        route_type: nil,
+        direction_id: nil,
+        route: nil,
+        stop: stop,
+        activities: ["EXIT"]
+      ]
+      informed_entity = build(:informed_entity, informed_entity_details)
+      refute InformedEntityFilter.subscription_match?(subscription, informed_entity)
+    end
 
-    {:ok, sub1: sub1, sub2: sub2, sub3: sub3, sub4: sub4, sub5: sub5, sub6: sub6, sub7: sub7,
-     user1: user1, user2: user2, all_subscriptions: [sub1, sub2, sub3, sub4, sub5, sub6, sub7]}
-  end
+    test "returns true with activities match (USING_WHEELCHAIR)" do
+      subscription_details = [
+        route_type: 1,
+        direction_id: 0,
+        route: "some route",
+        origin: "some origin",
+        destination: "some destination",
+        facility_types: [:elevator],
+      ]
+      subscription = build(:subscription, subscription_details)
+      informed_entity_details = [
+        route_type: nil,
+        direction_id: nil,
+        route: nil,
+        stop: nil,
+        activities: ["USING_WHEELCHAIR"]
+      ]
+      informed_entity = build(:informed_entity, informed_entity_details)
+      assert InformedEntityFilter.subscription_match?(subscription, informed_entity)
+    end
 
-  test "filter returns :ok empty list if subscription list passed is empty" do
-    assert [] == InformedEntityFilter.filter([], alert: @alert1)
-  end
+    test "returns true with activities match (USING_ESCALATOR)" do
+      subscription_details = [
+        route_type: 1,
+        direction_id: 0,
+        route: "some route",
+        origin: "some origin",
+        destination: "some destination",
+        facility_types: [:escalator],
+      ]
+      subscription = build(:subscription, subscription_details)
+      informed_entity_details = [
+        route_type: nil,
+        direction_id: nil,
+        route: nil,
+        stop: nil,
+        activities: ["USING_ESCALATOR"]
+      ]
+      informed_entity = build(:informed_entity, informed_entity_details)
+      assert InformedEntityFilter.subscription_match?(subscription, informed_entity)
+    end
 
-  test "returns subscription id if informed entity matches subscription", %{sub4: sub4, all_subscriptions: all_subscriptions} do
-    assert [sub4] == InformedEntityFilter.filter(all_subscriptions, alert: @alert2)
-  end
+    test "returns true with activities match (PARK_CAR)" do
+      subscription_details = [
+        route_type: 1,
+        direction_id: 0,
+        route: "some route",
+        origin: "some origin",
+        destination: "some destination",
+        facility_types: [:parking_area],
+      ]
+      subscription = build(:subscription, subscription_details)
+      informed_entity_details = [
+        route_type: nil,
+        direction_id: nil,
+        route: nil,
+        stop: nil,
+        activities: ["PARK_CAR"]
+      ]
+      informed_entity = build(:informed_entity, informed_entity_details)
+      assert InformedEntityFilter.subscription_match?(subscription, informed_entity)
+    end
 
-  test "does not return subscription id if subscription not included in previous ids list", %{sub2: sub2} do
-    assert [sub2] == InformedEntityFilter.filter([sub2], alert: @alert1)
-  end
+    test "returns true with activities match (STORE_BIKE)" do
+      subscription_details = [
+        route_type: 1,
+        direction_id: 0,
+        route: "some route",
+        origin: "some origin",
+        destination: "some destination",
+        facility_types: [:bike_storage],
+      ]
+      subscription = build(:subscription, subscription_details)
+      informed_entity_details = [
+        route_type: nil,
+        direction_id: nil,
+        route: nil,
+        stop: nil,
+        activities: ["STORE_BIKE"]
+      ]
+      informed_entity = build(:informed_entity, informed_entity_details)
+      assert InformedEntityFilter.subscription_match?(subscription, informed_entity)
+    end
 
-  test "returns multiple subscriptions for same user if both match the alert", %{sub1: sub1, sub4: sub4} do
-    assert [sub1, sub4] == InformedEntityFilter.filter([sub1, sub4], alert: @alert1)
-  end
+    test "returns true with a 'stop subscription' (activities match)" do
+      # A "stop subscription" has these characteristics:
+      #   * route_type, direction_id, and route are set to nil
+      #   * origin and it's destination are equal
+      #
+      # Note that `informed_entity_details` below has non-nil values for
+      # route_type, direction_id, and route. This is important to have coverage
+      # for scenarios in which the subscription has nil values for these fields
+      # but the alert's informed_entity doesn't.
+      #
+      stop = "some stop"
+      subscription_details = [
+        route_type: nil,
+        direction_id: nil,
+        route: nil,
+        origin: stop,
+        destination: stop,
+        facility_types: [:bike_storage],
+      ]
+      subscription = build(:subscription, subscription_details)
+      informed_entity_details = [
+        route_type: 1,
+        direction_id: 0,
+        route: "some route",
+        stop: stop,
+        activities: ["STORE_BIKE"]
+      ]
+      informed_entity = build(:informed_entity, informed_entity_details)
+      assert InformedEntityFilter.subscription_match?(subscription, informed_entity)
+    end
 
-  test "does not return subscriptions that only partially match alert informed entity", %{sub3: sub3, all_subscriptions: all_subscriptions} do
-    assert [sub3] == InformedEntityFilter.filter(all_subscriptions, alert: @alert4)
-  end
+    test "returns false with a 'stop subscription' (activities mismatch)" do
+      # A "stop subscription" has these characteristics:
+      #   * route_type, direction_id, and route are set to nil
+      #   * origin and it's destination are equal
+      #
+      stop = "some stop"
+      subscription_details = [
+        route_type: nil,
+        direction_id: nil,
+        route: nil,
+        origin: stop,
+        destination: stop,
+        facility_types: [:bike_storage],
+      ]
+      subscription = build(:subscription, subscription_details)
+      informed_entity_details = [
+        route_type: nil,
+        direction_id: nil,
+        route: nil,
+        stop: stop,
+        activities: ["USING_ESCALATOR"]
+      ]
+      informed_entity = build(:informed_entity, informed_entity_details)
+      refute InformedEntityFilter.subscription_match?(subscription, informed_entity)
+    end
 
-  test "returns empty list if no matches", %{all_subscriptions: all_subscriptions} do
-    assert [] == InformedEntityFilter.filter(all_subscriptions, alert: @alert3)
-  end
+    test "returns false with a 'stop subscription' (activities: ['BOARD'])" do
+      # A "stop subscription" has these characteristics:
+      #   * route_type, direction_id, and route are set to nil
+      #   * origin and it's destination are equal
+      #
+      stop = "some stop"
+      subscription_details = [
+        route_type: nil,
+        direction_id: nil,
+        route: nil,
+        origin: stop,
+        destination: stop,
+        facility_types: [:bike_storage],
+      ]
+      subscription = build(:subscription, subscription_details)
+      informed_entity_details = [
+        route_type: nil,
+        direction_id: nil,
+        route: nil,
+        stop: stop,
+        activities: ["BOARD"]
+      ]
+      informed_entity = build(:informed_entity, informed_entity_details)
+      refute InformedEntityFilter.subscription_match?(subscription, informed_entity)
+    end
 
-  test "matches facility alerts on stop or route", %{sub5: sub5, sub7: sub7, all_subscriptions: all_subscriptions} do
-    assert [sub5, sub7] == InformedEntityFilter.filter(all_subscriptions, alert: @alert5)
-  end
+    test "returns false with a 'stop subscription' (activities: ['EXIT'])" do
+      # A "stop subscription" has these characteristics:
+      #   * route_type, direction_id, and route are set to nil
+      #   * origin and it's destination are equal
+      #
+      stop = "some stop"
+      subscription_details = [
+        route_type: nil,
+        direction_id: nil,
+        route: nil,
+        origin: stop,
+        destination: stop,
+        facility_types: [:bike_storage],
+      ]
+      subscription = build(:subscription, subscription_details)
+      informed_entity_details = [
+        route_type: nil,
+        direction_id: nil,
+        route: nil,
+        stop: stop,
+        activities: ["EXIT"]
+      ]
+      informed_entity = build(:informed_entity, informed_entity_details)
+      refute InformedEntityFilter.subscription_match?(subscription, informed_entity)
+    end
 
-  test "matches trips", %{sub6: sub6, all_subscriptions: all_subscriptions} do
-    assert [sub6] == InformedEntityFilter.filter(all_subscriptions, alert: @alert6)
-  end
+    test "returns false with a 'stop subscription' (stop mismatch)" do
+      # A "stop subscription" has these characteristics:
+      #   * route_type, direction_id, and route are set to nil
+      #   * origin and it's destination are equal
+      #
+      subscription_details = [
+        route_type: nil,
+        direction_id: nil,
+        route: nil,
+        origin: "some stop",
+        destination: "some stop",
+        facility_types: [:escalator],
+      ]
+      subscription = build(:subscription, subscription_details)
+      informed_entity_details = [
+        route_type: nil,
+        direction_id: nil,
+        route: nil,
+        stop: "some other stop",
+        activities: ["USING_ESCALATOR"]
+      ]
+      informed_entity = build(:informed_entity, informed_entity_details)
+      refute InformedEntityFilter.subscription_match?(subscription, informed_entity)
+    end
 
-  test "ignores intermediate stops if activities do not match" do
-    user = insert(:user)
-    {:ok, subscription} =
-      :subscription
-      |> build(user: user)
-      |> weekday_subscription()
-      |> commuter_rail_subscription()
-      |> Repo.preload(:informed_entities)
-      |> Ecto.Changeset.change()
-      |> Ecto.Changeset.put_assoc(:informed_entities, [%InformedEntity{route_type: 2, route: "CR-Lowell", stop: "Mishawum", activities: ["RIDE"]} | commuter_rail_subscription_entities()])
-      |> Repo.insert()
-    assert [] == InformedEntityFilter.filter([subscription], alert: @alert7)
+    test "returns false with a 'stop subscription' and nil informed_entity stop" do
+      # A "stop subscription" has these characteristics:
+      #   * route_type, direction_id, and route are set to nil
+      #   * origin and it's destination are equal
+      #
+      subscription_details = [
+        route_type: nil,
+        direction_id: nil,
+        route: nil,
+        origin:  "some stop",
+        destination: "some stop",
+        facility_types: [:elevator],
+      ]
+      subscription = build(:subscription, subscription_details)
+      informed_entity_details = [
+        route_type: 1,
+        direction_id: nil,
+        route: "some route",
+        stop: nil,
+        activities: ["USING_WHEELCHAIR"]
+      ]
+      informed_entity = build(:informed_entity, informed_entity_details)
+      refute InformedEntityFilter.subscription_match?(subscription, informed_entity)
+    end
   end
 end

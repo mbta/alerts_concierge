@@ -82,7 +82,7 @@ defmodule AlertProcessor.Model.Subscription do
   end
 
   @permitted_fields ~w(alert_priority_type user_id trip_id relevant_days start_time
-    end_time type rank route return_trip)a
+    end_time type rank route return_trip route_type)a
   @required_fields ~w(alert_priority_type user_id start_time end_time)a
   @update_permitted_fields ~w(alert_priority_type relevant_days start_time end_time)a
   @valid_days ~w(weekday monday tuesday wednesday thursday friday saturday sunday)a

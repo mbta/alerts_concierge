@@ -4,6 +4,7 @@ defmodule ConciergeSite.Integration.Matching do
   import ConciergeSite.AlertFactory, only: [active_period: 3, severity_by_priority: 1]
   import ConciergeSite.NotificationFactory
   import AlertProcessor.SubscriptionFilterEngine, only: [determine_recipients: 3]
+  import AlertProcessor.Factory
 
   @base %{"alert_priority_type" => "medium", "departure_end" => ~T[08:30:00], "departure_start" => ~T[08:00:00],
           "relevant_days" => ["weekday"], "return_start" => nil, "return_end" => nil}
@@ -12,10 +13,30 @@ defmodule ConciergeSite.Integration.Matching do
   @alert_later_period [active_period(~T[09:00:00], ~T[09:30:00], :monday)]
 
   describe "subway subscription" do
-    @subscription subscription(:subway, Map.merge(@base, %{"destination" => "place-brdwy",
-                                                           "origin" => "place-harsq", "roaming" => "false"}))
-    @subscription_roaming subscription(:subway, Map.merge(@base, %{"destination" => "place-brdwy",
-                                                                   "origin" => "place-harsq", "roaming" => "true"}))
+      subscription_details = [
+        route_type: 1,
+        direction_id: 0,
+        route: "Red",
+        origin: "place-harsq",
+        destination: "place-brdwy",
+        facility_types: ~w(elevator)a,
+        start_time: ~T[08:00:00],
+        end_time: ~T[08:30:00],
+        relevant_days: ~w(monday tuesday wednesday thursday friday)a
+      ]
+      @subscription build(:subscription, subscription_details)
+      subscription_roaming_details = [
+        route_type: 1,
+        direction_id: 1,
+        route: "Red",
+        origin: "place-harsq",
+        destination: "place-brdwy",
+        facility_types: ~w(elevator)a,
+        start_time: ~T[08:00:00],
+        end_time: ~T[08:30:00],
+        relevant_days: ~w(monday tuesday wednesday thursday friday)a
+      ]
+    @subscription_roaming build(:subscription, subscription_roaming_details)
 
     test "all same: stop, direction, time, activity and severity" do
       assert_notify alert(informed_entity: [entity(:subway)]), @subscription
@@ -87,12 +108,30 @@ defmodule ConciergeSite.Integration.Matching do
     end
 
     test "similar: different stop -- in between (roaming)" do
-      assert_notify alert(informed_entity: [entity(:subway, stop_id: "place-cntsq")]), @subscription_roaming
+      informed_entity_details = %{
+        "route_type" => 1,
+        "direction_id" => 1,
+        "route" => "Red",
+        "stop" => "place-cntsq",
+        "activities" => ["BOARD"]
+      }
+      assert_notify alert(informed_entity: [informed_entity_details]), @subscription_roaming
     end
   end
 
   describe "bus subscription" do
-    @subscription subscription(:bus, Map.merge(@base, %{"routes" => ["57A - 0"]}))
+      subscription_details = [
+        route_type: 3,
+        direction_id: 0,
+        route: "57A",
+        origin: nil, # no origin for bus subcsriptions
+        destination: nil, # no destinations for bus subscriptions
+        facility_types: [],
+        start_time: ~T[08:00:00],
+        end_time: ~T[08:30:00],
+        relevant_days: ~w(monday tuesday wednesday thursday friday)a
+      ]
+    @subscription build(:subscription, subscription_details)
 
     test "all same: route, direction, time, activity and severity" do
       assert_notify alert(informed_entity: [entity(:bus)]), @subscription
@@ -144,12 +183,18 @@ defmodule ConciergeSite.Integration.Matching do
   end
 
   describe "commuter rail subscription" do
-    @subscription subscription(:commuter_rail, Map.merge(@base, %{
-      "destination" => "place-north",
-      "direction_id" => "1",
-      "origin" => "Melrose Highlands",
-      "route_id" => "CR-Haverhill",
-      "trips" => ["288"]}))
+    subscription_details = [
+      route_type: 2,
+      direction_id: 1,
+      route: "CR-Haverhill",
+      origin: "Melrose Highlands",
+      destination: "place-north",
+      facility_types: [],
+      start_time: ~T[08:00:00],
+      end_time: ~T[08:30:00],
+      relevant_days: ~w(monday tuesday wednesday thursday friday)a
+    ]
+    @subscription build(:subscription, subscription_details)
 
     test "all same: trip, direction, time, activity and severity" do
       assert_notify alert(informed_entity: [entity(:commuter_rail)]), @subscription
@@ -203,23 +248,24 @@ defmodule ConciergeSite.Integration.Matching do
       refute_notify alert(informed_entity: [entity(:commuter_rail, direction_id: 0, trip: trip)]), @subscription
     end
 
-    test "similar: different trip_id" do
-      trip = %{"direction_id" => 1, "route_id" => "CR-Haverhill", "trip_id" => "CR-Weekday-Fall-17-227"}
-      refute_notify alert(informed_entity: [entity(:commuter_rail, trip: trip)]), @subscription
-    end
-
     test "unknown effect detail does not effect matching or cause an error" do
       assert_notify alert(effect_detail: "TEST", informed_entity: [entity(:commuter_rail)]), @subscription
     end
   end
 
   describe "ferry subscription" do
-    @subscription subscription(:ferry, Map.merge(@base, %{
-      "destination" => "Boat-Long",
-      "direction_id" => "1",
-      "origin" => "Boat-Charlestown",
-      "route_id" => "Boat-F4",
-      "trips" => ["Boat-F4-Boat-Charlestown-08:00:00-weekday-1"]}))
+      subscription_details = [
+        route_type: 4,
+        direction_id: 1,
+        route: "Boat-F4",
+        origin: "Boat-Charlestown",
+        destination: "Boat-Long",
+        facility_types: [],
+        start_time: ~T[08:00:00],
+        end_time: ~T[08:30:00],
+        relevant_days: ~w(monday tuesday wednesday thursday friday)a
+      ]
+    @subscription build(:subscription, subscription_details)
 
     test "all same: trip, direction, time, activity and severity" do
       assert_notify alert(informed_entity: [entity(:ferry)]), @subscription
@@ -269,22 +315,32 @@ defmodule ConciergeSite.Integration.Matching do
       trip = %{"direction_id" => 0, "route_id" => "Boat-F4", "trip_id" => "Boat-F4-Boat-Charlestown-08:00:00-weekday-1"}
       refute_notify alert(informed_entity: [entity(:ferry, direction_id: 0, trip: trip)]), @subscription
     end
-
-    test "similar: different trip_id" do
-      trip = %{"direction_id" => 1, "route_id" => "Boat-F4", "trip_id" => "Boat-F4-1900-Long-Weekday"}
-      refute_notify alert(informed_entity: [entity(:ferry, trip: trip)]), @subscription
-    end
   end
 
   describe "accessibility subscriptions" do
-    @subscription subscription(:accessibility, %{"accessibility" => ["elevator", "escalator"],
-                                                 "relevant_days" => ["saturday", "sunday"],
-                                                 "routes" => ["red", "green"],
-                                                 "stops" => ["place-chncl", "place-aqucl"]})
+    subscription_details = [
+      route_type: 1,
+      direction_id: 0,
+      route: "Red",
+      origin: "place-chncl",
+      destination: "place-aqucl",
+      facility_types: ~w(elevator)a, # "elevator" triggers and "activities" match for "USING_WHEELCHAIR"
+      start_time: ~T[00:00:00],
+      end_time: ~T[23:59:59],
+      relevant_days: ~w(saturday sunday)a
+    ]
+    @subscription build(:subscription, subscription_details)
 
     test "all same: activity, route, stop, day" do
+      informed_entity_details = %{
+        "route_type" => 1,
+        "direction_id" => nil,
+        "route" => "Red",
+        "stop" => "place-aqucl",
+        "activities" => ["USING_WHEELCHAIR"]
+      }
       assert_notify alert(active_period: @alert_weekend_period,
-                          informed_entity: [entity(:accessibility, stop_id: "place-chncl")]), @subscription
+                          informed_entity: [informed_entity_details]), @subscription
     end
 
     test "similar: activity, route, day" do
@@ -293,17 +349,20 @@ defmodule ConciergeSite.Integration.Matching do
     end
 
     test "similar: activity, stop, day" do
-      entity = :accessibility
-      |> entity(stop_id: "place-chncl")
-      |> Map.delete("route_id")
-      assert_notify alert(active_period: @alert_weekend_period, informed_entity: [entity]), @subscription
+      informed_entity_details = %{
+        "route_type" => 1,
+        "stop" => "place-chncl",
+        "activities" => ["USING_WHEELCHAIR"]
+      }
+      assert_notify alert(active_period: @alert_weekend_period, informed_entity: [informed_entity_details]), @subscription
     end
 
     test "similar: only activity" do
-      entity = :accessibility
-      |> entity()
-      |> Map.delete("route_id")
-      refute_notify alert(active_period: @alert_weekend_period, informed_entity: [entity]), @subscription
+      informed_entity_details = %{
+        "route_type" => 1,
+        "activities" => ["USING_WHEELCHAIR"]
+      }
+      assert_notify alert(active_period: @alert_weekend_period, informed_entity: [informed_entity_details]), @subscription
     end
 
     test "similar: different route" do
@@ -316,11 +375,6 @@ defmodule ConciergeSite.Integration.Matching do
       |> entity(stop_id: "place-ogmnl") # Orange Line, Oak Grove
       |> Map.delete("route_id")
       refute_notify alert(active_period: @alert_weekend_period, informed_entity: [entity]), @subscription
-    end
-
-    test "similar: different activity" do
-      refute_notify alert(active_period: @alert_weekend_period,
-                          informed_entity: [entity(:accessibility, activities: ["BOARD"])]), @subscription
     end
 
     test "all same: different day" do
@@ -394,8 +448,18 @@ defmodule ConciergeSite.Integration.Matching do
   end
 
   describe "sent notification" do
-    @subscription subscription(:subway, Map.merge(@base, %{"destination" => "place-brdwy",
-                                                           "origin" => "place-harsq", "roaming" => "false"}))
+    subscription_details = [
+      route_type: 1,
+      direction_id: 0,
+      route: "Red",
+      origin: "place-harsq",
+      destination: "place-brdwy",
+      facility_types: [],
+      start_time: ~T[08:00:00],
+      end_time: ~T[08:30:00],
+      relevant_days: ~w(monday tuesday wednesday saturday sunday)a
+    ]
+    @subscription build(:subscription, subscription_details)
 
     test "matches: no notification sent" do
       alert = alert(informed_entity: [entity(:subway)])
@@ -420,8 +484,18 @@ defmodule ConciergeSite.Integration.Matching do
   end
 
   describe "estimated duration" do
-    @weekday_subscription subscription(:subway, Map.merge(@base, %{"destination" => "place-brdwy",
-                                                           "origin" => "place-harsq", "roaming" => "false"}))
+    weekday_subscription_details = [
+      route_type: 1,
+      direction_id: 0,
+      route: "Red",
+      origin: "place-harsq",
+      destination: "place-brdwy",
+      facility_types: [],
+      start_time: ~T[08:00:00],
+      end_time: ~T[08:30:00],
+      relevant_days: ~w(monday tuesday wednesday saturday sunday)a
+    ]
+    @weekday_subscription build(:subscription, weekday_subscription_details)
 
     @saturday_subscription subscription(:subway, Map.merge(@base, %{"destination" => "place-brdwy",
                                                                     "relevant_days" => ["saturday"],
@@ -446,10 +520,18 @@ defmodule ConciergeSite.Integration.Matching do
 
   describe "overnight timeframes" do
     test "late night and early morning" do
-      subscription = subscription(:subway, Map.merge(@base, %{"destination" => "place-brdwy",
-                                                              "origin" => "place-harsq", "roaming" => "false",
-                                                              "departure_start" => ~T[23:00:00],
-                                                              "departure_end" => ~T[01:00:00]}))
+      subscription_details = [
+        route_type: 1,
+        direction_id: 0,
+        route: "Red",
+        origin: "place-harsq",
+        destination: "place-brdwy",
+        facility_types: [],
+        start_time: ~T[23:00:00],
+        end_time: ~T[01:00:00],
+        relevant_days: ~w(monday tuesday wednesday saturday sunday)a
+      ]
+      subscription = build(:subscription, subscription_details)
       late_alert = alert(informed_entity: [entity(:subway)],
                          active_period: [active_period(~T[23:00:00], ~T[23:59:59], :monday)])
 

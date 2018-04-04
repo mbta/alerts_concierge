@@ -1,7 +1,7 @@
 defmodule ConciergeSite.BikeStorageSubscriptionControllerTest do
   use ConciergeSite.ConnCase
   use ExVCR.Mock, adapter: ExVCR.Adapter.Hackney
-  alias AlertProcessor.{HoldingQueue, Model.Subscription, Model.InformedEntity, Repo}
+  alias AlertProcessor.{Model.Subscription, Model.InformedEntity, Repo}
 
   describe "authorized" do
     setup :login_user
@@ -94,8 +94,6 @@ defmodule ConciergeSite.BikeStorageSubscriptionControllerTest do
     end
 
     test "PATCH /subscriptions/bike_storage/:id", %{conn: conn, user: user} do
-      notification = build(:notification, user_id: user.id, send_after: DateTime.from_unix!(4_078_579_247))
-      :ok = HoldingQueue.list_enqueue([notification])
       subscription =
         subscription_factory()
         |> Map.put(:informed_entities, bike_storage_subscription_entities())
@@ -112,7 +110,6 @@ defmodule ConciergeSite.BikeStorageSubscriptionControllerTest do
       use_cassette "bike_storage_update", clear_mock: true  do
         conn = patch(conn, "/subscriptions/bike_storage/#{subscription.id}", params)
         assert html_response(conn, 302) =~ "my-subscriptions"
-        assert :error = HoldingQueue.pop()
       end
     end
 
