@@ -32,6 +32,9 @@ import toggleInput from "./toggle-input";
 import helpText from "./help-text";
 import daySelector from "./day-selector";
 import schedule from "./schedule";
+import toggleTripType from "./toggle-trip-type";
+
+const path = window.location.pathname;
 
 selectEntity();
 selectMultipleEntity();
@@ -45,5 +48,8 @@ toggleInput();
 helpText();
 daySelector();
 schedule();
+if (path.match(/\/trip_type$/)) {
+  toggleTripType();
+}
 
 document.body.className = document.body.className.replace("no-js", "js");

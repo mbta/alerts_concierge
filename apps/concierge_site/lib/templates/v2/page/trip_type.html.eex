@@ -1,5 +1,27 @@
-<div>What kind of alerts would you like to setup?</div>
-
-<div><%= link("alerts for my commute", to: v2_trip_path(@conn, :new)) %></div>
-
-<div><%= link("alerts for accessibility", to: v2_accessibility_trip_path(@conn, :new)) %></div>
+<%= render ConciergeSite.V2.LayoutView, "_steps.html", step: "two" %>
+<h1 class="heading__title">Personalize my subscription</h1>
+<div class="container container__inner">
+  <div class="row justify-content-md-center">
+    <div class="col-md-10 col-sm-12">
+      <div class="form__label my-4">What kind of alerts would you like to setup?</div>
+      <div>
+        <%= link("alerts for my commute", to: v2_trip_path(@conn, :new),
+                                          class: "btn btn-outline-primary btn-block",
+                                          data: [type: "toggle-trip-type",
+                                                message: "These are travel delays and station alerts for any trip you take."]) %>
+      </div>
+      <div class="my-3">
+        <%= link("alerts for station features", to: v2_accessibility_trip_path(@conn, :new),
+                                            class: "btn btn-outline-primary btn-block",
+                                            data: [type: "toggle-trip-type",
+                                                    message: "These are alerts specific to stations, including elevator and escalator outages."]) %>
+      </div>
+      <div data-type="trip-type-message"></div>
+      <div class="my-5">
+        <button type="button" class="btn btn-primary btn-login float-right" data-type="advance-trip-type" disabled>Next</button>
+        <br>
+        <a href="javascript:history.back()">&lt; Back</a>
+      </div>
+    </div>
+  </div>
+</div>
