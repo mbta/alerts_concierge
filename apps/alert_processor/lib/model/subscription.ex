@@ -6,6 +6,7 @@ defmodule AlertProcessor.Model.Subscription do
   alias AlertProcessor.{Repo, TimeFrameComparison}
   alias AlertProcessor.Model.{InformedEntity, TripInfo, User, Trip, Subscription}
   alias AlertProcessor.Helpers.DateTimeHelper
+  alias AlertProcessor.ServiceInfoCache
   import Ecto.Query
 
   @type id :: String.t
@@ -366,5 +367,22 @@ defmodule AlertProcessor.Model.Subscription do
 
   def get_last_inserted_timestamp() do
     Repo.one(from s in __MODULE__, order_by: [desc: s.updated_at], select: s.updated_at, limit: 1)
+  end
+
+  def add_latlong_to_subscription(subscription, origin, destination) do
+    case {get_latlong_from_stop(origin), get_latlong_from_stop(destination)} do
+      {nil, nil} -> subscription
+      {{origin_lat, origin_long}, {destination_lat, destination_long}} ->
+        %{subscription | origin_lat: origin_lat, origin_long: origin_long, destination_lat: destination_lat,
+                         destination_long: destination_long}
+    end
+  end
+
+  defp get_latlong_from_stop(""), do: nil
+  defp get_latlong_from_stop(stop_id) do
+    case ServiceInfoCache.get_stop(stop_id) do
+      {:ok, {_, _, latlong, _}} -> latlong
+      _ -> nil
+    end
   end
 end

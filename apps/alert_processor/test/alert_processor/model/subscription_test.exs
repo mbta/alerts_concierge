@@ -528,4 +528,19 @@ defmodule AlertProcessor.Model.SubscriptionTest do
       assert 2 == Subscription.route_count(subscription)
     end
   end
+
+  describe "add_latlong_to_subscription/3" do
+    test "with stop values" do
+      subscription = Subscription.add_latlong_to_subscription(%Subscription{}, "place-alfcl", "place-dwnxg")
+      assert subscription.destination_lat == 42.355518000000004
+      assert subscription.destination_long == -71.060225
+      assert subscription.origin_lat == 42.395428
+      assert subscription.origin_long == -71.142483
+    end
+
+    test "without stop values" do
+      subscription = Subscription.add_latlong_to_subscription(%Subscription{}, "", "")
+      assert subscription == %Subscription{}
+    end
+  end
 end
