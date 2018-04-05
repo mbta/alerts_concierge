@@ -46,3 +46,18 @@ body {
 .btn-link {
   cursor: pointer;
 }
+
+.btn.active {
+  background-color: $light-blue;
+  color: $gray-dark;
+}
+
+.btn.btn-outline-primary {
+  border-color: $brand-primary;
+  color: $gray-dark;
+
+  &:hover {
+    background-color: $light-blue;
+    color: $gray-dark;
+  }
+}
