@@ -8,12 +8,15 @@ defmodule AlertProcessor.SubscriptionFilterEngine do
   alias Model.{Alert, Notification, Subscription}
   require Logger
 
+  @notification_window_filter Application.get_env(:alert_processor, :notification_window_filter)
+
   @spec schedule_all_notifications([Alert.t]) :: {integer, Keyword.t}
   def schedule_all_notifications(alerts) do
     all_subscriptions = Subscription
     |> Repo.all()
     |> Repo.preload(:user)
     |> Repo.preload(:informed_entities)
+    |> Repo.preload(:trip)
 
     subscription_timestamp = Subscription.get_last_inserted_timestamp()
     start_time = Time.utc_now()
@@ -43,6 +46,7 @@ defmodule AlertProcessor.SubscriptionFilterEngine do
                                                                                    alert: alert,
                                                                                    notifications: notifications)
     subscriptions_to_test
+    |> @notification_window_filter.filter()
     |> InformedEntityFilter.filter(alert: alert)
     |> SeverityFilter.filter(alert: alert)
     |> ActivePeriodFilter.filter(alert: alert)
