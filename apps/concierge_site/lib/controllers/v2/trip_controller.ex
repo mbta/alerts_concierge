@@ -221,7 +221,7 @@ defmodule ConciergeSite.V2.TripController do
         direction_id: determine_direction_id(route.stop_list, direction, origin, destination),
         rank: rank,
         return_trip: false}
-      |> add_latlong_to_subscription(origin, destination)
+      |> Subscription.add_latlong_to_subscription(origin, destination)
       |> add_return_subscription(params)
     end)
   end
@@ -237,15 +237,6 @@ defmodule ConciergeSite.V2.TripController do
     [subscription, return_subscription]
   end
   defp add_return_subscription(subscription, _), do: [subscription]
-
-  defp add_latlong_to_subscription(subscription, origin, destination) do
-    case {get_latlong_from_stop(origin), get_latlong_from_stop(destination)} do
-      {nil, nil} -> subscription
-      {{origin_lat, origin_long}, {destination_lat, destination_long}} ->
-        %{subscription | origin_lat: origin_lat, origin_long: origin_long, destination_lat: destination_lat,
-                         destination_long: destination_long}
-    end
-  end
 
   defp input_to_trip(user, params) do
     %Trip{
@@ -274,14 +265,6 @@ defmodule ConciergeSite.V2.TripController do
 
   defp flip_direction(0), do: 1
   defp flip_direction(1), do: 0
-
-  defp get_latlong_from_stop(""), do: nil
-  defp get_latlong_from_stop(stop_id) do
-    case ServiceInfoCache.get_stop(stop_id) do
-      {:ok, stop} -> elem(stop, 2)
-      _ -> nil
-    end
-  end
 
   defp determine_direction_id(_, "0", _, _), do: 0
   defp determine_direction_id(_, "1", _, _), do: 1

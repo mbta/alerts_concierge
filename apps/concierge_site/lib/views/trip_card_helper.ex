@@ -6,6 +6,11 @@ defmodule ConciergeSite.TripCardHelper do
   alias AlertProcessor.Model.{Trip, Subscription}
 
   @spec render(Plug.Conn.t, atom | Trip.t) :: Phoenix.HTML.safe
+  def render(conn, %Trip{trip_type: :accessibility, id: id}) do
+    link to: ConciergeSite.Router.Helpers.v2_trip_path(conn, :edit, id), class: "card trip__card" do
+      "Accessibility Trip"
+    end
+  end
   def render(conn, %Trip{subscriptions: subscriptions, roundtrip: roundtrip, relevant_days: relevant_days,
                    start_time: start_time, end_time: end_time, return_start_time: return_start_time,
                    return_end_time: return_end_time, id: id}) do
