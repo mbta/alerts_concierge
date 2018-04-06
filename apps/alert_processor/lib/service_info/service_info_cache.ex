@@ -239,17 +239,21 @@ defmodule AlertProcessor.ServiceInfoCache do
   end
 
   defp load_initial_service_info do
-    Logger.info("Loading initial service info from cached file")
-    case CacheFile.load_service_info() do
-      {:ok, state} when is_map(state) ->
-        Logger.info("Loading initial service info from cached file")
-        state
-      _ ->
-        Logger.info("Loading initial service info from APIs")
-        state = fetch_and_cache_service_info()
-        Logger.info("Loaded initial service info from APIs")
-        CacheFile.save_service_info(state)
-        state
+    if CacheFile.should_use_file? do
+      Logger.info("Loading initial service info from cached file")
+      case CacheFile.load_service_info() do
+        {:ok, state} when is_map(state) ->
+          Logger.info("Loading initial service info from cached file")
+          state
+        _ ->
+          Logger.info("Loading initial service info from APIs")
+          state = fetch_and_cache_service_info()
+          Logger.info("Loaded initial service info from APIs")
+          CacheFile.save_service_info(state)
+          state
+      end
+    else
+      fetch_and_cache_service_info()
     end
   end
 
