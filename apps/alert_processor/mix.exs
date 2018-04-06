@@ -34,6 +34,7 @@ defmodule AlertProcessor.Mixfile do
         :comeonin,
         :con_cache,
         :sweet_xml, # Must come before ex_aws
+        :exactor,
         :ex_aws,
         :ex_rated,
         :hackney,
@@ -66,6 +67,7 @@ defmodule AlertProcessor.Mixfile do
       {:cowboy, "~> 1.0"},
       {:dialyxir, "~> 0.5.0", only: [:dev]},
       {:ecto, "~> 2.1.0"},
+      {:exactor, "~> 2.2.0"},
       {:excoveralls, "~> 0.5", only: [:dev, :test]},
       {:ex_aws, git: "https://github.com/bfauble/ex_aws", ref: "f64f2cb026171dc6def03102ccae31906797deb0"},
       {:ex_machina, "~> 2.0", only: :test},
