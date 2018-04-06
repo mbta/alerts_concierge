@@ -30,20 +30,12 @@ config :logger,
   level: :info,
   truncate: :infinity,
   handle_sasl_reports: true,
-  backends: [{Logger.Backend.Splunk, :splunk}, :console]
+  backends: [:console]
 
 config :logger, :console,
   level: :info,
   format: "$dateT$time [$level]$levelpad node=$node $metadata$message\n",
   metadata: [:request_id, :ip]
-
-config :logger, :splunk,
-  connector: Logger.Backend.Splunk.Output.Http,
-  host: 'https://http-inputs-mbta.splunkcloud.com/services/collector/event',
-  token: {:system, "SPLUNK_TOKEN"},
-  level: :debug,
-  format: "$dateT$time [$level]$levelpad node=$node $metadata$message\n",
-  metadata: [:request_id]
 
 config :ehmon, :report_mf, {:ehmon, :info_report}
 
