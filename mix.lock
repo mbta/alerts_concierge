@@ -15,6 +15,7 @@
   "decimal": {:hex, :decimal, "1.4.0", "fac965ce71a46aab53d3a6ce45662806bdd708a4a95a65cde8a12eb0124a1333", [:mix], [], "hexpm"},
   "dialyxir": {:hex, :dialyxir, "0.5.1", "b331b091720fd93e878137add264bac4f644e1ddae07a70bf7062c7862c4b952", [:mix], [], "hexpm"},
   "diskusage_logger": {:hex, :diskusage_logger, "0.2.0", "04fc48b538fe4de43153542a71ea94f623d54707d85844123baacfceedf625c3", [], [], "hexpm"},
+  "distillery": {:hex, :distillery, "1.5.2", "eec18b2d37b55b0bcb670cf2bcf64228ed38ce8b046bb30a9b636a6f5a4c0080", [:mix], [], "hexpm"},
   "ecto": {:hex, :ecto, "2.1.6", "29b45f393c2ecd99f83e418ea9b0a2af6078ecb30f401481abac8a473c490f84", [:mix], [{:db_connection, "~> 1.1", [repo: "hexpm", hex: :db_connection, optional: true]}, {:decimal, "~> 1.2", [repo: "hexpm", hex: :decimal, optional: false]}, {:mariaex, "~> 0.8.0", [repo: "hexpm", hex: :mariaex, optional: true]}, {:poison, "~> 2.2 or ~> 3.0", [repo: "hexpm", hex: :poison, optional: true]}, {:poolboy, "~> 1.5", [repo: "hexpm", hex: :poolboy, optional: false]}, {:postgrex, "~> 0.13.0", [repo: "hexpm", hex: :postgrex, optional: true]}, {:sbroker, "~> 1.0", [repo: "hexpm", hex: :sbroker, optional: true]}], "hexpm"},
   "eflame": {:hex, :eflame, "1.0.1", "0664d287e39eef3c413749254b3af5f4f8b00be71c1af67d325331c4890be0fc", [:mix], [], "hexpm"},
   "ehmon": {:git, "https://github.com/heroku/ehmon.git", "8831d2e138d866ac0f23206eb3436877a93633b9", [tag: "v4"]},

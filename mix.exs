@@ -26,6 +26,7 @@ defmodule AlertsConcierge.Mixfile do
   defp deps do
     [
       {:credo, "~> 0.7", only: [:dev, :test]},
+      {:distillery, "~> 1.5", runtime: false},
       {:excoveralls, "~> 0.5", only: [:dev, :test]},
     ]
   end
