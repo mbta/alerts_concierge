@@ -27,8 +27,6 @@ defmodule AlertsConcierge.Mixfile do
     [
       {:credo, "~> 0.7", only: [:dev, :test]},
       {:excoveralls, "~> 0.5", only: [:dev, :test]},
-      {:edeliver, "1.4.3"},
-      {:distillery, "~> 1.4", runtime: false}
     ]
   end
 
