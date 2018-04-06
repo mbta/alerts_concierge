@@ -11,9 +11,15 @@ defmodule ConciergeSite.V2.AccessibilityTripController do
 
   def create(conn, %{"trip" => trip}, user, {:ok, claims}) do
     trip
+    |> default_values()
     |> make_changeset()
     |> validate_input()
     |> save_trip(conn, user, claims)
+  end
+
+  defp default_values(trip_params) do
+    default_params = %{"routes" => [], "stops" => [], "elevator" => "false", "escalator" => "false", "relevant_days" => []}
+    Map.merge(default_params, trip_params)
   end
 
   defp save_trip(%{valid?: false} = changeset, conn, _user, _claims) do
@@ -136,12 +142,21 @@ defmodule ConciergeSite.V2.AccessibilityTripController do
   end
 
   defp make_route_subscriptions(%{changes: %{routes: routes}}, trip) do
-    Enum.map(routes, fn(route) ->
+    routes
+    |> clean_routes_input()
+    |> Enum.map(fn(route) ->
       route_type = if route == "Green", do: 0, else: 1
       trip
       |> make_subscription()
       |> Map.put(:route, route)
       |> Map.put(:route_type, route_type)
+    end)
+  end
+
+  defp clean_routes_input(routes) do
+    Enum.map(routes, fn(route_input) ->
+      [route_name, _, _] = String.split(route_input, "~~")
+      route_name
     end)
   end
 

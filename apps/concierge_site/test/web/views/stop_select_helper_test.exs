@@ -36,4 +36,18 @@ defmodule ConciergeSite.StopSelectHelperTest do
 
     assert html =~ "<option data-accessible=\"true\" data-green=\"true\" data-red=\"true\" value=\"place-pktrm\">Park Street</option>"
   end
+
+  test "render/4 Orange with pre-selection" do
+    html = Phoenix.HTML.safe_to_string(StopSelectHelper.render("Orange", :foo, :bar, ["place-ogmnl"]))
+
+    assert html =~ "<option data-accessible=\"true\" data-bus=\"true\" data-orange=\"true\" selected=\"selected\" value=\"place-ogmnl\">Oak Grove</option>"
+  end
+
+  test "render/5 Orange with multiple and no default" do
+    html = Phoenix.HTML.safe_to_string(StopSelectHelper.render("Orange", :foo, :bar, [], [no_default: true,
+                                                                                          multiple: "multiple"]))
+
+    refute html =~ "<option disabled=\"disabled\" selected=\"selected\" value=\"\">Select a stop</option>"
+    assert html =~ "<select class=\"form-control\" data-type=\"stop\" id=\"foo_bar\" multiple=\"multiple\" name=\"foo[bar][]\""
+  end
 end

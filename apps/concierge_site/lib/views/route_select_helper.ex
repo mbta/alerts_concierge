@@ -6,23 +6,25 @@ defmodule ConciergeSite.RouteSelectHelper do
   alias AlertProcessor.Model.Route
   import Phoenix.HTML.Tag, only: [content_tag: 3]
 
-  @spec render(atom, atom, keyword) :: Phoenix.HTML.safe
-  def render(input_name, field, attrs \\ []) do
+  @spec render(atom, atom, [String.t], keyword) :: Phoenix.HTML.safe
+  def render(input_name, field, selected \\ [], attrs \\ []) do
     content_tag :select, attributes(input_name, field, attrs) do
-      [default_option(),
-       option_group("Subway", :subway),
-       option_group("Commuter Rail", :cr),
-       option_group("Ferry", :ferry),
-       option_group("Bus", :bus)]
+      default = if attrs[:no_default] == true, do: [], else: default_option()
+      [default,
+       option_group("Subway", :subway, selected),
+       option_group("Commuter Rail", :cr, selected),
+       option_group("Ferry", :ferry, selected),
+       option_group("Bus", :bus, selected)]
     end
   end
 
   @spec attributes(atom, atom, keyword) :: keyword(String.t)
   defp attributes(input_name, field, attrs) do
+    name = if attrs[:multiple] == "multiple", do: "#{input_name}[#{field}][]", else: "#{input_name}[#{field}]"
     [data: [type: "route"],
      class: "form-control",
      id: "#{input_name}_#{field}",
-     name: "#{input_name}[#{field}]"]
+     name: name]
     |> Keyword.merge(attrs)
   end
 
@@ -33,12 +35,15 @@ defmodule ConciergeSite.RouteSelectHelper do
     end
   end
 
-  @spec option_group(String.t, atom) :: Phoenix.HTML.safe
-  defp option_group(label, mode) do
+  @spec option_group(String.t, atom, [String.t]) :: Phoenix.HTML.safe
+  defp option_group(label, mode, selected) do
     options = get_routes(mode)
     content_tag :optgroup, label: label do
       for {icon, id, name} <- options do
-        content_tag :option, value: value(id, name, mode), data: [icon: icon] do
+        value = value(id, name, mode)
+        selected = if Enum.member?(selected, value), do: [selected: "selected"], else: []
+        attrs = [value: value, data: [icon: icon]] ++ selected
+        content_tag :option, attrs do
           name
         end
       end
