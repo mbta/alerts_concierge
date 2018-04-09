@@ -1,4 +1,4 @@
 <div class="callout dnd-overlap">
   <span>We won’t send you notifications during your ‘Do Not Disturb’ period. Right now your Do Not Disturb period overlaps with one of your alerts.</span>
-  <span>You can edit the period on the <%= link "My Account", to: my_account_path(ConciergeSite.Endpoint, :edit) %> page.</span>
+  <span>You can edit the period on the <%= link "My Account", to: "/" %> page.</span>
 </div>

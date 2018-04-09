@@ -58,14 +58,6 @@ defmodule ConciergeSite.SignInHelper do
     subscription_path(@endpoint, :index)
   end
 
-  defp redirect_path(user, :my_account) do
-    if User.is_admin?(user) do
-      admin_my_account_path(@endpoint, :edit)
-    else
-      my_account_path(@endpoint, :edit)
-    end
-  end
-
   defp redirect_path(user, :v2_default) do
     if Trip.get_trips_by_user(user.id) == [] do
       v2_account_path(@endpoint, :options_new)
