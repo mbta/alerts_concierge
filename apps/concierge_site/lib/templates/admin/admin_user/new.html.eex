@@ -18,7 +18,7 @@
       <%= select f, :role, @admin_roles, class: "form-control",
           prompt: "Select a Role" %>
     </div>
-    <%= render ConciergeSite.PasswordView, "_password_entry_form_section.html", f: f, changeset: @account_changeset %>
+    <%= render "_password_entry_form_section.html", f: f, changeset: @account_changeset %>
     <div class="account-creation-footer">
       <%= submit "Save New Admin", class: "btn btn-primary btn-create-account" %>
     </div>

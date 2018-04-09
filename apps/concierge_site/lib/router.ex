@@ -47,9 +47,6 @@ defmodule ConciergeSite.Router do
     get "/", PageController, :index
     get "/intro", AccountController, :intro
     resources "/account", AccountController, only: [:new, :create]
-    resources "/login", SessionController, only: [:new, :create, :delete], singleton: true
-    get "/reset-password/sent", PasswordResetController, :sent
-    resources "/reset-password", PasswordResetController, only: [:new, :create, :edit, :update]
     post "/unsubscribe", UnsubscribeController, :unsubscribe_confirmed
     get "/unsubscribe/:token", UnsubscribeController, :unsubscribe
     post "/rejected_email", RejectedEmailController, :handle_rejected_email
@@ -57,18 +54,12 @@ defmodule ConciergeSite.Router do
 
   scope "/", ConciergeSite do
     pipe_through [:browser, :browser_auth, :disable_account_auth]
-    get "/my-account/confirm_disable", MyAccountController, :confirm_disable
-    delete "/my-account", MyAccountController, :delete
     get "/account_disabled", PageController, :account_disabled
   end
 
   scope "/", ConciergeSite do
     pipe_through [:browser, :browser_auth, :full_auth]
 
-    resources "/my-account", MyAccountController, only: [:edit, :update], singleton: true do
-      resources "/password", PasswordController, only: [:edit, :update], singleton: true
-      resources "/vacation", VacationController, only: [:edit, :update, :delete], singleton: true
-    end
     resources "/impersonate_sessions", ImpersonateSessionController, only: [:delete], singleton: true
   end
 
@@ -126,7 +117,6 @@ defmodule ConciergeSite.Router do
     get "/admin_users/:id/confirm_role_change", Admin.AdminUserController, :confirm_role_change
 
     resources "/admin_users", Admin.AdminUserController, only: [:index, :show, :new, :create, :update]
-    resources "/my-account", Admin.MyAccountController, only: [:edit, :update], singleton: true
     resources "/impersonate_sessions", Admin.ImpersonateSessionController, only: [:create]
 
     get "/admin_users/:id/confirm_deactivate", Admin.AdminUserController, :confirm_deactivate

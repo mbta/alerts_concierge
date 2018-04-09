@@ -53,7 +53,7 @@
                   <% end %>
                   <%= if @current_user do %>
                     <li>
-                      <%= link to: my_account_path(@conn, :edit), class: "main__menu--link" do %>
+                      <%= link to: "/", class: "main__menu--link" do %>
                         My Account <i class="fa fa-gear"></i>
                       <% end %>
                     </li>
