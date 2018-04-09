@@ -3,20 +3,36 @@ defmodule ConciergeSite.TripCardHelper do
   import Phoenix.HTML.Tag, only: [content_tag: 3]
   import Phoenix.HTML.Link, only: [link: 2]
   import ConciergeSite.TimeHelper, only: [format_time_string: 2, time_to_string: 1]
+  alias AlertProcessor.ServiceInfoCache
   alias AlertProcessor.Model.{Trip, Subscription}
 
   @spec render(Plug.Conn.t, atom | Trip.t) :: Phoenix.HTML.safe
-  def render(conn, %Trip{trip_type: :accessibility, id: id}) do
+  def render(conn, %Trip{trip_type: :accessibility, id: id, relevant_days: relevant_days,
+                         facility_types: facility_types, subscriptions: subscriptions}) do
     link to: ConciergeSite.Router.Helpers.v2_trip_path(conn, :edit, id), class: "card trip__card" do
-      "Accessibility Trip"
+      [
+        edit_faux_link(),
+        content_tag :span, class: "trip__card--route-icon" do
+          ConciergeSite.IconViewHelper.icon(:t)
+        end,
+        content_tag :span, class: "trip__card--route" do
+          "Station features"
+        end,
+        content_tag :div, class: "trip__card--type my-2" do
+          "#{days(relevant_days)} — #{stops_and_routes(subscriptions)}"
+        end,
+        content_tag :div, class: "trip__card--type my-2" do
+          "#{facility_types(facility_types)}"
+        end
+      ]
     end
   end
   def render(conn, %Trip{subscriptions: subscriptions, roundtrip: roundtrip, relevant_days: relevant_days,
                    start_time: start_time, end_time: end_time, return_start_time: return_start_time,
                    return_end_time: return_end_time, id: id}) do
-
     link to: ConciergeSite.Router.Helpers.v2_trip_path(conn, :edit, id), class: "card trip__card" do
       [
+        edit_faux_link(),
         routes(subscriptions),
         trip_type(roundtrip, relevant_days),
         trip_times({start_time, end_time}, {return_start_time, return_end_time})
@@ -88,5 +104,50 @@ defmodule ConciergeSite.TripCardHelper do
   @spec format_time({Time.t, Time.t}) :: String.t
   defp format_time({start_time, end_time}) do
     "#{format_time_string(time_to_string(start_time), "%l:%M%P")} - #{format_time_string(time_to_string(end_time), "%l:%M%P")}"
+  end
+
+  @spec facility_types([atom]) :: String.t
+  defp facility_types(facility_types) do
+    case facility_types do
+      [:elevator] -> "Elevators"
+      [:escalator] -> "Escalators"
+      [_, _] -> "Elevators and escalators"
+    end
+  end
+
+  @spec stops_and_routes([Subscription.t]) :: [String.t]
+  defp stops_and_routes(subscriptions) do
+    subscriptions
+    |> Enum.map(fn(subscription) ->
+      case {subscription.origin, subscription.route} do
+        {stop_id, nil} -> stop_name(stop_id)
+        {nil, route_id} -> route_name(route_id)
+      end
+    end)
+    |> Enum.intersperse(", ")
+  end
+
+  @spec stop_name(String.t) :: String.t
+  defp stop_name(stop_id) do
+    {:ok, {name, _, _, _}} = ServiceInfoCache.get_stop(stop_id)
+    name
+  end
+
+  @spec route_name(String.t) :: String.t
+  defp route_name("Green"), do: "Green Line"
+  defp route_name(route_id) do
+    {:ok, route} = ServiceInfoCache.get_route(route_id)
+    route.long_name
+  end
+
+  @spec edit_faux_link() :: Phoenix.HTML.safe
+  defp edit_faux_link() do
+    content_tag :span, class: "trip__card--edit-link" do
+      [
+        "Edit ", content_tag :i, class: "fa fa-edit" do
+          ""
+        end
+      ]
+    end
   end
 end
