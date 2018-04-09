@@ -21,7 +21,7 @@ defmodule ConciergeSite.V2.AccessibilityTripControllerTest do
         stops: ["place-pktrm"],
         elevator: "true",
         escalator: "false",
-        routes: ["Red"],
+        routes: ["Red~~Red Line~~subway"]
       }
 
       conn = user

@@ -1,6 +1,39 @@
-accessibility
 <%= flash_error(@conn) %>
-<%= form_for @changeset, v2_accessibility_trip_path(@conn, :create), [as: :trip, method: :post], fn form -> %>
-  <%= hidden_input form, :type, name: "trip[type]", value: "accessibilty" %>
-  <input type="submit" value="Save Trip" />
-<% end %>
+<%= render ConciergeSite.V2.LayoutView, "_steps.html", step: "two" %>
+<h1 class="heading__title">Personalize my subscription</h1>
+<div class="container container__inner">
+  <div class="row justify-content-md-center">
+    <div class="col-md-10 col-sm-12">
+      <%= form_for @changeset, v2_accessibility_trip_path(@conn, :create), [as: :trip, method: :post], fn form -> %>
+        <div class="form-group my-4">
+          <%= label form, :facility_types, "Which station features would you like to receive alerts about?", class: "form__label" %>
+          <div class="form-check"><label><%= checkbox form, :elevator %>Elevators and ramps</label></div>
+          <div class="form-check"><label><%= checkbox form, :escalator %>Escalators</label></div>
+          <%= if @changeset.errors[:escalator], do: error_tag @changeset, :escalator %>
+        </div>
+
+        <div class="form-group my-4">
+          <%= label form, :stops, "Would you like alerts for specific stations?", class: "form__label" %>
+          <%= ConciergeSite.StopSelectHelper.render("*", :trip, :stops, @changeset.changes[:stops] || [], multiple: "multiple", no_default: true) %>
+          <%= if @changeset.errors[:stops], do: error_tag @changeset, :stops %>
+        </div>
+
+        <div class="form-group my-4">
+          <%= label form, :routes, "Would you like alerts for all stations on a line?", class: "form__label" %>
+          <%= ConciergeSite.RouteSelectHelper.render(:trip, :routes, @changeset.changes[:routes] || [], multiple: "multiple", no_default: true) %>
+          <%= if @changeset.errors[:routes], do: error_tag @changeset, :routes %>
+        </div>
+
+        <div class="form-group my-4">
+          <%= label form, :relevant_days, "What days do you take this trip?", class: "form__label" %>
+          <%= ConciergeSite.DaySelectHelper.render(:trip, ["monday", "tuesday", "wednesday", "thursday", "friday", "weekdays"]) %>
+        </div>
+
+        <div class="my-5">
+          <%= submit "Finish", class: "btn btn-primary btn-login float-right" %>
+          <a href="javascript:history.back()">&lt; Back</a>
+        </div>
+      <% end %>
+    </div>
+  </div>
+</div>

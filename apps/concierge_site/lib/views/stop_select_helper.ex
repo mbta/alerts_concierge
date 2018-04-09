@@ -5,10 +5,11 @@ defmodule ConciergeSite.StopSelectHelper do
   alias AlertProcessor.ServiceInfoCache
   import Phoenix.HTML.Tag, only: [content_tag: 3]
 
-  @spec render(String.t, atom, atom) :: Phoenix.HTML.safe
-  def render(route_id, input_name, field) do
-    content_tag :select, attributes(input_name, field) do
-      for stop <- get_stops_by_route(route_id), into: [default_option()], do: render_option(stop)
+  @spec render(String.t, atom, atom, [String.t], keyword) :: Phoenix.HTML.safe
+  def render(route_id, input_name, field, selected \\ [], attrs \\ []) do
+    default = if attrs[:no_default] == true, do: [], else: default_option()
+    content_tag :select, attributes(input_name, field, attrs) do
+      for stop <- get_stops_by_route(route_id), into: [default], do: render_option(stop, selected)
     end
   end
 
@@ -19,9 +20,11 @@ defmodule ConciergeSite.StopSelectHelper do
     end
   end
 
-  @spec render_option(stop_row) :: Phoenix.HTML.safe
-  defp render_option([id: id, name: name, modes: modes, accessible: accessible]) do
-    content_tag :option, value: id, data: option_data(modes, accessible) do
+  @spec render_option(stop_row, [String.t]) :: Phoenix.HTML.safe
+  defp render_option([id: id, name: name, modes: modes, accessible: accessible], selected) do
+    selected = if Enum.member?(selected, id), do: [selected: "selected"], else: []
+    attributes = [value: id, data: option_data(modes, accessible)] ++ selected
+    content_tag :option, attributes do
       name
     end
   end
@@ -34,6 +37,14 @@ defmodule ConciergeSite.StopSelectHelper do
   end
 
   @spec get_stops_by_route(String.t) :: [stop_row]
+  defp get_stops_by_route("*") do
+    :subway
+    |> get_routes()
+    |> Kernel.++(get_routes(:cr))
+    |> Kernel.++(get_routes(:ferry))
+    |> Enum.flat_map(& get_stops_by_route(&1))
+    |> Enum.uniq_by(& &1)
+  end
   defp get_stops_by_route(route_id) do
     {:ok, stops_with_icons} = ServiceInfoCache.get_stops_with_icons()
     route_stops = route_id
@@ -58,11 +69,23 @@ defmodule ConciergeSite.StopSelectHelper do
   end
   defp get_stop_list(route_id), do: with {:ok, %{stop_list: stops}} = ServiceInfoCache.get_route(route_id), do: stops
 
-  @spec attributes(atom, atom) :: keyword(String.t)
-  defp attributes(input_name, field) do
-    [data: [type: "stop"],
-     class: "form-control",
-     id: "#{input_name}_#{field}",
-     name: "#{input_name}[#{field}]"]
+  @spec attributes(atom, atom, keyword) :: keyword(String.t)
+  defp attributes(input_name, field, attrs) do
+    name = if attrs[:multiple] == "multiple", do: "#{input_name}[#{field}][]", else: "#{input_name}[#{field}]"
+    [data: [type: "stop"], class: "form-control", id: "#{input_name}_#{field}", name: name]
+    |> Keyword.merge(attrs)
+  end
+
+  @spec get_routes(atom) :: [String.t]
+  defp get_routes(:subway), do: ["Red", "Orange", "Green", "Blue", "Mattapan"]
+  defp get_routes(:cr) do
+    with {:ok, routes} <- ServiceInfoCache.get_commuter_rail_info() do
+      for route <- routes, do: route.route_id
+    end
+  end
+  defp get_routes(:ferry) do
+    with {:ok, routes} <- ServiceInfoCache.get_ferry_info() do
+      for route <- routes, do: route.route_id
+    end
   end
 end
