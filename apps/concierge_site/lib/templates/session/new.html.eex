@@ -31,7 +31,7 @@
     </div>
     <div class="login-footer">
       <%= submit "Sign In", class: "btn btn-primary btn-login" %>
-      <p>Not a subscriber? <%= link("Create a T-Alerts account", to: account_path(@conn, :intro)) %></p>
+      <p>Not a subscriber? <%= link("Create a T-Alerts account", to: "/") %></p>
     </div>
   <% end %>
 </div>
