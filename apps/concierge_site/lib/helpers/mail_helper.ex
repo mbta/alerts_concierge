@@ -138,11 +138,6 @@ defmodule ConciergeSite.Helpers.MailHelper do
     Helpers.unsubscribe_url(ConciergeSite.Endpoint, :unsubscribe, token)
   end
 
-  def disable_account_url(user) do
-    {:ok, token, _permissions} = Token.issue(user, [:disable_account], {30, :days})
-    Helpers.my_account_url(ConciergeSite.Endpoint, :confirm_disable, token: token)
-  end
-
   def reset_password_url(password_reset_id) do
     Helpers.password_reset_url(ConciergeSite.Endpoint, :edit, password_reset_id)
   end

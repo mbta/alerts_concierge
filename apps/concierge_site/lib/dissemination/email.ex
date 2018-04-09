@@ -54,23 +54,22 @@ defmodule ConciergeSite.Dissemination.Email do
     :def,
     :confirmation_html_email,
     Path.join(@template_dir, "confirmation.html.eex"),
-    [:unsubscribe_url, :disable_account_url, :manage_subscriptions_url, :feedback_url])
+    [:unsubscribe_url, :manage_subscriptions_url, :feedback_url])
   EEx.function_from_file(
     :def,
     :confirmation_text_email,
     Path.join(~w(#{System.cwd!} lib mail_templates confirmation.txt.eex)),
-    [:unsubscribe_url, :disable_account_url, :manage_subscriptions_url, :feedback_url])
+    [:unsubscribe_url, :manage_subscriptions_url, :feedback_url])
 
   def confirmation_email(user) do
     unsubscribe_url = MailHelper.unsubscribe_url(user)
-    disable_account_url = MailHelper.disable_account_url(user)
     manage_subscriptions_url = MailHelper.manage_subscriptions_url(user)
     feedback_url = MailHelper.feedback_url()
     base_email()
     |> to(user.email)
     |> subject("MBTA Alerts Account Confirmation")
-    |> html_body(confirmation_html_email(unsubscribe_url, disable_account_url, manage_subscriptions_url, feedback_url))
-    |> text_body(confirmation_text_email(unsubscribe_url, disable_account_url, manage_subscriptions_url, feedback_url))
+    |> html_body(confirmation_html_email(unsubscribe_url, manage_subscriptions_url, feedback_url))
+    |> text_body(confirmation_text_email(unsubscribe_url, manage_subscriptions_url, feedback_url))
   end
 
   EEx.function_from_file(
