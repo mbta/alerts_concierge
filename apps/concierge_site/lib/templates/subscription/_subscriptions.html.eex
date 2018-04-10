@@ -1,8 +1,0 @@
-  <% customer_subscription_map = sorted_subscriptions(@subscriptions) %>
-  <%= render "_subway_subscription_info.html", conn: @conn, subscriptions: customer_subscription_map[:subway], station_display_names: @station_display_names, render_links: @render_links %>
-  <%= render "_commuter_rail_subscription_info.html", conn: @conn, subscriptions: customer_subscription_map[:commuter_rail], station_display_names: @station_display_names, departure_time_map: @departure_time_map, render_links: @render_links %>
-  <%= render "_bus_subscription_info.html", conn: @conn, subscriptions: customer_subscription_map[:bus], render_links: @render_links %>
-  <%= render "_ferry_subscription_info.html", conn: @conn, subscriptions: customer_subscription_map[:ferry], station_display_names: @station_display_names, departure_time_map: @departure_time_map, render_links: @render_links %>
-  <%= render "_accessibility_subscription_info.html", conn: @conn, subscriptions: customer_subscription_map[:accessibility], render_links: @render_links %>
-  <%= render "_parking_subscription_info.html", conn: @conn, subscriptions: customer_subscription_map[:parking], render_links: @render_links %>
-  <%= render "_bike_storage_subscription_info.html", conn: @conn, subscriptions: customer_subscription_map[:bike_storage], render_links: @render_links %>
