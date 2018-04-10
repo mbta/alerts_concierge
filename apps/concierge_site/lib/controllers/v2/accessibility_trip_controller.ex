@@ -169,6 +169,7 @@ defmodule ConciergeSite.V2.AccessibilityTripController do
       start_time: trip.start_time,
       end_time: trip.end_time,
       type: :accessibility,
+      facility_types: trip.facility_types,
       return_trip: false
     }
   end
