@@ -16,14 +16,14 @@ defmodule ConciergeSite.Helpers.MailHelper do
     :def,
     :html_footer,
     Path.join(@template_dir, "_footer.html.eex"),
-    [:unsubscribe_url, :manage_subscriptions_url, :feedback_url]
+    [:manage_subscriptions_url, :feedback_url]
   )
 
   EEx.function_from_file(
     :def,
     :text_footer,
     Path.join(@template_dir, "_footer.txt.eex"),
-    [:unsubscribe_url, :manage_subscriptions_url, :feedback_url]
+    [:manage_subscriptions_url, :feedback_url]
   )
 
   EEx.function_from_file(
@@ -131,20 +131,6 @@ defmodule ConciergeSite.Helpers.MailHelper do
       "Green-E" -> "logo-green-line"
       nil -> "logo-mbta"
     end
-  end
-
-  def unsubscribe_url(user) do
-    {:ok, token, _permissions} = Token.issue(user, [:unsubscribe], {30, :days})
-    Helpers.unsubscribe_url(ConciergeSite.Endpoint, :unsubscribe, token)
-  end
-
-  def disable_account_url(user) do
-    {:ok, token, _permissions} = Token.issue(user, [:disable_account], {30, :days})
-    Helpers.my_account_url(ConciergeSite.Endpoint, :confirm_disable, token: token)
-  end
-
-  def reset_password_url(password_reset_id) do
-    Helpers.password_reset_url(ConciergeSite.Endpoint, :edit, password_reset_id)
   end
 
   def manage_subscriptions_url(user) do

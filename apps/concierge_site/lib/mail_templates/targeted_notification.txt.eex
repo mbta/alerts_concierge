@@ -2,4 +2,4 @@
 
 <%= body %>
 
-<%= ConciergeSite.Helpers.MailHelper.text_footer(unsubscribe_url, manage_subscriptions_url, feedback_url) %>
+<%= ConciergeSite.Helpers.MailHelper.text_footer(manage_subscriptions_url, feedback_url) %>

@@ -5,10 +5,6 @@
 
   <table>
     <tr>
-      <td style="border-collapse: collapse;">
-        <a class="footer-link" href="<%= unsubscribe_url %>" style="font-size: .75rem; line-height: 1.6; text-align: center; color: #67a0d1; text-decoration: none;">Unsubscribe</a>
-      </td>
-
       <%= if feedback_url do %>
         <td class="footer-link-separator" style="border-collapse: collapse; width: 10px; height: 10px;">
           <div class="footer-link-separator-bullet" style="height: 5px; width: 5px; border-radius: 100%; background-color: #ffffff;">

@@ -14,17 +14,17 @@ defmodule ConciergeSite.FeatureTestHelper do
   """
   def log_in(session, email, password) do
     session
-    |> visit("/")
-    |> fill_in(text_field("Email address"), with: email)
+    |> visit("/v2/login/new")
+    |> fill_in(text_field("Email login"), with: email)
     |> fill_in(text_field("Password"), with: password)
-    |> click(button("Sign In"))
+    |> click(button("Go to my account"))
   end
   def log_in(session, %User{email: email, password: password}) do
     session
-    |> visit("/")
-    |> fill_in(text_field("Email address"), with: email)
+    |> visit("/v2/login/new")
+    |> fill_in(text_field("Email login"), with: email)
     |> fill_in(text_field("Password"), with: password)
-    |> click(button("Sign In"))
+    |> click(button("Go to my account"))
   end
 
   @doc """
