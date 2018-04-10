@@ -50,4 +50,75 @@ defmodule ConciergeSite.V2.AccessibilityTripControllerTest do
       assert html_response(conn, 200) =~  "Please correct the error and re-submit."
     end
   end
+
+  describe "GET /v2/accessibility_trips/:id/edit" do
+    test "with valid trip", %{conn: conn, user: user} do
+      trip = insert(:trip, %{trip_type: :accessibility, user: user})
+      conn =
+        user
+        |> guardian_login(conn)
+        |> get(v2_accessibility_trip_path(conn, :edit, trip.id))
+
+      assert html_response(conn, 200) =~ "Edit Subscription"
+    end
+
+    test "returns 404 with non-existent trip", %{conn: conn, user: user} do
+      non_existent_trip_id = "ba51f08c-ad36-4dd5-a81a-557168c42f51"
+      conn =
+        user
+        |> guardian_login(conn)
+        |> get(v2_accessibility_trip_path(conn, :edit, non_existent_trip_id))
+
+      assert html_response(conn, 404) =~ "cannot be found"
+    end
+
+    test "returns 404 if user doesn't own trip", %{conn: conn, user: user} do
+      sneaky_user = insert(:user, email: "sneaky_user@emailprovider.com")
+      trip = insert(:trip, user: user)
+      conn =
+        sneaky_user
+        |> guardian_login(conn)
+        |> get(v2_accessibility_trip_path(conn, :edit, trip.id))
+
+      assert html_response(conn, 404) =~ "cannot be found"
+    end
+  end
+
+  describe "PATCH /v2/trips/:id" do
+    test "with valid relevant days", %{conn: conn, user: user} do
+      trip = insert(:trip, %{trip_type: :accessibility, user: user})
+      params = [
+        trip: %{
+          relevant_days: [:tuesday, :thursday],
+        }
+      ]
+      conn =
+        user
+        |> guardian_login(conn)
+        |> patch(v2_accessibility_trip_path(conn, :update, trip.id, params))
+
+      assert html_response(conn, 200) =~ "Trip updated."
+    end
+
+    test "with invalid relevant day", %{conn: conn, user: user} do
+      trip = insert(:trip, %{trip_type: :accessibility, user: user})
+      params = [trip: %{relevant_days: [:invalid]}]
+      conn = user
+             |> guardian_login(conn)
+             |> patch(v2_accessibility_trip_path(conn, :update, trip.id, params))
+
+      assert html_response(conn, 422) =~ "Trip could not be updated."
+    end
+
+    test "with no relevant days selected to update", %{conn: conn, user: user} do
+      trip = insert(:trip, %{trip_type: :accessibility, user: user})
+      params = [trip: %{}]
+      conn = user
+             |> guardian_login(conn)
+             |> patch(v2_accessibility_trip_path(conn, :update, trip.id, params))
+
+      assert html_response(conn, 422) =~ "Trip could not be updated."
+      assert html_response(conn, 422) =~ "should have at least 1"
+    end
+  end
 end

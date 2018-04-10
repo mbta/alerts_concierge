@@ -9,7 +9,7 @@ defmodule ConciergeSite.TripCardHelper do
   @spec render(Plug.Conn.t, atom | Trip.t) :: Phoenix.HTML.safe
   def render(conn, %Trip{trip_type: :accessibility, id: id, relevant_days: relevant_days,
                          facility_types: facility_types, subscriptions: subscriptions}) do
-    link to: ConciergeSite.Router.Helpers.v2_trip_path(conn, :edit, id), class: "card trip__card" do
+    link to: ConciergeSite.Router.Helpers.v2_accessibility_trip_path(conn, :edit, id), class: "card trip__card" do
       [
         edit_faux_link(),
         content_tag :span, class: "trip__card--route-icon" do
