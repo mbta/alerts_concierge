@@ -151,7 +151,7 @@ defmodule ConciergeSite.Router do
       post "/times", V2.TripController, :times
       get "/type", V2.TripController, :type
     end
-    resources "/accessibility_trips", V2.AccessibilityTripController, only: [:new, :create]
+    resources "/accessibility_trips", V2.AccessibilityTripController, only: [:new, :create, :edit, :update]
   end
 
   if Mix.env == :dev do

@@ -5,6 +5,8 @@ defmodule ConciergeSite.V2.AccessibilityTripController do
   alias Ecto.Multi
   import Ecto.Changeset
 
+  action_fallback ConciergeSite.V2.FallbackController
+
   def new(conn, _params, _user, _claims) do
     render conn, "new.html", changeset: make_changeset()
   end
@@ -15,6 +17,50 @@ defmodule ConciergeSite.V2.AccessibilityTripController do
     |> make_changeset()
     |> validate_input()
     |> save_trip(conn, user, claims)
+  end
+
+  def edit(conn, %{"id" => id}, user, _claims) do
+    with {:trip, %Trip{} = trip} <- {:trip, Trip.find_by_id(id)},
+         {:authorized, true} <- {:authorized, user.id == trip.user_id},
+         {:changeset, changeset} <- {:changeset, Trip.update_changeset(trip)} do
+
+      render(conn, "edit.html", trip: trip, changeset: changeset)
+    else
+      {:trip, nil} ->
+        {:error, :not_found}
+      {:authorized, false} ->
+        {:error, :not_found}
+    end
+  end
+
+  def update(conn, %{"id" => id, "trip" => trip_params}, user, _claims) do
+    with {:trip, %Trip{} = trip} <- {:trip, Trip.find_by_id(id)},
+         {:authorized, true} <- {:authorized, user.id == trip.user_id},
+         {:sanitized, sanitized_trip_params} <- {:sanitized, sanitize_trip_params(trip_params)},
+         {:ok, %Trip{} = updated_trip} <- Trip.update(trip, sanitized_trip_params) do
+
+      conn
+      |> put_flash(:info, "Trip updated.")
+      |> render("edit.html", trip: updated_trip, changeset: Trip.update_changeset(updated_trip))
+    else
+      {:trip, nil} ->
+        {:error, :not_found}
+      {:authorized, false} ->
+        {:error, :not_found}
+      {:error, %Ecto.Changeset{} = changeset} ->
+        conn
+        |> put_status(:unprocessable_entity)
+        |> put_flash(:error, "Trip could not be updated. Please see errors below.")
+        |> render("edit.html", trip: Trip.find_by_id(id), changeset: changeset, schedules: %{}, return_schedules: %{})
+    end
+  end
+
+  def update(conn, %{"id" => id}, user, claims) do
+    # This function clause is here incase someone submits an update request
+    # with no relevant days selected. In this scenario we want users to be
+    # shown a message saying that they should at least select one relevant day.
+    # This function's purpose is to trigger that error message.
+    update(conn, %{"id" => id, "trip" => %{"relevant_days" => []}}, user, claims)
   end
 
   defp default_values(trip_params) do
@@ -172,5 +218,16 @@ defmodule ConciergeSite.V2.AccessibilityTripController do
       facility_types: trip.facility_types,
       return_trip: false
     }
+  end
+
+  defp sanitize_trip_params(trip_params) when is_map(trip_params) do
+    trip_params
+    |> Enum.map(&sanitize_trip_param/1)
+    |> Enum.into(%{})
+  end
+
+  defp sanitize_trip_param({"relevant_days" = key, relevant_days}) do
+    days_as_atoms = Enum.map(relevant_days, &String.to_existing_atom/1)
+    {key, days_as_atoms}
   end
 end
