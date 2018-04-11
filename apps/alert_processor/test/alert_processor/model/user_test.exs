@@ -7,14 +7,7 @@ defmodule AlertProcessor.Model.UserTest do
   @valid_account_attrs %{
     "email" => "test@email.com",
     "password" => "Password1",
-    "password_confirmation" => "Password1",
     "sms_toggle" => "false"
-  }
-  @valid_admin_account_attrs %{
-    "email" => "test@email.com",
-    "password" => "Password1",
-    "password_confirmation" => "Password1",
-    "role" => "customer_support"
   }
   @invalid_attrs %{}
   @password "password1"
@@ -28,7 +21,7 @@ defmodule AlertProcessor.Model.UserTest do
     end
 
     test "changeset with invalid attributes" do
-      changeset = User.changeset(%User{}, @invalid_attrs)
+      changeset = User.changeset(%User{}, @invalid_attrs, ~w(email password)a)
       refute changeset.valid?
     end
   end
@@ -65,99 +58,10 @@ defmodule AlertProcessor.Model.UserTest do
       assert user.id != nil
     end
 
-    test "does not create new account" do
-      assert {:error, changeset} = User.create_account(Map.put(@valid_account_attrs, "password_confirmation", "Garbage"))
-      refute changeset.valid?
-    end
-
     test "removes non digits from phone number input" do
       assert {:ok, user} = User.create_account(Map.merge(@valid_account_attrs, %{"sms_toggle" => "true", "phone_number" => "555-555-1234"}))
       assert user.phone_number == "5555551234"
       assert user.id != nil
-    end
-  end
-
-  describe "create_admin_account" do
-    test "creates new admin account" do
-      admin_user = insert(:user, role: "application_administration")
-      assert {:ok, user} = User.create_admin_account(@valid_admin_account_attrs, admin_user)
-      assert user.id != nil
-      assert %{
-        item_id: item_id,
-        item_type: "User",
-        origin: "admin:create-admin-account",
-        originator_id: originator_id,
-      } = PaperTrail.get_version(user)
-      assert item_id == user.id
-      assert originator_id == admin_user.id
-    end
-
-    test "does not create new account" do
-      admin_user = insert(:user, role: "application_administration")
-      assert {:error, changeset} =
-        User.create_admin_account(Map.put(@valid_admin_account_attrs,
-                                "role", nil), admin_user)
-      refute changeset.valid?
-    end
-
-    test "cannot have an invalid role name" do
-      admin_user = insert(:user, role: "application_administration")
-      assert {:error, changeset} =
-        User.create_admin_account(Map.put(@valid_admin_account_attrs,
-                                          "role", "super_user"), admin_user)
-      refute changeset.valid?
-    end
-  end
-
-  describe "upgrade_admin_account" do
-    test "updgrades admin account" do
-      admin_user = insert(:user, role: "application_administration")
-      regular_user = insert(:user)
-      assert {:ok, user} = User.upgrade_admin_account(regular_user, %{role: "customer_support"}, admin_user)
-
-      assert %{
-        item_type: "User",
-        origin: "admin:upgrade-admin-account",
-        originator_id: originator_id,
-      } = PaperTrail.get_version(user)
-
-      assert "customer_support" == user.role
-      assert originator_id == admin_user.id
-    end
-  end
-
-  describe "authenticate_admin/1" do
-    test "authenticates if email and password are valid and user has the application_administration role" do
-      Repo.insert!(%User{email: "test@email.com", role: "application_administration", encrypted_password: @encrypted_password})
-      assert {:ok, _} = User.authenticate_admin(%{"email" => "test@email.com", "password" => @password})
-    end
-
-    test "authenticates if email and password are valid and user has the customer_support role" do
-      Repo.insert!(%User{email: "test@email.com", role: "customer_support", encrypted_password: @encrypted_password})
-      assert {:ok, _} = User.authenticate_admin(%{"email" => "test@email.com", "password" => @password})
-    end
-
-    test "does not authenticate if email and password are valid but user has user role" do
-      Repo.insert!(%User{email: "test@email.com", role: "user", encrypted_password: @encrypted_password})
-      assert :unauthorized = User.authenticate_admin(%{"email" => "test@email.com", "password" => @password})
-    end
-
-    test "does not authenticate if user has been deactivated by admin" do
-      Repo.insert!(%User{
-        email: "test@email.com",
-        role: "deactivated_admin",
-        encrypted_password: @encrypted_password
-      })
-      assert :deactivated = User.authenticate_admin(%{"email" => "test@email.com", "password" => @password})
-    end
-
-    test "does not authenticate if user doesn't exist" do
-      assert {:error, _} = User.authenticate(%{"email" => "nope@invalid.com", "password" => @password})
-    end
-
-    test "email is not case sensitive" do
-      Repo.insert!(%User{email: "test@email.com", role: "application_administration", encrypted_password: @encrypted_password})
-      assert {:ok, _} = User.authenticate_admin(%{"email" => "TEST@EMAIL.COM", "password" => @password})
     end
   end
 
@@ -168,22 +72,17 @@ defmodule AlertProcessor.Model.UserTest do
     end
 
     test "will create a valid changeset with password containing special characters and at least 6 characters" do
-      changeset = User.create_account_changeset(%User{}, Map.merge(@valid_account_attrs, %{"password" => "P@ssword", "password_confirmation" => "P@ssword"}))
+      changeset = User.create_account_changeset(%User{}, Map.merge(@valid_account_attrs, %{"password" => "P@ssword"}))
       assert changeset.valid?
     end
 
-    test "will create an invalid changeset with non-matching password_confirmation" do
-      changeset = User.create_account_changeset(%User{}, Map.put(@valid_account_attrs, "password_confirmation", "Garbage"))
-      refute changeset.valid?
-    end
-
     test "will create an invalid changeset with invalid password that is too short" do
-      changeset = User.create_account_changeset(%User{}, Map.merge(@valid_account_attrs, %{"password" => "Pass1", "password_confirmation" => "Pass1"}))
+      changeset = User.create_account_changeset(%User{}, Map.merge(@valid_account_attrs, %{"password" => "Pass1"}))
       refute changeset.valid?
     end
 
     test "will create an invalid changeset with invalid password that does not contain a digit or special character" do
-      changeset = User.create_account_changeset(%User{}, Map.merge(@valid_account_attrs, %{"password" => "Password", "password_confirmation" => "Password"}))
+      changeset = User.create_account_changeset(%User{}, Map.merge(@valid_account_attrs, %{"password" => "Password"}))
       refute changeset.valid?
     end
 
@@ -205,13 +104,6 @@ defmodule AlertProcessor.Model.UserTest do
       refute Map.has_key?(changes, :phone_number)
       assert changeset.valid?
     end
-
-    test "sets do_not_disturb period from 10PM to 7AM" do
-      changeset = User.create_account_changeset(%User{}, @valid_account_attrs)
-
-      assert changeset.changes.do_not_disturb_start == ~T[22:00:00]
-      assert changeset.changes.do_not_disturb_end == ~T[07:00:00]
-    end
   end
 
   describe "update_account" do
@@ -229,7 +121,7 @@ defmodule AlertProcessor.Model.UserTest do
 
     test "does not opt in phone number when phone number not changed" do
       user = insert(:user)
-      assert {:ok, _} = User.update_account(user, %{"do_not_disturb_start" => ~T[23:00:00], "do_not_disturb_end" => ~T[05:00:00]}, user.id)
+      assert {:ok, _} = User.update_account(user, %{}, user.id)
       refute_received :opt_in_phone_number
     end
 
@@ -238,233 +130,14 @@ defmodule AlertProcessor.Model.UserTest do
       assert {:error, changeset} = User.update_account(user, %{"phone_number" => "not a phone number"}, user.id)
       refute changeset.valid?
     end
-
-    test "does not opt in phone number when does not save" do
-      user = insert(:user)
-      assert {:error, _} = User.update_account(user, %{"do_not_disturb_start" => "not a date", "phone_number" => "5550000000"}, user.id)
-      refute_received :opt_in_phone_number
-    end
-
-    test "performed by admin" do
-      admin_user = insert(:user, role: "application_administration")
-      user = insert(:user)
-      assert {:ok, user} = User.update_account(user, %{"phone_number" => "5550000000"}, admin_user.id)
-      assert user.phone_number == "5550000000"
-      assert %{
-        item_id: item_id,
-        item_type: "User",
-        origin: "admin:update-subscriber-account",
-        originator_id: originator_id
-      } = PaperTrail.get_version(user)
-      assert item_id == user.id
-      assert originator_id == admin_user.id
-    end
-  end
-
-  describe "upgrade_account_changest" do
-    test "with valid role" do
-      changeset = User.upgrade_account_changeset(%User{}, %{role: "customer_support"})
-
-      assert changeset.valid?
-    end
-
-    test "with invalid role" do
-      changeset = User.upgrade_account_changeset(%User{}, %{role: "user"})
-
-      refute changeset.valid?
-    end
-  end
-
-  describe "disable_account" do
-    test "removes password and puts into indefinite vacation mode" do
-      user = insert(:user)
-      assert {:ok, user} = User.disable_account(user, user.id)
-      assert DateTime.compare(user.vacation_end, DateTime.from_naive!(~N[9999-12-25 23:59:59], "Etc/UTC")) == :eq
-      assert user.encrypted_password == ""
-    end
-
-    test "performed by admin" do
-      admin_user = insert(:user, role: "application_administration")
-      user = insert(:user)
-      assert {:ok, user} = User.disable_account(user, admin_user.id)
-      assert DateTime.compare(user.vacation_end, DateTime.from_naive!(~N[9999-12-25 23:59:59], "Etc/UTC")) == :eq
-      assert user.encrypted_password == ""
-      assert %{
-        item_id: item_id,
-        item_type: "User",
-        origin: "admin:deactivate-subscriber-account",
-        originator_id: originator_id,
-        meta: %{
-          "subscriber_email" => subscriber_email,
-          "subscriber_id" => subscriber_id
-        }
-      } = PaperTrail.get_version(user)
-      assert item_id == user.id
-      assert originator_id == admin_user.id
-      assert subscriber_email == user.email
-      assert subscriber_id == user.id
-    end
   end
 
   describe "update_password" do
     test "updates password" do
       user = insert(:user)
       current_password = user.encrypted_password
-      assert {:ok, user} = User.update_password(user, %{"password" => "Password1", "password_confirmation" => "Password1"}, user.id)
+      assert {:ok, user} = User.update_password(user, %{"password" => "Password1"}, user.id)
       assert current_password != user.encrypted_password
-    end
-
-    test "does not update password" do
-      user = insert(:user)
-      assert {:error, changeset} = User.update_password(user, %{"password" => "Password1", "password_confirmation" => "Garbage"}, user.id)
-      refute changeset.valid?
-    end
-
-    test "performed by admin" do
-      admin_user = insert(:user, role: "application_administration")
-      user = insert(:user)
-      current_password = user.encrypted_password
-      assert {:ok, user} = User.update_password(user, %{"password" => "Password1", "password_confirmation" => "Password1"}, admin_user.id)
-      assert current_password != user.encrypted_password
-      assert %{
-        item_id: item_id,
-        item_type: "User",
-        origin: "admin:update-subscriber-password",
-        originator_id: originator_id,
-        meta: %{
-          "subscriber_email" => subscriber_email,
-          "subscriber_id" => subscriber_id
-        }
-      } = PaperTrail.get_version(user)
-      assert item_id == user.id
-      assert originator_id == admin_user.id
-      assert subscriber_email == user.email
-      assert subscriber_id == user.id
-    end
-  end
-
-  describe "update_password_changeset" do
-    test "will create a valid changeset with password containing special characters and at least 6 characters" do
-      changeset = User.update_password_changeset(%User{}, %{"password" => "P@ssword", "password_confirmation" => "P@ssword"})
-      assert changeset.valid?
-    end
-
-    test "will create an invalid changeset with non-matching password_confirmation" do
-      changeset = User.update_password_changeset(%User{}, %{"password" => "P@ssword", "password_confirmation" => "DifferentPassword"})
-      refute changeset.valid?
-    end
-
-    test "will create an invalid changeset with invalid password that is too short" do
-      changeset = User.update_password_changeset(%User{}, %{"password" => "Pass1", "password_confirmation" => "Pass1"})
-      refute changeset.valid?
-    end
-
-    test "will create an invalid changeset with invalid password that does not contain a digit or special character" do
-      changeset = User.update_password_changeset(%User{}, %{"password" => "Password", "password_confirmation" => "Password"})
-      refute changeset.valid?
-    end
-  end
-
-  describe "update_vacation" do
-    test "updates vacation" do
-      user = insert(:user)
-      assert user.vacation_start == nil
-      assert user.vacation_end == nil
-      {:ok, user} = User.update_vacation(user, %{"vacation_start" => "2017-09-01T00:00:00+00:00", "vacation_end" => "2035-09-01T00:00:00+00:00"}, user.id)
-      assert DateTime.compare(user.vacation_start, DateTime.from_naive!(~N[2017-09-01 00:00:00], "Etc/UTC")) == :eq
-      assert DateTime.compare(user.vacation_end, DateTime.from_naive!(~N[2035-09-01 00:00:00], "Etc/UTC")) == :eq
-    end
-
-    test "does not update vacation" do
-      user = insert(:user)
-      {:error, changeset} = User.update_vacation(user, %{"vacation_start" => "2017-09-01T00:00:00+00:00", "vacation_end" => "2015-09-01T00:00:00+00:00"}, user.id)
-      refute changeset.valid?
-    end
-
-    test "performed by admin" do
-      admin_user = insert(:user, role: "application_administration")
-      user = insert(:user)
-      assert user.vacation_start == nil
-      assert user.vacation_end == nil
-      {:ok, user} = User.update_vacation(user, %{"vacation_start" => "2017-09-01T00:00:00+00:00", "vacation_end" => "2035-09-01T00:00:00+00:00"}, admin_user.id)
-      assert DateTime.compare(user.vacation_start, DateTime.from_naive!(~N[2017-09-01 00:00:00], "Etc/UTC")) == :eq
-      assert DateTime.compare(user.vacation_end, DateTime.from_naive!(~N[2035-09-01 00:00:00], "Etc/UTC")) == :eq
-      assert %{
-        item_id: item_id,
-        item_type: "User",
-        origin: "admin:update-subscriber-vacation",
-        originator_id: originator_id,
-        meta: %{
-          "subscriber_email" => subscriber_email,
-          "subscriber_id" => subscriber_id
-        }
-      } = PaperTrail.get_version(user)
-      assert item_id == user.id
-      assert originator_id == admin_user.id
-      assert subscriber_email == user.email
-      assert subscriber_id == user.id
-    end
-  end
-
-  describe "update_vacation_changeset" do
-    test "will create a valid changeset with end time in the future" do
-      changeset = User.update_vacation_changeset(%User{}, %{"vacation_start" => "2017-09-01T00:00:00+00:00", "vacation_end" => "2035-09-01T00:00:00+00:00"})
-      assert changeset.valid?
-    end
-
-    test "will create an invalid changeset with vacation_end in past" do
-      changeset = User.update_vacation_changeset(%User{}, %{"vacation_start" => "2014-09-01T00:00:00+00:00", "vacation_end" => "2015-09-01T00:00:00+00:00"})
-      refute changeset.valid?
-      assert changeset.errors[:vacation_end] == {"Vacation period must end sometime in the future.", []}
-    end
-
-    test "will create an invalid changeset with vacation_end before vacation_start" do
-      changeset = User.update_vacation_changeset(%User{}, %{"vacation_start" => "2037-09-01T00:00:00+00:00", "vacation_end" => "2035-09-01T00:00:00+00:00"})
-      refute changeset.valid?
-      assert changeset.errors[:vacation_end] == {"Vacation period must have an end time later than the start time.", []}
-    end
-  end
-
-  describe "remove_vacation" do
-    test "removes vacation" do
-      user = insert(:user, vacation_start: ~N[2017-07-01 00:00:00], vacation_end: ~N[2099-07-01 00:00:00])
-      {:ok, user} = User.remove_vacation(user, user.id)
-      assert user.vacation_start == nil
-      assert user.vacation_end == nil
-    end
-
-    test "performed by admin" do
-      admin_user = insert(:user, role: "application_administration")
-      user = insert(:user, vacation_start: ~N[2017-07-01 00:00:00], vacation_end: ~N[2099-07-01 00:00:00])
-      {:ok, user} = User.remove_vacation(user, admin_user.id)
-      assert user.vacation_start == nil
-      assert user.vacation_end == nil
-      assert %{
-        item_id: item_id,
-        item_type: "User",
-        origin: "admin:remove-subscriber-vacation",
-        originator_id: originator_id,
-        meta: %{
-          "subscriber_email" => subscriber_email,
-          "subscriber_id" => subscriber_id
-        }
-      } = PaperTrail.get_version(user)
-      assert item_id == user.id
-      assert originator_id == admin_user.id
-      assert subscriber_email == user.email
-      assert subscriber_id == user.id
-    end
-  end
-
-  describe "remove_vacation_changeset" do
-    test "will create a valid changeset when vacation period is set" do
-      changeset = User.remove_vacation_changeset(%User{vacation_start: ~N[2017-07-01 00:00:00], vacation_end: ~N[2018-07-01 00:00:00]})
-      assert changeset.valid?
-    end
-
-    test "will create a valid changeset when vacation period is not set" do
-      changeset = User.remove_vacation_changeset(%User{vacation_start: nil, vacation_end: nil})
-      assert changeset.valid?
     end
   end
 
@@ -496,59 +169,6 @@ defmodule AlertProcessor.Model.UserTest do
     end
   end
 
-  describe "deactivate_admin/1" do
-    test "changes a user's role to deactivated_admin" do
-      admin_user = insert(:user, role: "application_administration")
-      user = insert(:user, role: "application_administration")
-
-      assert {:ok, %User{role: "deactivated_admin"}} = User.deactivate_admin(user, admin_user)
-      assert %{
-        item_id: item_id,
-        item_type: "User",
-        origin: "admin:deactivate-admin",
-        originator_id: originator_id
-      } = PaperTrail.get_version(user)
-      assert item_id == user.id
-      assert originator_id == admin_user.id
-    end
-  end
-
-  describe "activate_admin/2" do
-    test "changes a user's role to the role passed in params" do
-      admin_user = insert(:user, role: "application_administration")
-      user = insert(:user, role: "deactivated_admin")
-      params = %{"role" => "customer_support"}
-
-      assert {:ok, %User{role: "customer_support"}} = User.activate_admin(user, params, admin_user)
-      assert %{
-        item_id: item_id,
-        item_type: "User",
-        origin: "admin:change-admin-role",
-        originator_id: originator_id
-      } = PaperTrail.get_version(user)
-      assert item_id == user.id
-      assert originator_id == admin_user.id
-    end
-
-    test "returns an invalid changeset if passed empty role param" do
-      admin_user = insert(:user, role: "application_administration")
-      user = insert(:user)
-      invalid_params = %{"role" => ""}
-      {_, changeset} = User.activate_admin(user, invalid_params, admin_user)
-
-      refute changeset.valid?
-    end
-
-    test "returns an invalid changeset if passed a role other than active admin roles" do
-      admin_user = insert(:user, role: "application_administration")
-      user = insert(:user)
-      invalid_params = %{"role" => "deactivated_admin"}
-      {_, changeset} = User.activate_admin(user, invalid_params, admin_user)
-
-      refute changeset.valid?
-    end
-  end
-
   describe "for_email/1" do
     test "returns a user if present" do
       user = insert(:user)
@@ -557,193 +177,6 @@ defmodule AlertProcessor.Model.UserTest do
 
     test "returns nil if no matching user" do
       assert nil == User.for_email("test@nonexistent.com")
-    end
-  end
-
-  describe "all_admin_users/0" do
-    test "returns all users with admin roles" do
-      application_admin = insert(:user, role: "application_administration")
-      customer_support = insert(:user, role: "customer_support")
-      user = insert(:user, role: "user")
-
-      all_admin_users = User.all_admin_users()
-
-      assert application_admin in all_admin_users
-      assert customer_support in all_admin_users
-      refute user in all_admin_users
-    end
-  end
-
-  describe "admin_one!/1" do
-    test "returns an admin user with matching id" do
-      user = insert(:user, role: "application_administration")
-      assert user == User.admin_one!(user.id)
-    end
-
-    test "raises an exception if matching user is not an admin" do
-      user = insert(:user, role: "user")
-
-      assert_raise Ecto.NoResultsError, fn ->
-        User.admin_one!(user.id)
-      end
-    end
-
-    test "raises an exception if no user matches id" do
-      fake_id = "01cea8b6-7031-4dce-9781-9578777e6135"
-
-      assert_raise Ecto.NoResultsError, fn ->
-        User.admin_one!(fake_id)
-      end
-    end
-  end
-
-  describe "ordered_by_email/0" do
-    test "returns users in order by email address" do
-      user1 = insert(:user, email: "test_user@gmail.com")
-      user2 = insert(:user, email: "another_test_user@gmail.com")
-
-      assert [^user2, ^user1] = User.ordered_by_email().entries
-    end
-  end
-
-  describe "search_by_contact_info/2" do
-    test "filters by email" do
-      user1 = insert(:user, email: "one@email.com")
-      user2 = insert(:user, email: "two@email.com")
-
-      assert [^user1] = User.search_by_contact_info("one").entries
-      assert [^user2] = User.search_by_contact_info("two").entries
-      assert [^user1, ^user2] = User.search_by_contact_info("email").entries
-    end
-
-    test "filters by phone_number" do
-      user1 = insert(:user, email: "a@email.com", phone_number: "5551231234")
-      user2 = insert(:user, email: "b@email.com", phone_number: "5553559999")
-
-      assert [^user1] = User.search_by_contact_info("1234").entries
-      assert [^user2] = User.search_by_contact_info("9999").entries
-      assert [^user1, ^user2] = User.search_by_contact_info("555").entries
-    end
-
-    test "paginates" do
-      insert_list(26, :user)
-
-      users = User.search_by_contact_info("example", 1).entries
-      assert Enum.count(users) == 25
-      assert [user] = User.search_by_contact_info("example", 2).entries
-      assert Enum.find(users, fn(u) -> u.email == user.email end) == nil
-    end
-  end
-
-  describe "is_admin?/1" do
-    test "returns true if the user is an administrator" do
-      admin = build(:user, role: "application_administration")
-
-      assert User.is_admin?(admin) == true
-    end
-
-    test "returns false if the user is not an administrator" do
-      admin = build(:user, role: "user")
-
-      assert User.is_admin?(admin) == false
-    end
-  end
-
-  describe "is_app_admin?/1" do
-    test "returns true only if the user is an application administrator" do
-      app_admin = build(:user, role: "application_administration")
-
-      assert User.is_app_admin?(app_admin) == true
-    end
-
-    test "returns false if the user is not an administrator" do
-      user = build(:user, role: "customer_support")
-
-      assert User.is_app_admin?(user) == false
-    end
-  end
-
-  describe "log_admin_action" do
-    test "view_subscriber" do
-      admin_user = insert(:user, role: "application_administration")
-      subscriber = insert(:user)
-      assert {:ok, _} = User.log_admin_action(:view_subscriber, admin_user, subscriber)
-      assert %{
-        item_id: item_id,
-        item_type: "User",
-        origin: "admin:view-subscriber",
-        meta: %{
-          "subscriber_email" => subscriber_email,
-          "subscriber_id" => subscriber_id
-        }
-      } = PaperTrail.get_version(admin_user)
-      assert item_id == admin_user.id
-      assert subscriber_email == subscriber.email
-      assert subscriber_id == subscriber.id
-    end
-
-    test "message_subscriber" do
-      admin_user = insert(:user, role: "application_administration")
-      subscriber = insert(:user)
-      assert {:ok, _} = User.log_admin_action(:message_subscriber, admin_user, subscriber)
-      assert %{
-        item_id: item_id,
-        item_type: "User",
-        origin: "admin:message-subscriber",
-        meta: %{
-          "subscriber_email" => subscriber_email,
-          "subscriber_id" => subscriber_id
-        }
-      } = PaperTrail.get_version(admin_user)
-      assert item_id == admin_user.id
-      assert subscriber_email == subscriber.email
-      assert subscriber_id == subscriber.id
-    end
-
-    test "impersonate_subscriber" do
-      admin_user = insert(:user, role: "application_administration")
-      subscriber = insert(:user)
-      assert {:ok, _} = User.log_admin_action(:impersonate_subscriber, admin_user, subscriber)
-      assert %{
-        item_id: item_id,
-        item_type: "User",
-        origin: "admin:impersonate-subscriber",
-        meta: %{
-          "subscriber_email" => subscriber_email,
-          "subscriber_id" => subscriber_id
-        }
-      } = PaperTrail.get_version(admin_user)
-      assert item_id == admin_user.id
-      assert subscriber_email == subscriber.email
-      assert subscriber_id == subscriber.id
-    end
-  end
-
-  describe "admin_log" do
-    test "ordered by inserted_at in descending order" do
-      admin_user = insert(:user, role: "application_administration")
-      subscriber1 = insert(:user)
-      subscriber2 = insert(:user)
-      assert {:ok, _} = User.log_admin_action(:view_subscriber, admin_user, subscriber1)
-      assert {:ok, _} = User.log_admin_action(:view_subscriber, admin_user, subscriber2)
-      assert [%{
-        item_type: "User",
-        inserted_at: subscriber2_log_time,
-        origin: "admin:view-subscriber",
-        meta: %{
-          "subscriber_email" => subscriber2_email,
-        }
-      }, %{
-        item_type: "User",
-        inserted_at: subscriber1_log_time,
-        origin: "admin:view-subscriber",
-        meta: %{
-          "subscriber_email" => subscriber1_email,
-        }
-      }] = User.admin_log(admin_user.id)
-      assert subscriber2_email == subscriber2.email
-      assert subscriber1_email == subscriber1.email
-      assert subscriber2_log_time > subscriber1_log_time
     end
   end
 

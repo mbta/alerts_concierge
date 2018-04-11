@@ -10,7 +10,7 @@ defmodule ConciergeSite.V2.TripController do
 
   def index(conn, _params, user, _claims) do
     trips = Trip.get_trips_by_user(user.id)
-    render conn, "index.html", trips: trips
+    render conn, "index.html", trips: trips, user_id: user.id
   end
 
   def new(conn, _params, _user, _claims) do

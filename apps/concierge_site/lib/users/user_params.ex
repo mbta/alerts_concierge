@@ -19,19 +19,8 @@ defmodule ConciergeSite.UserParams do
         _ -> %{}
       end
 
-    do_not_disturb =
-      case params["dnd_toggle"] do
-        "true" ->
-          %{"do_not_disturb_start" => Time.from_iso8601!(params["do_not_disturb_start"]),
-            "do_not_disturb_end" => Time.from_iso8601!(params["do_not_disturb_end"])}
-        "false" ->
-          %{"do_not_disturb_start" => nil, "do_not_disturb_end" => nil}
-        _ -> %{}
-      end
-
     %{}
     |> Map.merge(phone_number)
-    |> Map.merge(do_not_disturb)
   end
 
   @doc """

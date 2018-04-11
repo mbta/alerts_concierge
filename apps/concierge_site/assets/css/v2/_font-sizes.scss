@@ -11,6 +11,15 @@ html {
 .heading__title {
   font-size: 1.75rem;
   border-bottom: 5px solid $brand-primary;
+  position: relative;
+}
+
+.heading__title--link {
+  font-size: 1rem;
+  font-weight: normal;
+  position: absolute;
+  right: 0;
+  bottom: 0;
 }
 
 .heading__subtitle {

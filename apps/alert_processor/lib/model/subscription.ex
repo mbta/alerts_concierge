@@ -133,12 +133,8 @@ defmodule AlertProcessor.Model.Subscription do
 
   def delete_subscription(struct, originator) do
     originator = User.wrap_id(originator)
-    origin =
-      if struct.user_id != originator.id do
-        "admin:delete-subscription"
-      end
     struct
-    |> PaperTrail.delete(originator: originator, meta: %{owner: struct.user_id}, origin: origin)
+    |> PaperTrail.delete(originator: originator, meta: %{owner: struct.user_id}, origin: nil)
     |> normalize_papertrail_result()
   end
 

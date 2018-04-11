@@ -92,8 +92,7 @@ defmodule SendNotifications do
     case AlertProcessor.Repo.get_by(User, email: @user_email) do
       %User{} = user -> user
       _ ->
-        params = %{"email" => @user_email, "password" => "Password1",
-          "password_confirmation" => "Password1"}
+        params = %{"email" => @user_email, "password" => "Password1"}
 
         {:ok, user} = User.create_account(params)
         user

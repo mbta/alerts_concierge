@@ -13,8 +13,7 @@ defmodule AlertProcessor.Subscription.Diagnostic do
     :passed_informed_entity_filter?,
     :passed_severity_filter?,
     :passed_active_period_filter?,
-    :passes_vacation_period?,
-    :passes_do_not_disturb?
+    :passes_vacation_period?
   ]
 
   def sort(diagnoses) do
@@ -67,7 +66,6 @@ defmodule AlertProcessor.Subscription.Diagnostic do
     |> matches_severity?(alert: alert, subscriptions: subscriptions)
     |> matches_active_period?(alert: alert, subscriptions: subscriptions)
     |> matches_vacation_period?(alert: alert, user: sub.user)
-    |> matches_dnd_period?(alert: alert, user: sub.user)
   end
 
   defp alert_sent?(diagnostic, alert: alert, subscriptions: subscriptions, notifications: notifications) do
@@ -149,11 +147,6 @@ defmodule AlertProcessor.Subscription.Diagnostic do
   end
 
   defp matches_vacation_period?(diagnostic, alert: alert, user: user) do
-    user =
-      user
-      |> Map.put(:do_not_disturb_start, nil)
-      |> Map.put(:do_not_disturb_end, nil)
-
     result = Enum.any?(alert.active_period, fn(ap) ->
       end_time = Map.get(ap, :end, nil)
       case NotificationBuilder.calculate_send_after(user, {ap.start, end_time}, alert.last_push_notification) do
@@ -163,22 +156,5 @@ defmodule AlertProcessor.Subscription.Diagnostic do
     end)
 
     Map.put(diagnostic, :passes_vacation_period?, result)
-  end
-
-  defp matches_dnd_period?(diagnostic, alert: alert, user: user) do
-    user =
-      user
-      |> Map.put(:vacation_start, nil)
-      |> Map.put(:vacation_end, nil)
-
-    result = Enum.any?(alert.active_period, fn(ap) ->
-      end_time = Map.get(ap, :end, nil)
-      case NotificationBuilder.calculate_send_after(user, {ap.start, end_time}, alert.last_push_notification) do
-        %DateTime{} -> true
-        _ -> false
-      end
-    end)
-
-    Map.put(diagnostic, :passes_do_not_disturb?, result)
   end
 end

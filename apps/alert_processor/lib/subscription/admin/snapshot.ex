@@ -7,7 +7,6 @@ defmodule AlertProcessor.Subscription.Snapshot do
     Subscription.DiagnosticQuery, ServiceInfoCache}
   alias Helpers.StructHelper
   alias Model.{InformedEntity, Subscription, User}
-  alias Calendar.Time.Parse, as: TParse
   alias Calendar.DateTime.Parse, as: DTParse
   alias Calendar.NaiveDateTime, as: NaiveDT
   import Ecto.Query
@@ -124,7 +123,6 @@ defmodule AlertProcessor.Subscription.Snapshot do
 
   defp serialize(snapshot) do
     user_params = snapshot.user
-      |> set_dnd_times()
       |> set_vacation()
     user = StructHelper.to_struct(User, user_params)
 
@@ -138,23 +136,6 @@ defmodule AlertProcessor.Subscription.Snapshot do
       informed_entities: snapshot.informed_entities,
       alert_priority_type: String.to_existing_atom(snapshot.subscription["alert_priority_type"])
     })
-  end
-
-  defp set_dnd_times(%{
-    "do_not_disturb_start" => dnd_start,
-    "do_not_disturb_end" => dnd_end
-  } = user_params) do
-    params = if is_nil(dnd_start) do
-      user_params
-    else
-      Map.put(user_params, "do_not_disturb_start", TParse.iso8601!(dnd_start))
-    end
-
-    if is_nil(dnd_end) do
-      params
-    else
-      Map.put(params, "do_not_disturb_end", TParse.iso8601!(dnd_end))
-    end
   end
 
   defp set_vacation(%{

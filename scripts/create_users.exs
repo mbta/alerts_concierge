@@ -15,7 +15,7 @@ defmodule CreateUsers do
       -d, --delete                     Delete users previously created by script
   """
 
-  @user_fields ~w(email phone_number do_not_disturb_start do_not_disturb_end encrypted_password)a
+  @user_fields ~w(email phone_number encrypted_password)a
 
   def run(:help) do
     IO.write(@moduledoc)
@@ -47,8 +47,6 @@ defmodule CreateUsers do
     params = %{
       email: "send-alerts-test-#{count}@example.com",
       phone_number: "5555555555",
-      do_not_disturb_start: ~T[22:00:00],
-      do_not_disturb_end: ~T[07:00:00],
       encrypted_password: "$2b$12$BwbCgTrrnXytfn733NZvV.RkLpMyO8Ga/zON5mSZAFz4/50kYYDhK" # p@ssw0rd
     }
 

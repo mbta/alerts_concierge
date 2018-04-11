@@ -68,8 +68,7 @@ defmodule AlertProcessor.Subscription.DiagnosticTest do
         passed_informed_entity_filter?: true,
         passed_severity_filter?: true,
         passed_active_period_filter?: true,
-        passes_vacation_period?: true,
-        passes_do_not_disturb?: true
+        passes_vacation_period?: true
       }
 
       failing = %{
@@ -77,8 +76,7 @@ defmodule AlertProcessor.Subscription.DiagnosticTest do
         passed_informed_entity_filter?: false,
         passed_severity_filter?: false,
         passed_active_period_filter?: false,
-        passes_vacation_period?: false,
-        passes_do_not_disturb?: false
+        passes_vacation_period?: false
       }
       diagnoses = [passing, failing]
 
@@ -334,49 +332,6 @@ defmodule AlertProcessor.Subscription.DiagnosticTest do
 
       {:ok, [result], %{"id" => alert_id}} = Diagnostic.diagnose_alert(user, params)
       assert result.passes_vacation_period? == true
-      assert alert_id == "114166"
-    end
-
-    test "alert did not match do not disturb" do
-      saturday_morning = 1504972475
-      saturday_afternoon = 1504983275
-      data = Map.put(@alert_params, "active_period", [%{
-         "start" => saturday_morning,
-         "end" => saturday_afternoon
-       }])
-
-      alert_params =  %{
-        alert_id: "114167",
-        last_modified: DateTime.from_unix!(@lpn_unix),
-        data: data
-      }
-
-      alert = SavedAlert.save_new_alert(%SavedAlert{}, alert_params)
-
-      user =
-        :user
-        |> build(do_not_disturb_start: nil, vacation_end: nil)
-        |> PaperTrail.insert!
-
-      create_changeset = Subscription.create_changeset(
-        %Subscription{},
-        params_for(:subscription, user: user, relevant_days: [:sunday], type: :bus)
-      )
-      PaperTrail.insert!(create_changeset)
-
-      params = %{
-        "alert_date" => %{
-          "year" => "2020",
-          "month" => "01",
-          "day" => "01",
-          "hour" => "1",
-          "minute" => "1"
-        },
-        "alert_id" => alert.alert_id
-      }
-
-      {:ok, [result], %{"id" => alert_id}} = Diagnostic.diagnose_alert(user, params)
-      assert result.passes_do_not_disturb? == true
       assert alert_id == "114166"
     end
 
