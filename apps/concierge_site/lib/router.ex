@@ -42,6 +42,11 @@ defmodule ConciergeSite.Router do
   end
 
   scope "/", ConciergeSite do
+    # no pipe
+    get "/_health", HealthController, :index
+  end
+
+  scope "/", ConciergeSite do
     pipe_through :browser
 
     get "/", PageController, :index
