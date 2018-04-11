@@ -137,33 +137,6 @@ defmodule ConcerigeSite.Helpers.MailHelperTest do
     end
   end
 
-  describe "unsubscribe_url" do
-    test "generates url with token" do
-      user = insert(:user)
-      url = MailHelper.unsubscribe_url(user)
-      assert url =~ "http"
-      assert url =~ ~r/unsubscribe\/(.+)/
-    end
-  end
-
-  describe "disable_account_url" do
-    test "generates url with token" do
-      user = insert(:user)
-      url = MailHelper.disable_account_url(user)
-      assert url =~ "http"
-      assert url =~ ~r/my-account\/confirm_disable\?token=(.+)/
-    end
-  end
-
-  describe "reset_password_url" do
-    test "generates url with password reset id" do
-      password_reset_id = "this-is-a-password-reset-id"
-      url = MailHelper.reset_password_url(password_reset_id)
-      assert url =~ "http"
-      assert url =~ "reset-password/#{password_reset_id}/edit"
-    end
-  end
-
   describe "manage_subscription_url" do
     test "generates url with token" do
       user = insert(:user)

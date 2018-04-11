@@ -9,12 +9,11 @@
     <div class="email-contents" style="padding: 16px;">
       <p style="margin: 0; padding: 0; margin-bottom: 16px;">Congratulations, you have successfully subscribed to receive T-Alerts.</p>
       <p style="margin: 0; padding: 0; margin-bottom: 16px;">To update your subscription preferences, please tap on the Edit your Subscriptions link below.</p>
-      <p style="margin: 0; padding: 0; margin-bottom: 16px;">To stop receiving alerts, please click unsubscribe below.</p>
 
-      <p style="margin: 0; padding: 0; margin-bottom: 16px;">If you did NOT request an account to receive T-Alerts, visit <a href="<%= disable_account_url %>"><%= disable_account_url %></a> to disable the account.</p><p style="margin: 0; padding: 0; margin-bottom: 16px;">
+      <p style="margin: 0; padding: 0; margin-bottom: 16px;">
     </p></div>
     <center>
-      <%= ConciergeSite.Helpers.MailHelper.html_footer(unsubscribe_url, manage_subscriptions_url, feedback_url) %>
+      <%= ConciergeSite.Helpers.MailHelper.html_footer(manage_subscriptions_url, feedback_url) %>
     </center>
   </body>
 </html>

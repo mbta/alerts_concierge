@@ -1,6 +1,0 @@
-<%= link to: @link_to, class: "progress-link #{@link_class}" do %>
-  <div class="progress-circle <%= @step_classes[:circle] %>"></div>
-  <div class="progress-step-name <%= @step_classes[:name] %>">
-    <%= @name %>
-  </div>
-<% end %>
