@@ -27,7 +27,7 @@ defmodule ConciergeSite.V2.AccountController do
   end
 
   def options_create(conn, %{"user" => user_params}, user, {:ok, claims}) do
-    params = options_params(user_params)
+    params = Map.merge(user_params, options_params(user_params))
 
     case User.update_account(user, params, Map.get(claims, "imp", user.id)) do
       {:ok, user} ->

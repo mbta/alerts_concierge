@@ -21,6 +21,12 @@
     </div>
   </div>
 
+  <div class="form-group my-4">
+    <%= checkbox form, :digest_opt_in, class: "form__input--inline" %>
+    <%= label form, :digest_opt_in, "Yes, I want to receive a weekly email about planned service changes", class: "form__label" %>
+    <i title="Even if you receive text alerts, this will be sent to the email address you signed up with" class="fa fa-question-circle"></i>
+  </div>
+
   <div class="my-5">
     <%= submit "Next", class: "btn btn-primary btn-login btn-block" %>
     <br>
