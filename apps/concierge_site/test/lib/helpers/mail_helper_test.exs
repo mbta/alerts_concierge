@@ -142,7 +142,7 @@ defmodule ConcerigeSite.Helpers.MailHelperTest do
       user = insert(:user)
       url = MailHelper.manage_subscriptions_url(user)
       assert url =~ "http"
-      assert url =~ ~r/v2\/trips\?token=(.+)/
+      assert url =~ ~r/trips\?token=(.+)/
     end
   end
 

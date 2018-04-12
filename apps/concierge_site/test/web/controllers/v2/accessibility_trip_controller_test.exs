@@ -6,7 +6,7 @@ defmodule ConciergeSite.V2.AccessibilityTripControllerTest do
     {:ok, user: user}
   end
 
-  test "GET /v2/accessibility_trips/new", %{conn: conn, user: user} do
+  test "GET /accessibility_trips/new", %{conn: conn, user: user} do
     conn = user
     |> guardian_login(conn)
     |> get(v2_accessibility_trip_path(conn, :new))
@@ -14,7 +14,7 @@ defmodule ConciergeSite.V2.AccessibilityTripControllerTest do
     assert html_response(conn, 200) =~ "accessibility"
   end
 
-  describe "POST /v2/accessibility_trips" do
+  describe "POST /accessibility_trips" do
     test "success", %{conn: conn, user: user} do
       trip = %{
         relevant_days: ["monday", "tuesday", "wednesday", "thursday", "friday"],
@@ -28,7 +28,7 @@ defmodule ConciergeSite.V2.AccessibilityTripControllerTest do
       |> guardian_login(conn)
       |> post(v2_accessibility_trip_path(conn, :create), %{trip: trip})
 
-      redir_path = "/v2/trips"
+      redir_path = "/trips"
       assert html_response(conn, 302) =~ redir_path
       conn = get(recycle(conn), redir_path)
       assert html_response(conn, 200) =~  "Accessibility trip created"
@@ -51,7 +51,7 @@ defmodule ConciergeSite.V2.AccessibilityTripControllerTest do
     end
   end
 
-  describe "GET /v2/accessibility_trips/:id/edit" do
+  describe "GET /accessibility_trips/:id/edit" do
     test "with valid trip", %{conn: conn, user: user} do
       trip = insert(:trip, %{trip_type: :accessibility, user: user})
       conn =
@@ -84,7 +84,7 @@ defmodule ConciergeSite.V2.AccessibilityTripControllerTest do
     end
   end
 
-  describe "PATCH /v2/trips/:id" do
+  describe "PATCH /trips/:id" do
     test "with valid relevant days", %{conn: conn, user: user} do
       trip = insert(:trip, %{trip_type: :accessibility, user: user})
       params = [

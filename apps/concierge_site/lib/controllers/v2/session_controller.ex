@@ -20,6 +20,15 @@ defmodule ConciergeSite.V2.SessionController do
   end
 
   def delete(conn, _params) do
-    redirect(conn, to: v2_session_path(conn, :new))
+    conn
+    |> put_flash(:info, "You have been logged out!")
+    |> Guardian.Plug.sign_out()
+    |> redirect(to: v2_session_path(conn, :new))
+  end
+
+  def unauthenticated(conn, _params) do
+    conn
+    |> put_flash(:info, "Please log in")
+    |> redirect(to: v2_session_path(conn, :new))
   end
 end

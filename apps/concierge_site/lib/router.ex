@@ -16,7 +16,7 @@ defmodule ConciergeSite.Router do
     plug Guardian.Plug.VerifySession
     plug Guardian.Plug.LoadResource
     plug Guardian.Plug.EnsureAuthenticated,
-      handler: ConciergeSite.SessionController
+      handler: ConciergeSite.V2.SessionController
     plug ConciergeSite.Plugs.TokenRefresh
     plug ConciergeSite.Plugs.Authorized
   end
@@ -55,12 +55,10 @@ defmodule ConciergeSite.Router do
   scope "/", ConciergeSite do
     pipe_through [:redirect_prod_http, :browser]
 
-    get "/", PageController, :index
-    resources "/login", SessionController, only: [:delete], singleton: true
     post "/rejected_email", RejectedEmailController, :handle_rejected_email
   end
 
-  scope "/v2", ConciergeSite, as: :v2 do
+  scope "/", ConciergeSite, as: :v2 do
     pipe_through [:redirect_prod_http, :browser, :v2_layout]
 
     get "/", V2.PageController, :index
@@ -70,7 +68,7 @@ defmodule ConciergeSite.Router do
     resources "/account", V2.AccountController, only: [:new, :create]
   end
 
-  scope "/v2", ConciergeSite, as: :v2 do
+  scope "/", ConciergeSite, as: :v2 do
     pipe_through [:redirect_prod_http, :browser, :browser_auth, :subscription_auth, :v2_layout]
 
     get "/account/options", V2.AccountController, :options_new

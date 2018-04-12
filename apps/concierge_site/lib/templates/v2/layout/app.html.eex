@@ -26,7 +26,7 @@
         <%= render "_logo.html" %>
         <div class="header__right">
           <%= if @current_user do %>
-            <%= link to: session_path(@conn, :delete), method: :delete, class: "header__logout" do %>
+            <%= link to: v2_session_path(@conn, :delete), method: :delete, class: "header__logout" do %>
               Logout
             <% end %>
           <% end %>

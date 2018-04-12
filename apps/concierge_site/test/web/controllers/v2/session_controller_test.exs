@@ -6,41 +6,48 @@ defmodule ConciergeSite.V2.SessionControllerTest do
   @password "password1"
   @encrypted_password Comeonin.Bcrypt.hashpwsalt(@password)
 
-  test "GET /v2/login/new", %{conn: conn} do
+  test "GET /login/new", %{conn: conn} do
     conn = get(conn, v2_session_path(conn, :new))
     assert html_response(conn, 200) =~ "Sign in"
   end
 
-  test "POST /v2/login", %{conn: conn} do
+  test "POST /login", %{conn: conn} do
     user = Repo.insert!(%User{email: "test@email.com", role: "user", encrypted_password: @encrypted_password})
     params = %{"user" => %{"email" => user.email,"password" => @password}}
     conn = post(conn, v2_session_path(conn, :create), params)
-    assert html_response(conn, 302) =~ "/v2/account/options"
+    assert html_response(conn, 302) =~ "/account/options"
   end
 
-  test "POST /v2/login with trips", %{conn: conn} do
+  test "POST /login with trips", %{conn: conn} do
     user = Repo.insert!(%User{email: "test@email.com", role: "user", encrypted_password: @encrypted_password})
     Repo.insert!(%Trip{user_id: user.id, alert_priority_type: :low, relevant_days: [:monday], start_time: ~T[12:00:00],
                        end_time: ~T[18:00:00], facility_types: [:elevator]})
     params = %{"user" => %{"email" => user.email,"password" => @password}}
     conn = post(conn, v2_session_path(conn, :create), params)
-    assert html_response(conn, 302) =~ "<a href=\"/v2/trips\">"
+    assert html_response(conn, 302) =~ "<a href=\"/trips\">"
   end
 
-  test "POST /v2/login rejected", %{conn: conn} do
+  test "POST /login rejected", %{conn: conn} do
     user = Repo.insert!(%User{email: "test@email.com", role: "user", encrypted_password: @encrypted_password})
     params = %{"user" => %{"email" => user.email,"password" => "11111111111"}}
     conn = post(conn, v2_session_path(conn, :create), params)
     assert html_response(conn, 200) =~ "information was incorrect"
   end
 
-  test "DELETE /v2/login", %{conn: conn} do
+  test "DELETE /login", %{conn: conn} do
     user = insert(:user)
 
     conn = user
     |> guardian_login(conn)
     |> delete(v2_session_path(conn, :delete))
 
+    assert redirected_to(conn, 302) =~ v2_session_path(conn, :new)
+  end
+
+  test "unauthenticated/2", %{conn: conn} do
+    # v2_trip index path requires authentication so it is handled by
+    # `unauthenticated/2` if user has not logged in
+    conn = get(conn, v2_trip_path(conn, :index))
     assert redirected_to(conn, 302) =~ v2_session_path(conn, :new)
   end
 end
