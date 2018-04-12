@@ -41,13 +41,19 @@ defmodule ConciergeSite.Router do
     plug :put_layout, {ConciergeSite.V2.LayoutView, :app}
   end
 
+  pipeline :redirect_prod_http do
+    if Application.get_env(:concierge_site, :redirect_http?) do
+      plug Plug.SSL, rewrite_on: [:x_forwarded_proto]
+    end
+  end
+
   scope "/", ConciergeSite do
     # no pipe
     get "/_health", HealthController, :index
   end
 
   scope "/", ConciergeSite do
-    pipe_through :browser
+    pipe_through [:redirect_prod_http, :browser]
 
     get "/", PageController, :index
     resources "/login", SessionController, only: [:delete], singleton: true
@@ -55,7 +61,7 @@ defmodule ConciergeSite.Router do
   end
 
   scope "/v2", ConciergeSite, as: :v2 do
-    pipe_through [:browser, :v2_layout]
+    pipe_through [:redirect_prod_http, :browser, :v2_layout]
 
     get "/", V2.PageController, :index
     get "/trip_type", V2.PageController, :trip_type
@@ -64,7 +70,7 @@ defmodule ConciergeSite.Router do
   end
 
   scope "/v2", ConciergeSite, as: :v2 do
-    pipe_through [:browser, :browser_auth, :subscription_auth, :v2_layout]
+    pipe_through [:redirect_prod_http, :browser, :browser_auth, :subscription_auth, :v2_layout]
 
     get "/account/options", V2.AccountController, :options_new
     post "/account/options", V2.AccountController, :options_create

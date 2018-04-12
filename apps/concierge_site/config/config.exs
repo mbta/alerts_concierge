@@ -20,6 +20,8 @@ config :concierge_site, ConciergeSite.Endpoint,
 
 config :concierge_site, temp_state_key: {:system, "TEMP_STATE_KEY", "top_secret_temp_state_key"}
 
+config :concierge_site, :redirect_http?, false
+
 # Bamboo config for emails
 config :concierge_site, ConciergeSite.Dissemination.Mailer,
   adapter: Bamboo.LocalAdapter,

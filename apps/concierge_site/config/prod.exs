@@ -20,8 +20,9 @@ config :concierge_site, ConciergeSite.Endpoint,
   secret_key_base: "${SECRET_KEY_BASE}",
   server: true,
   root: ".",
-  version: Application.spec(:concierge_site, :vsn),
-  force_ssl: [host: nil, rewrite_on: [:x_forwarded_proto]]
+  version: Application.spec(:concierge_site, :vsn)
+
+config :concierge_site, :redirect_http?, true
 
 # Do not print debug messages in production
 config :logger,
