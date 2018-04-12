@@ -10,7 +10,8 @@ defmodule AlertProcessor.Model.User do
     vacation_start: DateTime.t | nil,
     vacation_end: DateTime.t | nil,
     do_not_disturb_start: Time.t | nil,
-    do_not_disturb_end: Time.t | nil
+    do_not_disturb_end: Time.t | nil,
+    digest_opt_in: boolean
   }
 
   @type id :: String.t
@@ -33,6 +34,7 @@ defmodule AlertProcessor.Model.User do
     field :do_not_disturb_start, :time
     field :do_not_disturb_end, :time
     field :encrypted_password, :string
+    field :digest_opt_in, :boolean, default: true
     field :password, :string, virtual: true
     field :password_confirmation, :string, virtual: true
     field :sms_toggle, :boolean, virtual: true
@@ -152,7 +154,7 @@ defmodule AlertProcessor.Model.User do
   """
   def update_account_changeset(struct, params \\ %{}) do
     struct
-    |> cast(params, ~w(phone_number do_not_disturb_start do_not_disturb_end))
+    |> cast(params, ~w(phone_number do_not_disturb_start do_not_disturb_end digest_opt_in))
     |> validate_format(:phone_number, ~r/^[0-9]{10}$/, message: "Phone number is not in a valid format.")
   end
 

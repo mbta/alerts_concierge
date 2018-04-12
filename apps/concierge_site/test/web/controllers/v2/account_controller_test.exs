@@ -48,7 +48,8 @@ defmodule ConciergeSite.V2.AccountControllerTest do
 
     user_params = %{
       sms_toggle: "true",
-      phone_number: "5555555555"
+      phone_number: "5555555555",
+      digest_opt_in: false
     }
 
     conn = user
@@ -59,6 +60,7 @@ defmodule ConciergeSite.V2.AccountControllerTest do
 
     assert html_response(conn, 302) =~ "/v2/trip_type"
     assert updated_user.phone_number == "5555555555"
+    assert updated_user.digest_opt_in == false
   end
 
   test "POST /v2/account/options with email", %{conn: conn} do
