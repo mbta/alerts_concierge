@@ -15,9 +15,11 @@
   <div class="form-group my-4">
     <%= label form, :alert_time_difference_in_minutes, "When would you like to start receiving alerts for your trips?", class: "form__label" %>
     <p>
-      <%= select form, :alert_time_difference_in_minutes, ["30", "60", "120"],
+    <%= select form, :alert_time_difference_in_minutes, [[key: "30 minutes", value: 30],
+                                                         [key: "1 hour", value: 60],
+                                                         [key: "2 hours", value: 120]],
           selected: @trip.alert_time_difference_in_minutes, class: "custom-select" %>
-      <em> minutes before my trip</em>
+      <em> before my trip</em>
     </p>
   </div>
 
