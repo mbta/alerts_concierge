@@ -253,7 +253,10 @@ defmodule AlertProcessor.ServiceInfoCache do
           state
       end
     else
-      fetch_and_cache_service_info()
+      Logger.info("Fetching service info")
+      state = fetch_and_cache_service_info()
+      Logger.info("Finished fetching")
+      state
     end
   end
 

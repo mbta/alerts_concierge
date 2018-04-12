@@ -20,30 +20,20 @@ config :concierge_site, ConciergeSite.Endpoint,
   secret_key_base: "${SECRET_KEY_BASE}",
   server: true,
   root: ".",
-  version: Mix.Project.config[:version],
-  force_ssl: [host: nil, rewrite_on: [:x_forwarded_proto]]
+  version: Application.spec(:concierge_site, :vsn)
 
-config :phoenix, :serve_endpoints, true
+config :concierge_site, :redirect_http?, true
 
 # Do not print debug messages in production
 config :logger,
   level: :info,
   truncate: :infinity,
-  handle_sasl_reports: true,
-  backends: [{Logger.Backend.Splunk, :splunk}, :console]
+  backends: [:console]
 
 config :logger, :console,
   level: :info,
   format: "$dateT$time [$level]$levelpad node=$node $metadata$message\n",
   metadata: [:request_id, :ip]
-
-config :logger, :splunk,
-  connector: Logger.Backend.Splunk.Output.Http,
-  host: 'https://http-inputs-mbta.splunkcloud.com/services/collector/event',
-  token: {:system, "SPLUNK_TOKEN"},
-  level: :debug,
-  format: "$dateT$time [$level]$levelpad node=$node $metadata$message\n",
-  metadata: [:request_id]
 
 config :ehmon, :report_mf, {:ehmon, :info_report}
 
