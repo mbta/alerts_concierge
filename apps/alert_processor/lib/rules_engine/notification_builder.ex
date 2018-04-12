@@ -16,8 +16,6 @@ defmodule AlertProcessor.NotificationBuilder do
   2. Determine what time the notification should go out (send_after)
   3a. Determine whether or not to send notification based on user's vacation period
   3b. If vacation period overlaps send_after, adjust send_after to end of period
-  4a. Determine whether a notification should go out based on a user's do_not_disturb
-  4b. If do_not_disturb overlaps send_after, adjust send_after to end of period
   """
   @spec build_notifications({User.t, [Subscription.t]}, Alert.t, DateTime.t)
   :: [Notification.t]
@@ -124,15 +122,12 @@ defmodule AlertProcessor.NotificationBuilder do
   def calculate_send_after(%User{
       vacation_start: vs,
       vacation_end: ve,
-      do_not_disturb_start: dnd_start,
-      do_not_disturb_end: dnd_end
   }, {active_start, active_end}, now, notification_time \\ @notification_time) do
 
     with active_period <- {convert_active_period_to_utc(active_start), convert_active_period_to_utc(active_end)},
       :ok <- not_expired(active_period, now),
       {:ok, send_time} <- send_immediately(active_period, now, notification_time),
-      {:ok, send_time} <- outside_vacation_dates(active_period, send_time, vs, ve),
-      {:ok, send_time} <- outside_do_not_disturb(active_period, send_time, dnd_start, dnd_end)
+      {:ok, send_time} <- outside_vacation_dates(active_period, send_time, vs, ve)
     do
       send_time
     else
@@ -186,55 +181,6 @@ defmodule AlertProcessor.NotificationBuilder do
     !DT.before?(sending_time, vs) && !DT.after?(end_time, ve)
   end
 
-  @spec outside_do_not_disturb({DateTime.t, DateTime.t | nil}, DateTime.t,
-  Time.t | nil, Time.t | nil) :: :error | {:ok, DateTime.t}
-  defp outside_do_not_disturb({_start_time, _end_time}, sending_time, nil, nil) do
-    {:ok, sending_time}
-  end
-  defp outside_do_not_disturb({_start_time, end_time}, send_time, dnd_start, dnd_end) do
-    dnd_start = time_to_datetime(dnd_start, send_time)
-    dnd_end = time_to_datetime(dnd_end, send_time)
-    case send_time(send_time, dnd_start, dnd_end) do
-      {:ok, send_time} -> {:ok, send_time}
-      {:check_send, adjusted_send_time} ->
-        case end_time(adjusted_send_time, end_time) do
-          true -> {:ok, adjusted_send_time}
-          false -> {:error, :do_not_disturb}
-        end
-    end
-  end
-
-  @spec end_time(DateTime.t, DateTime.t | nil) :: boolean()
-  defp end_time(_, nil) do
-    true
-  end
-  defp end_time(send_time, end_time) do
-    !DT.after?(send_time, end_time)
-  end
-
-  @spec send_time(DateTime.t, DateTime.t, DateTime.t)
-  :: {:ok | :check_send, DateTime.t}
-  defp send_time(send_time, dnd_start, dnd_end) do
-    if before_or_equal(dnd_start, dnd_end) do
-      if before_or_equal(dnd_start, send_time)
-      && before_or_equal(send_time, dnd_end) do
-        {:check_send, dnd_end}
-      else
-        {:ok, send_time}
-      end
-    else
-      case before_or_equal(send_time, dnd_start) do
-        true ->
-          case before_or_equal(dnd_end, send_time) do
-            false -> {:check_send, dnd_end}
-            true -> {:ok, send_time}
-          end
-        false ->
-          {:check_send, DT.add!(dnd_end, 86_400)}
-      end
-    end
-  end
-
   @spec time_to_datetime(Time.t | nil, DateTime.t) :: DateTime.t | nil
   defp time_to_datetime(time, datetime) do
     erl_time = T.to_erl(time)
@@ -250,10 +196,6 @@ defmodule AlertProcessor.NotificationBuilder do
     datetime
     |> DT.shift_zone!("America/New_York")
     |> DateTime.to_time
-  end
-
-  defp before_or_equal(first_dt, second_dt) do
-    !DT.after?(first_dt, second_dt)
   end
 
   @spec convert_active_period_to_utc(DateTime.t | nil) :: DateTime.t | nil
