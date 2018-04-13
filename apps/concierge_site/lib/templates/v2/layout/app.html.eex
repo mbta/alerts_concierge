@@ -43,8 +43,8 @@
     </div>
     <footer class="footer__container">
       <p>
-        <a class="text-white" href="https://www.mbta.com/alerts">See all alerts</a> ●
-        <a class="text-white" href="https://www.mbta.com/about-t-alerts-beta">FAQ</a>
+        <%= link "See all alerts", to: "https://www.mbta.com/alerts", class: "text-white" %> ●
+        <%= link "FAQ", to: "https://www.mbta.com/about-t-alerts-beta", class: "text-white" %>
       </p>
       <p>&copy; Massachusetts Bay Transportation Authority, all rights reserved.</p>
     </footer>
