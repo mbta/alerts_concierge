@@ -23,7 +23,7 @@ defmodule ConciergeSite.ConfirmationMessage do
 
   defp send_sms_confirmation(phone_number) do
     %Notification{
-      header: "You have been subscribed to MBTA alerts. To stop receiving text message alerts, reply STOP or visit alerts.mbta.com. Data rates may apply.",
+      header: "You have been subscribed to MBTA alerts. To stop receiving texts, reply STOP (cannot resubscribe for 30 days) or visit alerts.mbta.com. Data rates may apply.",
       phone_number: phone_number
     }
     |> NotificationSmser.notification_sms()
