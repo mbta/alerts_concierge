@@ -5,7 +5,6 @@ defmodule ConciergeSite.TimeHelper do
 
   alias Calendar.Time, as: T
   alias Calendar.Strftime
-  alias AlertProcessor.Helpers.DateTimeHelper
 
   @doc """
   Returns stringified times to populate a dropdown list of a full day of times at
