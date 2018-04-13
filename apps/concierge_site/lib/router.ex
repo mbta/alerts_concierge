@@ -75,11 +75,9 @@ defmodule ConciergeSite.Router do
 
     get "/account/options", V2.AccountController, :options_new
     post "/account/options", V2.AccountController, :options_create
-    resources "/account", V2.TripController, only: [:edit, :update, :delete], singleton: true do
-      get "/edit", V2.AccountController, :edit
-      post "/edit", V2.AccountController, :update
-      delete "/delete", V2.AccountController, :delete
-    end
+    get "/account/edit", V2.AccountController, :edit
+    post "/account/edit", V2.AccountController, :update
+    delete "/account/delete", V2.AccountController, :delete
     get "/password/edit", V2.AccountController, :edit_password
     post "/password/edit", V2.AccountController, :update_password
     resources "/trips", V2.TripController, only: [:index, :edit, :update, :delete]
