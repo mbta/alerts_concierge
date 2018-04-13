@@ -1,13 +1,7 @@
 defmodule ConciergeSite.TimeHelperTest do
   @moduledoc false
   use ExUnit.Case
-  alias AlertProcessor.Model.{Subscription, User}
   alias ConciergeSite.TimeHelper
-
-  test "string_to_time/1" do
-    assert nil == TimeHelper.string_to_time(nil)
-    assert ~T[04:00:00] == TimeHelper.string_to_time("04:00:00")
-  end
 
   test "travel_time_options/0 returns list of formatted 15 min increments" do
     expected = [
@@ -47,35 +41,5 @@ defmodule ConciergeSite.TimeHelperTest do
     ]
 
     assert TimeHelper.travel_time_options() == expected
-  end
-
-  describe "subscription_during_do_not_disturb?/2" do
-    test "returns true if range is completely contained within other" do
-      assert TimeHelper.subscription_during_do_not_disturb?(%Subscription{start_time: ~T[05:00:00], end_time: ~T[06:00:00]}, %User{do_not_disturb_start: ~T[05:00:00], do_not_disturb_end: ~T[07:00:00]})
-    end
-
-    test "returns true if range is partially contained within other" do
-      assert TimeHelper.subscription_during_do_not_disturb?(%Subscription{start_time: ~T[08:00:00], end_time: ~T[12:00:00]}, %User{do_not_disturb_start: ~T[05:00:00], do_not_disturb_end: ~T[14:00:00]})
-    end
-
-    test "returns false if no overlap" do
-      refute TimeHelper.subscription_during_do_not_disturb?(%Subscription{start_time: ~T[15:00:00], end_time: ~T[17:00:00]}, %User{do_not_disturb_start: ~T[09:00:00], do_not_disturb_end: ~T[14:00:00]})
-    end
-
-    test "returns false if subscription is an accessibility, parking, or bike storage subscription" do
-      refute TimeHelper.subscription_during_do_not_disturb?(%Subscription{start_time: ~T[05:00:00], end_time: ~T[06:00:00], type: :accessibility}, %User{do_not_disturb_start: ~T[05:00:00], do_not_disturb_end: ~T[07:00:00]})
-    end
-
-    test "handles overnight dnd periods" do
-      assert TimeHelper.subscription_during_do_not_disturb?(%Subscription{start_time: ~T[18:00:00], end_time: ~T[22:00:00]}, %User{do_not_disturb_start: ~T[17:00:00], do_not_disturb_end: ~T[02:00:00]})
-    end
-
-    test "handles overnight dnd periods with subscription in the morning" do
-      assert TimeHelper.subscription_during_do_not_disturb?(%Subscription{start_time: ~T[16:00:00], end_time: ~T[18:00:00]}, %User{do_not_disturb_start: ~T[17:00:00], do_not_disturb_end: ~T[08:00:00]})
-    end
-
-    test "returns false if dnd period is not set" do
-      refute TimeHelper.subscription_during_do_not_disturb?(%Subscription{start_time: ~T[17:00:00], end_time: ~T[23:00:00]}, %User{do_not_disturb_start: nil, do_not_disturb_end: nil})
-    end
   end
 end

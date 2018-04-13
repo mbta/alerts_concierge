@@ -5,10 +5,6 @@ defmodule ConciergeSite.TimeHelper do
 
   alias Calendar.Time, as: T
   alias Calendar.Strftime
-  alias AlertProcessor.Helpers.DateTimeHelper
-  alias AlertProcessor.Model.{Subscription, User}
-
-  @all_day_subscription_types [:accessibility, :parking, :bike_storage]
 
   @doc """
   Returns stringified times to populate a dropdown list of a full day of times at
@@ -36,51 +32,9 @@ defmodule ConciergeSite.TimeHelper do
   end
 
   @doc """
-  Takes Time.t and returns HH:MMam/pm
-  """
-  @spec format_time(Time.t) :: String.t
-  def format_time(time) do
-    {:ok, output} = Strftime.strftime(time, "%l:%M%P")
-    output
-  end
-
-  @doc """
   Converts a Time.t to a string with the H:M:S format
   """
   @spec time_to_string(Time.t | nil) :: String.t | nil
   def time_to_string(nil), do: nil
   def time_to_string(time), do: Strftime.strftime!(time, "%H:%M:%S")
-
-  @doc """
-  Converts a string with the H:M:S format to a Time.t
-  """
-  @spec string_to_time(String.t | nil) :: String.t | nil
-  def string_to_time(nil), do: nil
-  def string_to_time(time), do: Time.from_iso8601!(time)
-
-  @doc """
-  Converts timestamp into integer value adjusting late night, after
-  midnight values into higher than times before midnight.
-  """
-  @spec normalized_time_value(Time.t | nil) :: integer
-  def normalized_time_value(nil), do: 0
-  def normalized_time_value(timestamp) do
-    stv = DateTimeHelper.seconds_of_day(timestamp)
-    if stv < 10_800 do
-      stv + 86_400
-    else
-      stv
-    end
-  end
-
-  @spec subscription_during_do_not_disturb?(Subscription.t, User.t) :: boolean
-  def subscription_during_do_not_disturb?(_, %User{do_not_disturb_start: nil, do_not_disturb_end: nil}), do: false
-  def subscription_during_do_not_disturb?(%Subscription{type: type}, _) when type in @all_day_subscription_types, do: false
-  def subscription_during_do_not_disturb?(%Subscription{start_time: start_time, end_time: end_time}, %User{do_not_disturb_start: dnd_start, do_not_disturb_end: dnd_end}) do
-    if normalized_time_value(dnd_start) > normalized_time_value(dnd_end) do
-      normalized_time_value(end_time) > normalized_time_value(dnd_start) || normalized_time_value(dnd_end) > normalized_time_value(start_time)
-    else
-      !(normalized_time_value(start_time) >= normalized_time_value(dnd_end) || normalized_time_value(dnd_start) >= normalized_time_value(end_time))
-    end
-  end
 end

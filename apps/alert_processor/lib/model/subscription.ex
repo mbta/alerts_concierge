@@ -113,13 +113,9 @@ defmodule AlertProcessor.Model.Subscription do
   end
 
   def update_subscription(struct, params, originator) do
-    origin =
-      if struct.user_id != User.wrap_id(originator).id do
-        "admin:update-subscription"
-      end
     struct
     |> update_changeset(params)
-    |> PaperTrail.update(originator: User.wrap_id(originator), meta: %{owner: struct.user_id}, origin: origin)
+    |> PaperTrail.update(originator: User.wrap_id(originator), meta: %{owner: struct.user_id})
     |> normalize_papertrail_result()
   end
 
@@ -132,13 +128,8 @@ defmodule AlertProcessor.Model.Subscription do
   end
 
   def delete_subscription(struct, originator) do
-    originator = User.wrap_id(originator)
-    origin =
-      if struct.user_id != originator.id do
-        "admin:delete-subscription"
-      end
     struct
-    |> PaperTrail.delete(originator: originator, meta: %{owner: struct.user_id}, origin: origin)
+    |> PaperTrail.delete(originator: User.wrap_id(originator), meta: %{owner: struct.user_id})
     |> normalize_papertrail_result()
   end
 

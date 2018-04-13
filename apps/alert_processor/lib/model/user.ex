@@ -9,8 +9,6 @@ defmodule AlertProcessor.Model.User do
     role: String.t,
     vacation_start: DateTime.t | nil,
     vacation_end: DateTime.t | nil,
-    do_not_disturb_start: Time.t | nil,
-    do_not_disturb_end: Time.t | nil,
     digest_opt_in: boolean
   }
 
@@ -18,7 +16,7 @@ defmodule AlertProcessor.Model.User do
 
   use Ecto.Schema
   import Ecto.{Changeset, Query}
-  alias AlertProcessor.{Aws.AwsClient, Model.Subscription, HoldingQueue, Repo}
+  alias AlertProcessor.{Aws.AwsClient, Model.Subscription, Model.Trip, Repo}
   alias Comeonin.Bcrypt
   alias Ecto.Multi
 
@@ -31,33 +29,25 @@ defmodule AlertProcessor.Model.User do
     field :role, :string
     field :vacation_start, :utc_datetime
     field :vacation_end, :utc_datetime
-    field :do_not_disturb_start, :time
-    field :do_not_disturb_end, :time
     field :encrypted_password, :string
     field :digest_opt_in, :boolean, default: true
     field :password, :string, virtual: true
-    field :password_confirmation, :string, virtual: true
     field :sms_toggle, :boolean, virtual: true
 
     timestamps()
   end
 
-  @permitted_fields ~w(email phone_number role vacation_start
-    vacation_end do_not_disturb_start do_not_disturb_end password
-    password_confirmation)a
+  @permitted_fields ~w(email phone_number role password digest_opt_in)a
   @required_fields ~w(email password)a
-
-  @active_admin_roles ~w(customer_support application_administration)
-  @admin_roles ["deactivated_admin" | @active_admin_roles]
 
   @doc """
   Builds a changeset based on the `struct` and `params`.
   """
-  def changeset(struct, params \\ %{}) do
+  def changeset(struct, params \\ %{}, required_fields \\ []) do
     struct
     |> cast(params, @permitted_fields)
     |> update_change(:email, &String.downcase/1)
-    |> validate_required(@required_fields)
+    |> validate_required(required_fields)
   end
 
   def create_account(params) do
@@ -73,29 +63,36 @@ defmodule AlertProcessor.Model.User do
     end
   end
 
-  def create_or_upgrade_admin_account(%{"email" => email} = params, originator) do
-    case Repo.get_by(__MODULE__, email: email) do
-      user = %__MODULE__{} ->
-        upgrade_admin_account(user, params, originator)
+  def update_account(struct, params, originator) do
+    changeset = update_account_changeset(struct, params)
+
+    result = changeset
+    |> PaperTrail.update(originator: wrap_id(originator), origin: nil, meta: %{subscriber_id: struct.id, subscriber_email: struct.email})
+    |> normalize_papertrail_result()
+
+    case {result, changeset} do
+      {{:ok, updated_user}, %{changes: %{phone_number: _}}} ->
+        opt_in_phone_number(updated_user)
+        result
       _ ->
-        create_admin_account(params, originator)
+        result
     end
   end
 
-  def upgrade_admin_account(user, params, originator) do
-    user
-    |> upgrade_account_changeset(params)
-    |> PaperTrail.update(originator: wrap_id(originator), origin: "admin:upgrade-admin-account")
-    |> normalize_papertrail_result()
+  @doc """
+  Deletes all the version from papertrail, then the subscriptions and trips followed by the user record
+  """
+  def delete(user) do
+    Ecto.Adapters.SQL.query!(Repo, "DELETE FROM versions WHERE originator_id = $1", [UUID.string_to_binary!(user.id)])
+    Repo.delete_all(from(s in Subscription, where: s.user_id == ^user.id))
+    Repo.delete_all(from(t in Trip, where: t.user_id == ^user.id))
+    Repo.delete(user)
   end
 
-  def create_admin_account(params, originator) do
-    %__MODULE__{}
-    |> cast(params, [:role])
-    |> validate_required([:role])
-    |> validate_inclusion(:role, @admin_roles)
-    |> create_account_changeset(params)
-    |> PaperTrail.insert(originator: wrap_id(originator), origin: "admin:create-admin-account")
+  def update_password(user, params, originator) do
+    user
+    |> update_password_changeset(params)
+    |> PaperTrail.update(originator: wrap_id(originator), origin: nil, meta: %{subscriber_id: user.id, subscriber_email: user.email})
     |> normalize_papertrail_result()
   end
 
@@ -110,95 +107,36 @@ defmodule AlertProcessor.Model.User do
         _ -> params
       end
     struct
-    |> changeset(params)
-    |> change(%{do_not_disturb_start: ~T[22:00:00], do_not_disturb_end: ~T[07:00:00]})
+    |> changeset(params, @required_fields)
     |> validate_format(:email, ~r/@/, message: "Please enter a valid email address.")
     |> unique_constraint(:email, message: "Sorry, that email has already been taken.")
-    |> validate_confirmation(:password, required: true, message: "Password and password confirmation did not match.")
     |> validate_length(:password, min: 6, message: "Password must be at least six characters long.")
     |> validate_format(:password, ~r/[^a-zA-Z\s:]{1}/, message: "Password must contain one number or special character (? & % $ # !, etc).")
     |> validate_format(:phone_number, ~r/^[0-9]{10}$/, message: "Phone number is not in a valid format.")
     |> hash_password()
   end
 
-  def upgrade_account_changeset(struct, params \\ %{}) do
-    struct
-    |> cast(params, [:role])
-    |> validate_required([:role])
-    |> validate_inclusion(:role, @admin_roles)
-  end
-
-  def update_account(struct, params, originator) do
-    origin =
-      if struct.id != wrap_id(originator).id do
-        "admin:update-subscriber-account"
-      end
-
-    changeset = update_account_changeset(struct, params)
-
-    result = changeset
-    |> PaperTrail.update(originator: wrap_id(originator), origin: origin, meta: %{subscriber_id: struct.id, subscriber_email: struct.email})
-    |> normalize_papertrail_result()
-
-    case {result, changeset} do
-      {{:ok, updated_user}, %{changes: %{phone_number: _}}} ->
-        opt_in_phone_number(updated_user)
-        result
-      _ ->
-        result
-    end
-  end
-
   @doc """
   Builds changeset for updating an existing user account
   """
   def update_account_changeset(struct, params \\ %{}) do
+    params =
+      case params do
+        %{"sms_toggle" => "false"} -> Map.put(params, "phone_number", nil)
+        %{"sms_toggle" => "true"} -> Map.put(params, "phone_number", String.replace(params["phone_number"] || "", ~r/\D/, ""))
+        _ -> params
+      end
     struct
-    |> cast(params, ~w(phone_number do_not_disturb_start do_not_disturb_end digest_opt_in))
+    |> changeset(params, [])
     |> validate_format(:phone_number, ~r/^[0-9]{10}$/, message: "Phone number is not in a valid format.")
   end
 
-  def disable_account(struct, originator) do
-    origin =
-      if struct.id != wrap_id(originator).id do
-        "admin:deactivate-subscriber-account"
-      end
+  defp update_password_changeset(struct, params) do
     struct
-    |> disable_account_changeset()
-    |> PaperTrail.update(originator: wrap_id(originator), origin: origin, meta: %{subscriber_id: struct.id, subscriber_email: struct.email})
-    |> normalize_papertrail_result()
-  end
-
-  def disable_account_changeset(struct) do
-    struct
-    |> change(encrypted_password: "")
-    |> change(vacation_start: DateTime.utc_now())
-    |> change(vacation_end: DateTime.from_naive!(~N[9999-12-25 23:59:59], "Etc/UTC"))
-  end
-
-  def deactivate_admin(struct, originator) do
-    struct
-    |> deactivate_admin_changeset()
-    |> PaperTrail.update(originator: wrap_id(originator), origin: "admin:deactivate-admin")
-    |> normalize_papertrail_result()
-  end
-
-  def deactivate_admin_changeset(struct) do
-    change(struct, role: "deactivated_admin")
-  end
-
-  def activate_admin(struct, params, originator) do
-    struct
-    |> activate_admin_changeset(params)
-    |> PaperTrail.update(originator: wrap_id(originator), origin: "admin:change-admin-role")
-    |> normalize_papertrail_result()
-  end
-
-  def activate_admin_changeset(struct, params \\ %{}) do
-    struct
-    |> cast(params, [:role])
-    |> validate_required([:role])
-    |> validate_inclusion(:role, @active_admin_roles)
+    |> changeset(params, ~w(password)a)
+    |> validate_length(:password, min: 6, message: "Password must be at least six characters long.")
+    |> validate_format(:password, ~r/[^a-zA-Z\s:]{1}/, message: "Password must contain one number or special character (? & % $ # !, etc).")
+    |> hash_password()
   end
 
   defp hash_password(changeset) do
@@ -207,7 +145,6 @@ defmodule AlertProcessor.Model.User do
         changeset
         |> put_change(:encrypted_password, Bcrypt.hashpwsalt(password))
         |> delete_change(:password)
-        |> delete_change(:password_confirmation)
       _ ->
         changeset
     end
@@ -222,84 +159,10 @@ defmodule AlertProcessor.Model.User do
     |> validate_required([:email, :password])
   end
 
-  def update_password(user, params, originator) do
-    origin =
-      if user.id != wrap_id(originator).id do
-        "admin:update-subscriber-password"
-      end
-    user
-    |> update_password_changeset(params)
-    |> PaperTrail.update(originator: wrap_id(originator), origin: origin, meta: %{subscriber_id: user.id, subscriber_email: user.email})
-    |> normalize_papertrail_result()
-  end
-
-  @doc """
-  Builds a changeset to update password
-  """
-  def update_password_changeset(struct, params \\ %{}) do
-    struct
-    |> cast(params, [:password, :password_confirmation])
-    |> validate_required(:password)
-    |> validate_confirmation(:password, required: true, message: "Password and password confirmation did not match.")
-    |> validate_length(:password, min: 6, message: "Password must be at least six characters long.")
-    |> validate_format(:password, ~r/[^a-zA-Z\s:]{1}/, message: "Password must contain one number or special character (? & % $ # !, etc).")
-    |> hash_password()
-  end
-
-  def update_vacation(user, params, originator) do
-    origin =
-      if user.id != wrap_id(originator).id do
-        "admin:update-subscriber-vacation"
-      end
-    user
-    |> update_vacation_changeset(params)
-    |> PaperTrail.update(originator: wrap_id(originator), origin: origin, meta: %{subscriber_id: user.id, subscriber_email: user.email})
-    |> normalize_papertrail_result()
-  end
-
-  def remove_vacation(user, originator) do
-    origin =
-      if user.id != wrap_id(originator).id do
-        "admin:remove-subscriber-vacation"
-      end
-    user
-    |> remove_vacation_changeset()
-    |> PaperTrail.update(originator: wrap_id(originator), origin: origin, meta: %{subscriber_id: user.id, subscriber_email: user.email})
-    |> normalize_papertrail_result()
-  end
-
   @spec update_vacation_changeset(__MODULE__.t, map) :: Ecto.Changeset.t
   def update_vacation_changeset(struct, params \\ %{}) do
     struct
     |> cast(params, ~w(vacation_start vacation_end)a)
-    |> validate_vacation_period()
-  end
-
-  defp validate_vacation_period(changeset) do
-    vacation_start = get_field(changeset, :vacation_start)
-    vacation_end = get_field(changeset, :vacation_end)
-    case {vacation_start, vacation_end} do
-      {nil, nil} ->
-        changeset
-      {vacation_start, vacation_end} ->
-        now = DateTime.utc_now()
-        with {:lt, :valid_period} <- {DateTime.compare(vacation_start, vacation_end), :valid_period},
-            {:lt, :in_future} <- {DateTime.compare(now, vacation_end), :in_future} do
-          changeset
-        else
-          {_, :in_future} ->
-            add_error(changeset, :vacation_end, "Vacation period must end sometime in the future.")
-          {_, :valid_period} ->
-            add_error(changeset, :vacation_end, "Vacation period must have an end time later than the start time.")
-        end
-    end
-  end
-
-  @spec remove_vacation_changeset(__MODULE__.t) :: Ecto.Changeset.t
-  def remove_vacation_changeset(struct) do
-    struct
-    |> change(vacation_start: nil)
-    |> change(vacation_end: nil)
   end
 
   def opt_in_phone_number(%__MODULE__{phone_number: nil}), do: {:ok, nil}
@@ -331,24 +194,6 @@ defmodule AlertProcessor.Model.User do
       _ -> Bcrypt.checkpw(password, user.encrypted_password)
     end
   end
-
-  @doc """
-  Checks if a user's login credentials are valid and that the user has either the
-  customer_support or application_administration role
-  """
-  def authenticate_admin(params) do
-    params
-    |> authenticate()
-    |> authorize_admin()
-  end
-
-  defp authorize_admin({:ok, %__MODULE__{role: role}} = {_, user}) when role in @active_admin_roles do
-     {:ok, user}
-  end
-
-  defp authorize_admin({:ok, %__MODULE__{role: "deactivated_admin"}}), do: :deactivated
-  defp authorize_admin({:ok, _user}), do: :unauthorized
-  defp authorize_admin({:error, result}), do: {:error, result}
 
   @doc """
   Returns user ids based on a list of phone numbers
@@ -386,96 +231,11 @@ defmodule AlertProcessor.Model.User do
     |> normalize_papertrail_result()
   end
 
-  @spec clear_holding_queue_for_user_id(id) :: :ok
-  def clear_holding_queue_for_user_id(user_id) do
-    HoldingQueue.remove_user_notifications(user_id)
-  end
-
   defp normalize_papertrail_result({:ok, %{model: user}}), do: {:ok, user}
   defp normalize_papertrail_result(result), do: result
 
   def for_email(email) do
     Repo.get_by(__MODULE__, email: email)
-  end
-
-  @doc """
-  Returns all users with one of the admin_roles
-  """
-  def all_admin_users do
-    Repo.all(from u in __MODULE__, where: u.role in @admin_roles)
-  end
-
-  def admin_one!(id) do
-    Repo.one!(from u in __MODULE__,
-    where: u.role in @admin_roles and u.id == ^id)
-  end
-
-  @doc """
-  return list of users ordered by email address
-  """
-  def ordered_by_email(page \\ 1) do
-    __MODULE__
-    |> order_by(:email)
-    |> Repo.paginate(page: page, page_size: 25)
-  end
-
-  @doc """
-  filter users based on search criteria for either email
-  address or phone number
-  """
-  def search_by_contact_info(search_term, page \\ 1) do
-    __MODULE__
-    |> where([u], ilike(u.email, ^"%#{search_term}%"))
-    |> or_where([u], ilike(u.phone_number, ^"%#{search_term}%"))
-    |> order_by(:email)
-    |> Repo.paginate(page: page, page_size: 25)
-  end
-
-  def is_admin?(nil), do: false
-  def is_admin?(user), do: user.role in @active_admin_roles
-
-  def is_app_admin?(%__MODULE__{role: "application_administration"}), do: true
-  def is_app_admin?(%__MODULE__{}), do: false
-
-  @doc """
-  return one user based on id
-  """
-  def find_by_id(user_id) do
-    Repo.get(__MODULE__, user_id)
-  end
-
-  @doc """
-  log action by admin user using papertrail.
-  """
-  def log_admin_action(:view_subscriber, admin_user, user) do
-    admin_user
-    |> Ecto.Changeset.change()
-    |> PaperTrail.update(originator: wrap_id(admin_user), origin: "admin:view-subscriber", meta: %{subscriber_id: user.id, subscriber_email: user.email})
-    |> normalize_papertrail_result()
-  end
-  def log_admin_action(:message_subscriber, admin_user, user) do
-    admin_user
-    |> Ecto.Changeset.change()
-    |> PaperTrail.update(originator: wrap_id(admin_user), origin: "admin:message-subscriber", meta: %{subscriber_id: user.id, subscriber_email: user.email})
-    |> normalize_papertrail_result()
-  end
-  def log_admin_action(:impersonate_subscriber, admin_user, user) do
-    admin_user
-    |> Ecto.Changeset.change()
-    |> PaperTrail.update(originator: wrap_id(admin_user), origin: "admin:impersonate-subscriber", meta: %{subscriber_id: user.id, subscriber_email: user.email})
-    |> normalize_papertrail_result()
-  end
-
-  @doc """
-  fetch actions logged by admin user using papertrail.
-  """
-  def admin_log(admin_user_id) do
-    Repo.all(
-      from v in PaperTrail.Version,
-      where: v.originator_id == ^admin_user_id,
-      where: ilike(v.origin, "admin:%"),
-      order_by: [desc: v.inserted_at]
-    )
   end
 
   @spec wrap_id(__MODULE__.t | String.t) :: __MODULE__.t
