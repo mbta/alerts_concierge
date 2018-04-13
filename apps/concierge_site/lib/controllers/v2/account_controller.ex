@@ -73,8 +73,7 @@ defmodule ConciergeSite.V2.AccountController do
 
   def options_create(conn, %{"user" => params}, user, {:ok, claims}) do
     case User.update_account(user, params, Map.get(claims, "imp", user.id)) do
-      {:ok, user} ->
-        :ok = User.clear_holding_queue_for_user_id(user.id)
+      {:ok, _} ->
         conn
         |> redirect(to: v2_page_path(conn, :trip_type))
       {:error, changeset} ->

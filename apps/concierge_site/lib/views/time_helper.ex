@@ -32,15 +32,6 @@ defmodule ConciergeSite.TimeHelper do
   end
 
   @doc """
-  Takes Time.t and returns HH:MMam/pm
-  """
-  @spec format_time(Time.t) :: String.t
-  def format_time(time) do
-    {:ok, output} = Strftime.strftime(time, "%l:%M%P")
-    output
-  end
-
-  @doc """
   Converts a Time.t to a string with the H:M:S format
   """
   @spec time_to_string(Time.t | nil) :: String.t | nil

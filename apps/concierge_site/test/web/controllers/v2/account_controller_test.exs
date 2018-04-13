@@ -166,7 +166,7 @@ defmodule ConciergeSite.V2.AccountControllerTest do
       assert html_response(conn, 302) =~ "/v2/trips"
     end
 
-    test "POST /v2/password/edit error", %{conn: conn} do
+    test "POST /v2/password/edit no match error", %{conn: conn} do
       user = insert(:user, encrypted_password: Comeonin.Bcrypt.hashpwsalt("Password1!"))
 
       user_params = %{current_password: "Password3!", password: "Password2!"}
@@ -177,6 +177,18 @@ defmodule ConciergeSite.V2.AccountControllerTest do
    
       assert html_response(conn, 200) =~ "Current password is incorrect"
     end
+  end
+
+  test "POST /v2/password/edit validation error", %{conn: conn} do
+    user = insert(:user, encrypted_password: Comeonin.Bcrypt.hashpwsalt("Password1!"))
+
+    user_params = %{current_password: "Password1!", password: "Password"}
+
+    conn = user
+    |> guardian_login(conn)
+    |> post(v2_account_path(conn, :update_password), %{user: user_params})
+ 
+    assert html_response(conn, 200) =~ "New password format is incorrect"
   end
 
   describe "account delete" do

@@ -303,11 +303,6 @@ defmodule AlertProcessor.Subscription.Mapper do
   end
 
   def build_subscription_transaction(subscriptions, user, originator) do
-    origin =
-      if user.id != User.wrap_id(originator).id do
-        "admin:create-subscription"
-      end
-
     subscriptions
     |> Enum.with_index
     |> Enum.reduce(Multi.new, fn({{sub, ies}, index}, acc) ->
@@ -321,7 +316,7 @@ defmodule AlertProcessor.Subscription.Mapper do
 
       acc = acc
       |> Multi.run({:subscription, index}, fn _ ->
-           PaperTrail.insert(sub_to_insert, originator: User.wrap_id(originator), meta: %{owner: user.id}, origin: origin)
+           PaperTrail.insert(sub_to_insert, originator: User.wrap_id(originator), meta: %{owner: user.id})
          end)
 
       ies
@@ -339,11 +334,6 @@ defmodule AlertProcessor.Subscription.Mapper do
   end
 
   def build_update_subscription_transaction(subscription, %{"trips" => trips} = params, originator) do
-    origin =
-      if subscription.user_id != User.wrap_id(originator).id do
-        "admin:update-subscription"
-      end
-
     subscription_changeset = Subscription.create_changeset(subscription, params)
     current_trip_entities =
       subscription.informed_entities
@@ -366,7 +356,7 @@ defmodule AlertProcessor.Subscription.Mapper do
           end)
         end)
     |> Multi.run({:subscription}, fn _ ->
-         PaperTrail.update(subscription_changeset, originator: User.wrap_id(originator), meta: %{owner: subscription.user_id}, origin: origin)
+         PaperTrail.update(subscription_changeset, originator: User.wrap_id(originator), meta: %{owner: subscription.user_id})
        end)
   end
 
@@ -378,10 +368,6 @@ defmodule AlertProcessor.Subscription.Mapper do
   2. It regenerates the informed entities for that subscription from the new data
   """
   def build_subscription_update_transaction(subscription, subscription_infos, originator) do
-    origin =
-      if subscription.user_id != User.wrap_id(originator).id do
-        "admin:update-subscription"
-      end
     [{sub_changes, informed_entities}] = subscription_infos
     params =
       sub_changes
@@ -413,7 +399,7 @@ defmodule AlertProcessor.Subscription.Mapper do
     end)
     |> Multi.run({:subscription}, fn _ ->
       changeset = Subscription.update_changeset(subscription, params)
-      PaperTrail.update(changeset, originator: User.wrap_id(originator), meta: %{owner: subscription.user_id}, origin: origin)
+      PaperTrail.update(changeset, originator: User.wrap_id(originator), meta: %{owner: subscription.user_id})
     end)
   end
 

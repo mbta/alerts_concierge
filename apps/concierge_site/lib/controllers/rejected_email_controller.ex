@@ -27,7 +27,6 @@ defmodule ConciergeSite.RejectedEmailController do
         nil -> :ok
         user ->
           Logger.info(fn -> "Rejected Email: #{inspect(user)} #{inspect(user_data)}" end)
-          User.clear_holding_queue_for_user_id(user.id)
           User.put_user_on_indefinite_vacation(user, "email-complaint-received")
       end
     end)

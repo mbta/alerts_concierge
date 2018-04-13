@@ -189,4 +189,12 @@ defmodule AlertProcessor.Model.UserTest do
       assert %User{id: "098-765-4321"} == User.wrap_id(%User{id: "098-765-4321"})
     end
   end
+
+  describe "delete/1" do
+    test "delete one user" do
+      user = insert(:user)
+      User.delete(user)
+      assert nil == User.for_email(user.email)
+    end
+  end
 end

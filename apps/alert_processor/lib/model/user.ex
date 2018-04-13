@@ -16,7 +16,7 @@ defmodule AlertProcessor.Model.User do
 
   use Ecto.Schema
   import Ecto.{Changeset, Query}
-  alias AlertProcessor.{Aws.AwsClient, Model.Subscription, Model.Trip, HoldingQueue, Repo}
+  alias AlertProcessor.{Aws.AwsClient, Model.Subscription, Model.Trip, Repo}
   alias Comeonin.Bcrypt
   alias Ecto.Multi
 
@@ -229,11 +229,6 @@ defmodule AlertProcessor.Model.User do
     |> update_vacation_changeset(%{vacation_start: DateTime.utc_now(), vacation_end: DateTime.from_naive!(~N[9999-12-25 23:59:59], "Etc/UTC")})
     |> PaperTrail.update(origin: origin)
     |> normalize_papertrail_result()
-  end
-
-  @spec clear_holding_queue_for_user_id(id) :: :ok
-  def clear_holding_queue_for_user_id(user_id) do
-    HoldingQueue.remove_user_notifications(user_id)
   end
 
   defp normalize_papertrail_result({:ok, %{model: user}}), do: {:ok, user}
