@@ -42,10 +42,11 @@
       </div>
     </div>
     <footer class="footer__container">
+      <p>
+        <a class="text-white" href="https://www.mbta.com/alerts">See all alerts</a> ●
+        <a class="text-white" href="https://www.mbta.com/about-t-alerts-beta">FAQ</a>
+      </p>
       <p>&copy; Massachusetts Bay Transportation Authority, all rights reserved.</p>
-      <%= if @feedback_url do %>
-        <p><a href="<%= @feedback_url %>" target="_blank" class="footer__link">Send us your comments or questions</a></p>
-      <% end %>
     </footer>
     <script src="<%= static_path(@conn, "/js/app.js") %>"></script>
     <!-- Informizely code for site “mbta.com” -->
