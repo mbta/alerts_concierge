@@ -41,22 +41,21 @@ defmodule ConciergeSite.V2.AccountController do
   end
 
   def update_password(conn, %{"user" => params}, user, {:ok, claims}) do
-    case User.check_password(user, params["current_password"]) do
-      true -> 
-        case User.update_password(user, %{"password" => params["password"]}, Map.get(claims, "imp", user.id)) do
-          {:ok, _} -> 
-            conn
-            |> put_flash(:info, "Your password has been updated.")
-            |> redirect(to: v2_trip_path(conn, :index))
-          {:error, _} ->
-            conn
-            |> put_flash(:error, "New password format is incorrect. Please try again.")
-            |> render("edit_password.html")
-        end
-      _ -> 
-        conn
-        |> put_flash(:error, "Current password is incorrect. Please try again.")
-        |> render("edit_password.html")
+    if User.check_password(user, params["current_password"]) do
+      case User.update_password(user, %{"password" => params["password"]}, Map.get(claims, "imp", user.id)) do
+        {:ok, _} -> 
+          conn
+          |> put_flash(:info, "Your password has been updated.")
+          |> redirect(to: v2_trip_path(conn, :index))
+        {:error, _} ->
+          conn
+          |> put_flash(:error, "New password format is incorrect. Please try again.")
+          |> render("edit_password.html")
+      end
+    else 
+      conn
+      |> put_flash(:error, "Current password is incorrect. Please try again.")
+      |> render("edit_password.html")
     end
   end
 
