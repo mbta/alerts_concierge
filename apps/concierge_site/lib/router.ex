@@ -65,6 +65,7 @@ defmodule ConciergeSite.Router do
 
     get "/", V2.PageController, :index
     get "/trip_type", V2.PageController, :trip_type
+    get "/deleted", V2.PageController, :account_deleted
     resources "/login", V2.SessionController, only: [:new, :create, :delete], singleton: true
     resources "/account", V2.AccountController, only: [:new, :create]
   end
@@ -74,6 +75,11 @@ defmodule ConciergeSite.Router do
 
     get "/account/options", V2.AccountController, :options_new
     post "/account/options", V2.AccountController, :options_create
+    get "/account/edit", V2.AccountController, :edit
+    post "/account/edit", V2.AccountController, :update
+    delete "/account/delete", V2.AccountController, :delete
+    get "/password/edit", V2.AccountController, :edit_password
+    post "/password/edit", V2.AccountController, :update_password
     resources "/trips", V2.TripController, only: [:index, :edit, :update, :delete]
     resources "/trip", V2.TripController, only: [:new, :create], singleton: true do
       post "/leg", V2.TripController, :leg

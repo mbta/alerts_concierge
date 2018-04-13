@@ -10,8 +10,16 @@ defmodule ConciergeSite.V2.AccountController do
     render conn, "new.html", account_changeset: account_changeset
   end
 
+  def edit(conn, _params, user, _claims) do
+    render conn, "edit.html", changeset: User.changeset(user), user_id: user.id
+  end
+
+  def edit_password(conn, _params, _user, _claims) do
+    render conn, "edit_password.html"
+  end
+
   def create(conn, %{"user" => params}, _user, _claims) do
-    case User.create_account(Map.merge(params, %{"password_confirmation" => params["password"]})) do
+    case User.create_account(params) do
       {:ok, user} ->
         ConfirmationMessage.send_confirmation(user)
         SignInHelper.sign_in(conn, user, redirect: :v2_default)
@@ -20,24 +28,57 @@ defmodule ConciergeSite.V2.AccountController do
     end
   end
 
+  def update(conn, %{"user" => params}, user, {:ok, claims}) do
+    case User.update_account(user, params, Map.get(claims, "imp", user.id)) do
+      {:ok, _} -> 
+        conn
+        |> put_flash(:info, "Your account has been updated.")
+        |> redirect(to: v2_trip_path(conn, :index))
+      {:error, changeset} -> render conn, "edit.html", changeset: changeset,
+                                                       user_id: user.id,
+                                                       errors: errors(changeset)
+    end
+  end
+
+  def update_password(conn, %{"user" => params}, user, {:ok, claims}) do
+    if User.check_password(user, params["current_password"]) do
+      case User.update_password(user, %{"password" => params["password"]}, Map.get(claims, "imp", user.id)) do
+        {:ok, _} -> 
+          conn
+          |> put_flash(:info, "Your password has been updated.")
+          |> redirect(to: v2_trip_path(conn, :index))
+        {:error, _} ->
+          conn
+          |> put_flash(:error, "New password format is incorrect. Please try again.")
+          |> render("edit_password.html")
+      end
+    else 
+      conn
+      |> put_flash(:error, "Current password is incorrect. Please try again.")
+      |> render("edit_password.html")
+    end
+  end
+
+  def delete(conn, _params, user, _claims) do
+    User.delete(user)
+    redirect(conn, to: v2_page_path(conn, :account_deleted))
+  end
+
   def options_new(conn, _params, user, _claims) do
     changeset = User.update_account_changeset(user)
 
     render conn, "options_new.html", changeset: changeset, user: user, sms_toggle: false
   end
 
-  def options_create(conn, %{"user" => user_params}, user, {:ok, claims}) do
-    params = Map.merge(user_params, options_params(user_params))
-
+  def options_create(conn, %{"user" => params}, user, {:ok, claims}) do
     case User.update_account(user, params, Map.get(claims, "imp", user.id)) do
-      {:ok, user} ->
-        :ok = User.clear_holding_queue_for_user_id(user.id)
+      {:ok, _} ->
         conn
         |> redirect(to: v2_page_path(conn, :trip_type))
       {:error, changeset} ->
         conn
         |> put_flash(:error, "Preferences could not be saved. Please see errors below.")
-        |> render("options_new.html", user: user, changeset: changeset, sms_toggle: sms_toggle?(user_params))
+        |> render("options_new.html", user: user, changeset: changeset)
     end
   end
 
@@ -46,13 +87,4 @@ defmodule ConciergeSite.V2.AccountController do
       field
     end)
   end
-
-  defp options_params(%{"sms_toggle" => "true", "phone_number" => phone_number}) do
-    %{"phone_number" => String.replace(phone_number, ~r/\D/, "")}
-  end
-  defp options_params(%{"sms_toggle" => "false"}), do: %{"phone_number" => nil}
-  defp options_params(_), do: %{}
-
-  defp sms_toggle?(%{"sms_toggle" => "true"}), do: true
-  defp sms_toggle?(_), do: false
 end

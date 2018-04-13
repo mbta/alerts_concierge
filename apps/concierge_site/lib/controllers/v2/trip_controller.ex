@@ -10,7 +10,7 @@ defmodule ConciergeSite.V2.TripController do
 
   def index(conn, _params, user, _claims) do
     trips = Trip.get_trips_by_user(user.id)
-    render conn, "index.html", trips: trips
+    render conn, "index.html", trips: trips, user_id: user.id
   end
 
   def new(conn, _params, _user, _claims) do
@@ -169,13 +169,11 @@ defmodule ConciergeSite.V2.TripController do
   end
 
   defp build_trip_transaction(trip, subscriptions, user, originator) do
-    origin = if user.id != User.wrap_id(originator).id do "admin:create-subscription" end
-
     trip_id = Ecto.UUID.generate
     trip = Map.put(trip, :id, trip_id)
 
     multi = Multi.run(Multi.new, {:trip, 0}, fn _ ->
-      PaperTrail.insert(trip, originator: User.wrap_id(originator), meta: %{owner: user.id}, origin: origin)
+      PaperTrail.insert(trip, originator: User.wrap_id(originator), meta: %{owner: user.id})
     end)
 
     subscriptions
@@ -187,7 +185,7 @@ defmodule ConciergeSite.V2.TripController do
 
       acc
       |> Multi.run({:subscription, index}, fn _ ->
-           PaperTrail.insert(sub_to_insert, originator: User.wrap_id(originator), meta: %{owner: user.id}, origin: origin)
+           PaperTrail.insert(sub_to_insert, originator: User.wrap_id(originator), meta: %{owner: user.id})
          end)
     end)
   end

@@ -8,13 +8,13 @@
     <%= error_tag form, :phone_number %>
     <div class="radio">
       <label>
-        <%= radio_button form, :sms_toggle, "false", required: true, checked: !@sms_toggle, data: [toggle: "controller"] %>
+        <%= radio_button form, :sms_toggle, "false", required: true, checked: @changeset.data.phone_number == nil, data: [toggle: "controller"] %>
         Email
       </label>
     </div>
     <div class="radio">
       <label>
-        <%= radio_button form, :sms_toggle, "true", required: true, checked: @sms_toggle, data: [toggle: "controller"] %>
+        <%= radio_button form, :sms_toggle, "true", required: true, checked: @changeset.data.phone_number != nil, data: [toggle: "controller"] %>
         Text
       </label>
       <%= telephone_input form, :phone_number, placeholder: "###-###-####", class: "form__input--inline", data: [toggle: "input"] %>
