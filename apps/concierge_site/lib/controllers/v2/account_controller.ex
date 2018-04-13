@@ -32,7 +32,7 @@ defmodule ConciergeSite.V2.AccountController do
     case User.update_account(user, params, Map.get(claims, "imp", user.id)) do
       {:ok, _} -> 
         conn
-        |> put_flash(:info, "Your password has been updated.")
+        |> put_flash(:info, "Your account has been updated.")
         |> redirect(to: v2_trip_path(conn, :index))
       {:error, changeset} -> render conn, "edit.html", changeset: changeset,
                                                        user_id: user.id,
