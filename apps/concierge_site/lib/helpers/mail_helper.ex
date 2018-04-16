@@ -145,4 +145,8 @@ defmodule ConciergeSite.Helpers.MailHelper do
       url -> url
     end
   end
+
+  def reset_password_url(reset_token) do
+    Helpers.v2_password_reset_url(ConciergeSite.Endpoint, :edit, reset_token)
+  end
 end
