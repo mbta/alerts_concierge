@@ -14,7 +14,13 @@
     <%= label f, :password, "Password", class: "form__label" %>
     <%= error_tag f, :password %>
     <%= password_input f, :password, placeholder: "Enter your password", class: "form-control form__input", pattern: password_regex_string(), required: true %>
+
+    <div class="text-right">
+      <%= link "Forgot password?", to: v2_password_reset_path(@conn, :new) %>
+    </div>
   </div>
+
+
   <div class="my-5">
     <%= submit "Go to my account", class: "btn btn-primary btn btn-block" %>
   </div>

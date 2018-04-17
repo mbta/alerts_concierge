@@ -66,6 +66,7 @@ defmodule ConciergeSite.Router do
     get "/deleted", V2.PageController, :account_deleted
     resources "/login", V2.SessionController, only: [:new, :create, :delete], singleton: true
     resources "/account", V2.AccountController, only: [:new, :create]
+    resources "/password_resets",V2.PasswordResetController, only: [:new, :create, :edit, :update]
   end
 
   scope "/", ConciergeSite, as: :v2 do

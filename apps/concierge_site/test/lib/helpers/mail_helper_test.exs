@@ -151,4 +151,13 @@ defmodule ConcerigeSite.Helpers.MailHelperTest do
       assert MailHelper.feedback_url() == "http://mbtafeedback.com/"
     end
   end
+
+  describe "reset_password_url" do
+    test "generates url with password reset id" do
+      reset_token = "some-reset-token"
+      url = MailHelper.reset_password_url(reset_token)
+      assert url =~ "http"
+      assert url =~ "password_resets/#{reset_token}/edit"
+    end
+  end
 end
