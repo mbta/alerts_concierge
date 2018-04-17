@@ -21,7 +21,7 @@
     <%= ConciergeSite.ScheduleHelper.render(@schedules, "trip_start_time", "trip_end_time") %>
   </div>
 
-  <%= if @round_trip do %>
+  <%= if @round_trip == "true" do %>
     <div class="form-group my-4">
       <span class="form__label">What time do you usually take your return trip?</span>
       <div class="form-group form-inline form__group--inline">
