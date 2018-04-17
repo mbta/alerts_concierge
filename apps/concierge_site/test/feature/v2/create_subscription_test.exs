@@ -15,7 +15,7 @@ defmodule ConciergeSite.V2.CreateSubscriptionTest do
 
   test "new account", %{session: session} do
     session
-    |> visit("/v2/account/new")
+    |> visit("/account/new")
     |> fill_in(text_field("user_email"), with: "test@test.com")
     |> fill_in(text_field("user_password"), with: @password)
     |> click(button("Create my account"))
@@ -25,7 +25,7 @@ defmodule ConciergeSite.V2.CreateSubscriptionTest do
   test "account options", %{session: session, user: user} do
     session
     |> log_in(user)
-    |> visit("/v2/account/options")
+    |> visit("/account/options")
     |> assert_has(css("#main", text: "Customize my settings"))
     |> click(button("Next"))
     |> assert_has(css("#main", text: "What kind of alerts would you like to setup?"))
@@ -33,13 +33,13 @@ defmodule ConciergeSite.V2.CreateSubscriptionTest do
 
   test "home page", %{session: session} do
     session
-    |> visit("/v2/")
+    |> visit("/")
     |> assert_has(css("#main", text: "Welcome to T-Alerts!"))
   end
 
   test "new session", %{session: session, user: user} do
     session
-    |> visit("/v2/login/new")
+    |> visit("/login/new")
     |> fill_in(text_field("user_email"), with: user.email)
     |> fill_in(text_field("user_password"), with: @password)
     |> click(button("Go to my account"))
@@ -48,7 +48,7 @@ defmodule ConciergeSite.V2.CreateSubscriptionTest do
 
   test "failed login", %{session: session, user: user} do
     session
-    |> visit("/v2/login/new")
+    |> visit("/login/new")
     |> fill_in(text_field("user_email"), with: user.email)
     |> fill_in(text_field("user_password"), with: "Password1!")
     |> click(button("Go to my account"))
@@ -58,7 +58,7 @@ defmodule ConciergeSite.V2.CreateSubscriptionTest do
   test "trip index", %{session: session, user: user} do
     session
     |> log_in(user)
-    |> visit("/v2/trips")
+    |> visit("/trips")
     |> assert_has(css("#main", text: "My account"))
   end
 
@@ -66,7 +66,7 @@ defmodule ConciergeSite.V2.CreateSubscriptionTest do
     trip = insert(:trip, %{user: user})
     session
     |> log_in(user)
-    |> visit("/v2/trips/#{trip.id}/edit")
+    |> visit("/trips/#{trip.id}/edit")
     |> assert_has(css("#main", text: "Edit Subscription"))
   end
 end

@@ -1,5 +1,6 @@
 <h1 class="heading__title my-4">Sign in</h1>
 <%= flash_error(@conn) %>
+<%= flash_info(@conn) %>
 
 <p>Don't have an account? <%= link("Sign up", to: v2_account_path(@conn, :new)) %></p>
 

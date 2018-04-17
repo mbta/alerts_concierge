@@ -9,7 +9,7 @@ defmodule ConciergeSite.V2.TripControllerTest do
     {:ok, user: user}
   end
 
-  test "GET /v2/trips", %{conn: conn, user: user} do
+  test "GET /trips", %{conn: conn, user: user} do
     conn = user
     |> guardian_login(conn)
     |> get(v2_trip_path(conn, :index))
@@ -17,7 +17,7 @@ defmodule ConciergeSite.V2.TripControllerTest do
     assert html_response(conn, 200) =~ "My account"
   end
 
-  describe "GET /v2/trips/:id/edit" do
+  describe "GET /trips/:id/edit" do
     test "with valid trip", %{conn: conn, user: user} do
       trip = insert(:trip, %{user: user})
       insert(:subscription, %{trip_id: trip.id, type: :cr, origin: "Readville", destination: "Newmarket", route: "CR-Fairmount"})
@@ -53,7 +53,7 @@ defmodule ConciergeSite.V2.TripControllerTest do
     end
   end
 
-  describe "PATCH /v2/trips/:id" do
+  describe "PATCH /trips/:id" do
     test "with HH:MM time format", %{conn: conn, user: user} do
       # Time format comes through with `HH:MM` format after a user updates them
       # in the trip edit page.
@@ -108,7 +108,7 @@ defmodule ConciergeSite.V2.TripControllerTest do
     end
   end
 
-  describe "DELETE /v2/trips/:id" do
+  describe "DELETE /trips/:id" do
     test "deletes trip and redirects to trip index page", %{conn: conn, user: user} do
       trip = insert(:trip, %{user: user})
       conn = user
@@ -140,7 +140,7 @@ defmodule ConciergeSite.V2.TripControllerTest do
     end
   end
 
-  test "GET /v2/trip/new", %{conn: conn, user: user} do
+  test "GET /trip/new", %{conn: conn, user: user} do
     conn = user
     |> guardian_login(conn)
     |> get(v2_trip_path(conn, :new))
@@ -149,7 +149,7 @@ defmodule ConciergeSite.V2.TripControllerTest do
     assert html_response(conn, 200) =~ "Which route or line do you connect to?"
   end
 
-  describe "POST /v2/trip" do
+  describe "POST /trip" do
     test "subway", %{conn: conn, user: user} do
       trip = %{
         bike_storage: "false",
@@ -214,7 +214,7 @@ defmodule ConciergeSite.V2.TripControllerTest do
     end
   end
 
-  test "POST /v2/trip/leg to create new trip leg", %{conn: conn, user: user} do
+  test "POST /trip/leg to create new trip leg", %{conn: conn, user: user} do
     trip = %{
       destination: "place-pktrm",
       new_leg: "true",
@@ -233,7 +233,7 @@ defmodule ConciergeSite.V2.TripControllerTest do
     assert html_response(conn, 200) =~ "Do you make a connection to another route or line?"
   end
 
-  test "POST /v2/trip/leg to create new trip leg with existing trip legs", %{conn: conn, user: user} do
+  test "POST /trip/leg to create new trip leg with existing trip legs", %{conn: conn, user: user} do
     trip = %{
       destination: "place-pktrm",
       new_leg: "true",
@@ -256,7 +256,7 @@ defmodule ConciergeSite.V2.TripControllerTest do
     assert html_response(conn, 200) =~ "Do you make a connection to another route or line?"
   end
 
-  test "POST /v2/trip/leg to finish trip", %{conn: conn, user: user} do
+  test "POST /trip/leg to finish trip", %{conn: conn, user: user} do
     trip = %{
       destination: "place-pktrm",
       new_leg: "false",
@@ -276,7 +276,7 @@ defmodule ConciergeSite.V2.TripControllerTest do
     assert html_response(conn, 200) =~ "place-pktrm"
   end
 
-  test "POST /v2/trip/leg to create first leg", %{conn: conn, user: user} do
+  test "POST /trip/leg to create first leg", %{conn: conn, user: user} do
     trip = %{
       from_new_trip: "true",
       round_trip: "true",
@@ -291,7 +291,7 @@ defmodule ConciergeSite.V2.TripControllerTest do
     assert html_response(conn, 200) =~ "Do you make a connection to another route or line?"
   end
 
-  test "POST /v2/trip/leg with errors", %{conn: conn, user: user} do
+  test "POST /trip/leg with errors", %{conn: conn, user: user} do
     conn = user
     |> guardian_login(conn)
     |> post(v2_trip_trip_path(conn, :leg), %{trip: %{}})
@@ -299,7 +299,7 @@ defmodule ConciergeSite.V2.TripControllerTest do
     assert html_response(conn, 200) =~ "There was an error creating your trip. Please try again."
   end
 
-  describe "POST /v2/trip/times" do
+  describe "POST /trip/times" do
     test "subway", %{conn: conn, user: user} do
       trip = %{
         destinations: ["place-pktrm"],

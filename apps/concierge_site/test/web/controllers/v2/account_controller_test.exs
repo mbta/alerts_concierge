@@ -3,36 +3,36 @@ defmodule ConciergeSite.V2.AccountControllerTest do
   import AlertProcessor.Factory
   alias AlertProcessor.{Model.User, Repo}
 
-  test "GET /v2/account/new", %{conn: conn} do
+  test "GET /account/new", %{conn: conn} do
     conn = get(conn, v2_account_path(conn, :new))
     assert html_response(conn, 200) =~ "Create account"
   end
 
-  test "POST /v2/account", %{conn: conn} do
+  test "POST /account", %{conn: conn} do
     params = %{"user" => %{"password" => "Password1!", "email" => "test@test.com"}}
     conn = post(conn, v2_account_path(conn, :create), params)
-    assert html_response(conn, 302) =~ "/v2/account/options"
+    assert html_response(conn, 302) =~ "/account/options"
   end
 
-  test "POST /v2/account bad password", %{conn: conn} do
+  test "POST /account bad password", %{conn: conn} do
     params = %{"user" => %{"password" => "password", "email" => "test@test.com"}}
     conn = post(conn, v2_account_path(conn, :create), params)
     assert html_response(conn, 200) =~ "Password must contain one number"
   end
 
-  test "POST /v2/account bad email", %{conn: conn} do
+  test "POST /account bad email", %{conn: conn} do
     params = %{"user" => %{"password" => "password1!", "email" => "test"}}
     conn = post(conn, v2_account_path(conn, :create), params)
     assert html_response(conn, 200) =~ "enter a valid email"
   end
 
-  test "POST /v2/account empty values", %{conn: conn} do
+  test "POST /account empty values", %{conn: conn} do
     params = %{"user" => %{"password" => "", "email" => ""}}
     conn = post(conn, v2_account_path(conn, :create), params)
     assert html_response(conn, 200) =~ "be blank"
   end
 
-  test "GET /v2/account/options", %{conn: conn} do
+  test "GET /account/options", %{conn: conn} do
     user = insert(:user)
 
     conn = user
@@ -43,7 +43,7 @@ defmodule ConciergeSite.V2.AccountControllerTest do
     assert html_response(conn, 200) =~ "How would you like to receive alerts?"
   end
 
-  test "POST /v2/account/options", %{conn: conn} do
+  test "POST /account/options", %{conn: conn} do
     user = insert(:user, phone_number: nil)
 
     user_params = %{
@@ -58,12 +58,12 @@ defmodule ConciergeSite.V2.AccountControllerTest do
 
     updated_user = Repo.get(User, user.id)
 
-    assert html_response(conn, 302) =~ "/v2/trip_type"
+    assert html_response(conn, 302) =~ "/trip_type"
     assert updated_user.phone_number == "5555555555"
     assert updated_user.digest_opt_in == false
   end
 
-  test "POST /v2/account/options with email", %{conn: conn} do
+  test "POST /account/options with email", %{conn: conn} do
     user = insert(:user, phone_number: nil)
 
     user_params = %{
@@ -77,11 +77,11 @@ defmodule ConciergeSite.V2.AccountControllerTest do
 
     updated_user = Repo.get!(User, user.id)
 
-    assert html_response(conn, 302) =~ "/v2/trip_type"
+    assert html_response(conn, 302) =~ "/trip_type"
     assert updated_user.phone_number == nil
   end
 
-  test "POST /v2/account/options with errors", %{conn: conn} do
+  test "POST /account/options with errors", %{conn: conn} do
     user = insert(:user)
 
     user_params = %{
@@ -99,7 +99,7 @@ defmodule ConciergeSite.V2.AccountControllerTest do
   end
 
   describe "edit account" do
-    test "GET /v2/account/edit", %{conn: conn} do
+    test "GET /account/edit", %{conn: conn} do
       user = insert(:user)
 
       conn = user
@@ -109,7 +109,7 @@ defmodule ConciergeSite.V2.AccountControllerTest do
       assert html_response(conn, 200) =~ "My account settings"
     end
 
-    test "POST /v2/account/edit", %{conn: conn} do
+    test "POST /account/edit", %{conn: conn} do
       user = insert(:user, phone_number: nil)
 
       user_params = %{
@@ -123,11 +123,11 @@ defmodule ConciergeSite.V2.AccountControllerTest do
   
       updated_user = Repo.get!(User, user.id)
   
-      assert html_response(conn, 302) =~ "/v2/trips"
+      assert html_response(conn, 302) =~ "/trips"
       assert updated_user.phone_number == "5555555555"
     end
 
-    test "POST /v2/account/edit error", %{conn: conn} do
+    test "POST /account/edit error", %{conn: conn} do
       user = insert(:user, phone_number: nil)
 
       user_params = %{
@@ -144,7 +144,7 @@ defmodule ConciergeSite.V2.AccountControllerTest do
   end
 
   describe "update password" do
-    test "GET /v2/password/edit", %{conn: conn} do
+    test "GET /password/edit", %{conn: conn} do
       user = insert(:user)
 
       conn = user
@@ -154,7 +154,7 @@ defmodule ConciergeSite.V2.AccountControllerTest do
       assert html_response(conn, 200) =~ "Update password"
     end
 
-    test "POST /v2/password/edit", %{conn: conn} do
+    test "POST /password/edit", %{conn: conn} do
       user = insert(:user, encrypted_password: Comeonin.Bcrypt.hashpwsalt("Password1!"))
 
       user_params = %{current_password: "Password1!", password: "Password2!"}
@@ -163,10 +163,10 @@ defmodule ConciergeSite.V2.AccountControllerTest do
       |> guardian_login(conn)
       |> post(v2_account_path(conn, :update_password), %{user: user_params})
     
-      assert html_response(conn, 302) =~ "/v2/trips"
+      assert html_response(conn, 302) =~ "/trips"
     end
 
-    test "POST /v2/password/edit no match error", %{conn: conn} do
+    test "POST /password/edit no match error", %{conn: conn} do
       user = insert(:user, encrypted_password: Comeonin.Bcrypt.hashpwsalt("Password1!"))
 
       user_params = %{current_password: "Password3!", password: "Password2!"}
@@ -179,7 +179,7 @@ defmodule ConciergeSite.V2.AccountControllerTest do
     end
   end
 
-  test "POST /v2/password/edit validation error", %{conn: conn} do
+  test "POST /password/edit validation error", %{conn: conn} do
     user = insert(:user, encrypted_password: Comeonin.Bcrypt.hashpwsalt("Password1!"))
 
     user_params = %{current_password: "Password1!", password: "Password"}
@@ -192,14 +192,14 @@ defmodule ConciergeSite.V2.AccountControllerTest do
   end
 
   describe "account delete" do
-    test "DELETE /v2/account/delete", %{conn: conn} do
+    test "DELETE /account/delete", %{conn: conn} do
       user = insert(:user)
 
       conn = user
       |> guardian_login(conn)
       |> delete(v2_account_path(conn, :delete))
 
-      assert html_response(conn, 302) =~ "/v2/deleted"
+      assert html_response(conn, 302) =~ "/deleted"
     end
   end
 end
