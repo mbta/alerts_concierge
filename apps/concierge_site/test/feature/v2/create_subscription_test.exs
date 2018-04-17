@@ -15,7 +15,7 @@ defmodule ConciergeSite.V2.CreateSubscriptionTest do
 
   test "new account", %{session: session} do
     session
-    |> visit("/account/new")
+    |> visit("/")
     |> fill_in(text_field("user_email"), with: "test@test.com")
     |> fill_in(text_field("user_password"), with: @password)
     |> click(button("Create my account"))
@@ -29,12 +29,6 @@ defmodule ConciergeSite.V2.CreateSubscriptionTest do
     |> assert_has(css("#main", text: "Customize my settings"))
     |> click(button("Next"))
     |> assert_has(css("#main", text: "What kind of alerts would you like to setup?"))
-  end
-
-  test "home page", %{session: session} do
-    session
-    |> visit("/")
-    |> assert_has(css("#main", text: "Welcome to T-Alerts!"))
   end
 
   test "new session", %{session: session, user: user} do

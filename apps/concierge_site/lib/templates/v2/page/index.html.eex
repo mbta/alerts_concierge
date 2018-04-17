@@ -1,9 +1,0 @@
-<h1 class="heading__hero my-4 text-center">Welcome to T-Alerts!</h1>
-
-<p class="my-4 text-center">T-Alerts are personalized text or email notifications about service disruptions and changes.</p>
-
-<p class="my-4 text-center">Want to learn more? <a href="https://www.mbta.com/about-t-alerts-beta">Read out FAQ <i aria-hidden="true" class="fa fa-arrow-right "></i></a></p>
-
-<p class="my-4 text-center"><a class="btn btn-primary btn btn-lg" href="<%= v2_account_path(@conn, :new) %>">Sign up to T-Alerts</a></p>
-
-<p class="my-4 text-center">Already have an account? <a href="<%= v2_session_path(@conn, :new) %>">Sign in <i aria-hidden="true" class="fa fa-arrow-right "></i></a></p>
