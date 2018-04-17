@@ -5,7 +5,7 @@ defmodule AlertProcessor.AlertParser do
   """
   require Logger
   alias AlertProcessor.{AlertCache, AlertsClient, ApiClient,
-    Helpers.StringHelper, HoldingQueue, Parser, ServiceInfoCache,
+    Helpers.StringHelper, Parser, ServiceInfoCache,
     SubscriptionFilterEngine, Helpers.DateTimeHelper}
   alias AlertProcessor.Model.{Alert, InformedEntity, Notification, SavedAlert}
 
@@ -19,13 +19,12 @@ defmodule AlertProcessor.AlertParser do
   def process_alerts() do
     with {:ok, alerts, feed_timestamp} <- AlertsClient.get_alerts(),
          {:ok, facility_map} <- ServiceInfoCache.get_facility_map() do
-      {alerts_needing_notifications, alert_ids_to_clear_notifications} =
+      {alerts_needing_notifications, _alert_ids_to_clear_notifications} =
         {alerts, facility_map, feed_timestamp}
         |> parse_alerts()
         |> AlertCache.update_cache()
 
       SavedAlert.save!(alerts)
-      HoldingQueue.remove_notifications(alert_ids_to_clear_notifications)
       SubscriptionFilterEngine.schedule_all_notifications(alerts_needing_notifications)
     end
   end

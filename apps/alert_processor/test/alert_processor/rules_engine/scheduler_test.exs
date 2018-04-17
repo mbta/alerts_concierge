@@ -1,7 +1,7 @@
 defmodule AlertProcessor.SchedulerTest do
   use AlertProcessor.DataCase
   import AlertProcessor.Factory
-  alias AlertProcessor.{Scheduler, Model, HoldingQueue}
+  alias AlertProcessor.{Scheduler, Model, SendingQueue}
   alias Model.Alert
   alias Calendar.DateTime, as: DT
 
@@ -20,7 +20,7 @@ defmodule AlertProcessor.SchedulerTest do
   end
 
   describe "schedule_notifications/2" do
-    test "schedules notifications in holding queue", %{time: time} do
+    test "schedules notifications in sending queue", %{time: time} do
       user = insert(:user)
       sub = insert(:subscription, user: user)
       alert = %Alert{
@@ -30,7 +30,7 @@ defmodule AlertProcessor.SchedulerTest do
       }
 
       {:ok, [notification]} = Scheduler.schedule_notifications([{user, [sub]}], alert, time.now)
-      {:ok, queued_notification} = HoldingQueue.pop
+      {:ok, queued_notification} = SendingQueue.pop
       assert notification == queued_notification
     end
   end

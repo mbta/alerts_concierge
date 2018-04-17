@@ -9,10 +9,8 @@ defmodule AlertProcessor.Supervisor do
     AlertCache,
     AlertWorker,
     DigestManager,
-    HoldingQueue,
     SendingQueue,
     NotificationWorker,
-    QueueWorker,
     ServiceInfoCache,
     SmsOptOutWorker
   }
@@ -42,9 +40,7 @@ defmodule AlertProcessor.Supervisor do
       worker(AlertWorker, []),
       worker(AlertCache, []),
       worker(DigestManager, []),
-      worker(HoldingQueue, []),
       worker(SendingQueue, []),
-      worker(QueueWorker, []),
       worker(SmsOptOutWorker, []),
       :poolboy.child_spec(:message_worker, message_worker_config, [])
     ]
