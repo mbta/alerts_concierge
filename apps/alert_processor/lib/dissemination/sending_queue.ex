@@ -14,6 +14,14 @@ defmodule AlertProcessor.SendingQueue do
   end
 
   @doc """
+  Add list of notifications to queue
+  """
+  @spec list_enqueue([Notification.t]) :: :ok
+  def list_enqueue(name \\ __MODULE__, notifications) do
+    GenServer.call(name, {:list_push, notifications})
+  end
+
+  @doc """
   Adds notification to qeue
   """
   @spec enqueue(Notification.t) :: :ok
@@ -27,6 +35,12 @@ defmodule AlertProcessor.SendingQueue do
   @spec pop() :: {:ok, Notification.t} | :error
   def pop(name \\ __MODULE__) do
     GenServer.call(name, :pop)
+  end
+
+  @doc false
+  def handle_call({:list_push, new_notifications}, _from, notifications) do
+    newstate = new_notifications ++ notifications
+    {:reply, :ok, Enum.uniq(newstate)}
   end
 
   @doc false

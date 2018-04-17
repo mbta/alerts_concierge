@@ -3,7 +3,7 @@ defmodule AlertProcessor.Scheduler do
   Takes alert and subscriptions payload from rules engine and schedules notifications
   """
 
-  alias AlertProcessor.{Model, HoldingQueue, NotificationBuilder}
+  alias AlertProcessor.{Model, SendingQueue, NotificationBuilder}
   alias Model.{Alert, Notification, Subscription, User}
 
   @doc """
@@ -24,6 +24,6 @@ defmodule AlertProcessor.Scheduler do
 
   @spec enqueue_notifications([Notification.t]) :: :ok
   defp enqueue_notifications(notifications) do
-    HoldingQueue.list_enqueue(notifications)
+    SendingQueue.list_enqueue(notifications)
   end
 end

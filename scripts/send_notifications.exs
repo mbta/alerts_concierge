@@ -60,7 +60,7 @@ defmodule SendNotifications do
     index
     |> Stream.iterate(& &1 + 1)
     |> Stream.map(& notification(&1, datetime, user))
-    |> Stream.map(&AlertProcessor.HoldingQueue.enqueue/1)
+    |> Stream.map(&AlertProcessor.SendingQueue.enqueue/1)
     |> Enum.take(count)
   end
 

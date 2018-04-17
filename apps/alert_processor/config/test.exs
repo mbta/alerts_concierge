@@ -10,9 +10,6 @@ config :alert_processor, AlertProcessor.Repo,
 
   pool: Ecto.Adapters.SQL.Sandbox
 
-config :alert_processor, AlertProcessor.HoldingQueue,
-  filter_interval: 100 # 0.1 sec
-
 # Config for ExAws lib
 config :alert_processor, :ex_aws, ExAws.Mock
 
