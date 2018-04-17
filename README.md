@@ -10,7 +10,7 @@ functionality remain low and that MBTA can manage and improve the system.
 ### Requirements
 
 * PostgreSQL ~10.0
-* Elixir 1.5.2 (you can use [asdf](https://github.com/asdf-vm/asdf) with
+* Elixir 1.6.x (you can use [asdf](https://github.com/asdf-vm/asdf) with
   [asdf-elixir](https://github.com/asdf-vm/asdf-elixir) to manage Elixir
   versions)
 * Node.js 8.7.0 (you can use [asdf](https://github.com/asdf-vm/asdf) with
