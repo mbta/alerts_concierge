@@ -1,7 +1,7 @@
 <%= render ConciergeSite.V2.LayoutView, "_steps.html", step: "two" %>
 <h1 class="heading__title">Personalize Subscription</h1>
 
-<%= form_for @conn, v2_trip_trip_path(@conn, :leg), [as: :trip, method: :post], fn form -> %>
+<%= form_for @conn, v2_trip_trip_path(@conn, :leg), [as: :trip, method: :post, id: "tripleg-form"], fn form -> %>
   <%= if @saved_mode != "bus" do %>
     <div class="form-group my-4">
       <%= label form, :origin, "Where do you get on the #{@route_name}?", class: "form__label" %>
