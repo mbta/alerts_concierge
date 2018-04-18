@@ -75,6 +75,13 @@ defmodule ConciergeSite.V2.TripController do
     end
   end
 
+  def leg(conn, %{"trip" => %{"origin" => origin, "destination" => destination}}, _, _)
+      when origin == destination do
+    conn
+    |> put_flash(:error, "There was an error. Trip origin and destination must be different.")
+    |> render("new.html")
+  end
+
   def leg(conn, %{"trip" => trip}, _user, _claims) do
     case trip do
       %{"route" => route, "saved_leg" => saved_leg, "origin" => origin,

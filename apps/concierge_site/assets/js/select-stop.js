@@ -11,7 +11,8 @@ export default function($) {
   };
 
   $("select[data-type='stop']").each(function() {
-     $(this).select2(options);
+    $(this).select2(options);
+    addSameStopValidationIfTripLegForm($(this));
   });
 };
 
@@ -29,3 +30,23 @@ function formatStop(stop) {
   const ferry = $el.data("ferry") ? getIcon("ferry")(className) : "";
   return $(`<span>${stop.text}${accessible}${ferry}${cr}${bus}${mattapan}${blue}${green}${orange}${red}</span>`);
 };
+
+function addSameStopValidationIfTripLegForm(selectStopComponent) {
+  if (isTripLegForm()) {
+    selectStopComponent.on("select2:select", disableSubmitButtonIfSameStops);
+  }
+}
+
+function isTripLegForm() {
+  return $("#tripleg-form").length > 0
+}
+
+function disableSubmitButtonIfSameStops() {
+  const origin = $("#select2-trip_origin-container").attr("title")
+  const destination = $("#select2-trip_destination-container").attr("title")
+  if (origin == destination) {
+    $("button[type='submit']").attr("disabled", "disabled");
+  } else {
+    $("button[type='submit']").removeAttr("disabled");
+  }
+}

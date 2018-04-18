@@ -233,6 +233,25 @@ defmodule ConciergeSite.V2.TripControllerTest do
     assert html_response(conn, 200) =~ "Do you make a connection to another route or line?"
   end
 
+  test "leg/3 with same origin and destination", %{conn: conn, user: user} do
+    stop = "some-stop"
+
+    trip = %{
+      destination: stop,
+      new_leg: "true",
+      origin: stop,
+      round_trip: "true",
+      route: "Green~~Green Line~~subway",
+      saved_leg: "Red",
+      saved_mode: "subway"
+    }
+    conn = user
+    |> guardian_login(conn)
+    |> post(v2_trip_trip_path(conn, :leg), %{trip: trip})
+
+    assert html_response(conn, 200) =~ "Trip origin and destination must be different."
+  end
+
   test "POST /trip/leg to create new trip leg with existing trip legs", %{conn: conn, user: user} do
     trip = %{
       destination: "place-pktrm",
