@@ -6,6 +6,8 @@ defmodule ConciergeSite.V2.TripController do
   alias AlertProcessor.ServiceInfoCache
   alias Ecto.Multi
 
+  plug :scrub_params, "trip" when action in [:leg]
+
   action_fallback ConciergeSite.V2.FallbackController
 
   def index(conn, _params, user, _claims) do
@@ -76,7 +78,7 @@ defmodule ConciergeSite.V2.TripController do
   end
 
   def leg(conn, %{"trip" => %{"origin" => origin, "destination" => destination}}, _, _)
-      when origin == destination do
+      when not is_nil(origin) and origin == destination do
     conn
     |> put_flash(:error, "There was an error. Trip origin and destination must be different.")
     |> render("new.html")
