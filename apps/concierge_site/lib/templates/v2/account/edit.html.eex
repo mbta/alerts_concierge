@@ -1,40 +1,53 @@
-<h1 class="heading__title my-3">My account settings</h1>
+<h1 class="heading__title">My account settings</h1>
 <%= flash_error(@conn) %>
 
-<%= form_for @changeset, v2_account_path(@conn, :update), [as: :user, method: :post], fn form -> %>
-  <div class="form-group my-4">
-    <%= label form, :sms_toggle, "I’d like to receive alert by:", class: "form__label" %>
-    <%= error_tag form, :phone_number %>
-    <div class="radio">
-      <label>
-        <%= radio_button form, :sms_toggle, "false", required: true, checked: @changeset.data.phone_number == nil, data: [toggle: "controller"] %>
-        Email
-      </label>
-    </div>
-    <div class="radio">
-      <label>
-        <%= radio_button form, :sms_toggle, "true", required: true, checked: @changeset.data.phone_number != nil, data: [toggle: "controller"] %>
-        Text
-      </label>
-      <%= telephone_input form, :phone_number, placeholder: "###-###-####", class: "form__input--inline", data: [toggle: "input"] %>
-    </div>
-  </div>
+<div class="container container__inner">
+  <div class="row justify-content-md-center">
+    <div class="col-md-10 col-sm-12">
+      <%= form_for @changeset, v2_account_path(@conn, :update), [as: :user, method: :post], fn form -> %>
+        <div class="form-group form__section--top">
+          <%= label form, :sms_toggle, "I’d like to receive alerts by:", class: "form__label" %>
+          <%= error_tag form, :phone_number %>
+          <div class="radio form-check">
+            <label>
+              <%= radio_button form, :sms_toggle, "false", required: true, checked: @changeset.data.phone_number == nil, data: [toggle: "controller"], class: "form-check-input" %>
+              Email
+            </label>
+          </div>
+          <div class="radio form-check">
+            <label>
+              <%= radio_button form, :sms_toggle, "true", required: true, checked: @changeset.data.phone_number != nil, data: [toggle: "controller"], class: "form-check-input" %>
+              Text
+            </label>
+            <%= telephone_input form, :phone_number, placeholder: "###-###-####", class: "form__input--inline", data: [toggle: "input"] %>
+            <%= ConciergeSite.HelpTextHelper.link("phone") %>
+            <%= ConciergeSite.HelpTextHelper.message("phone", "Your mobile provider's rates for sending and receiving text messages still apply.") %>
+          </div>
+        </div>
 
-  <div class="form-group my-4">
-    <%= label form, :email, "Your account email:", class: "form__label" %>
-    <div><%= @changeset.data.email %></div>
-    <div><%= link to: v2_account_path(@conn, :edit_password) do %>Change password<% end %>
-  </div>
+        <div class="form-group form__section form-check">
+          <%= checkbox form, :digest_opt_in, class: "form-check-input" %>
+          <%= label form, :digest_opt_in, "Yes, I want to receive a weekly email about planned service changes", class: "form__label--radio" %>
+          <%= ConciergeSite.HelpTextHelper.link("optin") %>
+          <%= ConciergeSite.HelpTextHelper.message("optin", "Even if you receive text alerts, this will be sent to the email address you signed up with.") %>
+        </div>
 
-  <div class="my-5">
-    <%= submit "Update Account Settings", class: "btn btn-primary btn-login btn-block" %>
-    <div class="text-center">
-      <button type="button" class="btn btn-link" data-toggle="modal" data-target="#deleteModal">
-      <i aria-hidden="true" class="fa fa-trash"></i> Delete my account
-    </button>
+        <div class="form-group form__section">
+          <%= label form, :email, "Your account email:", class: "form__label" %>
+          <div><%= @changeset.data.email %></div>
+          <div class="text-right"><%= link to: v2_account_path(@conn, :edit_password) do %>Change password<% end %>
+        </div>
+
+        <div class="form__action-buttons--container">
+          <%= submit "Update Account Settings", class: "btn btn-primary btn-login btn-block" %>
+          <button type="button" class="btn btn-outline-danger btn-block" data-toggle="modal" data-target="#deleteModal">
+            Delete my account
+          </button>
+        </div>
+      <% end %>
+    </div>
   </div>
-  </div>
-<% end %>
+</div>
 
 <div class="modal fade" id="deleteModal" tabindex="-1" role="dialog" aria-hidden="true">
   <div class="modal-dialog" role="document">
@@ -44,10 +57,10 @@
           Are you sure you want to delete this account?
         </div>
         <div class="my-3">
-          <%= link to: v2_account_path(@conn, :delete), method: :delete, class: "btn btn-outline-primary" do %>
-            Yes
+          <%= link to: v2_account_path(@conn, :delete), method: :delete, class: "btn btn-primary" do %>
+            Yes, delete
           <% end %>
-          <button type="button" class="btn btn-outline-primary" data-dismiss="modal">No</button>
+          <button type="button" class="btn btn-outline-primary" data-dismiss="modal">No, cancel</button>
         </div>
       </div>
     </div>

@@ -57,13 +57,10 @@ defmodule ConciergeSite.V2.TripController do
     with {:trip, %Trip{} = trip} <- {:trip, Trip.find_by_id(id)},
          {:authorized, true} <- {:authorized, user.id == trip.user_id},
          {:sanitized, sanitized_trip_params} <- {:sanitized, sanitize_trip_params(trip_params)},
-         {:ok, %Trip{} = updated_trip} <- Trip.update(trip, sanitized_trip_params) do
-      schedules = get_schedules_for_trip(trip.subscriptions, false)
-      return_schedules = get_schedules_for_trip(trip.subscriptions, true)
+         {:ok, %Trip{}} <- Trip.update(trip, sanitized_trip_params) do
       conn
       |> put_flash(:info, "Trip updated.")
-      |> render("edit.html", trip: updated_trip, changeset: Trip.update_changeset(updated_trip), schedules: schedules,
-                             return_schedules: return_schedules)
+      |> redirect(to: v2_trip_path(conn, :index))
     else
       {:trip, nil} ->
         {:error, :not_found}

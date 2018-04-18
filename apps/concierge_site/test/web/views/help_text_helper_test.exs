@@ -5,7 +5,7 @@ defmodule ConciergeSite.HelpTextHelperTest do
 
   test "link/1" do
     html = Phoenix.HTML.safe_to_string(HelpTextHelper.link("test"))
-    assert html == "<a class=\"helptext__link\" data-message-id=\"test\" data-type=\"help-link\" href=\"#show\"><i class=\"fa fa-question-circle helptext__link--icon\"></i></a>"
+    assert html =~ "<a class=\"helptext__link\" data-message-id=\"test\" data-type=\"help-link\" href=\"#show\">"
   end
 
   test "message/2" do

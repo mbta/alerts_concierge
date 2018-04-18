@@ -1,27 +1,31 @@
-<h1 class="heading__title">Edit Subscription</h1>
+<h1 class="heading__title">Edit subscription</h1>
 <%= flash_error(@conn) %>
 <%= flash_info(@conn) %>
 
-<div class="my-4">
-  <%= ConciergeSite.TripCardHelper.render(@conn, @trip) %>
-  <div class="text-center">
-    <button type="button" class="btn btn-link" data-toggle="modal" data-target="#deleteModal">
-    <i aria-hidden="true" class="fa fa-trash"></i> Delete this subscription
-    </button>
+<div class="container container__inner">
+  <div class="row justify-content-md-center">
+    <div class="col-md-10 col-sm-12">
+      <div class="my-4 trip__editpage">
+        <%= ConciergeSite.TripCardHelper.display(@conn, @trip) %>
+      </div>
+
+      <%= form_for @changeset, v2_accessibility_trip_path(@conn, :update, @trip), [as: :trip], fn form -> %>
+        <div class="form-group my-5">
+          <%= label form, :relevant_days, "What days do you take this trip?", class: "form__label" %>
+          <%= ConciergeSite.DaySelectHelper.render(:trip, @trip.relevant_days) %>
+          <%= error_tag form, :relevant_days %>
+        </div>
+
+        <div class="form__action-buttons--container">
+          <%= submit "Update subscription", class: "btn btn-primary btn-login btn-block" %>
+          <button type="button" class="btn btn-outline-danger btn-block" data-toggle="modal" data-target="#deleteModal">
+            Delete this subscription
+          </button>
+        </div>
+      <% end %>
+    </div>
   </div>
 </div>
-
-<%= form_for @changeset, v2_accessibility_trip_path(@conn, :update, @trip), [as: :trip], fn form -> %>
-  <div class="form-group my-4">
-    <%= label form, :relevant_days, "What days do you take this trip?", class: "form__label" %>
-    <%= ConciergeSite.DaySelectHelper.render(:trip, @trip.relevant_days) %>
-    <%= error_tag form, :relevant_days %>
-  </div>
-
-  <div class="my-5">
-    <%= submit "Update subscription", class: "btn btn-primary btn-login btn-block" %>
-  </div>
-<% end %>
 
 <div class="modal fade" id="deleteModal" tabindex="-1" role="dialog" aria-hidden="true">
   <div class="modal-dialog" role="document">
@@ -31,10 +35,10 @@
           Are you sure you want to delete this subscription?
         </div>
         <div class="my-3">
-          <%= link to: v2_trip_path(@conn, :delete, @trip), method: :delete, class: "btn btn-outline-primary" do %>
-            Yes
+          <%= link to: v2_trip_path(@conn, :delete, @trip), method: :delete, class: "btn btn-primary" do %>
+            Yes, delete
           <% end %>
-          <button type="button" class="btn btn-outline-primary" data-dismiss="modal">No</button>
+          <button type="button" class="btn btn-outline-primary" data-dismiss="modal">No, cancel</button>
         </div>
       </div>
     </div>

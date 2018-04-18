@@ -53,7 +53,7 @@ defmodule ConciergeSite.V2.CreateSubscriptionTest do
     session
     |> log_in(user)
     |> visit("/trips")
-    |> assert_has(css("#main", text: "My account"))
+    |> assert_has(css("#main", text: "My subscriptions"))
   end
 
   test "edit trip", %{session: session, user: user} do
@@ -61,6 +61,6 @@ defmodule ConciergeSite.V2.CreateSubscriptionTest do
     session
     |> log_in(user)
     |> visit("/trips/#{trip.id}/edit")
-    |> assert_has(css("#main", text: "Edit Subscription"))
+    |> assert_has(css("#main", text: "Edit subscription"))
   end
 end

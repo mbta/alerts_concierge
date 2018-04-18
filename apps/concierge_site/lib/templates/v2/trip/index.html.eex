@@ -1,5 +1,5 @@
-<h1 class="heading__title my-4">
-  My account
+<h1 class="heading__title">
+  My subscriptions
   <%= link to: v2_account_path(@conn, :edit), class: "float-right heading__title--link" do %>
     <i aria-hidden="true" class="fa fa-cog"></i> Settings
   <% end %>
@@ -10,13 +10,15 @@
 <div class="container container__inner">
   <div class="row justify-content-md-center">
     <div class="col-md-10 col-sm-12">
-      <h2 class="heading__subtitle my-3">My subscriptions</h2>
-      <%= for trip <- @trips do %>
-        <div class="trip__card--container">
-          <%= ConciergeSite.TripCardHelper.render(@conn, trip) %>
-        </div>
-      <% end %>
+      <div>
+        <%= for trip <- @trips do %>
+          <div class="trip__card--container">
+            <%= ConciergeSite.TripCardHelper.render(@conn, trip) %>
+          </div>
+        <% end %>
+      </div>
       <%= link("Subscribe to a new alert", to: v2_page_path(@conn, :trip_type), class: "btn btn-primary btn-block my-3") %>
+      <%= link("How are we doing? Give us feedback.", to: feedback_url(), class: "btn btn-outline-primary btn-block my-3") %>
     </div>
   </div>
 </div>

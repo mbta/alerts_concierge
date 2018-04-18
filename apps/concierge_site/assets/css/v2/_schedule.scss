@@ -1,8 +1,5 @@
 .schedules__container {
   background-color: $gray-lightest;
-  border-left: 1px solid $pale-grey;
-  border-right: 1px solid $pale-grey;
-  border-bottom: 1px solid $pale-grey;
   display: none;
 }
 
@@ -32,12 +29,14 @@
 .schedules__trips--item {
   border-top: 1px solid $pale-grey;
   clear: both;
-  padding: $base-spacing / 4 $base-spacing / 2;
+  padding: $base-spacing / 2;
 
   svg {
     float: left;
-    height: 22px;
-    width: 22px;
+    height: 18px;
+    margin-right: 4px;
+    width: 18px;
+    transform: translate(0px, 3px);
   }
 }
 
@@ -45,7 +44,7 @@
   padding: $base-spacing / 2;
   position: absolute;
   text-decoration: none;
-  top: 0px;
+  top: 2px;
   right: 0px;
 
   &:hover,

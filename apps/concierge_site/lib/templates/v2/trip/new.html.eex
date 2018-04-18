@@ -1,38 +1,46 @@
-<%= render ConciergeSite.V2.LayoutView, "_steps.html", step: "two" %>
-<h1 class="heading__title">Personalize Subscription</h1>
+<h1 class="heading__title">Personalize my subscription</h1>
 <%= flash_error(@conn) %>
 
-<p>Once we get to know more about your commute, we can customize alerts just for you.</p>
+<div class="container container__inner">
+  <div class="row justify-content-md-center">
+    <div class="col-md-10 col-sm-12">
+      <div class="form__intro">Once we get to know more about your commute, we can customize alerts just for you.
+      
+      <br /><br />
 
-<p>Tell us about your first trip of the day.</p>
+      Tell us about your first trip of the day.</div>
 
-<%= form_for @conn, v2_trip_trip_path(@conn, :leg), [as: :trip, method: :post], fn form -> %>
-  <div class="form-group my-4">
-    <%= label form, :round_trip, "Is this usually a round trip?", class: "form__label" %>
-    <div class="radio">
-      <label>
-        <%= radio_button form, :round_trip, true, required: true %>
-        Yes
-      </label>
+      <%= form_for @conn, v2_trip_trip_path(@conn, :leg), [as: :trip, method: :post], fn form -> %>
+        <div class="form-group my-4">
+          <%= label form, :round_trip, "Is this usually a round trip?", class: "form__label" %>
+          <%= ConciergeSite.HelpTextHelper.link("phone") %>
+            <%= ConciergeSite.HelpTextHelper.message("phone", "If you take the same mode of transit on your first trip as your return trip, this is a round trip.<br><br>For example, 39 Inbound in the morning and 39 Outbound in the evening.") %>
+          <div class="form-check">
+            <label class="form-check-label">
+              <%= radio_button form, :round_trip, true, required: true, class: "form-check-input" %>
+              Yes
+            </label>
+          </div>
+          <div class="form-check">
+            <label class="form-check-label">
+              <%= radio_button form, :round_trip, false, required: true, class: "form-check-input" %>
+              No
+            </label>
+          </div>
+        </div>
+
+        <%= hidden_input form, :from_new_trip, value: "true" %>
+
+        <div class="form-group my-4">
+          <%= label form, :route, "Which route or line do you connect to?", class: "form__label" %>
+          <%= ConciergeSite.RouteSelectHelper.render(:trip, :route, [], required: true) %>
+        </div>
+
+        <div class="form__action-buttons--container">
+          <%= submit "Next", class: "btn btn-primary float-right form__action-button" %>
+          <a href="javascript:history.back()" class="btn btn-outline-primary form__action-button">Back</a>
+        </div>
+      <% end %>
     </div>
-    <div class="radio">
-      <label>
-        <%= radio_button form, :round_trip, false, required: true %>
-        No
-      </label>
-    </div>
   </div>
-
-  <%= hidden_input form, :from_new_trip, value: "true" %>
-
-  <div class="form-group my-4">
-    <%= label form, :route, "Which route or line do you connect to?", class: "form__label" %>
-    <%= ConciergeSite.RouteSelectHelper.render(:trip, :route, [], required: true) %>
-  </div>
-
-  <div class="my-5">
-    <%= submit "Next", class: "btn btn-primary btn-login btn-block" %>
-    <br>
-    <a href="javascript:history.back()">&lt; Back</a>
-  </div>
-<% end %>
+</div>
