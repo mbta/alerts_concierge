@@ -6,7 +6,7 @@ defmodule ConciergeSite.V2.TripController do
   alias AlertProcessor.ServiceInfoCache
   alias Ecto.Multi
 
-  plug :scrub_params, "trip" when action in [:leg]
+  plug :scrub_params, "trip" when action in [:create, :leg]
 
   action_fallback ConciergeSite.V2.FallbackController
 
