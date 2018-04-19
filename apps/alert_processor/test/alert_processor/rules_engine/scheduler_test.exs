@@ -29,7 +29,7 @@ defmodule AlertProcessor.SchedulerTest do
         active_period: [%{start: time.two_days_from_now, end: time.three_days_from_now}]
       }
 
-      {:ok, [notification]} = Scheduler.schedule_notifications([{user, [sub]}], alert, time.now)
+      {:ok, [notification]} = Scheduler.schedule_notifications([{user, [sub]}], alert)
       {:ok, queued_notification} = SendingQueue.pop
       assert notification == queued_notification
     end
