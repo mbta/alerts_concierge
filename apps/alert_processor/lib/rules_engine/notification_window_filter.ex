@@ -55,6 +55,14 @@ defmodule AlertProcessor.NotificationWindowFilter do
     Enum.map(subscription.relevant_days, &Map.get(days, &1))
   end
 
+  defp time_within_notification_window?(%Subscription{type: :accessibility}, _) do
+    # For subscriptions with type of `:accessibility` it doesn't matter what
+    # time of the day it is. The users these subscriptions belong to signed up
+    # to be notified of specific accessibility related alerts, so regardless of
+    # what time of the day it might be, these users should be notified.
+    true
+  end
+
   defp time_within_notification_window?(subscription, now) do
     start_time = notification_window_start_time(subscription)
     end_time = subscription.end_time
