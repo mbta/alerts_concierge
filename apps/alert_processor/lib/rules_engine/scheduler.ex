@@ -8,15 +8,12 @@ defmodule AlertProcessor.Scheduler do
 
   @doc """
   1. Generate a Notification for each {User, [Subscription]}/Alert combination
-  2. Add resulting list of Notifications to holding queue
   """
-  @spec schedule_notifications({User.t, [Subscription.t]}, Alert.t, DateTime.t)
+  @spec schedule_notifications({User.t, [Subscription.t]}, Alert.t)
   :: {:ok, [Notification.t]} | :error
-  def schedule_notifications(user_subscriptions, alert, now \\ nil) do
-    now = now || DateTime.utc_now()
-
+  def schedule_notifications(user_subscriptions, alert) do
     notifications = user_subscriptions
-    |> Enum.flat_map(&NotificationBuilder.build_notifications(&1, alert, now))
+    |> Enum.map(&NotificationBuilder.build_notification(&1, alert))
 
     enqueue_notifications(notifications)
     {:ok, notifications}
