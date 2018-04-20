@@ -13,14 +13,6 @@ defmodule AlertProcessor.AlertParserTest do
     :ok
   end
 
-  setup do
-    :subscription_filter
-    |> ConCache.ets
-    |> :ets.tab2list
-    |> Enum.each(fn({key, _}) -> ConCache.delete(:subscription_filter, key) end)
-    :ok
-  end
-
   test "process_alerts/1" do
     user = insert(:user, phone_number: nil)
     :subscription

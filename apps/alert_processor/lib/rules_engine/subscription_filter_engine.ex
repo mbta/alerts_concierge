@@ -18,13 +18,10 @@ defmodule AlertProcessor.SubscriptionFilterEngine do
     |> Repo.preload(:informed_entities)
     |> Repo.preload(:trip)
 
-    subscription_timestamp = Subscription.get_last_inserted_timestamp()
     start_time = Time.utc_now()
 
     {skipped, matched_notifications} = Enum.reduce(alerts, {0, []}, fn(alert, {last_skipped, existing_notifications}) ->
-      {checked?, old_timestamp} = get_and_set_last_subscription_timestamp(alert, subscription_timestamp)
-      new_subscriptions = subscritptions_new_to_alert(checked?, all_subscriptions, subscription_timestamp, old_timestamp)
-      case new_subscriptions do
+      case all_subscriptions do
         [] -> {last_skipped + 1, [{:ok, []}] ++ existing_notifications}
         new_subscriptions ->
           notifications = Notification.most_recent_for_subscriptions_and_alerts(new_subscriptions, [alert])
@@ -59,28 +56,5 @@ defmodule AlertProcessor.SubscriptionFilterEngine do
     |> Enum.group_by(& &1.user)
     |> Map.to_list()
     |> Scheduler.schedule_notifications(alert)
-  end
-
-  defp get_and_set_last_subscription_timestamp(alert, new_timestamp) do
-    name = :subscription_filter
-    key = :erlang.phash2(alert)
-    case ConCache.get(name, key) do
-      nil ->
-        cache_alert(name, key, new_timestamp)
-        {false, nil}
-      old_timestamp ->
-        if old_timestamp != new_timestamp, do: cache_alert(name, key, new_timestamp)
-        {true, old_timestamp}
-    end
-  end
-
-  defp cache_alert(name, key, value) do
-    ConCache.put(name, key, %ConCache.Item{value: value, ttl: :timer.hours(12)})
-  end
-
-  defp subscritptions_new_to_alert(true, _subscriptions, last_timestamp, last_timestamp), do: []
-  defp subscritptions_new_to_alert(false, subscriptions, _, _), do: subscriptions
-  defp subscritptions_new_to_alert(true, subscriptions, _last_timestamp, cached_timestamp) do
-    Enum.filter(subscriptions, & &1.inserted_at > cached_timestamp)
   end
 end
