@@ -22,7 +22,6 @@ exports.config = {
     },
     stylesheets: {
       joinTo: {
-        "css/app.css": /^css\/app.scss/,
         "css/app_v2.css": /^css\/app_v2.scss/
       },
       order: {
