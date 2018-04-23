@@ -26,3 +26,6 @@ config :exvcr, [
   custom_cassette_library_dir: "test/fixture/custom_cassettes",
   filter_request_headers: ["x-api-key"]
 ]
+
+config :wallaby,
+  driver: Wallaby.Experimental.Chrome
