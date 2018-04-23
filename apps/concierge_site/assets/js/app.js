@@ -28,6 +28,7 @@ import helpText from "./help-text";
 import daySelector from "./day-selector";
 import schedule from "./schedule";
 import toggleTripType from "./toggle-trip-type";
+import phoneMask from "./phone-mask";
 
 const path = window.location.pathname;
 
@@ -38,6 +39,7 @@ toggleInput();
 helpText();
 daySelector();
 schedule();
+phoneMask();
 if (path.match(/\/trip_type$/)) {
   toggleTripType();
 }
