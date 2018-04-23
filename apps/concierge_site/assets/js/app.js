@@ -20,12 +20,7 @@ import "phoenix_html"
 
 // import socket from "./socket"
 
-import selectEntity from './select-entity';
-import selectMultipleEntity from './select-multiple-entity';
-import selectTrip from './select-trip';
 import formHelpers from './form-helpers';
-import vacationDatepicker from './vacation-datepicker';
-import subscriptionSearch from './subscription-search';
 import selectRoute from "./select-route";
 import selectStop from "./select-stop";
 import toggleInput from "./toggle-input";
@@ -36,12 +31,7 @@ import toggleTripType from "./toggle-trip-type";
 
 const path = window.location.pathname;
 
-selectEntity();
-selectMultipleEntity();
-selectTrip();
 formHelpers();
-vacationDatepicker();
-subscriptionSearch();
 selectRoute();
 selectStop();
 toggleInput();
@@ -51,5 +41,3 @@ schedule();
 if (path.match(/\/trip_type$/)) {
   toggleTripType();
 }
-
-document.body.className = document.body.className.replace("no-js", "js");
