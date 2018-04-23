@@ -71,8 +71,8 @@ defmodule ConciergeSite.DaySelectHelper do
   defp check_icon(true), do: content_tag(:i, "", class: "fa fa-check")
   defp check_icon(_), do: content_tag(:i, "", class: "fa")
 
-  defp label_class(true), do: "btn btn-secondary active"
-  defp label_class(_), do: "btn btn-secondary"
+  defp label_class(true), do: "btn btn-day active"
+  defp label_class(_), do: "btn btn-day"
 
   defp group(checked_set) do
     content_tag :div, class: "group-part invisible-no-js" do

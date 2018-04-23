@@ -25,53 +25,71 @@
   .title-part {
     padding-bottom: 4px;
     padding-left: 9px;
-
-    @include media-breakpoint-up(sm) {
-      padding-left: 15px;
-    }
+    display: flex;
+    flex-direction: row;
 
     .day-header {
-      width: 49px;
+      flex: 1;
+      width: 0;
       display: inline-block;
       font-size: $font-size-xs;
-
-      @include media-breakpoint-up(sm) {
-        width: 69px;
-        font-size: $font-size-sm;
-      }
+      text-align: center;
     }
   }
 
   .day-part {
+
+    border-top-left-radius: 5px;
+
+    .btn-group {
+      display: flex;
+      flex-direction: row;
+    }
+
     label.btn {
-      width: 50px;
       color: $brand-primary;
       margin-bottom: 0;
-      min-height: 44px;
-
-      @include media-breakpoint-up(sm) {
-        width: 70px;
-      }
+      flex: 1;
+      width: 0;
     }
   }
   .group-part {
+    .btn-group {
+      display: flex;
+      flex-direction: row;
+    }
+
     label.btn {
       border-top: 0;
       border-radius: 0;
     }
     .btn-weekdays {
-      width: 246px;
-
-      @include media-breakpoint-up(sm) {
-        width: 346px;
-      }
+      width: 72.5%;
+      border-bottom-left-radius: 5px !important;
     }
     .btn-weekend {
-      width: 99px;
+      width: 29%;
+      border-bottom-right-radius: 5px !important;
+    }
+  }
 
-      @include media-breakpoint-up(sm) {
-        width: 139px;
-      }
+  .btn-day {
+    min-height: 50px;
+
+    &.active {
+      background-color: $light-blue;
+    }
+
+    &:hover {
+      background-color: $light-blue;
+    }
+
+    &:first-child {
+      border-top-left-radius: 5px;
+    }
+
+    &:last-child {
+      border-top-right-radius: 5px;
     }
   }
 }
