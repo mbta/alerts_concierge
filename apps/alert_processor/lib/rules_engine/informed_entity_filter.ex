@@ -86,6 +86,14 @@ defmodule AlertProcessor.InformedEntityFilter do
     {subscription, informed_entity, updated_match_report}
   end
 
+  defp route_match?({%{route: "Green"} = subscription, informed_entity, match_report}) do
+    # The "Green" route is a special case. Subscriptions's for "Green" routes
+    # should match on all the Green branches.
+    route_match? = informed_entity.route in ["Green-B", "Green-C", "Green-D", "Green-E"]
+    updated_match_report = Map.put(match_report, :route_match?, route_match?)
+    {subscription, informed_entity, updated_match_report}
+  end
+
   defp route_match?({subscription, informed_entity, match_report}) do
     route_match? = subscription.route == informed_entity.route
     updated_match_report = Map.put(match_report, :route_match?, route_match?)

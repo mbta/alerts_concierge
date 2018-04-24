@@ -111,6 +111,27 @@ defmodule AlertProcessor.InformedEntityFilterTest do
       assert InformedEntityFilter.subscription_match?(subscription, informed_entity)
     end
 
+    test "returns true with 'Green-E' route match" do
+      subscription_details = [
+        route_type: 1,
+        direction_id: 0,
+        route: "Green",
+        origin: "some origin",
+        destination: "some destination",
+        facility_types: [],
+      ]
+      subscription = build(:subscription, subscription_details)
+      informed_entity_details = [
+        route_type: nil,
+        direction_id: nil,
+        route: "Green-E",
+        stop: nil,
+        activities: nil
+      ]
+      informed_entity = build(:informed_entity, informed_entity_details)
+      assert InformedEntityFilter.subscription_match?(subscription, informed_entity)
+    end
+
     test "returns false with route mismatch" do
       subscription_details = [
         route_type: 1,
