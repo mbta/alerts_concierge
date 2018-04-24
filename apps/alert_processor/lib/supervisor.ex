@@ -35,7 +35,6 @@ defmodule AlertProcessor.Supervisor do
     children = [
       supervisor(Registry, [:unique, :mailer_process_registry]),
       supervisor(AlertProcessor.Repo, []),
-      supervisor(ConCache, [[ttl_check: :timer.minutes(10)], [name: :subscription_filter]]),
       worker(ServiceInfoCache, []),
       worker(AlertWorker, []),
       worker(AlertCache, []),

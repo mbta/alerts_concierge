@@ -147,31 +147,5 @@ defmodule AlertProcessor.SubscriptionFilterEngineTest do
       assert {_, [{:ok, notifications}]} = SubscriptionFilterEngine.schedule_all_notifications([alert])
       assert length(notifications) == 1
     end
-
-    test "test skipping an unchanged alert, then sending when new subscriber is added", %{alert: alert} do
-      user = insert(:user, phone_number: nil)
-
-      :subscription
-      |> build(route_type: 1, user: user, alert_priority_type: :low, informed_entities: [%InformedEntity{route_type: 1, activities: InformedEntity.default_entity_activities()}])
-      |> weekday_subscription
-      |> insert
-
-      assert {skipped, [{:ok, notifications}]} = SubscriptionFilterEngine.schedule_all_notifications([alert])
-      assert length(notifications) == 1
-      assert skipped == 0
-
-      assert {skipped, [{:ok, notifications}]} = SubscriptionFilterEngine.schedule_all_notifications([alert])
-      assert length(notifications) == 0
-      assert skipped == 1
-
-      :subscription
-      |> build(route_type: 1, user: user, alert_priority_type: :low, informed_entities: [%InformedEntity{route_type: 1, activities: InformedEntity.default_entity_activities()}])
-      |> weekday_subscription
-      |> insert
-
-      assert {skipped, [{:ok, notifications}]} = SubscriptionFilterEngine.schedule_all_notifications([alert])
-      assert length(notifications) == 1
-      assert skipped == 0
-    end
   end
 end
