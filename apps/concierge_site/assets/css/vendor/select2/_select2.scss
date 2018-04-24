@@ -40,7 +40,7 @@
       box-sizing: border-box;
       border: none;
       font-size: 100%;
-      margin-top: 5px;
+      margin-top: 2px;
       padding: 0; }
       .select2-container .select2-search--inline .select2-search__field::-webkit-search-cancel-button {
         -webkit-appearance: none; }
@@ -480,3 +480,13 @@
 
 .select2-container--classic.select2-container--open .select2-dropdown {
   border-color: #5897fb; }
+
+.select2 svg,
+.select2-container svg {
+  transform: translate(0, 3px);
+  margin-right: 7px;
+
+  &:first-child {
+    margin-right: 20px;
+  }
+}
