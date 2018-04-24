@@ -1,9 +1,23 @@
+.form__intro {
+  margin-bottom: 1.25rem;
+}
+
+.form__instructions {
+  margin: 1rem 0 1.5rem;
+  font-weight: bold;
+}
+
 .form__label {
   font-weight: bold;
 }
 
 .form__label--disabled {
   color: $gray;
+}
+
+.form__label--radio {
+  font-weight: bold;
+  display: inline;
 }
 
 label.form__label--inline {
@@ -33,6 +47,12 @@ label.form__label--inline {
   padding: .25rem;
 }
 
+.form__select--inline-small {
+  display: inline-block;
+  width: 8rem;
+  margin-right: .5rem;
+}
+
 .error-block-container {
   background-color: $form-error-message;
   margin-top: .5rem;
@@ -48,4 +68,29 @@ label.form__label--inline {
       margin-right: .25rem;
     }
   }
+}
+
+.form__action-buttons--container {
+  margin-top: 2.5rem;
+}
+
+.form__action-button {
+  min-width: 10rem;
+}
+
+.form__section {
+  margin-bottom: 2.5rem;
+}
+
+.form__section--top {
+  margin-bottom: 2.5rem;
+  margin-top: 1.5rem;
+}
+
+.form-control {
+  border-color: $brand-primary;
+}
+
+.form-check-input {
+  margin-top: .1rem;
 }

@@ -12,10 +12,10 @@
 }
 .select2-container--bootstrap4 .select2-selection {
   background-color: #fff;
-  border: 1px solid #ced4da;
+  border: 1px solid $form-input-border;
   border-radius: 0.25rem;
   color: #495057;
-  font-size: 1rem;
+  font-size: 16px;
   outline: 0;
 }
 .select2-container--bootstrap4 .select2-selection.form-control {
@@ -26,7 +26,7 @@
   border: 1px solid #ced4da;
   border-radius: 0.25rem;
   color: #495057;
-  font-size: 1rem;
+  font-size: 16px;
 }
 .select2-container--bootstrap4 .select2-search__field {
   outline: 0;
@@ -46,8 +46,8 @@
 }
 .select2-container--bootstrap4 .select2-results__option {
   padding: 0.75rem 0.375rem;
-  font-size: 1rem;
-  font-weight: bold;
+  font-size: 16px;
+  font-weight: normal;
 }
 .select2-container--bootstrap4 .select2-results__option[role=group] {
   padding: 0;
@@ -65,7 +65,7 @@
   color: #1c1e23;
 }
 .select2-container--bootstrap4 .select2-results__option .select2-results__option {
-  padding: 0.75rem 0.375rem;
+  padding: .5rem;
 }
 .select2-container--bootstrap4 .select2-results__option .select2-results__option .select2-results__group {
   padding-left: 0;
@@ -91,16 +91,16 @@
   padding-left: 2.25rem;
 }
 .select2-container--bootstrap4 .select2-results__group {
-  color: #868e96;
+  color: #777777;
   display: block;
-  padding: 0.75rem 0.375rem;
-  font-size: 75%;
+  padding: .5rem 0 .25rem .5rem;
+  font-weight: normal;
   line-height: 1;
   white-space: nowrap;
 }
 .select2-container--bootstrap4.select2-container--focus .select2-selection, .select2-container--bootstrap4.select2-container--open .select2-selection {
   transition: border-color ease-in-out 0.15s, box-shadow ease-in-out 0.15s;
-  border-color: #80bdff;
+  border-color: $form-input-border;
 }
 .select2-container--bootstrap4.select2-container--open .select2-selection .select2-selection__arrow b {
   border-color: transparent transparent #868e96 transparent;
@@ -142,7 +142,7 @@
   display: none;
 }
 .select2-container--bootstrap4 .select2-dropdown {
-  border-color: #80bdff;
+  border-color: $form-input-border;
   border-width: 1px;
   overflow-x: hidden;
   margin-top: -1px;
@@ -155,7 +155,7 @@
   overflow-y: auto;
 }
 .select2-container--bootstrap4 .select2-selection--single {
-  padding: 0.75rem 1.125rem 0.75rem 0.375rem;
+  padding: .5rem;
 }
 .select2-container--bootstrap4 .select2-selection--single .select2-selection__arrow {
   position: absolute;
@@ -170,7 +170,7 @@
   border-width: 0.25rem 0.25rem 0 0.25rem;
   height: 0;
   left: 0;
-  margin-left: -0.25rem;
+  margin-left: -0.5rem;
   margin-top: -0.125rem;
   position: absolute;
   top: 50%;
@@ -179,7 +179,6 @@
 .select2-container--bootstrap4 .select2-selection--single .select2-selection__rendered {
   color: #495057;
   padding: 0;
-  font-weight: bold;
 }
 .select2-container--bootstrap4 .select2-selection--single .select2-selection__placeholder {
   color: #868e96;
@@ -209,12 +208,12 @@
 .select2-container--bootstrap4 .select2-selection--multiple .select2-selection__choice {
   color: #495057;
   background: transparent;
-  border: 1px solid #343a40;
+  border: 1px solid $form-input-border;
   border-radius: 0.25rem;
   cursor: default;
   float: left;
   line-height: 1.6rem;
-  margin: 0.25rem 0 0 0.1875rem;
+  margin: 0.25rem;
   padding: 0.25rem;
 }
 .select2-container--bootstrap4 .select2-selection--multiple .select2-selection__choice svg {
@@ -225,7 +224,6 @@
   padding: 0 0.375rem;
   height: calc(2.25rem + 2px)-2;
   line-height: 1.6rem;
-  margin-top: .5rem;
   min-width: 5em;
 }
 .select2-container--bootstrap4 .select2-selection--multiple .select2-selection__choice__remove {
