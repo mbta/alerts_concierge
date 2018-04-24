@@ -41,7 +41,6 @@ defmodule ConciergeSite.Web do
       import ConciergeSite.Router.Helpers
       import ConciergeSite.ErrorHelpers
       import ConciergeSite.FlashHelpers
-      import ConciergeSite.PaginationHelpers
       import ConciergeSite.FontAwesomeHelpers
       import ConciergeSite.Gettext
       import ConciergeSite.ViewHelpers
