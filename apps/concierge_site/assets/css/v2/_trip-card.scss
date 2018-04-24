@@ -1,13 +1,15 @@
 .trip__card {
   display: block;
+  line-height: 1.5rem;
   padding: .75rem;
   border-color: $steel;
-  color: $black;
+  color: $black !important;
+  text-align: left;
 
   &:hover,
   &:active,
   &:focus {
-    color: $brand-primary;
+    color: $black;
     text-decoration: none;
   }
 }
@@ -15,19 +17,22 @@
 .trip__card--route {
   display: inline-block;
   font-weight: bold;
-  margin-bottom: .25rem;
 }
 
 .trip__card--route-deliminator {
   display: inline-block;
-  padding: 0 .5rem 0 .25rem;
+  font-size: 16px;
+  font-weight: bold;
+  padding: 0 .5rem;
 }
 
 .trip__card--route-icon {
   position: relative;
   display: inline-block;
-  width: 30px;
+  width: 20px;
   height: 20px;
+  margin-right: 4px;
+  transform: translate(0px, 4px);
 
   svg {
     position: absolute;
@@ -39,9 +44,30 @@
 }
 
 .trip__card--container {
-  padding-bottom: 10px;
+  padding: 10px 0;
+
+  &:first-child {
+    padding-top: 2rem;
+  }
+
+  &:last-child {
+    padding-bottom: 2rem;
+  }
 }
 
 .trip__card--edit-link {
   float: right;
+  color: $brand-primary;
+}
+
+.trip__editpage .trip__card--edit-link {
+  display: none;
+}
+
+.trip__card--display {
+  cursor: auto !important;
+
+  &:hover {
+    background-color: #fff !important;
+  }
 }

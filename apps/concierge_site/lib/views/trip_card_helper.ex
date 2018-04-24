@@ -7,39 +7,61 @@ defmodule ConciergeSite.TripCardHelper do
   alias AlertProcessor.Model.{Trip, Subscription}
 
   @spec render(Plug.Conn.t, atom | Trip.t) :: Phoenix.HTML.safe
-  def render(conn, %Trip{trip_type: :accessibility, id: id, relevant_days: relevant_days,
-                         facility_types: facility_types, subscriptions: subscriptions}) do
-    link to: ConciergeSite.Router.Helpers.v2_accessibility_trip_path(conn, :edit, id), class: "card trip__card" do
-      [
-        edit_faux_link(),
-        content_tag :span, class: "trip__card--route-icon" do
-          ConciergeSite.IconViewHelper.icon(:t)
-        end,
-        content_tag :span, class: "trip__card--route" do
-          "Station features"
-        end,
-        content_tag :div, class: "trip__card--type my-2" do
-          "#{days(relevant_days)} — #{stops_and_routes(subscriptions)}"
-        end,
-        content_tag :div, class: "trip__card--type my-2" do
-          "#{facility_types(facility_types)}"
-        end
-      ]
+  def render(conn, %Trip{trip_type: :accessibility, id: id} = trip) do
+    link to: ConciergeSite.Router.Helpers.v2_accessibility_trip_path(conn, :edit, id), class: "card trip__card btn btn-outline-primary" do
+      accessibility_content(trip)
     end
   end
-  def render(conn, %Trip{subscriptions: subscriptions, roundtrip: roundtrip, relevant_days: relevant_days,
-                   start_time: start_time, end_time: end_time, return_start_time: return_start_time,
-                   return_end_time: return_end_time, id: id}) do
-    link to: ConciergeSite.Router.Helpers.v2_trip_path(conn, :edit, id), class: "card trip__card" do
-      [
-        edit_faux_link(),
-        routes(subscriptions),
-        trip_type(roundtrip, relevant_days),
-        trip_times({start_time, end_time}, {return_start_time, return_end_time})
-      ]
+  def render(conn, %Trip{id: id} = trip) do
+    link to: ConciergeSite.Router.Helpers.v2_trip_path(conn, :edit, id), class: "card trip__card btn btn-outline-primary" do
+      commute_content(trip)
     end
   end
   def render(_), do: ""
+
+  def display(_conn, %Trip{trip_type: :accessibility} = trip) do
+    content_tag :div, class: "card trip__card trip__card--display btn btn-outline-primary" do
+      accessibility_content(trip)
+    end
+  end
+  def display(_conn, trip) do
+    content_tag :div, class: "card trip__card trip__card--display btn btn-outline-primary" do
+      commute_content(trip)
+    end
+  end
+  def display(_), do: ""
+
+  @spec accessibility_content(Trip.t) :: [Phoenix.HTML.safe]
+  defp accessibility_content(%Trip{trip_type: :accessibility, relevant_days: relevant_days,
+                                  facility_types: facility_types, subscriptions: subscriptions}) do
+    [
+      edit_faux_link(),
+      content_tag :span, class: "trip__card--route-icon" do
+        ConciergeSite.IconViewHelper.icon(:t)
+      end,
+      content_tag :span, class: "trip__card--route" do
+        "Station features"
+      end,
+      content_tag :div, class: "trip__card--type" do
+        "#{days(relevant_days)} — #{stops_and_routes(subscriptions)}"
+      end,
+      content_tag :div, class: "trip__card--type" do
+        "#{facility_types(facility_types)}"
+      end
+    ]
+  end
+
+  @spec commute_content(Trip.t) :: [Phoenix.HTML.safe]
+  defp commute_content(%Trip{subscriptions: subscriptions, roundtrip: roundtrip, relevant_days: relevant_days,
+  start_time: start_time, end_time: end_time, return_start_time: return_start_time,
+  return_end_time: return_end_time}) do
+    [
+      edit_faux_link(),
+      routes(subscriptions),
+      trip_type(roundtrip, relevant_days),
+      trip_times({start_time, end_time}, {return_start_time, return_end_time})
+    ]
+  end
 
   @spec routes([Subscription.t]) :: [Phoenix.HTML.safe]
   defp routes(subscriptions) do
@@ -56,8 +78,8 @@ defmodule ConciergeSite.TripCardHelper do
       ]
     end)
     |> Enum.intersperse(
-      content_tag :i, class: "fa fa-chevron-right trip__card--route-deliminator" do
-        ""
+      content_tag :span, class: "trip__card--route-deliminator" do
+        ">"
       end
     )
   end
@@ -71,7 +93,7 @@ defmodule ConciergeSite.TripCardHelper do
 
   @spec trip_type(boolean, [atom]) :: Phoenix.HTML.safe
   defp trip_type(roundtrip?, days) do
-    content_tag :div, class: "trip__card--type my-2" do
+    content_tag :div, class: "trip__card--type" do
       "#{roundtrip(roundtrip?)}, #{days(days)}"
     end
   end
