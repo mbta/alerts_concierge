@@ -59,7 +59,7 @@ defmodule ConciergeSite.V2.AccessibilityTripControllerTest do
         |> guardian_login(conn)
         |> get(v2_accessibility_trip_path(conn, :edit, trip.id))
 
-      assert html_response(conn, 200) =~ "Edit Subscription"
+      assert html_response(conn, 200) =~ "Edit subscription"
     end
 
     test "returns 404 with non-existent trip", %{conn: conn, user: user} do

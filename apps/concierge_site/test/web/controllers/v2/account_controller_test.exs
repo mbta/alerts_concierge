@@ -5,7 +5,7 @@ defmodule ConciergeSite.V2.AccountControllerTest do
 
   test "new/4", %{conn: conn} do
     conn = get(conn, v2_account_path(conn, :new))
-    assert html_response(conn, 200) =~ "Create account"
+    assert html_response(conn, 200) =~ "Welcome to T-alerts"
   end
 
   test "POST /account", %{conn: conn} do

@@ -21,17 +21,17 @@ defmodule ConciergeSite.StopSelectHelper do
   end
 
   @spec render_option(stop_row, [String.t]) :: Phoenix.HTML.safe
-  defp render_option([id: id, name: name, modes: modes, accessible: accessible], selected) do
+  defp render_option([id: id, name: name, modes: modes, accessible: _accessible], selected) do
     selected = if Enum.member?(selected, id), do: [selected: "selected"], else: []
-    attributes = [value: id, data: option_data(modes, accessible)] ++ selected
+    attributes = [value: id, data: option_data(modes)] ++ selected
     content_tag :option, attributes do
       name
     end
   end
 
-  @spec option_data([integer], boolean) :: Keyword.t
-  defp option_data(modes, accessible) do
-    Enum.reduce(modes, [accessible: to_string(accessible)], fn(route_type, acc) ->
+  @spec option_data([integer]) :: Keyword.t
+  defp option_data(modes) do
+    Enum.reduce(modes, [], fn(route_type, acc) ->
       Keyword.put(acc, route_type, true)
     end)
   end

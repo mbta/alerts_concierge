@@ -14,7 +14,7 @@ defmodule ConciergeSite.V2.TripControllerTest do
     |> guardian_login(conn)
     |> get(v2_trip_path(conn, :index))
 
-    assert html_response(conn, 200) =~ "My account"
+    assert html_response(conn, 200) =~ "My subscriptions"
   end
 
   describe "GET /trips/:id/edit" do
@@ -28,7 +28,7 @@ defmodule ConciergeSite.V2.TripControllerTest do
         |> guardian_login(conn)
         |> get(v2_trip_path(conn, :edit, trip.id))
 
-      assert html_response(conn, 200) =~ "Edit Subscription"
+      assert html_response(conn, 200) =~ "Edit subscription"
     end
 
     test "returns 404 with non-existent trip", %{conn: conn, user: user} do
@@ -72,7 +72,7 @@ defmodule ConciergeSite.V2.TripControllerTest do
              |> guardian_login(conn)
              |> patch(v2_trip_path(conn, :update, trip.id, params))
 
-      assert html_response(conn, 200) =~ "Trip updated."
+      assert html_response(conn, 302) =~ v2_trip_path(conn, :index)
     end
 
     test "with HH:MM:SS time format", %{conn: conn, user: user} do
@@ -94,7 +94,7 @@ defmodule ConciergeSite.V2.TripControllerTest do
              |> guardian_login(conn)
              |> patch(v2_trip_path(conn, :update, trip.id, params))
 
-      assert html_response(conn, 200) =~ "Trip updated."
+      assert html_response(conn, 302) =~ v2_trip_path(conn, :index)
     end
 
     test "with invalid relevant day", %{conn: conn, user: user} do

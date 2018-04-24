@@ -3,16 +3,16 @@
 @import "bootstrap";
 @import "font-awesome";
 @import "v2/font-sizes";
-@import "v2/header.scss";
-@import "v2/footer.scss";
-@import "v2/forms.scss";
-@import "v2/steps.scss";
-@import "v2/trip-card.scss";
+@import "v2/header";
+@import "v2/footer";
+@import "v2/forms";
+@import "v2/steps";
+@import "v2/trip-card";
 @import "vendor/select2/select2";
 @import "vendor/select2/select2-bootstrap4";
 @import "v2/help_text";
 @import "v2/day_selector";
-@import "v2/schedule.scss";
+@import "v2/schedule";
 
 body {
   -moz-osx-font-smoothing: grayscale;
@@ -24,26 +24,26 @@ body {
   min-height: 100vh;
 }
 
-.container {
-  @include media-breakpoint-down(md) {
-    margin-left: 0;
-    margin-right: 0;
-    width: 100%;
-  }
-}
-
 .container__inner {
   margin: 0;
   padding: 0;
 }
 
 .page__content {
-  padding-bottom: 10rem;
+  padding-bottom: 2.5rem;
+  padding-top: 1.75rem;
   flex: 1 0 auto;
 }
 
-.btn-link {
+.btn {
   cursor: pointer;
+  box-shadow: none !important;
+
+  &:disabled {
+    opacity: 1;
+    background-color: $gray !important;
+    border-color: $gray !important;
+  }
 }
 
 .btn.active {
@@ -53,10 +53,20 @@ body {
 
 .btn.btn-outline-primary {
   border-color: $brand-primary;
-  color: $gray-dark;
+  color: $brand-primary;
 
   &:hover {
     background-color: $light-blue;
-    color: $gray-dark;
   }
+
+  &.active, &:active {
+    background-color: $light-blue !important;
+    border-color: $brand-primary !important;
+    color: $gray-dark !important;
+  }
+}
+
+.btn.btn-primary {
+  background-color: $brand-primary;
+  border-color: $brand-primary;
 }
