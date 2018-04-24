@@ -179,7 +179,7 @@ defmodule ConciergeSite.V2.TripControllerTest do
       assert html_response(conn, 200) =~ "Success! If at any time you need to edit the features, "
       <> "stations, or lines you&#39;ve subscribed to, you can click in the box below."
 
-      assert html_response(conn, 200) =~ "<span class=\"trip__card--route\">Red</span>"
+      assert html_response(conn, 200) =~ "<span class=\"trip__card--route\">Red Line</span>"
       <> "<div class=\"trip__card--type\">Round-trip, Weekdays</div>"
       <> "<div class=\"trip__card--times\"> 8:00am -  9:00am /  5:00pm -  6:00pm</div>"
     end
@@ -210,7 +210,7 @@ defmodule ConciergeSite.V2.TripControllerTest do
 
       conn = get(conn, v2_trip_path(conn, :index))
 
-      assert html_response(conn, 200) =~ "<span class=\"trip__card--route\">741</span>"
+      assert html_response(conn, 200) =~ "<span class=\"trip__card--route\">Silver Line SL1</span>"
     end
   end
 
