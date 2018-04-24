@@ -1,9 +1,4 @@
-<h1 class="heading__title">
-  My subscriptions
-  <%= link to: v2_account_path(@conn, :edit), class: "float-right heading__title--link" do %>
-    <i aria-hidden="true" class="fa fa-cog"></i> Settings
-  <% end %>
-</h1>
+<h1 class="heading__title">My subscriptions</h1>
 <%= flash_error(@conn) %>
 <%= flash_info(@conn) %>
 
