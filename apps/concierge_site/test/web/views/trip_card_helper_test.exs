@@ -38,6 +38,7 @@ defmodule ConciergeSite.TripCardHelperTest do
       refute html =~ "Round-trip"
       assert html =~ "Mondays"
       assert html =~ "9:00am - 10:00am"
+      assert html =~ "<a class=\"card trip__card btn"
 
       trip_all_weekdays = %{trip_with_subscriptions | relevant_days: [:monday, :tuesday, :wednesday, :thursday, :friday]}
       html = Phoenix.HTML.safe_to_string(TripCardHelper.render(conn, trip_all_weekdays))
@@ -52,6 +53,9 @@ defmodule ConciergeSite.TripCardHelperTest do
       refute html =~ "One-way"
       assert html =~ "Round-trip"
       assert html =~ "9:00am - 10:00am /  1:00pm -  2:00pm"
+
+      html = Phoenix.HTML.safe_to_string(TripCardHelper.display(conn, trip_with_subscriptions))
+      assert html =~ "<div class=\"card trip__card trip__card--display btn"
     end
 
     test "accessiblity", %{conn: conn} do
@@ -65,6 +69,7 @@ defmodule ConciergeSite.TripCardHelperTest do
       assert html =~ "Mondays — Chinatown, Orange Line"
       assert html =~ "Station features"
       assert html =~ "Elevators"
+      assert html =~ "<a class=\"card trip__card btn"
 
       trip_escalator = %{trip_with_subscriptions | facility_types: [:escalator]}
       html = Phoenix.HTML.safe_to_string(TripCardHelper.render(conn, trip_escalator))
@@ -73,6 +78,9 @@ defmodule ConciergeSite.TripCardHelperTest do
       trip_both_facilities = %{trip_with_subscriptions | facility_types: [:elevator, :escalator]}
       html = Phoenix.HTML.safe_to_string(TripCardHelper.render(conn, trip_both_facilities))
       assert html =~ "Elevators and escalators"
+
+      html = Phoenix.HTML.safe_to_string(TripCardHelper.display(conn, trip_with_subscriptions))
+      assert html =~ "<div class=\"card trip__card trip__card--display btn"
     end
   end
 

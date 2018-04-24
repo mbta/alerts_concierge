@@ -180,7 +180,7 @@ defmodule ConciergeSite.V2.TripControllerTest do
       <> "stations, or lines you&#39;ve subscribed to, you can click in the box below."
 
       assert html_response(conn, 200) =~ "<span class=\"trip__card--route\">Red</span>"
-      <> "<div class=\"trip__card--type my-2\">Round-trip, Weekdays</div>"
+      <> "<div class=\"trip__card--type\">Round-trip, Weekdays</div>"
       <> "<div class=\"trip__card--times\"> 8:00am -  9:00am /  5:00pm -  6:00pm</div>"
     end
 
