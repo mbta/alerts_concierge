@@ -291,10 +291,10 @@ defmodule AlertProcessor.ServiceInfoCache do
   defp stop_mode_icon("Red", _), do: :red
   defp stop_mode_icon("Orange", _), do: :orange
   defp stop_mode_icon("Blue", _), do: :blue
-  defp stop_mode_icon("Green-B", _), do: :green
-  defp stop_mode_icon("Green-C", _), do: :green
-  defp stop_mode_icon("Green-D", _), do: :green
-  defp stop_mode_icon("Green-E", _), do: :green
+  defp stop_mode_icon("Green-B", _), do: :"green-b"
+  defp stop_mode_icon("Green-C", _), do: :"green-c"
+  defp stop_mode_icon("Green-D", _), do: :"green-d"
+  defp stop_mode_icon("Green-E", _), do: :"green-e"
   defp stop_mode_icon("Mattapan", _), do: :mattapan
   defp stop_mode_icon(_, 2), do: :cr
   defp stop_mode_icon(_, 3), do: :bus
