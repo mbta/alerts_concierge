@@ -15,8 +15,9 @@
 }
 
 .trip__card--route {
-  display: inline-block;
   font-weight: bold;
+  overflow-x: hidden;
+  text-overflow: ellipsis;
 }
 
 .trip__card--route-deliminator {
@@ -41,6 +42,8 @@
 
 .trip__card--type, .trip__card--times {
   font-size: 1rem;
+  overflow-x: hidden;
+  text-overflow: ellipsis;
 }
 
 .trip__card--container {

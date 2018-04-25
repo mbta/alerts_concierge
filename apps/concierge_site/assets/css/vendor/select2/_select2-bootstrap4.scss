@@ -66,6 +66,7 @@
 }
 .select2-container--bootstrap4 .select2-results__option .select2-results__option {
   padding: .5rem;
+  overflow: hidden;
 }
 .select2-container--bootstrap4 .select2-results__option .select2-results__option .select2-results__group {
   padding-left: 0;
@@ -179,6 +180,8 @@
 .select2-container--bootstrap4 .select2-selection--single .select2-selection__rendered {
   color: #495057;
   padding: 0;
+  overflow: hidden;
+  width: 96%;
 }
 .select2-container--bootstrap4 .select2-selection--single .select2-selection__placeholder {
   color: #868e96;
