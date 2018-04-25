@@ -13,14 +13,9 @@
         <div class="form-group my-5">
           <%= label form, :alert_time_difference_in_minutes, "When would you like to start receiving alerts for your trips?", class: "form__label" %>
           <p>
-          <%= select form, :alert_time_difference_in_minutes, [[key: "15 mins", value: 15],
-                                                              [key: "30 mins", value: 30],
-                                                              [key: "45 mins", value: 45],
-                                                              [key: "1 hour", value: 60],
-                                                              [key: "1 hour, 15 mins", value: 75],
-                                                              [key: "1 hour, 30 mins", value: 90],
-                                                              [key: "1 hour, 45 mins", value: 105],
-                                                              [key: "2 hours", value: 120]],
+          <%= select form, :alert_time_difference_in_minutes, [[key: "30 mins", value: 30],
+                                                               [key: "1 hour", value: 60],
+                                                               [key: "2 hours", value: 120]],
                 selected: @trip.alert_time_difference_in_minutes, class: "form-control form__select--inline-small" %>
             <em> before my trip</em>
           </p>
@@ -35,11 +30,11 @@
           <span class="form__label">My first trip is usually at this time:</span>
           <div class="form-group form-inline form__group--inline">
             <%= label form, :start_time, "Departing around", class: "form__label--inline" %>
-            <%= text_input form, :start_time, type: "time", class: "form-control form__time--inline", required: true, value: Time.truncate(@trip.start_time, :second) %>
+            <%= text_input form, :start_time, type: "time", class: "form-control form__time--inline", required: true, value: Time.truncate(@trip.start_time, :second), step: "900" %>
           </div>
           <div class="form-group form-inline form__group--inline">
             <%= label form, :end_time, "Arriving around", class: "form__label--inline" %>
-            <%= text_input form, :end_time, type: "time", class: "form-control form__time--inline", required: true, value: Time.truncate(@trip.end_time, :second) %>
+            <%= text_input form, :end_time, type: "time", class: "form-control form__time--inline", required: true, value: Time.truncate(@trip.end_time, :second), step: "900" %>
           </div>
           <%= ConciergeSite.ScheduleHelper.render(@schedules, "trip_start_time", "trip_end_time") %>
         </div>
@@ -49,11 +44,11 @@
           <span class="form__label">My return trip is usually at this time:</span>
           <div class="form-group form-inline form__group--inline">
             <%= label form, :return_start_time, "Departing around", class: "form__label--inline" %>
-            <%= text_input form, :return_start_time, type: "time", class: "form-control form__time--inline", required: true, value: Time.truncate(@trip.return_start_time, :second) %>
+            <%= text_input form, :return_start_time, type: "time", class: "form-control form__time--inline", required: true, value: Time.truncate(@trip.return_start_time, :second), step: "900" %>
           </div>
           <div class="form-group form-inline form__group--inline">
             <%= label form, :return_end_time, "Arriving around", class: "form__label--inline" %>
-            <%= text_input form, :return_end_time, type: "time", class: "form-control form__time--inline", required: true, value: Time.truncate(@trip.return_end_time, :second) %>
+            <%= text_input form, :return_end_time, type: "time", class: "form-control form__time--inline", required: true, value: Time.truncate(@trip.return_end_time, :second), step: "900" %>
           </div>
           <%= ConciergeSite.ScheduleHelper.render(@return_schedules, "trip_return_start_time", "trip_return_end_time") %>
         </div>
