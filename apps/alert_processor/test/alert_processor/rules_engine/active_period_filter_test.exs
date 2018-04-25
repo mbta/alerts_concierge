@@ -156,4 +156,13 @@ defmodule AlertProcessor.ActivePeriodFilterTest do
         ActivePeriodFilter.filter([weekday_subscription, saturday_subscription, sunday_subscription], alert: alert7)
     end
   end
+
+  describe "with alert with nil 'active_period'" do
+    test "does not match" do
+      alert = %Alert{active_period: nil}
+      subscription = :subscription |> build() |> weekday_subscription()
+
+      assert [] == ActivePeriodFilter.filter([subscription], alert: alert)
+    end
+  end
 end
