@@ -73,7 +73,7 @@ defmodule ConciergeSite.TripCardHelper do
           icon(subscription.type, subscription.route)
         end,
         content_tag :span, class: "trip__card--route" do
-          subscription.route
+          route_name(subscription.route)
         end
       ]
     end)
@@ -159,7 +159,10 @@ defmodule ConciergeSite.TripCardHelper do
   defp route_name("Green"), do: "Green Line"
   defp route_name(route_id) do
     {:ok, route} = ServiceInfoCache.get_route(route_id)
-    route.long_name
+    case route.long_name do
+      "" -> route.short_name
+      _ -> route.long_name
+    end
   end
 
   @spec edit_faux_link() :: Phoenix.HTML.safe

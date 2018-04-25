@@ -20,20 +20,22 @@ defmodule ConciergeSite.TripCardHelperTest do
         add_subscription_for_trip(trip, %{type: :subway, route: "Mattapan", origin: "place-asmnl", destination: "place-matt",
                                           direction_id: 0, rank: 5}),
         add_subscription_for_trip(trip, %{type: :bus, route: "57A", direction_id: 0, rank: 6}),
+        add_subscription_for_trip(trip, %{type: :bus, route: "741", direction_id: 0, rank: 6}),
         add_subscription_for_trip(trip, %{type: :cr, route: "CR-Haverhill", origin: "Melrose Highlands",
                                           destination: "place-north", direction_id: 1, rank: 7}),
         add_subscription_for_trip(trip, %{type: :ferry, route: "Boat-F4", origin: "Boat-Long",
                                           destination: "Boat-Charlestown", direction_id: 0, rank: 8})]}
 
       html = Phoenix.HTML.safe_to_string(TripCardHelper.render(conn, trip_with_subscriptions))
-      assert html =~ "Red"
-      assert html =~ "Orange"
-      assert html =~ "Green"
-      assert html =~ "Blue"
-      assert html =~ "Mattapan"
+      assert html =~ "Red Line"
+      assert html =~ "Orange Line"
+      assert html =~ "Green Line"
+      assert html =~ "Blue Line"
+      assert html =~ "Mattapan Trolley"
       assert html =~ "57A"
-      assert html =~ "CR-Haverhill"
-      assert html =~ "Boat-F4"
+      assert html =~ "Silver Line SL1"
+      assert html =~ "Haverhill Line"
+      assert html =~ "Charlestown Ferry"
       assert html =~ "One-way"
       refute html =~ "Round-trip"
       assert html =~ "Mondays"
