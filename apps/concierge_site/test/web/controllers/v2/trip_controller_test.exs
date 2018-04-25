@@ -146,7 +146,7 @@ defmodule ConciergeSite.V2.TripControllerTest do
     |> get(v2_trip_path(conn, :new))
 
     assert html_response(conn, 200) =~ "Is this usually a round trip?"
-    assert html_response(conn, 200) =~ "Which route or line do you connect to?"
+    assert html_response(conn, 200) =~ "Which route or line do you take?"
   end
 
   describe "POST /trip" do
@@ -176,8 +176,7 @@ defmodule ConciergeSite.V2.TripControllerTest do
 
       conn = get(conn, v2_trip_path(conn, :index))
 
-      assert html_response(conn, 200) =~ "Success! If at any time you need to edit the features, "
-      <> "stations, or lines you&#39;ve subscribed to, you can click in the box below."
+      assert html_response(conn, 200) =~ "Sucess! Your subscription has been created."
 
       assert html_response(conn, 200) =~ "<span class=\"trip__card--route\">Red Line</span>"
       <> "<div class=\"trip__card--type\">Round-trip, Weekdays</div>"

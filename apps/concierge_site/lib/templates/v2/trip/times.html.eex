@@ -6,7 +6,7 @@
     <div class="col-md-10 col-sm-12">
       <%= form_for @conn, v2_trip_path(@conn, :create), [as: :trip, method: :post], fn form -> %>
         <div class="form-group form__section--top">
-          <%= label form, :days, "What days do you take this trip?", class: "form__label" %>
+          <%= label form, :days, "What days do you usually travel?", class: "form__label" %>
           <%= ConciergeSite.DaySelectHelper.render(:trip, ["monday", "tuesday", "wednesday", "thursday", "friday", "weekdays"]) %>
         </div>
 
@@ -81,7 +81,7 @@
         </div>
 
         <div class="form__action-buttons--container">
-          <%= submit "Next", class: "btn btn-primary float-right form__action-button" %>
+          <%= submit "Finish", class: "btn btn-primary float-right form__action-button" %>
           <a href="javascript:history.back()" class="btn btn-outline-primary form__action-button">Back</a>
         </div>
       <% end %>
