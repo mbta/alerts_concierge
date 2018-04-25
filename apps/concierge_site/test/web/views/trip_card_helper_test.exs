@@ -13,7 +13,7 @@ defmodule ConciergeSite.TripCardHelperTest do
                                           direction_id: 0, rank: 1}),
         add_subscription_for_trip(trip, %{type: :subway, route: "Orange", origin: "place-chncl", destination: "place-ogmnl",
                                           direction_id: 1, rank: 2}),
-        add_subscription_for_trip(trip, %{type: :subway, route: "Green", origin: "place-lake", destination: "place-kencl",
+        add_subscription_for_trip(trip, %{type: :subway, route: "Green-B", origin: "place-lake", destination: "place-kencl",
                                           direction_id: 0, rank: 3}),
         add_subscription_for_trip(trip, %{type: :subway, route: "Blue", origin: "place-wondl", destination: "place-bomnl",
                                           direction_id: 0, rank: 4}),

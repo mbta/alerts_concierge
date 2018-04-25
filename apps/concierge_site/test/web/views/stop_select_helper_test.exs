@@ -9,7 +9,7 @@ defmodule ConciergeSite.StopSelectHelperTest do
     assert html =~ "<select class=\"form-control\" data-type=\"stop\" id=\"foo_bar\" name=\"foo[bar]\">"
     assert html =~ "Select a stop"
     assert html =~ "<option data-bus=\"true\" data-mattapan=\"true\" data-red=\"true\" value=\"place-asmnl\">Ashmont</option>"
-    assert html =~ "<option data-green=\"true\" data-red=\"true\" value=\"place-pktrm\">Park Street</option>"
+    assert html =~ "<option data-green-b=\"true\" data-green-c=\"true\" data-green-d=\"true\" data-green-e=\"true\" data-red=\"true\" value=\"place-pktrm\">Park Street</option>"
     assert html =~ "<option data-orange=\"true\" data-red=\"true\" value=\"place-dwnxg\">Downtown Crossing</option>"
   end
 
@@ -31,10 +31,28 @@ defmodule ConciergeSite.StopSelectHelperTest do
     assert html =~ "<option data-ferry=\"true\" value=\"Boat-Charlestown\">Charlestown</option>"
   end
 
-  test "render/3 Green" do
-    html = Phoenix.HTML.safe_to_string(StopSelectHelper.render("Green", :foo, :bar))
+  test "render/3 Green-B" do
+    html = Phoenix.HTML.safe_to_string(StopSelectHelper.render("Green-B", :foo, :bar))
 
-    assert html =~ "<option data-green=\"true\" data-red=\"true\" value=\"place-pktrm\">Park Street</option>"
+    assert html =~ "<option data-green-b=\"true\" data-green-c=\"true\" data-green-d=\"true\" data-green-e=\"true\" data-red=\"true\" value=\"place-pktrm\">Park Street</option>"
+  end
+
+  test "render/3 Green-C" do
+    html = Phoenix.HTML.safe_to_string(StopSelectHelper.render("Green-C", :foo, :bar))
+
+    assert html =~ "<option data-green-b=\"true\" data-green-c=\"true\" data-green-d=\"true\" data-green-e=\"true\" data-red=\"true\" value=\"place-pktrm\">Park Street</option>"
+  end
+
+  test "render/3 Green-D" do
+    html = Phoenix.HTML.safe_to_string(StopSelectHelper.render("Green-D", :foo, :bar))
+
+    assert html =~ "<option data-green-b=\"true\" data-green-c=\"true\" data-green-d=\"true\" data-green-e=\"true\" data-red=\"true\" value=\"place-pktrm\">Park Street</option>"
+  end
+
+  test "render/3 Green-E" do
+    html = Phoenix.HTML.safe_to_string(StopSelectHelper.render("Green-E", :foo, :bar))
+
+    assert html =~ "<option data-green-b=\"true\" data-green-c=\"true\" data-green-d=\"true\" data-green-e=\"true\" data-red=\"true\" value=\"place-pktrm\">Park Street</option>"
   end
 
   test "render/4 Orange with pre-selection" do
