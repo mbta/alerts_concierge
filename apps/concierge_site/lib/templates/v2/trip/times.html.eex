@@ -6,7 +6,7 @@
     <div class="col-md-10 col-sm-12">
       <%= form_for @conn, v2_trip_path(@conn, :create), [as: :trip, method: :post], fn form -> %>
         <div class="form-group form__section--top">
-          <%= label form, :days, "What days do you take this trip?", class: "form__label" %>
+          <%= label form, :days, "What days do you usually travel?", class: "form__label" %>
           <%= ConciergeSite.DaySelectHelper.render(:trip, ["monday", "tuesday", "wednesday", "thursday", "friday", "weekdays"]) %>
         </div>
 
@@ -14,11 +14,11 @@
           <span class="form__label">What time do you usually take your first trip?</span>
           <div class="form-group form-inline form__group--inline">
             <%= label form, :start_time, "Departing around", class: "form__label--inline" %>
-            <%= text_input form, :start_time, type: "time", class: "form-control form__time--inline", required: true, value: "08:00" %>
+            <%= text_input form, :start_time, type: "time", class: "form-control form__time--inline", required: true, value: "08:00", step: "900"  %>
           </div>
           <div class="form-group form-inline form__group--inline">
             <%= label form, :end_time, "Arriving around", class: "form__label--inline" %>
-            <%= text_input form, :end_time, type: "time", class: "form-control form__time--inline", required: true, value: "09:00" %>
+            <%= text_input form, :end_time, type: "time", class: "form-control form__time--inline", required: true, value: "09:00", step: "900" %>
           </div>
           <%= ConciergeSite.ScheduleHelper.render(@schedules, "trip_start_time", "trip_end_time") %>
         </div>
@@ -28,11 +28,11 @@
             <span class="form__label">What time do you usually take your return trip?</span>
             <div class="form-group form-inline form__group--inline">
               <%= label form, :return_start_time, "Departing around", class: "form__label--inline" %>
-              <%= text_input form, :return_start_time, type: "time", class: "form-control form__time--inline", required: true, value: "17:00" %>
+              <%= text_input form, :return_start_time, type: "time", class: "form-control form__time--inline", required: true, value: "17:00", step: "900" %>
             </div>
             <div class="form-group form-inline form__group--inline">
               <%= label form, :return_end_time, "Arriving around", class: "form__label--inline" %>
-              <%= text_input form, :return_end_time, type: "time", class: "form-control form__time--inline", required: true, value: "18:00" %>
+              <%= text_input form, :return_end_time, type: "time", class: "form-control form__time--inline", required: true, value: "18:00", step: "900" %>
             </div>
             <%= ConciergeSite.ScheduleHelper.render(@return_schedules, "trip_return_start_time", "trip_return_end_time") %>
           </div>
@@ -81,7 +81,7 @@
         </div>
 
         <div class="form__action-buttons--container">
-          <%= submit "Next", class: "btn btn-primary float-right form__action-button" %>
+          <%= submit "Finish", class: "btn btn-primary float-right form__action-button" %>
           <a href="javascript:history.back()" class="btn btn-outline-primary form__action-button">Back</a>
         </div>
       <% end %>

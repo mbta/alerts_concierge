@@ -16,6 +16,8 @@ defmodule AlertProcessor.ActivePeriodFilter do
     do_filter(subscriptions, alert)
   end
 
+  defp do_filter(_, %Alert{active_period: nil}), do: []
+
   defp do_filter(subscriptions, alert) do
     active_period_timeframe_maps = Alert.timeframe_maps(alert)
 

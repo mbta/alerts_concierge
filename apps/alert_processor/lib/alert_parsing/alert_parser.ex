@@ -37,9 +37,7 @@ defmodule AlertProcessor.AlertParser do
 
   @spec remove_ignored([map]) :: [map]
   def remove_ignored(alerts) do
-    alerts
-    |> filter_invalid_key_value("last_push_notification_timestamp")
-    |> filter_invalid_key_value("active_period")
+    filter_invalid_key_value(alerts, "last_push_notification_timestamp")
   end
 
   @spec filter_invalid_key_value([map], String.t) :: [map]
@@ -58,7 +56,6 @@ defmodule AlertProcessor.AlertParser do
 
   def parse_alert(%{
       "id" => id,
-      "active_period" => active_period,
       "created_timestamp" => created_timestamp,
       "duration_certainty" => duration_certainty,
       "effect_detail" => effect_detail,
@@ -68,6 +65,7 @@ defmodule AlertProcessor.AlertParser do
       "severity" => severity,
       "last_push_notification_timestamp" => last_push_notification_timestamp
     } = alert_data, facilities_map, feed_timestamp) do
+    active_period = Map.get(alert_data, "active_period")
     %Alert{}
     |> parse_duration_certainty(duration_certainty, active_period, feed_timestamp)
     |> parse_active_periods(active_period, created_timestamp)
@@ -85,6 +83,7 @@ defmodule AlertProcessor.AlertParser do
     |> Map.put(:recurrence, parse_translation(alert_data["recurrence_text"]))
     |> Map.put(:closed_timestamp, parse_datetime_or_nil(alert_data["closed_timestamp"]))
   end
+
   def parse_alert(alert, _, _) do
     Logger.warn("Failed to parse alert: #{Poison.encode!(alert)}")
     nil
@@ -98,11 +97,16 @@ defmodule AlertProcessor.AlertParser do
   defp parse_datetime_or_nil(nil), do: nil
   defp parse_datetime_or_nil(datetime), do: parse_datetime(datetime)
 
+  defp parse_duration_certainty(alert, _, nil, _), do: alert
+
   defp parse_duration_certainty(alert, "ESTIMATED", [%{"start" => _start_timestamp, "end" => end_timestamp}], feed_timestamp) do
     estimated_duration = round((end_timestamp - feed_timestamp) / 900) * 900
     %{alert | duration_certainty: {:estimated, estimated_duration}}
   end
+
   defp parse_duration_certainty(alert, _, _, _), do: %{alert | duration_certainty: :known}
+
+  defp parse_active_periods(alert, nil, _), do: alert
 
   defp parse_active_periods(%Alert{duration_certainty: {:estimated, _}} = alert, [%{"start" => start_timestamp, "end" => _end_timestamp}], created_timestamp) do
     {:ok, start_datetime} = DateTimeHelper.parse_unix_timestamp(start_timestamp)
@@ -110,6 +114,7 @@ defmodule AlertProcessor.AlertParser do
 
     %{alert | active_period: [%{start: start_datetime, end: end_datetime}]}
   end
+
   defp parse_active_periods(alert, active_periods, _) do
     %{alert | active_period: Enum.map(active_periods, &parse_active_period(&1))}
   end

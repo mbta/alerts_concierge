@@ -2,7 +2,7 @@
 <div class="container container__inner">
   <div class="row justify-content-md-center">
     <div class="col-md-10 col-sm-12">
-      <div class="form__instructions">What kind of alerts would you like to setup?</div>
+      <div class="form__instructions">What kind of alerts would you like to set up?</div>
       <div>
         <%= link("alerts for my commute", to: v2_trip_path(@conn, :new),
                                           class: "btn btn-outline-primary btn-block",

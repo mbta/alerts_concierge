@@ -259,22 +259,6 @@ defmodule AlertProcessor.AlertParserTest do
     test "do not remove alert when last_push_notification_timestamp and active_period are set" do
       assert length(AlertParser.remove_ignored([@valid_alert])) == 1
     end
-
-    test "remove alert when active_period is not available"  do
-      assert AlertParser.remove_ignored([Map.delete(@valid_alert, "active_period")]) == []
-    end
-
-    test "remove alert when active_period is nil" do
-      assert AlertParser.remove_ignored([%{@valid_alert | "active_period" => nil}]) == []
-    end
-
-    test "remove alert when active_period is an empty string" do
-      assert AlertParser.remove_ignored([%{@valid_alert | "active_period" => ""}]) == []
-    end
-
-    test "remove alert when active_period is an empty list" do
-      assert AlertParser.remove_ignored([%{@valid_alert | "active_period" => []}]) == []
-    end
   end
 
   describe "parse_translation/1" do
@@ -308,6 +292,25 @@ defmodule AlertProcessor.AlertParserTest do
         ]
       }
       assert AlertParser.parse_translation(translation) == text
+    end
+  end
+
+  describe "parse_alert/1" do
+    test "with alert with no active_period" do
+      some_timestamp = 1524609934
+      alert = %{
+        "id" => "some id",
+        "created_timestamp" => some_timestamp,
+        "duration_certainty" => nil,
+        "effect_detail" => "some_effect",
+        "header_text" => nil,
+        "informed_entity" => [],
+        "service_effect_text" => nil,
+        "severity" => nil,
+        "last_push_notification_timestamp" => some_timestamp
+      }
+      parsed_alert = AlertParser.parse_alert(alert, %{}, nil)
+      refute parsed_alert.active_period
     end
   end
 end
