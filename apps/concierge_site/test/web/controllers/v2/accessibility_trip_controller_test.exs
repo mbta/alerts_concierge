@@ -31,7 +31,7 @@ defmodule ConciergeSite.V2.AccessibilityTripControllerTest do
       redir_path = "/trips"
       assert html_response(conn, 302) =~ redir_path
       conn = get(recycle(conn), redir_path)
-      assert html_response(conn, 200) =~  "Accessibility trip created"
+      assert html_response(conn, 200) =~  "Success! Your subscription has been created."
     end
 
     test "failure", %{conn: conn, user: user} do
@@ -97,7 +97,7 @@ defmodule ConciergeSite.V2.AccessibilityTripControllerTest do
         |> guardian_login(conn)
         |> patch(v2_accessibility_trip_path(conn, :update, trip.id, params))
 
-      assert html_response(conn, 200) =~ "Trip updated."
+      assert html_response(conn, 200) =~ "Subscription updated."
     end
 
     test "with invalid relevant day", %{conn: conn, user: user} do
