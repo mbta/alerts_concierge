@@ -27,7 +27,7 @@ defmodule ConciergeSite.V2.TripController do
     case Subscription.set_versioned_subscription(multi) do
       :ok ->
         conn
-        |> put_flash(:info, "Success! If at any time you need to edit the features, stations, or lines you've subscribed to, you can click in the box below.")
+        |> put_flash(:info, "Sucess! Your subscription has been created.")
         |> redirect(to: v2_trip_path(conn, :index))
       :error ->
         conn
@@ -59,7 +59,7 @@ defmodule ConciergeSite.V2.TripController do
          {:sanitized, sanitized_trip_params} <- {:sanitized, sanitize_trip_params(trip_params)},
          {:ok, %Trip{}} <- Trip.update(trip, sanitized_trip_params) do
       conn
-      |> put_flash(:info, "Trip updated.")
+      |> put_flash(:info, "Subscription updated.")
       |> redirect(to: v2_trip_path(conn, :index))
     else
       {:trip, nil} ->
@@ -132,7 +132,7 @@ defmodule ConciergeSite.V2.TripController do
          true <- user.id == trip.user_id,
          {:ok, %Trip{}} <- Trip.delete(trip) do
       conn
-      |> put_flash(:info, "Alert deleted.")
+      |> put_flash(:info, "Subscription deleted.")
       |> redirect(to: v2_trip_path(conn, :index))
     else
       _ ->

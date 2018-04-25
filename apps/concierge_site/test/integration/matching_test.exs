@@ -481,6 +481,13 @@ defmodule ConciergeSite.Integration.Matching do
       [new_notification] = determine_recipients(alert, [@subscription], [notification])
       refute notification == new_notification
     end
+
+    test "matches: notification already sent but it has a closed_timestamp" do
+      alert = alert(informed_entity: [entity(:subway)])
+      notification = notification(:all_clear, alert, [@subscription])
+
+      assert_notify alert, @subscription, [notification]
+    end
   end
 
   describe "estimated duration" do

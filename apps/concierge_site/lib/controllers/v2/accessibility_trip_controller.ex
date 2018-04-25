@@ -40,7 +40,7 @@ defmodule ConciergeSite.V2.AccessibilityTripController do
          {:ok, %Trip{} = updated_trip} <- Trip.update(trip, sanitized_trip_params) do
 
       conn
-      |> put_flash(:info, "Trip updated.")
+      |> put_flash(:info, "Subscription updated.")
       |> render("edit.html", trip: updated_trip, changeset: Trip.update_changeset(updated_trip))
     else
       {:trip, nil} ->
@@ -82,7 +82,7 @@ defmodule ConciergeSite.V2.AccessibilityTripController do
     case Subscription.set_versioned_subscription(multi) do
       :ok ->
         conn
-        |> put_flash(:info, "Success! Accessibility trip created.")
+        |> put_flash(:info, "Success! Your subscription has been created.")
         |> redirect(to: v2_trip_path(conn, :index))
       :error ->
         conn

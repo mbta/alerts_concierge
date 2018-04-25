@@ -28,7 +28,7 @@
               </div>
 
               <div class="form-group form__section">
-                <%= label form, :relevant_days, "What days do you take this trip?", class: "form__label" %>
+                <%= label form, :relevant_days, "What days do you usually travel?", class: "form__label" %>
                 <%= ConciergeSite.DaySelectHelper.render(:trip, ["monday", "tuesday", "wednesday", "thursday", "friday", "weekdays"]) %>
               </div>
 

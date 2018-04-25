@@ -39,7 +39,7 @@
         </div>
 
         <div class="form__action-buttons--container">
-          <%= submit "Update Account Settings", class: "btn btn-primary btn-login btn-block" %>
+          <%= submit "Update account settings", class: "btn btn-primary btn-login btn-block" %>
           <button type="button" class="btn btn-outline-danger btn-block" data-toggle="modal" data-target="#deleteModal">
             Delete my account
           </button>

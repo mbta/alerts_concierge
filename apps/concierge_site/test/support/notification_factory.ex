@@ -26,6 +26,16 @@ defmodule ConciergeSite.NotificationFactory do
     }
   end
 
+  def notification(:all_clear, alert, subscriptions) do
+    %Notification{
+      alert_id: alert.id,
+      status: :sent,
+      last_push_notification: alert.last_push_notification,
+      subscriptions: subscriptions,
+      closed_timestamp: Calendar.DateTime.add!(alert.last_push_notification, 1800)
+    }
+  end
+
   defp earlier_push_notification(%Alert{last_push_notification: datetime}) do
     timestamp = DateTime.to_unix(datetime)
 
