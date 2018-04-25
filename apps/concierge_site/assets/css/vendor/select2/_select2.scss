@@ -483,10 +483,5 @@
 
 .select2 svg,
 .select2-container svg {
-  transform: translate(0, 3px);
   margin-right: 7px;
-
-  &:first-child {
-    margin-right: 20px;
-  }
 }
