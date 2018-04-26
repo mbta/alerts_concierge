@@ -27,7 +27,7 @@ defmodule ConciergeSite.V2.TripController do
     case Subscription.set_versioned_subscription(multi) do
       :ok ->
         conn
-        |> put_flash(:info, "Sucess! Your subscription has been created.")
+        |> put_flash(:info, "Success! Your subscription has been created.")
         |> redirect(to: v2_trip_path(conn, :index))
       :error ->
         conn
