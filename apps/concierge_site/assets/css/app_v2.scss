@@ -29,7 +29,7 @@ body {
 }
 
 .page__content {
-  padding-bottom: 2.5rem;
+  padding-bottom: 4.5rem;
   padding-top: 1.75rem;
   flex: 1 0 auto;
 }
@@ -68,4 +68,11 @@ body {
 .btn.btn-primary {
   background-color: $brand-primary;
   border-color: $brand-primary;
+
+  &.active,
+  &:active,
+  &:hover {
+    background-color: $dark-blue !important;
+    border-color: $dark-blue !important;
+  }
 }
