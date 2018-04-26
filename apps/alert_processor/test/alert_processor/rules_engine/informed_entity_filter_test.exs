@@ -475,6 +475,52 @@ defmodule AlertProcessor.InformedEntityFilterTest do
       assert InformedEntityFilter.subscription_match?(subscription, informed_entity)
     end
 
+    test "returns false with activities mismatch (accessibility subscription and BOARD) " do
+      # Accessibility subscription should not match for BOARD activities.
+      subscription_details = [
+        route_type: nil,
+        direction_id: nil,
+        route: "some route",
+        origin:  nil,
+        destination: nil,
+        facility_types: [:elevator],
+        type: "accessibility"
+      ]
+      subscription = build(:subscription, subscription_details)
+      informed_entity_details = [
+        route_type: nil,
+        direction_id: nil,
+        route: "some route",
+        stop: nil,
+        activities: ["BOARD"]
+      ]
+      informed_entity = build(:informed_entity, informed_entity_details)
+      refute InformedEntityFilter.subscription_match?(subscription, informed_entity)
+    end
+
+    test "returns false with activities mismatch (accessibility subscription and EXIT) " do
+      # Accessibility subscription should not match for BOARD activities.
+      subscription_details = [
+        route_type: nil,
+        direction_id: nil,
+        route: "some route",
+        origin: nil,
+        destination: nil,
+        facility_types: [:elevator],
+        type: "accessibility"
+      ]
+      subscription = build(:subscription, subscription_details)
+      informed_entity_details = [
+        route_type: nil,
+        direction_id: nil,
+        route: "some route",
+        stop: nil,
+        activities: ["EXIT"]
+      ]
+      informed_entity = build(:informed_entity, informed_entity_details)
+      refute InformedEntityFilter.subscription_match?(subscription, informed_entity)
+    end
+
     test "returns true with a 'stop subscription' (activities match)" do
       # A "stop subscription" has these characteristics:
       #   * route_type, direction_id, and route are set to nil
@@ -545,6 +591,7 @@ defmodule AlertProcessor.InformedEntityFilterTest do
         origin: stop,
         destination: stop,
         facility_types: [:bike_storage],
+        type: "accessibility"
       ]
       subscription = build(:subscription, subscription_details)
       informed_entity_details = [
