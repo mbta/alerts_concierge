@@ -176,7 +176,7 @@ defmodule ConciergeSite.V2.TripControllerTest do
 
       conn = get(conn, v2_trip_path(conn, :index))
 
-      assert html_response(conn, 200) =~ "Sucess! Your subscription has been created."
+      assert html_response(conn, 200) =~ "Success! Your subscription has been created."
 
       assert html_response(conn, 200) =~ "<span class=\"trip__card--route\">Red Line</span>"
       <> "<div class=\"trip__card--type\">Round-trip, Weekdays</div>"
