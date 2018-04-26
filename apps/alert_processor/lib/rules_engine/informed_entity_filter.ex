@@ -4,6 +4,7 @@ defmodule AlertProcessor.InformedEntityFilter do
   """
 
   alias AlertProcessor.Model.{Alert, InformedEntity, Subscription}
+  alias AlertProcessor.ServiceInfoCache
 
   @doc """
   Accepts a list of subscriptions and an alert that is used to filter the
@@ -108,6 +109,12 @@ defmodule AlertProcessor.InformedEntityFilter do
     {subscription, informed_entity, updated_match_report}
   end
 
+  defp stop_match?({%{type: "accessibility", origin: nil} = subscription, informed_entity, match_report}) do
+    stop_match? = route_stop_match?(subscription.route, informed_entity.stop)
+    updated_match_report = Map.put(match_report, :stop_match?, stop_match?)
+    {subscription, informed_entity, updated_match_report}
+  end
+
   defp stop_match?({subscription, informed_entity, match_report}) do
     origin = subscription.origin
     destination = subscription.destination
@@ -115,6 +122,16 @@ defmodule AlertProcessor.InformedEntityFilter do
     stop_match? = origin == stop || destination == stop
     updated_match_report = Map.put(match_report, :stop_match?, stop_match?)
     {subscription, informed_entity, updated_match_report}
+  end
+
+  defp route_stop_match?(route, stop) do
+    case ServiceInfoCache.get_route(route) do
+      {:ok, %{stop_list: stop_list}} ->
+        Enum.any?(stop_list, fn {route_stop, _, _, _} ->
+          route_stop == stop
+        end)
+      _ -> false
+    end
   end
 
   defp activities_match?({subscription, informed_entity, match_report}) do

@@ -197,7 +197,7 @@ defmodule AlertProcessor.InformedEntityFilterTest do
       refute InformedEntityFilter.subscription_match?(subscription, informed_entity)
     end
 
-    test "returns false with stop mismatch (bus subscription and BOARD activity)" do
+   test "returns false with stop mismatch (bus subscription and BOARD activity)" do
       # Bus subscriptions don't have an origin and destination
       subscription_details = [
         route_type: 3,
@@ -632,6 +632,31 @@ defmodule AlertProcessor.InformedEntityFilterTest do
       ]
       informed_entity = build(:informed_entity, informed_entity_details)
       refute InformedEntityFilter.subscription_match?(subscription, informed_entity)
+    end
+
+    test "returns true for accessibility subscription route-stop match" do
+      # With an "accessibility" type subscription with no origin or destination
+      # we want to infer the stops from the route. In the scenario below the
+      # "Harvard" stop is on the "Red" line so we have a match.
+      subscription_details = [
+        route_type: nil,
+        direction_id: nil,
+        route: "Red",
+        origin:  nil,
+        destination: nil,
+        facility_types: [:elevator],
+        type: "accessibility"
+      ]
+      subscription = build(:subscription, subscription_details)
+      informed_entity_details = [
+        route_type: 1,
+        direction_id: nil,
+        route: nil,
+        stop: "Harvard",
+        activities: ["USING_WHEELCHAIR"]
+      ]
+      informed_entity = build(:informed_entity, informed_entity_details)
+      assert InformedEntityFilter.subscription_match?(subscription, informed_entity)
     end
   end
 end
