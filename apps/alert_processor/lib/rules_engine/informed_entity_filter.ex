@@ -157,18 +157,14 @@ defmodule AlertProcessor.InformedEntityFilter do
   end
 
   defp stop_related_activities(subscription, informed_entity) do
-    case {subscription.origin, subscription.destination, informed_entity.stop} do
-      {nil, nil, nil} ->
-        ["BOARD", "EXIT"]
-      {origin, destination, stop} when origin == stop and destination == stop ->
-        # When origin equals destination and the informed_entity's stop we have
-        # what we refer to as a "stop subscription". For a stop subscription we
-        # return an empty list. That's because in this case the user doesn't
-        # care about "BOARD" or "EXIT" activities.
+    case {subscription.type, subscription.origin, subscription.destination, informed_entity.stop} do
+      {"accessibility", _, _, _} ->
         []
-      {origin, _, stop} when origin == stop ->
+      {_, nil, nil, nil} ->
+        ["BOARD", "EXIT"]
+      {_, origin, _, stop} when origin == stop ->
         ["BOARD"]
-      {_, destination, stop} when destination == stop ->
+      {_, _, destination, stop} when destination == stop ->
         ["EXIT"]
       _ ->
         ["BOARD", "EXIT"]
