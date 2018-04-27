@@ -194,6 +194,9 @@ defmodule ConciergeSite.V2.AccountControllerTest do
   describe "account delete" do
     test "DELETE /account/delete", %{conn: conn} do
       user = insert(:user)
+      trip = insert(:trip, %{user: user})
+      insert(:subscription, %{user_id: user.id, trip_id: trip.id, type: :cr, origin: "Readville", destination: "Newmarket", route: "CR-Fairmount"})
+      insert(:notification, %{alert_id: "Test", status: :sent, user_id: user.id})
 
       conn = user
       |> guardian_login(conn)
