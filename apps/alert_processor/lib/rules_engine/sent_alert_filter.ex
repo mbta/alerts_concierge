@@ -14,14 +14,12 @@ defmodule AlertProcessor.SentAlertFilter do
     do_filter(subscriptions, alert, notifications)
   end
 
-  defp do_filter(subscriptions, %Alert{id: alert_id, last_push_notification: lpn,
-    closed_timestamp: closed_timestamp}, notifications) do
-
+  defp do_filter(subscriptions, %Alert{id: alert_id, last_push_notification: lpn}, notifications) do
     sent_matching_notifications =
       Enum.filter(notifications, fn (n) -> alert_id == n.alert_id && n.status == :sent end)
 
     resend_subscription_id_set = sent_matching_notifications
-    |> Enum.filter(fn (n) -> new_or_closed?(lpn, closed_timestamp, n) end)
+    |> Enum.filter(fn (n) -> new?(lpn, n.last_push_notification) end)
     |> Enum.flat_map(fn (n) -> n.subscriptions end)
     |> MapSet.new(fn (n) -> n.id end)
 
@@ -47,16 +45,5 @@ defmodule AlertProcessor.SentAlertFilter do
 
   defp new?(lpn, notification_lpn) do
     DateTime.compare(lpn, notification_lpn) == :gt
-  end
-
-  defp closed?(nil, nil), do: false
-  defp closed?(_, nil), do: true
-  defp closed?(nil, _), do: true
-  defp closed?(alert_closed, subscription_closed) do
-    new?(alert_closed, subscription_closed)
-  end
-
-  defp new_or_closed?(lpn, closed_timestamp, notification) do
-    new?(lpn, notification.last_push_notification) || closed?(closed_timestamp, notification.closed_timestamp)
   end
 end
