@@ -482,11 +482,11 @@ defmodule ConciergeSite.Integration.Matching do
       refute notification == new_notification
     end
 
-    test "matches: notification already sent but it has a closed_timestamp" do
+    test "does not match: notification already sent but it has a closed_timestamp" do
       alert = alert(informed_entity: [entity(:subway)])
       notification = notification(:all_clear, alert, [@subscription])
 
-      assert_notify alert, @subscription, [notification]
+      refute_notify alert, @subscription, [notification]
     end
   end
 
