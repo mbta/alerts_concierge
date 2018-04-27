@@ -1,70 +1,337 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html>
-  <head>
-    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-    <title>MBTA Alert</title>
-  </head>
-  <body leftmargin="0" marginwidth="0" topmargin="0" marginheight="0" offset="0" style="-webkit-font-smoothing: antialiased; font-family: Helvetica Neue, Helvetica, Arial, sans-serif; overflow-y: scroll; max-width: 580px;">
-    <div style="width: 460px; padding: 0 60px">
-      <div style="border-bottom-color: #15528D; border-bottom-style: solid; border-bottom-width: 3px; width: 100%; padding-bottom: 4px; padding-top: 24px; font-size: 28px">
-        <span style="width: 24px; height: 24px;">
+
+    <!doctype html>
+    <html xmlns="http://www.w3.org/1999/xhtml" xmlns:v="urn:schemas-microsoft-com:vml" xmlns:o="urn:schemas-microsoft-com:office:office">
+      <head>
+        <title>
+          
+        </title>
+        <!--[if !mso]><!-- -->
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <!--<![endif]-->
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <style type="text/css">
+          #outlook a { padding:0; }
+          .ReadMsgBody { width:100%; }
+          .ExternalClass { width:100%; }
+          .ExternalClass * { line-height:100%; }
+          body { margin:0;padding:0;-webkit-text-size-adjust:100%;-ms-text-size-adjust:100%; }
+          table, td { border-collapse:collapse;mso-table-lspace:0pt;mso-table-rspace:0pt; }
+          img { border:0;height:auto;line-height:100%; outline:none;text-decoration:none;-ms-interpolation-mode:bicubic; }
+          p { display:block;margin:13px 0; }
+        </style>
+        <!--[if !mso]><!-->
+        <style type="text/css">
+          @media only screen and (max-width:480px) {
+            @-ms-viewport { width:320px; }
+            @viewport { width:320px; }
+          }
+        </style>
+        <!--<![endif]-->
+        <!--[if mso]>
+        <xml>
+        <o:OfficeDocumentSettings>
+          <o:AllowPNG/>
+          <o:PixelsPerInch>96</o:PixelsPerInch>
+        </o:OfficeDocumentSettings>
+        </xml>
+        <![endif]-->
+        <!--[if lte mso 11]>
+        <style type="text/css">
+          .outlook-group-fix { width:100% !important; }
+        </style>
+        <![endif]-->
+        
+      <!--[if !mso]><!-->
+        <link href="https://fonts.googleapis.com/css?family=Lato:400,700" rel="stylesheet" type="text/css">
+        <style type="text/css">
+          @import url(https://fonts.googleapis.com/css?family=Lato:400,700);
+        </style>
+      <!--<![endif]-->
+
+    
+        
+    <style type="text/css">
+      @media only screen and (min-width:480px) {
+        .mj-column-per-100 { width:100% !important; }
+      }
+    </style>
+    
+  
+        <style type="text/css">
+        
+        
+        </style>
+        
+      </head>
+      <body>
+        
+        
+      <div
+        
+      >
+        <%= if notification.description do %>
+        <span style="display: none"><%= notification.description %></span>
+        <% end %><!-- Body content -->
+      
+      <!--[if mso | IE]>
+      <table
+         align="center" border="0" cellpadding="0" cellspacing="0" style="width:600px;" width="600"
+      >
+        <tr>
+          <td style="line-height:0px;font-size:0px;mso-line-height-rule:exactly;">
+      <![endif]-->
+    
+      
+      <div  style="background:#ffffff;background-color:#ffffff;Margin:0px auto;max-width:600px;">
+        
+        <table
+           align="center" border="0" cellpadding="0" cellspacing="0" role="presentation" style="background:#ffffff;background-color:#ffffff;width:100%;"
+        >
+          <tbody>
+            <tr>
+              <td
+                 style="direction:ltr;font-size:0px;padding:20px 0;padding-bottom:0;padding-top:0;text-align:center;vertical-align:top;"
+              >
+                <!--[if mso | IE]>
+                  <table role="presentation" border="0" cellpadding="0" cellspacing="0">
+                
+        <tr>
+      
+            <td
+               style="vertical-align:top;width:600px;"
+            >
+          <![endif]-->
+            
+      <div
+         class="mj-column-per-100 outlook-group-fix" style="font-size:13px;text-align:left;direction:ltr;display:inline-block;vertical-align:top;width:100%;"
+      >
+        
+      <table
+         border="0" cellpadding="0" cellspacing="0" role="presentation" style="vertical-align:top;" width="100%"
+      >
+        <div style="font-family:Lato, Arial; border-bottom-color: #15528D; border-bottom-style: solid; border-bottom-width: 3px; width: 100%; padding-bottom: 4px; padding-top: 24px; font-size: 28px">
+            <span style="width: 24px; height: 24px;">
             <img src="<%= ConciergeSite.Helpers.MailHelper.logo_for_alert(notification.alert) %>" alt="<%= ConciergeSite.Helpers.MailHelper.alt_text_for_alert(notification.alert) %>" style="border: 0; line-height: 100%; outline: none; text-decoration: none;">
           </span>
-          <%= if notification.closed_timestamp do %>
-            All clear (re: <%= notification.service_effect %>)
-          <% else %>
-            <%= notification.service_effect %>
-          <% end %>
+            <%= if notification.closed_timestamp do %>
+              All clear (re: <%= notification.service_effect %>)
+            <% else %>
+              <%= notification.service_effect %>
+            <% end %>
+          </div>
+          <div style="font-family:Lato, Arial; padding: 10px 0 10px 0">
+            <%= if notification.closed_timestamp do %>
+              <p>The issue described below has ended:</p>
+              <p style="margin: 0; padding: 0 0 0 15px; border-left: 5px #f7f7f7 solid; font-size: 16px; line-height: 1.5; color: #1c1e23; margin-top: 24px;">
+                <%= notification.header %>
+              </p>
+              <br />
+              <%= if notification.description do %>
+                <p style="margin: 0; padding: 0 0 0 15px; border-left: 5px #f7f7f7 solid; font-size: 16px; line-height: 1.5; color: #1c1e23;">
+                  <%= String.replace(notification.description, "\r\n", "<br/>") %>
+                </p>
+                <% end %>
+              <% else %>
+                <p style="margin: 0; padding: 0; font-size: 16px; line-height: 1.5; color: #1c1e23; margin-top: 24px;">
+                   <%= notification.header %>
+                 </p>
+                 <br />
+                 <%= if notification.description do %>
+                   <p style="margin: 0; padding: 0; font-size: 16px; line-height: 1.5; color: #1c1e23;">
+                     <%= String.replace(notification.description, "\r\n", "<br/>") %></p>
+                  <% end %>
+               <% end %>
+               <%= if notification.last_push_notification do %>
+                  <p style="font-size: 13px">Last Updated: <%= ConciergeSite.Helpers.DateHelper.format_datetime(notification.last_push_notification, :local) %>
+                  </p>
+               <% end %>
+          </div>
+      </table>
+    
       </div>
-      <div style="padding: 10px 0 40px 0">
-        <%= if notification.closed_timestamp do %>
-          <p>The issue described below has ended:</p>
-          <p style="margin: 0; padding: 0 0 0 15px; border-left: 5px #f7f7f7 solid; font-size: 16px; line-height: 1.5; color: #1c1e23; margin-top: 24px;">
-            <%= notification.header %>
-          </p>
-          <br>
-          <%= if notification.description do %>
-            <p style="margin: 0; padding: 0 0 0 15px; border-left: 5px #f7f7f7 solid; font-size: 16px; line-height: 1.5; color: #1c1e23;"><%= String.replace(notification.description, "\r\n", "<br/>") %></p>
-          <% end %>
-        <% else %>
-          <p style="margin: 0; padding: 0; font-size: 16px; line-height: 1.5; color: #1c1e23; margin-top: 24px;">
-            <%= notification.header %>
-          </p>
-          <br>
-          <%= if notification.description do %>
-            <p style="margin: 0; padding: 0; font-size: 16px; line-height: 1.5; color: #1c1e23;"><%= String.replace(notification.description, "\r\n", "<br/>") %></p>
-          <% end %>
-        <% end %>
-
-        <%= if notification.last_push_notification do %>
-          <p style="font-size: 13px">Last Updated: <%= ConciergeSite.Helpers.DateHelper.format_datetime(notification.last_push_notification, :local) %></p>
-        <% end %>
-
-        <a href="<%= feedback_url %>" style="display: block; text-align: center; color: #334A60; text-decoration: none; border: 1px solid #334A60; padding: 12px 0; font-size: 16px; border-radius: 3px; margin-top: 30px">
-          <img style="display: inline-block; transform: translateY(15%)" src="<%= comment_icon_url %>" />
-          How are T-Alerts working for you? Let us know.
+    
+          <!--[if mso | IE]>
+            </td>
+          
+        </tr>
+      
+                  </table>
+                <![endif]-->
+              </td>
+            </tr>
+          </tbody>
+        </table>
+        
+      </div>
+    
+      
+      <!--[if mso | IE]>
+          </td>
+        </tr>
+      </table>
+      
+      <table
+         align="center" border="0" cellpadding="0" cellspacing="0" style="width:600px;" width="600"
+      >
+        <tr>
+          <td style="line-height:0px;font-size:0px;mso-line-height-rule:exactly;">
+      <![endif]-->
+    
+      
+      <div  style="Margin:0px auto;max-width:600px;">
+        
+        <table
+           align="center" border="0" cellpadding="0" cellspacing="0" role="presentation" style="width:100%;"
+        >
+          <tbody>
+            <tr>
+              <td
+                 style="direction:ltr;font-size:0px;padding:20px 0;padding-left:0;padding-right:0;padding-top:0;text-align:center;vertical-align:top;"
+              >
+                <!--[if mso | IE]>
+                  <table role="presentation" border="0" cellpadding="0" cellspacing="0">
+                
+        <tr>
+      
+            <td
+               style="vertical-align:top;width:600px;"
+            >
+          <![endif]-->
+            
+      <div
+         class="mj-column-per-100 outlook-group-fix" style="font-size:13px;text-align:left;direction:ltr;display:inline-block;vertical-align:top;width:100%;"
+      >
+        
+      <table
+         border="0" cellpadding="0" cellspacing="0" role="presentation" style="vertical-align:top;" width="100%"
+      >
+        
+            <tr>
+              <td
+                 align="left" style="font-size:0px;padding:10px 25px;word-break:break-word;"
+              >
+                
+      <div
+         style="font-family:Lato, Arial;font-size:13px;line-height:19px;text-align:left;color:#000000;"
+      >
+        <a href="<%= feedback_url %>" style="display: block; text-align: center; color: #16528A; text-decoration: none; border: 1px solid #334A60; padding: 4px; font-size: 16px; border-radius: 3px; height: 30px; line-height: 32px; overflow: hidden">
+          How are T-Alerts working for you? <img style="display: inline-block; transform: translateY(15%)" src="https://s3.amazonaws.com/mbta-alerts/html_email/notice/comment-icon.png" />
         </a>
       </div>
-    </div>
-    <center>
-      <div style="background-color: #15528C; padding: 16px 0; width: 580px;">
-        <table>
-          <tr>
-            <td style="border-collapse: collapse;">
-              <a href="<%= manage_subscriptions_url %>" style="color: #fff; font-size: 14px; text-decoration: none;">Edit subscription</a>
-            </td>
-            <td class="footer-link-separator" style="border-collapse: collapse; width: 10px; height: 10px;">
-              <div class="footer-link-separator-bullet" style="height: 5px; width: 5px; border-radius: 100%; background-color: #ffffff;"></div>
-            </td>
-            <td style="border-collapse: collapse;">
-              <a href="https://www.mbta.com/alerts" style="color: #fff; font-size: 14px; text-decoration: none;">See all alerts</a>
-            </td>
-          </tr>
-        </table>
-        <div class="footer-copyright" style="font-size: 11px; text-align: center; color: #fff; margin-top: 12px">
-          &copy; Massachusetts Bay Transportation Authority, all rights reserved.
-        </div>
+    
+              </td>
+            </tr>
+          
+      </table>
+    
       </div>
-    </center>
-	</body>
-</html>
+    
+          <!--[if mso | IE]>
+            </td>
+          
+        </tr>
+      
+                  </table>
+                <![endif]-->
+              </td>
+            </tr>
+          </tbody>
+        </table>
+        
+      </div>
+    
+      
+      <!--[if mso | IE]>
+          </td>
+        </tr>
+      </table>
+      <![endif]-->
+    
+    <!-- Footer -->
+      
+      <!--[if mso | IE]>
+      <table
+         align="center" border="0" cellpadding="0" cellspacing="0" style="width:600px;" width="600"
+      >
+        <tr>
+          <td style="line-height:0px;font-size:0px;mso-line-height-rule:exactly;">
+      <![endif]-->
+    
+      
+      <div  style="background:#0c3353;background-color:#0c3353;Margin:0px auto;max-width:600px;">
+        
+        <table
+           align="center" border="0" cellpadding="0" cellspacing="0" role="presentation" style="background:#0c3353;background-color:#0c3353;width:100%;"
+        >
+          <tbody>
+            <tr>
+              <td
+                 style="direction:ltr;font-size:0px;padding:0;text-align:center;vertical-align:top;"
+              >
+                <!--[if mso | IE]>
+                  <table role="presentation" border="0" cellpadding="0" cellspacing="0">
+                
+        <tr>
+      
+            <td
+               style="vertical-align:top;width:600px;"
+            >
+          <![endif]-->
+            
+      <div
+         class="mj-column-per-100 outlook-group-fix" style="font-size:13px;text-align:left;direction:ltr;display:inline-block;vertical-align:top;width:100%;"
+      >
+        
+      <table
+         border="0" cellpadding="0" cellspacing="0" role="presentation" style="vertical-align:top;" width="100%"
+      >
+        
+            <tr>
+              <td
+                 align="center" style="font-size:0px;padding:10px 25px;word-break:break-word;"
+              >
+                
+      <div
+         style="font-family:Lato, Arial;font-size:12px;line-height:19px;text-align:center;color:#fff;"
+      >
+        <p>
+            <a href="<%= manage_subscriptions_url %>" style="color: #fff; font-size: 16px">Edit Subscription</a> ●
+            <a href="https://www.mbta.com/alerts" style="color: #fff; font-size: 16px">See all alerts</a></p>
+          <p>© Massachusetts Bay Transportation Authority, all rights reserved.</p>
+      </div>
+    
+              </td>
+            </tr>
+          
+      </table>
+    
+      </div>
+    
+          <!--[if mso | IE]>
+            </td>
+          
+        </tr>
+      
+                  </table>
+                <![endif]-->
+              </td>
+            </tr>
+          </tbody>
+        </table>
+        
+      </div>
+    
+      
+      <!--[if mso | IE]>
+          </td>
+        </tr>
+      </table>
+      <![endif]-->
+    
+    
+      </div>
+    
+      </body>
+    </html>
+  

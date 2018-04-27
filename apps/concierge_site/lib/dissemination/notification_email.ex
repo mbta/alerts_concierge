@@ -5,7 +5,6 @@ defmodule ConciergeSite.Dissemination.NotificationEmail do
   alias AlertProcessor.Model.Notification
   alias AlertProcessor.Helpers.ConfigHelper
   alias ConciergeSite.Helpers.MailHelper
-  alias ConciergeSite.Router.Helpers, as: RouterHelpers
   require EEx
 
   @from {ConfigHelper.get_string(:send_from_name, :concierge_site),
@@ -16,7 +15,7 @@ defmodule ConciergeSite.Dissemination.NotificationEmail do
     :def,
     :html_email,
     Path.join(@template_dir, "notification.html.eex"),
-    [:notification, :manage_subscriptions_url, :feedback_url, :comment_icon_url])
+    [:notification, :manage_subscriptions_url, :feedback_url])
   EEx.function_from_file(
     :def,
     :text_email,
@@ -29,12 +28,11 @@ defmodule ConciergeSite.Dissemination.NotificationEmail do
     manage_subscriptions_url = MailHelper.manage_subscriptions_url(user)
     feedback_url = MailHelper.feedback_url()
     notification_email_subject = email_subject(notification)
-    comment_icon_url = RouterHelpers.static_url(ConciergeSite.Endpoint, "/images/comment-icon.png")
 
     base_email()
     |> to(user.email)
     |> subject(notification_email_subject)
-    |> html_body(html_email(notification, manage_subscriptions_url, feedback_url, comment_icon_url))
+    |> html_body(html_email(notification, manage_subscriptions_url, feedback_url))
     |> text_body(text_email(notification, manage_subscriptions_url, feedback_url))
   end
 
