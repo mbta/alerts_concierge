@@ -156,10 +156,10 @@ defmodule ConciergeSite.TripCardHelper do
   end
 
   @spec route_name(String.t) :: String.t
-  defp route_name("Green-B"), do: "Green Line B Branch"
-  defp route_name("Green-C"), do: "Green Line C Branch"
-  defp route_name("Green-D"), do: "Green Line D Branch"
-  defp route_name("Green-E"), do: "Green Line E Branch"
+  defp route_name("Green-B"), do: "Green Line B"
+  defp route_name("Green-C"), do: "Green Line C"
+  defp route_name("Green-D"), do: "Green Line D"
+  defp route_name("Green-E"), do: "Green Line E"
   defp route_name(route_id) do
     {:ok, route} = ServiceInfoCache.get_route(route_id)
     case route.long_name do
