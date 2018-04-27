@@ -58,10 +58,10 @@ defmodule ConciergeSite.RouteSelectHelper do
   defp get_routes(:subway) do
     [{:red, "Red", "Red Line"},
      {:orange, "Orange", "Orange Line"},
-     {:"green-b", "Green-B", "Green Line B Branch"},
-     {:"green-c", "Green-C", "Green Line C Branch"},
-     {:"green-d", "Green-D", "Green Line D Branch"},
-     {:"green-e", "Green-E", "Green Line E Branch"},
+     {:"green-b", "Green-B", "Green Line B"},
+     {:"green-c", "Green-C", "Green Line C"},
+     {:"green-d", "Green-D", "Green Line D"},
+     {:"green-e", "Green-E", "Green Line E"},
      {:blue, "Blue", "Blue Line"},
      {:mattapan, "Mattapan", "Mattapan Trolley"}]
   end
