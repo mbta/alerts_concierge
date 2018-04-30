@@ -34,11 +34,6 @@ defmodule AlertProcessor.AlertParserTest do
     |> build(route_type: 2, route: "CR-Needham", direction_id: 1, user: user1, alert_priority_type: :low)
     |> weekday_subscription
     |> PaperTrail.insert
-    user2 = insert(:user, phone_number: nil)
-    :subscription
-    |> build(route_type: 2, route: "CR-Needham", direction_id: 1, user: user2, alert_priority_type: :high)
-    |> weekday_subscription
-    |> PaperTrail.insert
     user3 = insert(:user, phone_number: nil)
     :subscription
     |> build(route_type: 2, route: "CR-Lowell", direction_id: 1, user: user3, alert_priority_type: :low)
