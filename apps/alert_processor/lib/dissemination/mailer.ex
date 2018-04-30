@@ -7,10 +7,6 @@ defmodule AlertProcessor.Dissemination.Mailer do
     GenServer.call(to_tuple(name), {:send_notification_email, params})
   end
 
-  def send_digest_email(name \\ :mailer, params) do
-    GenServer.call(to_tuple(name), {:send_digest_email, params})
-  end
-
   defp to_tuple(name) do
     {:via, Registry, {:mailer_process_registry, name}}
   end

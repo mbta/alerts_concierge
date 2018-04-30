@@ -14,11 +14,6 @@ defmodule AlertProcessor.Dissemination.MailerTest do
     {:ok, msg} = Mailer.send_notification_email(:fake_mailer, :fake_notification)
     assert {:send_notification_email, :fake_notification} = msg
   end
-
-  test "send_digest_email can call interface using via tuple" do
-    {:ok, msg} = Mailer.send_digest_email(:fake_mailer, :fake_digest)
-    assert {:send_digest_email, :fake_digest} = msg
-  end
 end
 
 defmodule AlertProcessor.Dissemination.ResponseServer do

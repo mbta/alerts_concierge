@@ -8,7 +8,6 @@ defmodule AlertProcessor.Supervisor do
   alias AlertProcessor.{
     AlertCache,
     AlertWorker,
-    DigestManager,
     SendingQueue,
     NotificationWorker,
     ServiceInfoCache,
@@ -38,7 +37,6 @@ defmodule AlertProcessor.Supervisor do
       worker(ServiceInfoCache, []),
       worker(AlertWorker, []),
       worker(AlertCache, []),
-      worker(DigestManager, []),
       worker(SendingQueue, []),
       worker(SmsOptOutWorker, []),
       :poolboy.child_spec(:message_worker, message_worker_config, [])
