@@ -112,10 +112,10 @@ defmodule ConciergeSite.Integration.Matching do
         "route_type" => 1,
         "direction_id" => 1,
         "route" => "Red",
-        "stop" => "place-cntsq",
+        "stop_id" => "place-cntsq",
         "activities" => ["BOARD"]
       }
-      assert_notify alert(informed_entity: [informed_entity_details]), @subscription_roaming
+      refute_notify alert(informed_entity: [informed_entity_details]), @subscription_roaming
     end
   end
 
