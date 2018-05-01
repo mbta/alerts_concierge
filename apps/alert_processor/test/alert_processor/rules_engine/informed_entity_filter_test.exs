@@ -176,6 +176,74 @@ defmodule AlertProcessor.InformedEntityFilterTest do
       assert InformedEntityFilter.subscription_match?(subscription, informed_entity)
     end
 
+    test "returns true with stop match (with stop in between origin and destination)" do
+      # As you can see here:
+      # https://cdn.mbta.com/sites/default/files/maps/2018-04-map-rapid-transit-key-bus-v31a.pdf,
+      # "Davis" (place-davis) is in between "Alewife" (place-alfcl) and "Porter" (place-portr).
+      subscription_details_1 = [
+        route_type: 1,
+        direction_id: 0,
+        route: "Red",
+        origin: "place-alfcl",
+        destination: "place-portr",
+        facility_types: [],
+      ]
+      subscription_1 = build(:subscription, subscription_details_1)
+      informed_entity_details_1 = [
+        route_type: nil,
+        direction_id: nil,
+        route: nil,
+        stop: "place-davis",
+        activities: ["RIDE"]
+      ]
+      informed_entity_1 = build(:informed_entity, informed_entity_details_1)
+      assert InformedEntityFilter.subscription_match?(subscription_1, informed_entity_1)
+
+      # The scenario below is the return trip for the scenario above (opposite origin/destination).
+      subscription_details_2 = [
+        route_type: 1,
+        direction_id: 1,
+        route: "Red",
+        origin: "place-portr",
+        destination: "place-alfcl",
+        facility_types: [],
+      ]
+      subscription_2 = build(:subscription, subscription_details_2)
+      informed_entity_details_2 = [
+        route_type: nil,
+        direction_id: nil,
+        route: nil,
+        stop: "place-davis",
+        activities: ["RIDE"]
+      ]
+      informed_entity_2 = build(:informed_entity, informed_entity_details_2)
+      assert InformedEntityFilter.subscription_match?(subscription_2, informed_entity_2)
+    end
+
+    test "returns false with stop match (with stop in between origin and destination but wrong activity)" do
+      # As you can see here:
+      # https://cdn.mbta.com/sites/default/files/maps/2018-04-map-rapid-transit-key-bus-v31a.pdf,
+      # "Davis" (place-davis) is in between "Alewife" (place-alfcl) and "Porter" (place-portr).
+      subscription_details = [
+        route_type: 1,
+        direction_id: 0,
+        route: "Red",
+        origin: "Alewife",
+        destination: "Porter",
+        facility_types: [],
+      ]
+      subscription = build(:subscription, subscription_details)
+      informed_entity_details = [
+        route_type: nil,
+        direction_id: nil,
+        route: nil,
+        stop: "Davis",
+        activities: ["BOARD"]
+      ]
+      informed_entity = build(:informed_entity, informed_entity_details)
+      refute InformedEntityFilter.subscription_match?(subscription, informed_entity)
+    end
+
     test "returns false with stop mismatch" do
       subscription_details = [
         route_type: 1,
@@ -241,6 +309,31 @@ defmodule AlertProcessor.InformedEntityFilterTest do
       refute InformedEntityFilter.subscription_match?(subscription, informed_entity)
     end
 
+    test "returns false with stop mismatch (with stop not in between origin and destination)" do
+      # As you can see here:
+      # https://cdn.mbta.com/sites/default/files/maps/2018-04-map-rapid-transit-key-bus-v31a.pdf,
+      # "Harvard" (place-harsq) is not in between "Alewife" (place-alfcl) and
+      # "Porter" (place-portr).
+      subscription_details = [
+        route_type: 1,
+        direction_id: 0,
+        route: "Red",
+        origin: "place-alfcl",
+        destination: "place-portr",
+        facility_types: [],
+      ]
+      subscription = build(:subscription, subscription_details)
+      informed_entity_details = [
+        route_type: nil,
+        direction_id: nil,
+        route: nil,
+        stop: "place-harsq",
+        activities: ["RIDE"]
+      ]
+      informed_entity = build(:informed_entity, informed_entity_details)
+      refute InformedEntityFilter.subscription_match?(subscription, informed_entity)
+    end
+
     test "returns true with activities match (BOARD)" do
       # An "activities BOARD match" happens when the alert's informed_entity
       # activities includes "BOARD" and it's stop equals the subscription's
@@ -286,6 +379,32 @@ defmodule AlertProcessor.InformedEntityFilterTest do
         route: nil,
         stop: nil,
         activities: ["BOARD"]
+      ]
+      informed_entity = build(:informed_entity, informed_entity_details)
+      assert InformedEntityFilter.subscription_match?(subscription, informed_entity)
+    end
+
+    test "returns true with activities match (RIDE)" do
+      # An "activities RIDE match" happens when the alert's informed_entity
+      # activities includes "RIDE" and it's stop equals the subscription's
+      # origin or destination value. It can also happen if the
+      # informed_entity's stop is nil.
+      stop = "some stop"
+      subscription_details = [
+        route_type: 1,
+        direction_id: 0,
+        route: "some route",
+        origin: stop,
+        destination: "some destination",
+        facility_types: [],
+      ]
+      subscription = build(:subscription, subscription_details)
+      informed_entity_details = [
+        route_type: nil,
+        direction_id: nil,
+        route: nil,
+        stop: stop,
+        activities: ["RIDE"]
       ]
       informed_entity = build(:informed_entity, informed_entity_details)
       assert InformedEntityFilter.subscription_match?(subscription, informed_entity)
@@ -484,7 +603,7 @@ defmodule AlertProcessor.InformedEntityFilterTest do
         origin:  nil,
         destination: nil,
         facility_types: [:elevator],
-        type: "accessibility"
+        type: :accessibility
       ]
       subscription = build(:subscription, subscription_details)
       informed_entity_details = [
@@ -507,7 +626,7 @@ defmodule AlertProcessor.InformedEntityFilterTest do
         origin: nil,
         destination: nil,
         facility_types: [:elevator],
-        type: "accessibility"
+        type: :accessibility
       ]
       subscription = build(:subscription, subscription_details)
       informed_entity_details = [
@@ -591,7 +710,7 @@ defmodule AlertProcessor.InformedEntityFilterTest do
         origin: stop,
         destination: stop,
         facility_types: [:bike_storage],
-        type: "accessibility"
+        type: :accessibility
       ]
       subscription = build(:subscription, subscription_details)
       informed_entity_details = [
@@ -692,14 +811,14 @@ defmodule AlertProcessor.InformedEntityFilterTest do
         origin:  nil,
         destination: nil,
         facility_types: [:elevator],
-        type: "accessibility"
+        type: :accessibility
       ]
       subscription = build(:subscription, subscription_details)
       informed_entity_details = [
         route_type: 1,
         direction_id: nil,
         route: nil,
-        stop: "Harvard",
+        stop: "place-harsq",
         activities: ["USING_WHEELCHAIR"]
       ]
       informed_entity = build(:informed_entity, informed_entity_details)

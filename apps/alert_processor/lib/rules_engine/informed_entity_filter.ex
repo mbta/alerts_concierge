@@ -109,7 +109,7 @@ defmodule AlertProcessor.InformedEntityFilter do
     {subscription, informed_entity, updated_match_report}
   end
 
-  defp stop_match?({%{type: "accessibility", origin: nil} = subscription, informed_entity, match_report}) do
+  defp stop_match?({%{type: :accessibility, origin: nil} = subscription, informed_entity, match_report}) do
     stop_match? = route_stop_match?(subscription.route, informed_entity.stop)
     updated_match_report = Map.put(match_report, :stop_match?, stop_match?)
     {subscription, informed_entity, updated_match_report}
@@ -119,7 +119,10 @@ defmodule AlertProcessor.InformedEntityFilter do
     origin = subscription.origin
     destination = subscription.destination
     stop = informed_entity.stop
-    stop_match? = origin == stop || destination == stop
+    stop_match? =
+      origin == stop
+      || destination == stop
+      || in_between_stop_match?(subscription, informed_entity)
     updated_match_report = Map.put(match_report, :stop_match?, stop_match?)
     {subscription, informed_entity, updated_match_report}
   end
@@ -127,11 +130,64 @@ defmodule AlertProcessor.InformedEntityFilter do
   defp route_stop_match?(route, stop) do
     case ServiceInfoCache.get_route(route) do
       {:ok, %{stop_list: stop_list}} ->
-        Enum.any?(stop_list, fn {route_stop, _, _, _} ->
-          route_stop == stop
+        Enum.any?(stop_list, fn {_, route_stop_id, _, _} ->
+          route_stop_id == stop
         end)
-      _ -> false
+      _ ->
+        false
     end
+  end
+
+  defp in_between_stop_match?(%{type: "accessibility"}, _), do: false
+
+  defp in_between_stop_match?(_, %{activities: nil}), do: false
+
+  defp in_between_stop_match?(subscription, %{activities: activities, stop: stop}) do
+    if "RIDE" in activities do
+      stop in stops_in_between(subscription)
+    else
+      false
+    end
+  end
+
+  defp stops_in_between(%{route: route, origin: origin, destination: destination}) do
+    case ServiceInfoCache.get_route(route) do
+      {:ok, %{stop_list: stop_list}} ->
+        stops_in_between_from_stop_list(stop_list, origin, destination)
+      _ ->
+        []
+    end
+  end
+
+  defp stops_in_between_from_stop_list([], _, _), do: []
+
+  defp stops_in_between_from_stop_list(stop_list, origin, destination) do
+    with {:ok, slice_range} <- slice_range(stop_list, origin, destination) do
+      stop_list
+      |> Enum.slice(slice_range)
+      |> Enum.map(fn {_, route_stop_id, _, _} -> route_stop_id end)
+    else
+      _ -> []
+    end
+  end
+
+  defp slice_range(stop_list, origin, destination) do
+    origin_index = stop_list_index(stop_list, origin)
+    destination_index = stop_list_index(stop_list, destination)
+    case {origin_index, destination_index} do
+      {origin, destination} when is_nil(origin) or is_nil(destination)->
+        :error
+      {origin, destination} when origin < destination ->
+        {:ok, origin_index..destination_index}
+      _ ->
+        {:ok, destination_index..origin_index}
+    end
+  end
+
+  defp stop_list_index(stop_list, stop) do
+    Enum.find_index(stop_list, fn {_, route_stop_id, _, _} ->
+      route_stop_id == stop
+    end)
   end
 
   defp activities_match?({subscription, informed_entity, match_report}) do
@@ -158,16 +214,16 @@ defmodule AlertProcessor.InformedEntityFilter do
 
   defp stop_related_activities(subscription, informed_entity) do
     case {subscription.type, subscription.origin, subscription.destination, informed_entity.stop} do
-      {"accessibility", _, _, _} ->
+      {:accessibility, _, _, _} ->
         []
       {_, nil, nil, nil} ->
-        ["BOARD", "EXIT"]
+        ["BOARD", "EXIT", "RIDE"]
       {_, origin, _, stop} when origin == stop ->
-        ["BOARD"]
+        ["BOARD", "RIDE"]
       {_, _, destination, stop} when destination == stop ->
-        ["EXIT"]
+        ["EXIT", "RIDE"]
       _ ->
-        ["BOARD", "EXIT"]
+        ["BOARD", "EXIT", "RIDE"]
     end
   end
 
