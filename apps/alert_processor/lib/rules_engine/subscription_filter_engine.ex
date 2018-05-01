@@ -4,7 +4,7 @@ defmodule AlertProcessor.SubscriptionFilterEngine do
   with relevant subscriptions to alert provided.
   """
   alias AlertProcessor.{ActivePeriodFilter, InformedEntityFilter, Model,
-    Repo, Scheduler, SentAlertFilter, SeverityFilter}
+    Repo, Scheduler, SentAlertFilter}
   alias Model.{Alert, Notification, Subscription}
   require Logger
 
@@ -45,7 +45,6 @@ defmodule AlertProcessor.SubscriptionFilterEngine do
     subscriptions_to_test
     |> @notification_window_filter.filter()
     |> InformedEntityFilter.filter(alert: alert)
-    |> SeverityFilter.filter(alert: alert)
     |> ActivePeriodFilter.filter(alert: alert)
     |> Kernel.++(subscriptions_to_auto_resend)
   end

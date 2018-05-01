@@ -71,14 +71,6 @@ defmodule ConciergeSite.Integration.Matching do
       refute_notify alert(active_period: @alert_weekend_period, informed_entity: [entity(:subway)]), @subscription
     end
 
-    test "similar: not severe enough" do
-      refute_notify alert(severity: severity_by_priority("low"), informed_entity: [entity(:subway)]), @subscription
-    end
-
-    test "similar: more severe" do
-      assert_notify alert(severity: severity_by_priority("high"), informed_entity: [entity(:subway)]), @subscription
-    end
-
     test "similar: different activity" do
       refute_notify alert(informed_entity: [entity(:subway, activities: ["NO_MATCH"])]), @subscription
     end
@@ -157,14 +149,6 @@ defmodule ConciergeSite.Integration.Matching do
       refute_notify alert(active_period: @alert_weekend_period, informed_entity: [entity(:bus)]), @subscription
     end
 
-    test "similar: not severe enough" do
-      refute_notify alert(severity: severity_by_priority("low"), informed_entity: [entity(:bus)]), @subscription
-    end
-
-    test "similar: more severe" do
-      assert_notify alert(severity: severity_by_priority("high"), informed_entity: [entity(:bus)]), @subscription
-    end
-
     test "similar: different activity" do
       refute_notify alert(informed_entity: [entity(:bus, activities: ["NO_MATCH"])]), @subscription
     end
@@ -218,16 +202,6 @@ defmodule ConciergeSite.Integration.Matching do
 
     test "similar: different days (same time)" do
       refute_notify alert(active_period: @alert_weekend_period, informed_entity: [entity(:commuter_rail)]),
-                    @subscription
-    end
-
-    test "similar: not severe enough" do
-      refute_notify alert(severity: severity_by_priority("low"), informed_entity: [entity(:commuter_rail)]),
-                    @subscription
-    end
-
-    test "similar: more severe" do
-      assert_notify alert(severity: severity_by_priority("high"), informed_entity: [entity(:commuter_rail)]),
                     @subscription
     end
 
@@ -289,14 +263,6 @@ defmodule ConciergeSite.Integration.Matching do
 
     test "similar: different days (same time)" do
       refute_notify alert(active_period: @alert_weekend_period, informed_entity: [entity(:ferry)]), @subscription
-    end
-
-    test "similar: not severe enough" do
-      refute_notify alert(severity: severity_by_priority("low"), informed_entity: [entity(:ferry)]), @subscription
-    end
-
-    test "similar: more severe" do
-      assert_notify alert(severity: severity_by_priority("high"), informed_entity: [entity(:ferry)]), @subscription
     end
 
     test "similar: different activity" do
