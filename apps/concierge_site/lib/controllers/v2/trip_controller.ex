@@ -353,7 +353,7 @@ defmodule ConciergeSite.V2.TripController do
   defp get_route_intersection(routes, origin, destination) do
     origin_routes = get_routes_for_stop(routes, origin)
     destination_routes = get_routes_for_stop(routes, destination)
-    origin_routes -- origin_routes -- destination_routes
+    MapSet.intersection(MapSet.new(origin_routes), MapSet.new(destination_routes))
   end
 
   defp get_routes_for_stop(routes, stop_id) do
