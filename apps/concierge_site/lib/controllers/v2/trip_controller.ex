@@ -6,17 +6,17 @@ defmodule ConciergeSite.V2.TripController do
   alias AlertProcessor.ServiceInfoCache
   alias Ecto.Multi
 
-  plug :scrub_params, "trip" when action in [:create, :leg]
+  plug(:scrub_params, "trip" when action in [:create, :leg])
 
-  action_fallback ConciergeSite.V2.FallbackController
+  action_fallback(ConciergeSite.V2.FallbackController)
 
   def index(conn, _params, user, _claims) do
     trips = Trip.get_trips_by_user(user.id)
-    render conn, "index.html", trips: trips, user_id: user.id
+    render(conn, "index.html", trips: trips, user_id: user.id)
   end
 
   def new(conn, _params, _user, _claims) do
-    render conn, "new.html"
+    render(conn, "new.html")
   end
 
   def create(conn, %{"trip" => trip_params}, user, {:ok, claims}) do
@@ -24,11 +24,13 @@ defmodule ConciergeSite.V2.TripController do
     subscriptions = input_to_subscriptions(user, params)
     trip = input_to_trip(user, params)
     multi = build_trip_transaction(trip, subscriptions, user, Map.get(claims, "imp", user.id))
+
     case Subscription.set_versioned_subscription(multi) do
       :ok ->
         conn
         |> put_flash(:info, "Success! Your subscription has been created.")
         |> redirect(to: v2_trip_path(conn, :index))
+
       :error ->
         conn
         |> put_flash(:error, "There was an error creating your trip. Please try again.")
@@ -40,14 +42,21 @@ defmodule ConciergeSite.V2.TripController do
     with {:trip, %Trip{} = trip} <- {:trip, Trip.find_by_id(id)},
          {:authorized, true} <- {:authorized, user.id == trip.user_id},
          {:changeset, changeset} <- {:changeset, Trip.update_changeset(trip)} do
-
       schedules = get_schedules_for_trip(trip.subscriptions, false)
       return_schedules = get_schedules_for_trip(trip.subscriptions, true)
-      render(conn, "edit.html", trip: trip, changeset: changeset, schedules: schedules,
-                                return_schedules: return_schedules)
+
+      render(
+        conn,
+        "edit.html",
+        trip: trip,
+        changeset: changeset,
+        schedules: schedules,
+        return_schedules: return_schedules
+      )
     else
       {:trip, nil} ->
         {:error, :not_found}
+
       {:authorized, false} ->
         {:error, :not_found}
     end
@@ -64,13 +73,21 @@ defmodule ConciergeSite.V2.TripController do
     else
       {:trip, nil} ->
         {:error, :not_found}
+
       {:authorized, false} ->
         {:error, :not_found}
+
       {:error, %Ecto.Changeset{} = changeset} ->
         conn
         |> put_status(:unprocessable_entity)
         |> put_flash(:error, "Trip could not be updated. Please see errors below.")
-        |> render("edit.html", trip: Trip.find_by_id(id), changeset: changeset, schedules: %{}, return_schedules: %{})
+        |> render(
+          "edit.html",
+          trip: Trip.find_by_id(id),
+          changeset: changeset,
+          schedules: %{},
+          return_schedules: %{}
+        )
     end
   end
 
@@ -83,48 +100,114 @@ defmodule ConciergeSite.V2.TripController do
 
   def leg(conn, %{"trip" => trip}, _user, _claims) do
     case trip do
-      %{"route" => route, "saved_leg" => saved_leg, "origin" => origin,
-        "destination" => destination, "round_trip" => round_trip, "new_leg" => "true",
-        "saved_mode" => saved_mode} ->
-
+      %{
+        "route" => route,
+        "saved_leg" => saved_leg,
+        "origin" => origin,
+        "destination" => destination,
+        "round_trip" => round_trip,
+        "new_leg" => "true",
+        "saved_mode" => saved_mode
+      } ->
         [leg, route_name, mode] = String.split(route, "~~")
-        {legs, origins, destinations, modes} = parse_legs(trip, saved_leg, origin, destination, saved_mode)
+
+        {legs, origins, destinations, modes} =
+          parse_legs(trip, saved_leg, origin, destination, saved_mode)
+
         conn = %{conn | params: %{}}
 
-        render conn, "leg.html", legs: legs, origins: origins, destinations: destinations,
-          round_trip: round_trip, route_name: route_name, mode: mode, saved_leg: leg, saved_mode: mode,
+        render(
+          conn,
+          "leg.html",
+          legs: legs,
+          origins: origins,
+          destinations: destinations,
+          round_trip: round_trip,
+          route_name: route_name,
+          mode: mode,
+          saved_leg: leg,
+          saved_mode: mode,
           modes: modes
-      %{"saved_leg" => saved_leg, "origin" => origin, "destination" => destination,
-        "round_trip" => round_trip, "new_leg" => "false", "saved_mode" => saved_mode} ->
-        {legs, origins, destinations, modes} = parse_legs(trip, saved_leg, origin, destination, saved_mode)
+        )
+
+      %{
+        "saved_leg" => saved_leg,
+        "origin" => origin,
+        "destination" => destination,
+        "round_trip" => round_trip,
+        "new_leg" => "false",
+        "saved_mode" => saved_mode
+      } ->
+        {legs, origins, destinations, modes} =
+          parse_legs(trip, saved_leg, origin, destination, saved_mode)
+
         conn = %{conn | params: %{}}
         schedules = get_schedules_for_input(legs, origins, destinations, modes)
         return_schedules = get_schedules_for_input(legs, destinations, origins, modes)
 
-        render conn, "times.html", legs: legs, origins: origins, destinations: destinations, round_trip: round_trip,
-                                   modes: modes, schedules: schedules, return_schedules: return_schedules
-      %{"route" => route, "round_trip" => round_trip, "from_new_trip" => "true"} ->
+        render(
+          conn,
+          "times.html",
+          legs: legs,
+          origins: origins,
+          destinations: destinations,
+          round_trip: round_trip,
+          modes: modes,
+          schedules: schedules,
+          return_schedules: return_schedules
+        )
 
+      %{"route" => route, "round_trip" => round_trip, "from_new_trip" => "true"} ->
         [leg, route_name, mode] = String.split(route, "~~")
         conn = %{conn | params: %{}}
 
-        render conn, "leg.html", legs: [], origins: [], destinations: [], round_trip: round_trip,
-          route_name: route_name, saved_mode: mode, saved_leg: leg, modes: []
+        render(
+          conn,
+          "leg.html",
+          legs: [],
+          origins: [],
+          destinations: [],
+          round_trip: round_trip,
+          route_name: route_name,
+          saved_mode: mode,
+          saved_leg: leg,
+          modes: []
+        )
+
       _ ->
         conn = put_flash(conn, :error, "There was an error creating your trip. Please try again.")
-        render conn, "new.html"
+        render(conn, "new.html")
     end
   end
 
-  def times(conn, %{"trip" => %{"legs" => legs, "origins" => origins,
-    "destinations" => destinations, "modes" => modes, "round_trip" => round_trip}},
-    _user, _claims) do
-
+  def times(
+        conn,
+        %{
+          "trip" => %{
+            "legs" => legs,
+            "origins" => origins,
+            "destinations" => destinations,
+            "modes" => modes,
+            "round_trip" => round_trip
+          }
+        },
+        _user,
+        _claims
+      ) do
     schedules = get_schedules_for_input(legs, origins, destinations, modes)
     return_schedules = get_schedules_for_input(legs, destinations, origins, modes)
 
-    render conn, "times.html", legs: legs, origins: origins, destinations: destinations,
-      modes: modes, round_trip: round_trip, schedules: schedules, return_schedules: return_schedules
+    render(
+      conn,
+      "times.html",
+      legs: legs,
+      origins: origins,
+      destinations: destinations,
+      modes: modes,
+      round_trip: round_trip,
+      schedules: schedules,
+      return_schedules: return_schedules
+    )
   end
 
   def delete(conn, %{"id" => id}, user, _claims) do
@@ -167,6 +250,7 @@ defmodule ConciergeSite.V2.TripController do
   end
 
   defp to_time(nil), do: nil
+
   defp to_time(form_time) do
     [hour, minute] = Enum.map(String.split(form_time, ":"), &String.to_integer/1)
     {:ok, time} = Time.new(hour, minute, 0)
@@ -175,24 +259,35 @@ defmodule ConciergeSite.V2.TripController do
   end
 
   defp build_trip_transaction(trip, subscriptions, user, originator) do
-    trip_id = Ecto.UUID.generate
+    trip_id = Ecto.UUID.generate()
     trip = Map.put(trip, :id, trip_id)
 
-    multi = Multi.run(Multi.new, {:trip, 0}, fn _ ->
-      PaperTrail.insert(trip, originator: User.wrap_id(originator), meta: %{owner: user.id})
-    end)
+    multi =
+      Multi.run(Multi.new(), {:trip, 0}, fn _ ->
+        PaperTrail.insert(trip, originator: User.wrap_id(originator), meta: %{owner: user.id})
+      end)
 
     subscriptions
-    |> Enum.with_index
-    |> Enum.reduce(multi, fn({sub, index}, acc) ->
-      sub_to_insert = sub
-      |> Map.merge(%{id: Ecto.UUID.generate, user_id: user.id, trip_id: trip.id, facility_types: trip.facility_types})
-      |> Subscription.create_changeset()
+    |> Enum.with_index()
+    |> Enum.reduce(multi, fn {sub, index}, acc ->
+      sub_to_insert =
+        sub
+        |> Map.merge(%{
+          id: Ecto.UUID.generate(),
+          user_id: user.id,
+          trip_id: trip.id,
+          facility_types: trip.facility_types
+        })
+        |> Subscription.create_changeset()
 
       acc
       |> Multi.run({:subscription, index}, fn _ ->
-           PaperTrail.insert(sub_to_insert, originator: User.wrap_id(originator), meta: %{owner: user.id})
-         end)
+        PaperTrail.insert(
+          sub_to_insert,
+          originator: User.wrap_id(originator),
+          meta: %{owner: user.id}
+        )
+      end)
     end)
   end
 
@@ -206,11 +301,17 @@ defmodule ConciergeSite.V2.TripController do
   end
 
   defp input_to_subscriptions(user, params) do
-    Enum.zip([Enum.reverse(params["modes"]), Enum.reverse(params["legs"]), Enum.reverse(params["origins"]),
-              Enum.reverse(params["destinations"]), Stream.iterate(0, &(&1+1))])
+    Enum.zip([
+      Enum.reverse(params["modes"]),
+      Enum.reverse(params["legs"]),
+      Enum.reverse(params["origins"]),
+      Enum.reverse(params["destinations"]),
+      Stream.iterate(0, &(&1 + 1))
+    ])
     |> Enum.flat_map(fn {type, route_in, origin, destination, rank} ->
       {route_id, direction} = determine_route(route_in)
       {:ok, route} = ServiceInfoCache.get_route(route_id)
+
       %Subscription{
         alert_priority_type: "low",
         user_id: user.id,
@@ -224,22 +325,69 @@ defmodule ConciergeSite.V2.TripController do
         route_type: route.route_type,
         direction_id: determine_direction_id(route.stop_list, direction, origin, destination),
         rank: rank,
-        return_trip: false}
+        return_trip: false
+      }
       |> Subscription.add_latlong_to_subscription(origin, destination)
       |> add_return_subscription(params)
     end)
+    |> expand_multiroute_greenline_subscriptions()
   end
 
-  defp add_return_subscription(subscription, %{"round_trip" => "true", "return_start_time" => return_start_time,
-                                               "return_end_time" => return_end_time}) do
+  defp expand_multiroute_greenline_subscriptions([%{route_type: 0} | _] = subscriptions) do
+    {:ok, subway_routes} = ServiceInfoCache.get_subway_full_routes()
+
+    Enum.flat_map(subscriptions, fn %{origin: origin, destination: destination} = subscription ->
+      routes = get_route_intersection(subway_routes, origin, destination)
+      copy_subscription_for_routes(routes, subscription)
+    end)
+  end
+
+  defp expand_multiroute_greenline_subscriptions(subscriptions), do: subscriptions
+
+  defp copy_subscription_for_routes(routes, subscription) do
+    Enum.map(routes, fn route_id ->
+      %{subscription | route: route_id}
+    end)
+  end
+
+  defp get_route_intersection(routes, origin, destination) do
+    origin_routes = get_routes_for_stop(routes, origin)
+    destination_routes = get_routes_for_stop(routes, destination)
+    origin_routes -- origin_routes -- destination_routes
+  end
+
+  defp get_routes_for_stop(routes, stop_id) do
+    Enum.flat_map(routes, fn %{stop_list: stop_list, route_id: route_id} ->
+      if Enum.any?(stop_list, fn {_, match, _, _} -> match == stop_id end) do
+        [route_id]
+      else
+        []
+      end
+    end)
+  end
+
+  defp add_return_subscription(subscription, %{
+         "round_trip" => "true",
+         "return_start_time" => return_start_time,
+         "return_end_time" => return_end_time
+       }) do
     return_subscription = %{
-      subscription | start_time: return_start_time, end_time: return_end_time, origin: subscription.destination,
-                     origin_lat: subscription.destination_lat, origin_long: subscription.destination_long,
-                     destination: subscription.origin, destination_lat: subscription.origin_lat,
-                     destination_long: subscription.origin_long, direction_id: flip_direction(subscription.direction_id),
-                     return_trip: true}
+      subscription
+      | start_time: return_start_time,
+        end_time: return_end_time,
+        origin: subscription.destination,
+        origin_lat: subscription.destination_lat,
+        origin_long: subscription.destination_long,
+        destination: subscription.origin,
+        destination_lat: subscription.origin_lat,
+        destination_long: subscription.origin_long,
+        direction_id: flip_direction(subscription.direction_id),
+        return_trip: true
+    }
+
     [subscription, return_subscription]
   end
+
   defp add_return_subscription(subscription, _), do: [subscription]
 
   defp input_to_trip(user, params) do
@@ -258,7 +406,7 @@ defmodule ConciergeSite.V2.TripController do
 
   defp input_to_facility_types(params) do
     ["bike_storage", "elevator", "escalator", "parking_area"]
-    |> Enum.reduce([], fn(type, acc) ->
+    |> Enum.reduce([], fn type, acc ->
       if params[type] == "true" do
         acc ++ [String.to_atom(type)]
       else
@@ -272,19 +420,22 @@ defmodule ConciergeSite.V2.TripController do
 
   defp determine_direction_id(_, "0", _, _), do: 0
   defp determine_direction_id(_, "1", _, _), do: 1
+
   defp determine_direction_id(stop_list, _, origin, destination) do
     case stop_list
-      |> Enum.filter(fn({_name, id, _latlong, _wheelchair}) -> Enum.member?([origin, destination], id) end)
-      |> Enum.map(fn({_name, id, _latlong, _wheelchair}) -> id end) do
-        [^origin, ^destination] -> 1
-        [^destination, ^origin] -> 0
+         |> Enum.filter(fn {_name, id, _latlong, _wheelchair} ->
+           Enum.member?([origin, destination], id)
+         end)
+         |> Enum.map(fn {_name, id, _latlong, _wheelchair} -> id end) do
+      [^origin, ^destination] -> 1
+      [^destination, ^origin] -> 0
     end
   end
 
   defp determine_route(route_id) do
     route_id
     |> String.split(" - ")
-    |> Enum.reduce({}, fn(part, acc) ->
+    |> Enum.reduce({}, fn part, acc ->
       if acc == {} do
         {part, nil}
       else
@@ -316,12 +467,18 @@ defmodule ConciergeSite.V2.TripController do
         [hours, minutes] -> "#{hours}:#{minutes}:00"
         [_hours, _minutes, _seconds] -> time_value
       end
+
     {time_key, Time.from_iso8601!(time)}
   end
 
   defp get_schedules_for_input(legs, origins, destinations, modes) do
-    Enum.zip([Enum.reverse(modes), Enum.reverse(legs), Enum.reverse(origins), Enum.reverse(destinations)])
-    |> Enum.reduce(%{}, fn({mode, route, origin, destination}, acc) ->
+    Enum.zip([
+      Enum.reverse(modes),
+      Enum.reverse(legs),
+      Enum.reverse(origins),
+      Enum.reverse(destinations)
+    ])
+    |> Enum.reduce(%{}, fn {mode, route, origin, destination}, acc ->
       case mode do
         "subway" -> acc
         "bus" -> acc
@@ -332,8 +489,9 @@ defmodule ConciergeSite.V2.TripController do
 
   defp get_schedules_for_trip(subscriptions, return_trip) do
     subscriptions
-    |> Enum.filter(& &1.return_trip == return_trip)
-    |> Enum.reduce(%{}, fn(%{type: type, route: route, origin: origin, destination: destination}, acc) ->
+    |> Enum.filter(&(&1.return_trip == return_trip))
+    |> Enum.reduce(%{}, fn %{type: type, route: route, origin: origin, destination: destination},
+                           acc ->
       case type do
         :subway -> acc
         :bus -> acc
@@ -345,12 +503,26 @@ defmodule ConciergeSite.V2.TripController do
   defp get_schedule(route_id, origin, destination) do
     with {:ok, route} <- ServiceInfoCache.get_route(route_id) do
       direction_id = determine_direction_id(route.stop_list, nil, origin, destination)
-      {:ok, schedules, trips} = ApiClient.schedules(origin, destination, direction_id, [route.route_id],
-                                                    Calendar.Date.today!("America/New_York"))
+
+      {:ok, schedules, trips} =
+        ApiClient.schedules(
+          origin,
+          destination,
+          direction_id,
+          [route.route_id],
+          Calendar.Date.today!("America/New_York")
+        )
+
       trip_name_map = map_trip_names(trips)
       {:ok, origin_stop} = ServiceInfoCache.get_stop(origin)
       {:ok, destination_stop} = ServiceInfoCache.get_stop(destination)
-      trip = %TripInfo{origin: origin_stop, destination: destination_stop, direction_id: direction_id}
+
+      trip = %TripInfo{
+        origin: origin_stop,
+        destination: destination_stop,
+        direction_id: direction_id
+      }
+
       map_common_trips(schedules, trip_name_map, trip)
     end
   end
@@ -359,42 +531,58 @@ defmodule ConciergeSite.V2.TripController do
     Map.new(trips, &do_map_trip_name/1)
   end
 
-  defp do_map_trip_name(%{"type" => "trip", "id" => id, "attributes" => %{"name" => name}}), do: {id, name}
+  defp do_map_trip_name(%{"type" => "trip", "id" => id, "attributes" => %{"name" => name}}),
+    do: {id, name}
+
   defp do_map_trip_name(_), do: {nil, nil}
 
   defp map_common_trips([], _, _), do: :error
+
   defp map_common_trips(schedules, trip_names_map, trip) do
     schedules
-    |> Enum.group_by(fn(%{"relationships" => %{"trip" => %{"data" => %{"id" => id}}}}) -> id end)
-    |> Enum.filter(fn({_id, schedules}) -> Enum.count(schedules) > 1 end)
-    |> Enum.map(fn({_id, schedules}) ->
-        [departure_schedule, arrival_schedule] = Enum.sort_by(schedules, fn(%{"attributes" => %{"departure_time" => departure_timestamp}}) -> departure_timestamp end)
-        %{"attributes" => %{
+    |> Enum.group_by(fn %{"relationships" => %{"trip" => %{"data" => %{"id" => id}}}} -> id end)
+    |> Enum.filter(fn {_id, schedules} -> Enum.count(schedules) > 1 end)
+    |> Enum.map(fn {_id, schedules} ->
+      [departure_schedule, arrival_schedule] =
+        Enum.sort_by(schedules, fn %{"attributes" => %{"departure_time" => departure_timestamp}} ->
+          departure_timestamp
+        end)
+
+      %{
+        "attributes" => %{
           "departure_time" => departure_timestamp
+        },
+        "relationships" => %{
+          "trip" => %{
+            "data" => %{
+              "id" => trip_id
+            }
           },
-          "relationships" => %{
-            "trip" => %{
-              "data" => %{
-               "id" => trip_id
-              }
-            },
-            "route" => %{
-              "data" => %{
-                "id" => route_id
-              }
+          "route" => %{
+            "data" => %{
+              "id" => route_id
             }
           }
-        } = departure_schedule
+        }
+      } = departure_schedule
 
-        %{"attributes" => %{"arrival_time" => arrival_timestamp}} = arrival_schedule
-        {:ok, route} = ServiceInfoCache.get_route(route_id)
+      %{"attributes" => %{"arrival_time" => arrival_timestamp}} = arrival_schedule
+      {:ok, route} = ServiceInfoCache.get_route(route_id)
 
-        %{trip | arrival_time: map_schedule_time(arrival_timestamp), departure_time: map_schedule_time(departure_timestamp), trip_number: Map.get(trip_names_map, trip_id), route: route}
-      end)
-    |> Enum.sort_by(fn(%TripInfo{departure_time: departure_time}) -> {~T[05:00:00] > departure_time, departure_time} end)
+      %{
+        trip
+        | arrival_time: map_schedule_time(arrival_timestamp),
+          departure_time: map_schedule_time(departure_timestamp),
+          trip_number: Map.get(trip_names_map, trip_id),
+          route: route
+      }
+    end)
+    |> Enum.sort_by(fn %TripInfo{departure_time: departure_time} ->
+      {~T[05:00:00] > departure_time, departure_time}
+    end)
   end
 
   defp map_schedule_time(schedule_datetime) do
-    schedule_datetime |> NaiveDateTime.from_iso8601! |> NaiveDateTime.to_time()
+    schedule_datetime |> NaiveDateTime.from_iso8601!() |> NaiveDateTime.to_time()
   end
 end
