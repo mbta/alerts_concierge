@@ -3,7 +3,7 @@ const icons = {
     <circle cx="20" cy="20" r="20" fill="#165c96" transform="translate(1 1)"/>
     <path d="M26 29.4c-1.5 3-4.6 5-8 5-5 0-9-4-9-9 0-3.5 2-6.7 5.3-8.2l.2 2.7c-2 1-3 3.2-3 5.4 0 3.7 3 6.7 6.5 6.7 3.3 0 6-2.6 6.5-5.8l1.6 3.2zM17 12c1.3-.2 2.2-1.3 2.2-2.6S18.2 7 16.8 7c-1.3 0-2.4 1-2.4 2.4 0 .5 0 1 .3 1.2l.8 12.4h9l3.7 8.5 4.8-2-.7-1.7-2.7 1-3.6-8.2h-8.3V19h6v-2h-6.5l-.3-5z"/>
     </svg>`,
-  red: className =>   
+  red: className =>
     `<svg width="20" height="20" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 25 25" class="${className}">
       <g fill="none" fill-rule="evenodd">
         <path d="M12 0C5.372 0 0 5.373 0 12c0 6.628 5.372 12 12 12 6.627 0 12-5.372 12-12 0-6.627-5.373-12-12-12" fill="#FFF"/>
