@@ -248,9 +248,10 @@ defmodule ConciergeSite.V2.TripControllerTest do
 
       assert html_response(conn, 200) =~ "Success! Your subscription has been created."
 
-      assert html_response(conn, 200) =~ "Green Line C"
-      assert html_response(conn, 200) =~ "Green Line D"
-      assert html_response(conn, 200) =~ "Green Line E"
+      assert html_response(conn, 200) =~ "Green Line"
+      refute html_response(conn, 200) =~ "Green Line D"
+      refute html_response(conn, 200) =~ "Green Line D"
+      refute html_response(conn, 200) =~ "Green Line E"
     end
 
     test "green line single-route", %{conn: conn, user: user} do

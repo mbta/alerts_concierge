@@ -67,6 +67,7 @@ defmodule ConciergeSite.TripCardHelper do
   defp routes(subscriptions) do
     subscriptions
     |> Enum.reject(& &1.return_trip)
+    |> collapse_duplicate_green_legs()
     |> Enum.map(fn (subscription) ->
       [
         content_tag :span, class: "trip__card--route-icon" do
@@ -84,8 +85,27 @@ defmodule ConciergeSite.TripCardHelper do
     )
   end
 
+  @spec collapse_duplicate_green_legs([Subscription.t]) :: [Subscription.t] 
+  defp collapse_duplicate_green_legs(subscriptions) do
+    Enum.reduce(subscriptions, [], fn(subscription, unique_subscriptions) ->
+      case Enum.find_index(unique_subscriptions, fn(%{origin: origin, destination: destination}) ->
+        subscription.route_type == 0 && origin == subscription.origin && destination == subscription.destination
+      end) do
+        nil -> unique_subscriptions ++ [subscription]
+        index -> List.update_at(unique_subscriptions, index, fn(original_subscription) ->
+          %{original_subscription | route: add_route_to_subscription(original_subscription.route, subscription.route) }
+        end)
+      end
+    end)
+  end
+
+  @spec add_route_to_subscription([String.t] | String.t, String.t) :: [String.t] 
+  defp add_route_to_subscription(original, additional) when is_list(original), do: original ++ [additional]
+  defp add_route_to_subscription(original, additional), do: [original, additional]
+
   @spec icon(atom, String.t) :: Phoenix.HTML.safe
   defp icon(_, "Mattapan"), do: ConciergeSite.IconViewHelper.icon(:mattapan)
+  defp icon(:subway, routes) when is_list(routes), do: Enum.map(routes, fn(route) -> icon(:subway, route) end)
   defp icon(:subway, route), do: ConciergeSite.IconViewHelper.icon(String.to_atom(String.downcase(route)))
   defp icon(:cr, _), do: ConciergeSite.IconViewHelper.icon(:commuter_rail)
   defp icon(:bus, _), do: ConciergeSite.IconViewHelper.icon(:bus)
@@ -156,6 +176,7 @@ defmodule ConciergeSite.TripCardHelper do
   end
 
   @spec route_name(String.t) :: String.t
+  defp route_name(routes) when is_list(routes), do: "Green Line"
   defp route_name("Green-B"), do: "Green Line B"
   defp route_name("Green-C"), do: "Green Line C"
   defp route_name("Green-D"), do: "Green Line D"

@@ -1,7 +1,7 @@
 .trip__card {
   display: block;
   line-height: 1.5rem;
-  padding: .75rem;
+  padding: 0.75rem;
   border-color: $steel;
   color: $black !important;
   text-align: left;
@@ -24,23 +24,17 @@
   display: inline-block;
   font-size: 16px;
   font-weight: bold;
-  padding: 0 .5rem;
+  padding: 0 0.5rem;
 }
 
 .trip__card--route-icon {
-  position: relative;
   display: inline-block;
-  width: 20px;
-  height: 20px;
   margin-right: 4px;
   transform: translate(0px, 4px);
-
-  svg {
-    position: absolute;
-  }
 }
 
-.trip__card--type, .trip__card--times {
+.trip__card--type,
+.trip__card--times {
   font-size: 1rem;
   overflow-x: hidden;
   text-overflow: ellipsis;
