@@ -484,7 +484,7 @@ defmodule AlertProcessor.InformedEntityFilterTest do
         origin:  nil,
         destination: nil,
         facility_types: [:elevator],
-        type: "accessibility"
+        type: :accessibility
       ]
       subscription = build(:subscription, subscription_details)
       informed_entity_details = [
@@ -507,7 +507,7 @@ defmodule AlertProcessor.InformedEntityFilterTest do
         origin: nil,
         destination: nil,
         facility_types: [:elevator],
-        type: "accessibility"
+        type: :accessibility
       ]
       subscription = build(:subscription, subscription_details)
       informed_entity_details = [
@@ -591,7 +591,7 @@ defmodule AlertProcessor.InformedEntityFilterTest do
         origin: stop,
         destination: stop,
         facility_types: [:bike_storage],
-        type: "accessibility"
+        type: :accessibility
       ]
       subscription = build(:subscription, subscription_details)
       informed_entity_details = [
@@ -692,14 +692,14 @@ defmodule AlertProcessor.InformedEntityFilterTest do
         origin:  nil,
         destination: nil,
         facility_types: [:elevator],
-        type: "accessibility"
+        type: :accessibility
       ]
       subscription = build(:subscription, subscription_details)
       informed_entity_details = [
         route_type: 1,
         direction_id: nil,
         route: nil,
-        stop: "Harvard",
+        stop: "place-harsq",
         activities: ["USING_WHEELCHAIR"]
       ]
       informed_entity = build(:informed_entity, informed_entity_details)

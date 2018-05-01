@@ -109,7 +109,7 @@ defmodule AlertProcessor.InformedEntityFilter do
     {subscription, informed_entity, updated_match_report}
   end
 
-  defp stop_match?({%{type: "accessibility", origin: nil} = subscription, informed_entity, match_report}) do
+  defp stop_match?({%{type: :accessibility, origin: nil} = subscription, informed_entity, match_report}) do
     stop_match? = route_stop_match?(subscription.route, informed_entity.stop)
     updated_match_report = Map.put(match_report, :stop_match?, stop_match?)
     {subscription, informed_entity, updated_match_report}
@@ -127,8 +127,8 @@ defmodule AlertProcessor.InformedEntityFilter do
   defp route_stop_match?(route, stop) do
     case ServiceInfoCache.get_route(route) do
       {:ok, %{stop_list: stop_list}} ->
-        Enum.any?(stop_list, fn {route_stop, _, _, _} ->
-          route_stop == stop
+        Enum.any?(stop_list, fn {_, route_stop_id, _, _} ->
+          route_stop_id == stop
         end)
       _ -> false
     end
@@ -158,7 +158,7 @@ defmodule AlertProcessor.InformedEntityFilter do
 
   defp stop_related_activities(subscription, informed_entity) do
     case {subscription.type, subscription.origin, subscription.destination, informed_entity.stop} do
-      {"accessibility", _, _, _} ->
+      {:accessibility, _, _, _} ->
         []
       {_, nil, nil, nil} ->
         ["BOARD", "EXIT"]
