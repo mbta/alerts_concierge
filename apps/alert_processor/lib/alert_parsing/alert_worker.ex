@@ -30,6 +30,10 @@ defmodule AlertProcessor.AlertWorker do
     {:noreply, nil}
   end
 
+  def handle_info(_msg, state) do
+    {:noreply, state}
+  end
+
   defp schedule_work do
     Process.send_after(self(), :work, filter_interval())
   end
