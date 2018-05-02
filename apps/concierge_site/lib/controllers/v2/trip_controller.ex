@@ -301,6 +301,7 @@ defmodule ConciergeSite.V2.TripController do
   end
 
   defp input_to_subscriptions(user, params) do
+    {:ok, subway_routes} = ServiceInfoCache.get_subway_full_routes()
     Enum.zip([
       Enum.reverse(params["modes"]),
       Enum.reverse(params["legs"]),
@@ -330,19 +331,15 @@ defmodule ConciergeSite.V2.TripController do
       |> Subscription.add_latlong_to_subscription(origin, destination)
       |> add_return_subscription(params)
     end)
-    |> expand_multiroute_greenline_subscriptions()
+    |> Enum.flat_map(&expand_multiroute_greenline_subscription(&1, subway_routes))
   end
 
-  defp expand_multiroute_greenline_subscriptions([%{route_type: 0} | _] = subscriptions) do
-    {:ok, subway_routes} = ServiceInfoCache.get_subway_full_routes()
-
-    Enum.flat_map(subscriptions, fn %{origin: origin, destination: destination} = subscription ->
-      routes = get_route_intersection(subway_routes, origin, destination)
-      copy_subscription_for_routes(routes, subscription)
-    end)
+  defp expand_multiroute_greenline_subscription(%{route_type: 0, origin: origin, destination: destination} = subscription, subway_routes) do
+    routes = get_route_intersection(subway_routes, origin, destination)
+    copy_subscription_for_routes(routes, subscription)
   end
 
-  defp expand_multiroute_greenline_subscriptions(subscriptions), do: subscriptions
+  defp expand_multiroute_greenline_subscription(subscription, _routes), do: [subscription]
 
   defp copy_subscription_for_routes(routes, subscription) do
     Enum.map(routes, fn route_id ->
