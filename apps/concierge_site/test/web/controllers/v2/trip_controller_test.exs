@@ -10,9 +10,10 @@ defmodule ConciergeSite.V2.TripControllerTest do
   end
 
   test "GET /trips", %{conn: conn, user: user} do
-    conn = user
-    |> guardian_login(conn)
-    |> get(v2_trip_path(conn, :index))
+    conn =
+      user
+      |> guardian_login(conn)
+      |> get(v2_trip_path(conn, :index))
 
     assert html_response(conn, 200) =~ "My subscriptions"
   end
@@ -20,9 +21,25 @@ defmodule ConciergeSite.V2.TripControllerTest do
   describe "GET /trips/:id/edit" do
     test "with valid trip", %{conn: conn, user: user} do
       trip = insert(:trip, %{user: user})
-      insert(:subscription, %{trip_id: trip.id, type: :cr, origin: "Readville", destination: "Newmarket", route: "CR-Fairmount"})
-      insert(:subscription, %{trip_id: trip.id, type: :subway, origin: "place-chncl", destination: "place-ogmnl", route: "Orange"})
+
+      insert(:subscription, %{
+        trip_id: trip.id,
+        type: :cr,
+        origin: "Readville",
+        destination: "Newmarket",
+        route: "CR-Fairmount"
+      })
+
+      insert(:subscription, %{
+        trip_id: trip.id,
+        type: :subway,
+        origin: "place-chncl",
+        destination: "place-ogmnl",
+        route: "Orange"
+      })
+
       insert(:subscription, %{trip_id: trip.id, type: :bus, route: "741"})
+
       conn =
         user
         |> guardian_login(conn)
@@ -33,6 +50,7 @@ defmodule ConciergeSite.V2.TripControllerTest do
 
     test "returns 404 with non-existent trip", %{conn: conn, user: user} do
       non_existent_trip_id = "ba51f08c-ad36-4dd5-a81a-557168c42f51"
+
       conn =
         user
         |> guardian_login(conn)
@@ -44,6 +62,7 @@ defmodule ConciergeSite.V2.TripControllerTest do
     test "returns 404 if user doesn't own trip", %{conn: conn, user: user} do
       sneaky_user = insert(:user, email: "sneaky_user@emailprovider.com")
       trip = insert(:trip, user: user)
+
       conn =
         sneaky_user
         |> guardian_login(conn)
@@ -58,6 +77,7 @@ defmodule ConciergeSite.V2.TripControllerTest do
       # Time format comes through with `HH:MM` format after a user updates them
       # in the trip edit page.
       trip = insert(:trip, %{user: user})
+
       params = [
         trip: %{
           relevant_days: [:tuesday, :thursday],
@@ -68,9 +88,11 @@ defmodule ConciergeSite.V2.TripControllerTest do
           alert_time_difference_in_minutes: 30
         }
       ]
-      conn = user
-             |> guardian_login(conn)
-             |> patch(v2_trip_path(conn, :update, trip.id, params))
+
+      conn =
+        user
+        |> guardian_login(conn)
+        |> patch(v2_trip_path(conn, :update, trip.id, params))
 
       assert html_response(conn, 302) =~ v2_trip_path(conn, :index)
     end
@@ -80,6 +102,7 @@ defmodule ConciergeSite.V2.TripControllerTest do
       # They come through with `HH:MM` format if they do update them. So we
       # need to correctly handle both formats.
       trip = insert(:trip, %{user: user})
+
       params = [
         trip: %{
           relevant_days: [:tuesday, :thursday],
@@ -90,9 +113,11 @@ defmodule ConciergeSite.V2.TripControllerTest do
           alert_time_difference_in_minutes: 30
         }
       ]
-      conn = user
-             |> guardian_login(conn)
-             |> patch(v2_trip_path(conn, :update, trip.id, params))
+
+      conn =
+        user
+        |> guardian_login(conn)
+        |> patch(v2_trip_path(conn, :update, trip.id, params))
 
       assert html_response(conn, 302) =~ v2_trip_path(conn, :index)
     end
@@ -100,9 +125,11 @@ defmodule ConciergeSite.V2.TripControllerTest do
     test "with invalid relevant day", %{conn: conn, user: user} do
       trip = insert(:trip, %{user: user})
       params = [trip: %{relevant_days: [:invalid]}]
-      conn = user
-             |> guardian_login(conn)
-             |> patch(v2_trip_path(conn, :update, trip.id, params))
+
+      conn =
+        user
+        |> guardian_login(conn)
+        |> patch(v2_trip_path(conn, :update, trip.id, params))
 
       assert html_response(conn, 422) =~ "Trip could not be updated."
     end
@@ -111,9 +138,11 @@ defmodule ConciergeSite.V2.TripControllerTest do
   describe "DELETE /trips/:id" do
     test "deletes trip and redirects to trip index page", %{conn: conn, user: user} do
       trip = insert(:trip, %{user: user})
-      conn = user
-             |> guardian_login(conn)
-             |> delete(v2_trip_path(conn, :delete, trip.id))
+
+      conn =
+        user
+        |> guardian_login(conn)
+        |> delete(v2_trip_path(conn, :delete, trip.id))
 
       assert html_response(conn, 302) =~ v2_trip_path(conn, :index)
       refute Trip.find_by_id(trip.id)
@@ -121,9 +150,11 @@ defmodule ConciergeSite.V2.TripControllerTest do
 
     test "returns 404 with non-existent trip", %{conn: conn, user: user} do
       non_existent_trip_id = Ecto.UUID.generate()
-      conn = user
-             |> guardian_login(conn)
-             |> delete(v2_trip_path(conn, :delete, non_existent_trip_id))
+
+      conn =
+        user
+        |> guardian_login(conn)
+        |> delete(v2_trip_path(conn, :delete, non_existent_trip_id))
 
       assert html_response(conn, 404) =~ "cannot be found"
     end
@@ -131,9 +162,11 @@ defmodule ConciergeSite.V2.TripControllerTest do
     test "returns 404 if user is not the owner of the trip", %{conn: conn, user: sneaky_user} do
       owner = insert(:user)
       trip = insert(:trip, %{user: owner})
-      conn = sneaky_user
-             |> guardian_login(conn)
-             |> delete(v2_trip_path(conn, :delete, trip.id))
+
+      conn =
+        sneaky_user
+        |> guardian_login(conn)
+        |> delete(v2_trip_path(conn, :delete, trip.id))
 
       assert html_response(conn, 404) =~ "cannot be found"
       assert Trip.find_by_id(trip.id)
@@ -141,9 +174,10 @@ defmodule ConciergeSite.V2.TripControllerTest do
   end
 
   test "GET /trip/new", %{conn: conn, user: user} do
-    conn = user
-    |> guardian_login(conn)
-    |> get(v2_trip_path(conn, :new))
+    conn =
+      user
+      |> guardian_login(conn)
+      |> get(v2_trip_path(conn, :new))
 
     assert html_response(conn, 200) =~ "Is this usually a round trip?"
     assert html_response(conn, 200) =~ "Which route or line do you take?"
@@ -168,9 +202,10 @@ defmodule ConciergeSite.V2.TripControllerTest do
         start_time: "08:00"
       }
 
-      conn = user
-      |> guardian_login(conn)
-      |> post(v2_trip_path(conn, :create), %{trip: trip})
+      conn =
+        user
+        |> guardian_login(conn)
+        |> post(v2_trip_path(conn, :create), %{trip: trip})
 
       assert html_response(conn, 302) =~ v2_trip_path(conn, :index)
 
@@ -178,9 +213,77 @@ defmodule ConciergeSite.V2.TripControllerTest do
 
       assert html_response(conn, 200) =~ "Success! Your subscription has been created."
 
-      assert html_response(conn, 200) =~ "<span class=\"trip__card--route\">Red Line</span>"
-      <> "<div class=\"trip__card--type\">Round-trip, Weekdays</div>"
-      <> "<div class=\"trip__card--times\"> 8:00am -  9:00am /  5:00pm -  6:00pm</div>"
+      assert html_response(conn, 200) =~
+               "<span class=\"trip__card--route\">Red Line</span>" <>
+                 "<div class=\"trip__card--type\">Round-trip, Weekdays</div>" <>
+                 "<div class=\"trip__card--times\"> 8:00am -  9:00am /  5:00pm -  6:00pm</div>"
+    end
+
+    test "green line multi-route", %{conn: conn, user: user} do
+      trip = %{
+        bike_storage: "false",
+        relevant_days: ["monday", "tuesday", "wednesday", "thursday", "friday"],
+        destinations: ["place-gover"],
+        elevator: "true",
+        end_time: "09:00",
+        escalator: "false",
+        legs: ["Green"],
+        modes: ["subway"],
+        origins: ["place-boyls"],
+        parking_area: "true",
+        return_end_time: "18:00",
+        return_start_time: "17:00",
+        round_trip: "true",
+        start_time: "08:00"
+      }
+
+      conn =
+        user
+        |> guardian_login(conn)
+        |> post(v2_trip_path(conn, :create), %{trip: trip})
+
+      assert html_response(conn, 302) =~ v2_trip_path(conn, :index)
+
+      conn = get(conn, v2_trip_path(conn, :index))
+
+      assert html_response(conn, 200) =~ "Success! Your subscription has been created."
+
+      assert html_response(conn, 200) =~ "Green Line C"
+      assert html_response(conn, 200) =~ "Green Line D"
+      assert html_response(conn, 200) =~ "Green Line E"
+    end
+
+    test "green line single-route", %{conn: conn, user: user} do
+      trip = %{
+        bike_storage: "false",
+        relevant_days: ["monday", "tuesday", "wednesday", "thursday", "friday"],
+        destinations: ["place-north"],
+        elevator: "true",
+        end_time: "09:00",
+        escalator: "false",
+        legs: ["Green"],
+        modes: ["subway"],
+        origins: ["place-lech"],
+        parking_area: "true",
+        return_end_time: "18:00",
+        return_start_time: "17:00",
+        round_trip: "true",
+        start_time: "08:00"
+      }
+
+      conn =
+        user
+        |> guardian_login(conn)
+        |> post(v2_trip_path(conn, :create), %{trip: trip})
+
+      assert html_response(conn, 302) =~ v2_trip_path(conn, :index)
+
+      conn = get(conn, v2_trip_path(conn, :index))
+
+      assert html_response(conn, 200) =~ "Success! Your subscription has been created."
+
+      refute html_response(conn, 200) =~ "Green Line C"
+      assert html_response(conn, 200) =~ "Green Line E"
     end
 
     test "bus", %{conn: conn, user: user} do
@@ -201,15 +304,17 @@ defmodule ConciergeSite.V2.TripControllerTest do
         start_time: "08:00"
       }
 
-      conn = user
-      |> guardian_login(conn)
-      |> post(v2_trip_path(conn, :create), %{trip: trip})
+      conn =
+        user
+        |> guardian_login(conn)
+        |> post(v2_trip_path(conn, :create), %{trip: trip})
 
       assert html_response(conn, 302) =~ v2_trip_path(conn, :index)
 
       conn = get(conn, v2_trip_path(conn, :index))
 
-      assert html_response(conn, 200) =~ "<span class=\"trip__card--route\">Silver Line SL1</span>"
+      assert html_response(conn, 200) =~
+               "<span class=\"trip__card--route\">Silver Line SL1</span>"
     end
   end
 
@@ -224,9 +329,10 @@ defmodule ConciergeSite.V2.TripControllerTest do
       saved_mode: "subway"
     }
 
-    conn = user
-    |> guardian_login(conn)
-    |> post(v2_trip_trip_path(conn, :leg), %{trip: trip})
+    conn =
+      user
+      |> guardian_login(conn)
+      |> post(v2_trip_trip_path(conn, :leg), %{trip: trip})
 
     assert html_response(conn, 200) =~ "Where do you get on the Green Line?"
     assert html_response(conn, 200) =~ "Do you make a connection to another route or line?"
@@ -244,9 +350,11 @@ defmodule ConciergeSite.V2.TripControllerTest do
       saved_leg: "Red",
       saved_mode: "subway"
     }
-    conn = user
-    |> guardian_login(conn)
-    |> post(v2_trip_trip_path(conn, :leg), %{trip: trip})
+
+    conn =
+      user
+      |> guardian_login(conn)
+      |> post(v2_trip_trip_path(conn, :leg), %{trip: trip})
 
     assert html_response(conn, 200) =~ "Trip origin and destination must be different."
   end
@@ -266,9 +374,10 @@ defmodule ConciergeSite.V2.TripControllerTest do
       modes: ["subway"]
     }
 
-    conn = user
-    |> guardian_login(conn)
-    |> post(v2_trip_trip_path(conn, :leg), %{trip: trip})
+    conn =
+      user
+      |> guardian_login(conn)
+      |> post(v2_trip_trip_path(conn, :leg), %{trip: trip})
 
     assert html_response(conn, 200) =~ "Where do you get on the Green Line?"
     assert html_response(conn, 200) =~ "Do you make a connection to another route or line?"
@@ -284,9 +393,10 @@ defmodule ConciergeSite.V2.TripControllerTest do
       saved_mode: "subway"
     }
 
-    conn = user
-    |> guardian_login(conn)
-    |> post(v2_trip_trip_path(conn, :leg), %{trip: trip})
+    conn =
+      user
+      |> guardian_login(conn)
+      |> post(v2_trip_trip_path(conn, :leg), %{trip: trip})
 
     assert html_response(conn, 200) =~ "true"
     assert html_response(conn, 200) =~ "Red"
@@ -301,18 +411,20 @@ defmodule ConciergeSite.V2.TripControllerTest do
       route: "Red~~Red Line~~subway"
     }
 
-    conn = user
-    |> guardian_login(conn)
-    |> post(v2_trip_trip_path(conn, :leg), %{trip: trip})
+    conn =
+      user
+      |> guardian_login(conn)
+      |> post(v2_trip_trip_path(conn, :leg), %{trip: trip})
 
     assert html_response(conn, 200) =~ "Where do you get on the Red Line?"
     assert html_response(conn, 200) =~ "Do you make a connection to another route or line?"
   end
 
   test "POST /trip/leg with errors", %{conn: conn, user: user} do
-    conn = user
-    |> guardian_login(conn)
-    |> post(v2_trip_trip_path(conn, :leg), %{trip: %{}})
+    conn =
+      user
+      |> guardian_login(conn)
+      |> post(v2_trip_trip_path(conn, :leg), %{trip: %{}})
 
     assert html_response(conn, 200) =~ "There was an error creating your trip. Please try again."
   end
@@ -327,9 +439,10 @@ defmodule ConciergeSite.V2.TripControllerTest do
         modes: ["subway"]
       }
 
-      conn = user
-      |> guardian_login(conn)
-      |> post(v2_trip_trip_path(conn, :times), %{trip: trip})
+      conn =
+        user
+        |> guardian_login(conn)
+        |> post(v2_trip_trip_path(conn, :times), %{trip: trip})
 
       assert html_response(conn, 200) =~ "true"
       assert html_response(conn, 200) =~ "Red"
@@ -346,9 +459,10 @@ defmodule ConciergeSite.V2.TripControllerTest do
         modes: ["cr"]
       }
 
-      conn = user
-      |> guardian_login(conn)
-      |> post(v2_trip_trip_path(conn, :times), %{trip: trip})
+      conn =
+        user
+        |> guardian_login(conn)
+        |> post(v2_trip_trip_path(conn, :times), %{trip: trip})
 
       assert html_response(conn, 200) =~ "true"
       assert html_response(conn, 200) =~ "CR-Fairmount"
@@ -365,9 +479,10 @@ defmodule ConciergeSite.V2.TripControllerTest do
         modes: ["bus"]
       }
 
-      conn = user
-      |> guardian_login(conn)
-      |> post(v2_trip_trip_path(conn, :times), %{trip: trip})
+      conn =
+        user
+        |> guardian_login(conn)
+        |> post(v2_trip_trip_path(conn, :times), %{trip: trip})
 
       assert html_response(conn, 200) =~ "true"
     end
