@@ -61,12 +61,10 @@ defmodule AlertProcessor.NotificationWorkerTest do
     user = insert :user
     notification = Map.put(notification, :user, user)
 
-    SendingQueue.start_link()
-    {:ok, pid} = NotificationWorker.start_link([name: :notification_worker_test_1])
+    {:ok, pid} = start_supervised(NotificationWorker)
     :erlang.trace(pid, true, [:receive])
 
     SendingQueue.enqueue(notification)
-    :timer.sleep(101)
 
     assert_receive {:trace, ^pid, :receive, {:sent_notification_email, _}}
     assert_number_of_notifications_persisted_for_user(1, user)
@@ -85,8 +83,7 @@ defmodule AlertProcessor.NotificationWorkerTest do
 
     RateLimiter.check_rate_limit(user.id)
 
-    SendingQueue.start_link()
-    {:ok, pid} = NotificationWorker.start_link([name: :notification_worker_test_2])
+    {:ok, pid} = start_supervised(NotificationWorker)
     :erlang.trace(pid, true, [:receive])
 
     a = fn ->
@@ -104,12 +101,10 @@ defmodule AlertProcessor.NotificationWorkerTest do
     notification = Map.put(notification, :user, user)
     notification = Map.put(notification, :service_effect, nil)
 
-    SendingQueue.start_link()
-    {:ok, pid} = NotificationWorker.start_link([name: :notification_worker_test_3])
+    {:ok, pid} = start_supervised(NotificationWorker)
     :erlang.trace(pid, true, [:receive])
 
     SendingQueue.enqueue(notification)
-    :timer.sleep(101)
 
     refute_receive {:trace, ^pid, :receive, {:sent_notification_email, _}}
     assert_number_of_notifications_persisted_for_user(0, user)
