@@ -22,6 +22,10 @@ config :alert_processor, database_url: {:system, "DATABASE_URL_TEST"}
 
 config :alert_processor, :notification_window_filter, AlertProcessor.NotificationWindowFilterMock
 
+config :alert_processor,
+  pool_size: 0,
+  overflow: 0
+
 config :exvcr, [
   vcr_cassette_library_dir: "test/fixture/vcr_cassettes",
   custom_cassette_library_dir: "test/fixture/custom_cassettes",
