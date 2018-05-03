@@ -8,7 +8,7 @@ defmodule ConciergeSite.StopSelectHelper do
   @spec render(String.t, atom, atom, [String.t], keyword) :: Phoenix.HTML.safe
   def render(route_id, input_name, field, selected \\ [], attrs \\ []) do
     default = if attrs[:no_default] == true, do: [], else: default_option()
-    content_tag :select, attributes(input_name, field, attrs) do
+    content_tag :select, attributes(input_name, field, route_id, attrs) do
       for stop <- get_stops_by_route(route_id), into: [default], do: render_option(stop, selected)
     end
   end
@@ -69,10 +69,10 @@ defmodule ConciergeSite.StopSelectHelper do
   end
   defp get_stop_list(route_id), do: with {:ok, %{stop_list: stops}} = ServiceInfoCache.get_route(route_id), do: stops
 
-  @spec attributes(atom, atom, keyword) :: keyword(String.t)
-  defp attributes(input_name, field, attrs) do
+  @spec attributes(atom, atom, String.t, keyword) :: keyword(String.t)
+  defp attributes(input_name, field, route_id, attrs) do
     name = if attrs[:multiple] == "multiple", do: "#{input_name}[#{field}][]", else: "#{input_name}[#{field}]"
-    [data: [type: "stop"], class: "form-control", id: "#{input_name}_#{field}", name: name]
+    [data: [type: "stop", route: route_id], class: "form-control", id: "#{input_name}_#{field}", name: name]
     |> Keyword.merge(attrs)
   end
 
