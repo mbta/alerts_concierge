@@ -319,7 +319,27 @@ defmodule ConciergeSite.V2.TripControllerTest do
     end
   end
 
-  test "POST /trip/leg to create new trip leg", %{conn: conn, user: user} do
+  test "POST /trip/leg to create new trip leg (orange)", %{conn: conn, user: user} do
+    trip = %{
+      destination: "place-forhl",
+      new_leg: "true",
+      origin: "place-dwnxg",
+      round_trip: "true",
+      route: "Orange~~Orange Line~~subway",
+      saved_leg: "Red",
+      saved_mode: "subway"
+    }
+
+    conn =
+      user
+      |> guardian_login(conn)
+      |> post(v2_trip_trip_path(conn, :leg), %{trip: trip})
+
+    assert html_response(conn, 200) =~ "Where do you get on the Orange Line?"
+    assert html_response(conn, 200) =~ "Do you make a connection to another route or line?"
+  end
+
+  test "POST /trip/leg to create new trip leg (Green)", %{conn: conn, user: user} do
     trip = %{
       destination: "place-pktrm",
       new_leg: "true",
@@ -336,7 +356,7 @@ defmodule ConciergeSite.V2.TripControllerTest do
       |> post(v2_trip_trip_path(conn, :leg), %{trip: trip})
 
     assert html_response(conn, 200) =~ "Where do you get on the Green Line?"
-    assert html_response(conn, 200) =~ "Do you make a connection to another route or line?"
+    assert html_response(conn, 200) =~ "Do you connect to another route, line, or branch?"
   end
 
   test "leg/3 with same origin and destination", %{conn: conn, user: user} do
@@ -381,7 +401,7 @@ defmodule ConciergeSite.V2.TripControllerTest do
       |> post(v2_trip_trip_path(conn, :leg), %{trip: trip})
 
     assert html_response(conn, 200) =~ "Where do you get on the Green Line?"
-    assert html_response(conn, 200) =~ "Do you make a connection to another route or line?"
+    assert html_response(conn, 200) =~ "Do you connect to another route, line, or branch?"
   end
 
   test "POST /trip/leg to finish trip", %{conn: conn, user: user} do
@@ -418,7 +438,7 @@ defmodule ConciergeSite.V2.TripControllerTest do
       |> post(v2_trip_trip_path(conn, :leg), %{trip: trip})
 
     assert html_response(conn, 200) =~ "Where do you get on the Red Line?"
-    assert html_response(conn, 200) =~ "Do you make a connection to another route or line?"
+    assert html_response(conn, 200) =~ "Do you connect to another route, line, or branch?"
   end
 
   test "POST /trip/leg with errors", %{conn: conn, user: user} do
