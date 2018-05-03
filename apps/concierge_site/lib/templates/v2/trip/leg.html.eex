@@ -5,6 +5,8 @@ new_leg_label = if @route_name == "Green Line" || @route_name == "Red Line" do
 else
   "Do you make a connection to another route or line?"
 end
+
+
 %>
 
 <div class="container container__inner">
@@ -20,6 +22,9 @@ end
           <div class="form-group form__section">
             <%= label form, :destination, "Where do you exit?", class: "form__label" %>
             <%= ConciergeSite.StopSelectHelper.render(@saved_leg, :trip, :destination) %>
+            <%= if @route_name == "Green Line" || @route_name == "Red Line" do %>
+              <div class="my-1 font-italic">Only stops on the same branch can be selected</div>
+            <% end %>
           </div>
         <% else %>
           <%= hidden_input form, :origin, value: "" %>

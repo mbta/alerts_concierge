@@ -337,6 +337,7 @@ defmodule ConciergeSite.V2.TripControllerTest do
 
     assert html_response(conn, 200) =~ "Where do you get on the Orange Line?"
     assert html_response(conn, 200) =~ "Do you make a connection to another route or line?"
+    refute html_response(conn, 200) =~ "Only stops on the same branch can be selected"
   end
 
   test "POST /trip/leg to create new trip leg (Green)", %{conn: conn, user: user} do
@@ -357,6 +358,7 @@ defmodule ConciergeSite.V2.TripControllerTest do
 
     assert html_response(conn, 200) =~ "Where do you get on the Green Line?"
     assert html_response(conn, 200) =~ "Do you connect to another route, line, or branch?"
+    assert html_response(conn, 200) =~ "Only stops on the same branch can be selected"
   end
 
   test "leg/3 with same origin and destination", %{conn: conn, user: user} do
