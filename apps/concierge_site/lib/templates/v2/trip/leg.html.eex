@@ -1,4 +1,11 @@
 <h1 class="heading__title">Personalize my subscription</h1>
+<%
+new_leg_label = if @route_name == "Green Line" || @route_name == "Red Line" do
+  "Do you connect to another route, line, or branch?"
+else
+  "Do you make a connection to another route or line?"
+end
+%>
 
 <div class="container container__inner">
   <div class="row justify-content-md-center">
@@ -20,7 +27,7 @@
         <% end %>
 
         <div class="form-group form__section">
-          <%= label form, :new_leg, "Do you make a connection to another route or line?", class: "form__label" %>
+          <%= label form, :new_leg, new_leg_label, class: "form__label" %>
           <div class="form-check">
             <label class="form-check-label">
               <%= radio_button form, :new_leg, true, required: true, data: [toggle: "controller"], class: "form-check-input" %>
