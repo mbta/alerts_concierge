@@ -11,6 +11,7 @@ defmodule ConciergeSite.StopSelectHelperTest do
     assert html =~ "<option data-bus=\"true\" data-mattapan=\"true\" data-red=\"true\" value=\"place-asmnl\">Ashmont</option>"
     assert html =~ "<option data-green-b=\"true\" data-green-c=\"true\" data-green-d=\"true\" data-green-e=\"true\" data-red=\"true\" value=\"place-pktrm\">Park Street</option>"
     assert html =~ "<option data-orange=\"true\" data-red=\"true\" value=\"place-dwnxg\">Downtown Crossing</option>"
+    assert html =~ "<option data-bus=\"true\" data-cr=\"true\" data-red=\"true\" value=\"place-brntn\">Braintree</option>"
   end
 
   test "render/3 Commuter Rail" do
