@@ -67,6 +67,15 @@ defmodule ConciergeSite.StopSelectHelper do
       Enum.uniq_by(b_stops ++ c_stops ++ d_stops ++ e_stops, & &1)
     end
   end
+  defp get_stop_list("Red") do
+    with {:ok, subway_lines} = ServiceInfoCache.get_subway_info do
+      subway_lines
+      |> Enum.flat_map(fn(%{stop_list: stops, route_id: route_id}) -> 
+        if route_id == "Red", do: stops, else: []
+      end)
+      |> Enum.uniq_by(& &1)
+    end
+  end
   defp get_stop_list(route_id), do: with {:ok, %{stop_list: stops}} = ServiceInfoCache.get_route(route_id), do: stops
 
   @spec attributes(atom, atom, String.t, keyword) :: keyword(String.t)
