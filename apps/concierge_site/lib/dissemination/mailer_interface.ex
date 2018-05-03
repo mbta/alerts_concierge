@@ -25,4 +25,8 @@ defmodule ConciergeSite.Dissemination.MailerInterface do
     Logger.info(fn -> "Notification Email result: #{inspect(response)}, alert_id: #{notification.alert_id}, user_id: #{notification.user.id}," end)
     {:reply, response, nil}
   end
+
+  def handle_info(_msg, state) do
+    {:noreply, state}
+  end
 end
