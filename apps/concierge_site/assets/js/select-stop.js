@@ -8,6 +8,7 @@ const select2Options = {
 };
 
 const greenLines = ["green-b", "green-c", "green-d", "green-e"];
+const redShapes = ["red-1", "red-2"];
 
 export default function($) {
   $ = $ || window.jQuery;
@@ -39,6 +40,7 @@ function addValidation(selectStopComponent) {
   if (isTripLegForm()) {
     selectStopComponent.on("select2:select", disableSubmitButtonIfSameStops);
     selectStopComponent.on("select2:select", greenEnforceSameRoute);
+    selectStopComponent.on("select2:select", redEnforceSameShape);
   }
 }
 
@@ -70,29 +72,56 @@ function greenEnforceSameRoute(select2) {
     return;
   }
   const originSelectedOption = $originSelectEl.find(":selected")[0];
-  const selectedOriginRoutes = greenLines.filter(route => (originSelectedOption.getAttribute(`data-${route}`) == "true")); 
-  [...$destinationSelectEl.children()].forEach(option => {
-    if (stopRouteMatch(selectedOriginRoutes, option)) {
-      option.removeAttribute("disabled");
+  const selectedOriginRoutes = greenLines.filter(route => (originSelectedOption.getAttribute(`data-${route}`) == "true"));
+  [...$destinationSelectEl.children()].forEach(optionEl => {
+    if (stopMatch(selectedOriginRoutes, optionEl)) {
+      optionEl.removeAttribute("disabled");
     } else {
-      option.setAttribute("disabled", "disabled");
+      optionEl.setAttribute("disabled", "disabled");
     }
   });
 
-  // always clear the destination because it may have an incompatible value
-  $destinationSelectEl.val(null).trigger('change');
-
-  // select2 needs to be re-initialized or it doesn't see the changes
-  $destinationSelectEl.select2("destroy");
-  $destinationSelectEl.select2(select2Options);
+  rebuildSelect2($destinationSelectEl);
 }
 
-const stopRouteMatch = (routes, option) => 
-  routes.reduce((accumulator, route) => (
+const rebuildSelect2 = ($select2El) => {
+  $select2El.val(null).trigger('change');
+
+  $select2El.select2("destroy");
+  $select2El.select2(select2Options);
+};
+
+const stopMatch = (options, optionEl) => 
+  options.reduce((accumulator, value) => (
     accumulator == true
     ? true
-    : option.getAttribute(`data-${route}`) == "true"
+    : optionEl.getAttribute(`data-${value}`) == "true"
       ? true
       : false
   ), false);
   
+function redEnforceSameShape(select2) {
+  const $originSelectEl = $("#trip_origin");
+  const $destinationSelectEl = $("#trip_destination");
+
+  // only perform this operation when the origin changes
+  if (select2.target.getAttribute("id") != "trip_origin") {
+    return;
+  }
+
+  // only perform this operation if the line is Green
+  if ($originSelectEl.attr("data-route") != "Red") {
+    return;
+  }
+  const originSelectedOption = $originSelectEl.find(":selected")[0];
+  const selectedOriginShapes = redShapes.filter(shape => (originSelectedOption.getAttribute(`data-${shape}`) == "true"));
+  [...$destinationSelectEl.children()].forEach(optionEl => {
+    if (stopMatch(selectedOriginShapes, optionEl)) {
+      optionEl.removeAttribute("disabled");
+    } else {
+      optionEl.setAttribute("disabled", "disabled");
+    }
+  });
+
+  rebuildSelect2($destinationSelectEl);
+}
