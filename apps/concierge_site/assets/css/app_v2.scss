@@ -1,4 +1,4 @@
-@import "v2/variables.scss";
+@import "v2/variables";
 @import "lato";
 @import "bootstrap";
 @import "font-awesome";
@@ -12,6 +12,7 @@
 @import "v2/help_text";
 @import "v2/day_selector";
 @import "v2/schedule";
+@import "vendor/flatpickr/light";
 
 body {
   -moz-osx-font-smoothing: grayscale;

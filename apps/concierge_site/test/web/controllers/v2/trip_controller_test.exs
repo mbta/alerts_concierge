@@ -81,10 +81,10 @@ defmodule ConciergeSite.V2.TripControllerTest do
       params = [
         trip: %{
           relevant_days: [:tuesday, :thursday],
-          start_time: "13:30",
-          end_time: "14:00",
-          return_start_time: "15:30",
-          return_end_time: "16:00",
+          start_time: "1:30 PM",
+          end_time: "2:00 PM",
+          return_start_time: "3:30 PM",
+          return_end_time: "4:00 PM",
           alert_time_difference_in_minutes: 30
         }
       ]
@@ -106,10 +106,10 @@ defmodule ConciergeSite.V2.TripControllerTest do
       params = [
         trip: %{
           relevant_days: [:tuesday, :thursday],
-          start_time: "13:30:00",
-          end_time: "14:00:00",
-          return_start_time: "15:30:00",
-          return_end_time: "16:00:00",
+          start_time: "1:30 PM",
+          end_time: "2:00 PM",
+          return_start_time: "3:30 PM",
+          return_end_time: "4:00 PM",
           alert_time_difference_in_minutes: 30
         }
       ]
@@ -190,16 +190,16 @@ defmodule ConciergeSite.V2.TripControllerTest do
         relevant_days: ["monday", "tuesday", "wednesday", "thursday", "friday"],
         destinations: ["place-pktrm"],
         elevator: "true",
-        end_time: "09:00",
+        end_time: "9:00 AM",
         escalator: "false",
         legs: ["Red"],
         modes: ["subway"],
         origins: ["place-alfcl"],
         parking_area: "true",
-        return_end_time: "18:00",
-        return_start_time: "17:00",
+        return_end_time: "6:00 PM",
+        return_start_time: "5:00 PM",
         round_trip: "true",
-        start_time: "08:00"
+        start_time: "8:00 AM"
       }
 
       conn =
@@ -225,16 +225,16 @@ defmodule ConciergeSite.V2.TripControllerTest do
         relevant_days: ["monday", "tuesday", "wednesday", "thursday", "friday"],
         destinations: ["place-gover"],
         elevator: "true",
-        end_time: "09:00",
+        end_time: "9:00 AM",
         escalator: "false",
         legs: ["Green"],
         modes: ["subway"],
         origins: ["place-boyls"],
         parking_area: "true",
-        return_end_time: "18:00",
-        return_start_time: "17:00",
+        return_end_time: "6:00 PM",
+        return_start_time: "5:00 PM",
         round_trip: "true",
-        start_time: "08:00"
+        start_time: "8:00 AM"
       }
 
       conn =
@@ -260,16 +260,16 @@ defmodule ConciergeSite.V2.TripControllerTest do
         relevant_days: ["monday", "tuesday", "wednesday", "thursday", "friday"],
         destinations: ["place-north"],
         elevator: "true",
-        end_time: "09:00",
+        end_time: "9:00 AM",
         escalator: "false",
         legs: ["Green"],
         modes: ["subway"],
         origins: ["place-lech"],
         parking_area: "true",
-        return_end_time: "18:00",
-        return_start_time: "17:00",
+        return_end_time: "6:00 PM",
+        return_start_time: "5:00 PM",
         round_trip: "true",
-        start_time: "08:00"
+        start_time: "8:00 AM"
       }
 
       conn =
@@ -293,16 +293,16 @@ defmodule ConciergeSite.V2.TripControllerTest do
         relevant_days: ["monday", "tuesday", "wednesday", "thursday", "friday"],
         destinations: [""],
         elevator: "false",
-        end_time: "09:00",
+        end_time: "9:00 AM",
         escalator: "false",
         legs: ["741 - 1"],
         modes: ["bus"],
         origins: [""],
         parking: "false",
-        return_end_time: "18:00",
-        return_start_time: "17:00",
+        return_end_time: "6:00 PM",
+        return_start_time: "5:00 PM",
         round_trip: "true",
-        start_time: "08:00"
+        start_time: "8:00 AM"
       }
 
       conn =

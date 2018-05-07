@@ -252,10 +252,17 @@ defmodule ConciergeSite.V2.TripController do
   defp to_time(nil), do: nil
 
   defp to_time(form_time) do
-    [hour, minute] = Enum.map(String.split(form_time, ":"), &String.to_integer/1)
-    {:ok, time} = Time.new(hour, minute, 0)
+    {time_input, add_hours} = time_meridian(form_time)
+    [hour, minute] = Enum.map(String.split(time_input, ":"), &String.to_integer/1)
+    {:ok, time} = Time.new(hour + add_hours, minute, 0)
 
     time
+  end
+
+  defp time_meridian(form_time) do
+    [time, meridian] = String.split(form_time, " ")
+    add_hours = if meridian == "PM", do: 12, else: 0
+    {time, add_hours}
   end
 
   defp build_trip_transaction(trip, subscriptions, user, originator) do
@@ -459,13 +466,7 @@ defmodule ConciergeSite.V2.TripController do
   @valid_time_keys ~w(start_time end_time return_start_time return_end_time alert_time)
 
   defp sanitize_trip_param({time_key, time_value}) when time_key in @valid_time_keys do
-    time =
-      case String.split(time_value, ":") do
-        [hours, minutes] -> "#{hours}:#{minutes}:00"
-        [_hours, _minutes, _seconds] -> time_value
-      end
-
-    {time_key, Time.from_iso8601!(time)}
+    {time_key, to_time(time_value)}
   end
 
   defp get_schedules_for_input(legs, origins, destinations, modes) do
