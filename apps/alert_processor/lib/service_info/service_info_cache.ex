@@ -74,8 +74,31 @@ defmodule AlertProcessor.ServiceInfoCache do
     GenServer.call(name, {:get_headsign, origin, destination, direction_id}, @timeout)
   end
 
-  def get_route(name \\ __MODULE__, route) do
+  def get_route(name \\ __MODULE__, route)
+
+  def get_route(_name, nil), do: {:ok, nil}
+
+  def get_route(name, route) when is_binary(route) do
     GenServer.call(name, {:get_route, route}, @timeout)
+  end
+
+  def get_route(name, %{route_id: "Red", stop_ids: stop_ids}) do
+    {:ok, routes} = GenServer.call(name, :get_routes, @timeout)
+    route =
+      Enum.find(routes, fn route ->
+        route.route_id == "Red"
+        && Enum.all?(stop_ids, fn stop_id ->
+          route_stop_ids = Enum.map(route.stop_list, & elem(&1, 1))
+          stop_id in route_stop_ids
+        end)
+      end)
+    {:ok, route}
+  end
+
+  def get_route(name, %{route_id: route}), do: get_route(name, route)
+
+  def get_routes(name \\ __MODULE__) do
+    GenServer.call(name, :get_routes, @timeout)
   end
 
   def get_parent_stop_id(name \\ __MODULE__, stop_id) do
@@ -201,6 +224,10 @@ defmodule AlertProcessor.ServiceInfoCache do
   def handle_call({:get_route, route}, _from, %{routes: route_state} = state) do
     route = Enum.find(route_state, fn %{route_id: route_id} -> route_id == route end)
     {:reply, {:ok, route}, state}
+  end
+
+  def handle_call(:get_routes, _from, %{routes: routes} = state) do
+    {:reply, {:ok, routes}, state}
   end
 
   def handle_call(
