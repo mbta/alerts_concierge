@@ -318,7 +318,8 @@ defmodule ConciergeSite.V2.TripController do
     ])
     |> Enum.flat_map(fn {type, route_in, origin, destination, rank} ->
       {route_id, direction} = determine_route(route_in)
-      {:ok, route} = ServiceInfoCache.get_route(route_id)
+      route_filter = %{route_id: route_id, stop_ids: [origin, destination]}
+      {:ok, route} = ServiceInfoCache.get_route(route_filter)
 
       %Subscription{
         alert_priority_type: "low",

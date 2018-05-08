@@ -112,6 +112,29 @@ defmodule AlertProcessor.ServiceInfoCacheTest do
     assert {:ok, %Route{route_id: "Green"}} = ServiceInfoCache.get_route(pid, "Green")
   end
 
+  test "get_route/2 finds correct red line shape for given stops", %{pid: pid} do
+    # Refer to
+    # https://cdn.mbta.com/sites/default/files/maps/2018-04-map-rapid-transit-key-bus-v31a.pdf
+    # for details about the Red line's shapes/branches.
+    filter1 = %{route_id: "Red", stop_ids: ["place-alfcl", "place-qamnl"]}
+    {:ok, %Route{stop_list: stop_list1}} = ServiceInfoCache.get_route(pid, filter1)
+    assert {"Braintree", _, _, _} = List.first(stop_list1)
+
+    filter2 = %{route_id: "Red", stop_ids: ["place-alfcl", "place-smmnl"]}
+    {:ok, %Route{stop_list: stop_list2}} = ServiceInfoCache.get_route(pid, filter2)
+    assert {"Ashmont", _, _, _} = List.first(stop_list2)
+  end
+
+  test "get_route/2 ignores stops with non-Red route_id", %{pid: pid} do
+    filter = %{route_id: "Orange", stop_ids: ["non-existent-stop-id"]}
+    assert {:ok, %Route{long_name: "Orange Line", short_name: ""}} = ServiceInfoCache.get_route(pid, filter)
+  end
+
+  test "get_routes/1 returns all the routes", %{pid: pid} do
+    {:ok, routes} = ServiceInfoCache.get_routes(pid)
+    assert Enum.all?(routes, fn route -> route.__struct__ == Route end)
+  end
+
   test "get_parent_stop_id returns the correct parent stop id", %{pid: pid} do
     assert {:ok, "place-gover"} = ServiceInfoCache.get_parent_stop_id(pid, "70039")
     assert {:ok, "place-fenwy"} = ServiceInfoCache.get_parent_stop_id(pid, "70186")
