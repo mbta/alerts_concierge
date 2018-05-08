@@ -9,6 +9,7 @@
   "dependencies": {
     "babel-polyfill": "^6.26.0",
     "bootstrap": "^4.1.0",
+    "flatpickr": "^4.4.6",
     "font-awesome": "^4.7.0",
     "jquery": "^3.2.1",
     "maskerjs": "^1.8.3",

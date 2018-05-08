@@ -29,6 +29,7 @@ import daySelector from "./day-selector";
 import schedule from "./schedule";
 import toggleTripType from "./toggle-trip-type";
 import phoneMask from "./phone-mask";
+import customTimeSelect from "./custom-time-select";
 
 const path = window.location.pathname;
 
@@ -40,6 +41,7 @@ helpText();
 daySelector();
 schedule();
 phoneMask();
+customTimeSelect();
 if (path.match(/\/trip_type$/)) {
   toggleTripType();
 }
