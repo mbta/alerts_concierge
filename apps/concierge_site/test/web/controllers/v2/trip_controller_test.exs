@@ -215,7 +215,7 @@ defmodule ConciergeSite.V2.TripControllerTest do
       assert html_response(conn, 200) =~ "Success! Your subscription has been created."
 
       assert html_response(conn, 200) =~
-               "<span class=\"trip__card--route\">Red Line</span>" <>
+               "<span class=\"trip__card--route\">Red Line</span></div>" <>
                  "<div class=\"trip__card--type\">Round-trip, Weekdays</div>" <>
                  "<div class=\"trip__card--times\"> 8:00am -  9:00am /  5:00pm -  6:00pm</div>"
     end
