@@ -1,4 +1,4 @@
-<h1 class="heading__title">Welcome to T-alerts</h1>
+<h1 class="heading__title">Welcome to T-Alerts</h1>
 <%= flash_error(@conn) %>
 <%= flash_info(@conn) %>
 
