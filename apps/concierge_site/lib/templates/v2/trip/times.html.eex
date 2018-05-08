@@ -1,5 +1,12 @@
 <h1 class="heading__title">Personalize my subscription</h1>
 <%= flash_error(@conn) %>
+<%
+first_trip_label = if @round_trip == "true" do
+  "What time do you usually take your first trip?"
+else
+  "What time do you usually take this trip?"
+end
+%>
 
 <div class="container container__inner">
   <div class="row justify-content-md-center">
@@ -11,7 +18,7 @@
         </div>
 
         <div class="form-group form__section">
-          <span class="form__label">What time do you usually take your first trip?</span>
+          <span class="form__label"><%= first_trip_label %></span>
           <div class="form-group form-inline form__group--inline">
             <%= label form, :start_time, "Departing around", class: "form__label--inline" %>
             <%= text_input form, :start_time, type: "text", class: "form-control form__time--inline", required: true, value: "08:00", data: [type: "time"]  %>

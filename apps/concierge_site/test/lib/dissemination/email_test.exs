@@ -20,7 +20,7 @@ defmodule ConciergeSite.Dissemination.EmailTest do
     email = Email.confirmation_email(user)
 
     assert email.to == user.email
-    assert email.subject == "MBTA Alerts Account Confirmation"
+    assert email.subject == "T-Alerts Account Confirmation"
     assert email.html_body =~ "Thanks for signing up for T-Alerts Beta!"
     assert email.html_body =~ "mbtafeedback.com"
   end
