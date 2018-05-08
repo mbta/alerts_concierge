@@ -4,11 +4,7 @@
 <div class="container container__inner">
   <div class="row justify-content-md-center">
     <div class="col-md-10 col-sm-12">
-      <div class="form__intro">Once we get to know more about your commute, we can customize alerts just for you.
-      
-      <br /><br />
-
-      Tell us about your first trip of the day.</div>
+      <div class="form__intro">Once we get to know more about your commute, we can customize alerts just for you.</div>
 
       <%= form_for @conn, v2_trip_trip_path(@conn, :leg), [as: :trip, method: :post], fn form -> %>
         <div class="form-group my-4">
