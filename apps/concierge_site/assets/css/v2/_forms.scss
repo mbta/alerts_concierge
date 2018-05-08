@@ -76,6 +76,10 @@ label.form__label--inline {
 
 .form__action-button {
   min-width: 10rem;
+
+  @include media-breakpoint-down(xs) {
+    min-width: 8rem;
+  }
 }
 
 .form__section {
