@@ -199,7 +199,8 @@ defmodule ConciergeSite.V2.TripControllerTest do
         return_end_time: "6:00 PM",
         return_start_time: "5:00 PM",
         round_trip: "true",
-        start_time: "8:00 AM"
+        start_time: "08:00 AM",
+        alert_time_difference_in_minutes: "120"
       }
 
       conn =
@@ -234,7 +235,8 @@ defmodule ConciergeSite.V2.TripControllerTest do
         return_end_time: "6:00 PM",
         return_start_time: "5:00 PM",
         round_trip: "true",
-        start_time: "8:00 AM"
+        start_time: "8:00 AM",
+        alert_time_difference_in_minutes: "120"
       }
 
       conn =
@@ -269,7 +271,8 @@ defmodule ConciergeSite.V2.TripControllerTest do
         return_end_time: "6:00 PM",
         return_start_time: "5:00 PM",
         round_trip: "true",
-        start_time: "8:00 AM"
+        start_time: "8:00 AM",
+        alert_time_difference_in_minutes: "120"
       }
 
       conn =
@@ -302,7 +305,8 @@ defmodule ConciergeSite.V2.TripControllerTest do
         return_end_time: "6:00 PM",
         return_start_time: "5:00 PM",
         round_trip: "true",
-        start_time: "8:00 AM"
+        start_time: "8:00 AM",
+        alert_time_difference_in_minutes: "120"
       }
 
       conn =

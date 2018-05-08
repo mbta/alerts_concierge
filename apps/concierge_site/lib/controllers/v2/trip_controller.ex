@@ -404,7 +404,8 @@ defmodule ConciergeSite.V2.TripController do
       return_start_time: params["return_start_time"],
       return_end_time: params["return_end_time"],
       facility_types: input_to_facility_types(params),
-      roundtrip: params["round_trip"] == "true"
+      roundtrip: params["round_trip"] == "true",
+      alert_time_difference_in_minutes: String.to_integer(params["alert_time_difference_in_minutes"])
     }
   end
 
