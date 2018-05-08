@@ -1,6 +1,6 @@
 defmodule ConciergeSite.TripCardHelper do
 
-  import Phoenix.HTML.Tag, only: [content_tag: 3]
+  import Phoenix.HTML.Tag, only: [content_tag: 3, content_tag: 2]
   import Phoenix.HTML.Link, only: [link: 2]
   import ConciergeSite.TimeHelper, only: [format_time_string: 2, time_to_string: 1]
   alias AlertProcessor.ServiceInfoCache
@@ -69,20 +69,17 @@ defmodule ConciergeSite.TripCardHelper do
     |> Enum.reject(& &1.return_trip)
     |> collapse_duplicate_green_legs()
     |> Enum.map(fn (subscription) ->
-      [
-        content_tag :span, class: "trip__card--route-icon" do
-          icon(subscription.type, subscription.route)
-        end,
-        content_tag :span, class: "trip__card--route" do
-          route_name(subscription.route)
-        end
-      ]
-    end)
-    |> Enum.intersperse(
-      content_tag :span, class: "trip__card--route-deliminator" do
-        ">"
+      content_tag :div do
+        [
+          content_tag :span, class: "trip__card--route-icon" do
+            icon(subscription.type, subscription.route)
+          end,
+          content_tag :span, class: "trip__card--route" do
+            route_name(subscription.route)
+          end
+        ]
       end
-    )
+    end)
   end
 
   @spec collapse_duplicate_green_legs([Subscription.t]) :: [Subscription.t] 
