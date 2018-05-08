@@ -7,10 +7,10 @@
         <%= link("alerts for my commute", to: v2_trip_path(@conn, :new),
                                           class: "btn btn-outline-primary btn-block",
                                           data: [type: "toggle-trip-type",
-                                                message: "These are travel delays and station alerts for any trip you take."]) %>
+                                                message: "These are alerts specific to your trips, including delays and detours, and can include elevator and escalator information."]) %>
       </div>
       <div class="my-3">
-        <%= link("alerts for station features", to: v2_accessibility_trip_path(@conn, :new),
+        <%= link("alerts for elevators & escalators", to: v2_accessibility_trip_path(@conn, :new),
                                             class: "btn btn-outline-primary btn-block",
                                             data: [type: "toggle-trip-type",
                                                     message: "These are alerts specific to stations, including elevator and escalator outages."]) %>
