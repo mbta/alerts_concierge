@@ -509,7 +509,7 @@ defmodule AlertProcessor.ServiceInfoCache do
   defp parse_time_of_week(_), do: "weekday"
 
   defp do_fetch_service_info(route_types) do
-    {:ok, routes} = ApiClient.routes(route_types)
+    {:ok, routes} = get_routes_from_api(route_types)
 
     routes
     |> Enum.map(fn %{
@@ -525,6 +525,18 @@ defmodule AlertProcessor.ServiceInfoCache do
     end)
     |> Enum.with_index()
     |> Enum.map(&map_route_struct/1)
+  end
+
+  defp get_routes_from_api(route_types, retry_count \\ 3) do
+    case ApiClient.routes(route_types) do
+      {:ok, _routes} = response ->
+        response
+      {:error, _} when retry_count > 1 ->
+        new_retry_count = retry_count - 1
+        get_routes_from_api(route_types, new_retry_count)
+      final_response ->
+        final_response
+    end
   end
 
   defp map_route_struct({{route_id, route_type, long_name, short_name, direction_names}, index}) do
