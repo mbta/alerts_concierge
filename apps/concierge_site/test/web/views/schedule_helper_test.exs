@@ -21,7 +21,7 @@ defmodule ConciergeSite.ScheduleHelperTest do
       ]
     }
 
-    html = Phoenix.HTML.safe_to_string(ScheduleHelper.render(schedules, "start_input", "end_input"))
+    html = Phoenix.HTML.safe_to_string(ScheduleHelper.render(schedules, "trip_start_time", "trip_return_start_time"))
 
     assert html =~ "Commuter Rail trains scheduled at this time for CR-Worcester"
     assert html =~ "Ferry boats scheduled at this time for Boat-F4"
