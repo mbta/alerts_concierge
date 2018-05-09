@@ -8,8 +8,8 @@ use Mix.Config
 # General application configuration
 config :alert_processor,
   ecto_repos: [AlertProcessor.Repo],
-  notification_window_filter: AlertProcessor.NotificationWindowFilter
-
+  notification_window_filter: AlertProcessor.NotificationWindowFilter,
+  env: Mix.env
 
 config :paper_trail, repo: AlertProcessor.Repo, item_type: Ecto.UUID, originator_type: Ecto.UUID
 

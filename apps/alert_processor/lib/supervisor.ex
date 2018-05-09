@@ -11,7 +11,8 @@ defmodule AlertProcessor.Supervisor do
     SendingQueue,
     NotificationWorker,
     ServiceInfoCache,
-    SmsOptOutWorker
+    SmsOptOutWorker,
+    Metrics
   }
 
   @worker_pool_size Application.get_env(:alert_processor, :pool_size)
@@ -35,6 +36,7 @@ defmodule AlertProcessor.Supervisor do
       supervisor(Registry, [:unique, :mailer_process_registry]),
       supervisor(AlertProcessor.Repo, []),
       worker(ServiceInfoCache, []),
+      worker(Metrics, []),
       worker(AlertWorker, []),
       worker(AlertCache, []),
       worker(SendingQueue, []),
