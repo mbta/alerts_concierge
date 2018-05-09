@@ -18,14 +18,14 @@ defmodule ConciergeSite.DaySelectHelperTest do
     test "with monday as string" do
       html = Phoenix.HTML.safe_to_string(DaySelectHelper.render(:foo, ["monday"]))
 
-      assert html =~ "<input autocomplete=\"off\" checked=\"checked\" name=\"foo[relevant_days][]\" type=\"checkbox\" value=\"monday\">"
+      assert html =~ "<input autocomplete=\"off\" name=\"foo[relevant_days][]\" type=\"checkbox\" value=\"monday\" checked>"
       assert html =~ "<input autocomplete=\"off\" name=\"foo[relevant_days][]\" type=\"checkbox\" value=\"tuesday\">"
     end
 
     test "with monday as atom" do
       html = Phoenix.HTML.safe_to_string(DaySelectHelper.render(:foo, [:monday]))
 
-      assert html =~ "<input autocomplete=\"off\" checked=\"checked\" name=\"foo[relevant_days][]\" type=\"checkbox\" value=\"monday\">"
+      assert html =~ "<input autocomplete=\"off\" name=\"foo[relevant_days][]\" type=\"checkbox\" value=\"monday\" checked>"
       assert html =~ "<input autocomplete=\"off\" name=\"foo[relevant_days][]\" type=\"checkbox\" value=\"tuesday\">"
     end
 
@@ -33,34 +33,34 @@ defmodule ConciergeSite.DaySelectHelperTest do
       weekdays = ~w(monday tuesday wednesday thursday friday)a
       html = Phoenix.HTML.safe_to_string(DaySelectHelper.render(:foo, weekdays))
 
-      assert html =~ "<input autocomplete=\"off\" checked=\"checked\" name=\"foo[relevant_days][]\" type=\"checkbox\" value=\"monday\">"
-      assert html =~ "<input autocomplete=\"off\" checked=\"checked\" name=\"foo[relevant_days][]\" type=\"checkbox\" value=\"tuesday\">"
-      assert html =~ "<input autocomplete=\"off\" checked=\"checked\" name=\"foo[relevant_days][]\" type=\"checkbox\" value=\"thursday\">"
-      assert html =~ "<input autocomplete=\"off\" checked=\"checked\" name=\"foo[relevant_days][]\" type=\"checkbox\" value=\"friday\">"
-      assert html =~ "<input autocomplete=\"off\" checked=\"checked\" type=\"checkbox\" value=\"weekdays\">"
+      assert html =~ "<input autocomplete=\"off\" name=\"foo[relevant_days][]\" type=\"checkbox\" value=\"monday\" checked>"
+      assert html =~ "<input autocomplete=\"off\" name=\"foo[relevant_days][]\" type=\"checkbox\" value=\"tuesday\" checked>"
+      assert html =~ "<input autocomplete=\"off\" name=\"foo[relevant_days][]\" type=\"checkbox\" value=\"thursday\" checked>"
+      assert html =~ "<input autocomplete=\"off\" name=\"foo[relevant_days][]\" type=\"checkbox\" value=\"friday\" checked>"
+      assert html =~ "<input autocomplete=\"off\" type=\"checkbox\" value=\"weekdays\" checked>"
     end
 
     test "weekend" do
       weekdays = ~w(saturday sunday)a
       html = Phoenix.HTML.safe_to_string(DaySelectHelper.render(:foo, weekdays))
 
-      assert html =~ "<input autocomplete=\"off\" checked=\"checked\" name=\"foo[relevant_days][]\" type=\"checkbox\" value=\"saturday\">"
-      assert html =~ "<input autocomplete=\"off\" checked=\"checked\" name=\"foo[relevant_days][]\" type=\"checkbox\" value=\"sunday\">"
-      assert html =~ "<input autocomplete=\"off\" checked=\"checked\" type=\"checkbox\" value=\"weekend\">"
+      assert html =~ "<input autocomplete=\"off\" name=\"foo[relevant_days][]\" type=\"checkbox\" value=\"saturday\" checked>"
+      assert html =~ "<input autocomplete=\"off\" name=\"foo[relevant_days][]\" type=\"checkbox\" value=\"sunday\" checked>"
+      assert html =~ "<input autocomplete=\"off\" type=\"checkbox\" value=\"weekend\" checked>"
     end
 
     test "weekdays and weekend" do
       weekdays = ~w(monday tuesday wednesday thursday friday saturday sunday)a
       html = Phoenix.HTML.safe_to_string(DaySelectHelper.render(:foo, weekdays))
 
-      assert html =~ "<input autocomplete=\"off\" checked=\"checked\" name=\"foo[relevant_days][]\" type=\"checkbox\" value=\"monday\">"
-      assert html =~ "<input autocomplete=\"off\" checked=\"checked\" name=\"foo[relevant_days][]\" type=\"checkbox\" value=\"tuesday\">"
-      assert html =~ "<input autocomplete=\"off\" checked=\"checked\" name=\"foo[relevant_days][]\" type=\"checkbox\" value=\"thursday\">"
-      assert html =~ "<input autocomplete=\"off\" checked=\"checked\" name=\"foo[relevant_days][]\" type=\"checkbox\" value=\"friday\">"
-      assert html =~ "<input autocomplete=\"off\" checked=\"checked\" name=\"foo[relevant_days][]\" type=\"checkbox\" value=\"saturday\">"
-      assert html =~ "<input autocomplete=\"off\" checked=\"checked\" name=\"foo[relevant_days][]\" type=\"checkbox\" value=\"sunday\">"
-      assert html =~ "<input autocomplete=\"off\" checked=\"checked\" type=\"checkbox\" value=\"weekdays\">"
-      assert html =~ "<input autocomplete=\"off\" checked=\"checked\" type=\"checkbox\" value=\"weekend\">"
+      assert html =~ "<input autocomplete=\"off\" name=\"foo[relevant_days][]\" type=\"checkbox\" value=\"monday\" checked>"
+      assert html =~ "<input autocomplete=\"off\" name=\"foo[relevant_days][]\" type=\"checkbox\" value=\"tuesday\" checked>"
+      assert html =~ "<input autocomplete=\"off\" name=\"foo[relevant_days][]\" type=\"checkbox\" value=\"thursday\" checked>"
+      assert html =~ "<input autocomplete=\"off\" name=\"foo[relevant_days][]\" type=\"checkbox\" value=\"friday\" checked>"
+      assert html =~ "<input autocomplete=\"off\" name=\"foo[relevant_days][]\" type=\"checkbox\" value=\"saturday\" checked>"
+      assert html =~ "<input autocomplete=\"off\" name=\"foo[relevant_days][]\" type=\"checkbox\" value=\"sunday\" checked>"
+      assert html =~ "<input autocomplete=\"off\" type=\"checkbox\" value=\"weekdays\" checked>"
+      assert html =~ "<input autocomplete=\"off\" type=\"checkbox\" value=\"weekend\" checked>"
     end
   end
 end
