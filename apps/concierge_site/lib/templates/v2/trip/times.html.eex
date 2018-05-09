@@ -32,11 +32,11 @@ end
           <span class="form__label"><%= first_trip_label %></span>
           <div class="form-group form-inline form__group--inline">
             <%= label form, :start_time, "Departing around", class: "form__label--inline" %>
-            <%= text_input form, :start_time, type: "text", class: "form-control form__time--inline", required: true, value: "8:00 AM", data: [type: "time"]  %>
+            <%= text_input form, :start_time, type: "text", class: "form-control form__time--inline", step: "60", required: true, value: "8:00 AM", data: [type: "time"]  %>
           </div>
           <div class="form-group form-inline form__group--inline">
             <%= label form, :end_time, "Arriving around", class: "form__label--inline" %>
-            <%= text_input form, :end_time, type: "text", class: "form-control form__time--inline", required: true, value: "9:00 AM", data: [type: "time"] %>
+            <%= text_input form, :end_time, type: "text", class: "form-control form__time--inline", step: "60", required: true, value: "9:00 AM", data: [type: "time"] %>
           </div>
           <%= ConciergeSite.ScheduleHelper.render(@schedules, "trip_start_time", "trip_end_time") %>
         </div>
@@ -46,11 +46,11 @@ end
             <span class="form__label">What time do you usually take your return trip?</span>
             <div class="form-group form-inline form__group--inline">
               <%= label form, :return_start_time, "Departing around", class: "form__label--inline" %>
-              <%= text_input form, :return_start_time, type: "text", class: "form-control form__time--inline", required: true, value: "5:00 PM", data: [type: "time"] %>
+              <%= text_input form, :return_start_time, type: "text", class: "form-control form__time--inline", step: "60", required: true, value: "5:00 PM", data: [type: "time"] %>
             </div>
             <div class="form-group form-inline form__group--inline">
               <%= label form, :return_end_time, "Arriving around", class: "form__label--inline" %>
-              <%= text_input form, :return_end_time, type: "text", class: "form-control form__time--inline", required: true, value: "6:00 PM", data: [type: "time"] %>
+              <%= text_input form, :return_end_time, type: "text", class: "form-control form__time--inline", step: "60", required: true, value: "6:00 PM", data: [type: "time"] %>
             </div>
             <%= ConciergeSite.ScheduleHelper.render(@return_schedules, "trip_return_start_time", "trip_return_end_time") %>
           </div>
