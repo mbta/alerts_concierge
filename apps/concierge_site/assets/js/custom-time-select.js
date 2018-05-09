@@ -7,7 +7,6 @@ export default pubsub => {
     dateFormat: "h:i K",
     time_24hr: false,
     minuteIncrement: 15,
-    disableMobile: true,
     onChange: (selectedDates, dateStr, instance) => {
       const mode =
         instance.element.id == "trip_return_start_time" ||
