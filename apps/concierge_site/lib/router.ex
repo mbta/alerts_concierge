@@ -50,6 +50,8 @@ defmodule ConciergeSite.Router do
   scope "/", ConciergeSite do
     # no pipe
     get "/_health", HealthController, :index
+    get "/_five_hundred", ErrorController, :five_hundred
+    get "/_raise", ErrorController, :raise
   end
 
   scope "/", ConciergeSite do
