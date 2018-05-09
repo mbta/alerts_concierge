@@ -7,6 +7,7 @@
     "test": "mocha --require ./test/testHelper.js"
   },
   "dependencies": {
+    "PubSub": "^3.4.0",
     "babel-polyfill": "^6.26.0",
     "bootstrap": "^4.1.0",
     "flatpickr": "^4.4.6",

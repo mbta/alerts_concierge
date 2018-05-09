@@ -30,6 +30,8 @@ import schedule from "./schedule";
 import toggleTripType from "./toggle-trip-type";
 import phoneMask from "./phone-mask";
 import customTimeSelect from "./custom-time-select";
+import pubsubFactory from "PubSub";
+const pubsub = new pubsubFactory();
 
 const path = window.location.pathname;
 
@@ -39,9 +41,9 @@ selectStop();
 toggleInput();
 helpText();
 daySelector();
-schedule();
+schedule(pubsub);
 phoneMask();
-customTimeSelect();
+customTimeSelect(pubsub);
 if (path.match(/\/trip_type$/)) {
   toggleTripType();
 }

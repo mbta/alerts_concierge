@@ -25,15 +25,6 @@ function processSchedule(scheduleEl) {
   trips.forEach(tripEl => processTrip(tripEl, startTime, endTime));
 }
 
-function handleTimeChange(scheduleEl) {
-  const startInputEl = document.getElementById(scheduleEl.dataset.start);
-  const endInputEl = document.getElementById(scheduleEl.dataset.end);
-  ['keyup', 'click'].forEach((eventType) => {
-    startInputEl.addEventListener(eventType, () => expandAndProcessSchedule(scheduleEl));
-    endInputEl.addEventListener(eventType, () => expandAndProcessSchedule(scheduleEl));
-  });
-};
-
 function expandAndProcessSchedule(scheduleEl) {
   const legs = [... scheduleEl.querySelectorAll(".schedules__trips--leg")];
   legs.forEach((legEl) => {
@@ -71,12 +62,16 @@ function enableToggle(scheduleEl) {
   });
 }
 
-export default () => {
+export default (pubSub) => {
+  pubSub.subscribe("time-change", e => {
+    const scheduleEl = document.getElementById(`schedule_${e.mode}`);
+    expandAndProcessSchedule(scheduleEl);
+  });
+
   const scheduleWidgets = [... document.querySelectorAll("div[data-type='schedule-viewer']")];
   scheduleWidgets.forEach((scheduleEl) => {
     scheduleEl.style.display = "block";
     processSchedule(scheduleEl);
     enableToggle(scheduleEl);
-    handleTimeChange(scheduleEl);
   });
 };

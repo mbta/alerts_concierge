@@ -4,12 +4,15 @@ defmodule ConciergeSite.ScheduleHelper do
 
   @spec render(map, String.t, String.t) :: Phoenix.HTML.safe
   def render(schedules, start_field_id, end_field_id) do
-    content_tag :div, class: "schedules__container", data: [type: "schedule-viewer", start: start_field_id, end: end_field_id] do
+    content_tag :div, id: id(start_field_id), class: "schedules__container", data: [type: "schedule-viewer", start: start_field_id, end: end_field_id] do
       for {{mode, route}, schedule} <- schedules do
         do_route_schedule(mode, route, schedule)
       end
     end
   end
+
+  defp id("trip_start_time"), do: "schedule_start"
+  defp id("trip_return_start_time"), do: "schedule_return"
 
   defp do_route_schedule(mode, route, schedule) do
     [
