@@ -16,12 +16,12 @@ end
         <%= if @saved_mode != "bus" do %>
           <div class="form-group form__section--top">
             <%= label form, :origin, "Where do you get on the #{@route_name}?", class: "form__label" %>
-            <%= ConciergeSite.StopSelectHelper.render(@saved_leg, :trip, :origin) %>
+            <%= ConciergeSite.StopSelectHelper.render(@saved_leg, :trip, :origin, [], [required: true]) %>
           </div>
 
           <div class="form-group form__section">
             <%= label form, :destination, "Where do you exit?", class: "form__label" %>
-            <%= ConciergeSite.StopSelectHelper.render(@saved_leg, :trip, :destination) %>
+            <%= ConciergeSite.StopSelectHelper.render(@saved_leg, :trip, :destination, [], [required: true]) %>
             <%= if @route_name == "Green Line" || @route_name == "Red Line" do %>
               <div class="my-1 font-italic">Only stops on the same branch can be selected</div>
             <% end %>
