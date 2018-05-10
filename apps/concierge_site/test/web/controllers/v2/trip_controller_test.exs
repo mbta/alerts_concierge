@@ -190,7 +190,7 @@ defmodule ConciergeSite.V2.TripControllerTest do
         relevant_days: ["monday", "tuesday", "wednesday", "thursday", "friday"],
         destinations: ["place-pktrm"],
         elevator: "true",
-        end_time: "9:00 AM",
+        end_time: "12:00 PM",
         escalator: "false",
         legs: ["Red"],
         modes: ["subway"],
@@ -199,7 +199,7 @@ defmodule ConciergeSite.V2.TripControllerTest do
         return_end_time: "6:00 PM",
         return_start_time: "5:00 PM",
         round_trip: "true",
-        start_time: "08:00 AM",
+        start_time: "12:00 AM",
         alert_time_difference_in_minutes: "120"
       }
 
@@ -217,7 +217,7 @@ defmodule ConciergeSite.V2.TripControllerTest do
       assert html_response(conn, 200) =~
                "<span class=\"trip__card--route\">Red Line</span></div>" <>
                  "<div class=\"trip__card--type\">Round-trip, Weekdays</div>" <>
-                 "<div class=\"trip__card--times\"> 8:00am -  9:00am /  5:00pm -  6:00pm</div>"
+                 "<div class=\"trip__card--times\">12:00am - 12:00pm /  5:00pm -  6:00pm</div>"
     end
 
     test "green line multi-route", %{conn: conn, user: user} do

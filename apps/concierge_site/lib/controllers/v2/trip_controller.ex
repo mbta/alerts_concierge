@@ -270,8 +270,10 @@ defmodule ConciergeSite.V2.TripController do
 
   defp time_meridian(form_time) do
     [time, meridian] = String.split(form_time, " ")
-    add_hours = if meridian == "PM", do: 12, else: 0
-    {time, add_hours}
+    [hour, _] = String.split(time, ":")
+    pm_add_hours = if meridian == "PM" && hour != "12", do: 12, else: 0
+    am_subtract_hours = if meridian == "AM" && hour == "12", do: 12, else: 0
+    {time, pm_add_hours - am_subtract_hours}
   end
 
   defp build_trip_transaction(trip, subscriptions, user, originator) do
