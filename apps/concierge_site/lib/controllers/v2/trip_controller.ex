@@ -25,17 +25,26 @@ defmodule ConciergeSite.V2.TripController do
     trip = input_to_trip(user, params)
     multi = build_trip_transaction(trip, subscriptions, user, Map.get(claims, "imp", user.id))
 
-    case Subscription.set_versioned_subscription(multi) do
-      :ok ->
+    with :ok <- validate_relevant_days(trip_params),
+         :ok <- Subscription.set_versioned_subscription(multi) do
+      conn
+      |> put_flash(:info, "Success! Your subscription has been created.")
+      |> redirect(to: v2_trip_path(conn, :index))
+    else
+      {:error, :relevant_days} ->
         conn
-        |> put_flash(:info, "Success! Your subscription has been created.")
-        |> redirect(to: v2_trip_path(conn, :index))
-
-      :error ->
-        conn
-        |> put_flash(:error, "There was an error creating your trip. Please try again.")
+        |> put_flash(:error, "You must select at least one day for your trip.")
         |> render("new.html")
+      _ ->
+       conn
+       |> put_flash(:error, "There was an error creating your trip. Please try again.")
+       |> render("new.html")
     end
+  end
+
+  defp validate_relevant_days(trip_params) do
+    relevant_days? = "relevant_days" in Map.keys(trip_params)
+    if relevant_days?, do: :ok, else: {:error, :relevant_days}
   end
 
   def edit(conn, %{"id" => id}, user, _claims) do

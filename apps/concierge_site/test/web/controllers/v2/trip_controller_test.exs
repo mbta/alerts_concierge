@@ -321,6 +321,34 @@ defmodule ConciergeSite.V2.TripControllerTest do
       assert html_response(conn, 200) =~
                "<span class=\"trip__card--route\">Silver Line SL1</span>"
     end
+
+    test "returns error message with no day selected", %{conn: conn, user: user} do
+      trip = %{
+        # Note that ':relevant_days' is missing. This simulates somebody not
+        # selecting a day.
+        bike_storage: "false",
+        destinations: [""],
+        elevator: "false",
+        end_time: "9:00 AM",
+        escalator: "false",
+        legs: ["741 - 1"],
+        modes: ["bus"],
+        origins: [""],
+        parking: "false",
+        return_end_time: "6:00 PM",
+        return_start_time: "5:00 PM",
+        round_trip: "true",
+        start_time: "8:00 AM",
+        alert_time_difference_in_minutes: "120"
+      }
+
+      conn =
+        user
+        |> guardian_login(conn)
+        |> post(v2_trip_path(conn, :create), %{trip: trip})
+
+      assert html_response(conn, 200) =~ "You must select at least one day for your trip."
+    end
   end
 
   test "POST /trip/leg to create new trip leg (orange)", %{conn: conn, user: user} do

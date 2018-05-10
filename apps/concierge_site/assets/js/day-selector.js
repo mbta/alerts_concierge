@@ -37,7 +37,10 @@ DaySelector.prototype.labelsFromInputs = function() {
 DaySelector.prototype.addListeners = function() {
   var that = this;
 
-  for (var day in this.labels) this.labels[day].on("click", renderFn(this, day));
+  for (var day in this.labels) {
+    this.labels[day].on("click", renderFn(this, day));
+    this.labels[day].on("click", disableSubmitButtonIfNoDaySelected(this));
+  }
 
   return this;
 };
@@ -137,6 +140,24 @@ function renderFn(that, day) {
     that.toggleState(day);
     that.htmlFromState();
   };
+}
+
+function disableSubmitButtonIfNoDaySelected(that) {
+  return function (e) {
+    e.preventDefault();
+    e.stopPropagation();
+
+    const days = Object.values(that.state);
+    if (!days.some(isTrue)) {
+      $("button[type='submit']").attr("disabled", "disabled");
+    } else {
+      $("button[type='submit']").removeAttr("disabled");
+    }
+  };
+}
+
+function isTrue(element) {
+  return element == true;
 }
 
 function clickLabel($label) {
