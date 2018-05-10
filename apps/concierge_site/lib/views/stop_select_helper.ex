@@ -51,7 +51,6 @@ defmodule ConciergeSite.StopSelectHelper do
       red_line_shapes = get_redline_shapes(route_id, subway_lines)
       route_stops = route_id
       |> get_stop_list(subway_lines)
-      |> Enum.sort_by(fn({name, _, _, _}) -> name end)
 
       for {name, id, _, _} <- route_stops do
         stops_with_icons[id]
