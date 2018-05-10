@@ -9,17 +9,15 @@ export default function($) {
 
 function toggleFn($) {
   return function() {
-    const input = $(":input[data-toggle='input']");
-    const label = $("label[data-toggle='label']");
+    const $inputEl = $(":input[data-toggle='input']");
+    const $containerEl = $("div[data-type='connection']");
 
     if ($(this).val() === "true") {
-      input.prop("disabled", false);
-      input.prop("required", true);
-      label.removeClass("form__label--disabled");
+      $inputEl.prop("required", true);
+      $containerEl.removeClass("d-none");
     } else {
-      input.prop("disabled", true);
-      input.prop("required", false);
-      label.addClass("form__label--disabled");
+      $inputEl.prop("required", false);
+      $containerEl.addClass("d-none");
     }
   };
 }

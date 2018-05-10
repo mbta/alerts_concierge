@@ -63,9 +63,9 @@ end
           <%= hidden_input form, :modes, name: "trip[modes][]", value: mode %>
         <% end %>
 
-        <div class="form-group form__section">
+        <div class="form-group form__section" data-type="connection">
           <%= label form, :route, "Which route or line do you connect to?", class: "form__label", data: [toggle: "label"] %>
-          <%= ConciergeSite.RouteSelectHelper.render(:trip, :route, [], disabled: true, data: [toggle: "input", type: "route"]) %>
+          <%= ConciergeSite.RouteSelectHelper.render(:trip, :route, [], data: [toggle: "input", type: "route"]) %>
         </div>
 
         <div class="form__action-buttons--container">
