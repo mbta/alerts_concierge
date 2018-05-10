@@ -286,5 +286,52 @@ defmodule AlertProcessor.AlertParserTest do
       parsed_alert = AlertParser.parse_alert(alert, %{}, nil)
       refute parsed_alert.active_period
     end
+
+    test "with direction_id for informed_entity" do
+      informed_entity = %{
+        "direction_id" => 0
+      }
+      some_timestamp = 1524609934
+      alert = %{
+        "id" => "some id",
+        "created_timestamp" => some_timestamp,
+        "duration_certainty" => nil,
+        "effect_detail" => "some_effect",
+        "header_text" => nil,
+        "informed_entity" => [informed_entity],
+        "service_effect_text" => nil,
+        "severity" => nil,
+        "last_push_notification_timestamp" => some_timestamp
+      }
+      parsed_alert = AlertParser.parse_alert(alert, %{}, nil)
+      [informed_entity] = parsed_alert.informed_entities
+      assert informed_entity.direction_id == 0
+    end
+
+    test "with direction_id for informed_entity when within 'trip'" do
+      # Some alert's informed_entities include the direction_id within a
+      # 'trip'.
+      informed_entity = %{
+        "trip" => %{
+          "trip_id" => "some-trip-id",
+          "direction_id" => 0
+        }
+      }
+      some_timestamp = 1524609934
+      alert = %{
+        "id" => "some id",
+        "created_timestamp" => some_timestamp,
+        "duration_certainty" => nil,
+        "effect_detail" => "some_effect",
+        "header_text" => nil,
+        "informed_entity" => [informed_entity],
+        "service_effect_text" => nil,
+        "severity" => nil,
+        "last_push_notification_timestamp" => some_timestamp
+      }
+      parsed_alert = AlertParser.parse_alert(alert, %{}, nil)
+      [informed_entity] = parsed_alert.informed_entities
+      assert informed_entity.direction_id == 0
+    end
   end
 end

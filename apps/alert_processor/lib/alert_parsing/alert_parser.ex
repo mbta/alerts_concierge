@@ -196,17 +196,23 @@ defmodule AlertProcessor.AlertParser do
     |> Enum.map(&(&1.route_id))
   end
 
-  defp parse_trip(%{"trip_id" => trip_id}, %{"route_type" => 4}) do
-    case ServiceInfoCache.get_generalized_trip_id(trip_id) do
-      {:ok, trip_name} -> %{trip: trip_name}
-      _ -> %{}
+  defp parse_trip(trip, informed_entity) do
+    trip_name = get_trip_name(trip, informed_entity)
+    case {trip_name, trip} do
+      {{:ok, trip_name}, %{"direction_id" => direction_id}} ->
+        %{trip: trip_name, direction_id: direction_id}
+      {_, %{"direction_id" => direction_id}} ->
+        %{direction_id: direction_id}
+      _ ->
+        %{}
     end
   end
-  defp parse_trip(%{"trip_id" => trip_id}, _ie) do
-    case ServiceInfoCache.get_trip_name(trip_id) do
-      {:ok, trip_name} -> %{trip: trip_name}
-      _ -> %{}
-    end
+
+  defp get_trip_name(%{"trip_id" => trip_id}, %{"route_type" => 4}) do
+    ServiceInfoCache.get_generalized_trip_id(trip_id)
+  end
+  defp get_trip_name(%{"trip_id" => trip_id}, _informed_enttiy) do
+    ServiceInfoCache.get_trip_name(trip_id)
   end
 
   defp parse_stop(stop_id) do
