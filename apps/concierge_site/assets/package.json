@@ -9,6 +9,7 @@
   "dependencies": {
     "PubSub": "^3.4.0",
     "babel-polyfill": "^6.26.0",
+    "babel-preset-env": "^1.7.0",
     "bootstrap": "^4.1.0",
     "flatpickr": "^4.4.6",
     "font-awesome": "^4.7.0",
