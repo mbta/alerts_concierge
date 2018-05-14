@@ -51,8 +51,12 @@ exports.config = {
   // Configure your plugins
   plugins: {
     babel: {
-      presets: ["es2015"],
-      // Do not use ES6 compiler in vendor code
+      presets: [['env', {
+        useBuiltIns: true,
+        targets: {
+          ie: 11
+        }
+      }]],
       ignore: [/vendor/]
     },
     copycat: {

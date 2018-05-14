@@ -19,7 +19,7 @@ import "phoenix_html"
 // paths "./socket" or full ones "web/static/js/socket".
 
 // import socket from "./socket"
-
+require("babel-polyfill");
 import formHelpers from './form-helpers';
 import selectRoute from "./select-route";
 import selectStop from "./select-stop";
