@@ -4,7 +4,7 @@ defmodule AlertProcessor.AlertParser do
   relevant information to subscription filter engine.
   """
   require Logger
-  alias AlertProcessor.{AlertCache, AlertsClient,
+  alias AlertProcessor.{AlertCache, AlertsClient, ApiClient,
     Helpers.StringHelper, Parser, ServiceInfoCache,
     SubscriptionFilterEngine, Helpers.DateTimeHelper}
   alias AlertProcessor.Model.{Alert, InformedEntity, Notification, SavedAlert}
@@ -197,31 +197,56 @@ defmodule AlertProcessor.AlertParser do
   end
 
   defp parse_trip(trip, informed_entity) do
-    trip_name = get_trip_name(trip, informed_entity)
-    case {trip_name, trip} do
-      {{:ok, trip_name}, %{"direction_id" => direction_id}} ->
-        %{trip: trip_name, direction_id: direction_id}
-      {_, %{"direction_id" => direction_id}} ->
-        %{direction_id: direction_id}
-      _ ->
-        %{}
-    end
+    %{trip: get_trip_name(trip, informed_entity),
+      direction_id: Map.get(trip, "direction_id"),
+      schedule: get_schedule(trip, informed_entity)}
   end
 
   defp get_trip_name(%{"trip_id" => trip_id}, %{"route_type" => 4}) do
-    ServiceInfoCache.get_generalized_trip_id(trip_id)
+    case ServiceInfoCache.get_generalized_trip_id(trip_id) do
+      {:ok, trip_name} -> trip_name
+      _ -> nil
+    end
   end
   defp get_trip_name(%{"trip_id" => trip_id}, _informed_enttiy) do
-    ServiceInfoCache.get_trip_name(trip_id)
+    case ServiceInfoCache.get_trip_name(trip_id) do
+      {:ok, trip_name} -> trip_name
+      _ -> nil
+    end
+  end
+
+  defp get_schedule(%{"trip_id" => trip_id} = trip, %{"route_type" => 2}) do
+    with nil <- Map.get(trip, "stop_id"),
+         {:ok, schedule} <- ApiClient.schedule_for_trip(trip_id) do
+      Enum.map(schedule, &parse_schedule_event/1)
+    else
+      _ -> nil
+    end
+  end
+  defp get_schedule(_, _), do: nil
+
+  defp parse_schedule_event(event) do
+    %{
+      departure_time: event["attributes"]["departure_time"],
+      stop_id: stop_from_schedule_event(event),
+      trip_id: event["relationships"]["trip"]["data"]["id"]
+    }
+  end
+
+  defp stop_from_schedule_event(event) do
+    stop_id = event["relationships"]["stop"]["data"]["id"]
+    ensure_parent_stop_id(stop_id)
   end
 
   defp parse_stop(stop_id) do
-    stop =
-      case ServiceInfoCache.get_parent_stop_id(stop_id) do
-        {:ok, parent_stop_id} when is_binary(parent_stop_id) -> parent_stop_id
-        _ -> stop_id
-      end
-     %{stop: stop}
+    %{stop: ensure_parent_stop_id(stop_id)}
+  end
+
+  defp ensure_parent_stop_id(stop_id) do
+    case ServiceInfoCache.get_parent_stop_id(stop_id) do
+      {:ok, parent_stop_id} when is_binary(parent_stop_id) -> parent_stop_id
+      _ -> stop_id
+    end
   end
 
   def parse_severity(sev) when sev >= 9, do: :extreme
