@@ -418,22 +418,30 @@ defmodule AlertProcessor.ServiceInfoCache do
     trip_ids = Enum.map(trips, & &1["id"])
 
     for trip_id <- trip_ids, into: %{} do
-      {:ok, schedules} = ApiClient.schedule_for_trip(trip_id)
-      [departure_schedule | _t] = Enum.sort_by(schedules, & &1["attributes"]["departure_time"])
+      case ApiClient.schedule_for_trip(trip_id) do
+        {:ok, []} ->
+          {trip_id,
+            map_generalized_trip_id(trip_id, trip_info_map, %{
+              origin_id: nil,
+              departure_time: nil
+            })}
+        {:ok, schedule} ->
+          [departure_schedule | _t] = Enum.sort_by(schedule, & &1["attributes"]["departure_time"])
 
-      %{
-        "relationships" => %{"stop" => %{"data" => %{"id" => origin_id}}},
-        "attributes" => %{"departure_time" => departure_timestamp}
-      } = departure_schedule
+          %{
+            "relationships" => %{"stop" => %{"data" => %{"id" => origin_id}}},
+            "attributes" => %{"departure_time" => departure_timestamp}
+          } = departure_schedule
 
-      departure_time =
-        departure_timestamp |> NaiveDateTime.from_iso8601!() |> NaiveDateTime.to_time()
+          departure_time =
+            departure_timestamp |> NaiveDateTime.from_iso8601!() |> NaiveDateTime.to_time()
 
-      {trip_id,
-       map_generalized_trip_id(trip_id, trip_info_map, %{
-         origin_id: origin_id,
-         departure_time: departure_time
-       })}
+          {trip_id,
+            map_generalized_trip_id(trip_id, trip_info_map, %{
+              origin_id: origin_id,
+              departure_time: departure_time
+            })}
+      end
     end
   end
 
