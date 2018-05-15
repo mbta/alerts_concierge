@@ -20,6 +20,17 @@ defmodule ConciergeSite.TimeHelper do
   end
 
   @doc """
+  Takes a time struct and returns HH:MM AM/PM
+  """
+  def format_time(time, format \\ "%l:%M %p")
+  def format_time(nil, _), do: ""
+  def format_time(time, format) do
+    time
+    |> time_to_string()
+    |> format_time_string(format)
+  end
+
+  @doc """
   Takes a time string in format HH:MM:SS and returns HH:MM AM/PM
   """
   def format_time_string(time_string, format \\ "%l:%M %p") do
