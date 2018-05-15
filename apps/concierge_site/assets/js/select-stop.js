@@ -38,7 +38,7 @@ function formatStop(stop) {
 
 function addValidation(selectStopComponent) {
   if (isTripLegForm()) {
-    selectStopComponent.on("select2:select", disableSubmitButtonIfSameStops);
+    selectStopComponent.on("select2:select", removeDestinationIfSameAsOrigin);
     selectStopComponent.on("select2:select", greenEnforceSameRoute);
     selectStopComponent.on("select2:select", redEnforceSameShape);
   }
@@ -48,14 +48,25 @@ function isTripLegForm() {
   return $("#tripleg-form").length > 0;
 }
 
-function disableSubmitButtonIfSameStops() {
-  const origin = $("#select2-trip_origin-container").attr("title");
-  const destination = $("#select2-trip_destination-container").attr("title");
-  if (origin == destination) {
-    $("button[type='submit']").attr("disabled", "disabled");
-  } else {
-    $("button[type='submit']").removeAttr("disabled");
+function removeDestinationIfSameAsOrigin(select2) {
+  const $originSelectEl = $("#trip_origin");
+  const $destinationSelectEl = $("#trip_destination");
+  const originSelectedOption = $originSelectEl.find(":selected")[0];
+
+  // only perform this operation when the origin changes
+  if (select2.target.getAttribute("id") != "trip_origin") {
+    return;
   }
+
+  [...$destinationSelectEl.children()].forEach(optionEl => {
+    if (optionEl.value == originSelectedOption.value) {
+      optionEl.setAttribute("disabled", "disabled");
+    } else {
+      optionEl.removeAttribute("disabled");
+    }
+  });
+
+  rebuildSelect2($destinationSelectEl);
 }
 
 function greenEnforceSameRoute(select2) {
