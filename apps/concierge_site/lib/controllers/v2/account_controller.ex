@@ -21,7 +21,7 @@ defmodule ConciergeSite.V2.AccountController do
   def create(conn, %{"user" => params}, _user, _claims) do
     case User.create_account(params) do
       {:ok, user} ->
-        ConfirmationMessage.send_confirmation(user)
+        ConfirmationMessage.send_email_confirmation(user)
         SignInHelper.sign_in(conn, user, redirect: :v2_default)
       {:error, changeset} ->
         render conn, "new.html", account_changeset: changeset, errors: errors(changeset)
@@ -30,7 +30,10 @@ defmodule ConciergeSite.V2.AccountController do
 
   def update(conn, %{"user" => params}, user, {:ok, claims}) do
     case User.update_account(user, params, Map.get(claims, "imp", user.id)) do
-      {:ok, _} -> 
+      {:ok, updated_user} ->
+        if user.phone_number == nil and updated_user.phone_number != nil do
+          ConfirmationMessage.send_sms_confirmation(updated_user.phone_number, params["sms_toggle"])
+        end
         conn
         |> put_flash(:info, "Your account has been updated.")
         |> redirect(to: v2_trip_path(conn, :index))
@@ -72,7 +75,8 @@ defmodule ConciergeSite.V2.AccountController do
 
   def options_create(conn, %{"user" => params}, user, {:ok, claims}) do
     case User.update_account(user, params, Map.get(claims, "imp", user.id)) do
-      {:ok, _} ->
+      {:ok, updated_user} ->
+        ConfirmationMessage.send_sms_confirmation(updated_user.phone_number, params["sms_toggle"])
         conn
         |> redirect(to: v2_page_path(conn, :trip_type))
       {:error, changeset} ->
