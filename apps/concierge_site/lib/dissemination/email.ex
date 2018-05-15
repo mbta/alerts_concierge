@@ -13,21 +13,19 @@ defmodule ConciergeSite.Dissemination.Email do
     :def,
     :password_reset_html_email,
     Path.join(@template_dir, "password_reset.html.eex"),
-    [:reset_token, :manage_subscriptions_url, :feedback_url])
+    [:reset_token])
   EEx.function_from_file(
     :def,
     :password_reset_text_email,
     Path.join(~w(#{System.cwd!} lib mail_templates password_reset.txt.eex)),
-    [:reset_token, :manage_subscriptions_url, :feedback_url])
+    [:reset_token])
 
   def password_reset_email(user, reset_token) do
-    manage_subscriptions_url = MailHelper.manage_subscriptions_url(user)
-    feedback_url = MailHelper.feedback_url()
     base_email()
     |> to(user.email)
-    |> subject("Reset Your MBTA Alerts Password")
-    |> html_body(password_reset_html_email(reset_token, manage_subscriptions_url, feedback_url))
-    |> text_body(password_reset_text_email(reset_token, manage_subscriptions_url, feedback_url))
+    |> subject("Reset your T-Alerts password")
+    |> html_body(password_reset_html_email(reset_token))
+    |> text_body(password_reset_text_email(reset_token))
   end
 
   EEx.function_from_file(
