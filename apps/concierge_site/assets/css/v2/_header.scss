@@ -45,32 +45,12 @@
   line-height: 2.5rem;
   border-bottom: 1px solid $pale-grey;
 
-  .container {
-    @include media-breakpoint-up(md) {
-      text-align: right;
+  .container {    
+    text-align: right;
 
-      a {
-        display: inline-block;
-        margin-left: 2rem;
-      }
-    }
-
-    @include media-breakpoint-down(sm) {
-      display: flex;
-
-      a {
-        flex-grow: 1;
-        flex-basis: 0;
-        text-align: center;
-
-        &:first-child {
-          text-align: left;
-        }
-
-        &:last-child {
-          text-align: right;
-        }
-      }
+    a {
+      display: inline-block;
+      margin-left: 2rem;
     }
   }
 }
