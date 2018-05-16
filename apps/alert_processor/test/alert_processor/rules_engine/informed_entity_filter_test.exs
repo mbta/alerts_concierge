@@ -220,28 +220,26 @@ defmodule AlertProcessor.InformedEntityFilterTest do
       assert InformedEntityFilter.subscription_match?(subscription_2, informed_entity_2)
     end
 
-    test "returns false with stop match (with stop in between origin and destination but wrong activity)" do
-      # As you can see here:
-      # https://cdn.mbta.com/sites/default/files/maps/2018-04-map-rapid-transit-key-bus-v31a.pdf,
-      # "Davis" (place-davis) is in between "Alewife" (place-alfcl) and "Porter" (place-portr).
+    test "returns true with stop match (without stop but stops in schedule)" do
       subscription_details = [
-        route_type: 1,
+        route_type: 2,
         direction_id: 0,
-        route: "Red",
-        origin: "Alewife",
-        destination: "Porter",
+        route: "some route",
+        origin: "some origin",
+        destination: "some destination",
         facility_types: [],
       ]
       subscription = build(:subscription, subscription_details)
       informed_entity_details = [
-        route_type: nil,
+        route_type: 2,
         direction_id: nil,
         route: nil,
-        stop: "Davis",
-        activities: ["BOARD"]
+        stop: nil,
+        activities: ["BOARD", "EXIT"],
+        schedule: [%{stop_id: "some origin"}, %{stop_id: "some destination"}]
       ]
       informed_entity = build(:informed_entity, informed_entity_details)
-      refute InformedEntityFilter.subscription_match?(subscription, informed_entity)
+      assert InformedEntityFilter.subscription_match?(subscription, informed_entity)
     end
 
     test "returns false with stop mismatch" do
@@ -309,6 +307,52 @@ defmodule AlertProcessor.InformedEntityFilterTest do
       refute InformedEntityFilter.subscription_match?(subscription, informed_entity)
     end
 
+    test "returns false with stop mismatch (without stop, origin and destination not in schedule)" do
+      subscription_details = [
+        route_type: 2,
+        direction_id: 0,
+        route: "some route",
+        origin: "some origin",
+        destination: "some stop",
+        facility_types: [],
+      ]
+      subscription = build(:subscription, subscription_details)
+      informed_entity_details = [
+        route_type: 2,
+        direction_id: nil,
+        route: nil,
+        stop: nil,
+        activities: nil,
+        schedule: [%{stop_id: "some other stop"}]
+      ]
+      informed_entity = build(:informed_entity, informed_entity_details)
+      refute InformedEntityFilter.subscription_match?(subscription, informed_entity)
+    end
+
+    test "returns false with stop mismatch (without stop, origin in schedule, destination not in schedule)" do
+      # If no stop is provided by the alert/informed_entity, origin and
+      # destination must both be part of the schedule for the subscription to match.
+      subscription_details = [
+        route_type: 2,
+        direction_id: 0,
+        route: "some route",
+        origin: "some origin",
+        destination: "some destination",
+        facility_types: [],
+      ]
+      subscription = build(:subscription, subscription_details)
+      informed_entity_details = [
+        route_type: 2,
+        direction_id: nil,
+        route: nil,
+        stop: nil,
+        activities: nil,
+        schedule: [%{stop_id: "some origin"}]
+      ]
+      informed_entity = build(:informed_entity, informed_entity_details)
+      refute InformedEntityFilter.subscription_match?(subscription, informed_entity)
+    end
+
     test "returns false with stop mismatch (with stop not in between origin and destination)" do
       # As you can see here:
       # https://cdn.mbta.com/sites/default/files/maps/2018-04-map-rapid-transit-key-bus-v31a.pdf,
@@ -329,6 +373,30 @@ defmodule AlertProcessor.InformedEntityFilterTest do
         route: nil,
         stop: "place-harsq",
         activities: ["RIDE"]
+      ]
+      informed_entity = build(:informed_entity, informed_entity_details)
+      refute InformedEntityFilter.subscription_match?(subscription, informed_entity)
+    end
+
+    test "returns false with stop match (with stop in between origin and destination but wrong activity)" do
+      # As you can see here:
+      # https://cdn.mbta.com/sites/default/files/maps/2018-04-map-rapid-transit-key-bus-v31a.pdf,
+      # "Davis" (place-davis) is in between "Alewife" (place-alfcl) and "Porter" (place-portr).
+      subscription_details = [
+        route_type: 1,
+        direction_id: 0,
+        route: "Red",
+        origin: "Alewife",
+        destination: "Porter",
+        facility_types: [],
+      ]
+      subscription = build(:subscription, subscription_details)
+      informed_entity_details = [
+        route_type: nil,
+        direction_id: nil,
+        route: nil,
+        stop: "Davis",
+        activities: ["BOARD"]
       ]
       informed_entity = build(:informed_entity, informed_entity_details)
       refute InformedEntityFilter.subscription_match?(subscription, informed_entity)

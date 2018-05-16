@@ -93,7 +93,7 @@ defmodule AlertProcessor.InformedEntityFilter do
     {subscription, informed_entity, updated_match_report}
   end
 
-  defp stop_match?({subscription, %{stop: nil} = informed_entity, match_report}) do
+  defp stop_match?({subscription, %{stop: nil, schedule: nil} = informed_entity, match_report}) do
     updated_match_report =
       case {subscription.origin, subscription.destination} do
         {origin, destination} when not is_nil(origin) and origin == destination ->
@@ -111,6 +111,13 @@ defmodule AlertProcessor.InformedEntityFilter do
 
   defp stop_match?({%{type: :accessibility, origin: nil} = subscription, informed_entity, match_report}) do
     stop_match? = route_stop_match?(subscription.route, informed_entity.stop)
+    updated_match_report = Map.put(match_report, :stop_match?, stop_match?)
+    {subscription, informed_entity, updated_match_report}
+  end
+
+  defp stop_match?({subscription, %{stop: nil, schedule: schedule} = informed_entity, match_report})
+  when not is_nil(schedule) do
+    stop_match? = schedule_stop_match?(schedule, subscription)
     updated_match_report = Map.put(match_report, :stop_match?, stop_match?)
     {subscription, informed_entity, updated_match_report}
   end
@@ -138,24 +145,27 @@ defmodule AlertProcessor.InformedEntityFilter do
     end
   end
 
-  defp in_between_stop_match?(%{type: "accessibility"}, _), do: false
-
-  defp in_between_stop_match?(_, %{activities: nil}), do: false
-
-  defp in_between_stop_match?(subscription, %{activities: activities, stop: stop}) do
-    if "RIDE" in activities do
-      stop in stops_in_between(subscription)
-    else
-      false
-    end
+  def schedule_stop_match?(schedule, subscription) do
+    origin_and_destination = MapSet.new([subscription.origin, subscription.destination])
+    scheduled_stops = MapSet.new(schedule, & &1.stop_id)
+    MapSet.subset?(origin_and_destination, scheduled_stops)
   end
 
-  defp stops_in_between(%{route: route, origin: origin, destination: destination}) do
-    case ServiceInfoCache.get_route(route) do
-      {:ok, %{stop_list: stop_list}} ->
-        stops_in_between_from_stop_list(stop_list, origin, destination)
-      _ ->
-        []
+  defp in_between_stop_match?(%{type: "accessibility"}, _), do: false
+
+  defp in_between_stop_match?(subscription, %{activities: activities, stop: stop}) do
+    stop in stops_in_between(subscription, activities)
+  end
+
+  defp stops_in_between(_, nil), do: []
+
+  defp stops_in_between(%{route: route, origin: origin, destination: destination}, activities) do
+    with true <- "RIDE" in activities,
+         {:ok, %{stop_list: stop_list}} <- ServiceInfoCache.get_route(route)
+    do
+      stops_in_between_from_stop_list(stop_list, origin, destination)
+    else
+      _ -> []
     end
   end
 
