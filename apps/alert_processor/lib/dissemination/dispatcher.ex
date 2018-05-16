@@ -22,12 +22,12 @@ defmodule AlertProcessor.Dispatcher do
     email = @mailer.send_notification_email(notification)
     {:ok, email}
   end
-  def send_notification(%Notification{phone_number: phone_number} = notification) when not is_nil(phone_number) do
+  def send_notification(%Notification{phone_number: phone_number, alert_id: alert_id} = notification) when not is_nil(phone_number) do
     result =
       notification
       |> NotificationSmser.notification_sms()
       |> AwsClient.request()
-    Logger.info(fn -> "SMS notification result: #{inspect(result)}" end)
+    Logger.info(fn -> "SMS notification: phone_number=#{phone_number} alert_id=#{alert_id} result=#{inspect(result)}" end)
     result
   end
   def send_notification(_) do
