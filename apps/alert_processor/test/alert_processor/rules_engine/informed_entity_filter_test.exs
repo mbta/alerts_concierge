@@ -176,16 +176,16 @@ defmodule AlertProcessor.InformedEntityFilterTest do
       assert InformedEntityFilter.subscription_match?(subscription, informed_entity)
     end
 
-    test "returns true with stop match (with stop in between origin and destination)" do
+    test "returns true with stop match (stop in between origin and destination)" do
       # As you can see here:
       # https://cdn.mbta.com/sites/default/files/maps/2018-04-map-rapid-transit-key-bus-v31a.pdf,
-      # "Davis" (place-davis) is in between "Alewife" (place-alfcl) and "Porter" (place-portr).
+      # "Back Bay" (place-bbsta) is in between "Stony Brook" (place-sbmnl) and "Assembly" (place-astao).
       subscription_details_1 = [
         route_type: 1,
         direction_id: 0,
-        route: "Red",
-        origin: "place-alfcl",
-        destination: "place-portr",
+        route: "Orange",
+        origin: "place-sbmnl",
+        destination: "place-astao",
         facility_types: [],
       ]
       subscription_1 = build(:subscription, subscription_details_1)
@@ -193,7 +193,7 @@ defmodule AlertProcessor.InformedEntityFilterTest do
         route_type: nil,
         direction_id: nil,
         route: nil,
-        stop: "place-davis",
+        stop: "place-bbsta",
         activities: ["RIDE"]
       ]
       informed_entity_1 = build(:informed_entity, informed_entity_details_1)
@@ -203,9 +203,9 @@ defmodule AlertProcessor.InformedEntityFilterTest do
       subscription_details_2 = [
         route_type: 1,
         direction_id: 1,
-        route: "Red",
-        origin: "place-portr",
-        destination: "place-alfcl",
+        route: "Orange",
+        origin: "place-astao",
+        destination: "place-sbmnl",
         facility_types: [],
       ]
       subscription_2 = build(:subscription, subscription_details_2)
@@ -213,11 +213,59 @@ defmodule AlertProcessor.InformedEntityFilterTest do
         route_type: nil,
         direction_id: nil,
         route: nil,
-        stop: "place-davis",
+        stop: "place-bbsta",
         activities: ["RIDE"]
       ]
       informed_entity_2 = build(:informed_entity, informed_entity_details_2)
       assert InformedEntityFilter.subscription_match?(subscription_2, informed_entity_2)
+    end
+
+    test "returns true with stop match ('in between' stop on Red line's Ashmont branch/shape)" do
+      # As you can see here:
+      # https://cdn.mbta.com/sites/default/files/maps/2018-04-map-rapid-transit-key-bus-v31a.pdf,
+      # "Shawmut" (place-smmnl) is in between "Alewife" (place-alfcl) and "Ashmont" (place-asmnl).
+      subscription_details_1 = [
+        route_type: 1,
+        direction_id: 0,
+        route: "Red",
+        origin: "place-alfcl",
+        destination: "place-asmnl",
+        facility_types: [],
+      ]
+      subscription_1 = build(:subscription, subscription_details_1)
+      informed_entity_details_1 = [
+        route_type: nil,
+        direction_id: nil,
+        route: nil,
+        stop: "place-smmnl",
+        activities: ["RIDE"]
+      ]
+      informed_entity_1 = build(:informed_entity, informed_entity_details_1)
+      assert InformedEntityFilter.subscription_match?(subscription_1, informed_entity_1)
+    end
+
+    test "returns true with stop match ('in between' stop on Red line's Braintree branch/shape)" do
+      # As you can see here:
+      # https://cdn.mbta.com/sites/default/files/maps/2018-04-map-rapid-transit-key-bus-v31a.pdf,
+      # "Quincy Adams" (place-qamnl) is in between "Alewife" (place-alfcl) and "Braintree" (place-brntn).
+      subscription_details_1 = [
+        route_type: 1,
+        direction_id: 0,
+        route: "Red",
+        origin: "place-alfcl",
+        destination: "place-brntn",
+        facility_types: [],
+      ]
+      subscription_1 = build(:subscription, subscription_details_1)
+      informed_entity_details_1 = [
+        route_type: nil,
+        direction_id: nil,
+        route: nil,
+        stop: "place-qamnl",
+        activities: ["RIDE"]
+      ]
+      informed_entity_1 = build(:informed_entity, informed_entity_details_1)
+      assert InformedEntityFilter.subscription_match?(subscription_1, informed_entity_1)
     end
 
     test "returns true with stop match (without stop but stops in schedule)" do
