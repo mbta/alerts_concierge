@@ -20,6 +20,7 @@ import "phoenix_html"
 
 // import socket from "./socket"
 require("babel-polyfill");
+import touchSupport from "./touch-support";
 import formHelpers from './form-helpers';
 import selectRoute from "./select-route";
 import selectStop from "./select-stop";
@@ -35,6 +36,7 @@ const pubsub = new pubsubFactory();
 
 const path = window.location.pathname;
 
+touchSupport();
 formHelpers();
 selectRoute();
 selectStop();

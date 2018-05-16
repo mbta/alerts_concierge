@@ -80,16 +80,20 @@
       background-color: $light-blue;
     }
 
-    &:hover {
-      background-color: $light-blue;
-    }
-
     &:first-child {
       border-top-left-radius: 5px;
     }
 
     &:last-child {
       border-top-right-radius: 5px;
+    }
+  }
+}
+
+.no-touch {
+  .btn-day {
+    &:hover {
+      background-color: $light-blue;
     }
   }
 }
