@@ -15,14 +15,26 @@ function isMatched(tripTime, startTime, endTime) {
 
 function processTrip(tripEl, startTime, endTime) {
   const tripTime = tripEl.dataset.time;
-  tripEl.style.display = isMatched(tripTime, startTime, endTime) ? "block" : "none";
+  const matched = isMatched(tripTime, startTime, endTime);
+  tripEl.style.display = matched ? "block" : "none";
+  return matched ? 1 : 0;
+}
+
+function toggleBlankSlate(scheduleEl, display) {
+  const blankSlates = [... scheduleEl.getElementsByClassName("schedules__blankslate")];
+  blankSlates.forEach(blankSlate => {
+    blankSlate.style.display = display;
+  });
 }
 
 function processSchedule(scheduleEl) {
   const startTime = document.getElementById(scheduleEl.dataset.start).value;
   const endTime = document.getElementById(scheduleEl.dataset.end).value;
   const trips = [... scheduleEl.getElementsByClassName("schedules__trips--item")];
-  trips.forEach(tripEl => processTrip(tripEl, startTime, endTime));
+  const matchedTrips = trips.reduce((count, tripEl) => {
+    return count + processTrip(tripEl, startTime, endTime);
+  }, 0);
+  matchedTrips == 0 ? toggleBlankSlate(scheduleEl, "block") : toggleBlankSlate(scheduleEl, "none");
 }
 
 function expandAndProcessSchedule(scheduleEl) {

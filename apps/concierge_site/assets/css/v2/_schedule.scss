@@ -3,12 +3,17 @@
   display: none;
 }
 
-.schedules__header {
+.schedules__header,
+.schedules__blankslate {
   cursor: pointer;
   margin: 0;
   padding: $base-spacing / 2;
   border-top: 1px solid $pale-grey;
   width: 95%;
+}
+
+.schedules__blankslate {
+  display: none;
 }
 
 .schedules__trips--container {
