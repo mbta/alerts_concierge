@@ -1,12 +1,15 @@
 defmodule ConciergeSite.ScheduleHelper do
+  alias AlertProcessor.ServiceInfoCache
+  alias AlertProcessor.Model.Route
   import Phoenix.HTML.Tag, only: [content_tag: 3]
   import ConciergeSite.TimeHelper, only: [format_time_string: 2, time_to_string: 1]
 
   @spec render(map, String.t, String.t) :: Phoenix.HTML.safe
   def render(schedules, start_field_id, end_field_id) do
     content_tag :div, id: id(start_field_id), class: "schedules__container", data: [type: "schedule-viewer", start: start_field_id, end: end_field_id] do
-      for {{mode, route}, schedule} <- schedules do
-        do_route_schedule(mode, route, schedule)
+      for {{mode, route_id}, schedule} <- schedules do
+        {:ok, route} = ServiceInfoCache.get_route(route_id)
+        do_route_schedule(mode, Route.name(route), schedule)
       end
     end
   end
@@ -14,12 +17,12 @@ defmodule ConciergeSite.ScheduleHelper do
   defp id("trip_start_time"), do: "schedule_start"
   defp id("trip_return_start_time"), do: "schedule_return"
 
-  defp do_route_schedule(mode, route, schedule) do
+  defp do_route_schedule(mode, route_name, schedule) do
     [
       content_tag :div, class: "schedules__trips--leg" do
         [
           content_tag :p, class: "schedules__header" do
-            "#{header(mode)} scheduled at this time for #{route}"
+            "#{header(mode)} scheduled at this time for #{route_name}"
           end,
           content_tag :p, class: "schedules__blankslate" do
             "#{blank_slate(mode)}"
