@@ -21,6 +21,9 @@ defmodule ConciergeSite.ScheduleHelper do
           content_tag :p, class: "schedules__header" do
             "#{header(mode)} scheduled at this time for #{route}"
           end,
+          content_tag :p, class: "schedules__blankslate" do
+            "#{blank_slate(mode)}"
+          end,
           content_tag :ul, class: "schedules__trips--container" do
             for trip <- schedule do
               content_tag :li, class: "schedules__trips--item", data: [time: trip.departure_time] do
@@ -35,6 +38,9 @@ defmodule ConciergeSite.ScheduleHelper do
 
   defp header("cr"), do: "Commuter Rail trains"
   defp header("ferry"), do: "Ferry boats"
+
+  defp blank_slate("cr"), do: "No trains scheduled during this time period."
+  defp blank_slate("ferry"), do: "No boats scheduled during this time period."
 
   defp trip("cr", trip) do
     [ConciergeSite.IconViewHelper.icon(:commuter_rail), "Train #{trip.trip_number}, #{elem(trip.origin, 0)}, #{format_time_string(time_to_string(trip.departure_time), "%l:%M%P")}"]
