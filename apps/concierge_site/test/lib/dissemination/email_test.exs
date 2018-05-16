@@ -9,9 +9,8 @@ defmodule ConciergeSite.Dissemination.EmailTest do
     email = Email.password_reset_email(user, reset_token)
 
     assert email.to == user.email
-    assert email.subject == "Reset Your MBTA Alerts Password"
-    assert email.html_body =~ "Please click the link below and follow the instructions on the page to reset your password"
-    assert email.html_body =~ "mbtafeedback.com"
+    assert email.subject == "Reset your T-Alerts password"
+    assert email.html_body =~ "You recently requested a password reset for your T-Alerts account"
   end
 
   test "confirmation email" do
