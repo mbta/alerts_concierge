@@ -333,5 +333,26 @@ defmodule AlertProcessor.AlertParserTest do
       [informed_entity] = parsed_alert.informed_entities
       assert informed_entity.direction_id == 0
     end
+
+    test "adds schedule data to trip alerts" do
+      use_cassette "trip_alerts", custom: true, clear_mock: true, match_requests_on: [:query] do
+        AlertParser.process_alerts()
+
+        result =
+          AlertCache.get_alerts()
+          |> Enum.flat_map(& &1.informed_entities)
+          |> Enum.map(& &1.schedule)
+          |> Enum.reject(& is_nil(&1))
+
+        [schedule | _] = List.first(result)
+
+        assert length(result) > 0
+        assert %{
+          departure_time: "2017-10-26T08:52:00-04:00",
+          stop_id: "Newburyport",
+          trip_id: "CR-Saturday-Fall-17-1150",
+        } = schedule
+      end
+    end
   end
 end
