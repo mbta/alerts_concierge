@@ -136,7 +136,8 @@ defmodule ConciergeSite.V2.TripController do
           mode: mode,
           saved_leg: leg,
           saved_mode: mode,
-          modes: modes
+          modes: modes,
+          default_origin: List.first(destinations)
         )
 
       %{
@@ -163,7 +164,8 @@ defmodule ConciergeSite.V2.TripController do
           round_trip: round_trip,
           modes: modes,
           schedules: schedules,
-          return_schedules: return_schedules
+          return_schedules: return_schedules,
+          default_origin: nil
         )
 
       %{"route" => route, "round_trip" => round_trip, "from_new_trip" => "true"} ->
@@ -180,7 +182,8 @@ defmodule ConciergeSite.V2.TripController do
           route_name: route_name,
           saved_mode: mode,
           saved_leg: leg,
-          modes: []
+          modes: [],
+          default_origin: nil
         )
 
       _ ->

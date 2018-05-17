@@ -6,7 +6,7 @@ else
   "Do you make a connection to another route or line?"
 end
 
-
+default_origin_selection = if @default_origin, do: [@default_origin], else: []
 %>
 
 <div class="container container__inner">
@@ -16,7 +16,7 @@ end
         <%= if @saved_mode != "bus" do %>
           <div class="form-group form__section--top">
             <%= label form, :origin, "Where do you get on the #{@route_name}?", class: "form__label" %>
-            <%= ConciergeSite.StopSelectHelper.render(@saved_leg, :trip, :origin, [], [required: true]) %>
+            <%= ConciergeSite.StopSelectHelper.render(@saved_leg, :trip, :origin, default_origin_selection, [required: true]) %>
           </div>
 
           <div class="form-group form__section">

@@ -391,6 +391,7 @@ defmodule ConciergeSite.V2.TripControllerTest do
     assert html_response(conn, 200) =~ "Where do you get on the Green Line?"
     assert html_response(conn, 200) =~ "Do you connect to another route, line, or branch?"
     assert html_response(conn, 200) =~ "Only stops on the same branch can be selected"
+    assert html_response(conn, 200) =~ "selected=\"selected\" value=\"place-pktrm\">Park Street</option>"
   end
 
   test "leg/3 with same origin and destination", %{conn: conn, user: user} do
