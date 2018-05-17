@@ -161,7 +161,8 @@ defmodule AlertProcessor.InformedEntityFilter do
 
   defp stops_in_between(%{route: route, origin: origin, destination: destination}, activities) do
     with true <- "RIDE" in activities,
-         {:ok, %{stop_list: stop_list}} <- ServiceInfoCache.get_route(route)
+         route_filter <- %{route_id: route, stop_ids: [origin, destination]},
+         {:ok, %{stop_list: stop_list}} <- ServiceInfoCache.get_route(route_filter)
     do
       stops_in_between_from_stop_list(stop_list, origin, destination)
     else
