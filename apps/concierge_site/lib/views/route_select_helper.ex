@@ -9,13 +9,14 @@ defmodule ConciergeSite.RouteSelectHelper do
   def render(input_name, field, selected \\ [], attrs \\ []) do
     content_tag :select, attributes(input_name, field, attrs) do
       default = if attrs[:no_default] == true, do: [], else: default_option()
+      bus_options = if attrs[:no_bus] == true, do: [], else: option_group("Bus", :bus, selected)
 
       [
         default,
         option_group("Subway", :subway, selected),
         option_group("Commuter Rail", :cr, selected),
         option_group("Ferry", :ferry, selected),
-        option_group("Bus", :bus, selected)
+        bus_options
       ]
     end
   end
