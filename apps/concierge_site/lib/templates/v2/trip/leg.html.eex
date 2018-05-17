@@ -5,8 +5,6 @@ new_leg_label = if @route_name == "Green Line" || @route_name == "Red Line" do
 else
   "Do you make a connection to another route or line?"
 end
-
-default_origin_selection = if @default_origin, do: [@default_origin], else: []
 %>
 
 <div class="container container__inner">
@@ -16,7 +14,7 @@ default_origin_selection = if @default_origin, do: [@default_origin], else: []
         <%= if @saved_mode != "bus" do %>
           <div class="form-group form__section--top">
             <%= label form, :origin, "Where do you get on the #{@route_name}?", class: "form__label" %>
-            <%= ConciergeSite.StopSelectHelper.render(@saved_leg, :trip, :origin, default_origin_selection, [required: true]) %>
+            <%= ConciergeSite.StopSelectHelper.render(@saved_leg, :trip, :origin, @default_origin, [required: true]) %>
           </div>
 
           <div class="form-group form__section">
