@@ -3,7 +3,7 @@ defmodule AlertProcessor.AlertParserTest do
   use ExVCR.Mock, adapter: ExVCR.Adapter.Hackney
   use Bamboo.Test, shared: :true
   import AlertProcessor.Factory
-  alias AlertProcessor.{AlertCache, AlertParser, Model, Repo}
+  alias AlertProcessor.{AlertParser, Model, Repo, AlertsClient, ServiceInfoCache}
   alias Model.{InformedEntity, SavedAlert}
   alias Calendar.DateTime, as: DT
 
@@ -76,11 +76,14 @@ defmodule AlertProcessor.AlertParserTest do
     end
   end
 
-  test "process_alerts/1 parses alerts adds routes to facility entities" do
+  test "parse_alerts/1 parses alerts adds routes to facility entities" do
     use_cassette "facilities_alerts", custom: true, clear_mock: true, match_requests_on: [:query] do
-      AlertParser.process_alerts
+      {:ok, alerts, feed_timestamp} = AlertsClient.get_alerts()
+      {:ok, facility_map} = ServiceInfoCache.get_facility_map()
+
       facility_entities =
-        AlertCache.get_alerts()
+        {alerts, facility_map, feed_timestamp}
+        |> AlertParser.parse_alerts()
         |> Enum.flat_map(&(&1.informed_entities))
         |> Enum.reject(&(is_nil(&1.facility_type)))
 
@@ -336,10 +339,12 @@ defmodule AlertProcessor.AlertParserTest do
 
     test "adds schedule data to trip alerts" do
       use_cassette "trip_alerts", custom: true, clear_mock: true, match_requests_on: [:query] do
-        AlertParser.process_alerts()
+        {:ok, alerts, feed_timestamp} = AlertsClient.get_alerts()
+        {:ok, facility_map} = ServiceInfoCache.get_facility_map()
 
         result =
-          AlertCache.get_alerts()
+          {alerts, facility_map, feed_timestamp}
+          |> AlertParser.parse_alerts()
           |> Enum.flat_map(& &1.informed_entities)
           |> Enum.map(& &1.schedule)
           |> Enum.reject(& is_nil(&1))

@@ -4,7 +4,7 @@ defmodule AlertProcessor.AlertParser do
   relevant information to subscription filter engine.
   """
   require Logger
-  alias AlertProcessor.{AlertCache, AlertsClient, ApiClient,
+  alias AlertProcessor.{AlertsClient, ApiClient,
     Helpers.StringHelper, Parser, ServiceInfoCache,
     SubscriptionFilterEngine, Helpers.DateTimeHelper}
   alias AlertProcessor.Model.{Alert, InformedEntity, Notification, SavedAlert}
@@ -19,19 +19,16 @@ defmodule AlertProcessor.AlertParser do
   def process_alerts() do
     with {:ok, alerts, feed_timestamp} <- AlertsClient.get_alerts(),
          {:ok, facility_map} <- ServiceInfoCache.get_facility_map() do
-      {alerts_needing_notifications, _alert_ids_to_clear_notifications} =
-        {alerts, facility_map, feed_timestamp}
-        |> parse_alerts()
-        |> AlertCache.update_cache()
-
       SavedAlert.save!(alerts)
+      alerts_needing_notifications = parse_alerts({alerts, facility_map, feed_timestamp})
       SubscriptionFilterEngine.schedule_all_notifications(alerts_needing_notifications)
     end
   end
 
-  defp parse_alerts({alerts, facilities_map, feed_timestamp}) do
-    for alert_json <- remove_ignored(alerts), alert = parse_alert(alert_json, facilities_map, feed_timestamp), into: %{} do
-      {alert.id, alert}
+  @doc false
+  def parse_alerts({alerts, facilities_map, feed_timestamp}) do
+    for alert_json <- remove_ignored(alerts) do
+      parse_alert(alert_json, facilities_map, feed_timestamp)
     end
   end
 
