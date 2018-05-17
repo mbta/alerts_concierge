@@ -23,7 +23,7 @@
 
               <div class="form-group form__section">
                 <%= label form, :routes, "Would you like alerts for all stations on a line?", class: "form__label" %>
-                <%= ConciergeSite.RouteSelectHelper.render(:trip, :routes, @changeset.changes[:routes] || [], multiple: "multiple", no_default: true) %>
+                <%= ConciergeSite.RouteSelectHelper.render(:trip, :routes, @changeset.changes[:routes] || [], multiple: "multiple", no_default: true, no_bus: true) %>
                 <%= if @changeset.errors[:routes], do: error_tag @changeset, :routes %>
               </div>
 

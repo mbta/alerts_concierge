@@ -24,12 +24,22 @@ defmodule ConciergeSite.RouteSelectHelperTest do
     assert html =~ "<option data-icon=\"red\" selected=\"selected\" value=\"Red~~Red Line~~subway\">Red Line</option>"
   end
 
-  test "render/4" do
-    html = Phoenix.HTML.safe_to_string(RouteSelectHelper.render(:foo, :bar, [], [class: "some-other-class",
-                                                                                 no_default: true,
-                                                                                 multiple: "multiple"]))
+  describe "render/4" do
+    test "select multiple" do
+      html = Phoenix.HTML.safe_to_string(RouteSelectHelper.render(:foo, :bar, [], [class: "some-other-class",
+                                                                                  no_default: true,
+                                                                                  multiple: "multiple"]))
 
-    assert html =~ "<select class=\"some-other-class\" data-type=\"route\" id=\"foo_bar\" multiple=\"multiple\" name=\"foo[bar][]\""
-    refute html =~ "<option disabled=\"disabled\" selected=\"selected\" value=\"\">Select a subway, commuter rail, ferry or bus route</option>"
+      assert html =~ "Silver Line SL5"
+      assert html =~ "<select class=\"some-other-class\" data-type=\"route\" id=\"foo_bar\" multiple=\"multiple\" name=\"foo[bar][]\""
+      refute html =~ "<option disabled=\"disabled\" selected=\"selected\" value=\"\">Select a subway, commuter rail, ferry or bus route</option>"
+    end
+
+    test "no buses" do
+      html = Phoenix.HTML.safe_to_string(RouteSelectHelper.render(:foo, :bar, [], [no_default: true,
+                                                                                   no_bus: true]))
+
+      refute html =~ "Silver Line SL5"
+    end
   end
 end
