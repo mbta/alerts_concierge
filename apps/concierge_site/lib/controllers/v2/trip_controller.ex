@@ -136,7 +136,8 @@ defmodule ConciergeSite.V2.TripController do
           mode: mode,
           saved_leg: leg,
           saved_mode: mode,
-          modes: modes
+          modes: modes,
+          default_origin: [List.first(destinations)]
         )
 
       %{
@@ -180,7 +181,8 @@ defmodule ConciergeSite.V2.TripController do
           route_name: route_name,
           saved_mode: mode,
           saved_leg: leg,
-          modes: []
+          modes: [],
+          default_origin: []
         )
 
       _ ->
