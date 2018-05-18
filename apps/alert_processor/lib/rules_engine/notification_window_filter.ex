@@ -34,8 +34,12 @@ defmodule AlertProcessor.NotificationWindowFilter do
   @doc false
   @spec within_notification_window?(Subscription.t, DateTime.t) :: boolean
   def within_notification_window?(subscription, now) do
+    start_time = notification_window_start_time(subscription)
+    end_time = subscription.end_time
+    multiday? = span_multiple_days?(start_time, end_time)
+
     day_of_week(now) in relevant_days(subscription)
-    && time_within_notification_window?(subscription, now)
+    && time_within_notification_window?(subscription, start_time, end_time, now, multiday?)
   end
 
   defp day_of_week(now) do
@@ -55,7 +59,9 @@ defmodule AlertProcessor.NotificationWindowFilter do
     Enum.map(subscription.relevant_days, &Map.get(days, &1))
   end
 
-  defp time_within_notification_window?(%Subscription{type: :accessibility}, _) do
+  defp span_multiple_days?(start_time, end_time), do: Time.compare(start_time, end_time) in [:gt, :eq]
+
+  defp time_within_notification_window?(%Subscription{type: :accessibility}, _, _, _, _) do
     # For subscriptions with type of `:accessibility` it doesn't matter what
     # time of the day it is. The users these subscriptions belong to signed up
     # to be notified of specific accessibility related alerts, so regardless of
@@ -63,9 +69,11 @@ defmodule AlertProcessor.NotificationWindowFilter do
     true
   end
 
-  defp time_within_notification_window?(subscription, now) do
-    start_time = notification_window_start_time(subscription)
-    end_time = subscription.end_time
+  defp time_within_notification_window?(subscription, start_time, end_time, now, true) do
+    time_within_notification_window?(subscription, start_time, ~T[23:59:59], now, false)
+    || time_within_notification_window?(subscription, ~T[00:00:00], end_time, now, false)
+  end
+  defp time_within_notification_window?(_subscription, start_time, end_time, now, false) do
     time_now = DateTime.to_time(now)
     start_time_ok? = Time.compare(time_now, start_time) in [:gt, :eq]
     end_time_ok? = Time.compare(time_now, end_time) in [:lt, :eq]
