@@ -5,10 +5,7 @@ defmodule AlertProcessor.NotificationWindowFilterTest do
 
   describe "filter/2" do
     test "within notification window" do
-      trip_details = [
-        alert_time_difference_in_minutes: 60
-      ]
-      trip = build(:trip, trip_details)
+      trip = build(:trip)
       subscription_details = [
         relevant_days: ~w(monday)a,
         start_time: ~T[08:00:00],
@@ -22,10 +19,7 @@ defmodule AlertProcessor.NotificationWindowFilterTest do
     end
 
     test "within notification window (start after end)" do
-      trip_details = [
-        alert_time_difference_in_minutes: 60
-      ]
-      trip = build(:trip, trip_details)
+      trip = build(:trip)
       subscription_details = [
         relevant_days: ~w(monday)a,
         start_time: ~T[22:00:00],
@@ -39,10 +33,7 @@ defmodule AlertProcessor.NotificationWindowFilterTest do
     end
 
     test "outside notification window (start after end)" do
-      trip_details = [
-        alert_time_difference_in_minutes: 60
-      ]
-      trip = build(:trip, trip_details)
+      trip = build(:trip)
       subscription_details = [
         relevant_days: ~w(monday)a,
         start_time: ~T[22:00:00],
@@ -56,10 +47,7 @@ defmodule AlertProcessor.NotificationWindowFilterTest do
     end
 
     test "outside notification window (day mismatch: sunday)" do
-      trip_details = [
-        alert_time_difference_in_minutes: 60
-      ]
-      trip = build(:trip, trip_details)
+      trip = build(:trip)
       subscription_details = [
         relevant_days: ~w(monday)a,
         start_time: ~T[08:00:00],
@@ -73,10 +61,7 @@ defmodule AlertProcessor.NotificationWindowFilterTest do
     end
 
     test "outside notification window (day mismatch: thursday)" do
-      trip_details = [
-        alert_time_difference_in_minutes: 60
-      ]
-      trip = build(:trip, trip_details)
+      trip = build(:trip)
       subscription_details = [
         # Thursday is missing from `relevant_days`
         relevant_days: ~w(monday tuesday wednesday friday saturday sunday)a,
@@ -91,10 +76,7 @@ defmodule AlertProcessor.NotificationWindowFilterTest do
     end
 
     test "outside notification window (day match but time before window)" do
-      trip_details = [
-        alert_time_difference_in_minutes: 60
-      ]
-      trip = build(:trip, trip_details)
+      trip = build(:trip)
       subscription_details = [
         relevant_days: ~w(monday)a,
         start_time: ~T[08:00:00],
@@ -108,10 +90,7 @@ defmodule AlertProcessor.NotificationWindowFilterTest do
     end
 
     test "outside notification window (day match but time after window)" do
-      trip_details = [
-        alert_time_difference_in_minutes: 60
-      ]
-      trip = build(:trip, trip_details)
+      trip = build(:trip)
       subscription_details = [
         relevant_days: ~w(monday)a,
         start_time: ~T[08:00:00],

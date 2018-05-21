@@ -22,7 +22,6 @@ defmodule AlertProcessor.Model.Trip do
     return_end_time: Time.t | nil,
     facility_types: [facility_type] | [],
     roundtrip: boolean,
-    alert_time_difference_in_minutes: integer,
     trip_type: trip_type
   }
 
@@ -44,7 +43,6 @@ defmodule AlertProcessor.Model.Trip do
     field :return_end_time, :time, null: true
     field :facility_types, {:array, AlertProcessor.AtomType}, null: false
     field :roundtrip, :boolean, null: false
-    field :alert_time_difference_in_minutes, :integer, default: 60
     field :trip_type, AlertProcessor.AtomType, null: false, default: :commute
 
     timestamps()
@@ -57,14 +55,12 @@ defmodule AlertProcessor.Model.Trip do
   @valid_relevant_days ~w(monday tuesday wednesday thursday friday saturday sunday)a
   @valid_facility_types ~w(bike_storage electric_car_chargers elevator escalator parking_area pick_drop portable_boarding_lift tty_phone elevated_subplatform)a
   @valid_alert_priority_types ~w(low high)a
-  @valid_alert_time_difference_in_minutes [30, 60, 120]
   @update_permitted_fields ~w(
     relevant_days
     start_time
     end_time
     return_start_time
     return_end_time
-    alert_time_difference_in_minutes
   )a
 
   @doc """
@@ -90,7 +86,6 @@ defmodule AlertProcessor.Model.Trip do
   * end_time
   * return_start_time
   * return_end_time
-  * alert_time_difference_in_minutes
 
   """
   @spec update_changeset(__MODULE__.t, map) :: Ecto.Changeset.t
@@ -99,7 +94,6 @@ defmodule AlertProcessor.Model.Trip do
     |> cast(params, @update_permitted_fields)
     |> validate_subset(:relevant_days, @valid_relevant_days)
     |> validate_length(:relevant_days, min: 1)
-    |> validate_inclusion(:alert_time_difference_in_minutes, @valid_alert_time_difference_in_minutes)
   end
 
   @doc """
