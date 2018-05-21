@@ -1,9 +1,9 @@
 <h1 class="heading__title">Personalize my subscription</h1>
 <%
 new_leg_label = if @route_name == "Green Line" || @route_name == "Red Line" do
-  "Do you connect to another route, line, or branch?"
+  "Do you transfer to another route, line, or branch?"
 else
-  "Do you make a connection to another route or line?"
+  "Do you transfer to another route or line?"
 end
 %>
 
@@ -19,10 +19,10 @@ end
 
           <div class="form-group form__section">
             <%= label form, :destination, "Where do you exit?", class: "form__label" %>
-            <%= ConciergeSite.StopSelectHelper.render(@saved_leg, :trip, :destination, [], [required: true]) %>
             <%= if @route_name == "Green Line" || @route_name == "Red Line" do %>
-              <div class="my-1 font-italic">Only stops on the same branch can be selected</div>
+              <div class="form__label--text">Only stops on the same branch can be selected.</div>
             <% end %>
+            <%= ConciergeSite.StopSelectHelper.render(@saved_leg, :trip, :destination, [], [required: true]) %>
           </div>
         <% else %>
           <%= hidden_input form, :origin, value: "" %>
@@ -31,6 +31,9 @@ end
 
         <div class="form-group form__section">
           <%= label form, :new_leg, new_leg_label, class: "form__label" %>
+          <%= if @route_name == "Green Line" do %>
+            <div class="form__label--text">If you take one branch of the Green Line to another, then you make a transfer.</div>
+          <% end %>
           <div class="form-check">
             <label class="form-check-label">
               <%= radio_button form, :new_leg, true, required: true, data: [toggle: "controller"], class: "form-check-input" %>
@@ -62,7 +65,7 @@ end
         <% end %>
 
         <div class="form-group form__section" data-type="connection">
-          <%= label form, :route, "Which route or line do you connect to?", class: "form__label", data: [toggle: "label"] %>
+          <%= label form, :route, "Which line or route do you transfer to?", class: "form__label", data: [toggle: "label"] %>
           <%= ConciergeSite.RouteSelectHelper.render(:trip, :route, [], data: [toggle: "input", type: "route"]) %>
         </div>
 

@@ -368,7 +368,7 @@ defmodule ConciergeSite.V2.TripControllerTest do
       |> post(v2_trip_trip_path(conn, :leg), %{trip: trip})
 
     assert html_response(conn, 200) =~ "Where do you get on the Orange Line?"
-    assert html_response(conn, 200) =~ "Do you make a connection to another route or line?"
+    assert html_response(conn, 200) =~ "Do you transfer to another route or line?"
     refute html_response(conn, 200) =~ "Only stops on the same branch can be selected"
   end
 
@@ -389,8 +389,8 @@ defmodule ConciergeSite.V2.TripControllerTest do
       |> post(v2_trip_trip_path(conn, :leg), %{trip: trip})
 
     assert html_response(conn, 200) =~ "Where do you get on the Green Line?"
-    assert html_response(conn, 200) =~ "Do you connect to another route, line, or branch?"
-    assert html_response(conn, 200) =~ "Only stops on the same branch can be selected"
+    assert html_response(conn, 200) =~ "Do you transfer to another route, line, or branch?"
+    assert html_response(conn, 200) =~ "Only stops on the same branch can be selected."
     assert html_response(conn, 200) =~ "selected=\"selected\" value=\"place-pktrm\">Park Street</option>"
   end
 
@@ -436,7 +436,7 @@ defmodule ConciergeSite.V2.TripControllerTest do
       |> post(v2_trip_trip_path(conn, :leg), %{trip: trip})
 
     assert html_response(conn, 200) =~ "Where do you get on the Green Line?"
-    assert html_response(conn, 200) =~ "Do you connect to another route, line, or branch?"
+    assert html_response(conn, 200) =~ "Do you transfer to another route, line, or branch?"
   end
 
   test "POST /trip/leg to finish trip", %{conn: conn, user: user} do
@@ -473,7 +473,7 @@ defmodule ConciergeSite.V2.TripControllerTest do
       |> post(v2_trip_trip_path(conn, :leg), %{trip: trip})
 
     assert html_response(conn, 200) =~ "Where do you get on the Red Line?"
-    assert html_response(conn, 200) =~ "Do you connect to another route, line, or branch?"
+    assert html_response(conn, 200) =~ "Do you transfer to another route, line, or branch?"
   end
 
   test "POST /trip/leg with errors", %{conn: conn, user: user} do
