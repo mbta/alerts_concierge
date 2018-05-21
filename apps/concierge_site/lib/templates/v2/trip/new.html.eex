@@ -9,8 +9,6 @@
       <%= form_for @conn, v2_trip_trip_path(@conn, :leg), [as: :trip, method: :post], fn form -> %>
         <div class="form-group my-4">
           <%= label form, :round_trip, "What kind of trip is this?", class: "form__label" %>
-          <%= ConciergeSite.HelpTextHelper.link("phone") %>
-            <%= ConciergeSite.HelpTextHelper.message("phone", "If you take the same mode of transit on your first trip as your return trip, this is a round trip.<br><br>For example, 39 Inbound in the morning and 39 Outbound in the evening.") %>
           <div class="form-check">
             <label class="form-check-label">
               <%= radio_button form, :round_trip, true, required: true, class: "form-check-input" %>
