@@ -13,7 +13,7 @@ defmodule AlertProcessor.NotificationWindowFilterTest do
         trip: trip
       ]
       subscription = build(:subscription, subscription_details)
-      monday_at_7am = DateTime.from_naive!(~N[2018-04-02 07:00:00], "Etc/UTC")
+      monday_at_7am = DateTime.from_naive!(~N[2018-04-02 08:00:00], "Etc/UTC")
       result = NotificationWindowFilter.filter([subscription], monday_at_7am)
       assert result == [subscription]
     end
