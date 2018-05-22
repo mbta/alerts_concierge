@@ -123,11 +123,10 @@ defmodule AlertProcessor.Model.TripTest do
     test "updates a trip with valid params" do
       trip_details = %{
         relevant_days: [:monday],
-        start_time: ~T[12:00:00],
+        start_time: ~T[11:00:00],
         end_time: ~T[13:30:00],
-        return_start_time: ~T[18:00:00],
-        return_end_time: ~T[18:30:00],
-        alert_time_difference_in_minutes: 60
+        return_start_time: ~T[17:00:00],
+        return_end_time: ~T[18:30:00]
       }
       trip = insert(:trip, trip_details)
       params = %{
@@ -135,8 +134,7 @@ defmodule AlertProcessor.Model.TripTest do
         end_time: ~T[13:30:00],
         return_start_time: ~T[15:00:00],
         return_end_time: ~T[15:30:00],
-        relevant_days: [:tuesday],
-        alert_time_difference_in_minutes: 30
+        relevant_days: [:tuesday]
       }
       {:ok, %Trip{} = _} = Trip.update(trip, params)
       updated_trip = Trip.find_by_id(trip.id)
@@ -145,7 +143,6 @@ defmodule AlertProcessor.Model.TripTest do
       assert updated_trip.return_start_time == ~T[15:00:00.000000]
       assert updated_trip.return_end_time == ~T[15:30:00.000000]
       assert updated_trip.relevant_days == [:tuesday]
-      assert updated_trip.alert_time_difference_in_minutes == 30
     end
 
     test "errors if updated without any days" do
@@ -155,25 +152,16 @@ defmodule AlertProcessor.Model.TripTest do
       assert :relevant_days in Keyword.keys(changeset.errors)
     end
 
-    test "errors if invalid alert_time_difference_in_minutes" do
-      trip = insert(:trip)
-      params = %{alert_time_difference_in_minutes: 10}
-      assert {:error, %Ecto.Changeset{} = changeset} = Trip.update(trip, params)
-      assert :alert_time_difference_in_minutes in Keyword.keys(changeset.errors)
-    end
-
     test "syncs a one-way trip's subscriptions" do
       # When a trip is updated we want to make sure it's subscriptions are
       # updated accordingly.
       relevant_days = [:monday]
       start_time = ~T[12:00:00.000000]
       end_time = ~T[12:30:00.000000]
-      alert_time_difference_in_minutes = 60
       trip_details = %{
         relevant_days: relevant_days,
         start_time: start_time,
-        end_time: end_time,
-        alert_time_difference_in_minutes: alert_time_difference_in_minutes
+        end_time: end_time
       }
       trip = insert(:trip, trip_details)
       subscription_details_1 = %{
@@ -197,8 +185,7 @@ defmodule AlertProcessor.Model.TripTest do
       params = %{
         relevant_days: [:tuesday],
         start_time: ~T[13:00:00.000000],
-        end_time: ~T[13:30:00.000000],
-        alert_time_difference_in_minutes: 30
+        end_time: ~T[13:30:00.000000]
       }
 
       {:ok, %Trip{} = _} = Trip.update(trip, params)
@@ -223,14 +210,12 @@ defmodule AlertProcessor.Model.TripTest do
       end_time = ~T[12:30:00.000000]
       return_start_time = ~T[14:00:00.000000]
       return_end_time = ~T[14:30:00.000000]
-      alert_time_difference_in_minutes = 60
       trip_details = %{
         relevant_days: relevant_days,
         start_time: start_time,
         end_time: end_time,
         return_start_time: return_start_time,
-        return_end_time: return_end_time,
-        alert_time_difference_in_minutes: alert_time_difference_in_minutes
+        return_end_time: return_end_time
       }
       trip = insert(:trip, trip_details)
       departure_subscription_details = %{
@@ -258,8 +243,7 @@ defmodule AlertProcessor.Model.TripTest do
         start_time: ~T[13:00:00.000000],
         end_time: ~T[13:30:00.000000],
         return_start_time: ~T[15:00:00.000000],
-        return_end_time: ~T[15:30:00.000000],
-        alert_time_difference_in_minutes: 30
+        return_end_time: ~T[15:30:00.000000]
       }
 
       {:ok, %Trip{} = _} = Trip.update(trip, params)

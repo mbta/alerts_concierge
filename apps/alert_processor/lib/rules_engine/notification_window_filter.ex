@@ -7,8 +7,7 @@ defmodule AlertProcessor.NotificationWindowFilter do
   A subscription's notificaiton window has a start time and an end time:
 
   * A subscription's notification window start time is equal to the
-  subscription's `start_time` minus the `alert_time_difference_in_minutes`
-  (column in the trips table).
+  subscription's `start_time`.
 
   * A subscription's notification window end time is equal to the
   subscription's `end_time`.
@@ -34,7 +33,7 @@ defmodule AlertProcessor.NotificationWindowFilter do
   @doc false
   @spec within_notification_window?(Subscription.t, DateTime.t) :: boolean
   def within_notification_window?(subscription, now) do
-    start_time = notification_window_start_time(subscription)
+    start_time = subscription.start_time
     end_time = subscription.end_time
     multiday? = span_multiple_days?(start_time, end_time)
 
@@ -78,11 +77,5 @@ defmodule AlertProcessor.NotificationWindowFilter do
     start_time_ok? = Time.compare(time_now, start_time) in [:gt, :eq]
     end_time_ok? = Time.compare(time_now, end_time) in [:lt, :eq]
     start_time_ok? && end_time_ok?
-  end
-
-  defp notification_window_start_time(subscription) do
-    difference_in_minutes = subscription.trip.alert_time_difference_in_minutes
-    difference_in_seconds = difference_in_minutes * 60
-    Time.add(subscription.start_time, -difference_in_seconds)
   end
 end

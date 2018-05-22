@@ -28,8 +28,13 @@ label.form__label--inline {
   padding-left: 5px;
   padding-right: 10px;
   font-style: italic;
-  width: 170px;
+  width: 6rem;
   justify-content: flex-start;
+}
+
+label.form__label--inline-divider {
+  padding: 0 1rem;
+  font-style: italic;
 }
 
 .form__group--inline {
@@ -37,8 +42,9 @@ label.form__label--inline {
   flex-flow: initial;
 }
 
+.form-inline .form__time--inline,
 .form__time--inline {
-  width: auto;
+  width: 6rem;
 }
 
 .form__input {

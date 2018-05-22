@@ -418,8 +418,7 @@ defmodule ConciergeSite.V2.TripController do
       return_start_time: params["return_start_time"],
       return_end_time: params["return_end_time"],
       facility_types: input_to_facility_types(params),
-      roundtrip: params["round_trip"] == "true",
-      alert_time_difference_in_minutes: String.to_integer(params["alert_time_difference_in_minutes"])
+      roundtrip: params["round_trip"] == "true"
     }
   end
 
@@ -472,10 +471,6 @@ defmodule ConciergeSite.V2.TripController do
   defp sanitize_trip_param({"relevant_days" = key, relevant_days}) do
     days_as_atoms = Enum.map(relevant_days, &String.to_existing_atom/1)
     {key, days_as_atoms}
-  end
-
-  defp sanitize_trip_param({"alert_time_difference_in_minutes" = key, minutes}) do
-    {key, minutes}
   end
 
   @valid_time_keys ~w(start_time end_time return_start_time return_end_time alert_time)

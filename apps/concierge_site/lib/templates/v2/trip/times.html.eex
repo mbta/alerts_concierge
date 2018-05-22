@@ -1,11 +1,13 @@
 <h1 class="heading__title">Personalize my subscription</h1>
 <%= flash_error(@conn) %>
 <%
-first_trip_label = if @round_trip == "true" do
-  "What time do you usually take your first trip?"
+time_label = if @round_trip == "true" do
+  "When would you like to receive alerts for your trips?"
 else
-  "What time do you usually take this trip?"
+  "When would you like to receive alerts for your trip?"
 end
+first_trip_label = if @round_trip == "true", do: "First trip", else: "Starting at"
+first_trip_padding_class = if @round_trip == "true", do: "", else: "form__section"
 %>
 
 <div class="container container__inner">
@@ -17,25 +19,12 @@ end
           <%= ConciergeSite.DaySelectHelper.render(:trip, ["monday", "tuesday", "wednesday", "thursday", "friday", "weekdays"]) %>
         </div>
 
-        <div class="form-group form__section">
-          <%= label form, :alert_time_difference_in_minutes, "When would you like to start receiving alerts for your trips?", class: "form__label" %>
-          <p>
-          <%= select form, :alert_time_difference_in_minutes, [[key: "30 mins", value: 30],
-                                                               [key: "1 hour", value: 60],
-                                                               [key: "2 hours", value: 120]],
-                class: "form-control form__select--inline-small" %>
-            <em> before my trip</em>
-          </p>
-        </div>
-
-        <div class="form-group form__section">
-          <span class="form__label"><%= first_trip_label %></span>
+        <div class="form-group <%= first_trip_padding_class %>">
+          <span class="form__label"><%= time_label %></span>
           <div class="form-group form-inline form__group--inline">
-            <%= label form, :start_time, "Departing around", class: "form__label--inline" %>
+            <%= label form, :start_time, first_trip_label, class: "form__label--inline" %>
             <%= text_input form, :start_time, type: "text", class: "form-control form__time--inline", step: "60", required: true, value: "8:00 AM", data: [type: "time"]  %>
-          </div>
-          <div class="form-group form-inline form__group--inline">
-            <%= label form, :end_time, "Arriving around", class: "form__label--inline" %>
+            <%= label form, :end_time, "until", class: "form__label--inline-divider" %>
             <%= text_input form, :end_time, type: "text", class: "form-control form__time--inline", step: "60", required: true, value: "9:00 AM", data: [type: "time"] %>
           </div>
           <%= ConciergeSite.ScheduleHelper.render(@schedules, "trip_start_time", "trip_end_time") %>
@@ -43,13 +32,10 @@ end
 
         <%= if @round_trip == "true" do %>
           <div class="form-group form__section">
-            <span class="form__label">What time do you usually take your return trip?</span>
             <div class="form-group form-inline form__group--inline">
-              <%= label form, :return_start_time, "Departing around", class: "form__label--inline" %>
+              <%= label form, :return_start_time, "Return trip", class: "form__label--inline" %>
               <%= text_input form, :return_start_time, type: "text", class: "form-control form__time--inline", step: "60", required: true, value: "5:00 PM", data: [type: "time"] %>
-            </div>
-            <div class="form-group form-inline form__group--inline">
-              <%= label form, :return_end_time, "Arriving around", class: "form__label--inline" %>
+              <%= label form, :return_end_time, "until", class: "form__label--inline-divider" %>
               <%= text_input form, :return_end_time, type: "text", class: "form-control form__time--inline", step: "60", required: true, value: "6:00 PM", data: [type: "time"] %>
             </div>
             <%= ConciergeSite.ScheduleHelper.render(@return_schedules, "trip_return_start_time", "trip_return_end_time") %>

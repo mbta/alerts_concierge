@@ -2,6 +2,16 @@
 <%= flash_error(@conn) %>
 <%= flash_info(@conn) %>
 
+<%
+time_label = if @trip.roundtrip == "true" do
+  "When would you like to receive alerts for your trips?"
+else
+  "When would you like to receive alerts for your trip?"
+end
+first_trip_label = if @trip.roundtrip == "true", do: "First trip", else: "Starting at"
+first_trip_padding_class = if @trip.roundtrip == "true", do: "", else: "form__section"
+%>
+
 <div class="container container__inner">
   <div class="row justify-content-md-center">
     <div class="col-md-10 col-sm-12">
@@ -10,30 +20,17 @@
       </div>
 
       <%= form_for @changeset, v2_trip_path(@conn, :update, @trip), [as: :trip], fn form -> %>
-        <div class="form-group my-5">
-          <%= label form, :alert_time_difference_in_minutes, "When would you like to start receiving alerts for your trips?", class: "form__label" %>
-          <p>
-          <%= select form, :alert_time_difference_in_minutes, [[key: "30 mins", value: 30],
-                                                               [key: "1 hour", value: 60],
-                                                               [key: "2 hours", value: 120]],
-                selected: @trip.alert_time_difference_in_minutes, class: "form-control form__select--inline-small" %>
-            <em> before my trip</em>
-          </p>
-        </div>
-
-        <div class="form-group form__section">
+        <div class="form-group form__section my-5">
           <%= label form, :relevant_days, "I usually travel on these days:", class: "form__label" %>
           <%= ConciergeSite.DaySelectHelper.render(:trip, @trip.relevant_days) %>
         </div>
 
-        <div class="form-group form__section">
-          <span class="form__label">My first trip is usually at this time:</span>
+        <div class="form-group <%= first_trip_padding_class %>">
+          <span class="form__label"><%= time_label %></span>
           <div class="form-group form-inline form__group--inline">
-            <%= label form, :start_time, "Departing around", class: "form__label--inline" %>
+            <%= label form, :start_time, first_trip_label, class: "form__label--inline" %>
             <%= text_input form, :start_time, type: "text", class: "form-control form__time--inline", step: "60", required: true, value: ConciergeSite.TimeHelper.format_time(@trip.start_time), data: [type: "time"] %>
-          </div>
-          <div class="form-group form-inline form__group--inline">
-            <%= label form, :end_time, "Arriving around", class: "form__label--inline" %>
+            <%= label form, :end_time, "until", class: "form__label--inline-divider" %>
             <%= text_input form, :end_time, type: "text", class: "form-control form__time--inline", step: "60", required: true, value: ConciergeSite.TimeHelper.format_time(@trip.end_time), data: [type: "time"] %>
           </div>
           <%= ConciergeSite.ScheduleHelper.render(@schedules, "trip_start_time", "trip_end_time") %>
@@ -41,13 +38,10 @@
 
         <%= if @trip.roundtrip do %>
         <div class="form-group form__section">
-          <span class="form__label">My return trip is usually at this time:</span>
           <div class="form-group form-inline form__group--inline">
-            <%= label form, :return_start_time, "Departing around", class: "form__label--inline" %>
+            <%= label form, :return_start_time, "Return trip", class: "form__label--inline" %>
             <%= text_input form, :return_start_time, type: "text", class: "form-control form__time--inline", step: "60", required: true, value: ConciergeSite.TimeHelper.format_time(@trip.return_start_time), data: [type: "time"] %>
-          </div>
-          <div class="form-group form-inline form__group--inline">
-            <%= label form, :return_end_time, "Arriving around", class: "form__label--inline" %>
+            <%= label form, :return_end_time, "until", class: "form__label--inline-divider" %>
             <%= text_input form, :return_end_time, type: "text", class: "form-control form__time--inline", step: "60", required: true, value: ConciergeSite.TimeHelper.format_time(@trip.return_end_time), data: [type: "time"] %>
           </div>
           <%= ConciergeSite.ScheduleHelper.render(@return_schedules, "trip_return_start_time", "trip_return_end_time") %>
