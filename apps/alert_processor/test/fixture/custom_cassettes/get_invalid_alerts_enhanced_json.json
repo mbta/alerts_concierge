@@ -1,0 +1,14 @@
+[
+  {
+    "request": {
+      "url": "http://s3.amazonaws.com/mbta-realtime-test/alerts_enhanced.json"
+    },
+    "response": {
+      "status_code": 200,
+      "headers": {
+        "Content-Type": "text/html"
+      },
+      "body": "<h1>Custom Response</h1>"
+    }
+  }
+]

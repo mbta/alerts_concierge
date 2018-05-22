@@ -4,6 +4,7 @@ defmodule AlertProcessor.AlertsClient do
   """
   use HTTPoison.Base
   alias AlertProcessor.Helpers.ConfigHelper
+  require Logger
 
   @doc """
   fetch all alerts from enhanced json feed
@@ -11,11 +12,14 @@ defmodule AlertProcessor.AlertsClient do
   @spec get_alerts() :: [map] | {:ok, map, integer} | {:error, String.t}
   def get_alerts do
     case get(alerts_url()) do
-      {:ok, %{body: %{"alerts" => alerts, "timestamp" => timestamp}}} ->
+      {:ok, %{body: {:ok, %{"alerts" => alerts, "timestamp" => timestamp}}}} ->
         {:ok, alerts, timestamp}
-      {:ok, %{body: %{"header" => %{"timestamp" => timestamp}, "entity" => entity}}} ->
+      {:ok, %{body: {:ok, %{"header" => %{"timestamp" => timestamp}, "entity" => entity}}}} ->
         reconstructed_alerts = Enum.map(entity, &alert_from_entity/1)
         {:ok, reconstructed_alerts, timestamp}
+      {:ok, %{body: {:error, reason}}} ->
+        Logger.warn(fn -> "Error getting alerts enhanced JSON: reason=#{inspect(reason)}" end)
+        {:ok, [], nil}
       {:error, message} ->
         {:error, message}
     end
@@ -26,7 +30,7 @@ defmodule AlertProcessor.AlertsClient do
   end
 
   defp process_response_body(body) do
-    Poison.decode!(body)
+    Poison.decode(body)
   end
 
   defp alert_from_entity(%{"id" => id, "alert" => alert}) do
