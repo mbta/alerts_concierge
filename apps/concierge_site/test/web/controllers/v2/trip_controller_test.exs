@@ -179,8 +179,8 @@ defmodule ConciergeSite.V2.TripControllerTest do
       |> guardian_login(conn)
       |> get(v2_trip_path(conn, :new))
 
-    assert html_response(conn, 200) =~ "Is this usually a round trip?"
-    assert html_response(conn, 200) =~ "Which route or line do you take?"
+    assert html_response(conn, 200) =~ "What kind of trip is this?"
+    assert html_response(conn, 200) =~ "Which line or route do you take first?"
   end
 
   describe "POST /trip" do
