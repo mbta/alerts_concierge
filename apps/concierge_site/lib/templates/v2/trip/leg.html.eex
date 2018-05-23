@@ -14,7 +14,7 @@ end
         <%= if @saved_mode != "bus" do %>
           <div class="form-group form__section--top">
             <%= label form, :origin, "Where do you get on the #{@route_name}?", class: "form__label" %>
-            <%= ConciergeSite.StopSelectHelper.render(@saved_leg, :trip, :origin, @default_origin, [required: true]) %>
+            <%= ConciergeSite.StopSelectHelper.render(@saved_leg, :trip, :origin, @default_origin, [required: true, data_mode: @saved_mode]) %>
           </div>
 
           <div class="form-group form__section">
