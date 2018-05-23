@@ -56,8 +56,6 @@
     <style type="text/css">
       @media only screen and (min-width:480px) {
         .mj-column-per-100 { width:100% !important; }
-.mj-column-per-20 { width:20% !important; }
-.mj-column-per-80 { width:80% !important; }
       }
     </style>
     
@@ -74,15 +72,8 @@
       <div
         
       >
-        <!-- Header -->
-      <table
-         align="center" border="0" cellpadding="0" cellspacing="0" role="presentation" style="background:#16528b;background-color:#16528b;width:100%;"
-      >
-        <tbody>
-          <tr>
-            <td>
-              
         
+      
       <!--[if mso | IE]>
       <table
          align="center" border="0" cellpadding="0" cellspacing="0" style="width:600px;" width="600"
@@ -91,11 +82,11 @@
           <td style="line-height:0px;font-size:0px;mso-line-height-rule:exactly;">
       <![endif]-->
     
-        
-      <div  style="Margin:0px auto;max-width:600px;">
+      
+      <div  style="background:#16528b;background-color:#16528b;Margin:0px auto;max-width:600px;">
         
         <table
-           align="center" border="0" cellpadding="0" cellspacing="0" role="presentation" style="width:100%;"
+           align="center" border="0" cellpadding="0" cellspacing="0" role="presentation" style="background:#16528b;background-color:#16528b;width:100%;"
         >
           <tbody>
             <tr>
@@ -122,24 +113,14 @@
         
             <tr>
               <td
-                 align="center" style="font-size:0px;padding:10px 25px;word-break:break-word;"
+                 align="center" style="font-size:0px;padding:0;word-break:break-word;"
               >
                 
-      <table
-         align="center" border="0" cellpadding="0" cellspacing="0" role="presentation" style="border-collapse:collapse;border-spacing:0px;"
+      <div
+         style="font-family:Ubuntu, Helvetica, Arial, sans-serif;font-size:13px;line-height:19px;text-align:center;color:#000000;"
       >
-        <tbody>
-          <tr>
-            <td  style="width:253px;">
-              
-      <img
-         height="109" src="https://s3.amazonaws.com/mbta-alerts/html_email/welcome/welcome.png" style="border:0;display:block;outline:none;text-decoration:none;width:100%;" width="253"
-      />
-    
-            </td>
-          </tr>
-        </tbody>
-      </table>
+        <img src="https://s3.amazonaws.com/mbta-alerts/html_email/welcome2/header.png" width="254" height="100" />
+      </div>
     
               </td>
             </tr>
@@ -162,21 +143,12 @@
         
       </div>
     
-        
+      
       <!--[if mso | IE]>
           </td>
         </tr>
       </table>
-      <![endif]-->
-    
       
-            </td>
-          </tr>
-        </tbody>
-      </table>
-    <!-- Body content -->
-      
-      <!--[if mso | IE]>
       <table
          align="center" border="0" cellpadding="0" cellspacing="0" style="width:600px;" width="600"
       >
@@ -221,8 +193,9 @@
       <div
          style="font-family:Lato, Arial;font-size:16px;line-height:19px;text-align:left;color:#000000;"
       >
-        <p>Thanks for signing up for T-Alerts Beta!<br /><br /> If you have immediate feedback about the sign up process, or related to any alerts as you start to receive them, we’d love to hear it. <a style="color: #165c96" href="<%= feedback_url %>">Provide feedback now!</a><br /><br />
-            <strong>You can sign into your T-Alerts account to change your account preferences at any time, including:</strong>
+        <p>Thanks for signing up for T-Alerts Beta!<br /><br /> If you have immediate feedback about the sign up process, or related to any alerts as you start to receive them, we’d love to hear it. <a style="color: #165c96" href="<%= feedback_url %>">Provide feedback now!</a><br
+            /><br />
+            <strong>Get the most from your T-Alerts account by signing in!  You can:</strong>
           </p>
       </div>
     
@@ -269,7 +242,7 @@
           <tbody>
             <tr>
               <td
-                 style="direction:ltr;font-size:0px;padding:20px 0;padding-bottom:10;padding-top:0;text-align:center;vertical-align:top;"
+                 style="direction:ltr;font-size:0px;padding:20px 0;padding-bottom:20;padding-top:0;text-align:center;vertical-align:top;"
               >
                 <!--[if mso | IE]>
                   <table role="presentation" border="0" cellpadding="0" cellspacing="0">
@@ -277,46 +250,12 @@
         <tr>
       
             <td
-               style="vertical-align:top;width:120px;"
+               style="vertical-align:top;width:600px;"
             >
           <![endif]-->
             
       <div
-         class="mj-column-per-20 outlook-group-fix" style="font-size:13px;text-align:left;direction:ltr;display:inline-block;vertical-align:top;width:100%;"
-      >
-        
-      <table
-         border="0" cellpadding="0" cellspacing="0" role="presentation" style="vertical-align:top;" width="100%"
-      >
-        
-            <tr>
-              <td
-                 align="center" style="font-size:0px;padding:10px 25px;word-break:break-word;"
-              >
-                
-      <div
-         style="font-family:Ubuntu, Helvetica, Arial, sans-serif;font-size:13px;line-height:19px;text-align:center;color:#000000;"
-      >
-        <img src="https://s3.amazonaws.com/mbta-alerts/html_email/welcome/icon-1.png" width="86" height="92" />
-      </div>
-    
-              </td>
-            </tr>
-          
-      </table>
-    
-      </div>
-    
-          <!--[if mso | IE]>
-            </td>
-          
-            <td
-               style="vertical-align:top;width:480px;"
-            >
-          <![endif]-->
-            
-      <div
-         class="mj-column-per-80 outlook-group-fix" style="font-size:13px;text-align:left;direction:ltr;display:inline-block;vertical-align:top;width:100%;"
+         class="mj-column-per-100 outlook-group-fix" style="font-size:13px;text-align:left;direction:ltr;display:inline-block;vertical-align:top;width:100%;"
       >
         
       <table
@@ -331,9 +270,22 @@
       <div
          style="font-family:Lato, Arial;font-size:16px;line-height:19px;text-align:left;color:#000000;"
       >
-        <h3>Which alerts you receive</h3>
-          <p>
-            Moving from the Red Line to the Green Line? Have you started biking to the T? Sign into your account to add or remove alert subscriptions.</p>
+        <h3>Build multiple subscriptions</h3>
+          Have different travel plans on the weekends? Alternate between a couple of different routes to work? You can create multiple subscriptions to receive alerts that are relevant to all your travel plans
+      </div>
+    
+              </td>
+            </tr>
+          
+            <tr>
+              <td
+                 align="center" style="font-size:0px;padding:0;word-break:break-word;"
+              >
+                
+      <div
+         style="font-family:Ubuntu, Helvetica, Arial, sans-serif;font-size:13px;line-height:19px;text-align:center;color:#000000;"
+      >
+        <img src="https://s3.amazonaws.com/mbta-alerts/html_email/welcome2/email-icon-1.png" width="304" height="102" />
       </div>
     
               </td>
@@ -379,7 +331,7 @@
           <tbody>
             <tr>
               <td
-                 style="direction:ltr;font-size:0px;padding:20px 0;padding-bottom:10;padding-top:0;text-align:center;vertical-align:top;"
+                 style="direction:ltr;font-size:0px;padding:20px 0;padding-bottom:20;padding-top:0;text-align:center;vertical-align:top;"
               >
                 <!--[if mso | IE]>
                   <table role="presentation" border="0" cellpadding="0" cellspacing="0">
@@ -387,46 +339,12 @@
         <tr>
       
             <td
-               style="vertical-align:top;width:120px;"
+               style="vertical-align:top;width:600px;"
             >
           <![endif]-->
             
       <div
-         class="mj-column-per-20 outlook-group-fix" style="font-size:13px;text-align:left;direction:ltr;display:inline-block;vertical-align:top;width:100%;"
-      >
-        
-      <table
-         border="0" cellpadding="0" cellspacing="0" role="presentation" style="vertical-align:top;" width="100%"
-      >
-        
-            <tr>
-              <td
-                 align="center" style="font-size:0px;padding:10px 25px;word-break:break-word;"
-              >
-                
-      <div
-         style="font-family:Ubuntu, Helvetica, Arial, sans-serif;font-size:13px;line-height:19px;text-align:center;color:#000000;"
-      >
-        <img src="https://s3.amazonaws.com/mbta-alerts/html_email/welcome/icon-2.png" width="84" height="90" />
-      </div>
-    
-              </td>
-            </tr>
-          
-      </table>
-    
-      </div>
-    
-          <!--[if mso | IE]>
-            </td>
-          
-            <td
-               style="vertical-align:top;width:480px;"
-            >
-          <![endif]-->
-            
-      <div
-         class="mj-column-per-80 outlook-group-fix" style="font-size:13px;text-align:left;direction:ltr;display:inline-block;vertical-align:top;width:100%;"
+         class="mj-column-per-100 outlook-group-fix" style="font-size:13px;text-align:left;direction:ltr;display:inline-block;vertical-align:top;width:100%;"
       >
         
       <table
@@ -441,8 +359,22 @@
       <div
          style="font-family:Lato, Arial;font-size:16px;line-height:19px;text-align:left;color:#000000;"
       >
-        <h3>When you receive alerts</h3>
-          <p>Did you know you can receive alerts up to 2 hours before your trips? In your account, select “Edit” to update advance preferences.</p>
+        <h3>Change how you receive alerts</h3>
+          Prefer to receive text over email notifications, or vice versa? You can update this in your account settings.
+      </div>
+    
+              </td>
+            </tr>
+          
+            <tr>
+              <td
+                 align="center" style="font-size:0px;padding:0;word-break:break-word;"
+              >
+                
+      <div
+         style="font-family:Ubuntu, Helvetica, Arial, sans-serif;font-size:13px;line-height:19px;text-align:center;color:#000000;"
+      >
+        <img src="https://s3.amazonaws.com/mbta-alerts/html_email/welcome2/email-icon-2.png" width="304" height="102" />
       </div>
     
               </td>
@@ -488,7 +420,7 @@
           <tbody>
             <tr>
               <td
-                 style="direction:ltr;font-size:0px;padding:20px 0;padding-bottom:10;padding-top:0;text-align:center;vertical-align:top;"
+                 style="direction:ltr;font-size:0px;padding:20px 0;padding-bottom:20;padding-top:0;text-align:center;vertical-align:top;"
               >
                 <!--[if mso | IE]>
                   <table role="presentation" border="0" cellpadding="0" cellspacing="0">
@@ -496,46 +428,12 @@
         <tr>
       
             <td
-               style="vertical-align:top;width:120px;"
+               style="vertical-align:top;width:600px;"
             >
           <![endif]-->
             
       <div
-         class="mj-column-per-20 outlook-group-fix" style="font-size:13px;text-align:left;direction:ltr;display:inline-block;vertical-align:top;width:100%;"
-      >
-        
-      <table
-         border="0" cellpadding="0" cellspacing="0" role="presentation" style="vertical-align:top;" width="100%"
-      >
-        
-            <tr>
-              <td
-                 align="center" style="font-size:0px;padding:10px 25px;word-break:break-word;"
-              >
-                
-      <div
-         style="font-family:Ubuntu, Helvetica, Arial, sans-serif;font-size:13px;line-height:19px;text-align:center;color:#000000;"
-      >
-        <img src="https://s3.amazonaws.com/mbta-alerts/html_email/welcome/icon-3.png" width="81" height="89" />
-      </div>
-    
-              </td>
-            </tr>
-          
-      </table>
-    
-      </div>
-    
-          <!--[if mso | IE]>
-            </td>
-          
-            <td
-               style="vertical-align:top;width:480px;"
-            >
-          <![endif]-->
-            
-      <div
-         class="mj-column-per-80 outlook-group-fix" style="font-size:13px;text-align:left;direction:ltr;display:inline-block;vertical-align:top;width:100%;"
+         class="mj-column-per-100 outlook-group-fix" style="font-size:13px;text-align:left;direction:ltr;display:inline-block;vertical-align:top;width:100%;"
       >
         
       <table
@@ -550,8 +448,22 @@
       <div
          style="font-family:Lato, Arial;font-size:16px;line-height:19px;text-align:left;color:#000000;"
       >
-        <h3>How you receive alerts</h3>
-          <p>Prefer email over text notifications? Go to your account settings to change your preferred delivery method.</p>
+        <h3>Update when you receive alerts</h3>
+          Has your schedule changed? Need to change the times and days that you receive alerts? Sign into your account and update your subscription preferences at any time.
+      </div>
+    
+              </td>
+            </tr>
+          
+            <tr>
+              <td
+                 align="center" style="font-size:0px;padding:10px 25px;word-break:break-word;"
+              >
+                
+      <div
+         style="font-family:Ubuntu, Helvetica, Arial, sans-serif;font-size:13px;line-height:19px;text-align:center;color:#000000;"
+      >
+        <img src="https://s3.amazonaws.com/mbta-alerts/html_email/welcome2/email-icon-3.png" width="304" height="102" />
       </div>
     
               </td>
@@ -670,18 +582,7 @@
           </td>
         </tr>
       </table>
-      <![endif]-->
-    
-    <!-- Footer -->
-      <table
-         align="center" border="0" cellpadding="0" cellspacing="0" role="presentation" style="background:#0c3353;background-color:#0c3353;width:100%;"
-      >
-        <tbody>
-          <tr>
-            <td>
-              
-        
-      <!--[if mso | IE]>
+      
       <table
          align="center" border="0" cellpadding="0" cellspacing="0" style="width:600px;" width="600"
       >
@@ -689,11 +590,11 @@
           <td style="line-height:0px;font-size:0px;mso-line-height-rule:exactly;">
       <![endif]-->
     
-        
-      <div  style="Margin:0px auto;max-width:600px;">
+      
+      <div  style="background:#0c3353;background-color:#0c3353;Margin:0px auto;max-width:600px;">
         
         <table
-           align="center" border="0" cellpadding="0" cellspacing="0" role="presentation" style="width:100%;"
+           align="center" border="0" cellpadding="0" cellspacing="0" role="presentation" style="background:#0c3353;background-color:#0c3353;width:100%;"
         >
           <tbody>
             <tr>
@@ -750,18 +651,13 @@
         
       </div>
     
-        
+      
       <!--[if mso | IE]>
           </td>
         </tr>
       </table>
       <![endif]-->
     
-      
-            </td>
-          </tr>
-        </tbody>
-      </table>
     
       </div>
     
