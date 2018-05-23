@@ -34,7 +34,7 @@
         <div class="form-group form__section">
           <%= label form, :email, "Your account email:", class: "form__label" %>
           <div><%= @changeset.data.email %></div>
-          <div class="text-right"><%= link to: v2_account_path(@conn, :edit_password) do %>Change password<% end %>
+          <div class="text-right fs-hide"><%= link to: v2_account_path(@conn, :edit_password) do %>Change password<% end %>
         </div>
 
         <div class="form__action-buttons--container">
