@@ -30,7 +30,11 @@ defmodule AlertProcessor.NotificationWindowFilter do
     end)
   end
 
-  @doc false
+  @doc """
+  Returns true if the given datetime is within the subscription's notification
+  window. Returns false if it's not.
+
+  """
   @spec within_notification_window?(Subscription.t, DateTime.t) :: boolean
   def within_notification_window?(subscription, now) do
     start_time = subscription.start_time

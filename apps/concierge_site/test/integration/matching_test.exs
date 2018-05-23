@@ -3,7 +3,7 @@ defmodule ConciergeSite.Integration.Matching do
   import ConciergeSite.SubscriptionFactory
   import ConciergeSite.AlertFactory, only: [active_period: 3, severity_by_priority: 1]
   import ConciergeSite.NotificationFactory
-  import AlertProcessor.SubscriptionFilterEngine, only: [determine_recipients: 3]
+  import AlertProcessor.SubscriptionFilterEngine, only: [determine_recipients: 3, determine_recipients: 4]
   import AlertProcessor.Factory
 
   @base %{"alert_priority_type" => "medium", "departure_end" => ~T[08:30:00], "departure_start" => ~T[08:00:00],
@@ -443,9 +443,9 @@ defmodule ConciergeSite.Integration.Matching do
     test "matches: notification already sent but last push time changed" do
       alert = alert(informed_entity: [entity(:subway)])
       notification = notification(:earlier, alert, [@subscription])
+      monday_at_8am = DateTime.from_naive!(~N[2018-04-02 08:00:00], "Etc/UTC")
 
-      [new_notification] = determine_recipients(alert, [@subscription], [notification])
-      refute notification == new_notification
+      assert [_subscription] = determine_recipients(alert, [@subscription], [notification], monday_at_8am)
     end
 
     test "does not match: notification already sent but it has a closed_timestamp" do

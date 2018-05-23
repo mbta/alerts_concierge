@@ -37,11 +37,11 @@ defmodule AlertProcessor.SubscriptionFilterEngine do
   @doc """
   determine_recipients/3 receives an alert and applies relevant filters to exclude users who should not be notified
   """
-  @spec determine_recipients(Alert.t, [Subscription.t], [Notification.t]) :: [Subscription.t]
-  def determine_recipients(alert, subscriptions, notifications) do
-    {subscriptions_to_test, subscriptions_to_auto_resend} = SentAlertFilter.filter(subscriptions,
-                                                                                   alert: alert,
-                                                                                   notifications: notifications)
+  @spec determine_recipients(Alert.t, [Subscription.t], [Notification.t], DateTime.t) :: [Subscription.t]
+  def determine_recipients(alert, subscriptions, notifications, now \\ Calendar.DateTime.now!("America/New_York")) do
+    {subscriptions_to_test, subscriptions_to_auto_resend} =
+      SentAlertFilter.filter(subscriptions, alert, notifications, now)
+
     subscriptions_to_test
     |> @notification_window_filter.filter()
     |> InformedEntityFilter.filter(alert: alert)
