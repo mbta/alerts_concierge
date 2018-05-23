@@ -54,7 +54,8 @@
     <footer class="footer__container">
       <p>
         <%= link "See all alerts", to: "https://www.mbta.com/alerts", class: "text-white" %> ●
-        <%= link "FAQ", to: "https://www.mbta.com/about-t-alerts-beta", class: "text-white" %>
+        <%= link "FAQ", to: "https://www.mbta.com/about-t-alerts-beta", class: "text-white" %> ●
+        <%= link "Submit feedback", to: "https://www.mbta.com/beta-alerts-feedback", class: "text-white" %>
       </p>
       <p>&copy; Massachusetts Bay Transportation Authority, all rights reserved.</p>
     </footer>
