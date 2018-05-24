@@ -7,6 +7,9 @@ const select2Options = {
   placeholder: "Select a stop"
 };
 
+const NORTH_STATION = "place-sstat";
+const SOUTH_STATION = "place-north";
+
 const greenLines = ["green-b", "green-c", "green-d", "green-e"];
 const redShapes = ["red-1", "red-2"];
 
@@ -41,6 +44,7 @@ function addValidation(selectStopComponent) {
     selectStopComponent.on("select2:select", removeDestinationIfSameAsOrigin);
     selectStopComponent.on("select2:select", greenEnforceSameRoute);
     selectStopComponent.on("select2:select", redEnforceSameShape);
+    selectStopComponent.on("select2:select", commuterRailSmartDestination);
   }
 }
 
@@ -48,10 +52,52 @@ function isTripLegForm() {
   return $("#tripleg-form").length > 0;
 }
 
+function isDefaultOptionSelected($el) {
+  return $el.find(":selected").html() == "Select a stop";
+}
+
+function getSelectedOption($el) {
+  return $el.find(":selected")[0];
+}
+
+function commuterRailSmartDestination(select2) {
+  const $originSelectEl = $("#trip_origin");
+  const $destinationSelectEl = $("#trip_destination");
+  const originSelectedOption = getSelectedOption($originSelectEl);
+
+  // only perform for commuter rail
+  if (select2.target.getAttribute("data-mode") != "cr") {
+    return;
+  }
+
+  // only perform this operation when the origin changes
+  if (select2.target.getAttribute("id") != "trip_origin") {
+    return;
+  }
+
+  // skip if north / south station already selected
+  if (originSelectedOption.value == SOUTH_STATION || originSelectedOption.value == NORTH_STATION) {
+    return;
+  }
+
+  // skip if there is already an existing destination selection
+  if (!isDefaultOptionSelected($destinationSelectEl)) {
+    return;
+  }
+
+  [...$destinationSelectEl.children()].forEach(optionEl => {
+    if (optionEl.value == SOUTH_STATION || optionEl.value == NORTH_STATION) {
+      $destinationSelectEl.val(optionEl.value);
+      $destinationSelectEl.trigger('change');
+    }
+  });
+}
+
 function removeDestinationIfSameAsOrigin(select2) {
   const $originSelectEl = $("#trip_origin");
   const $destinationSelectEl = $("#trip_destination");
-  const originSelectedOption = $originSelectEl.find(":selected")[0];
+  const originSelectedOption = getSelectedOption($originSelectEl);
+  const destinationSelectedOption = getSelectedOption($destinationSelectEl);
 
   // only perform this operation when the origin changes
   if (select2.target.getAttribute("id") != "trip_origin") {
@@ -66,7 +112,7 @@ function removeDestinationIfSameAsOrigin(select2) {
     }
   });
 
-  rebuildSelect2($destinationSelectEl);
+  rebuildSelect2($destinationSelectEl, destinationSelectedOption.value);
 }
 
 function greenEnforceSameRoute(select2) {
@@ -95,11 +141,16 @@ function greenEnforceSameRoute(select2) {
   rebuildSelect2($destinationSelectEl);
 }
 
-const rebuildSelect2 = ($select2El) => {
+const rebuildSelect2 = ($select2El, selectedValue) => {
   $select2El.val(null).trigger('change');
 
   $select2El.select2("destroy");
   $select2El.select2(select2Options);
+
+  if (selectedValue) {
+    $select2El.val(selectedValue);
+    $select2El.trigger('change');
+  }
 };
 
 const stopMatch = (options, optionEl) => 
