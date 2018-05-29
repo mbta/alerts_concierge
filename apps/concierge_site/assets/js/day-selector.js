@@ -40,6 +40,7 @@ DaySelector.prototype.addListeners = function() {
   for (var day in this.labels) {
     this.labels[day].on("click", renderFn(this, day));
     this.labels[day].on("click", disableSubmitButtonIfNoDaySelected(this));
+    this.labels[day].on("keypress", triggerClick());
   }
 
   return this;
@@ -139,6 +140,14 @@ function renderFn(that, day) {
 
     that.toggleState(day);
     that.htmlFromState();
+  };
+}
+
+function triggerClick() {
+  return function (e) {
+    e.preventDefault();
+    e.stopPropagation();
+    $(e.target).click();
   };
 }
 

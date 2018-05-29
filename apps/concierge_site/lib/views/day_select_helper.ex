@@ -61,12 +61,18 @@ defmodule ConciergeSite.DaySelectHelper do
   end
 
   defp label(input_name, day, selected?) do
-    content_tag :label, class: label_class(selected?) do
+    content_tag :label, class: label_class(selected?), tabindex: "0", role: "button",
+                        aria_label: day_aria_label(day), aria_pressed: aria_pressed?(selected?) do
       [tag(:input, type: "checkbox", autocomplete: "off", value: day,
            name: "#{input_name}[relevant_days][]", checked: selected?),
        check_icon(selected?)]
     end
   end
+
+  defp day_aria_label(day), do: "travel day: #{day}"
+
+  defp aria_pressed?(true), do: "true"
+  defp aria_pressed?(false), do: "false"
 
   defp check_icon(true), do: content_tag(:i, "", class: "fa fa-check")
   defp check_icon(_), do: content_tag(:i, "", class: "fa")
@@ -83,9 +89,13 @@ defmodule ConciergeSite.DaySelectHelper do
   end
 
   defp group_label(name, selected?) do
-    content_tag :label, class: "#{label_class(selected?)} btn-#{name}" do
+    content_tag :label, class: "#{label_class(selected?)} btn-#{name}", tabindex: "0",
+                        role: "button", aria_label: group_aria_label(name), aria_pressed: aria_pressed?(selected?) do
       [tag(:input, type: "checkbox", autocomplete: "off", value: name, checked: selected?),
        String.capitalize(name)]
     end
   end
+
+  defp group_aria_label("weekdays"), do: "travel days: all weekdays"
+  defp group_aria_label("weekend"), do: "travel days: weekend"
 end
