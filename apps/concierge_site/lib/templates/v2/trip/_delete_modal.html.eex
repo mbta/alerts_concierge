@@ -1,0 +1,19 @@
+<div class="modal fade" id="deleteModal" tabindex="-1" role="dialog" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-body text-center">
+        <div class="my-2">
+          Are you sure you want to delete this subscription?
+        </div>
+        <div class="my-3" data-modal="action_container">
+          <%= if assigns[:trip] do %>
+            <%= link to: v2_trip_path(@conn, :delete, assigns[:trip]), method: :delete, class: "btn btn-primary" do %>
+              Yes, delete
+            <% end %>
+          <% end %>
+          <button type="button" class="btn btn-outline-primary" data-dismiss="modal">No, cancel</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

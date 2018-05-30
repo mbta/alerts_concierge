@@ -122,6 +122,13 @@ defmodule ConciergeSite.V2.TripControllerTest do
 
     test "with invalid relevant day", %{conn: conn, user: user} do
       trip = insert(:trip, %{user: user})
+      insert(:subscription, %{
+        trip_id: trip.id,
+        type: :cr,
+        origin: "Readville",
+        destination: "Newmarket",
+        route: "CR-Fairmount"
+      })
       params = [trip: %{relevant_days: [:invalid]}]
 
       conn =
@@ -209,12 +216,12 @@ defmodule ConciergeSite.V2.TripControllerTest do
 
       conn = get(conn, v2_trip_path(conn, :index))
 
-      assert html_response(conn, 200) =~ "Success! Your subscription has been created."
+      html = html_response(conn, 200)
+      assert html =~ "Success! Your subscription has been created."
 
-      assert html_response(conn, 200) =~
-               "<span class=\"trip__card--route\">Red Line</span></div>" <>
-                 "<div class=\"trip__card--type\">Round-trip, Weekdays</div>" <>
-                 "<div class=\"trip__card--times\">12:00am - 12:00pm /  5:00pm -  6:00pm</div>"
+      assert html =~ "Red Line"
+      assert html =~ "Round-trip"
+      assert html =~ "12:00A - 12:00P,  5:00P -  6:00P"
     end
 
     test "green line multi-route", %{conn: conn, user: user} do

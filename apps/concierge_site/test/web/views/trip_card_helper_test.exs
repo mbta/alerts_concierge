@@ -99,9 +99,9 @@ defmodule ConciergeSite.TripCardHelperTest do
       assert html =~ "Charlestown Ferry"
       assert html =~ "One-way"
       refute html =~ "Round-trip"
-      assert html =~ "Mondays"
-      assert html =~ "9:00am - 10:00am"
-      assert html =~ "<a class=\"card trip__card btn"
+      assert html =~ "Mon"
+      assert html =~ "9:00A - 10:00A"
+      assert html =~ "<div class=\"card trip__card btn"
 
       trip_all_weekdays = %{
         trip_with_subscriptions
@@ -115,6 +115,10 @@ defmodule ConciergeSite.TripCardHelperTest do
       html = Phoenix.HTML.safe_to_string(TripCardHelper.render(conn, trip_all_weekends))
       assert html =~ "Weekends"
 
+      trip_all_days = %{trip_with_subscriptions | relevant_days: [:monday, :tuesday, :wednesday, :thursday, :friday, :saturday, :sunday]}
+      html = Phoenix.HTML.safe_to_string(TripCardHelper.render(conn, trip_all_days))
+      assert html =~ "Every day"
+
       roundtrip = %{
         trip_with_subscriptions
         | roundtrip: true,
@@ -125,7 +129,7 @@ defmodule ConciergeSite.TripCardHelperTest do
       html = Phoenix.HTML.safe_to_string(TripCardHelper.render(conn, roundtrip))
       refute html =~ "One-way"
       assert html =~ "Round-trip"
-      assert html =~ "9:00am - 10:00am /  1:00pm -  2:00pm"
+      assert html =~ "9:00A - 10:00A,  1:00P -  2:00P"
 
       html = Phoenix.HTML.safe_to_string(TripCardHelper.display(conn, trip_with_subscriptions))
       assert html =~ "<div class=\"card trip__card trip__card--display btn"
@@ -135,7 +139,7 @@ defmodule ConciergeSite.TripCardHelperTest do
       trip = %Trip{
         id: Ecto.UUID.generate(),
         alert_priority_type: :low,
-        relevant_days: [:monday],
+        relevant_days: [:monday, :tuesday],
         start_time: ~T[09:00:00],
         end_time: ~T[10:00:00],
         trip_type: :accessibility,
@@ -151,10 +155,11 @@ defmodule ConciergeSite.TripCardHelperTest do
       }
 
       html = Phoenix.HTML.safe_to_string(TripCardHelper.render(conn, trip_with_subscriptions))
-      assert html =~ "Mondays — Chinatown, Orange Line"
+      assert html =~ "Chinatown, Orange Line"
+      assert html =~ "Mon, Tue"
       assert html =~ "Station features"
       assert html =~ "Elevators"
-      assert html =~ "<a class=\"card trip__card btn"
+      assert html =~ "<div class=\"card trip__card btn"
 
       trip_escalator = %{trip_with_subscriptions | facility_types: [:escalator]}
       html = Phoenix.HTML.safe_to_string(TripCardHelper.render(conn, trip_escalator))
