@@ -115,14 +115,14 @@ defmodule ConciergeSite.TripCardHelper do
     end)
   end
 
-  @spec stops([Subscription.t]) :: [Phoenix.HTML.safe]
+  @spec stops([Subscription.t]) :: Phoenix.HTML.safe
   defp stops(subscriptions) do
     origin = List.first(subscriptions).origin
     destination = List.last(subscriptions).destination
 
     content_tag :span, class: "trip__card--stops" do
       case {origin, destination} do
-        {nil, nil} -> []
+        {nil, nil} -> ""
         {nil, destination} -> ["to ", stop_name(destination)]
         {origin, nil} -> ["from ", stop_name(origin)]
         {origin, destination} -> ": #{stop_name(origin)} — #{stop_name(destination)}"
