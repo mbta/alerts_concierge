@@ -179,7 +179,8 @@ defmodule AlertProcessor.AlertParser do
   defp set_route_for_amenity(%{facility_id: fid, stop: stop} = entity) when not is_nil(fid) do
     with {:ok, subway_infos} <- ServiceInfoCache.get_subway_info(),
       {:ok, cr_infos} <- ServiceInfoCache.get_commuter_rail_info(),
-      routes <- get_routes_for_stop(stop, subway_infos ++ cr_infos) do
+      {:ok, bus_infos} <- ServiceInfoCache.get_bus_info(),
+      routes <- get_routes_for_stop(stop, subway_infos ++ cr_infos ++ bus_infos) do
         Enum.map(routes, & Map.put(entity, :route, &1))
     else
       _ -> [entity]

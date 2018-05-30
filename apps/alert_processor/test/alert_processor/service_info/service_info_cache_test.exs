@@ -40,15 +40,31 @@ defmodule AlertProcessor.ServiceInfoCacheTest do
     ] = Enum.sort_by(route_info, &(&1.route_id))
   end
 
-  test "get_bus_info/0 returns bus headsign lists", %{pid: pid} do
-    {:ok, [route | _]} = ServiceInfoCache.get_bus_info(pid)
+  describe "get_bus_info/0" do
+    test "returns bus headsign lists", %{pid: pid} do
+      {:ok, [route | _]} = ServiceInfoCache.get_bus_info(pid)
 
-    assert route == %AlertProcessor.Model.Route{
-                      direction_names: ["Outbound", "Inbound"],
-                      headsigns: %{0 => ["Logan Airport", "Silver Line Way"],
-                                   1 => ["South Station"]},
-                      long_name: "Silver Line SL1", order: 0,
-                      route_id: "741", route_type: 3, short_name: "SL1", stop_list: []}
+      assert route == %AlertProcessor.Model.Route{
+        direction_names: ["Outbound", "Inbound"],
+        headsigns: %{0 => ["Logan Airport", "Silver Line Way"],
+          1 => ["South Station"]},
+        long_name: "Silver Line SL1", order: 0,
+        route_id: "741", route_type: 3, short_name: "SL1", stop_list: [
+          {"World Trade Center", "place-wtcst", {42.34863, -71.04246}, 1},
+          {"Courthouse", "place-crtst", {42.35245, -71.04685}, 1},
+          {"South Station", "place-sstat", {42.352271, -71.055242}, 1}
+        ]}
+    end
+
+    test "includes populated stop_list for Silver Line routes", %{pid: pid} do
+      {:ok, routes} = ServiceInfoCache.get_bus_info(pid)
+      silver_line_route_ids = ~w(741 742 743 749 751)
+
+      for silver_line_route_id <- silver_line_route_ids do
+        route = Enum.find(routes, & &1.route_id == silver_line_route_id)
+        assert length(route.stop_list) > 0
+      end
+    end
   end
 
   test "get_commuter_rail_info/0 returns commuter rail info", %{pid: pid} do

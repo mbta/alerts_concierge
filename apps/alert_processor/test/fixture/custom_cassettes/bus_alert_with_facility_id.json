@@ -1,0 +1,18 @@
+[
+  {
+    "request": {
+      "body": "",
+      "headers": [],
+      "method": "get",
+      "options": [],
+      "request_body": "",
+      "url": "http://s3.amazonaws.com/mbta-realtime-test/alerts_enhanced.json"
+    },
+    "response": {
+      "body": "{ \"header\": { \"gtfs_realtime_version\": \"1.0\", \"incrementality\": 0, \"timestamp\": 1527776758 }, \"entity\": [ { \"id\": \"117908\", \"alert\": { \"effect\": \"OTHER_EFFECT\", \"effect_detail\": \"ELEVATOR_CLOSURE\", \"cause\": \"UNKNOWN_CAUSE\", \"cause_detail\": \"UNKNOWN_CAUSE\", \"header_text\": { \"translation\": [ { \"text\": \"Courthouse Elevator 937 (South Station platform to lobby) unavailable\", \"language\": \"en\" } ] }, \"description_text\": { \"translation\": [ { \"text\": \"If exiting, exit the Silver Line at South Station and transfer to outbound service back to Courthouse. If boarding, board outbound service to World Trade Center and switch to inbound service.\", \"language\": \"en\" } ] }, \"service_effect_text\": { \"translation\": [ { \"text\": \"elevator unavailable\", \"language\": \"en\" } ] }, \"short_header_text\": { \"translation\": [ { \"text\": \"Courthouse Elevator 937 (South Station platform to lobby) unavailable\", \"language\": \"en\" } ] }, \"severity\": 3, \"created_timestamp\": 1527776753, \"last_modified_timestamp\": 1527776753, \"last_push_notification_timestamp\": 1527776753, \"alert_lifecycle\": \"NEW\", \"duration_certainty\": \"ESTIMATED\", \"active_period\": [ { \"start\": 1527776750, \"end\": 1527783958 } ], \"informed_entity\": [ { \"stop_id\": \"74616\", \"facility_id\": \"937\", \"activities\": [ \"USING_WHEELCHAIR\" ] } ] } } ] }",
+      "headers": {},
+      "status_code": 200,
+      "type": "ok"
+    }
+  }
+]
