@@ -148,4 +148,8 @@ label.form__label--inline-divider {
   &.active div {
     color: $brand-primary;
   }
+
+  div, svg {
+    pointer-events: none;
+  }
 }
