@@ -31,6 +31,7 @@ import schedule from "./schedule";
 import toggleTripType from "./toggle-trip-type";
 import phoneMask from "./phone-mask";
 import customTimeSelect from "./custom-time-select";
+import tripIndex from "./trip-index";
 import pubsubFactory from "PubSub";
 const pubsub = new pubsubFactory();
 
@@ -46,6 +47,7 @@ daySelector();
 schedule(pubsub);
 phoneMask();
 customTimeSelect(pubsub);
+tripIndex();
 if (path.match(/\/trip_type$/)) {
   toggleTripType();
 }

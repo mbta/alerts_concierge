@@ -58,6 +58,13 @@ defmodule ConciergeSite.V2.CreateSubscriptionTest do
 
   test "edit trip", %{session: session, user: user} do
     trip = insert(:trip, %{user: user})
+    insert(:subscription, %{
+      trip_id: trip.id,
+      type: :cr,
+      origin: "Readville",
+      destination: "Newmarket",
+      route: "CR-Fairmount"
+    })
     session
     |> log_in(user)
     |> visit("/trips/#{trip.id}/edit")

@@ -1,7 +1,7 @@
 .trip__card {
   display: block;
   line-height: 1.5rem;
-  padding: 0.75rem;
+  padding: 0;
   border-color: $steel;
   color: $black !important;
   text-align: left;
@@ -21,11 +21,14 @@
   text-overflow: ellipsis;
 }
 
-.trip__card--route-deliminator {
+.trip__card--route-container {
   display: inline-block;
-  font-size: 16px;
-  font-weight: bold;
-  padding: 0 0.5rem;
+  padding-right: 1rem;
+
+  @include media-breakpoint-down(sm) {
+    display: block;
+    padding-right: 0;
+  }
 }
 
 .trip__card--route-icon {
@@ -36,7 +39,6 @@
 
 .trip__card--type,
 .trip__card--times {
-  font-size: 1rem;
   overflow-x: hidden;
   text-overflow: ellipsis;
 }
@@ -58,7 +60,13 @@
   color: $brand-primary;
 }
 
-.trip__editpage .trip__card--edit-link {
+.trip__card--delete-link {
+  float: right;
+  color: $brand-danger;
+}
+
+.trip__editpage .trip__card--edit-link,
+.trip__editpage .trip__card--delete-link {
   display: none;
 }
 
@@ -77,4 +85,38 @@
   text-align: center;
   height: 5rem;
   font-size: $font-size-xxl;
+}
+
+.trip__card--bottom {
+  border-top: 1px solid $pale-grey;
+  padding: .75rem;
+  border-radius: 0 0 .25rem .25rem;
+}
+
+.trip__card--top {
+  padding: .75rem;
+  border-radius: .25rem .25rem 0 0;
+  background-color: $white;
+}
+
+.trip__card--top-details {
+  padding-top: .5rem;
+}
+
+.trip__card {
+  &:hover {
+    .trip__card--bottom {
+      background-color: $light-blue;
+    }
+  }
+}
+
+.trip__editpage {
+  .trip__card {
+    &:hover {
+      .trip__card--bottom {
+        background-color: $white;
+      }
+    }
+  }
 }

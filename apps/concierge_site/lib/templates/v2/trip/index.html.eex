@@ -18,3 +18,5 @@
     </div>
   </div>
 </div>
+
+<%= render ConciergeSite.V2.TripView, "_delete_modal.html", assigns %>
