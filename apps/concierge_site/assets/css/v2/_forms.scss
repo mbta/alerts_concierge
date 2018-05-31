@@ -92,6 +92,21 @@ label.form__label--inline-divider {
   }
 }
 
+.form__phone--input {
+  width: 10rem;
+}
+
+.form__phone--note {
+  @include media-breakpoint-down(lg) {
+    display: block;
+    padding-top: .5rem
+  }
+
+  @include media-breakpoint-up(xxl) {
+    margin-left: .5rem;
+  }
+}
+
 .form__section {
   margin-bottom: 2.5rem;
 }
@@ -111,4 +126,26 @@ label.form__label--inline-divider {
 
 .form__action--secondary-link {
   margin-top: 1rem;
+}
+
+.btn__radio--toggle-container {
+  width: 100%;
+}
+
+.btn__radio--toggle-item {
+  width: 50%;
+  border-radius: 4px !important;
+  padding-top: 1rem;
+
+  &:first-child {
+    margin-right: 1rem;
+  }
+
+  &:last-child {
+    margin-left: 1rem;
+  }
+
+  &.active div {
+    color: $brand-primary;
+  }
 }
