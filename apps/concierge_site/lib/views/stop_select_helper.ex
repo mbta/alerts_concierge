@@ -42,6 +42,7 @@ defmodule ConciergeSite.StopSelectHelper do
     |> get_routes()
     |> Kernel.++(get_routes(:cr))
     |> Kernel.++(get_routes(:ferry))
+    |> Kernel.++(get_routes(:bus_silver_line))
     |> Enum.flat_map(& get_stops_by_route(&1))
     |> Enum.uniq_by(& &1)
   end
@@ -107,6 +108,7 @@ defmodule ConciergeSite.StopSelectHelper do
 
   @spec get_routes(atom) :: [String.t]
   defp get_routes(:subway), do: ["Red", "Orange", "Green", "Blue", "Mattapan"]
+  defp get_routes(:bus_silver_line), do: ~w(741 742 743 749 751)
   defp get_routes(:cr) do
     with {:ok, routes} <- ServiceInfoCache.get_commuter_rail_info() do
       for route <- routes, do: route.route_id

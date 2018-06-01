@@ -18,6 +18,7 @@ defmodule AlertProcessor.ServiceInfoCache do
     :commuter_rail_trip_ids,
     :facility_map
   ]
+  @silver_line_route_ids ~w(741 742 743 749 751)
 
   # This exists to keep services that make calls to ServerInfoCache from crashing
   # while the service is loading.
@@ -548,21 +549,42 @@ defmodule AlertProcessor.ServiceInfoCache do
     }
   end
 
+  defp fetch_stops(3, route_id) when route_id in @silver_line_route_ids do
+    stop_ids_with_elevator_or_escalator = stop_ids_with_elevator_or_escalator()
+    {:ok, route_stops} = ApiClient.route_stops(route_id)
+    route_stops
+    |> Enum.filter(& MapSet.member?(stop_ids_with_elevator_or_escalator, &1["id"]))
+    |> prepare_stops_for_cache()
+  end
+
   defp fetch_stops(3, _), do: []
 
   defp fetch_stops(_route_type, route_id) do
     {:ok, route_stops} = ApiClient.route_stops(route_id)
+    prepare_stops_for_cache(route_stops)
+  end
 
-    route_stops
-    |> Enum.map(fn %{
-                     "attributes" => %{
-                       "name" => name,
-                       "latitude" => latitude,
-                       "longitude" => longitude,
-                       "wheelchair_boarding" => wheelchair_boarding
-                     },
-                     "id" => id
-                   } ->
+  defp stop_ids_with_elevator_or_escalator() do
+    {:ok, facilities} = ApiClient.facilities()
+    Enum.reduce(facilities, MapSet.new(), fn facility, stop_ids ->
+      attributes_type = get_in(facility, ["attributes", "type"])
+      if attributes_type in ["ELEVATOR", "ESCALATOR"] do
+        stop_id = get_in(facility, ["relationships", "stop", "data", "id"])
+        MapSet.put(stop_ids, stop_id)
+      else
+        stop_ids
+      end
+    end)
+  end
+
+  defp prepare_stops_for_cache(stops) do
+    Enum.map(stops, fn stop ->
+      id = stop["id"]
+      attributes = stop["attributes"]
+      name = attributes["name"]
+      latitude = attributes["latitude"]
+      longitude = attributes["longitude"]
+      wheelchair_boarding = attributes["wheelchair_boarding"]
       {name, id, {latitude, longitude}, wheelchair_boarding}
     end)
   end

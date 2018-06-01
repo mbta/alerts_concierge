@@ -218,6 +218,16 @@ defmodule AlertProcessor.AlertParserTest do
     end
   end
 
+  test "parse informed_entities for bus alert if facility_id is included" do
+    # This test ensures `AlertParser.set_route_for_amenity/1` supports bus
+    # alerts when a facility_id is included.
+    use_cassette "bus_alert_with_facility_id", custom: true, clear_mock: true, match_requests_on: [:query] do
+      {:ok, [alert], feed_timestamp} = AlertProcessor.AlertsClient.get_alerts()
+      result = AlertParser.parse_alert(alert, %{}, feed_timestamp)
+      assert length(result.informed_entities) > 0
+    end
+  end
+
   describe "remove_ignored/1" do
     @valid_alert %{"active_period" => [%{"start" => 1507661322}], "last_push_notification_timestamp" => 1507661322}
 
