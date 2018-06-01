@@ -99,7 +99,7 @@ defmodule AlertProcessor.Model.Notification do
       where: n.status == "sent",
       preload: [:subscriptions],
       distinct: [:alert_id, :user_id],
-      order_by: [desc: n.last_push_notification],
+      order_by: [desc: [n.last_push_notification, n.inserted_at]],
       select: n
     )
   end
