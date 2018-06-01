@@ -4,7 +4,9 @@ const select2Options = {
   templateResult: formatStop,
   templateSelection: formatStop,
   theme: "bootstrap4",
-  placeholder: "Select a stop"
+  placeholder: "Select a stop",
+  dropdownAutoWidth: true,
+  width: 'auto'
 };
 
 const NORTH_STATION = "place-sstat";

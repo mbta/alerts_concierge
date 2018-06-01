@@ -9,7 +9,9 @@ export default function($) {
     templateResult: formatRoute,
     templateSelection: formatRoute,
     theme: "bootstrap4",
-    placeholder: "Select a subway, commuter rail, ferry or bus route"
+    placeholder: "Select a subway, commuter rail, ferry or bus route",
+    dropdownAutoWidth: true,
+    width: 'auto'
   };
 
   $("select[data-type='route']").each(function() {

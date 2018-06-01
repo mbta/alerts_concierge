@@ -64,32 +64,27 @@ first_trip_padding_class = if @round_trip == "true", do: "", else: "form__sectio
           <%= hidden_input form, :modes, name: "trip[modes][]", value: mode %>
         <% end %>
 
-        <div class="form-group form__section">
-          <%= label form, :facility_types, "Would you like alerts about any of these station features?", class: "form__label" %>
-          <div class="form-check">
-            <label>
-              <%= checkbox form, :elevator, class: "form-check-input" %>
-              Elevators and ramps
-            </label>
-          </div>
-          <div class="form-check">
-            <label>
-              <%= checkbox form, :escalator, class: "form-check-input" %>
-              Escalators
-            </label>
-          </div>
-          <div class="form-check">
-            <label>
-              <%= checkbox form, :parking_area, class: "form-check-input" %>
-              Parking
-            </label>
-          </div>
-          <div class="form-check">
-            <label>
-              <%= checkbox form, :bike_storage, class: "form-check-input" %>
-              Bike Storage
-            </label>
-          </div>
+        <div class="btn-group btn-group-toggle btn__radio--toggle-container" data-toggle="buttons" role="radiogroup">
+          <label data-id="roundtrip" role="checkbox" class="btn btn-outline-primary btn__radio--toggle-item-connected" tabindex="0">
+            <%= render ConciergeSite.V2.LayoutView, "_icon_elevator.html" %>
+            <%= checkbox form, :elevator, tabindex: "-1" %>
+            <div>Elevators</div>
+          </label>
+          <label data-id="oneway" role="checkbox" class="btn btn-outline-primary btn__radio--toggle-item-connected" tabindex="0">
+            <%= render ConciergeSite.V2.LayoutView, "_icon_escalator.html" %>
+            <%= checkbox form, :escalator, tabindex: "-1" %>
+            <div>Escalators</div>
+          </label>
+          <label data-id="roundtrip" role="checkbox" class="btn btn-outline-primary btn__radio--toggle-item-connected" tabindex="0">
+            <%= render ConciergeSite.V2.LayoutView, "_icon_parking.html" %>
+            <%= checkbox form, :parking_area, tabindex: "-1" %>
+            <div>Parking</div>
+          </label>
+          <label data-id="oneway" role="checkbox" class="btn btn-outline-primary btn__radio--toggle-item-connected" tabindex="0">
+            <%= render ConciergeSite.V2.LayoutView, "_icon_bike.html" %>
+            <%= checkbox form, :bike_storage, tabindex: "-1" %>
+            <div>Bike Storage</div>
+          </label>
         </div>
 
         <div class="form__action-buttons--container">
