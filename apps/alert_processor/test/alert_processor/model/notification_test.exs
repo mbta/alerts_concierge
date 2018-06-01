@@ -119,9 +119,11 @@ defmodule AlertProcessor.Model.NotificationTest do
     assert returned_notification_id == saved_notification_1.id
   end
 
-  test "most_recent_for_subscriptions_and_alerts/2 only returns latest notification by last_push_notification for alert/user combo" do
+  test "most_recent_for_subscriptions_and_alerts/2 only returns latest "
+  <> "notification by last_push_notification and inserted_at for alert/user combo" do
     now = DateTime.utc_now()
     later = Calendar.DateTime.add!(now, 1800)
+    even_later = Calendar.DateTime.add!(now, 2800)
     user1 = insert(:user)
     sub1 = insert(:subscription, user: user1)
 
@@ -131,12 +133,15 @@ defmodule AlertProcessor.Model.NotificationTest do
     {:ok, saved_notification_2} = Notification.save(notification2, :sent)
     notification3 = struct(Notification, Map.merge(@base_attrs, %{user: user1, last_push_notification: now, alert_id: "55555", notification_subscriptions: [%NotificationSubscription{subscription: sub1}]}))
     {:ok, saved_notification_3} = Notification.save(notification3, :sent)
+    notification4 = struct(Notification, Map.merge(@base_attrs, %{user: user1, last_push_notification: later, notification_subscriptions: [%NotificationSubscription{subscription: sub1}], inserted_at: even_later}))
+    {:ok, saved_notification_4} = Notification.save(notification4, :sent)
 
     notifications = Notification.most_recent_for_subscriptions_and_alerts([sub1], [%{id: "12345678"}, %{id: "55555"}])
     returned_notification_ids = Enum.map(notifications, & &1.id)
     refute Enum.member?(returned_notification_ids, saved_notification_1.id)
-    assert Enum.member?(returned_notification_ids, saved_notification_2.id)
+    refute Enum.member?(returned_notification_ids, saved_notification_2.id)
     assert Enum.member?(returned_notification_ids, saved_notification_3.id)
+    assert Enum.member?(returned_notification_ids, saved_notification_4.id)
     [returned_notification1, returned_notification2] = notifications
     assert [sub1.id] == Enum.map(returned_notification1.subscriptions, & &1.id)
     assert [sub1.id] == Enum.map(returned_notification2.subscriptions, & &1.id)

@@ -79,6 +79,7 @@ defmodule AlertProcessor.AlertParser do
     |> Map.put(:timeframe, parse_translation(alert_data["timeframe_text"]))
     |> Map.put(:recurrence, parse_translation(alert_data["recurrence_text"]))
     |> Map.put(:closed_timestamp, parse_datetime_or_nil(alert_data["closed_timestamp"]))
+    |> Map.put(:reminder_times, parse_reminder_times(alert_data["reminder_times"]))
   end
 
   def parse_alert(alert, _, _) do
@@ -278,4 +279,9 @@ defmodule AlertProcessor.AlertParser do
       _ -> nil
     end
   end
+
+  defp parse_reminder_times(reminder_times) when is_list(reminder_times) do
+    Enum.map(reminder_times, & parse_datetime(&1))
+  end
+  defp parse_reminder_times(_), do: []
 end

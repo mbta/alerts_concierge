@@ -369,5 +369,42 @@ defmodule AlertProcessor.AlertParserTest do
         } = schedule
       end
     end
+
+    test "with reminder_times" do
+      some_timestamp = 1524609934
+      reminder_times = [1515166200, 1515408300]
+      alert = %{
+        "id" => "some id",
+        "created_timestamp" => some_timestamp,
+        "duration_certainty" => nil,
+        "effect_detail" => "some_effect",
+        "header_text" => nil,
+        "informed_entity" => [],
+        "service_effect_text" => nil,
+        "severity" => nil,
+        "last_push_notification_timestamp" => some_timestamp,
+        "reminder_times" => reminder_times
+      }
+      parsed_alert = AlertParser.parse_alert(alert, %{}, nil)
+      expected_reminder_times = Enum.map(reminder_times, & DateTime.from_unix!(&1))
+      assert parsed_alert.reminder_times == expected_reminder_times
+    end
+
+    test "without reminder_times" do
+      some_timestamp = 1524609934
+      alert = %{
+        "id" => "some id",
+        "created_timestamp" => some_timestamp,
+        "duration_certainty" => nil,
+        "effect_detail" => "some_effect",
+        "header_text" => nil,
+        "informed_entity" => [],
+        "service_effect_text" => nil,
+        "severity" => nil,
+        "last_push_notification_timestamp" => some_timestamp,
+      }
+      parsed_alert = AlertParser.parse_alert(alert, %{}, nil)
+      assert parsed_alert.reminder_times == []
+    end
   end
 end
