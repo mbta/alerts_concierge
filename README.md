@@ -18,6 +18,7 @@ functionality remain low and that MBTA can manage and improve the system.
   [nvm](https://github.com/creationix/nvm) to manage Node.js versions)
 * Yarn ~1.3.2
 * MBTA API key (get one [here](https://dev.api.mbtace.com))
+* Chromedriver (`brew cask install chromedriver`)
 
 ### Instructions
 
