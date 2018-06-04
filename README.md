@@ -28,6 +28,7 @@ functionality remain low and that MBTA can manage and improve the system.
 * `sh -c "cd apps/concierge_site/assets ; yarn install"`
 * `cat .env.example | sed -e "s/__username__/$(logname)/g" > .env`
 * ``env `cat .env` mix ecto.setup``
+* ``env `cat .env` MIX_ENV=test mix ecto.setup``
 * `echo 'API_KEY=<YOUR_MBTA_API_KEY>' >> .env`
 
 #### Notes
@@ -45,7 +46,7 @@ configuration.
 
 #### Running only Elixir tests
 
-* ``env  `cat .env` mix test``
+* ``env  `cat .env` MIX_ENV=test mix test``
 
 ### Running the application
 
