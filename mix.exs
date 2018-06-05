@@ -34,6 +34,6 @@ defmodule AlertsConcierge.Mixfile do
   defp aliases do
     ["ecto.setup": ["ecto.create", "ecto.migrate"],
      "ecto.reset": ["ecto.drop", "ecto.setup"],
-     "test.all": ["ecto.create --quiet", "ecto.migrate", "mocha_test", "coveralls.json", "test"]]
+     "test.all": ["ecto.create --quiet", "ecto.migrate", "coveralls.json", "test"]]
   end
 end
