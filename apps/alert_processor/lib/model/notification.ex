@@ -18,7 +18,8 @@ defmodule AlertProcessor.Model.Notification do
     status: atom,
     last_push_notification: DateTime.t | nil,
     alert: Alert.t | nil,
-    closed_timestamp: DateTime.t | nil
+    closed_timestamp: DateTime.t | nil,
+    reminder?: boolean
  }
 
   use Ecto.Schema
@@ -44,6 +45,7 @@ defmodule AlertProcessor.Model.Notification do
     field :last_push_notification, :utc_datetime
     field :alert, :string, virtual: true
     field :closed_timestamp, :utc_datetime
+    field :reminder?, :boolean, default: false
 
     timestamps()
   end
@@ -100,6 +102,18 @@ defmodule AlertProcessor.Model.Notification do
       preload: [:subscriptions],
       distinct: [:alert_id, :user_id],
       order_by: [desc: [n.last_push_notification, n.inserted_at]],
+      select: n
+    )
+  end
+
+  def most_recent_for_user_alert(user, alert) do
+    Repo.one(
+      from n in __MODULE__,
+      where: n.user_id == ^user.id,
+      where: n.alert_id == ^alert.id,
+      where: n.status == "sent",
+      order_by: [desc: n.inserted_at],
+      limit: 1,
       select: n
     )
   end
