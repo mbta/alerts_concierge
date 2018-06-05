@@ -12,7 +12,7 @@
           </div>
         <% end %>
       </div>
-      <%= link(to: v2_page_path(@conn, :trip_type), class: "btn btn-outline-primary btn-block trip__card--btn") do %>
+      <%= link(to: v2_trip_path(@conn, :new), class: "btn btn-outline-primary btn-block trip__card--btn") do %>
         <span><i aria-hidden="true" class="fa fa-plus-circle"></i> Create another subscription</span>
       <% end %>
     </div>

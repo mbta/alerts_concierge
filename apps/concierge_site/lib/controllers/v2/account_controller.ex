@@ -78,7 +78,7 @@ defmodule ConciergeSite.V2.AccountController do
       {:ok, updated_user} ->
         ConfirmationMessage.send_sms_confirmation(updated_user.phone_number, params["sms_toggle"])
         conn
-        |> redirect(to: v2_page_path(conn, :trip_type))
+        |> redirect(to: v2_trip_path(conn, :new))
       {:error, changeset} ->
         conn
         |> put_flash(:error, "Preferences could not be saved. Please see errors below.")
