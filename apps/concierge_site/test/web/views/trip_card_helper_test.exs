@@ -167,7 +167,7 @@ defmodule ConciergeSite.TripCardHelperTest do
 
       trip_both_facilities = %{trip_with_subscriptions | facility_types: [:elevator, :escalator]}
       html = Phoenix.HTML.safe_to_string(TripCardHelper.render(conn, trip_both_facilities))
-      assert html =~ "Elevators and escalators"
+      assert html =~ "Elevators, Escalators"
 
       html = Phoenix.HTML.safe_to_string(TripCardHelper.display(conn, trip_with_subscriptions))
       assert html =~ "<div class=\"card trip__card trip__card--display btn"
