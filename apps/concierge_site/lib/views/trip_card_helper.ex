@@ -7,6 +7,8 @@ defmodule ConciergeSite.TripCardHelper do
   alias AlertProcessor.ServiceInfoCache
   alias AlertProcessor.Model.{Trip, Subscription}
 
+  @station_features [elevator: "Elevators", escalator: "Escalators", bike_storage: "Bike storage", parking_area: "Parking"]
+
   @spec render(Plug.Conn.t, atom | Trip.t) :: Phoenix.HTML.safe
   def render(conn, %Trip{trip_type: :accessibility, id: id} = trip) do
     content_tag :div, class: "card trip__card btn btn-outline-primary", data: [trip_card: "link",
@@ -72,7 +74,7 @@ defmodule ConciergeSite.TripCardHelper do
   @spec commute_content(Trip.t, Plug.Conn.t, String.t) :: [Phoenix.HTML.safe]
   defp commute_content(%Trip{subscriptions: subscriptions, roundtrip: roundtrip, relevant_days: relevant_days,
   start_time: start_time, end_time: end_time, return_start_time: return_start_time,
-  return_end_time: return_end_time}, conn, id) do
+  return_end_time: return_end_time, facility_types: facility_types}, conn, id) do
     [
       content_tag :div, class: "trip__card--top" do
         [
@@ -80,6 +82,9 @@ defmodule ConciergeSite.TripCardHelper do
           routes(subscriptions),
           content_tag :div, class: "trip__card--top-details" do
             [
+              content_tag :div, class: "trip__card--type" do
+                "#{facility_types(facility_types)}"
+              end,
               roundtrip(roundtrip),
               stops(subscriptions)
             ]
@@ -187,13 +192,12 @@ defmodule ConciergeSite.TripCardHelper do
     "#{String.slice(format_time_string(time_to_string(start_time), "%l:%M%p"), 0..-2)} - #{String.slice(format_time_string(time_to_string(end_time), "%l:%M%p"), 0..-2)}"
   end
 
-  @spec facility_types([atom]) :: String.t
+  @spec facility_types([atom] | nil) :: String.t
+  defp facility_types(nil), do: ""
   defp facility_types(facility_types) do
-    case facility_types do
-      [:elevator] -> "Elevators"
-      [:escalator] -> "Escalators"
-      [_, _] -> "Elevators and escalators"
-    end
+    facility_types
+    |> Enum.map(& @station_features[&1])
+    |> Enum.intersperse(", ")
   end
 
   @spec stops_and_routes([Subscription.t]) :: [String.t]

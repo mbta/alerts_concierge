@@ -34,15 +34,15 @@ end
           <%= if @route_name == "Green Line" do %>
             <div class="form__label--text">If you take one branch of the Green Line to another, then you make a transfer.</div>
           <% end %>
-          <div class="form-check">
-            <label class="form-check-label">
-              <%= radio_button form, :new_leg, true, required: true, data: [toggle: "controller"], class: "form-check-input" %>
-              Yes
+
+          <div class="btn-group btn-group-toggle btn__radio--toggle-container-wrap" data-toggle="buttons" role="radiogroup">
+            <label data-id="connection" role="radio" class="btn btn-outline-primary btn__radio--toggle btn__radio--toggle-item" tabindex="0">
+              <%= radio_button form, :new_leg, true, tabindex: "-1", required: true %>
+              <div>Yes, I make another connection</div>
             </label>
-          </div>
-          <div class="form-check">
-            <label class="form-check-label">
-              <%= radio_button form, :new_leg, false, required: true, data: [toggle: "controller"], class: "form-check-input" %> No
+            <label data-id="no-connection" aria-checked="true" role="radio" class="btn btn-outline-primary btn__radio--toggle btn__radio--toggle-item active" tabindex="0">
+              <%= radio_button form, :new_leg, false, tabindex: "-1", required: true, checked: "checked" %>
+              <div>No, I just take the <%= @route_name %></div>
             </label>
           </div>
         </div>
@@ -64,7 +64,7 @@ end
           <%= hidden_input form, :modes, name: "trip[modes][]", value: mode %>
         <% end %>
 
-        <div class="form-group form__section" data-type="connection">
+        <div class="form-group form__section d-none" data-type="connection">
           <%= label form, :route, "Which line or route do you transfer to?", class: "form__label", data: [toggle: "label"] %>
           <%= ConciergeSite.RouteSelectHelper.render(:trip, :route, [], data: [toggle: "input", type: "route"]) %>
         </div>

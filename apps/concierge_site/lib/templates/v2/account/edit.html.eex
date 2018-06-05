@@ -6,23 +6,26 @@
     <div class="col-md-10 col-sm-12">
       <%= form_for @changeset, v2_account_path(@conn, :update), [as: :user, method: :post], fn form -> %>
         <div class="form-group form__section--top">
-          <%= label form, :sms_toggle, "I’d like to receive alerts by:", class: "form__label" %>
+          <%= label form, :sms_toggle, "How would you like to receive alerts?", class: "form__label" %>
+          <div class="btn-group btn-group-toggle btn__radio--toggle-container" data-toggle="buttons" role="radiogroup">
+            <label data-id="email" role="radio" aria-checked="<%= if @changeset.data.phone_number == nil, do: "true", else: "false" %>" class="btn btn-outline-primary btn__radio--toggle btn__radio--toggle-item <%= if @changeset.data.phone_number == nil, do: "active" %>" tabindex="0">
+              <%= render ConciergeSite.V2.LayoutView, "_icon_email.html" %>
+              <%= radio_button form, :sms_toggle, "false", tabindex: "-1", required: true, checked: @changeset.data.phone_number == nil %>
+              <div>Email me</div>
+            </label>
+            <label data-id="sms" role="radio" aria-checked="<%= if @changeset.data.phone_number != nil, do: "true", else: "false" %>" class="btn btn-outline-primary btn__radio--toggle btn__radio--toggle-item <%= if @changeset.data.phone_number != nil, do: "active" %>" tabindex="0">
+              <%= render ConciergeSite.V2.LayoutView, "_icon_sms.html" %>
+              <%= radio_button form, :sms_toggle, "true", tabindex: "-1", required: true, checked: @changeset.data.phone_number != nil %>
+              <div>Text me</div>
+            </label>
+          </div>
+        </div>
+
+        <div class="form-group my-4 <%= if @changeset.data.phone_number == nil, do: "d-none" %>" data-phone="input">
+          <%= label form, :phone_number, "What’s your mobile phone number?", class: "form__label d-block" %>
           <%= error_tag form, :phone_number %>
-          <div class="radio form-check">
-            <label>
-              <%= radio_button form, :sms_toggle, "false", required: true, checked: @changeset.data.phone_number == nil, data: [toggle: "controller"], class: "form-check-input" %>
-              Email
-            </label>
-          </div>
-          <div class="radio form-check">
-            <label>
-              <%= radio_button form, :sms_toggle, "true", required: true, checked: @changeset.data.phone_number != nil, data: [toggle: "controller"], class: "form-check-input" %>
-              Text
-            </label>
-            <%= telephone_input form, :phone_number, placeholder: "###-###-####", class: "form__input--inline", data: [toggle: "input"] %>
-            <%= ConciergeSite.HelpTextHelper.link("phone") %>
-            <%= ConciergeSite.HelpTextHelper.message("phone", "Your mobile provider's rates for sending and receiving text messages still apply.") %>
-          </div>
+          <%= telephone_input form, :phone_number, autocomplete: "off", placeholder: "###-###-####", class: "form-control d-inline-block form__phone--input", data: [toggle: "input"] %>
+          <span class="form__phone--note">Your mobile provider’s message rates may apply.</span>
         </div>
 
         <div class="form-group form__section form-check">

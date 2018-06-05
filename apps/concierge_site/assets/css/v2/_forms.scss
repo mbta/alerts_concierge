@@ -132,10 +132,31 @@ label.form__label--inline-divider {
   width: 100%;
 }
 
+.btn__radio--toggle {
+  div, svg {
+    pointer-events: none;
+  }
+
+  svg {
+    margin-top: .5rem;
+  }
+
+  &.active div {
+    color: $brand-primary;
+  }
+
+  &:hover {
+    background-color: #fff !important;
+  }
+
+  &:focus {
+    z-index: 2;
+  }
+}
+
 .btn__radio--toggle-item {
   width: 50%;
   border-radius: 4px !important;
-  padding-top: 1rem;
 
   &:first-child {
     margin-right: 1rem;
@@ -144,12 +165,26 @@ label.form__label--inline-divider {
   &:last-child {
     margin-left: 1rem;
   }
+}
 
-  &.active div {
-    color: $brand-primary;
-  }
+.btn__radio--toggle-item-connected {
+  flex-grow: 1 !important;
+  flex-basis: 0 !important;
+}
 
-  div, svg {
-    pointer-events: none;
+.btn__radio--toggle-container-wrap {
+  width: 100%;
+  display: flex;
+
+  @include media-breakpoint-down(md) {
+    flex-direction: column;
+    
+    .btn__radio--toggle-item {
+      width: 100%;
+
+      &:first-child {
+        margin-bottom: 1rem;
+      }
+    }
   }
 }

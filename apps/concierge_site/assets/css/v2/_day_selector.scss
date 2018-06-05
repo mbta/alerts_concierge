@@ -8,13 +8,16 @@
   }
 
   label.btn {
-    box-shadow: none !important;
     border-color: $brand-primary;
     border-radius: 0;
     font-size: $font-size-xs;
 
     @include media-breakpoint-up(sm) {
       font-size: $font-size-base;
+    }
+
+    &:focus {
+      z-index: 2;
     }
 
     &:hover {
@@ -76,15 +79,6 @@
   .btn-day {
     min-height: 50px;
 
-    &:focus {
-      background-color: $brand-primary !important;
-      color: $white;
-
-      i {
-        color: $white;
-      }
-    }
-
     &.active {
       background-color: $light-blue;
     }
@@ -99,10 +93,3 @@
   }
 }
 
-.no-touch {
-  .btn-day {
-    &:hover {
-      background-color: $light-blue;
-    }
-  }
-}
