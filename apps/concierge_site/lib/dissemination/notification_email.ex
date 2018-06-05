@@ -47,6 +47,7 @@ defmodule ConciergeSite.Dissemination.NotificationEmail do
     |> subject_prefix()
     |> subject_suffix()
     |> subject_closed()
+    |> subject_reminder()
 
     subject
   end
@@ -68,5 +69,13 @@ defmodule ConciergeSite.Dissemination.NotificationEmail do
   defp subject_closed({%Notification{closed_timestamp: nil}, _} = pair), do: pair
   defp subject_closed({notification, subject}) do
     {notification, "All clear (re: #{subject})"}
+  end
+
+  defp subject_reminder({notification, subject} = pair) do
+    if notification.reminder? && is_nil(notification.closed_timestamp) do
+      {notification, "Reminder (re: #{subject})"}
+    else
+      pair
+    end
   end
 end

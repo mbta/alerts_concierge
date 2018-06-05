@@ -106,5 +106,16 @@ defmodule ConciergeSite.Dissemination.NotificationEmailTest do
 
       assert subject == "All clear (re: Starting September 1: Red line delay on weekends)"
     end
+
+    test "reminder alert" do
+      alert = %{@alert | timeframe: "starting September 1", recurrence: "on weekends"}
+      notification = %{@notification |
+        alert: alert,
+        closed_timestamp: nil,
+        reminder?: true}
+      subject = NotificationEmail.email_subject(notification)
+
+      assert subject == "Reminder (re: Starting September 1: Red line delay on weekends)"
+    end
   end
 end
