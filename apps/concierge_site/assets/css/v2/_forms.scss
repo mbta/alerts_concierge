@@ -132,6 +132,28 @@ label.form__label--inline-divider {
   width: 100%;
 }
 
+.btn__radio--toggle {
+  div, svg {
+    pointer-events: none;
+  }
+
+  svg {
+    margin-top: .5rem;
+  }
+
+  &.active div {
+    color: $brand-primary;
+  }
+
+  &:hover {
+    background-color: #fff !important;
+  }
+
+  &:focus {
+    z-index: 2;
+  }
+}
+
 .btn__radio--toggle-item {
   width: 50%;
   border-radius: 4px !important;
@@ -143,39 +165,11 @@ label.form__label--inline-divider {
   &:last-child {
     margin-left: 1rem;
   }
-
-  &.active div {
-    color: $brand-primary;
-  }
-
-  div, svg {
-    pointer-events: none;
-  }
-
-  svg {
-    margin-top: .5rem;
-  }
 }
 
 .btn__radio--toggle-item-connected {
   flex-grow: 1 !important;
   flex-basis: 0 !important;
-
-  &.active div {
-    color: $brand-primary;
-  }
-
-  div, svg {
-    pointer-events: none;
-  }
-
-  svg {
-    margin-top: .5rem;
-  }
-
-  &:hover {
-    background-color: #fff !important;
-  }
 }
 
 .btn__radio--toggle-container-wrap {

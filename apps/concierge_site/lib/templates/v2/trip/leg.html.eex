@@ -36,11 +36,11 @@ end
           <% end %>
 
           <div class="btn-group btn-group-toggle btn__radio--toggle-container-wrap" data-toggle="buttons" role="radiogroup">
-            <label data-id="connection" role="radio" class="btn btn-outline-primary btn__radio--toggle-item" tabindex="0">
+            <label data-id="connection" role="radio" class="btn btn-outline-primary btn__radio--toggle btn__radio--toggle-item" tabindex="0">
               <%= radio_button form, :new_leg, true, tabindex: "-1", required: true %>
               <div>Yes, I make another connection</div>
             </label>
-            <label data-id="no-connection" aria-checked="true" role="radio" class="btn btn-outline-primary btn__radio--toggle-item active" tabindex="0">
+            <label data-id="no-connection" aria-checked="true" role="radio" class="btn btn-outline-primary btn__radio--toggle btn__radio--toggle-item active" tabindex="0">
               <%= radio_button form, :new_leg, false, tabindex: "-1", required: true, checked: "checked" %>
               <div>No, I just take the <%= @route_name %></div>
             </label>
