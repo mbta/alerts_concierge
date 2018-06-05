@@ -2,7 +2,7 @@ Thanks for signing up for T-Alerts Beta!
 
 If you have immediate feedback about the sign up process, or related to any alerts as you start to receive them, we’d love to hear it. 
 
-Provide feedback now! https://www.mbta.com/beta-alerts-feedback
+Provide feedback now! <%= feedback_url %>
 
 Get the most from your T-Alerts account by signing in!  You can:
 
