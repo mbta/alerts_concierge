@@ -8,12 +8,12 @@
         <div class="form-group form__section--top">
           <%= label form, :sms_toggle, "How would you like to receive alerts?", class: "form__label" %>
           <div class="btn-group btn-group-toggle btn__radio--toggle-container" data-toggle="buttons" role="radiogroup">
-            <label data-id="email" role="radio" aria-checked="<%= if @changeset.data.phone_number == nil, do: "true", else: "false" %>" class="btn btn-outline-primary btn__radio--toggle-item <%= if @changeset.data.phone_number == nil, do: "active" %>" tabindex="0">
+            <label data-id="email" role="radio" aria-checked="<%= if @changeset.data.phone_number == nil, do: "true", else: "false" %>" class="btn btn-outline-primary btn__radio--toggle btn__radio--toggle-item <%= if @changeset.data.phone_number == nil, do: "active" %>" tabindex="0">
               <%= render ConciergeSite.V2.LayoutView, "_icon_email.html" %>
               <%= radio_button form, :sms_toggle, "false", tabindex: "-1", required: true, checked: @changeset.data.phone_number == nil %>
               <div>Email me</div>
             </label>
-            <label data-id="sms" role="radio" aria-checked="<%= if @changeset.data.phone_number != nil, do: "true", else: "false" %>" class="btn btn-outline-primary btn__radio--toggle-item <%= if @changeset.data.phone_number != nil, do: "active" %>" tabindex="0">
+            <label data-id="sms" role="radio" aria-checked="<%= if @changeset.data.phone_number != nil, do: "true", else: "false" %>" class="btn btn-outline-primary btn__radio--toggle btn__radio--toggle-item <%= if @changeset.data.phone_number != nil, do: "active" %>" tabindex="0">
               <%= render ConciergeSite.V2.LayoutView, "_icon_sms.html" %>
               <%= radio_button form, :sms_toggle, "true", tabindex: "-1", required: true, checked: @changeset.data.phone_number != nil %>
               <div>Text me</div>
