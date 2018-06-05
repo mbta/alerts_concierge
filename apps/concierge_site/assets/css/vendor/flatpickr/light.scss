@@ -1,4 +1,10 @@
+.flatpickr-calendar-container {
+  position: relative;
+}
+
 .flatpickr-calendar {
+  top: 45px !important;
+  left: 0px !important;
   background: transparent;
   opacity: 0;
   display: none;

@@ -23,9 +23,13 @@ first_trip_padding_class = if @round_trip == "true", do: "", else: "form__sectio
           <span class="form__label"><%= time_label %></span>
           <div class="form-group form-inline form__group--inline">
             <%= label form, :start_time, first_trip_label, class: "form__label--inline" %>
-            <%= text_input form, :start_time, type: "text", class: "form-control form__time--inline", step: "60", required: true, value: "8:00 AM", data: [type: "time"]  %>
+            <div class="flatpickr-calendar-container">
+              <%= text_input form, :start_time, type: "text", class: "form-control form__time--inline", step: "60", required: true, value: "8:00 AM", data: [type: "time"]  %>
+            </div>
             <%= label form, :end_time, "until", class: "form__label--inline-divider" %>
-            <%= text_input form, :end_time, type: "text", class: "form-control form__time--inline", step: "60", required: true, value: "9:00 AM", data: [type: "time"] %>
+            <div class="flatpickr-calendar-container">
+              <%= text_input form, :end_time, type: "text", class: "form-control form__time--inline", step: "60", required: true, value: "9:00 AM", data: [type: "time"] %>
+            </div>
           </div>
           <%= ConciergeSite.ScheduleHelper.render(@schedules, "trip_start_time", "trip_end_time") %>
         </div>
@@ -34,9 +38,13 @@ first_trip_padding_class = if @round_trip == "true", do: "", else: "form__sectio
           <div class="form-group form__section">
             <div class="form-group form-inline form__group--inline">
               <%= label form, :return_start_time, "Return trip", class: "form__label--inline" %>
-              <%= text_input form, :return_start_time, type: "text", class: "form-control form__time--inline", step: "60", required: true, value: "5:00 PM", data: [type: "time"] %>
+              <div class="flatpickr-calendar-container">
+                <%= text_input form, :return_start_time, type: "text", class: "form-control form__time--inline", step: "60", required: true, value: "5:00 PM", data: [type: "time"] %>
+              </div>
               <%= label form, :return_end_time, "until", class: "form__label--inline-divider" %>
-              <%= text_input form, :return_end_time, type: "text", class: "form-control form__time--inline", step: "60", required: true, value: "6:00 PM", data: [type: "time"] %>
+              <div class="flatpickr-calendar-container">
+                <%= text_input form, :return_end_time, type: "text", class: "form-control form__time--inline", step: "60", required: true, value: "6:00 PM", data: [type: "time"] %>
+              </div>
             </div>
             <%= ConciergeSite.ScheduleHelper.render(@return_schedules, "trip_return_start_time", "trip_return_end_time") %>
           </div>
