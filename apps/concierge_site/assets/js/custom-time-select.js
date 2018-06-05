@@ -59,6 +59,6 @@ export default pubsub => {
   pubsub.subscribe("time-change", shiftEndTime);
 
   [...document.querySelectorAll("input[data-type='time']")].forEach(input => {
-    flatpickr(input, config);
+    flatpickr(input, Object.assign({}, config, {appendTo: input.parentNode}));
   });
 };
