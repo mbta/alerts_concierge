@@ -27,7 +27,6 @@ import selectStop from "./select-stop";
 import helpText from "./help-text";
 import daySelector from "./day-selector";
 import schedule from "./schedule";
-import toggleTripType from "./toggle-trip-type";
 import phoneMask from "./phone-mask";
 import customTimeSelect from "./custom-time-select";
 import tripIndex from "./trip-index";
@@ -46,6 +45,3 @@ schedule(pubsub);
 phoneMask();
 customTimeSelect(pubsub);
 tripIndex();
-if (path.match(/\/trip_type$/)) {
-  toggleTripType();
-}

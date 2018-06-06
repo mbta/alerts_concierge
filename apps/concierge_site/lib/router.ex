@@ -64,7 +64,6 @@ defmodule ConciergeSite.Router do
     pipe_through [:redirect_prod_http, :browser, :v2_layout]
 
     get "/", V2.AccountController, :new
-    get "/trip_type", V2.PageController, :trip_type
     get "/deleted", V2.PageController, :account_deleted
     resources "/login", V2.SessionController, only: [:new, :create, :delete], singleton: true
     resources "/account", V2.AccountController, only: [:create]

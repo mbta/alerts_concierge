@@ -4,7 +4,29 @@
 <div class="container container__inner">
   <div class="row justify-content-md-center">
     <div class="col-md-10 col-sm-12">
-      <div class="form__intro">Once we get to know more about your commute, we can customize alerts just for you.</div>
+      <div class="callout">
+        <div class="callout__head">
+          Looking for elevator/escalator alerts that aren't a part of a regular commute?
+        </div>
+
+        <div class="callout__subhead">
+          <%= link(to: v2_accessibility_trip_path(@conn, :new), class: "") do %>
+            Sign up for accessibility alerts for specific stations
+            <i aria-hidden="true" class="fa fa-arrow-right "></i>
+          <% end %>
+        </div>
+
+        <div class="callout__content-container">
+          <div class="callout__content">
+            You can also sign up for these alerts as a part of your trip.
+          </div>
+
+          <div class="callout__icons">
+            <%= render ConciergeSite.V2.LayoutView, "_icon_elevator.html" %>
+            <%= render ConciergeSite.V2.LayoutView, "_icon_escalator.html" %>
+          </div>
+        </div>
+      </div>
 
       <%= form_for @conn, v2_trip_trip_path(@conn, :leg), [as: :trip, method: :post], fn form -> %>
         <div class="form-group my-4">
