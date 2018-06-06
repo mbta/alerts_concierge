@@ -20,8 +20,6 @@ defmodule AlertProcessor.NotificationWindowFilter do
   Accepts a list of subscriptions and returns a filtered list of subscriptions
   that could be notified on a given day and time per their notification window.
 
-  *Important Note:* Subscriptions are expected to have their trip preloaded.
-
   """
   @spec filter([Subscription.t], DateTime.t) :: [Subscription.t]
   def filter(subscriptions, now \\ Calendar.DateTime.now!("America/New_York")) do
