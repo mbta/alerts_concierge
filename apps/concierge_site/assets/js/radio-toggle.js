@@ -1,3 +1,5 @@
+import { toggleVisibleSelector } from "./select-route-choices";
+
 export default function(pubsub, $) {
   $ = $ || window.jQuery;
 
@@ -33,6 +35,9 @@ function toggleRadio(pubsub, $) {
   return e => {
     const $targetLabelEl = $(e.target);
     const selectedId = $targetLabelEl.data("id");
+    if (!selectedId) {
+      return;
+    }
     const $parentEl = $targetLabelEl.parents("div[role='radiogroup']");
 
     // update selection indicators and values, publish to subscribers
@@ -98,6 +103,11 @@ function toggleEvents($) {
           $connectionContainerEl.addClass("d-none");
           $connectionContainerEl.find("select").removeAttr("required");
         }
+        break;
+
+      case "mode_toggle":
+        toggleVisibleSelector(inputValue);
+        break;
     }
   };
 }

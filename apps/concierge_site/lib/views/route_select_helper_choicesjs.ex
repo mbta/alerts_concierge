@@ -1,57 +1,58 @@
-defmodule ConciergeSite.RouteSelectHelper do
+defmodule ConciergeSite.RouteSelectHelperChoicesJS do
   @type route_row :: {atom, String.t(), String.t()}
 
   alias AlertProcessor.ServiceInfoCache
   alias AlertProcessor.Model.Route
   import Phoenix.HTML.Tag, only: [content_tag: 3]
 
-  @spec render(atom, atom, [String.t()], keyword) :: Phoenix.HTML.safe()
+  @spec render(atom, atom, [String.t()], keyword) :: [Phoenix.HTML.safe()]
   def render(input_name, field, selected \\ [], attrs \\ []) do
-    content_tag :select, attributes(input_name, field, attrs) do
-      default = if attrs[:no_default] == true, do: [], else: default_option()
-      bus_options = if attrs[:no_bus] == true, do: [], else: option_group("Bus", :bus, selected)
-
-      [
-        default,
-        option_group("Subway", :subway, selected),
-        option_group("Commuter Rail", :cr, selected),
-        option_group("Ferry", :ferry, selected),
-        bus_options
-      ]
-    end
+    [
+      content_tag :div, data: [type: "mode-select", id: "subway"] do
+        content_tag :select, attributes(input_name, field, :subway, attrs, true) do
+          options(:subway, selected)
+        end
+      end,
+      content_tag :div, data: [type: "mode-select", id: "cr"], class: "d-none" do
+        content_tag :select, attributes(input_name, field, :cr, attrs, false) do
+          options(:cr, selected)
+        end
+      end,
+      content_tag :div, data: [type: "mode-select", id: "ferry"], class: "d-none" do
+        content_tag :select, attributes(input_name, field, :ferry, attrs, false) do
+          options(:ferry, selected)
+        end
+      end,
+      content_tag :div, data: [type: "mode-select", id: "bus"], class: "d-none" do
+        content_tag :select, attributes(input_name, field, :bus, attrs, false) do
+          options(:bus, selected)
+        end
+      end
+    ]
   end
 
-  @spec attributes(atom, atom, keyword) :: keyword(String.t())
-  defp attributes(input_name, field, attrs) do
+  @spec attributes(atom, atom, atom, keyword, boolean) :: keyword(String.t())
+  defp attributes(input_name, field, mode, attrs, selected) do
+    suffix = if selected, do: "", else: "-hidden"
     name =
       if attrs[:multiple] == "multiple",
-        do: "#{input_name}[#{field}][]",
-        else: "#{input_name}[#{field}]"
+        do: "#{input_name}#{suffix}[#{field}][]",
+        else: "#{input_name}#{suffix}[#{field}]"
 
-    [data: [type: "route"], class: "form-control", id: "#{input_name}_#{field}", name: name]
+    [data: [type: "route-choices"], class: "form-control", id: "#{input_name}_#{field}_#{mode}", name: name]
     |> Keyword.merge(attrs)
   end
 
-  @spec default_option() :: Phoenix.HTML.safe()
-  defp default_option() do
-    content_tag :option, value: "", disabled: "disabled", selected: "selected" do
-      "Select a subway, commuter rail, ferry or bus route"
-    end
-  end
-
-  @spec option_group(String.t(), atom, [String.t()]) :: Phoenix.HTML.safe()
-  defp option_group(label, mode, selected) do
+  @spec options(atom, [String.t()]) :: [Phoenix.HTML.safe()]
+  defp options(mode, selected) do
     options = get_routes(mode)
+    for {icon, id, name} <- options do
+      value = value(id, name, mode)
+      selected = if Enum.member?(selected, value), do: [selected: "selected"], else: []
+      attrs = [value: value, data: [icon: icon]] ++ selected
 
-    content_tag :optgroup, label: label do
-      for {icon, id, name} <- options do
-        value = value(id, name, mode)
-        selected = if Enum.member?(selected, value), do: [selected: "selected"], else: []
-        attrs = [value: value, data: [icon: icon]] ++ selected
-
-        content_tag :option, attrs do
-          name
-        end
+      content_tag :option, attrs do
+        name
       end
     end
   end

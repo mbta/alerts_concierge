@@ -66,7 +66,31 @@ end
 
         <div class="form-group form__section d-none" data-type="connection">
           <%= label form, :route, "Which line or route do you transfer to?", class: "form__label", data: [toggle: "label"] %>
-          <%= ConciergeSite.RouteSelectHelper.render(:trip, :route, [], data: [toggle: "input", type: "route"]) %>
+          <div class="route__selector--container">
+            <div class="btn-group btn-group-toggle btn__radio--toggle-container" role="radiogroup">
+              <label aria-checked="true" class="btn btn-outline-primary btn__radio--toggle btn__radio--toggle-item-connected active" data-id="subway" role="radio" tabindex="0">
+                <input checked="checked" name="mode_toggle" tabindex="-1" type="radio" value="subway">
+                <%= render ConciergeSite.V2.LayoutView, "_icon_mode_subway.html" %>
+                <div>Subway</div>
+              </label>
+              <label aria-checked="false" class="btn btn-outline-primary btn__radio--toggle btn__radio--toggle-item-connected " data-id="bus" role="radio" tabindex="0">
+                <input name="mode_toggle" tabindex="-1" type="radio" value="bus">
+                <%= render ConciergeSite.V2.LayoutView, "_icon_mode_bus.html" %>
+                <div>Bus</div>
+              </label>
+              <label aria-checked="false" class="btn btn-outline-primary btn__radio--toggle btn__radio--toggle-item-connected " data-id="cr" role="radio" tabindex="0">
+                <input name="mode_toggle" tabindex="-1" type="radio" value="cr">
+                <%= render ConciergeSite.V2.LayoutView, "_icon_mode_cr.html" %>
+                <div>Commuter Rail</div>
+              </label>
+              <label aria-checked="false" class="btn btn-outline-primary btn__radio--toggle btn__radio--toggle-item-connected " data-id="ferry" role="radio" tabindex="0">
+                <input name="mode_toggle" tabindex="-1" type="radio" value="ferry">
+                <%= render ConciergeSite.V2.LayoutView, "_icon_mode_ferry.html" %>
+                <div>Ferry</div>
+              </label>
+            </div>
+            <%= ConciergeSite.RouteSelectHelperChoicesJS.render(:trip, :route, [], data: [toggle: "input", type: "route-choices"]) %>
+          </div>
         </div>
 
         <div class="form__action-buttons--container">

@@ -81,7 +81,7 @@ label.form__label--inline-divider {
 }
 
 .form__action-buttons--container {
-  margin-top: 2.5rem;
+  margin: 2.5rem 2px 0 2px;
 }
 
 .form__action-button {
@@ -130,6 +130,10 @@ label.form__label--inline-divider {
 
 .btn__radio--toggle-container {
   width: 100%;
+
+  select {
+    display: none;
+  }
 }
 
 .btn__radio--toggle {
@@ -157,7 +161,7 @@ label.form__label--inline-divider {
   }
 
   &:focus {
-    z-index: 2;
+    z-index: 9999 !important;
   }
 }
 
