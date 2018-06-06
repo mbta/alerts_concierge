@@ -29,6 +29,7 @@ defmodule AlertProcessor.InformedEntityFilter do
   @spec subscription_match?(Subscription.t, InformedEntity.t) :: boolean
   def subscription_match?(subscription, informed_entity) do
     {subscription, informed_entity, new_match_report()}
+    |> trip_match?()
     |> route_type_match?()
     |> direction_id_match?()
     |> route_match?()
@@ -38,11 +39,33 @@ defmodule AlertProcessor.InformedEntityFilter do
   end
 
   defp new_match_report() do
-    %{route_type_match?: false,
+    %{trip_match?: false,
+      route_type_match?: false,
       route_match?: false,
       direction_id_match?: false,
       stop_match?: false,
       activities_match?: false}
+  end
+
+  defp trip_match?({subscription, %{trip: nil} = informed_entity, match_report}) do
+    updated_match_report = Map.put(match_report, :trip_match?, true)
+    {subscription, informed_entity, updated_match_report}
+  end
+
+  defp trip_match?({subscription, %{schedule: nil} = informed_entity, match_report}) do
+    updated_match_report = Map.put(match_report, :trip_match?, false)
+    {subscription, informed_entity, updated_match_report}
+  end
+
+  defp trip_match?({subscription, %{schedule: schedule} = informed_entity, match_report}) do
+    trip_match? =
+      with {:ok, trip_departure} <- trip_departure(subscription, schedule) do
+        Time.compare(trip_departure, subscription.start_time) in [:gt, :eq]
+      else
+        _ -> true
+      end
+    updated_match_report = Map.put(match_report, :trip_match?, trip_match?)
+    {subscription, informed_entity, updated_match_report}
   end
 
   defp route_type_match?({subscription, %{route_type: nil} = informed_entity, match_report}) do
@@ -132,6 +155,24 @@ defmodule AlertProcessor.InformedEntityFilter do
       || in_between_stop_match?(subscription, informed_entity)
     updated_match_report = Map.put(match_report, :stop_match?, stop_match?)
     {subscription, informed_entity, updated_match_report}
+  end
+
+  defp trip_departure(subscription, schedule) do
+    case Enum.find(schedule, & &1.stop_id == subscription.origin) do
+      matching_stop_event when is_map(matching_stop_event) ->
+        time = time_from_scheduled_stop_event(matching_stop_event)
+        {:ok, time}
+      _ ->
+        {:error, "Departure time not found."}
+    end
+  end
+
+  defp time_from_scheduled_stop_event(scheduled_stop_event) do
+    scheduled_stop_event
+    |> Map.get(:departure_time)
+    |> String.split("T")
+    |> List.last()
+    |> Time.from_iso8601!()
   end
 
   defp route_stop_match?(route, stop) do
