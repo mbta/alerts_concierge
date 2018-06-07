@@ -520,6 +520,74 @@ defmodule ConciergeSite.Integration.Matching do
     end
   end
 
+  describe "informed_entity's trip matching" do
+    test "with origin scheduled time after subscription's start time" do
+      subscription_details = [
+        route_type: 2,
+        direction_id: 0,
+        route: "CR-Fairmount",
+        origin: "Fairmount",
+        destination: "Newmarket",
+        facility_types: [],
+        start_time: ~T[16:30:00],
+        end_time: ~T[19:00:00],
+        relevant_days: ~w(monday)a
+      ]
+      informed_entity = %{
+        "route_type" => 2,
+        "route_id" => "CR-Fairmount",
+        "activities" => ["BOARD", "EXIT", "RIDE"],
+        "trip" => %{
+          "route_id" => "CR-Fairmount",
+          # You'll have to take a look at the ExVCR cassette to make sense of
+          # it but this trip leaves from Fairmount at 4:40PM. Since 4:40PM is
+          # after the subscription's start time of 4:30PM, we should trigger a
+          # notification.
+          "trip_id" => "CR-Weekday-Spring-18-773",
+          "direction_id" => 0
+        }
+      }
+      subscription = build(:subscription, subscription_details)
+      alert = alert(informed_entity: [informed_entity],
+                         active_period: [active_period(~T[16:00:00], ~T[18:00:00], :monday)])
+
+      assert_notify(alert, subscription)
+    end
+
+    test "with origin scheduled time before subscription's start time" do
+      subscription_details = [
+        route_type: 2,
+        direction_id: 0,
+        route: "CR-Fairmount",
+        origin: "Fairmount",
+        destination: "Newmarket",
+        facility_types: [],
+        start_time: ~T[17:00:00],
+        end_time: ~T[19:00:00],
+        relevant_days: ~w(monday)a
+      ]
+      informed_entity = %{
+        "route_type" => 2,
+        "route_id" => "CR-Fairmount",
+        "activities" => ["BOARD", "EXIT", "RIDE"],
+        "trip" => %{
+          "route_id" => "CR-Fairmount",
+          # You'll have to take a look at the ExVCR cassette to make sense of
+          # it but this trip leaves from Fairmount at 4:40PM. Since 4:40PM is
+          # before the subscription's start time of 5PM, we shouldn't trigger a
+          # notification.
+          "trip_id" => "CR-Weekday-Spring-18-773",
+          "direction_id" => 0
+        }
+      }
+      subscription = build(:subscription, subscription_details)
+      alert = alert(informed_entity: [informed_entity],
+                         active_period: [active_period(~T[16:00:00], ~T[18:00:00], :monday)])
+
+      refute_notify(alert, subscription)
+    end
+  end
+
   defp assert_notify(alert, subscription, notifications \\ []), do: assert notify?(alert, subscription, notifications)
   defp refute_notify(alert, subscription, notifications \\ []), do: refute notify?(alert, subscription, notifications)
   defp notify?(alert, subscription, notifications), do: determine_recipients(alert, [subscription], notifications) != []

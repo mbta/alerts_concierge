@@ -941,4 +941,118 @@ defmodule AlertProcessor.InformedEntityFilterTest do
       assert InformedEntityFilter.subscription_match?(subscription, informed_entity)
     end
   end
+
+  test "returns true for trip match per subscription origin start time." do
+    scheduled_origin_event = %{
+      stop_id: "Fairmount",
+      departure_time: "2018-04-02T08:00:00-04:00"
+    }
+    scheduled_destination_event = %{
+      stop_id: "Newmarket",
+      departure_time: nil
+    }
+    schedule = [scheduled_origin_event, scheduled_destination_event]
+    subscription_details = [
+      route_type: nil,
+      direction_id: nil,
+      route: nil,
+      origin:  "Fairmount",
+      destination: "Newmarket",
+      facility_types: [],
+      start_time: ~T[08:00:00]
+    ]
+    subscription = build(:subscription, subscription_details)
+    informed_entity_details = [
+      route_type: nil,
+      direction_id: nil,
+      route: nil,
+      stop: nil,
+      activities: nil,
+      schedule: schedule,
+      trip: "767"
+    ]
+    informed_entity = build(:informed_entity, informed_entity_details)
+    assert InformedEntityFilter.subscription_match?(subscription, informed_entity)
+  end
+
+  test "returns false for trip mismatch per subscription origin start time." do
+    scheduled_origin_event = %{
+      stop_id: "Fairmount",
+      departure_time: "2018-04-02T07:45:00-04:00"
+    }
+    scheduled_destination_event = %{
+      stop_id: "Newmarket",
+      departure_time: nil
+    }
+    schedule = [scheduled_origin_event, scheduled_destination_event]
+    subscription_details = [
+      route_type: nil,
+      direction_id: nil,
+      route: nil,
+      origin:  "Fairmount",
+      destination: "Newmarket",
+      facility_types: [],
+      start_time: ~T[08:00:00]
+    ]
+    subscription = build(:subscription, subscription_details)
+    informed_entity_details = [
+      route_type: nil,
+      direction_id: nil,
+      route: nil,
+      stop: nil,
+      activities: nil,
+      schedule: schedule,
+      trip: "767"
+    ]
+    informed_entity = build(:informed_entity, informed_entity_details)
+    refute InformedEntityFilter.subscription_match?(subscription, informed_entity)
+  end
+
+  test "returns false for trip mismatch if schedule missing event for origin" do
+    subscription_details = [
+      route_type: nil,
+      direction_id: nil,
+      route: nil,
+      origin:  "Fairmount",
+      destination: "Newmarket",
+      facility_types: [],
+      start_time: ~T[08:00:00]
+    ]
+    subscription = build(:subscription, subscription_details)
+    informed_entity_details = [
+      route_type: nil,
+      direction_id: nil,
+      route: nil,
+      stop: nil,
+      activities: nil,
+      schedule: [],
+      trip: "767"
+    ]
+    informed_entity = build(:informed_entity, informed_entity_details)
+    refute InformedEntityFilter.subscription_match?(subscription, informed_entity)
+  end
+
+  test "returns false for trip mismatch if nil schedule and trip given" do
+    subscription_details = [
+      route_type: nil,
+      direction_id: nil,
+      route: nil,
+      origin:  "Fairmount",
+      destination: "Newmarket",
+      facility_types: [],
+      start_time: ~T[08:00:00]
+    ]
+    subscription = build(:subscription, subscription_details)
+    informed_entity_details = [
+      route_type: nil,
+      direction_id: nil,
+      route: nil,
+      stop: nil,
+      activities: nil,
+      schedule: nil,
+      trip: "767"
+    ]
+    informed_entity = build(:informed_entity, informed_entity_details)
+    refute InformedEntityFilter.subscription_match?(subscription, informed_entity)
+  end
 end
