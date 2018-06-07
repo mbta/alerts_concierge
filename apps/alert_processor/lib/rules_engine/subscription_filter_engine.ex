@@ -16,7 +16,6 @@ defmodule AlertProcessor.SubscriptionFilterEngine do
     |> Repo.all()
     |> Repo.preload(:user)
     |> Repo.preload(:informed_entities)
-    |> Repo.preload(:trip)
 
     start_time = Time.utc_now()
 
