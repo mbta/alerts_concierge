@@ -2,20 +2,19 @@
   background-color: $dark-blue;
   color: white;
   font-size: $font-size-xs;
-  height: 6rem;
+  min-height: 6rem;
   width: 100%;
   padding-top: 1rem;
   overflow: hidden;
-  text-align: center;
+  text-align: left;
 }
 
-.footer__link {
-  color: $link-color-dark-background;
+.footer__links,
+.footer__links a,
+.footer__copyright a {
+  color: $brand-primary-light-contrast;
+}
 
-  &:hover,
-  &:active,
-  &:focus {
-    color: $link-color-dark-background;
-    text-decoration: underline;
-  }
+.footer__copyright {
+  font-size: $font-size-xxs;
 }
