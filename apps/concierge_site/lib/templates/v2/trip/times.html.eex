@@ -64,6 +64,7 @@ first_trip_padding_class = if @round_trip == "true", do: "", else: "form__sectio
           <%= hidden_input form, :modes, name: "trip[modes][]", value: mode %>
         <% end %>
 
+        <%= label form, :elevator, "Would you like alerts about any of these station features?", class: "form__label" %>
         <div class="btn-group btn-group-toggle btn__radio--toggle-container" data-toggle="buttons" role="radiogroup">
           <label data-id="roundtrip" role="checkbox" class="btn btn-outline-primary btn__radio--toggle btn__radio--toggle-item-connected" tabindex="0">
             <%= render ConciergeSite.V2.LayoutView, "_icon_elevator.html" %>
