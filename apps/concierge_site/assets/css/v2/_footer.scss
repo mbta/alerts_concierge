@@ -18,3 +18,10 @@
 .footer__copyright {
   font-size: $font-size-xxs;
 }
+
+.footer__sub--container {
+  background-color: $admin-detail-color;
+  font-size: $font-size-xs;
+  padding: 1.8rem 0;
+  text-align: center;
+}
