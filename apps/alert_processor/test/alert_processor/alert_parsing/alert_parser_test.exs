@@ -229,7 +229,26 @@ defmodule AlertProcessor.AlertParserTest do
   end
 
   describe "remove_ignored/1" do
-    @valid_alert %{"active_period" => [%{"start" => 1507661322}], "last_push_notification_timestamp" => 1507661322}
+    @valid_alert %{
+      "active_period" => [%{"start" => 1507661322}],
+      "last_push_notification_timestamp" => 1507661322,
+      "informed_entity" => [
+        %{
+          "activities" => ["BOARD", "EXIT", "RIDE"],
+          "agency_id" => "1",
+          "route_id" => "Boat-F1",
+          "route_type" => 4,
+          "trip" => %{
+            "route_id" => "Boat-F1",
+            "trip_id" => "Boat-F1-1000-Hingham-Weekday"
+          }
+        }
+      ]
+    }
+
+    test "remove alert when informed_entity is not available"  do
+      assert AlertParser.remove_ignored([Map.delete(@valid_alert, "informed_entity")]) == []
+    end
 
     test "remove alert when last_push_notification_timestamp is not available"  do
       assert AlertParser.remove_ignored([Map.delete(@valid_alert, "last_push_notification_timestamp")]) == []
