@@ -133,6 +133,13 @@ label.form__label--inline-divider {
 }
 
 .btn__radio--toggle {
+
+  white-space: normal;
+  justify-content: center;
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+
   div, svg {
     pointer-events: none;
   }
