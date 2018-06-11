@@ -50,4 +50,5 @@
     </div>
   </div>
 </div>
-<%= render ConciergeSite.V2.TripView, "_delete_modal.html", assigns %>
+
+<%= render ConciergeSite.V2.LayoutView, "_delete_modal.html", assigns %>

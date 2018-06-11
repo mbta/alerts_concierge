@@ -41,25 +41,25 @@ first_trip_padding_class = if @trip.roundtrip == "true", do: "", else: "form__se
         </div>
 
         <%= if @trip.roundtrip do %>
-        <div class="form-group form__section">
-          <div class="form-group form-inline form__group--inline">
-            <%= label form, :return_start_time, "Return trip", class: "form__label--inline" %>
-            <div class="flatpickr-calendar-container">
-              <%= text_input form, :return_start_time, type: "text", class: "form-control form__time--inline", step: "60", required: true, value: ConciergeSite.TimeHelper.format_time(@trip.return_start_time), data: [type: "time"] %>
+          <div class="form-group form__section">
+            <div class="form-group form-inline form__group--inline">
+              <%= label form, :return_start_time, "Return trip", class: "form__label--inline" %>
+              <div class="flatpickr-calendar-container">
+                <%= text_input form, :return_start_time, type: "text", class: "form-control form__time--inline", step: "60", required: true, value: ConciergeSite.TimeHelper.format_time(@trip.return_start_time), data: [type: "time"] %>
+              </div>
+              <%= label form, :return_end_time, "until", class: "form__label--inline-divider" %>
+              <div class="flatpickr-calendar-container">
+                <%= text_input form, :return_end_time, type: "text", class: "form-control form__time--inline", step: "60", required: true, value: ConciergeSite.TimeHelper.format_time(@trip.return_end_time), data: [type: "time"] %>
+              </div>
             </div>
-            <%= label form, :return_end_time, "until", class: "form__label--inline-divider" %>
-            <div class="flatpickr-calendar-container">
-              <%= text_input form, :return_end_time, type: "text", class: "form-control form__time--inline", step: "60", required: true, value: ConciergeSite.TimeHelper.format_time(@trip.return_end_time), data: [type: "time"] %>
-            </div>
+            <%= ConciergeSite.ScheduleHelper.render(@return_schedules, "trip_return_start_time", "trip_return_end_time") %>
           </div>
-          <%= ConciergeSite.ScheduleHelper.render(@return_schedules, "trip_return_start_time", "trip_return_end_time") %>
-        </div>
-      <% end %>
+        <% end %>
 
         <div class="form__action-buttons--container">
           <%= submit "Update subscription", class: "btn btn-primary btn-login btn-block" %>
           <button type="button" class="btn btn-outline-danger btn-block" data-toggle="modal" data-target="#deleteModal">
-          Delete this subscription
+            Delete this subscription
           </button>
         </div>
       <% end %>
@@ -67,4 +67,4 @@ first_trip_padding_class = if @trip.roundtrip == "true", do: "", else: "form__se
   </div>
 </div>
 
-<%= render ConciergeSite.V2.TripView, "_delete_modal.html", assigns %>
+<%= render ConciergeSite.V2.LayoutView, "_delete_modal.html", assigns %>

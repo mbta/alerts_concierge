@@ -29,7 +29,8 @@ import daySelector from "./day-selector";
 import schedule from "./schedule";
 import phoneMask from "./phone-mask";
 import customTimeSelect from "./custom-time-select";
-import tripIndex from "./trip-index";
+import deleteModal from "./delete-modal";
+import tripCard from "./trip-card";
 import pubsubFactory from "PubSub";
 const pubsub = new pubsubFactory();
 
@@ -44,4 +45,5 @@ daySelector();
 schedule(pubsub);
 phoneMask();
 customTimeSelect(pubsub);
-tripIndex();
+deleteModal();
+tripCard();
