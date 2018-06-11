@@ -34,7 +34,9 @@ defmodule AlertProcessor.AlertParser do
 
   @spec remove_ignored([map]) :: [map]
   def remove_ignored(alerts) do
-    filter_invalid_key_value(alerts, "last_push_notification_timestamp")
+    alerts
+    |> filter_invalid_key_value("last_push_notification_timestamp")
+    |> filter_invalid_key_value("informed_entity")
   end
 
   @spec filter_invalid_key_value([map], String.t) :: [map]
