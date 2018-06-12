@@ -1,0 +1,67 @@
+body.landing-page {
+  .page__content {
+    display: flex;
+    max-height: 40rem;
+    padding-bottom: 0;
+    position: relative;
+
+    @media screen and (max-width: 1088px) {
+      max-height: none;
+    }
+
+    main {
+      display: flex;
+    }
+
+  }
+
+  .footer__container {
+    box-shadow: 0 50vh 0 50vh $dark-blue;
+  }
+}
+
+.landing-page {
+  line-height: 1.5rem;
+}
+
+.landing-page__title {
+  font-size: 36px;
+  line-height: 2.5rem;
+  margin-top: 1rem;
+
+  span {
+    white-space: nowrap;
+  }
+}
+
+.landing-page__description {
+  font-size: $font-size-xxl;
+  margin-bottom: 4rem;
+
+  @media screen and (max-width: 1088px) {
+    margin-bottom: 2rem;
+  }
+}
+
+.form-control__details {
+  font-size: $font-size-xs;
+  font-style: italic;
+  line-height: 1.3125rem;
+}
+
+.form__action-buttons--container {
+  margin-top: 0;
+}
+
+.form__action--secondary-link {
+  margin-bottom: 3rem;
+}
+
+.landing-page__example {
+  align-items: flex-end;
+
+  img {
+    margin: 0 -20px -15px auto;  // Move phone image down a bit to compensate for space at bottom
+    width: 90%;
+  }
+}
