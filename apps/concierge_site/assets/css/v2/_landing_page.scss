@@ -12,7 +12,36 @@ body.landing-page {
     main {
       display: flex;
     }
+  }
 
+  @media screen and (min-width: 1089px) {
+    .form-row > .col,
+    .form-row > [class*="col-"] {
+      padding: 0;
+      position: relative;
+
+      .form-control {
+        border-radius: 0;
+        border-left-width: 0;
+      }
+      &:first-of-type .form-control {
+        border-left-width: 1px;
+        border-top-left-radius: 0.25rem;
+        border-bottom-left-radius: 0.25rem;
+      }
+      &:last-of-type .form-control {
+        border-top-right-radius: 0.25rem;
+        border-bottom-right-radius: 0.25rem;
+      }
+    }
+  }
+
+  .lb_label {
+    font-weight: 700;
+    top: -31px !important;
+    width: 10rem;
+
+    _:-ms-lang(x), & { top: 0 !important; }
   }
 
   .footer__container {
@@ -36,7 +65,7 @@ body.landing-page {
 
 .landing-page__description {
   font-size: $font-size-xxl;
-  margin-bottom: 4rem;
+  margin-bottom: 5.5rem;
 
   @media screen and (max-width: 1088px) {
     margin-bottom: 2rem;
