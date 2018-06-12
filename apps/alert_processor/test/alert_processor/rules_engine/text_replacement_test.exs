@@ -158,7 +158,7 @@ defmodule AlertProcessor.TextReplacementTest do
       assert TextReplacement.parse_target(fourth) == %{0 => {{"123", "Lowell", ~T[11:20:00]}, fourth}}
     end
 
-    test "parses time" do
+    test "parses time with different AM/PM combinations" do
       first = "Lowell line 12 (11:20am from Lowell)"
       second = "Lowell line 12 (11:20 AM from Lowell)"
       third = "Lowell line 12 (11:20 PM from Lowell)"
@@ -168,6 +168,42 @@ defmodule AlertProcessor.TextReplacementTest do
       assert TextReplacement.parse_target(second) == %{0 => {{"12", "Lowell", ~T[11:20:00]}, second}}
       assert TextReplacement.parse_target(third) == %{0 => {{"12", "Lowell", ~T[23:20:00]}, third}}
       assert TextReplacement.parse_target(fourth) == %{0 => {{"12", "Lowell", ~T[23:20:00]}, fourth}}
+    end
+
+    test "parses time for all hours of the day" do
+      expected = %{
+        "12:00am" => ~T[00:00:00],
+        "1:00am" => ~T[01:00:00],
+        "2:00am" => ~T[02:00:00],
+        "3:00am" => ~T[03:00:00],
+        "4:00am" => ~T[04:00:00],
+        "5:00am" => ~T[05:00:00],
+        "6:00am" => ~T[06:00:00],
+        "7:00am" => ~T[07:00:00],
+        "8:00am" => ~T[08:00:00],
+        "9:00am" => ~T[09:00:00],
+        "10:00am" => ~T[10:00:00],
+        "11:00am" => ~T[11:00:00],
+        "12:00pm" => ~T[12:00:00],
+        "1:00pm" => ~T[13:00:00],
+        "2:00pm" => ~T[14:00:00],
+        "3:00pm" => ~T[15:00:00],
+        "4:00pm" => ~T[16:00:00],
+        "5:00pm" => ~T[17:00:00],
+        "6:00pm" => ~T[18:00:00],
+        "7:00pm" => ~T[19:00:00],
+        "8:00pm" => ~T[20:00:00],
+        "9:00pm" => ~T[21:00:00],
+        "10:00pm" => ~T[22:00:00],
+        "11:00pm" => ~T[23:00:00],
+      }
+
+      for hour <- 1..12, am_pm <- ["am", "pm"] do
+        time = "#{hour}:00#{am_pm}"
+        text = "Lowell line 12 (#{time} from Lowell)"
+        %{0 => {{_, _, time_result}, _}} = TextReplacement.parse_target(text)
+        assert time_result == Map.get(expected, time)
+      end
     end
 
     test "parse station" do
