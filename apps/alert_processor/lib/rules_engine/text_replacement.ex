@@ -5,6 +5,15 @@ defmodule AlertProcessor.TextReplacement do
   alias Calendar.Strftime
 
   def replace_text(alert, subscriptions) do
+    try do
+      {:ok, replace_text!(alert, subscriptions)}
+    rescue
+      error ->
+        {:error, error}
+    end
+  end
+
+  def replace_text!(alert, subscriptions) do
     if Alert.commuter_rail_alert?(alert) do
       {stop_schedules, trip_schedules} = build_schedule_mapping(alert.informed_entities)
 

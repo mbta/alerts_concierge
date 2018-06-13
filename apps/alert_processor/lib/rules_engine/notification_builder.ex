@@ -3,11 +3,26 @@ defmodule AlertProcessor.NotificationBuilder do
   Responsible for construction of Notifications from an Alert and Subscription
   """
 
+  require Logger
   alias AlertProcessor.TextReplacement
   alias AlertProcessor.Model.Notification
 
   def build_notification({user, subscriptions}, alert) do
-    alert = TextReplacement.replace_text(alert, subscriptions)
+    alert_text_replaced = replace_text(alert, subscriptions)
+    do_build_notification({user, subscriptions}, alert_text_replaced)
+  end
+
+  defp replace_text(alert, subscriptions) do
+    case TextReplacement.replace_text(alert, subscriptions) do
+      {:ok, modified_alert} ->
+        modified_alert
+      {:error, error} ->
+        Logger.warn(fn -> "Error replacing text: alert_id=#{inspect alert.id} error=#{inspect error}" end)
+        alert
+    end
+  end
+
+  defp do_build_notification({user, subscriptions}, alert) do
     %Notification{
       alert_id: alert.id,
       user: user,

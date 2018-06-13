@@ -1,7 +1,8 @@
 defmodule AlertProcessor.NotificationBuilderTest do
   use AlertProcessor.DataCase
   import AlertProcessor.Factory
-  alias AlertProcessor.{Model, NotificationBuilder, Model.Notification}
+  alias AlertProcessor.{Model, NotificationBuilder}
+  alias AlertProcessor.Model.{Notification, InformedEntity}
   alias Model.Alert
   alias Calendar.DateTime, as: DT
 
@@ -63,5 +64,25 @@ defmodule AlertProcessor.NotificationBuilderTest do
     }
 
     assert expected_notification == notification
+  end
+
+  test "logs warning if it errors replacing text" do
+    user = build(:user)
+    subscription = build(:subscription, user: user)
+    alert = %Alert{
+      header: "Newburyport Train 180 (25:25 pm from Newburyport)",
+      id: "115346",
+      informed_entities: [%InformedEntity{route_type: 2}]
+    }
+
+    function = fn ->
+      NotificationBuilder.build_notification({user, [subscription]}, alert)
+    end
+
+    expected_log =
+      "Error replacing text: alert_id=\"115346\" "
+      <> "error=%ArgumentError{message: \"cannot convert {25, 25, 0} to time, "
+      <> "reason: :invalid_time\"}"
+    assert ExUnit.CaptureLog.capture_log(function) =~ expected_log
   end
 end
