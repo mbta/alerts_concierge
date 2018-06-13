@@ -11,7 +11,7 @@ defmodule AlertProcessor.TextReplacementTest do
     {:ok, user: user}
   end
 
-  describe "replace_text/2" do
+  describe "replace_text!/2" do
     test "returns default text if not commuter rail subscription" do
       alert = %Alert{
         header: "test",
@@ -20,7 +20,7 @@ defmodule AlertProcessor.TextReplacementTest do
       }
       subscription = %Subscription{}
 
-      assert TextReplacement.replace_text(alert, [subscription]) == alert
+      assert TextReplacement.replace_text!(alert, [subscription]) == alert
     end
 
     test "if user doesn't have matching subscription, return original text", %{user: user} do
@@ -34,7 +34,7 @@ defmodule AlertProcessor.TextReplacementTest do
         informed_entities: commuter_rail_subscription_entities()
       }
 
-      assert TextReplacement.replace_text(alert, [sub]) == alert
+      assert TextReplacement.replace_text!(alert, [sub]) == alert
     end
 
     test "if subscription matches alert, and user has different origin station, replace text" do
@@ -85,7 +85,7 @@ defmodule AlertProcessor.TextReplacementTest do
         description: "Affected trips: Newburyport Train 180 (22:17 pm from Chelsea)"
       }
 
-      assert TextReplacement.replace_text(alert, [sub]) == Map.merge(alert, expected)
+      assert TextReplacement.replace_text!(alert, [sub]) == Map.merge(alert, expected)
     end
 
     test "if subscription matches alert and the origin station's id differs from its name, replace text" do
@@ -136,7 +136,26 @@ defmodule AlertProcessor.TextReplacementTest do
         description: "Affected trips: Fairmount Train 752 (22:17 pm from Four Corners/Geneva)"
       }
 
-      assert TextReplacement.replace_text(alert, [sub]) == Map.merge(alert, expected)
+      assert TextReplacement.replace_text!(alert, [sub]) == Map.merge(alert, expected)
+    end
+  end
+
+  describe "replace_text/2" do
+    test "returns :ok tuple with no errors" do
+      alert = %Alert{}
+      subscription = %Subscription{}
+
+      assert {:ok, ^alert} = TextReplacement.replace_text(alert, [subscription])
+    end
+
+    test "returns :error tuple with invalid hour" do
+      alert = %Alert{
+        header: "Newburyport Train 180 (25:25 pm from Newburyport)",
+        informed_entities: [%InformedEntity{route_type: 2}],
+      }
+      subscription = %Subscription{}
+
+      assert {:error, _} = TextReplacement.replace_text(alert, [subscription])
     end
   end
 
