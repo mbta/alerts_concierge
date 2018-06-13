@@ -28,133 +28,95 @@ defmodule AlertProcessor.InformedEntityFilter do
   @doc false
   @spec subscription_match?(Subscription.t, InformedEntity.t) :: boolean
   def subscription_match?(subscription, informed_entity) do
-    {subscription, informed_entity, new_match_report()}
-    |> trip_match?()
-    |> route_type_match?()
-    |> direction_id_match?()
-    |> route_match?()
-    |> stop_match?()
-    |> activities_match?()
-    |> all_match?()
+    with true <- trip_match?(subscription, informed_entity),
+         true <- route_type_match?(subscription, informed_entity),
+         true <- direction_id_match?(subscription, informed_entity),
+         true <- route_match?(subscription, informed_entity),
+         true <- stop_match?(subscription, informed_entity),
+         true <- activities_match?(subscription, informed_entity)
+    do
+      true
+    else
+      _ -> false
+    end
   end
 
-  defp new_match_report() do
-    %{trip_match?: false,
-      route_type_match?: false,
-      route_match?: false,
-      direction_id_match?: false,
-      stop_match?: false,
-      activities_match?: false}
+  defp trip_match?(_subscription, %{trip: nil}), do: true
+
+  defp trip_match?(_subscription, %{schedule: nil}), do: false
+
+  defp trip_match?(subscription, %{schedule: schedule} = _informed_entity) do
+    with {:ok, trip_departure} <- trip_departure(subscription, schedule) do
+      Time.compare(trip_departure, subscription.start_time) in [:gt, :eq]
+    else
+      _ -> true
+    end
   end
 
-  defp trip_match?({subscription, %{trip: nil} = informed_entity, match_report}) do
-    updated_match_report = Map.put(match_report, :trip_match?, true)
-    {subscription, informed_entity, updated_match_report}
+  defp route_type_match?(_subscription, %{route_type: nil}), do: true
+
+  defp route_type_match?(%{route_type: nil}, _informed_entity), do: true
+
+  defp route_type_match?(subscription, informed_entity) do
+    subscription.route_type == informed_entity.route_type
   end
 
-  defp trip_match?({subscription, %{schedule: nil} = informed_entity, match_report}) do
-    updated_match_report = Map.put(match_report, :trip_match?, false)
-    {subscription, informed_entity, updated_match_report}
+  defp direction_id_match?(_subscription, %{direction_id: nil}), do: true
+
+  defp direction_id_match?(%{direction_id: nil}, _informed_entity), do: true
+
+  defp direction_id_match?(subscription, informed_entity) do
+    subscription.direction_id == informed_entity.direction_id
   end
 
-  defp trip_match?({subscription, %{schedule: schedule} = informed_entity, match_report}) do
-    trip_match? =
-      with {:ok, trip_departure} <- trip_departure(subscription, schedule) do
-        Time.compare(trip_departure, subscription.start_time) in [:gt, :eq]
-      else
-        _ -> true
-      end
-    updated_match_report = Map.put(match_report, :trip_match?, trip_match?)
-    {subscription, informed_entity, updated_match_report}
+  defp route_match?(_subscription, %{route: nil}), do: true
+
+  defp route_match?(%{route: nil}, _informed_entity), do: true
+
+  defp route_match?(subscription, informed_entity) do
+    subscription.route == informed_entity.route
   end
 
-  defp route_type_match?({subscription, %{route_type: nil} = informed_entity, match_report}) do
-    updated_match_report = Map.put(match_report, :route_type_match?, true)
-    {subscription, informed_entity, updated_match_report}
+  defp stop_match?(subscription, %{stop: nil, schedule: nil}) do
+    case {subscription.origin, subscription.destination} do
+      {origin, destination} when not is_nil(origin) and origin == destination ->
+        # When origin equals destination we have what we refer to as a "stop
+        # subscription". This means that this subscription doesn't care about
+        # an alert's informed_entity with a nil stop. It only cares about an
+        # alert if one of it's informed_entities has a stop equal to the
+        # origin and destination. So, we can set `:stop_match?` to false.
+        false
+      _ ->
+        true
+    end
   end
 
-  defp route_type_match?({%{route_type: nil} = subscription, informed_entity, match_report}) do
-    updated_match_report = Map.put(match_report, :route_type_match?, true)
-    {subscription, informed_entity, updated_match_report}
+  defp stop_match?(%{type: :accessibility, origin: nil} = subscription, informed_entity) do
+    route_stop_match?(subscription.route, informed_entity.stop)
   end
 
-  defp route_type_match?({subscription, informed_entity, match_report}) do
-    route_type_match? = subscription.route_type == informed_entity.route_type
-    updated_match_report = Map.put(match_report, :route_type_match?, route_type_match?)
-    {subscription, informed_entity, updated_match_report}
-  end
-
-  defp direction_id_match?({subscription, %{direction_id: nil} = informed_entity, match_report}) do
-    updated_match_report = Map.put(match_report, :direction_id_match?, true)
-    {subscription, informed_entity, updated_match_report}
-  end
-
-  defp direction_id_match?({%{direction_id: nil} = subscription, informed_entity, match_report}) do
-    updated_match_report = Map.put(match_report, :direction_id_match?, true)
-    {subscription, informed_entity, updated_match_report}
-  end
-
-  defp direction_id_match?({subscription, informed_entity, match_report}) do
-    direction_id_match? = subscription.direction_id == informed_entity.direction_id
-    updated_match_report = Map.put(match_report, :direction_id_match?, direction_id_match?)
-    {subscription, informed_entity, updated_match_report}
-  end
-
-  defp route_match?({subscription, %{route: nil} = informed_entity, match_report}) do
-    updated_match_report = Map.put(match_report, :route_match?, true)
-    {subscription, informed_entity, updated_match_report}
-  end
-
-  defp route_match?({%{route: nil} = subscription, informed_entity, match_report}) do
-    updated_match_report = Map.put(match_report, :route_match?, true)
-    {subscription, informed_entity, updated_match_report}
-  end
-
-  defp route_match?({subscription, informed_entity, match_report}) do
-    route_match? = subscription.route == informed_entity.route
-    updated_match_report = Map.put(match_report, :route_match?, route_match?)
-    {subscription, informed_entity, updated_match_report}
-  end
-
-  defp stop_match?({subscription, %{stop: nil, schedule: nil} = informed_entity, match_report}) do
-    updated_match_report =
-      case {subscription.origin, subscription.destination} do
-        {origin, destination} when not is_nil(origin) and origin == destination ->
-          # When origin equals destination we have what we refer to as a "stop
-          # subscription". This means that this subscription doesn't care about
-          # an alert's informed_entity with a nil stop. It only cares about an
-          # alert if one of it's informed_entities has a stop equal to the
-          # origin and destination. So, we can set `:stop_match?` to false.
-          Map.put(match_report, :stop_match?, false)
-        _ ->
-          Map.put(match_report, :stop_match?, true)
-      end
-    {subscription, informed_entity, updated_match_report}
-  end
-
-  defp stop_match?({%{type: :accessibility, origin: nil} = subscription, informed_entity, match_report}) do
-    stop_match? = route_stop_match?(subscription.route, informed_entity.stop)
-    updated_match_report = Map.put(match_report, :stop_match?, stop_match?)
-    {subscription, informed_entity, updated_match_report}
-  end
-
-  defp stop_match?({subscription, %{stop: nil, schedule: schedule} = informed_entity, match_report})
+  defp stop_match?(subscription, %{stop: nil, schedule: schedule})
   when not is_nil(schedule) do
-    stop_match? = schedule_stop_match?(schedule, subscription)
-    updated_match_report = Map.put(match_report, :stop_match?, stop_match?)
-    {subscription, informed_entity, updated_match_report}
+    schedule_stop_match?(schedule, subscription)
   end
 
-  defp stop_match?({subscription, informed_entity, match_report}) do
+  defp stop_match?(subscription, informed_entity) do
     origin = subscription.origin
     destination = subscription.destination
     stop = informed_entity.stop
-    stop_match? =
-      origin == stop
-      || destination == stop
-      || in_between_stop_match?(subscription, informed_entity)
-    updated_match_report = Map.put(match_report, :stop_match?, stop_match?)
-    {subscription, informed_entity, updated_match_report}
+
+    origin == stop
+    || destination == stop
+    || in_between_stop_match?(subscription, informed_entity)
+  end
+
+  defp activities_match?(_subscription, %{activities: nil}), do: true
+
+  defp activities_match?(subscription, informed_entity) do
+    subscription_activities = subscription_activities(subscription, informed_entity)
+    Enum.any?(subscription_activities, fn subscription_activity ->
+      subscription_activity in informed_entity.activities
+    end)
   end
 
   defp trip_departure(subscription, schedule) do
@@ -242,23 +204,6 @@ defmodule AlertProcessor.InformedEntityFilter do
     end)
   end
 
-  defp activities_match?({subscription, informed_entity, match_report}) do
-    activities_match? = activities_match?(subscription, informed_entity)
-    updated_match_report = Map.put(match_report, :activities_match?, activities_match?)
-    {subscription, informed_entity, updated_match_report}
-  end
-
-  defp activities_match?(_subscription, %{activities: nil} = _informed_entity) do
-    true
-  end
-
-  defp activities_match?(subscription, informed_entity) do
-    subscription_activities = subscription_activities(subscription, informed_entity)
-    Enum.any?(subscription_activities, fn subscription_activity ->
-      subscription_activity in informed_entity.activities
-    end)
-  end
-
   defp subscription_activities(subscription, informed_entity) do
     stop_related_activities(subscription, informed_entity)
     ++ facility_types_to_activities(subscription.facility_types)
@@ -289,11 +234,5 @@ defmodule AlertProcessor.InformedEntityFilter do
       bike_storage: "STORE_BIKE"
     }
     Enum.map(facility_types, &Map.get(rules, &1))
-  end
-
-  @spec all_match?({Subscription.t, InformedEntity.t, map}) :: boolean
-  def all_match?({_subscription, _informed_entity, match_report}) do
-    results = Map.values(match_report)
-    Enum.all?(results, &(&1))
   end
 end
