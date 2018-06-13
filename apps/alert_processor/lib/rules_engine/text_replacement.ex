@@ -104,10 +104,12 @@ defmodule AlertProcessor.TextReplacement do
       |> String.split(time_regex, trim: true)
       |> Enum.map(&String.to_integer/1)
 
-    if Regex.match?(~r/[pP][mM]/, time_with_ampm) do
-      Time.from_erl!({hour + 12, minute, 0})
-    else
-      Time.from_erl!({hour, minute, 0})
+    pm_match? = Regex.match?(~r/[pP][mM]/, time_with_ampm)
+
+    case {pm_match?, hour} do
+      {false, hour} when hour == 12 -> Time.from_erl!({0, minute, 0})
+      {true, hour} when hour < 12 -> Time.from_erl!({hour + 12, minute, 0})
+      _ -> Time.from_erl!({hour, minute, 0})
     end
   end
 
