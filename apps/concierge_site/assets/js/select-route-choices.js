@@ -24,7 +24,7 @@ export default () => {
   });
 };
 
-// destroys and instance of the route select component and remove event listeners
+// destroys any instance of the route select component and remove event listeners
 const destroyChoicesJSForRoute = el => {
   const id = el.getAttribute("id");
   if (instances[id]) {
