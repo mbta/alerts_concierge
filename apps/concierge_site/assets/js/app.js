@@ -23,6 +23,7 @@ require("babel-polyfill");
 import touchSupport from "./touch-support";
 import radioToggle from "./radio-toggle";
 import selectRoute from "./select-route";
+import selectRouteChoices from "./select-route-choices";
 import selectStop from "./select-stop";
 import helpText from "./help-text";
 import daySelector from "./day-selector";
@@ -34,11 +35,10 @@ import tripCard from "./trip-card";
 import pubsubFactory from "PubSub";
 const pubsub = new pubsubFactory();
 
-const path = window.location.pathname;
-
 touchSupport();
-radioToggle(pubsub);
 selectRoute();
+selectRouteChoices();
+radioToggle(pubsub);
 selectStop();
 helpText();
 daySelector();
