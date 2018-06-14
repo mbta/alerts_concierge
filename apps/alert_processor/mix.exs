@@ -71,6 +71,7 @@ defmodule AlertProcessor.Mixfile do
       {:ex_machina, "~> 2.0", only: :test},
       {:ex_rated, "~> 1.3"},
       {:exvcr, "~> 0.10.1", runtime: :false},
+      {:fast_local_datetime, "~> 0.1.0"},
       {:gettext, "~> 0.11"},
       {:hackney, "~> 1.12", override: true},
       {:httpoison, "~> 1.1.1", override: true},

@@ -39,22 +39,6 @@ defmodule AlertProcessor.TimeFrameComparisonTest do
       refute TimeFrameComparison.match?(alert_timeframe_map, subscription_timeframe_map)
     end
 
-    test "always matches if alert_timeframe_map is true" do
-      alert_timeframe_map = true
-      subscription_timeframe_map = %{
-        sunday: %{start: 7200, end: 14_400}
-      }
-      assert TimeFrameComparison.match?(alert_timeframe_map, subscription_timeframe_map)
-    end
-
-    test "never matches if alert_timeframe_map is true" do
-      alert_timeframe_map = false
-      subscription_timeframe_map = %{
-        sunday: %{start: 7200, end: 14_400}
-      }
-      refute TimeFrameComparison.match?(alert_timeframe_map, subscription_timeframe_map)
-    end
-
     test "matches overlapping, overnight timeframes" do
       alert_timeframe_map = %{
         saturday: %{end: 86_399, start: 14_400},
