@@ -164,18 +164,10 @@ defmodule AlertProcessor.Helpers.DateTimeHelper do
 
   @spec parse_unix_timestamp(integer, String.t) :: {:ok, DateTime.t} | :error
   def parse_unix_timestamp(timestamp, time_zone \\ @time_zone) do
-    with {:ok, datetime} <- unix_to_datetime(timestamp, time_zone) do
+    with {:ok, datetime} <- FastLocalDatetime.unix_to_datetime(timestamp, time_zone) do
       {:ok, datetime}
     else
       _ -> :error
-    end
-  end
-
-  defp unix_to_datetime(timestamp, time_zone) do
-    try do
-      FastLocalDatetime.unix_to_datetime(timestamp, time_zone)
-    rescue
-      e in MatchError -> {:error, e}
     end
   end
 end
