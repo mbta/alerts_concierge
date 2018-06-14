@@ -150,7 +150,8 @@ defmodule ConciergeSite.TripCardHelperTest do
         trip
         | subscriptions: [
             add_subscription_for_trip(trip, %{origin: "place-chncl"}),
-            add_subscription_for_trip(trip, %{route: "Orange"})
+            add_subscription_for_trip(trip, %{route: "Orange"}),
+            add_subscription_for_trip(trip, %{route: "Green"})
           ]
       }
 

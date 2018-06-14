@@ -42,6 +42,7 @@ defmodule ConciergeSite.TripCardHelper do
   @spec accessibility_content(Trip.t, Plug.Conn.t, String.t) :: [Phoenix.HTML.safe]
   defp accessibility_content(%Trip{trip_type: :accessibility, relevant_days: relevant_days,
                                   facility_types: facility_types, subscriptions: subscriptions}, conn, id) do
+                                    IO.inspect subscriptions
     [
       content_tag :div, class: "trip__card--top" do
         [
@@ -220,6 +221,7 @@ defmodule ConciergeSite.TripCardHelper do
 
   @spec route_name(String.t) :: String.t
   defp route_name(routes) when is_list(routes), do: "Green Line"
+  defp route_name("Green"), do: "Green Line"
   defp route_name("Green-B"), do: "Green Line B"
   defp route_name("Green-C"), do: "Green Line C"
   defp route_name("Green-D"), do: "Green Line D"
