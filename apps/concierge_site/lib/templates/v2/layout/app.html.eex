@@ -88,5 +88,6 @@
     </script>
     <noscript><a href="https://www.informizely.com/">Informizely customer feedback surveys</a></noscript>
     <!-- End Informizely code. -->
+    <div class="sr-only" data-type="speaker" role="region" aria-live="assertive"></div>
   </body>
 </html>
