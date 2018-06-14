@@ -220,6 +220,7 @@ defmodule ConciergeSite.TripCardHelper do
 
   @spec route_name(String.t) :: String.t
   defp route_name(routes) when is_list(routes), do: "Green Line"
+  defp route_name("Green"), do: "Green Line"
   defp route_name("Green-B"), do: "Green Line B"
   defp route_name("Green-C"), do: "Green Line C"
   defp route_name("Green-D"), do: "Green Line D"
