@@ -42,7 +42,6 @@ defmodule ConciergeSite.TripCardHelper do
   @spec accessibility_content(Trip.t, Plug.Conn.t, String.t) :: [Phoenix.HTML.safe]
   defp accessibility_content(%Trip{trip_type: :accessibility, relevant_days: relevant_days,
                                   facility_types: facility_types, subscriptions: subscriptions}, conn, id) do
-                                    IO.inspect subscriptions
     [
       content_tag :div, class: "trip__card--top" do
         [
