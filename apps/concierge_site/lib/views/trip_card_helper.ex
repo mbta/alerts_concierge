@@ -123,7 +123,7 @@ defmodule ConciergeSite.TripCardHelper do
   @spec stops([Subscription.t]) :: Phoenix.HTML.safe
   defp stops(subscriptions) do
     origin = List.first(subscriptions).origin
-    destination = List.last(subscriptions).destination
+    destination = List.first(subscriptions).destination
 
     content_tag :span, class: "trip__card--stops" do
       case {origin, destination} do
