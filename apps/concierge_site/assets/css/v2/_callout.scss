@@ -16,6 +16,10 @@
 .callout__content-container {
   display: flex;
   flex-direction: row;
+
+  @media screen and (max-width: 1087px) {
+    flex-direction: column;
+  }
 }
 
 .callout__icons {
