@@ -19,7 +19,7 @@ export default $ => {
     // append a fresh link
     $("#deleteModal")
       .find("div[data-modal='action_container']")
-      .prepend(
+      .append(
         `<a class="btn btn-primary" data-modal="temp-button" data-csrf="${token}" data-method="delete" data-to="/trips/${tripId}" href="#" rel="nofollow">Yes, delete</a>`
       );
   });

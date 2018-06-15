@@ -11,6 +11,7 @@
           <% end %>
         </div>
         <div class="my-3" data-modal="action_container">
+          <button type="button" class="btn btn-outline-primary" data-dismiss="modal">No, cancel</button>
           <%# Editing an individual trip %>
           <%= if assigns[:trip] do %>
             <%= link to: v2_trip_path(@conn, :delete, assigns[:trip]), method: :delete, class: "btn btn-primary" do %>
@@ -23,7 +24,6 @@
               Yes, delete
             <% end %>
           <% end %>
-          <button type="button" class="btn btn-outline-primary" data-dismiss="modal">No, cancel</button>
         </div>
       </div>
     </div>
