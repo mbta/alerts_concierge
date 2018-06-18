@@ -131,6 +131,7 @@ defmodule ConciergeSite.V2.TripController do
           legs: legs,
           origins: origins,
           destinations: destinations,
+          headsigns: get_headsigns(leg),
           round_trip: round_trip,
           route_name: route_name,
           mode: mode,
@@ -177,6 +178,7 @@ defmodule ConciergeSite.V2.TripController do
           legs: [],
           origins: [],
           destinations: [],
+          headsigns: get_headsigns(leg),
           round_trip: round_trip,
           route_name: route_name,
           saved_mode: mode,
@@ -506,6 +508,12 @@ defmodule ConciergeSite.V2.TripController do
         _ -> Map.put(acc, {Atom.to_string(type), route}, get_schedule(route, origin, destination))
       end
     end)
+  end
+
+  defp get_headsigns(route_id) do
+    with {:ok, %{headsigns: headsigns}} <- ServiceInfoCache.get_route(route_id) do
+      headsigns
+    end
   end
 
   defp get_schedule(route_id, origin, destination) do
