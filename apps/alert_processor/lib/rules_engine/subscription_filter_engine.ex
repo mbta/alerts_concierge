@@ -10,27 +10,30 @@ defmodule AlertProcessor.SubscriptionFilterEngine do
 
   @notification_window_filter Application.get_env(:alert_processor, :notification_window_filter)
 
-  @spec schedule_all_notifications([Alert.t]) :: {integer, Keyword.t}
+  @spec schedule_all_notifications([Alert.t]) :: any
   def schedule_all_notifications(alerts) do
-    all_subscriptions = Subscription
-    |> Repo.all()
-    |> Repo.preload(:user)
-    |> Repo.preload(:informed_entities)
-
+    all_subscriptions = Subscription |> Repo.all() |> Repo.preload(:user)
     start_time = Time.utc_now()
-
-    {skipped, matched_notifications} = Enum.reduce(alerts, {0, []}, fn(alert, {last_skipped, existing_notifications}) ->
-      case all_subscriptions do
-        [] -> {last_skipped + 1, [{:ok, []}] ++ existing_notifications}
-        new_subscriptions ->
-          notifications = Notification.most_recent_for_subscriptions_and_alerts(new_subscriptions, [alert])
-          matched_subscriptions = determine_recipients(alert, new_subscriptions, notifications)
-          notifications = schedule_distinct_notifications(alert, matched_subscriptions)
-          {last_skipped, [notifications] ++ existing_notifications}
-      end
+    scheduled_notifications = schedule_notifications(all_subscriptions, alerts)
+    Logger.info(fn ->
+      "alert matching, time=#{Time.diff(Time.utc_now(), start_time, :millisecond)}"
     end)
-    Logger.info(fn -> "alert matching, time=#{Time.diff(Time.utc_now(), start_time, :millisecond)}, skipped: #{skipped}" end)
-    {skipped, matched_notifications}
+    scheduled_notifications
+  end
+
+  defp schedule_notifications(all_subscriptions, alerts) when is_list(alerts) do
+    options = [ordered: false, timeout: 600_000]
+    notifications =
+      alerts
+      |> Task.async_stream(&(schedule_notifications(all_subscriptions, &1)), options)
+      |> Enum.map(fn {:ok, notification} -> notification end)
+    {:ok, notifications}
+  end
+
+  defp schedule_notifications(all_subscriptions, %Alert{} = alert) do
+    notifications = Notification.most_recent_for_subscriptions_and_alerts(all_subscriptions, [alert])
+    matched_subscriptions = determine_recipients(alert, all_subscriptions, notifications)
+    schedule_distinct_notifications(alert, matched_subscriptions)
   end
 
   @doc """
