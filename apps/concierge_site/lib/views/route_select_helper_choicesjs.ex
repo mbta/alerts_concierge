@@ -91,7 +91,7 @@ defmodule ConciergeSite.RouteSelectHelperChoicesJS do
   defp get_routes(:bus) do
     with {:ok, routes} <- ServiceInfoCache.get_bus_info() do
       for route <- routes do
-        {:bus, route.route_id, "Route #{Route.name(route)}"}
+        {:bus, "#{route.route_id} - 1", "Route #{Route.name(route)}"}
       end
     end
   end

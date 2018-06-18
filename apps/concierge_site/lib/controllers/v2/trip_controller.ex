@@ -511,7 +511,7 @@ defmodule ConciergeSite.V2.TripController do
   end
 
   defp get_headsigns(route_id) do
-    with {:ok, %{headsigns: headsigns}} <- ServiceInfoCache.get_route(route_id) do
+    with {:ok, %{headsigns: headsigns}} <- ServiceInfoCache.get_route(String.replace_suffix(route_id, " - 1", "")) do
       headsigns
     end
   end
