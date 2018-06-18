@@ -3,7 +3,7 @@
 
 <div class="container container__inner">
   <div class="row justify-content-md-center">
-    <div class="col-md-10 col-sm-12">
+    <div class="col-sm-12">
       <%= form_for @changeset, v2_account_path(@conn, :update), [as: :user, method: :post], fn form -> %>
         <div class="form-group form__section--top">
           <%= label form, :sms_toggle, "How would you like to receive alerts?", class: "form__label" %>
