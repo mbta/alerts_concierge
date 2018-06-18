@@ -1,4 +1,5 @@
 import { toggleVisibleSelector } from "./select-route-choices";
+import { toggleBusDirection } from "./bus-direction-toggle";
 
 export default function(pubsub, $) {
   $ = $ || window.jQuery;
@@ -107,6 +108,10 @@ function toggleEvents($) {
 
       case "mode_toggle":
         toggleVisibleSelector(inputValue);
+        break;
+
+      case "trip[direction]":
+        toggleBusDirection(inputValue);
         break;
     }
   };

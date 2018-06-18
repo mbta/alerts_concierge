@@ -90,23 +90,9 @@ defmodule ConciergeSite.RouteSelectHelperChoicesJS do
 
   defp get_routes(:bus) do
     with {:ok, routes} <- ServiceInfoCache.get_bus_info() do
-      Enum.flat_map(routes, fn route ->
-        [bus_route(route, "1"), bus_route(route, "0")]
-      end)
+      for route <- routes do
+        {:bus, "#{route.route_id} - 1", "Route #{Route.name(route)}"}
+      end
     end
   end
-
-  @spec bus_route(Route.t(), String.t()) :: route_row
-  defp bus_route(route, direction_id) do
-    {:bus, "#{route.route_id} - #{direction_id}",
-     "Route #{Route.name(route)} - #{headsign(route, direction_id)}"}
-  end
-
-  @spec headsign(Route.t(), String.t()) :: [String.t()]
-  defp headsign(%Route{headsigns: %{0 => signs}}, "0"),
-    do: [Enum.join(signs, ", "), " - Outbound"]
-
-  defp headsign(%Route{headsigns: %{1 => signs}}, "1"), do: [Enum.join(signs, ", "), " - Inbound"]
-  defp headsign(_, "0"), do: ["Outbound"]
-  defp headsign(_, "1"), do: ["Inbound"]
 end
