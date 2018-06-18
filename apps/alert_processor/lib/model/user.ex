@@ -24,6 +24,7 @@ defmodule AlertProcessor.Model.User do
 
   schema "users" do
     has_one :subscription, Subscription
+    has_many :trips, Trip
     field :email, :string, null: false
     field :phone_number, :string
     field :role, :string
