@@ -102,7 +102,7 @@ defmodule ConciergeSite.StopSelectHelper do
   @spec attributes(atom, atom, String.t, keyword) :: keyword(String.t)
   defp attributes(input_name, field, route_id, attrs) do
     name = if attrs[:multiple] == "multiple", do: "#{input_name}[#{field}][]", else: "#{input_name}[#{field}]"
-    [data: [type: "stop", route: route_id], class: "form-control", id: "#{input_name}_#{field}", name: name]
+    [data: [type: "stop-choices", route: route_id], class: "form-control", id: "#{input_name}_#{field}", name: name]
     |> Keyword.merge(attrs)
   end
 

@@ -1,17 +1,14 @@
 import Choices from "choices.js";
 import getIcon from "./route-icons";
+import { say } from "./speak-to-screenreader";
 
 // global-to-this-module variables for tracking instances, icons and the speaker element
 let instances = {};
 let icons = {};
-let speakerEl;
 
 export default () => {
   // wait for DOM to load
   document.addEventListener("DOMContentLoaded", () => {
-    // assign reference to speaker element
-    speakerEl = document.querySelector("[data-type='speaker']");
-
     const routeSelectEls = document.querySelectorAll(
       "[data-type='route-choices']"
     );
@@ -20,7 +17,7 @@ export default () => {
     }
 
     // apply the chouices to the first element found
-    applyChoicesJSToRoute(routeSelectEls.item(0), {keepClosed: true});
+    applyChoicesJSToRoute(routeSelectEls.item(0), { keepClosed: true });
   });
 };
 
@@ -158,20 +155,11 @@ const handleChoice = event => {
 };
 
 const handleHighlightChoice = event => {
+  // assign reference to speaker element
   const routeName = event.detail.el
     .querySelector("[data-id='name']")
     .innerHTML.trim();
-  addAriaLiveNode(speakerEl, routeName);
-};
-
-// adds a node to dom that will be spoken by screenreader, clears any previous text
-const addAriaLiveNode = (containerEl, text) => {
-  while (containerEl.firstChild) {
-    containerEl.removeChild(containerEl.firstChild);
-  }
-  const speakEl = document.createElement("span");
-  speakEl.innerHTML = text;
-  containerEl.appendChild(speakEl);
+  say(routeName);
 };
 
 // read icons from select form data and puts them in dictionary object

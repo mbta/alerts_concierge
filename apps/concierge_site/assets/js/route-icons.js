@@ -125,4 +125,24 @@ const icons = {
     </svg>`
 };
 
-export default route => icons[route];
+const aliasRoute = route => {
+  switch (route) {
+    case "greenB":
+      return "green-b";
+
+    case "greenC":
+      return "green-c";
+
+    case "greenD":
+      return "green-d";
+
+    case "greenE":
+      return "green-e";
+
+    default:
+      return route;
+  }
+};
+
+export default route =>
+  icons[aliasRoute(route)] ? icons[aliasRoute(route)] : () => "";
