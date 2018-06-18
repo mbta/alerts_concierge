@@ -60,12 +60,25 @@ body {
 
   &:hover {
     background-color: $light-blue;
+    color: $gray-dark;
   }
 
   &.active, &:active {
     background-color: $light-blue !important;
     border-color: $brand-primary !important;
     color: $gray-dark !important;
+
+    div {
+      color: $gray-dark;
+    }
+
+    &[data-id="roundtrip"],
+    &[data-id="oneway"] {
+      path {
+        fill: $gray-dark;
+        mask: none;
+      }
+    }
   }
 }
 
