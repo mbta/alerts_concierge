@@ -32,6 +32,7 @@ import phoneMask from "./phone-mask";
 import customTimeSelect from "./custom-time-select";
 import deleteModal from "./delete-modal";
 import tripCard from "./trip-card";
+import landingPage from "./landing-page";
 import pubsubFactory from "PubSub";
 const pubsub = new pubsubFactory();
 
@@ -47,3 +48,4 @@ phoneMask();
 customTimeSelect(pubsub);
 deleteModal();
 tripCard();
+landingPage();

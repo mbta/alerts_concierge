@@ -14,12 +14,12 @@
         <div class="form-group col-lg-6 col-md-12">
           <%= label f, :email, "Enter your email", class: "form__label" %>
           <%= error_tag f, :email %>
-          <%= email_input f, :email, placeholder: "your@email.com", class: "form-control", required: true %>
+          <%= email_input f, :email, placeholder: "Enter your email", class: "form-control", required: true %>
         </div>
         <div class="form-group col-lg-6 col-md-12">
           <%= label f, :password, "Create a password", class: "form__label" %>
           <%= error_tag f, :password %>
-          <%= password_input f, :password, placeholder: "Enter your password", class: "form-control", pattern: password_regex_string(), required: true %>
+          <%= password_input f, :password, placeholder: "Create a password", class: "form-control", pattern: password_regex_string(), required: true %>
           <div class="my-1 form-control__details">At least 6 characters, with one number or special character</div>
         </div>
       </div>
