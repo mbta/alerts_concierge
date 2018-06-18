@@ -9,7 +9,7 @@ end
 
 <div class="container container__inner">
   <div class="row justify-content-md-center">
-    <div class="col-md-10 col-sm-12">
+    <div class="col-sm-12">
       <%= form_for @conn, v2_trip_trip_path(@conn, :leg), [as: :trip, method: :post, id: "tripleg-form"], fn form -> %>
         <%= if @saved_mode != "bus" do %>
           <div class="form-group form__section--top">

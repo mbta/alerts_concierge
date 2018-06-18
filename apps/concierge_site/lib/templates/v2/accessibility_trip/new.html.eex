@@ -3,53 +3,47 @@
 
 <div class="container container__inner">
   <div class="row justify-content-md-center">
-    <div class="col-md-10 col-sm-12">
-      <div class="container container__inner">
-        <div class="row justify-content-md-center">
-          <div class="col-md-10 col-sm-12">
-            <%= form_for @changeset, v2_accessibility_trip_path(@conn, :create), [as: :trip, method: :post], fn form -> %>
-              <div class="form-group form__section--top">
-                <%= label form, :facility_types, "Which station features would you like to receive alerts about?", class: "form__label" %>
-                <div class="btn-group btn-group-toggle btn__radio--toggle-container" data-toggle="buttons" role="radiogroup">
-                  <label data-id="roundtrip" role="checkbox" class="btn btn-outline-primary btn__radio--toggle btn__radio--toggle-item-connected" tabindex="0">
-                    <%= render ConciergeSite.V2.LayoutView, "_icon_elevator.html" %>
-                    <%= checkbox form, :elevator, tabindex: "-1" %>
-                    <div>Elevators</div>
-                  </label>
-                  <label data-id="oneway" role="checkbox" class="btn btn-outline-primary btn__radio--toggle btn__radio--toggle-item-connected" tabindex="0">
-                    <%= render ConciergeSite.V2.LayoutView, "_icon_escalator.html" %>
-                    <%= checkbox form, :escalator, tabindex: "-1" %>
-                    <div>Escalators</div>
-                  </label>
-                </div>
-                <%= if @changeset.errors[:escalator], do: error_tag @changeset, :escalator %>
-              </div>
-
-              <div class="form-group form__section">
-                <%= label form, :stops, "Would you like alerts for specific stations?", class: "form__label" %>
-                <%= ConciergeSite.StopSelectHelper.render("*", :trip, :stops, @changeset.changes[:stops] || [], multiple: "multiple", no_default: true) %>
-                <%= if @changeset.errors[:stops], do: error_tag @changeset, :stops %>
-              </div>
-
-              <div class="form-group form__section">
-                <%= label form, :routes, "Would you like alerts for all stations on a line?", class: "form__label" %>
-                <%= ConciergeSite.RouteSelectHelper.render(:trip, :routes, @changeset.changes[:routes] || [], multiple: "multiple", no_default: true, no_bus: true) %>
-                <%= if @changeset.errors[:routes], do: error_tag @changeset, :routes %>
-              </div>
-
-              <div class="form-group form__section">
-                <%= label form, :relevant_days, "What days do you usually travel?", class: "form__label" %>
-                <%= ConciergeSite.DaySelectHelper.render(:trip, ["monday", "tuesday", "wednesday", "thursday", "friday", "weekdays"]) %>
-              </div>
-
-              <div class="form__action-buttons--container">
-                <%= submit "Finish", class: "btn btn-primary float-right form__action-button" %>
-                <a href="javascript:history.back()" class="btn btn-outline-primary form__action-button">Back</a>
-              </div>
-            <% end %>
+    <div class="col-sm-12">
+      <%= form_for @changeset, v2_accessibility_trip_path(@conn, :create), [as: :trip, method: :post], fn form -> %>
+        <div class="form-group form__section--top">
+          <%= label form, :facility_types, "Which station features would you like to receive alerts about?", class: "form__label" %>
+          <div class="btn-group btn-group-toggle btn__radio--toggle-container" data-toggle="buttons" role="radiogroup">
+            <label data-id="roundtrip" role="checkbox" class="btn btn-outline-primary btn__radio--toggle btn__radio--toggle-item-connected" tabindex="0">
+              <%= render ConciergeSite.V2.LayoutView, "_icon_elevator.html" %>
+              <%= checkbox form, :elevator, tabindex: "-1" %>
+              <div>Elevators</div>
+            </label>
+            <label data-id="oneway" role="checkbox" class="btn btn-outline-primary btn__radio--toggle btn__radio--toggle-item-connected" tabindex="0">
+              <%= render ConciergeSite.V2.LayoutView, "_icon_escalator.html" %>
+              <%= checkbox form, :escalator, tabindex: "-1" %>
+              <div>Escalators</div>
+            </label>
           </div>
+          <%= if @changeset.errors[:escalator], do: error_tag @changeset, :escalator %>
         </div>
-      </div>
+
+        <div class="form-group form__section">
+          <%= label form, :stops, "Would you like alerts for specific stations?", class: "form__label" %>
+          <%= ConciergeSite.StopSelectHelper.render("*", :trip, :stops, @changeset.changes[:stops] || [], multiple: "multiple", no_default: true) %>
+          <%= if @changeset.errors[:stops], do: error_tag @changeset, :stops %>
+        </div>
+
+        <div class="form-group form__section">
+          <%= label form, :routes, "Would you like alerts for all stations on a line?", class: "form__label" %>
+          <%= ConciergeSite.RouteSelectHelper.render(:trip, :routes, @changeset.changes[:routes] || [], multiple: "multiple", no_default: true, no_bus: true) %>
+          <%= if @changeset.errors[:routes], do: error_tag @changeset, :routes %>
+        </div>
+
+        <div class="form-group form__section">
+          <%= label form, :relevant_days, "What days do you usually travel?", class: "form__label" %>
+          <%= ConciergeSite.DaySelectHelper.render(:trip, ["monday", "tuesday", "wednesday", "thursday", "friday", "weekdays"]) %>
+        </div>
+
+        <div class="form__action-buttons--container">
+          <%= submit "Finish", class: "btn btn-primary float-right form__action-button" %>
+          <a href="javascript:history.back()" class="btn btn-outline-primary form__action-button">Back</a>
+        </div>
+      <% end %>
     </div>
   </div>
 </div>

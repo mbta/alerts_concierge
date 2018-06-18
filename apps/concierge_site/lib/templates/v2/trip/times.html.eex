@@ -12,7 +12,7 @@ first_trip_padding_class = if @round_trip == "true", do: "", else: "form__sectio
 
 <div class="container container__inner">
   <div class="row justify-content-md-center">
-    <div class="col-md-10 col-sm-12">
+    <div class="col-sm-12">
       <%= form_for @conn, v2_trip_path(@conn, :create), [as: :trip, method: :post], fn form -> %>
         <div class="form-group form__section--top">
           <%= label form, :days, "What days do you usually travel?", class: "form__label" %>
