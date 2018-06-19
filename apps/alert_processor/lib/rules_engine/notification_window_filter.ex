@@ -22,7 +22,7 @@ defmodule AlertProcessor.NotificationWindowFilter do
 
   """
   @spec filter([Subscription.t], DateTime.t) :: [Subscription.t]
-  def filter(subscriptions, now \\ Calendar.DateTime.now!("America/New_York")) do
+  def filter(subscriptions, now) do
     Enum.filter(subscriptions, fn(subscription) ->
       within_notification_window?(subscription, now)
     end)

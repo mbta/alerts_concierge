@@ -45,7 +45,7 @@ defmodule AlertProcessor.SubscriptionFilterEngine do
       SentAlertFilter.filter(subscriptions, alert, notifications, now)
 
     subscriptions_to_test
-    |> @notification_window_filter.filter()
+    |> @notification_window_filter.filter(now)
     |> InformedEntityFilter.filter(alert: alert)
     |> ActivePeriodFilter.filter(alert: alert)
     |> Kernel.++(subscriptions_to_auto_resend)
