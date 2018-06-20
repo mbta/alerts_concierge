@@ -14,7 +14,8 @@ end
         <%= if @saved_mode != "bus" do %>
           <div class="form-group form__section--top">
             <%= label form, :origin, "Where do you get on the #{@route_name}?", class: "form__label" %>
-            <%= ConciergeSite.StopSelectHelper.render(@saved_leg, :trip, :origin, @default_origin, [required: true, data_mode: @saved_mode]) %>
+            <%= ConciergeSite.StopSelectHelper.render(@saved_leg, :trip, :origin, @default_origin, [data_mode: @saved_mode]) %>
+            <div id="trip_origin_error"></div>
           </div>
 
           <div class="form-group form__section">
@@ -22,7 +23,8 @@ end
             <%= if @route_name == "Green Line" || @route_name == "Red Line" do %>
               <div class="form__label--text">Only stops on the same branch can be selected.</div>
             <% end %>
-            <%= ConciergeSite.StopSelectHelper.render(@saved_leg, :trip, :destination, [], [required: true]) %>
+            <%= ConciergeSite.StopSelectHelper.render(@saved_leg, :trip, :destination, []) %>
+            <div id="trip_destination_error"></div>
           </div>
         <% else %>
           <%= hidden_input form, :origin, value: "" %>

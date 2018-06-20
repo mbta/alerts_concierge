@@ -21,7 +21,8 @@
     "popper.js": "^1.14.3",
     "select2": "^4.0.6-rc.1",
     "tether": "^1.4.4",
-    "time-number": "^1.1.0"
+    "time-number": "^1.1.0",
+    "elem-dataset": "^1.1.1"
   },
   "devDependencies": {
     "autoprefixer": "^7.1.2",

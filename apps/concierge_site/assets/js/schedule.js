@@ -1,3 +1,4 @@
+import elemDataset from 'elem-dataset';
 const toggleDownClasses = "fa fa-caret-down schedules__toggle";
 const toggleUpClasses = "fa fa-caret-up schedules__toggle";
 
@@ -14,7 +15,8 @@ function isMatched(tripTime, startTime, endTime) {
 }
 
 function processTrip(tripEl, startTime, endTime) {
-  const tripTime = tripEl.dataset.time;
+  const dataset = elemDataset(tripEl); 
+  const tripTime = dataset.time;
   const matched = isMatched(tripTime, startTime, endTime);
   tripEl.style.display = matched ? "block" : "none";
   return matched ? 1 : 0;
@@ -28,8 +30,9 @@ function toggleBlankSlate(scheduleEl, display) {
 }
 
 function processSchedule(scheduleEl) {
-  const startTime = document.getElementById(scheduleEl.dataset.start).value;
-  const endTime = document.getElementById(scheduleEl.dataset.end).value;
+  const dataset = elemDataset(scheduleEl);
+  const startTime = document.getElementById(dataset.start).value;
+  const endTime = document.getElementById(dataset.end).value;
   const trips = [... scheduleEl.getElementsByClassName("schedules__trips--item")];
   const matchedTrips = trips.reduce((count, tripEl) => {
     return count + processTrip(tripEl, startTime, endTime);
@@ -48,7 +51,8 @@ function expandAndProcessSchedule(scheduleEl) {
 
 function handleToggle(e, legEl, toggleEl, scheduleEl) {
   e.preventDefault();
-  const expanded = !JSON.parse(legEl.dataset.expanded || "false");
+  const dataset = elemDataset(legEl);
+  const expanded = !JSON.parse(dataset.expanded || "false");
   doToggle(legEl, toggleEl, expanded);
 }
 
