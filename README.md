@@ -1,5 +1,8 @@
 # Alerts Concierge
 
+[![Build Status](https://semaphoreci.com/api/v1/projects/de013d4d-9f29-4afd-83d4-85f13e0699e6/1892610/badge.svg)](https://semaphoreci.com/mbta/alerts_concierge)
+[![codecov](https://codecov.io/gh/mbta/alerts_concierge/branch/master/graph/badge.svg?token=yvAzhPtUcf)](https://codecov.io/gh/mbta/alerts_concierge)
+
 Subscription and dissemination system which allows MBTA customers to easily
 subscribe to and receive relevant service alerts for desired
 itineraries/services, while ensuring MBTA’s costs for providing this
