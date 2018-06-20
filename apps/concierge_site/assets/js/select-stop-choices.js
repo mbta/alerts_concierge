@@ -10,7 +10,7 @@ export default () => {
   // wait for DOM to load
   document.addEventListener("DOMContentLoaded", () => {
     const stopSelectEls = [
-      ...document.querySelectorAll("[data-type='stop-choices']")
+      ...document.querySelectorAll("[data-type='stop']")
     ];
 
     // apply the choices to all stop selectors
@@ -35,6 +35,11 @@ const cacheStopData = optionEls => {
 
 const applyChoicesJSToStop = el => {
   const id = el.getAttribute("id");
+
+  // don't handle multi-selects
+  if (el.hasAttribute("multiple")) {
+    return;
+  }
 
   // create a new instance of choices
   instances[id] = new Choices(el, {
