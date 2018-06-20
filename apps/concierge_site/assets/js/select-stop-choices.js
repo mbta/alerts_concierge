@@ -1,4 +1,5 @@
 import Choices from "choices.js";
+import elemDataset from 'elem-dataset';
 import getIcon from "./route-icons";
 import { say } from "./speak-to-screenreader";
 
@@ -29,7 +30,8 @@ const cacheStopData = optionEls => {
     if (!stopId) {
       return;
     }
-    stopData[stopId] = Object.keys(Object.assign({}, optionEl.dataset));
+    const dataset = elemDataset(optionEl);
+    stopData[stopId] = Object.keys(Object.assign({}, dataset));
   });
 };
 
@@ -117,7 +119,8 @@ const handleChoice = event => {
   const selectEl = event.target;
   const selectId = selectEl.getAttribute("id");
   const otherSelectId = flipId(selectId);
-  const selectData = Object.assign({}, selectEl.dataset);
+  const dataset = elemDataset(selectEl);
+  const selectData = Object.assign({}, dataset);
   const selectedStopId = event.detail.choice.value || null;
   let availableChoices;
 

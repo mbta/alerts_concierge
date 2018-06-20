@@ -1,4 +1,5 @@
 import Choices from "choices.js";
+import elemDataset from 'elem-dataset';
 import getIcon from "./route-icons";
 import { say } from "./speak-to-screenreader";
 
@@ -166,7 +167,8 @@ const handleHighlightChoice = event => {
 const getIconMap = el => {
   return [...el.querySelectorAll("option")].reduce((accumulator, option) => {
     const id = option.getAttribute("value");
-    const icon = option.dataset.icon;
+    const dataset = elemDataset(option);
+    const icon = dataset.icon;
     if (id && icon) {
       accumulator[id] = icon;
     }
@@ -178,7 +180,8 @@ const getIconMap = el => {
 export const toggleVisibleSelector = inputValue => {
   [...document.querySelectorAll("[data-type='mode-select']")].forEach(el => {
     const selectEl = el.querySelector("select");
-    if (el.dataset.id == inputValue) {
+    const dataset = elemDataset(el);
+    if (dataset.id == inputValue) {
       el.classList.remove("d-none");
       selectEl.setAttribute("name", "trip[route]");
       applyChoicesJSToRoute(selectEl, { focus: true });
