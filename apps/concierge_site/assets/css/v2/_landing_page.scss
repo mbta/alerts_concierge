@@ -5,12 +5,23 @@ body.landing-page {
     padding-bottom: 0;
     position: relative;
 
+    @media all and (-ms-high-contrast: none), (-ms-high-contrast: active) {
+      height: 32rem;
+    }
+
     @media screen and (max-width: 1088px) {
       max-height: none;
     }
 
     main {
       display: flex;
+      flex: 1 1 auto;
+      -ms-flex: 1 1 auto;
+
+      div {
+        flex: 1 1 auto;
+        -ms-flex: 1 1 auto;
+      }
     }
   }
 
