@@ -1,17 +1,15 @@
 import Choices from "choices.js";
+import elemDataset from 'elem-dataset';
 import getIcon from "./route-icons";
+import { say } from "./speak-to-screenreader";
 
 // global-to-this-module variables for tracking instances, icons and the speaker element
 let instances = {};
 let icons = {};
-let speakerEl;
 
 export default () => {
   // wait for DOM to load
   document.addEventListener("DOMContentLoaded", () => {
-    // assign reference to speaker element
-    speakerEl = document.querySelector("[data-type='speaker']");
-
     const routeSelectEls = document.querySelectorAll(
       "[data-type='route-choices']"
     );
@@ -20,7 +18,7 @@ export default () => {
     }
 
     // apply the chouices to the first element found
-    applyChoicesJSToRoute(routeSelectEls.item(0), {keepClosed: true});
+    applyChoicesJSToRoute(routeSelectEls.item(0), { keepClosed: true });
   });
 };
 
@@ -158,27 +156,19 @@ const handleChoice = event => {
 };
 
 const handleHighlightChoice = event => {
+  // assign reference to speaker element
   const routeName = event.detail.el
     .querySelector("[data-id='name']")
     .innerHTML.trim();
-  addAriaLiveNode(speakerEl, routeName);
-};
-
-// adds a node to dom that will be spoken by screenreader, clears any previous text
-const addAriaLiveNode = (containerEl, text) => {
-  while (containerEl.firstChild) {
-    containerEl.removeChild(containerEl.firstChild);
-  }
-  const speakEl = document.createElement("span");
-  speakEl.innerHTML = text;
-  containerEl.appendChild(speakEl);
+  say(routeName);
 };
 
 // read icons from select form data and puts them in dictionary object
 const getIconMap = el => {
   return [...el.querySelectorAll("option")].reduce((accumulator, option) => {
     const id = option.getAttribute("value");
-    const icon = option.dataset.icon;
+    const dataset = elemDataset(option);
+    const icon = dataset.icon;
     if (id && icon) {
       accumulator[id] = icon;
     }
@@ -190,7 +180,8 @@ const getIconMap = el => {
 export const toggleVisibleSelector = inputValue => {
   [...document.querySelectorAll("[data-type='mode-select']")].forEach(el => {
     const selectEl = el.querySelector("select");
-    if (el.dataset.id == inputValue) {
+    const dataset = elemDataset(el);
+    if (dataset.id == inputValue) {
       el.classList.remove("d-none");
       selectEl.setAttribute("name", "trip[route]");
       applyChoicesJSToRoute(selectEl, { focus: true });

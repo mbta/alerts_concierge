@@ -4,7 +4,6 @@ const NAME_LIMIT = 50;
 export default function($) {
   $ = $ || window.jQuery;
 
-  var selectApplied = false;
   const options = {
     templateResult: formatRoute,
     templateSelection: formatRoute,

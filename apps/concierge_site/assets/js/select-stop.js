@@ -18,6 +18,9 @@ const redShapes = ["red-1", "red-2"];
 export default function($) {
   $ = $ || window.jQuery;
   $("select[data-type='stop']").each(function() {
+    if (!$(this)[0].hasAttribute("multiple")) {
+      return;
+    }
     $(this).select2(select2Options);
     addValidation($(this));
   });
