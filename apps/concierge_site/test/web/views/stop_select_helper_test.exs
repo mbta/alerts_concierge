@@ -6,7 +6,7 @@ defmodule ConciergeSite.StopSelectHelperTest do
   test "render/3 Subway Line" do
     html = Phoenix.HTML.safe_to_string(StopSelectHelper.render("Red", :foo, :bar))
 
-    assert html =~ "<select class=\"form-control\" data-route=\"Red\" data-type=\"stop\" id=\"foo_bar\" name=\"foo[bar]\">"
+    assert html =~ "<select class=\"form-control\" data-route=\"Red\" data-type=\"stop-choices\" id=\"foo_bar\" name=\"foo[bar]\">"
     assert html =~ "Select a stop"
     assert html =~ "<option data-bus=\"true\" data-mattapan=\"true\" data-red=\"true\" data-red-1=\"true\" value=\"place-asmnl\">Ashmont</option>"
     assert html =~ "<option data-green-b=\"true\" data-green-c=\"true\" data-green-d=\"true\" data-green-e=\"true\" data-red=\"true\" data-red-1=\"true\" data-red-2=\"true\" value=\"place-pktrm\">Park Street</option>"
@@ -67,6 +67,6 @@ defmodule ConciergeSite.StopSelectHelperTest do
                                                                                           multiple: "multiple"]))
 
     refute html =~ "<option disabled=\"disabled\" selected=\"selected\" value=\"\">Select a stop</option>"
-    assert html =~ "<select class=\"form-control\" data-route=\"Orange\" data-type=\"stop\" id=\"foo_bar\" multiple=\"multiple\" name=\"foo[bar][]\""
+    assert html =~ "<select class=\"form-control\" data-route=\"Orange\" data-type=\"stop-choices\" id=\"foo_bar\" multiple=\"multiple\" name=\"foo[bar][]\""
   end
 end
