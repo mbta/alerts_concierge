@@ -39,7 +39,7 @@ defmodule ConciergeSite.RouteSelectHelperChoicesJS do
         do: "#{input_name}#{suffix}[#{field}][]",
         else: "#{input_name}#{suffix}[#{field}]"
 
-    [data: [type: "route-choices"], class: "form-control", id: "#{input_name}_#{field}_#{mode}", name: name]
+    [data: [type: "route"], class: "form-control", id: "#{input_name}_#{field}_#{mode}", name: name]
     |> Keyword.merge(attrs)
   end
 

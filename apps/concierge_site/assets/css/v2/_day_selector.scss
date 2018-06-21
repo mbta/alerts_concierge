@@ -11,6 +11,7 @@
     border-color: $brand-primary;
     border-radius: 0;
     font-size: $font-size-xs;
+    z-index: inherit !important;
 
     @include media-breakpoint-up(sm) {
       font-size: $font-size-base;

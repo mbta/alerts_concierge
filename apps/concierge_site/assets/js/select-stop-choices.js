@@ -38,22 +38,21 @@ const cacheStopData = optionEls => {
 const applyChoicesJSToStop = el => {
   const id = el.getAttribute("id");
 
-  // don't handle multi-selects
-  if (el.hasAttribute("multiple")) {
-    return;
-  }
+  const removeItemButton = el.hasAttribute("multiple") ? true : false;
 
   // create a new instance of choices
   instances[id] = new Choices(el, {
+    removeItemButton: removeItemButton,
     position: "bottom",
     shouldSort: false,
     classNames: {
       containerOuter:
-        "choices choices__bootstrap--theme choices__bootstrap--stop-theme"
+        "choices choices__bootstrap--theme choices__bootstrap--stop-theme",
+      itemSelectable: 'choices__item--selectable choices__bootstrap--item-selectable'
     },
     searchPlaceholderValue: `Type here to search for your stop`,
     callbackOnCreateTemplates: template => ({
-      item: itemTemplate(id, template),
+      item: itemTemplate(id, template, removeItemButton),
       choice: choiceTemplate(id, template)
     })
   });
@@ -62,7 +61,9 @@ const applyChoicesJSToStop = el => {
   el.addEventListener("highlightChoice", handleHighlightChoice, false);
 
   // callback to trigger any events for when a choice is made
-  el.addEventListener("choice", handleChoice, false);
+  if (id == "trip_origin" || id == "trip_destination") {
+    el.addEventListener("choice", handleChoice, false);
+  }
 };
 
 const getStopChoices = optionEls =>
@@ -78,7 +79,7 @@ const renderIcons = stopId =>
     ""
   );
 
-const itemTemplate = (_id, template) => (classNames, data) => {
+const itemTemplate = (_id, template, removeItemButton) => (classNames, data) => {
   return template(`
   <div class="${classNames.item} ${
     data.highlighted ? classNames.highlightedState : classNames.itemSelectable
@@ -87,6 +88,7 @@ const itemTemplate = (_id, template) => (classNames, data) => {
   } ${data.disabled ? 'aria-disabled="true"' : ""}>
     ${data.value ? renderIcons(data.value) : ""}
     ${data.label}
+    ${removeItemButton ? `<button type="button" class="choices__button" data-button="" aria-label="">Remove item</button>` : ""}
   </div>
 `);
 };
