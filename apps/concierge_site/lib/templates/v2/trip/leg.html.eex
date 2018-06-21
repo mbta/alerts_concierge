@@ -37,11 +37,11 @@ end
             <div class="btn-group btn-group-toggle btn__radio--toggle-container" data-toggle="buttons" role="radiogroup">
             <label data-id="inbound" role="radio" aria-checked="true" class="btn btn-outline-primary btn__radio--toggle btn__radio--toggle-item active" tabindex="0">
               <%= radio_button form, :direction, "1", tabindex: "-1", required: true, checked: true %>
-              <div><%= Map.get(@headsigns, 1, "Inbound") %></div>
+              <div><%= Enum.intersperse(Map.get(@headsigns, 1, ["Inbound"]), " ● ") %></div>
             </label>
             <label data-id="outbound" role="radio" aria-checked="false" class="btn btn-outline-primary btn__radio--toggle btn__radio--toggle-item" tabindex="0">
               <%= radio_button form, :direction, "0", tabindex: "-1", required: true, checked: false %>
-              <div><%= Map.get(@headsigns, 0, "Outbound") %></div>
+              <div><%= Enum.intersperse(Map.get(@headsigns, 0, ["Outbound"]), " ● ") %></div>
             </label>
           </div>
           </div>
