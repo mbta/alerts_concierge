@@ -7,6 +7,7 @@ defmodule AlertProcessor.Supervisor do
   use Supervisor
   alias AlertProcessor.{
     AlertWorker,
+    CachedApiClient,
     SendingQueue,
     NotificationWorker,
     ServiceInfoCache,
@@ -34,6 +35,16 @@ defmodule AlertProcessor.Supervisor do
     children = [
       supervisor(Registry, [:unique, :mailer_process_registry]),
       supervisor(AlertProcessor.Repo, []),
+      supervisor(
+        ConCache,
+        [
+          [
+            ttl_check: :timer.seconds(60),
+            ttl: :timer.minutes(60)
+          ],
+          [name: CachedApiClient.cache_name()]
+        ]
+      ),
       worker(ServiceInfoCache, []),
       worker(Metrics, []),
       worker(AlertWorker, []),
