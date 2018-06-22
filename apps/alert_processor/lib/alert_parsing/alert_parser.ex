@@ -4,7 +4,7 @@ defmodule AlertProcessor.AlertParser do
   relevant information to subscription filter engine.
   """
   require Logger
-  alias AlertProcessor.{AlertsClient, ApiClient,
+  alias AlertProcessor.{AlertsClient, CachedApiClient,
     Helpers.StringHelper, Parser, ServiceInfoCache,
     SubscriptionFilterEngine, Helpers.DateTimeHelper}
   alias AlertProcessor.Model.{Alert, InformedEntity, Notification, SavedAlert}
@@ -220,7 +220,7 @@ defmodule AlertProcessor.AlertParser do
 
   defp get_schedule(%{"trip_id" => trip_id} = trip, %{"route_type" => 2}) do
     with nil <- Map.get(trip, "stop_id"),
-         {:ok, schedule} <- ApiClient.schedule_for_trip(trip_id) do
+         {:ok, schedule} <- CachedApiClient.schedule_for_trip(trip_id) do
       Enum.map(schedule, &parse_schedule_event/1)
     else
       _ -> nil
