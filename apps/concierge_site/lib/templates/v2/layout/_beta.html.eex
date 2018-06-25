@@ -2,7 +2,8 @@
 destination = if @current_user, do: v2_trip_path(@conn, :index), else: v2_account_path(@conn, :new)
 %>
 <%= link to: destination do %>
-<svg class="header__beta" xmlns="http://www.w3.org/2000/svg" width="112" height="21">
+<svg class="header__beta" xmlns="http://www.w3.org/2000/svg" width="112" height="21" role="img">
+  <title>T-Alerts Beta</title>
   <g fill="none" fill-rule="evenodd">
     <g transform="translate(65)">
       <rect width="47" height="21" fill="#E00013" rx="3"/>
