@@ -37,6 +37,16 @@ defmodule AlertProcessor.SendingQueue do
     GenServer.call(name, :pop)
   end
 
+  @doc """
+  Resets state to an empty list.
+
+  For use in tests only.
+  """
+  @spec reset() :: :ok
+  def reset(name \\ __MODULE__) do
+    GenServer.call(name, :reset)
+  end
+
   @doc false
   def handle_call({:list_push, new_notifications}, _from, notifications) do
     newstate = new_notifications ++ notifications
@@ -56,6 +66,11 @@ defmodule AlertProcessor.SendingQueue do
   def handle_call({:push, notification}, _from, notifications) do
     newstate = [notification | notifications]
     {:reply, :ok, Enum.uniq(newstate)}
+  end
+
+  @doc false
+  def handle_call(:reset, _from, _notifications) do
+    {:reply, :ok, []}
   end
 
   @doc false

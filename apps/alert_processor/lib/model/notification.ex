@@ -103,4 +103,18 @@ defmodule AlertProcessor.Model.Notification do
       select: n
     )
   end
+
+  def most_recent_for_alerts(alerts) do
+    alert_ids = Enum.map(alerts, &(&1.id))
+
+    Repo.all(
+      from n in __MODULE__,
+      where: n.alert_id in ^alert_ids,
+      where: n.status == "sent",
+      preload: [subscriptions: :user],
+      distinct: [:alert_id, :user_id],
+      order_by: [desc: n.inserted_at],
+      select: n
+    )
+  end
 end

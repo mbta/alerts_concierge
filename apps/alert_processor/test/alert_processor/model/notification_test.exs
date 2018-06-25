@@ -141,4 +141,128 @@ defmodule AlertProcessor.Model.NotificationTest do
     assert [sub1.id] == Enum.map(returned_notification1.subscriptions, & &1.id)
     assert [sub1.id] == Enum.map(returned_notification2.subscriptions, & &1.id)
   end
+
+  describe "most_recent_for_alerts/1" do
+    test "returns most recent notification by inserted_at" do
+      user = insert(:user)
+      for number <- 1..5 do
+        notification_details = %{
+          alert_id: "1",
+          header: "notification #{number}",
+          service_effect: "some service effect",
+          user: user,
+          email: user.email,
+        }
+        notification = struct(Notification, notification_details)
+        Notification.save(notification, :sent)
+      end
+
+      [latest_notification] = Notification.most_recent_for_alerts([%{id: "1"}])
+
+      assert latest_notification.header == "notification 5"
+    end
+
+    test "returns a single notification per alert" do
+      user = insert(:user)
+      for alert_id <- 1..2, notification_number <- 1..2 do
+        notification_details = %{
+          alert_id: "#{alert_id}",
+          header: "notification #{notification_number}",
+          service_effect: "some service effect",
+          user: user,
+          email: user.email,
+        }
+        notification = struct(Notification, notification_details)
+        Notification.save(notification, :sent)
+      end
+
+      latest_notifications = Notification.most_recent_for_alerts([%{id: "1"}, %{id: "2"}])
+
+      assert length(latest_notifications) == 2
+      assert Enum.any?(latest_notifications, & &1.alert_id == "1")
+      assert Enum.any?(latest_notifications, & &1.alert_id == "2")
+    end
+
+    test "returns a single notification per user" do
+      user1 = insert(:user, email: "user1@emailprovider.com")
+      user2 = insert(:user, email: "user2@emailprovider.com")
+      for user <- [user1, user2], notification_number <- 1..2 do
+        notification_details = %{
+          alert_id: "1",
+          header: "notification #{notification_number}",
+          service_effect: "some service effect",
+          user: user,
+          email: user.email,
+        }
+        notification = struct(Notification, notification_details)
+        Notification.save(notification, :sent)
+      end
+
+      latest_notifications = Notification.most_recent_for_alerts([%{id: "1"}])
+
+      assert length(latest_notifications) == 2
+      assert Enum.any?(latest_notifications, & &1.user_id == user1.id)
+      assert Enum.any?(latest_notifications, & &1.user_id == user2.id)
+    end
+
+    test "ignores irrelevant alerts" do
+      user = insert(:user)
+      for alert_id <- 1..2 do
+        notification_details = %{
+          alert_id: "#{alert_id}",
+          header: "notification",
+          service_effect: "some service effect",
+          user: user,
+          email: user.email,
+        }
+        notification = struct(Notification, notification_details)
+        Notification.save(notification, :sent)
+      end
+
+      [%{alert_id: alert_id}] = Notification.most_recent_for_alerts([%{id: "1"}])
+
+      assert alert_id == "1"
+    end
+
+    test "ignores alerts with non-sent status" do
+      user = insert(:user)
+      for status <- [:sent, :failed] do
+        notification_details = %{
+          alert_id: "1",
+          header: "notification",
+          service_effect: "some service effect",
+          user: user,
+          email: user.email,
+        }
+        notification = struct(Notification, notification_details)
+        Notification.save(notification, status)
+      end
+
+      [%{status: status}] = Notification.most_recent_for_alerts([%{id: "1"}])
+
+      assert status == :sent
+    end
+
+    test "preloads subscriptions and it's users" do
+      user = insert(:user)
+      subscription = insert(:subscription, user: user)
+      notification_details = %{
+        alert_id: "1",
+        header: "notification",
+        service_effect: "some service effect",
+        user: user,
+        email: user.email,
+        notification_subscriptions: [
+          %NotificationSubscription{subscription: subscription}
+        ]
+      }
+      notification = struct(Notification, notification_details)
+      Notification.save(notification, :sent)
+
+      [latest_notification] = Notification.most_recent_for_alerts([%{id: "1"}])
+
+      assert [subscription] = latest_notification.subscriptions
+      assert subscription.user == user
+    end
+  end
 end

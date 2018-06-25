@@ -6,7 +6,8 @@ defmodule AlertProcessor.Model.Alert do
 
   defstruct [:active_period, :effect_name, :id, :header, :informed_entities,
              :severity, :last_push_notification, :service_effect, :description, :url,
-             :timeframe, :recurrence, :duration_certainty, :created_at, :closed_timestamp]
+             :timeframe, :recurrence, :duration_certainty, :created_at, :closed_timestamp,
+             :reminder_times]
 
   @type informed_entity :: [
     %{
@@ -34,7 +35,8 @@ defmodule AlertProcessor.Model.Alert do
     recurrence: String.t,
     duration_certainty: {:estimated, pos_integer} | :known,
     created_at: DateTime.t,
-    closed_timestamp: DateTime.t | nil
+    closed_timestamp: DateTime.t | nil,
+    reminder_times: [DateTime.t] | nil
   }
 
   @route_types %{

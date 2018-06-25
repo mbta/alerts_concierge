@@ -61,6 +61,8 @@ defmodule AlertProcessor.Model.Subscription do
     belongs_to :user, User, type: :binary_id
     belongs_to :trip, Trip, type: :binary_id
     has_many :informed_entities, InformedEntity
+    has_many :notification_subscriptions, AlertProcessor.Model.NotificationSubscription
+    has_many :notifications, through: [:notification_subscriptions, :notification]
     field :alert_priority_type, AlertProcessor.AtomType
     field :relevant_days, {:array, AlertProcessor.AtomType}
     field :start_time, :time, null: false
