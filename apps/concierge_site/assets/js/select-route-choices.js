@@ -11,7 +11,7 @@ export default () => {
   // wait for DOM to load
   document.addEventListener("DOMContentLoaded", () => {
     const routeSelectEls = document.querySelectorAll(
-      "[data-type='route-choices']"
+      "[data-type='route']"
     );
     if (routeSelectEls.length < 1) {
       return;
@@ -34,6 +34,7 @@ const destroyChoicesJSForRoute = el => {
 
 const applyChoicesJSToRoute = (el, options = {}) => {
   const id = el.getAttribute("id");
+  const removeItemButton = el.hasAttribute("multiple") ? true : false;
 
   // if the element was already create, re-initialize it
   // this is a bit hacky, but without this it was causing major errors
@@ -56,34 +57,37 @@ const applyChoicesJSToRoute = (el, options = {}) => {
     position: "bottom",
     shouldSort: false,
     classNames: {
-      containerOuter: `choices choices__bootstrap--theme ${searchOptionClass(
+      containerOuter: `choices choices__bootstrap--theme choices__bootstrap--route-theme ${searchOptionClass(
         id
-      )}`
+      )}`,
+      itemSelectable: 'choices__item--selectable choices__bootstrap--item-selectable'
     },
     searchPlaceholderValue: `Type here to search for your ${modeNameFromId(
       id
     )} route`,
     callbackOnCreateTemplates: template => ({
-      item: itemTemplate(id, template),
+      item: itemTemplate(id, template, removeItemButton),
       choice: choiceTemplate(id, template)
     })
   });
 
-  // immediately show the dropdown
-  if (options.keepClosed != true) {
-    instances[id].showDropdown();
-  }
-
   // cause options to be spoken when highlighted
   el.addEventListener("highlightChoice", handleHighlightChoice, false);
 
-  // allows focus to be applied to the component instead of search input when search input is hidden
-  if (options.focus === true) {
-    el.addEventListener("showDropdown", handleShowDropdown, false);
-  }
+  if (id != "trip_routes") {
+    // immediately show the dropdown
+    if (options.keepClosed != true) {
+      instances[id].showDropdown();
+    }
 
-  // callback to make the component appear closed when a selection is made
-  el.addEventListener("choice", handleChoice, false);
+    // allows focus to be applied to the component instead of search input when search input is hidden
+    if (options.focus === true) {
+      el.addEventListener("showDropdown", handleShowDropdown, false);
+    }
+
+    // callback to make the component appear closed when a selection is made
+    el.addEventListener("choice", handleChoice, false);
+  }
 };
 
 const modeNameFromId = id =>
@@ -92,7 +96,7 @@ const modeNameFromId = id =>
 const searchOptionClass = id =>
   id == "trip_route_subway" || id == "trip_route_ferry" ? "no-search" : "";
 
-const itemTemplate = (id, template) => (classNames, data) => {
+const itemTemplate = (id, template, removeItemButton) => (classNames, data) => {
   return template(`
   <div class="${classNames.item} ${
     data.highlighted ? classNames.highlightedState : classNames.itemSelectable
@@ -105,6 +109,7 @@ const itemTemplate = (id, template) => (classNames, data) => {
         : ""
     }
     ${data.label}
+    ${removeItemButton ? `<button type="button" class="choices__button" data-button="" aria-label="">Remove item</button>` : ""}
   </div>
 `);
 };

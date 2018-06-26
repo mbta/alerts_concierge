@@ -107,7 +107,7 @@ end
                 <div>Ferry</div>
               </label>
             </div>
-            <%= ConciergeSite.RouteSelectHelperChoicesJS.render(:trip, :route, [], data: [toggle: "input", type: "route-choices"]) %>
+            <%= ConciergeSite.RouteSelectHelperChoicesJS.render(:trip, :route, [], data: [toggle: "input", type: "route"]) %>
           </div>
         </div>
 
