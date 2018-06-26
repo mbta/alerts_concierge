@@ -16,7 +16,7 @@ defmodule AlertProcessor.SubscriptionFilterEngine do
     start_time = Time.utc_now()
     scheduled_notifications = schedule_notifications(all_subscriptions, alerts)
     Logger.info(fn ->
-      "alert matching, time=#{Time.diff(Time.utc_now(), start_time, :millisecond)}"
+      "alert matching, time=#{Time.diff(Time.utc_now(), start_time, :millisecond)} for #{length(alerts)} alerts"
     end)
     scheduled_notifications
   end

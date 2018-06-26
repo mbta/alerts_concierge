@@ -32,7 +32,9 @@ defmodule AlertProcessor.AlertParser do
     parsed_alerts = for alert_json <- remove_ignored(alerts) do
       parse_alert(alert_json, facilities_map, feed_timestamp)
     end
-    Logger.info(fn -> "alert parsing, time=#{Time.diff(Time.utc_now(), start_time, :millisecond)}" end)
+    Logger.info(fn ->
+      "alert parsing, time=#{Time.diff(Time.utc_now(), start_time, :millisecond)} for #{length(alerts)} alerts"
+    end)
     parsed_alerts
   end
 
