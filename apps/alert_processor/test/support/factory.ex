@@ -2,7 +2,7 @@ defmodule AlertProcessor.Factory do
   @moduledoc false
   use ExMachina.Ecto, repo: AlertProcessor.Repo
 
-  alias AlertProcessor.Model.{InformedEntity, Notification, Subscription, User, PasswordReset, Trip}
+  alias AlertProcessor.Model.{InformedEntity, Notification, Subscription, User, PasswordReset, Trip, NotificationSubscription}
   alias Calendar.DateTime
 
   def informed_entity_factory do
@@ -191,5 +191,9 @@ defmodule AlertProcessor.Factory do
       facility_types: [:elevator],
       user: build(:user)
     }
+  end
+
+  def notification_subscription_factory do
+    %NotificationSubscription{}
   end
 end
