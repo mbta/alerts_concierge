@@ -11,46 +11,20 @@ defmodule AlertProcessor.SentAlertFilter do
   but with an older last_push_notification
   """
   @spec filter([Subscription.t], Alert.t, [Notification.t], DateTime.t) :: {[Subscription.t], [Subscription.t]}
-  def filter(subscriptions, alert, notifications, now \\ Calendar.DateTime.now!("America/New_York")) do
-    do_filter(subscriptions, alert, notifications, now)
-  end
+  def filter(subscriptions, alert, notifications, now) do
+    sent_notifications =
+      Enum.filter(notifications, & &1.alert_id == alert.id)
 
-  defp do_filter(subscriptions, %Alert{id: alert_id, last_push_notification: lpn}, notifications, now) do
-    sent_matching_notifications =
-      Enum.filter(notifications, fn (n) -> alert_id == n.alert_id && n.status == :sent end)
-
-    subscriptions_to_auto_resend =
-      subscriptions_to_auto_resend(subscriptions, sent_matching_notifications, lpn, now)
-
-    subscription_ids = MapSet.new(subscriptions, fn (s) -> s.id end)
-
-    has_been_sent_user_id_set = sent_matching_notifications
-    |> Enum.filter(fn (n) ->
-      case n.subscriptions do
-        [] -> true
-        subs -> Enum.any?(subs, fn (s) -> MapSet.member?(subscription_ids, s.id) end)
-      end
-    end)
-    |> MapSet.new(fn (n) -> n.user_id end)
+    subscriptions_to_resend =
+      subscriptions_to_resend(sent_notifications, alert.last_push_notification, now)
 
     subscriptions_to_test =
-      Enum.reject(subscriptions, fn (s) -> MapSet.member?(has_been_sent_user_id_set, s.user_id) end)
+      subscriptions_to_test(subscriptions, sent_notifications)
 
-    {subscriptions_to_test, subscriptions_to_auto_resend}
+    {subscriptions_to_test, subscriptions_to_resend}
   end
 
-  defp subscriptions_to_auto_resend(subscriptions, notifications, last_push_notification, now) do
-    subscription_ids_to_notify =
-      notifications
-      |> subscriptions_to_notify_of_update(last_push_notification, now)
-      |> MapSet.new(fn(subscription) -> subscription.id end)
-
-    Enum.filter(subscriptions, fn(subscription) ->
-      MapSet.member?(subscription_ids_to_notify, subscription.id)
-    end)
-  end
-
-  defp subscriptions_to_notify_of_update(notifications, last_push_notification, now) do
+  defp subscriptions_to_resend(notifications, last_push_notification, now) do
     Enum.reduce(notifications, [], fn(notification, subscriptions_to_notify) ->
       case DateTime.compare(notification.last_push_notification, last_push_notification) do
         :lt ->
@@ -60,6 +34,14 @@ defmodule AlertProcessor.SentAlertFilter do
         _ ->
           subscriptions_to_notify
       end
+    end)
+  end
+
+  defp subscriptions_to_test(subscriptions, notifications) do
+    notified_user_ids = MapSet.new(notifications, & &1.user_id)
+
+    Enum.reject(subscriptions, fn subscription ->
+      subscription_user_notified?(subscription, notified_user_ids)
     end)
   end
 
@@ -77,5 +59,9 @@ defmodule AlertProcessor.SentAlertFilter do
     Map.update!(subscription, :end_time, fn(end_time) ->
       Time.add(end_time, :timer.hours(1), :millisecond)
     end)
+  end
+
+  defp subscription_user_notified?(%{user_id: user_id}, notified_user_ids) do
+    MapSet.member?(notified_user_ids, user_id)
   end
 end
