@@ -46,6 +46,13 @@ defmodule AlertProcessor.SendingQueue do
   def reset(name \\ __MODULE__) do
     GenServer.call(name, :reset)
   end
+  
+  @doc """
+  Returns the number of items in the queue
+  """
+  def queue_length(name \\ __MODULE__) do
+    GenServer.call(name, :queue_length)
+  end
 
   @doc false
   def handle_call({:list_push, new_notifications}, _from, notifications) do
@@ -60,6 +67,11 @@ defmodule AlertProcessor.SendingQueue do
   def handle_call(:pop, _from, notifications) do
     [notification | newstate] = notifications
     {:reply, {:ok, notification}, newstate}
+  end
+
+  @doc false
+  def handle_call(:queue_length, _from, notifications) do
+    {:reply, {:ok, length(notifications)}, notifications}
   end
 
   @doc false
