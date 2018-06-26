@@ -88,7 +88,7 @@ defmodule AlertProcessor.Model.Notification do
     )
   end
 
-  def most_recent_for_subscriptions_and_alerts(alerts) do
+  def most_recent_for_alerts(alerts) do
     alert_ids = Enum.map(alerts, &(&1.id))
 
     Repo.all(

@@ -223,7 +223,7 @@ defmodule AlertProcessor.SentAlertFilterTest do
         |> Repo.preload(:user)
         |> Repo.preload(:informed_entities)
 
-      notifications = Notification.most_recent_for_subscriptions_and_alerts([alert])
+      notifications = Notification.most_recent_for_alerts([alert])
 
       assert {[], []} ==
         SentAlertFilter.filter(subscriptions, alert, notifications, @monday_at_8am)
