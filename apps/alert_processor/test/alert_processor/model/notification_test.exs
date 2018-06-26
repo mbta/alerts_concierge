@@ -119,7 +119,7 @@ defmodule AlertProcessor.Model.NotificationTest do
     assert returned_notification_id == saved_notification_1.id
   end
 
-  test "most_recent_for_alerts/2 only returns latest notification by last_push_notification for alert/user combo" do
+  test "most_recent_for_subscriptions_and_alerts/1 only returns latest notification by last_push_notification for alert/user combo" do
     now = DateTime.utc_now()
     later = Calendar.DateTime.add!(now, 1800)
     user1 = insert(:user)
@@ -132,7 +132,7 @@ defmodule AlertProcessor.Model.NotificationTest do
     notification3 = struct(Notification, Map.merge(@base_attrs, %{user: user1, last_push_notification: now, alert_id: "55555", notification_subscriptions: [%NotificationSubscription{subscription: sub1}]}))
     {:ok, saved_notification_3} = Notification.save(notification3, :sent)
 
-    notifications = Notification.most_recent_for_alerts([%{id: "12345678"}, %{id: "55555"}])
+    notifications = Notification.most_recent_for_subscriptions_and_alerts([%{id: "12345678"}, %{id: "55555"}])
     returned_notification_ids = Enum.map(notifications, & &1.id)
     refute Enum.member?(returned_notification_ids, saved_notification_1.id)
     assert Enum.member?(returned_notification_ids, saved_notification_2.id)
