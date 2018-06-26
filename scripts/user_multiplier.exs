@@ -90,6 +90,8 @@ defmodule UserMultiplier do
     |> Map.put(:user_id, user.id)
     |> Map.delete(:user)
     |> Map.delete(:trip)
+    |> Map.update(:notifications, [], &(Enum.drop_every(&1, 1)))
+    |> Map.update(:notification_subscriptions, [], &(Enum.drop_every(&1, 1)))
     |> Map.put(:trip_id, trip.id)
     |> Map.update(:informed_entities, [], &(Enum.drop_every(&1, 1)))
   end
