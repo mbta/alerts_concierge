@@ -88,13 +88,11 @@ defmodule AlertProcessor.Model.Notification do
     )
   end
 
-  def most_recent_for_subscriptions_and_alerts(subscriptions, alerts) do
-    user_ids = Enum.map(subscriptions, &(&1.user.id))
+  def most_recent_for_subscriptions_and_alerts(alerts) do
     alert_ids = Enum.map(alerts, &(&1.id))
 
     Repo.all(
       from n in __MODULE__,
-      where: n.user_id in ^user_ids,
       where: n.alert_id in ^alert_ids,
       where: n.status == "sent",
       preload: [:subscriptions],

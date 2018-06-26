@@ -12,27 +12,27 @@ defmodule AlertProcessor.SubscriptionFilterEngine do
 
   @spec schedule_all_notifications([Alert.t]) :: any
   def schedule_all_notifications(alerts) do
-    all_subscriptions = Subscription |> Repo.all() |> Repo.preload(:user)
     start_time = Time.utc_now()
-    scheduled_notifications = schedule_notifications(all_subscriptions, alerts)
+    all_subscriptions = Subscription |> Repo.all() |> Repo.preload(:user)
+    recent_notifications = Notification.most_recent_for_subscriptions_and_alerts(alerts)
+    scheduled_notifications = schedule_notifications(all_subscriptions, recent_notifications, alerts)
     Logger.info(fn ->
       "alert matching, time=#{Time.diff(Time.utc_now(), start_time, :millisecond)}"
     end)
     scheduled_notifications
   end
 
-  defp schedule_notifications(all_subscriptions, alerts) when is_list(alerts) do
+  defp schedule_notifications(all_subscriptions, recent_notifications, alerts) when is_list(alerts) do
     options = [ordered: false, timeout: 600_000]
     notifications =
       alerts
-      |> Task.async_stream(&(schedule_notifications(all_subscriptions, &1)), options)
+      |> Task.async_stream(&(schedule_notifications(all_subscriptions, recent_notifications, &1)), options)
       |> Enum.map(fn {:ok, notification} -> notification end)
     {:ok, notifications}
   end
 
-  defp schedule_notifications(all_subscriptions, %Alert{} = alert) do
-    notifications = Notification.most_recent_for_subscriptions_and_alerts(all_subscriptions, [alert])
-    matched_subscriptions = determine_recipients(alert, all_subscriptions, notifications)
+  defp schedule_notifications(all_subscriptions, recent_notifications, %Alert{} = alert) do
+    matched_subscriptions = determine_recipients(alert, all_subscriptions, recent_notifications)
     schedule_distinct_notifications(alert, matched_subscriptions)
   end
 
