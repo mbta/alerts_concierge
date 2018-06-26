@@ -1,0 +1,14 @@
+#!/usr/bin/env bash
+
+# Run the Phoenix server
+env `cat .env` mix phx.server | \
+
+# Output to both stdout and our csv file
+tee >(\
+    
+    # Only look at out the timing lines
+    egrep --line-buffered 'alert (parsing|matching), time=[0-9]+' | \
+    
+    # Write measurement type and time separated by a comma to a csv file
+    sed -l 's/\[info\] alert //' | sed -l 's/, time=/,/' >> parsing_matching_times.csv\
+)
