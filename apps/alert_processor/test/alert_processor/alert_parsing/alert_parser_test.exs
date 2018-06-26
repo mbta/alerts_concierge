@@ -3,7 +3,7 @@ defmodule AlertProcessor.AlertParserTest do
   use ExVCR.Mock, adapter: ExVCR.Adapter.Hackney
   use Bamboo.Test, shared: :true
   import AlertProcessor.Factory
-  alias AlertProcessor.{AlertParser, Model, Repo, AlertsClient, ServiceInfoCache}
+  alias AlertProcessor.{AlertParser, Model, Repo, AlertsClient, SendingQueue, ServiceInfoCache}
   alias Model.{InformedEntity, SavedAlert}
   alias Calendar.DateTime, as: DT
 
@@ -20,11 +20,16 @@ defmodule AlertProcessor.AlertParserTest do
     |> weekday_subscription
     |> PaperTrail.insert
     use_cassette "old_alerts", custom: true, clear_mock: true, match_requests_on: [:query] do
-      assert {_, [{:ok, _} | _t]} = AlertParser.process_alerts
-      assert length(Repo.all(SavedAlert)) > 0
+      beginning_alerts = length(Repo.all(SavedAlert))
+      assert AlertParser.process_alerts()
+      ending_alerts = length(Repo.all(SavedAlert))
+      assert ending_alerts - beginning_alerts == 15
     end
     use_cassette "new_alerts", custom: true, clear_mock: true, match_requests_on: [:query] do
-      assert {_, [{:ok, _} | _t]} = AlertParser.process_alerts
+      beginning_alerts = length(Repo.all(SavedAlert))
+      assert AlertParser.process_alerts()
+      ending_alerts = length(Repo.all(SavedAlert))
+      assert ending_alerts - beginning_alerts == 0
     end
   end
 
@@ -47,8 +52,8 @@ defmodule AlertProcessor.AlertParserTest do
     insert(:notification, alert_id: "114166", last_push_notification: ~N[2017-06-19 20:02:14], user: user4, email: user4.email, phone_number: user4.phone_number, status: "sent", send_after: ~N[2017-04-25 10:00:00])
 
     use_cassette "unruly_passenger_alert", custom: true, clear_mock: true, match_requests_on: [:query] do
-      {_, result} = AlertParser.process_alerts
-      [notification] = Enum.reduce(result, [], fn({:ok, x}, acc) -> acc ++ x end)
+      assert AlertParser.process_alerts
+      {:ok, notification} = SendingQueue.pop()
       assert notification.header == "Board Needham Line on opposite track due to unruly passenger"
       assert notification.service_effect == "Needham Line track change"
     end
@@ -69,9 +74,9 @@ defmodule AlertProcessor.AlertParserTest do
     |> PaperTrail.insert
 
     use_cassette "facilities_alerts", custom: true, clear_mock: true, match_requests_on: [:query] do
-      {_, result} = AlertParser.process_alerts
+      assert AlertParser.process_alerts
 
-      [notification] = Enum.reduce(result, [], fn({:ok, x}, acc) -> acc ++ x end)
+      {:ok, notification} = SendingQueue.pop()
       assert notification.header == "Escalator 343 DAVIS SQUARE - Unpaid Lobby to Holland Street unavailable today"
     end
   end
@@ -108,8 +113,8 @@ defmodule AlertProcessor.AlertParserTest do
     |> insert()
 
     use_cassette "bus_stop_alert", custom: true, clear_mock: true, match_requests_on: [:query] do
-      {_, result} = AlertParser.process_alerts()
-      [notification] = Enum.reduce(result, [], fn({:ok, x}, acc) -> acc ++ x end)
+      assert AlertParser.process_alerts()
+      {:ok, notification} = SendingQueue.pop()
       assert notification.header == "Malcolm X Blvd @ King St (inbound) stop moving"
       assert notification.alert_id == "115718"
     end
@@ -117,7 +122,10 @@ defmodule AlertProcessor.AlertParserTest do
 
   test "correctly parses entities without activities" do
     use_cassette "no_activities_alerts", custom: true, clear_mock: true, match_requests_on: [:query] do
-      assert {_, [{:ok, []} | _]} = AlertParser.process_alerts()
+      beginning_alerts = length(Repo.all(SavedAlert))
+      assert AlertParser.process_alerts()
+      ending_alerts = length(Repo.all(SavedAlert))
+      assert ending_alerts - beginning_alerts == 38
     end
   end
 

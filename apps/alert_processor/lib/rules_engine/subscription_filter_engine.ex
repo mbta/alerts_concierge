@@ -10,25 +10,28 @@ defmodule AlertProcessor.SubscriptionFilterEngine do
 
   @notification_window_filter Application.get_env(:alert_processor, :notification_window_filter)
 
+  @doc """
+  Determine distinct notifications and schedule them to be sent.
+
+  We are intentionally not collecting the notifications that go out as our consumers don't need them and it is a performance hit.
+  """
   @spec schedule_all_notifications([Alert.t]) :: any
   def schedule_all_notifications(alerts) do
     start_time = Time.utc_now()
     all_subscriptions = Subscription |> Repo.all() |> Repo.preload(:user)
     recent_notifications = Notification.most_recent_for_subscriptions_and_alerts(alerts)
-    scheduled_notifications = schedule_notifications(all_subscriptions, recent_notifications, alerts)
+    schedule_notifications(all_subscriptions, recent_notifications, alerts)
     Logger.info(fn ->
       "alert matching, time=#{Time.diff(Time.utc_now(), start_time, :millisecond)} for #{length(alerts)} alerts"
     end)
-    scheduled_notifications
+    :ok
   end
 
   defp schedule_notifications(all_subscriptions, recent_notifications, alerts) when is_list(alerts) do
     options = [ordered: false, timeout: 600_000]
-    notifications =
-      alerts
-      |> Task.async_stream(&(schedule_notifications(all_subscriptions, recent_notifications, &1)), options)
-      |> Enum.map(fn {:ok, notification} -> notification end)
-    {:ok, notifications}
+    alerts
+    |> Task.async_stream(&(schedule_notifications(all_subscriptions, recent_notifications, &1)), options)
+    |> Stream.run()
   end
 
   defp schedule_notifications(all_subscriptions, recent_notifications, %Alert{} = alert) do
