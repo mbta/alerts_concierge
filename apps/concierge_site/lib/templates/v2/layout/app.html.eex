@@ -43,7 +43,7 @@
           <% end %>
         <% else %>
           <%= link(to: v2_session_path(@conn, :new)) do %>
-            Already a beta tester? Log in
+            Already have a beta account? Log in
           <% end %>
         <% end %>
       </div>
@@ -59,7 +59,7 @@
     <%= if assigns[:footer_note] do %>
     <footer class="footer__sub--container">
       <div class="container">
-        <%= assigns[:footer_note] %>
+        <%= raw assigns[:footer_note] %>
       </div>
     </footer>
     <% end %>
