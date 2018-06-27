@@ -95,7 +95,7 @@ defmodule AlertProcessor.Model.Notification do
       from n in __MODULE__,
       where: n.alert_id in ^alert_ids,
       where: n.status == "sent",
-      preload: [:subscriptions],
+      preload: [subscriptions: :user],
       distinct: [:alert_id, :user_id],
       order_by: [desc: n.last_push_notification],
       select: n
