@@ -2,12 +2,12 @@ defmodule SanitizeDbDump do
   @moduledoc """
   Sanitize a Postgres database dump sql file.
 
-  NOTE: Currently we are "cheating" by relying on the knowledge that email addresses and phone numbers come one after the other in our two table definitions. This lets us limit where we look for 10-digit numbers and avoid timestamps and other items that aren't actually phone numbers but look the same.
+  NOTE: Currently we are "cheating" by relying on the knowledge that email addresses and phone numbers come one after the other in our users table definition. This lets us limit where we look for 10-digit numbers and avoid timestamps and other items that aren't actually phone numbers but look the same.
 
   To dump from production, sanitize, and load into dev locally:
 
   ```
-  PGPASSWORD=<PROD PASSWORD> pg_dump --host=alerts-concierge-prod.cw84s0ixvuei.us-east-1.rds.amazonaws.com --port=5432 --username=alerts_concierge --dbname=alerts_concierge_prod --exclude-table-data=versions | elixir ./scripts/sanitize_db_dump.exs | psql -d alert_concierge_dev
+  PGPASSWORD=<PROD PASSWORD> pg_dump --host=alerts-concierge-prod.cw84s0ixvuei.us-east-1.rds.amazonaws.com --port=5432 --username=alerts_concierge --dbname=alerts_concierge_prod --table=users --table=trips --table=subscriptions --no-owner --data-only | elixir ./scripts/sanitize_db_dump.exs | psql -d alert_concierge_dev
   ```
   """
   
