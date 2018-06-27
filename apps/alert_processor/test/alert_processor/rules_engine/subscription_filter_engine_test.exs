@@ -2,7 +2,7 @@ defmodule AlertProcessor.SubscriptionFilterEngineTest do
   use AlertProcessor.DataCase
   import AlertProcessor.Factory
   import AlertProcessor.DateHelper
-  alias AlertProcessor.{Model.Alert, Model.InformedEntity, Model.Subscription, SubscriptionFilterEngine}
+  alias AlertProcessor.{Model.Alert, Model.InformedEntity, Model.Notification, Model.Subscription, SendingQueue, SubscriptionFilterEngine}
 
   setup_all do
     {:ok, _} = Application.ensure_all_started(:alert_processor)
@@ -144,8 +144,12 @@ defmodule AlertProcessor.SubscriptionFilterEngineTest do
       |> weekday_subscription
       |> insert
 
-      assert {_, [{:ok, notifications}]} = SubscriptionFilterEngine.schedule_all_notifications([alert])
-      assert length(notifications) == 1
+      {:ok, beginning_queue_length} = SendingQueue.queue_length()
+      assert SubscriptionFilterEngine.schedule_all_notifications([alert])
+      {:ok, ending_queue_length} = SendingQueue.queue_length()
+
+      assert ending_queue_length - beginning_queue_length == 1
+      assert {:ok, %Notification{}} = SendingQueue.pop()
     end
   end
 end

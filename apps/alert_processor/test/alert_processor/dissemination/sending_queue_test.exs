@@ -50,4 +50,17 @@ defmodule AlertProcessor.SendingQueueTest do
     assert SendingQueue.pop(test) == {:ok, notification3}
     assert SendingQueue.pop(test) == {:ok, notification1}
   end
+
+  test "We can get the number of items in the queue", %{test: test} do
+    notification1 = %Notification{alert_id: "1"}
+    notification2 = %Notification{alert_id: "2"}
+    SendingQueue.start_link([name: test])
+    SendingQueue.enqueue(test, notification1)
+    SendingQueue.enqueue(test, notification2)
+
+    assert {:ok, 2} = SendingQueue.queue_length(test)
+    SendingQueue.pop(test)
+    SendingQueue.pop(test)
+    assert {:ok, 0} = SendingQueue.queue_length(test)
+  end
 end
