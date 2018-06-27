@@ -5,6 +5,8 @@ defmodule AlertProcessor.Model.Notification do
 
   alias AlertProcessor.Model.{Alert, User}
 
+  @type notification_type :: :initial | :update | :reminder | :all_clear
+
   @type t :: %__MODULE__{
     alert_id: String.t | nil,
     user_id: String.t | nil,
@@ -18,7 +20,8 @@ defmodule AlertProcessor.Model.Notification do
     status: atom,
     last_push_notification: DateTime.t | nil,
     alert: Alert.t | nil,
-    closed_timestamp: DateTime.t | nil
+    closed_timestamp: DateTime.t | nil,
+    type: notification_type | nil
  }
 
   use Ecto.Schema
@@ -44,6 +47,7 @@ defmodule AlertProcessor.Model.Notification do
     field :last_push_notification, :utc_datetime
     field :alert, :string, virtual: true
     field :closed_timestamp, :utc_datetime
+    field :type, AlertProcessor.AtomType
 
     timestamps()
   end

@@ -65,8 +65,14 @@ defmodule ConciergeSite.Dissemination.NotificationEmail do
     {notification, "#{subject} #{recurrence}"}
   end
 
-  defp subject_closed({%Notification{closed_timestamp: nil}, _} = pair), do: pair
-  defp subject_closed({notification, subject}) do
+  defp subject_closed({%Notification{type: :all_clear} = notification, subject}) do
     {notification, "All clear (re: #{subject})"}
   end
+  defp subject_closed({%Notification{type: :update} = notification, subject}) do
+    {notification, "Update (re: #{subject})"}
+  end
+  defp subject_closed({%Notification{type: :reminder} = notification, subject}) do
+    {notification, "Reminder (re: #{subject})"}
+  end
+  defp subject_closed({_, _} = pair), do: pair
 end

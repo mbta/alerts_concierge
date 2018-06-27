@@ -60,7 +60,8 @@ defmodule AlertProcessor.NotificationBuilderTest do
       notification_subscriptions: [%AlertProcessor.Model.NotificationSubscription{
         subscription_id: sub.id
       }],
-      closed_timestamp: alert.closed_timestamp
+      closed_timestamp: alert.closed_timestamp,
+      type: :initial
     }
 
     assert expected_notification == notification

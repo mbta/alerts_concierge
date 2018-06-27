@@ -16,7 +16,7 @@ defmodule AlertProcessor.SentAlertFilter do
       Enum.filter(notifications, & &1.alert_id == alert.id)
 
     subscriptions_to_resend =
-      subscriptions_to_resend(sent_notifications, alert.last_push_notification, now)
+      subscriptions_to_resend(sent_notifications, alert, now)
 
     subscriptions_to_test =
       subscriptions_to_test(subscriptions, sent_notifications)
@@ -24,12 +24,13 @@ defmodule AlertProcessor.SentAlertFilter do
     {subscriptions_to_test, subscriptions_to_resend}
   end
 
-  defp subscriptions_to_resend(notifications, last_push_notification, now) do
+  defp subscriptions_to_resend(notifications, alert, now) do
     Enum.reduce(notifications, [], fn(notification, subscriptions_to_notify) ->
-      case DateTime.compare(notification.last_push_notification, last_push_notification) do
+      case DateTime.compare(notification.last_push_notification, alert.last_push_notification) do
         :lt ->
           notification.subscriptions
           |> notification_window_filter(now)
+          |> put_notification_type_to_send(alert)
           |> Enum.concat(subscriptions_to_notify)
         _ ->
           subscriptions_to_notify
@@ -63,5 +64,12 @@ defmodule AlertProcessor.SentAlertFilter do
 
   defp subscription_user_notified?(%{user_id: user_id}, notified_user_ids) do
     MapSet.member?(notified_user_ids, user_id)
+  end
+
+  defp put_notification_type_to_send(subscriptions, alert) do
+    notification_type = if alert.closed_timestamp, do: :all_clear, else: :update
+    Enum.map(subscriptions, fn subscription ->
+      Map.put(subscription, :notification_type_to_send, notification_type)
+    end)
   end
 end
