@@ -3,7 +3,7 @@
 <%= flash_info(@conn) %>
 
 <%
-time_label = if @trip.roundtrip == "true" do
+time_label = if @trip.roundtrip == true do
   "When would you like to receive alerts for your trips?"
 else
   "When would you like to receive alerts for your trip?"
