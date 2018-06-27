@@ -25,7 +25,7 @@
       </div>
       <div class="form__action-buttons--container">
         <%= submit "Create my account", class: "btn btn-primary btn-login btn-block" %>
-        <div class="form__action--secondary-link text-center">Already a beta tester?
+        <div class="form__action--secondary-link text-center">Already have a beta account?
           <%= link(to: v2_session_path(@conn, :new)) do %>
             Log in
             <i aria-hidden="true" class="fa fa-arrow-right "></i>
