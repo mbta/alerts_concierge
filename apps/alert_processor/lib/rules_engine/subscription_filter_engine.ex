@@ -22,7 +22,7 @@ defmodule AlertProcessor.SubscriptionFilterEngine do
     recent_notifications = Notification.most_recent_for_subscriptions_and_alerts(alerts)
     schedule_notifications(all_subscriptions, recent_notifications, alerts)
     Logger.info(fn ->
-      "alert matching, time=#{Time.diff(Time.utc_now(), start_time, :millisecond)} for #{length(alerts)} alerts"
+      "alert matching, time=#{Time.diff(Time.utc_now(), start_time, :millisecond)} alert_count=#{length(alerts)}"
     end)
     :ok
   end

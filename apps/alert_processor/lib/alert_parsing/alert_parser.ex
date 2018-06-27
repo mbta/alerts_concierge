@@ -33,7 +33,7 @@ defmodule AlertProcessor.AlertParser do
       parse_alert(alert_json, facilities_map, feed_timestamp)
     end
     Logger.info(fn ->
-      "alert parsing, time=#{Time.diff(Time.utc_now(), start_time, :millisecond)} for #{length(alerts)} alerts"
+      "alert parsing, time=#{Time.diff(Time.utc_now(), start_time, :millisecond)} alert_count=#{length(alerts)}"
     end)
     parsed_alerts
   end
