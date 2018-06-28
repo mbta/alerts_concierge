@@ -48,7 +48,7 @@ defmodule AlertProcessor.Model.InformedEntity do
   for String.to_existing_atom calls.
   """
   def facility_types do
-    [:elevator, :escalator]
+    [:bike_storage, :electric_car_chargers, :elevator, :escalator, :parking_area, :pick_drop, :portable_boarding_lift, :tty_phone, :elevated_subplatform]
   end
 
   def queryable_fields do
