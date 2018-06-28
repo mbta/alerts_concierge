@@ -7,6 +7,11 @@ config :logger,
   truncate: :infinity,
   backends: [:console]
 
+# Configure your database
+config :alert_processor, AlertProcessor.Repo,
+  adapter: Ecto.Adapters.Postgres,
+  pool_size: 50
+
 # Config for ExAws lib
 config :alert_processor, :ex_aws, ExAws
 
