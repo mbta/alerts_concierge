@@ -7,6 +7,10 @@ config :logger,
   truncate: :infinity,
   backends: [:console]
 
+# Configure your database
+config :alert_processor, AlertProcessor.Repo,
+  pool_size: 50
+
 # Config for ExAws lib
 config :alert_processor, :ex_aws, ExAws
 
