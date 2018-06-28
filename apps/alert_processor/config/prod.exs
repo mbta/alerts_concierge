@@ -9,7 +9,6 @@ config :logger,
 
 # Configure your database
 config :alert_processor, AlertProcessor.Repo,
-  adapter: Ecto.Adapters.Postgres,
   pool_size: 50
 
 # Config for ExAws lib
