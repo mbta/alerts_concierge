@@ -80,6 +80,7 @@ defmodule AlertProcessor.Model.Subscription do
     field :rank, :integer
     field :return_trip, :boolean
     field :facility_types, {:array, AlertProcessor.AtomType}
+    field :notification_type_to_send, AlertProcessor.AtomType, virtual: true
 
     timestamps()
   end

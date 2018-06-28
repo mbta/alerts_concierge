@@ -1,4 +1,4 @@
-<%= if notification.closed_timestamp do %>
+<%= if notification.type == :all_clear do %>
 All clear (re: <%= notification.service_effect %>)
 
 The issue described below has ended:

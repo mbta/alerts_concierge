@@ -114,7 +114,7 @@
             <span style="width: 24px; height: 24px;">
             <img src="<%= ConciergeSite.Helpers.MailHelper.logo_for_alert(notification.alert) %>" alt="<%= ConciergeSite.Helpers.MailHelper.alt_text_for_alert(notification.alert) %>" style="border: 0; line-height: 100%; outline: none; text-decoration: none;">
           </span>
-            <%= if notification.closed_timestamp do %>
+            <%= if notification.type == :all_clear do %>
               All clear (re: <%= notification.service_effect %>)
             <% else %>
               <%= notification.service_effect %>

@@ -37,7 +37,8 @@ defmodule AlertProcessor.NotificationBuilder do
       last_push_notification: alert.last_push_notification,
       alert: alert,
       notification_subscriptions: Enum.map(subscriptions, & %AlertProcessor.Model.NotificationSubscription{subscription_id: &1.id}),
-      closed_timestamp: alert.closed_timestamp
+      closed_timestamp: alert.closed_timestamp,
+      type: List.first(subscriptions).notification_type_to_send || :initial
     }
   end
 end

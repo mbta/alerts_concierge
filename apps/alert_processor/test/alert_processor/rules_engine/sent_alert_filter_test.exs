@@ -85,6 +85,45 @@ defmodule AlertProcessor.SentAlertFilterTest do
       assert {[], [returned_sub]} =
         SentAlertFilter.filter(subscriptions, updated_alert, [notification], @monday_at_8am)
       assert returned_sub.id == sub1.id
+      assert returned_sub.notification_type_to_send == :update
+    end
+
+    test "notification_type_to_send is set to `:all_clear`" do
+      # If there's `closed_timestamp` in the alert, then it's an "all clear".
+      user = insert(:user)
+      subscription_details = %{
+        user: user,
+        start_time: @monday_at_7am,
+        end_time: @monday_at_8am,
+        relevant_days: [:monday]
+      }
+      sub1 = insert(:subscription, subscription_details)
+      updated_alert = %Alert{
+        id: "123",
+        last_push_notification: @monday_at_8am,
+        closed_timestamp: @monday_at_8am
+      }
+      notification = %Notification{
+        alert_id: "123",
+        user_id: user.id,
+        email: "a@b.com",
+        header: "You are being notified",
+        service_effect: "test",
+        description: "test",
+        status: :sent,
+        last_push_notification: @monday_at_7am,
+        subscriptions: [sub1]
+      }
+      Repo.insert(Notification.create_changeset(notification))
+      subscriptions =
+        Subscription
+        |> Repo.all()
+        |> Repo.preload(:user)
+
+      assert {[], [returned_sub]} =
+        SentAlertFilter.filter(subscriptions, updated_alert, [notification], @monday_at_8am)
+      assert returned_sub.id == sub1.id
+      assert returned_sub.notification_type_to_send == :all_clear
     end
 
     test "returns subscriptions to auto resend if within notification window" do

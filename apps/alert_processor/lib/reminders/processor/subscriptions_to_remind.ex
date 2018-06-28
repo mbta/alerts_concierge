@@ -33,6 +33,7 @@ defmodule AlertProcessor.Reminders.Processor.SubscriptionsToRemind do
       if reminder_due?(notification, alert, now) do
         notification.subscriptions
         |> Enum.filter(&NotificationWindowFilter.within_notification_window?(&1, now))
+        |> put_notification_type_to_send()
         |> Enum.concat(subscriptions_to_remind)
       else
         subscriptions_to_remind
@@ -56,5 +57,11 @@ defmodule AlertProcessor.Reminders.Processor.SubscriptionsToRemind do
   defp reminder_time_later_than_inserted_at?(reminder_time, inserted_at) do
     inserted_at = DateTime.from_naive!(inserted_at, "Etc/UTC")
     DateTime.compare(reminder_time, inserted_at) == :gt
+  end
+
+  defp put_notification_type_to_send(subscriptions) do
+    Enum.map(subscriptions, fn subscription ->
+      Map.put(subscription, :notification_type_to_send, :reminder)
+    end)
   end
 end

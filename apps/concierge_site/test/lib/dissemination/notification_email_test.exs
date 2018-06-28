@@ -37,7 +37,11 @@ defmodule ConciergeSite.Dissemination.NotificationEmailTest do
   end
 
   test "text_email/1 includes content for closed alerts" do
-    notification = %{@notification | closed_timestamp: DateTime.utc_now()}
+    notification = %{
+      @notification |
+      closed_timestamp: DateTime.utc_now(),
+      type: :all_clear
+    }
     email = NotificationEmail.notification_email(notification)
     body = email.text_body
 
@@ -59,7 +63,11 @@ defmodule ConciergeSite.Dissemination.NotificationEmailTest do
   end
 
   test "html_email/1 includes content for closed alerts" do
-    notification = %{@notification | closed_timestamp: DateTime.utc_now()}
+    notification = %{
+      @notification |
+      closed_timestamp: DateTime.utc_now(),
+      type: :all_clear
+    }
     email = NotificationEmail.notification_email(notification)
     body = email.html_body
 
@@ -101,10 +109,41 @@ defmodule ConciergeSite.Dissemination.NotificationEmailTest do
 
     test "closed alert" do
       alert = %{@alert | timeframe: "starting September 1", recurrence: "on weekends"}
-      notification = %{@notification | alert: alert, closed_timestamp: DateTime.utc_now()}
+      notification = %{
+        @notification |
+        alert: alert,
+        closed_timestamp: DateTime.utc_now(),
+        type: :all_clear
+      }
       subject = NotificationEmail.email_subject(notification)
 
       assert subject == "All clear (re: Starting September 1: Red line delay on weekends)"
+    end
+
+    test "updated alert" do
+      alert = %{@alert | timeframe: "starting September 1", recurrence: "on weekends"}
+      notification = %{
+        @notification |
+        alert: alert,
+        closed_timestamp: DateTime.utc_now(),
+        type: :update
+      }
+      subject = NotificationEmail.email_subject(notification)
+
+      assert subject == "Update (re: Starting September 1: Red line delay on weekends)"
+    end
+
+    test "reminder alert" do
+      alert = %{@alert | timeframe: "starting September 1", recurrence: "on weekends"}
+      notification = %{
+        @notification |
+        alert: alert,
+        closed_timestamp: DateTime.utc_now(),
+        type: :reminder
+      }
+      subject = NotificationEmail.email_subject(notification)
+
+      assert subject == "Reminder (re: Starting September 1: Red line delay on weekends)"
     end
   end
 end

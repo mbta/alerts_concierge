@@ -27,7 +27,8 @@ defmodule AlertProcessor.NotificationSmserTest do
       header: @message,
       email: nil,
       phone_number: @phone_number,
-      closed_timestamp: DateTime.utc_now()
+      closed_timestamp: DateTime.utc_now(),
+      type: :all_clear
     }
 
     sms_operation = NotificationSmser.notification_sms(notification)
