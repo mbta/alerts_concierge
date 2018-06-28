@@ -4,8 +4,12 @@ defmodule ConciergeSite.V2.AccountController do
   alias AlertProcessor.Model.User
   alias ConciergeSite.ConfirmationMessage
   alias ConciergeSite.SignInHelper
+  require Logger
+  alias AlertProcessor.Metrics.UserMetrics
 
   def new(conn, _params, _user, _claims) do
+    [phone_count, email_count] = UserMetrics.counts_by_type()
+    Logger.info("user_metrics phone_count=#{phone_count} email_count=#{email_count}")
     account_changeset = User.create_account_changeset(%User{}, %{"sms_toggle" => false})
     render conn, "new.html", account_changeset: account_changeset, wide_layout: true, body_class: "landing-page", footer_note: "Note: If you previously signed up to the <a href='https://public.govdelivery.com/accounts/MABTA/subscriber/new' target='_blank'>old T-alerts system</a>, signing up for a beta account will not affect that account."
   end
