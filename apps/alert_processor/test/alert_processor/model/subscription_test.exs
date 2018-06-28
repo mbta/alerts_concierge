@@ -10,7 +10,9 @@ defmodule AlertProcessor.Model.SubscriptionTest do
     alert_priority_type: :low,
     relevant_days: [:weekday],
     start_time: ~T[12:00:00],
-    end_time: ~T[18:00:00]
+    end_time: ~T[18:00:00],
+    travel_start_time: ~T[14:00:00],
+    travel_end_time: ~T[16:00:00]
   }
 
   setup do
@@ -23,6 +25,12 @@ defmodule AlertProcessor.Model.SubscriptionTest do
   test "create_changeset/2 with valid parameters", %{valid_attrs: valid_attrs} do
     changeset = Subscription.create_changeset(%Subscription{}, valid_attrs)
     assert changeset.valid?
+  end
+
+  test "create_changeset/2 permits travel_start_time and travel_end_time", %{valid_attrs: valid_attrs} do
+    changeset = Subscription.create_changeset(%Subscription{}, valid_attrs)
+    assert Map.has_key?(changeset.changes, :travel_start_time)
+    assert Map.has_key?(changeset.changes, :travel_end_time)
   end
 
   test "create_changeset/2 requires a user_id", %{valid_attrs: valid_attrs} do
