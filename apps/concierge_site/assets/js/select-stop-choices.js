@@ -202,3 +202,5 @@ const smartDefaultForCommuterRail = (selectId, availableChoices) => {
   }
   instances[selectId].setChoiceByValue(defaultStops[0].value);
 };
+
+export const getStopInstances = () => instances;

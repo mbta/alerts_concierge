@@ -197,3 +197,5 @@ export const toggleVisibleSelector = inputValue => {
     }
   });
 };
+
+export const getRouteInstances = () => instances;
