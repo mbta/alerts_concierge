@@ -40,54 +40,15 @@ function processSchedule(scheduleEl) {
   matchedTrips == 0 ? toggleBlankSlate(scheduleEl, "block") : toggleBlankSlate(scheduleEl, "none");
 }
 
-function expandAndProcessSchedule(scheduleEl) {
-  const legs = [... scheduleEl.querySelectorAll(".schedules__trips--leg")];
-  legs.forEach((legEl) => {
-    const toggleEl = legEl.querySelector(".schedules__toggle");
-    doToggle(legEl, toggleEl, true);
-  });
-  processSchedule(scheduleEl);
-}
-
-function handleToggle(e, legEl, toggleEl, scheduleEl) {
-  e.preventDefault();
-  const dataset = elemDataset(legEl);
-  const expanded = !JSON.parse(dataset.expanded || "false");
-  doToggle(legEl, toggleEl, expanded);
-}
-
-function doToggle(legEl, toggleEl, expanded) {
-  legEl.setAttribute("data-expanded", expanded);
-  if (toggleEl) {
-    toggleEl.className = (expanded) ? toggleUpClasses : toggleDownClasses;
-  }
-}
-
-function enableToggle(scheduleEl) {
-  const legs = [... scheduleEl.querySelectorAll(".schedules__trips--leg")];
-  legs.forEach((legEl) => {
-    const toggleEl = document.createElement("A");
-    const headerEl = legEl.querySelector(".schedules__header");
-    toggleEl.className = toggleDownClasses;
-    toggleEl.setAttribute("href", "#");
-    legEl.appendChild(toggleEl);
-    ['keypress', 'click'].forEach((eventType) => {
-      toggleEl.addEventListener(eventType, (e) => handleToggle(e, legEl, toggleEl, scheduleEl));
-      headerEl.addEventListener(eventType, (e) => handleToggle(e, legEl, toggleEl, scheduleEl));
-    });
-  });
-}
-
 export default (pubSub) => {
   pubSub.subscribe("time-change", e => {
     const scheduleEl = document.getElementById(`schedule_${e.mode}`);
-    expandAndProcessSchedule(scheduleEl);
+    processSchedule(scheduleEl);
   });
 
   const scheduleWidgets = [... document.querySelectorAll("div[data-type='schedule-viewer']")];
   scheduleWidgets.forEach((scheduleEl) => {
     scheduleEl.style.display = "block";
     processSchedule(scheduleEl);
-    enableToggle(scheduleEl);
   });
 };

@@ -5,7 +5,6 @@
 
 .schedules__header,
 .schedules__blankslate {
-  cursor: pointer;
   margin: 0;
   padding: $base-spacing / 2;
   border-top: 1px solid $pale-grey;
@@ -17,19 +16,12 @@
 }
 
 .schedules__trips--container {
-  display: none;
   margin: 0;
   padding: 0;
 }
 
 .schedules__trips--leg {
   position: relative;
-}
-
-.schedules__trips--leg[data-expanded="true"] {
-  .schedules__trips--container {
-    display: block;
-  }
 }
 
 .schedules__trips--item {
