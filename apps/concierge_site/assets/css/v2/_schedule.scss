@@ -1,13 +1,9 @@
-.schedules__container {
-  background-color: $gray-lightest;
-  display: none;
-}
 
 .schedules__header,
 .schedules__blankslate {
+  font-weight: bold;
   margin: 0;
-  padding: $base-spacing / 2;
-  border-top: 1px solid $pale-grey;
+  padding: $base-spacing / 2 0;
   width: 95%;
 }
 

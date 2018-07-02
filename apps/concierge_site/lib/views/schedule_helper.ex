@@ -22,7 +22,7 @@ defmodule ConciergeSite.ScheduleHelper do
       content_tag :div, class: "schedules__trips--leg" do
         [
           content_tag :p, class: "schedules__header" do
-            "#{header(mode)} scheduled at this time for #{route_name}"
+            "Which #{header(mode)} would you like alerts about?"
           end,
           content_tag :p, class: "schedules__blankslate" do
             "#{blank_slate(mode)}"
