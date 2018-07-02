@@ -22,6 +22,8 @@ defmodule AlertProcessor.Model.Subscription do
     relevant_days: [relevant_day] | nil,
     start_time: Time.t | nil,
     end_time: Time.t | nil,
+    travel_start_time: Time.t | nil,
+    travel_end_time: Time.t | nil,
     origin: String.t | nil,
     destination: String.t | nil,
     type: subscription_type | nil,
@@ -67,6 +69,8 @@ defmodule AlertProcessor.Model.Subscription do
     field :relevant_days, {:array, AlertProcessor.AtomType}
     field :start_time, :time, null: false
     field :end_time, :time, null: false
+    field :travel_start_time, :time
+    field :travel_end_time, :time
     field :origin, :string
     field :destination, :string
     field :type, AlertProcessor.AtomType
@@ -86,9 +90,9 @@ defmodule AlertProcessor.Model.Subscription do
   end
 
   @permitted_fields ~w(alert_priority_type user_id trip_id relevant_days start_time
-    end_time type rank route return_trip route_type)a
+    end_time travel_start_time travel_end_time type rank route return_trip route_type)a
   @required_fields ~w(alert_priority_type user_id start_time end_time)a
-  @update_permitted_fields ~w(alert_priority_type relevant_days start_time end_time)a
+  @update_permitted_fields ~w(alert_priority_type relevant_days start_time end_time travel_start_time travel_end_time)a
   @valid_days ~w(weekday monday tuesday wednesday thursday friday saturday sunday)a
 
   @doc """

@@ -47,7 +47,8 @@ defmodule AlertProcessor.InformedEntityFilter do
 
   defp trip_match?(subscription, %{schedule: schedule} = _informed_entity) do
     with {:ok, trip_departure} <- trip_departure(subscription, schedule) do
-      Time.compare(trip_departure, subscription.start_time) in [:gt, :eq]
+      Time.compare(trip_departure, subscription.travel_start_time || subscription.start_time) in [:gt, :eq] and
+        Time.compare(trip_departure, subscription.travel_end_time || subscription.end_time) in [:lt, :eq]
     else
       _ -> true
     end

@@ -104,7 +104,7 @@ defmodule ConciergeSite.TripCardHelper do
   @spec routes([Subscription.t]) :: [Phoenix.HTML.safe]
   defp routes(subscriptions) do
     subscriptions
-    |> Enum.reject(& &1.return_trip)
+    |> exclude_return_trip_subscriptions()
     |> collapse_duplicate_green_legs()
     |> Enum.map(fn (subscription) ->
       content_tag :div, class: "trip__card--route-container" do
@@ -122,8 +122,10 @@ defmodule ConciergeSite.TripCardHelper do
 
   @spec stops([Subscription.t]) :: Phoenix.HTML.safe
   defp stops(subscriptions) do
-    origin = List.first(subscriptions).origin
-    destination = List.first(subscriptions).destination
+    first_trip_subscriptions = subscriptions |>
+      exclude_return_trip_subscriptions()
+    origin = List.first(first_trip_subscriptions).origin
+    destination = List.last(first_trip_subscriptions).destination
 
     content_tag :span, class: "trip__card--stops" do
       case {origin, destination} do
@@ -249,5 +251,10 @@ defmodule ConciergeSite.TripCardHelper do
                                                                             token: get_csrf_token()] do
       "Delete"
     end
+  end
+
+  defp exclude_return_trip_subscriptions(subscriptions) do
+    subscriptions
+    |> Enum.reject(& &1.return_trip)
   end
 end
