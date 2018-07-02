@@ -1,6 +1,4 @@
 import elemDataset from 'elem-dataset';
-const toggleDownClasses = "fa fa-caret-down schedules__toggle";
-const toggleUpClasses = "fa fa-caret-up schedules__toggle";
 
 const makeDate = timeString => new Date(`1/1/2000 ${timeString}`);
 
@@ -19,6 +17,7 @@ function processTrip(tripEl, startTime, endTime) {
   const tripTime = dataset.time;
   const matched = isMatched(tripTime, startTime, endTime);
   tripEl.style.display = matched ? "block" : "none";
+  tripEl.setAttribute("data-matched", matched ? "true" : "false");
   return matched ? 1 : 0;
 }
 
@@ -26,6 +25,19 @@ function toggleBlankSlate(scheduleEl, display) {
   const blankSlates = [... scheduleEl.getElementsByClassName("schedules__blankslate")];
   blankSlates.forEach(blankSlate => {
     blankSlate.style.display = display;
+  });
+}
+
+function markLastMatchedTrip(scheduleEl) {
+  const legs = [... scheduleEl.getElementsByClassName("schedules__trips--leg")];
+  legs.forEach(leg => {
+    const matchedTrips = [... leg.querySelectorAll("li[data-matched='true']")];
+    if (matchedTrips.length === 0) {
+      return;
+    }
+    matchedTrips.forEach(trip => trip.setAttribute("data-last-match", "false"));
+    const lastMatchedTrip = matchedTrips.slice(-1)[0];
+    lastMatchedTrip.setAttribute("data-last-match", "true");
   });
 }
 
@@ -37,6 +49,7 @@ function processSchedule(scheduleEl) {
   const matchedTrips = trips.reduce((count, tripEl) => {
     return count + processTrip(tripEl, startTime, endTime);
   }, 0);
+  markLastMatchedTrip(scheduleEl);
   matchedTrips == 0 ? toggleBlankSlate(scheduleEl, "block") : toggleBlankSlate(scheduleEl, "none");
 }
 

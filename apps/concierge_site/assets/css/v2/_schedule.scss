@@ -14,6 +14,8 @@
 .schedules__trips--container {
   margin: 0;
   padding: 0;
+  border: 1px solid $brand-primary;
+  border-radius: 5px;
 }
 
 .schedules__trips--leg {
@@ -21,16 +23,35 @@
 }
 
 .schedules__trips--item {
-  border-top: 1px solid $pale-grey;
   clear: both;
-  padding: $base-spacing / 2;
 
   svg {
-    float: left;
     height: 18px;
-    margin-right: 4px;
+    margin: 0 .25rem;
     width: 18px;
     transform: translate(0px, 3px);
+  }
+
+  .btn__radio--toggle {
+    margin-bottom: 0;
+    text-align: left;
+    align-items: start;
+    padding: .5rem;
+    border-radius: 0;
+    border: 0;
+    border-bottom: 1px solid $brand-primary;
+  }
+
+  &[data-last-match="true"] {
+    .btn__radio--toggle {
+      border-bottom: 0;
+    }
+  }
+
+  input {
+    position: absolute;
+    clip: rect(0, 0, 0, 0);
+    pointer-events: none;
   }
 }
 

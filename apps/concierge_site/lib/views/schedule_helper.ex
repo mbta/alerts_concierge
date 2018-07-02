@@ -1,7 +1,7 @@
 defmodule ConciergeSite.ScheduleHelper do
   alias AlertProcessor.ServiceInfoCache
   alias AlertProcessor.Model.Route
-  import Phoenix.HTML.Tag, only: [content_tag: 3]
+  import Phoenix.HTML.Tag, only: [content_tag: 3, content_tag: 2, tag: 2]
   import ConciergeSite.TimeHelper, only: [format_time_string: 2, time_to_string: 1]
 
   @spec render(map, String.t, String.t) :: Phoenix.HTML.safe
@@ -46,9 +46,31 @@ defmodule ConciergeSite.ScheduleHelper do
   defp blank_slate("ferry"), do: "No boats scheduled during this time period."
 
   defp trip("cr", trip) do
-    [ConciergeSite.IconViewHelper.icon(:commuter_rail), "Train #{trip.trip_number}, #{elem(trip.origin, 0)}, #{format_time_string(time_to_string(trip.departure_time), "%l:%M%P")}"]
+    content_tag :label, role: "checkbox", tabindex: "0", aria: [checked: "false"],
+                        class: "btn btn-outline-primary btn__radio--toggle" do
+      [
+        tag(:input, name: "trip[schedule][#{trip.route.route_id}][]", type: "checkbox", value: trip.departure_time),
+        content_tag :div do
+          [
+            ConciergeSite.IconViewHelper.icon(:commuter_rail),
+            "Train #{trip.trip_number}, #{elem(trip.origin, 0)}, #{format_time_string(time_to_string(trip.departure_time), "%l:%M%P")}"
+          ]
+        end
+      ]
+    end
   end
   defp trip("ferry", trip) do
-    [ConciergeSite.IconViewHelper.icon(:ferry), "#{elem(trip.origin, 0)}, #{format_time_string(time_to_string(trip.departure_time), "%l:%M%P")}"]
+    content_tag :label, role: "checkbox", tabindex: "0", aria: [checked: "false"],
+                        class: "btn btn-outline-primary btn__radio--toggle" do
+      [
+        tag(:input, name: "trip[schedule][#{trip.route.route_id}][]", type: "checkbox", value: trip.departure_time),
+        content_tag :div do
+          [
+            ConciergeSite.IconViewHelper.icon(:ferry),
+            "#{elem(trip.origin, 0)}, #{format_time_string(time_to_string(trip.departure_time), "%l:%M%P")}"
+          ]
+        end
+      ]
+    end
   end
 end
