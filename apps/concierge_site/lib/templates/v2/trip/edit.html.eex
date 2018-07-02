@@ -8,8 +8,8 @@ time_label = if @trip.roundtrip == true do
 else
   "When would you like to receive alerts for your trip?"
 end
-first_trip_label = if @trip.roundtrip == "true", do: "First trip", else: "Starting at"
-first_trip_padding_class = if @trip.roundtrip == "true", do: "", else: "form__section"
+first_trip_label = if @trip.roundtrip == true, do: "First trip", else: "Starting at"
+first_trip_padding_class = if @trip.roundtrip == true, do: "", else: "form__section"
 %>
 
 <div class="container container__inner">
