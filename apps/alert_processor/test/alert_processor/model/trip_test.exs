@@ -126,7 +126,8 @@ defmodule AlertProcessor.Model.TripTest do
         start_time: ~T[11:00:00],
         end_time: ~T[13:30:00],
         return_start_time: ~T[17:00:00],
-        return_end_time: ~T[18:30:00]
+        return_end_time: ~T[18:30:00],
+        facility_types: [:elevator]
       }
       trip = insert(:trip, trip_details)
       params = %{
@@ -134,7 +135,8 @@ defmodule AlertProcessor.Model.TripTest do
         end_time: ~T[13:30:00],
         return_start_time: ~T[15:00:00],
         return_end_time: ~T[15:30:00],
-        relevant_days: [:tuesday]
+        relevant_days: [:tuesday],
+        facility_types: [:escalator]
       }
       {:ok, %Trip{} = _} = Trip.update(trip, params)
       updated_trip = Trip.find_by_id(trip.id)
@@ -143,6 +145,7 @@ defmodule AlertProcessor.Model.TripTest do
       assert updated_trip.return_start_time == ~T[15:00:00.000000]
       assert updated_trip.return_end_time == ~T[15:30:00.000000]
       assert updated_trip.relevant_days == [:tuesday]
+      assert updated_trip.facility_types == [:escalator]
     end
 
     test "errors if updated without any days" do

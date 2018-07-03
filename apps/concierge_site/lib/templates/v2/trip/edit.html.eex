@@ -56,6 +56,8 @@ first_trip_padding_class = if @trip.roundtrip == true, do: "", else: "form__sect
           </div>
         <% end %>
 
+        <%= render "_station_features.html", form: form, trip: @trip %>
+
         <div class="form__action-buttons--container">
           <%= submit "Update subscription", class: "btn btn-primary btn-login btn-block" %>
           <button type="button" class="btn btn-outline-danger btn-block" data-toggle="modal" data-target="#deleteModal">
