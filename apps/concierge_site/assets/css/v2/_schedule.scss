@@ -55,16 +55,6 @@
   }
 }
 
-.schedules__toggle {
-  padding: $base-spacing / 2;
-  position: absolute;
-  text-decoration: none;
-  top: 2px;
-  right: 0px;
-
-  &:hover,
-  &:active,
-  &:focus {
-    text-decoration: none;
-  }
+div [data-type="leg-error"] {
+  display: none;
 }

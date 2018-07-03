@@ -20,7 +20,7 @@ defmodule ConciergeSite.ScheduleHelper do
 
   defp do_route_schedule(mode, id, route_name, schedule) do
     [
-      content_tag :div, class: "schedules__trips--leg" do
+      content_tag :div, class: "schedules__trips--leg", data: [type: "schedule-leg"] do
         [
           content_tag :p, class: "schedules__header" do
             "Which #{header(mode)} would you like alerts about?"
@@ -34,11 +34,19 @@ defmodule ConciergeSite.ScheduleHelper do
                 trip(mode, id, trip)
               end
             end
+          end,
+          content_tag :div, class: "error-block-container", data: [type: "leg-error"] do
+            content_tag :span, class: "error-block" do
+              "Select at least one #{vehicle(mode)} from the list."
+            end
           end
         ]
       end
     ]
   end
+
+  defp vehicle("cr"), do: "train"
+  defp vehicle("ferry"), do: "boat"
 
   defp header("cr"), do: "Commuter Rail trains"
   defp header("ferry"), do: "Ferry boats"
