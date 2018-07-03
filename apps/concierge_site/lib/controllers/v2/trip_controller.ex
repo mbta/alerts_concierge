@@ -320,6 +320,16 @@ defmodule ConciergeSite.V2.TripController do
     |> Map.put("end_time", to_time(params["end_time"]))
     |> Map.put("return_start_time", to_time(params["return_start_time"]))
     |> Map.put("return_end_time", to_time(params["return_end_time"]))
+    |> Map.put("schedule_start", parse_schedule_input(params, "schedule_start"))
+    |> Map.put("schedule_return", parse_schedule_input(params, "schedule_return"))
+  end
+
+  defp parse_schedule_input(params, field) do
+    params
+    |> Map.get(field, %{})
+    |> Enum.reduce(%{}, fn({route_id, travel_times}, accumulator) ->
+      Map.put(accumulator, route_id, Enum.map(travel_times, &Time.from_iso8601!(&1)))
+    end)
   end
 
   defp input_to_subscriptions(user, params) do
@@ -349,13 +359,17 @@ defmodule ConciergeSite.V2.TripController do
         route_type: route.route_type,
         direction_id: determine_direction_id(route.stop_list, direction, origin, destination),
         rank: rank,
-        return_trip: false
+        return_trip: false,
+        travel_start_time: List.first(travel_times(params["schedule_start"], route_id)),
+        travel_end_time: List.last(travel_times(params["schedule_start"], route_id))
       }
       |> Subscription.add_latlong_to_subscription(origin, destination)
       |> add_return_subscription(params)
     end)
     |> Enum.flat_map(&expand_multiroute_greenline_subscription(&1, subway_routes))
   end
+
+  defp travel_times(schedule, route_id), do: Map.get(schedule, route_id, [])
 
   defp expand_multiroute_greenline_subscription(%{route_type: 0, origin: origin, destination: destination} = subscription, subway_routes) do
     routes = get_route_intersection(subway_routes, origin, destination)
@@ -389,7 +403,8 @@ defmodule ConciergeSite.V2.TripController do
   defp add_return_subscription(subscription, %{
          "round_trip" => "true",
          "return_start_time" => return_start_time,
-         "return_end_time" => return_end_time
+         "return_end_time" => return_end_time,
+         "schedule_return" => schedule_return
        }) do
     return_subscription = %{
       subscription
@@ -402,7 +417,9 @@ defmodule ConciergeSite.V2.TripController do
         destination_lat: subscription.origin_lat,
         destination_long: subscription.origin_long,
         direction_id: flip_direction(subscription.direction_id),
-        return_trip: true
+        return_trip: true,
+        travel_start_time: List.first(travel_times(schedule_return, subscription.route)),
+        travel_end_time: List.last(travel_times(schedule_return, subscription.route))
     }
 
     [subscription, return_subscription]
