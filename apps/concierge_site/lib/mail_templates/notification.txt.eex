@@ -22,4 +22,4 @@ The issue described below has ended:
 
 Edit subscription: <%= manage_subscriptions_url %>
 
-See all alers: https://www.mbta.com/alerts
+See all alerts: https://www.mbta.com/alerts
