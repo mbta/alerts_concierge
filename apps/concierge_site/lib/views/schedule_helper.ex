@@ -10,7 +10,7 @@ defmodule ConciergeSite.ScheduleHelper do
     content_tag :div, id: id, class: "schedules__container", data: [type: "schedule-viewer", start: start_field_id, end: end_field_id] do
       for {{mode, route_id}, schedule} <- schedules do
         {:ok, route} = ServiceInfoCache.get_route(route_id)
-        do_route_schedule(mode, id, Route.name(route), schedule)
+        do_route_schedule(mode, id, schedule)
       end
     end
   end
@@ -18,7 +18,7 @@ defmodule ConciergeSite.ScheduleHelper do
   defp id("trip_start_time"), do: "schedule_start"
   defp id("trip_return_start_time"), do: "schedule_return"
 
-  defp do_route_schedule(mode, id, route_name, schedule) do
+  defp do_route_schedule(mode, id, schedule) do
     [
       content_tag :div, class: "schedules__trips--leg", data: [type: "schedule-leg"] do
         [

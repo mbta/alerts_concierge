@@ -9,14 +9,20 @@ defmodule ConciergeSite.ScheduleHelperTest do
         %AlertProcessor.Model.TripInfo{
           departure_time: ~T[23:58:00],
           origin: {"Auburndale", "Auburndale", {42.345725, -71.250826}, 2},
-          trip_number: "537"
+          trip_number: "537",
+          route: %{
+            route_id: "CR-Worcester"
+          }
         }
       ],
       {"ferry", "Boat-F4"} => [
         %AlertProcessor.Model.TripInfo{
           departure_time: ~T[06:30:00],
           origin: {"Boston (Long Wharf)", "Boat-Long", {42.360018, -71.050247}, 1},
-          trip_number: ""
+          trip_number: "",
+          route: %{
+            route_id: "Boat-F4"
+          }
         }
       ]
     }
