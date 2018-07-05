@@ -13,6 +13,7 @@ defmodule ConciergeSite.Dissemination.NotificationEmailTest do
   @email "test@test.com"
 
   @notification %Notification{
+    id: "a7722510-6a27-44ee-808e-b242312abb6d",
     user: build(:user, email: @email),
     email: @email,
     service_effect: "Red line delay",
@@ -145,5 +146,11 @@ defmodule ConciergeSite.Dissemination.NotificationEmailTest do
 
       assert subject == "Reminder (re: Starting September 1: Red line delay on weekends)"
     end
+  end
+
+  test "save notification_id in private data" do
+    email = NotificationEmail.notification_email(@notification)
+
+    assert email.private.notification_id == "a7722510-6a27-44ee-808e-b242312abb6d"
   end
 end
