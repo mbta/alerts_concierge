@@ -9,7 +9,6 @@ defmodule ConciergeSite.ScheduleHelper do
     id = id(start_field_id)
     content_tag :div, id: id, class: "schedules__container", data: [type: "schedule-viewer", start: start_field_id, end: end_field_id] do
       for {{mode, route_id}, schedule} <- schedules do
-        {:ok, route} = ServiceInfoCache.get_route(route_id)
         do_route_schedule(mode, id, schedule)
       end
     end
@@ -62,8 +61,11 @@ defmodule ConciergeSite.ScheduleHelper do
         content_tag :div do
           [
             ConciergeSite.IconViewHelper.icon(:commuter_rail),
-            "Train #{trip.trip_number}, #{elem(trip.origin, 0)}, #{format_time_string(time_to_string(trip.departure_time), "%l:%M%P")}"
+            "Train #{trip.trip_number} from #{elem(trip.origin, 0)}, #{format_time_string(time_to_string(trip.departure_time), "%l:%M%P")}"
           ]
+        end,
+        content_tag :i, class: "fa fa-check" do
+          ""
         end
       ]
     end
@@ -76,8 +78,11 @@ defmodule ConciergeSite.ScheduleHelper do
         content_tag :div do
           [
             ConciergeSite.IconViewHelper.icon(:ferry),
-            "#{elem(trip.origin, 0)}, #{format_time_string(time_to_string(trip.departure_time), "%l:%M%P")}"
+            "#{elem(trip.origin, 0)} from #{format_time_string(time_to_string(trip.departure_time), "%l:%M%P")}"
           ]
+        end,
+        content_tag :i, class: "fa fa-check" do
+          ""
         end
       ]
     end

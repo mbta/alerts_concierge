@@ -27,6 +27,14 @@
 
 .schedules__trips--item {
   clear: both;
+  position: relative;
+
+  .fa-check {
+    position: absolute;
+    right: 10px;
+    top: 12px;
+    display: none;
+  }
 
   svg {
     height: 18px;
@@ -43,6 +51,12 @@
     border-radius: 0;
     border: 0;
     border-bottom: 1px solid $brand-primary;
+
+    &.active {
+      .fa-check {
+        display: block;
+      }
+    }
   }
 
   &[data-last-match="true"] {

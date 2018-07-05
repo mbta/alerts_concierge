@@ -2,7 +2,7 @@
 <%= flash_error(@conn) %>
 <%
 time_label = if @round_trip == "true" do
-  "When would you like to receive alerts for your trips?"
+  "When would you like to receive alerts for your first trip?"
 else
   "When would you like to receive alerts for your trip?"
 end
@@ -19,7 +19,36 @@ first_trip_padding_class = if @round_trip == "true", do: "", else: "form__sectio
           <%= ConciergeSite.DaySelectHelper.render(:trip, ["monday", "tuesday", "wednesday", "thursday", "friday", "weekdays"]) %>
         </div>
 
+        <div class="form-group form__section">
+          <%= label form, :elevator, "Would you like alerts about any of these station features?", class: "form__label" %>
+          <div class="btn-group btn-group-toggle btn__radio--toggle-container" data-toggle="buttons" role="radiogroup">
+            <label role="checkbox" class="btn btn-outline-primary btn__radio--toggle btn__radio--toggle-item-connected" tabindex="0">
+              <%= render ConciergeSite.V2.LayoutView, "_icon_elevator.html" %>
+              <%= checkbox form, :elevator, tabindex: "-1" %>
+              <div>Elevators</div>
+            </label>
+            <label role="checkbox" class="btn btn-outline-primary btn__radio--toggle btn__radio--toggle-item-connected" tabindex="0">
+              <%= render ConciergeSite.V2.LayoutView, "_icon_escalator.html" %>
+              <%= checkbox form, :escalator, tabindex: "-1" %>
+              <div>Escalators</div>
+            </label>
+            <label role="checkbox" class="btn btn-outline-primary btn__radio--toggle btn__radio--toggle-item-connected" tabindex="0">
+              <%= render ConciergeSite.V2.LayoutView, "_icon_parking.html" %>
+              <%= checkbox form, :parking_area, tabindex: "-1" %>
+              <div>Parking</div>
+            </label>
+            <label role="checkbox" class="btn btn-outline-primary btn__radio--toggle btn__radio--toggle-item-connected" tabindex="0">
+              <%= render ConciergeSite.V2.LayoutView, "_icon_bike.html" %>
+              <%= checkbox form, :bike_storage, tabindex: "-1" %>
+              <div>Bike Storage</div>
+            </label>
+          </div>
+        </div>
+
         <div class="form-group <%= first_trip_padding_class %>">
+          <%= if @round_trip == "true" do %>
+            <h3>First trip</h3>
+          <% end %>
           <span class="form__label"><%= time_label %></span>
           <div class="form-group form-inline form__group--inline">
             <%= label form, :start_time, first_trip_label, class: "form__label--inline" %>
@@ -35,7 +64,8 @@ first_trip_padding_class = if @round_trip == "true", do: "", else: "form__sectio
         </div>
 
         <%= if @round_trip == "true" do %>
-          <div class="form-group form__section">
+          <div class="form-group form__section my-5">
+            <h3>Return trip</h3>
             <div class="form-group form-inline form__group--inline">
               <%= label form, :return_start_time, "Return trip", class: "form__label--inline" %>
               <div class="flatpickr-calendar-container">
@@ -63,32 +93,6 @@ first_trip_padding_class = if @round_trip == "true", do: "", else: "form__sectio
         <%= for mode <- @modes do %>
           <%= hidden_input form, :modes, name: "trip[modes][]", value: mode %>
         <% end %>
-
-        <div class="form-group form__section">
-          <%= label form, :elevator, "Would you like alerts about any of these station features?", class: "form__label" %>
-          <div class="btn-group btn-group-toggle btn__radio--toggle-container" data-toggle="buttons" role="radiogroup">
-            <label role="checkbox" class="btn btn-outline-primary btn__radio--toggle btn__radio--toggle-item-connected" tabindex="0">
-              <%= render ConciergeSite.V2.LayoutView, "_icon_elevator.html" %>
-              <%= checkbox form, :elevator, tabindex: "-1" %>
-              <div>Elevators</div>
-            </label>
-            <label role="checkbox" class="btn btn-outline-primary btn__radio--toggle btn__radio--toggle-item-connected" tabindex="0">
-              <%= render ConciergeSite.V2.LayoutView, "_icon_escalator.html" %>
-              <%= checkbox form, :escalator, tabindex: "-1" %>
-              <div>Escalators</div>
-            </label>
-            <label role="checkbox" class="btn btn-outline-primary btn__radio--toggle btn__radio--toggle-item-connected" tabindex="0">
-              <%= render ConciergeSite.V2.LayoutView, "_icon_parking.html" %>
-              <%= checkbox form, :parking_area, tabindex: "-1" %>
-              <div>Parking</div>
-            </label>
-            <label role="checkbox" class="btn btn-outline-primary btn__radio--toggle btn__radio--toggle-item-connected" tabindex="0">
-              <%= render ConciergeSite.V2.LayoutView, "_icon_bike.html" %>
-              <%= checkbox form, :bike_storage, tabindex: "-1" %>
-              <div>Bike Storage</div>
-            </label>
-          </div>
-        </div>
 
         <div class="form__action-buttons--container">
           <%= submit "Finish", class: "btn btn-primary float-right form__action-button" %>
