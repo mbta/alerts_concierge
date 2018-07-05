@@ -58,7 +58,7 @@ defmodule ConciergeSite.ScheduleHelper do
     content_tag :label, role: "checkbox", tabindex: "0", aria: [checked: "false"],
                         class: "btn btn-outline-primary btn__radio--toggle" do
       [
-        tag(:input, name: "trip[#{id}][#{trip.route.route_id}][]", type: "checkbox", value: trip.departure_time),
+        tag(:input, name: "trip[#{id}][#{trip.route.route_id}][]", type: "checkbox", tabindex: "-1", value: trip.departure_time),
         content_tag :div do
           [
             ConciergeSite.IconViewHelper.icon(:commuter_rail),
@@ -72,7 +72,7 @@ defmodule ConciergeSite.ScheduleHelper do
     content_tag :label, role: "checkbox", tabindex: "0", aria: [checked: "false"],
                         class: "btn btn-outline-primary btn__radio--toggle" do
       [
-        tag(:input, name: "trip[#{id}][#{trip.route.route_id}][]", type: "checkbox", value: trip.departure_time),
+        tag(:input, name: "trip[#{id}][#{trip.route.route_id}][]", type: "checkbox", tabindex: "-1", value: trip.departure_time),
         content_tag :div do
           [
             ConciergeSite.IconViewHelper.icon(:ferry),
