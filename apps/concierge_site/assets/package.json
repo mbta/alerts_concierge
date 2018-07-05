@@ -11,6 +11,7 @@
     "babel-preset-env": "^1.7.0",
     "bootstrap": "^4.1.0",
     "choices.js": "git+https://git@github.com/mbta/Choices.git#rpm-add-highlight-choice-event",
+    "elem-dataset": "^1.1.1",
     "flatpickr": "^4.4.6",
     "font-awesome": "^4.7.0",
     "jquery": "^3.2.1",
@@ -19,9 +20,9 @@
     "phoenix": "file:../../../deps/phoenix",
     "phoenix_html": "file:../../../deps/phoenix_html",
     "popper.js": "^1.14.3",
+    "set-manipulator": "^0.3.1",
     "tether": "^1.4.4",
-    "time-number": "^1.1.0",
-    "elem-dataset": "^1.1.1"
+    "time-number": "^1.1.0"
   },
   "devDependencies": {
     "autoprefixer": "^7.1.2",
