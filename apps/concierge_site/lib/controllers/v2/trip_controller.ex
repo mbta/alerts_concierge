@@ -53,14 +53,16 @@ defmodule ConciergeSite.V2.TripController do
          {:changeset, changeset} <- {:changeset, Trip.update_changeset(trip)} do
       schedules = get_schedules_for_trip(trip.subscriptions, false)
       return_schedules = get_schedules_for_trip(trip.subscriptions, true)
-
+        
       render(
         conn,
         "edit.html",
         trip: trip,
         changeset: changeset,
         schedules: schedules,
-        return_schedules: return_schedules
+        return_schedules: return_schedules,
+        travel_times: travel_times_by_route(trip.subscriptions, false),
+        return_travel_times: travel_times_by_route(trip.subscriptions, true)
       )
     else
       {:trip, nil} ->
@@ -69,6 +71,16 @@ defmodule ConciergeSite.V2.TripController do
       {:authorized, false} ->
         {:error, :not_found}
     end
+  end
+
+  defp travel_times_by_route(subscriptions, return_trip) do
+    Enum.reduce(subscriptions, %{}, fn(leg, accumulator) ->
+      if leg.return_trip == return_trip do
+        Map.put(accumulator, leg.route, {leg.travel_start_time, leg.travel_end_time})
+      else
+        accumulator
+      end
+    end)
   end
 
   def update(conn, %{"id" => id, "trip" => trip_params}, user, _claims) do
