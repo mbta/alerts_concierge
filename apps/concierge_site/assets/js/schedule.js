@@ -5,7 +5,7 @@ export default pubSub => {
   // subscribe to the time change event
   pubSub.subscribe("time-change", e => {
     const scheduleEl = document.getElementById(`schedule_${e.mode}`);
-    processSchedule(scheduleEl);
+    processSchedule(scheduleEl, false);
   });
 
   // subscribe to checkbox change event
@@ -15,7 +15,7 @@ export default pubSub => {
   [...document.querySelectorAll("div[data-type='schedule-viewer']")].forEach(
     scheduleEl => {
       scheduleEl.style.display = "block";
-      processSchedule(scheduleEl);
+      processSchedule(scheduleEl, true);
     }
   );
 };

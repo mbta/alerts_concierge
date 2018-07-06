@@ -1,4 +1,5 @@
 import elemDataset from "elem-dataset";
+import { checkItem, unCheckItem } from "./handle-trip-change";
 
 const makeDate = timeString => new Date(`1/1/2000 ${timeString}`);
 
@@ -12,12 +13,19 @@ function isMatched(tripTime, startTime, endTime) {
   return tripDate >= startDate && tripDate <= endDate;
 }
 
-function processTrip(tripEl, startTime, endTime) {
+function processTrip(tripEl, startTime, endTime, travelStartTime, travelEndTime) {
   const dataset = elemDataset(tripEl);
   const tripTime = dataset.time;
   const matched = isMatched(tripTime, startTime, endTime);
   tripEl.style.display = matched ? "block" : "none";
   tripEl.setAttribute("data-matched", matched ? "true" : "false");
+  if (travelStartTime && travelEndTime && isMatched(tripTime, travelStartTime, travelEndTime)) {
+    checkItem(tripEl);
+  }
+  // if the user has changes the time such that a time is no longer listed, the checkbox should be cleared
+  if (!matched) {
+    unCheckItem(tripEl);
+  }
   return matched ? 1 : 0;
 }
 
@@ -43,19 +51,23 @@ function markLastMatchedTrip(scheduleEl) {
   });
 }
 
-export function processSchedule(scheduleEl) {
-  const dataset = elemDataset(scheduleEl);
-  const startTime = document.getElementById(dataset.start).value;
-  const endTime = document.getElementById(dataset.end).value;
-  const trips = [
-    ...scheduleEl.getElementsByClassName("schedules__trips--item")
-  ];
-  trips.forEach((tripEl, index) => tripEl.setAttribute("data-position", index));
-  const matchedTrips = trips.reduce((count, tripEl) => {
-    return count + processTrip(tripEl, startTime, endTime);
-  }, 0);
-  markLastMatchedTrip(scheduleEl);
-  matchedTrips == 0
-    ? toggleBlankSlate(scheduleEl, "block")
-    : toggleBlankSlate(scheduleEl, "none");
+export function processSchedule(scheduleEl, showDefaultTravelTimes) {
+  const scheduleDataset = elemDataset(scheduleEl);
+  const startTime = document.getElementById(scheduleDataset.start).value;
+  const endTime = document.getElementById(scheduleDataset.end).value;
+  const legs = [...scheduleEl.querySelectorAll("div[data-type='schedule-leg']")];
+  legs.forEach(legEl => {
+    const legDataset = showDefaultTravelTimes === true ? elemDataset(legEl) : {};
+    const trips = [
+      ...legEl.getElementsByClassName("schedules__trips--item")
+    ];
+    trips.forEach((tripEl, index) => tripEl.setAttribute("data-position", index));
+    const matchedTrips = trips.reduce((count, tripEl) => {
+      return count + processTrip(tripEl, startTime, endTime, legDataset.travelStartTime, legDataset.travelEndTime);
+    }, 0);
+    markLastMatchedTrip(scheduleEl);
+    matchedTrips == 0
+      ? toggleBlankSlate(scheduleEl, "block")
+      : toggleBlankSlate(scheduleEl, "none");
+  });
 }

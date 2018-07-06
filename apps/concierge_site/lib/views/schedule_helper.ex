@@ -45,8 +45,8 @@ defmodule ConciergeSite.ScheduleHelper do
   defp selected_travel_times(nil), do: []
   defp selected_travel_times({start_time, end_time}) do
     [
-      start_time: format_time_string(time_to_string(start_time), "%T"),
-      end_time: format_time_string(time_to_string(end_time), "%T"),
+      travel_start_time: format_time_string(time_to_string(start_time), "%T"),
+      travel_end_time: format_time_string(time_to_string(end_time), "%T"),
     ]
   end
 

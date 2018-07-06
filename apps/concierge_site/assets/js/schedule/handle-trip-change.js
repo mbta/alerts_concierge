@@ -37,7 +37,7 @@ const determinePositionGaps = positions =>
     positions
   );
 
-const checkItem = itemEl => {
+export const checkItem = itemEl => {
   itemEl.setAttribute("data-selected", "true");
   itemEl
     .querySelector("input[type='checkbox']")
@@ -46,7 +46,7 @@ const checkItem = itemEl => {
   itemEl.querySelector("label").classList.add("active");
 };
 
-const unCheckItem = itemEl => {
+export const unCheckItem = itemEl => {
   itemEl.setAttribute("data-selected", "false");
   itemEl.querySelector("input[type='checkbox']").removeAttribute("checked");
   itemEl.querySelector("label").setAttribute("aria-checked", "false");
