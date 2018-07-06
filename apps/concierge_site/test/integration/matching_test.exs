@@ -588,6 +588,104 @@ defmodule ConciergeSite.Integration.Matching do
     end
   end
 
+  describe "travel window" do
+    test "with origin departure time within subscription's travel window" do
+      subscription_details = [
+        route_type: 2,
+        direction_id: 0,
+        route: "CR-Fairmount",
+        origin: "Fairmount",
+        destination: "Newmarket",
+        facility_types: [],
+        start_time: ~T[15:00:00],
+        end_time: ~T[19:00:00],
+        travel_start_time: ~T[16:30:00],
+        travel_end_time: ~T[16:45:00],
+        relevant_days: ~w(monday)a
+      ]
+      informed_entity = %{
+        "route_type" => 2,
+        "route_id" => "CR-Fairmount",
+        "activities" => ["BOARD", "EXIT", "RIDE"],
+        "trip" => %{
+          "route_id" => "CR-Fairmount",
+          # This trip leaves from Fairmount at 4:40PM
+          "trip_id" => "CR-Weekday-Spring-18-773",
+          "direction_id" => 0
+        }
+      }
+      subscription = build(:subscription, subscription_details)
+      alert = alert(informed_entity: [informed_entity],
+                         active_period: [active_period(~T[16:00:00], ~T[18:00:00], :monday)])
+
+      assert_notify(alert, subscription)
+    end
+
+    test "with origin departure time before subscription's travel window" do
+      subscription_details = [
+        route_type: 2,
+        direction_id: 0,
+        route: "CR-Fairmount",
+        origin: "Fairmount",
+        destination: "Newmarket",
+        facility_types: [],
+        start_time: ~T[15:00:00],
+        end_time: ~T[19:00:00],
+        travel_start_time: ~T[16:41:00],
+        travel_end_time: ~T[16:45:00],
+        relevant_days: ~w(monday)a
+      ]
+      informed_entity = %{
+        "route_type" => 2,
+        "route_id" => "CR-Fairmount",
+        "activities" => ["BOARD", "EXIT", "RIDE"],
+        "trip" => %{
+          "route_id" => "CR-Fairmount",
+          # This trip leaves from Fairmount at 4:40PM
+          "trip_id" => "CR-Weekday-Spring-18-773",
+          "direction_id" => 0
+        }
+      }
+      subscription = build(:subscription, subscription_details)
+      alert = alert(informed_entity: [informed_entity],
+                         active_period: [active_period(~T[16:00:00], ~T[18:00:00], :monday)])
+
+      refute_notify(alert, subscription)
+    end
+
+    test "with origin departure time after subscription's travel window" do
+      subscription_details = [
+        route_type: 2,
+        direction_id: 0,
+        route: "CR-Fairmount",
+        origin: "Fairmount",
+        destination: "Newmarket",
+        facility_types: [],
+        start_time: ~T[15:00:00],
+        end_time: ~T[19:00:00],
+        travel_start_time: ~T[16:30:00],
+        travel_end_time: ~T[16:35:00],
+        relevant_days: ~w(monday)a
+      ]
+      informed_entity = %{
+        "route_type" => 2,
+        "route_id" => "CR-Fairmount",
+        "activities" => ["BOARD", "EXIT", "RIDE"],
+        "trip" => %{
+          "route_id" => "CR-Fairmount",
+          # This trip leaves from Fairmount at 4:40PM
+          "trip_id" => "CR-Weekday-Spring-18-773",
+          "direction_id" => 0
+        }
+      }
+      subscription = build(:subscription, subscription_details)
+      alert = alert(informed_entity: [informed_entity],
+                         active_period: [active_period(~T[16:00:00], ~T[18:00:00], :monday)])
+
+      refute_notify(alert, subscription)
+    end
+  end
+
   defp assert_notify(alert, subscription, notifications \\ []), do: assert notify?(alert, subscription, notifications)
   defp refute_notify(alert, subscription, notifications \\ []), do: refute notify?(alert, subscription, notifications)
   defp notify?(alert, subscription, notifications), do: determine_recipients(alert, [subscription], notifications) != []
