@@ -512,7 +512,9 @@ defmodule ConciergeSite.V2.TripControllerTest do
         legs: ["CR-Fairmount"],
         origins: ["Readville"],
         round_trip: "true",
-        modes: ["cr"]
+        modes: ["cr"],
+        schedule_return: %{"CR-Fairmount" => ["17:45:00"]},
+        schedule_start: %{"CR-Fairmount" => ["08:48:00"]}
       }
 
       conn =
@@ -541,6 +543,38 @@ defmodule ConciergeSite.V2.TripControllerTest do
         |> post(v2_trip_trip_path(conn, :times), %{trip: trip})
 
       assert html_response(conn, 200) =~ "true"
+    end
+  end
+
+  describe "PUT /trips/:trip_id" do
+    test "cr", %{conn: conn, user: user} do
+      trip = insert(:trip, %{user: user})
+
+      insert(:subscription, %{
+        trip_id: trip.id,
+        type: :cr,
+        origin: "Readville",
+        destination: "Newmarket",
+        route: "CR-Fairmount",
+        user_id: user.id
+      })
+
+      data = %{
+        "end_time" => "9:00 AM",
+        "relevant_days" => ["monday", "tuesday", "wednesday", "thursday", "friday"],
+        "return_end_time" => "6:00 PM",
+        "return_start_time" => "5:00 PM",
+        "schedule_return" => %{"CR-Fairmount" => ["17:45:00"]},
+        "schedule_start" => %{"CR-Fairmount" => ["08:48:00"]},
+        "start_time" => "8:00 AM"
+      }
+
+      conn =
+        user
+        |> guardian_login(conn)
+        |> put("/trips/#{trip.id}", %{trip: data})
+
+      assert html_response(conn, 302) =~ "redirected"
     end
   end
 end
