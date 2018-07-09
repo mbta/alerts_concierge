@@ -32,6 +32,6 @@ defmodule ConciergeSite.ScheduleHelperTest do
     assert html =~ "Which Commuter Rail trains would you like alerts about?"
     assert html =~ "Which Ferry boats would you like alerts about?"
     assert html =~ "Train 537 from Auburndale, 11:58pm"
-    assert html =~ "Boston (Long Wharf) from  6:30am"
+    assert html =~ "Ferry from Boston (Long Wharf),  6:30am"
   end
 end
