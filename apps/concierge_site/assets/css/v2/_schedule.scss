@@ -11,7 +11,10 @@
 
 .schedules__blankslate {
   display: none;
-  font-style: italic;
+  border: 1px solid $gray;
+  border-radius: 5px;
+  padding: .5rem;
+  margin-bottom: 0;
 }
 
 .schedules__trips--container {
@@ -23,6 +26,11 @@
 
 .schedules__trips--leg {
   position: relative;
+  margin-bottom: .5rem;
+
+  &:last-child {
+    margin-bottom: 0;
+  }
 }
 
 .schedules__trips--item {

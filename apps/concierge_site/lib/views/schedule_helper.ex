@@ -56,8 +56,8 @@ defmodule ConciergeSite.ScheduleHelper do
   defp header("cr"), do: "Commuter Rail trains"
   defp header("ferry"), do: "Ferry boats"
 
-  defp blank_slate("cr"), do: "No trains scheduled during this time period."
-  defp blank_slate("ferry"), do: "No boats scheduled during this time period."
+  defp blank_slate("cr"), do: "No trains exist in the above time period."
+  defp blank_slate("ferry"), do: "No boats exist in the above time period."
 
   defp trip("cr", id, trip) do
     content_tag :label, role: "checkbox", tabindex: "0", aria: [checked: "false"],
