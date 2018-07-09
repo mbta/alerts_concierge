@@ -2,8 +2,7 @@
   display: none;
 }
 
-.schedules__header,
-.schedules__blankslate {
+.schedules__header {
   font-weight: bold;
   margin: 0;
   padding: $base-spacing / 2 0;
@@ -12,6 +11,7 @@
 
 .schedules__blankslate {
   display: none;
+  font-style: italic;
 }
 
 .schedules__trips--container {

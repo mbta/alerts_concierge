@@ -36,6 +36,12 @@ function toggleBlankSlate(scheduleEl, display) {
   blankSlates.forEach(blankSlate => {
     blankSlate.style.display = display;
   });
+  const containers = [
+    ...scheduleEl.getElementsByClassName("schedules__trips--container")
+  ];
+  containers.forEach(container => {
+    container.style.display = display === "block" ? "none" : "block";
+  });
 }
 
 function markLastMatchedTrip(scheduleEl) {
@@ -66,7 +72,7 @@ export function processSchedule(scheduleEl, showDefaultTravelTimes) {
       return count + processTrip(tripEl, startTime, endTime, legDataset.travelStartTime, legDataset.travelEndTime);
     }, 0);
     markLastMatchedTrip(scheduleEl);
-    matchedTrips == 0
+    matchedTrips === 0
       ? toggleBlankSlate(scheduleEl, "block")
       : toggleBlankSlate(scheduleEl, "none");
   });
