@@ -67,20 +67,18 @@ const fillSelectionGaps = (listEl, positions) =>
 const clearSelections = listEl =>
   [...listEl.childNodes].forEach(itemEl => unCheckItem(itemEl));
 
-const handleTripChecked = (listEl, positions) =>
-  isContigouos(positions) ? null : fillSelectionGaps(listEl, positions);
-
-const handleTripUnchecked = (listEl, positions) =>
-  isContigouos(positions) ? null : clearSelections(listEl);
-
 const handleTrip = (changedItemEl, isChecked) => {
   changedItemEl.setAttribute("data-selected", isChecked ? "true" : "false");
   const changedListEl = changedItemEl.parentNode;
   const selectedPositions = determineExistingSelections(changedListEl);
+  const fragmented = !isContigouos(selectedPositions);
 
-  isChecked
-    ? handleTripChecked(changedListEl, selectedPositions)
-    : handleTripUnchecked(changedListEl, selectedPositions);
+  if (isChecked && fragmented) {
+    fillSelectionGaps(changedListEl, selectedPositions)
+  }
+  if (!isChecked && fragmented) {
+    clearSelections(changedListEl);
+  }
 };
 
 export const handleTripChange = (e) => {
