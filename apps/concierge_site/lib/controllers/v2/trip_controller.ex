@@ -1,7 +1,7 @@
 defmodule ConciergeSite.V2.TripController do
   use ConciergeSite.Web, :controller
   use Guardian.Phoenix.Controller
-  alias AlertProcessor.ApiClient
+  alias AlertProcessor.{ApiClient, Repo}
   alias AlertProcessor.Model.{Trip, Subscription, User, TripInfo}
   alias AlertProcessor.ServiceInfoCache
   alias Ecto.Multi
@@ -60,7 +60,9 @@ defmodule ConciergeSite.V2.TripController do
         trip: trip,
         changeset: changeset,
         schedules: schedules,
-        return_schedules: return_schedules
+        return_schedules: return_schedules,
+        travel_times: travel_times_by_route(trip.subscriptions, false),
+        return_travel_times: travel_times_by_route(trip.subscriptions, true)
       )
     else
       {:trip, nil} ->
@@ -71,11 +73,23 @@ defmodule ConciergeSite.V2.TripController do
     end
   end
 
+  defp travel_times_by_route(subscriptions, return_trip) do
+    Enum.reduce(subscriptions, %{}, fn(leg, accumulator) ->
+      if leg.return_trip == return_trip do
+        Map.put(accumulator, leg.route, {leg.travel_start_time, leg.travel_end_time})
+      else
+        accumulator
+      end
+    end)
+  end
+
   def update(conn, %{"id" => id, "trip" => trip_params}, user, _claims) do
     with {:trip, %Trip{} = trip} <- {:trip, Trip.find_by_id(id)},
          {:authorized, true} <- {:authorized, user.id == trip.user_id},
-         {:sanitized, sanitized_trip_params} <- {:sanitized, sanitize_trip_params(trip_params)},
-         {:ok, %Trip{}} <- Trip.update(trip, sanitized_trip_params) do
+         {:sanitized, leg_params, updated_trip_params} <- sanitize_leg_params(trip_params),
+         {:sanitized, sanitized_trip_params} <- {:sanitized, sanitize_trip_params(updated_trip_params)},
+         {:ok, %Trip{}} <- Trip.update(trip, sanitized_trip_params),
+         {:ok, true} <- update_trip_legs(trip.subscriptions, leg_params) do
       conn
       |> put_flash(:info, "Subscription updated.")
       |> redirect(to: v2_trip_path(conn, :index))
@@ -95,7 +109,9 @@ defmodule ConciergeSite.V2.TripController do
           trip: Trip.find_by_id(id),
           changeset: changeset,
           schedules: %{},
-          return_schedules: %{}
+          return_schedules: %{},
+          travel_times: %{},
+          return_travel_times: %{}
         )
     end
   end
@@ -320,6 +336,16 @@ defmodule ConciergeSite.V2.TripController do
     |> Map.put("end_time", to_time(params["end_time"]))
     |> Map.put("return_start_time", to_time(params["return_start_time"]))
     |> Map.put("return_end_time", to_time(params["return_end_time"]))
+    |> Map.put("schedule_start", parse_schedule_input(params, "schedule_start"))
+    |> Map.put("schedule_return", parse_schedule_input(params, "schedule_return"))
+  end
+
+  defp parse_schedule_input(params, field) do
+    params
+    |> Map.get(field, %{})
+    |> Enum.reduce(%{}, fn({route_id, travel_times}, accumulator) ->
+      Map.put(accumulator, route_id, Enum.map(travel_times, &Time.from_iso8601!(&1)))
+    end)
   end
 
   defp input_to_subscriptions(user, params) do
@@ -349,13 +375,17 @@ defmodule ConciergeSite.V2.TripController do
         route_type: route.route_type,
         direction_id: determine_direction_id(route.stop_list, direction, origin, destination),
         rank: rank,
-        return_trip: false
+        return_trip: false,
+        travel_start_time: List.first(travel_times(params["schedule_start"], route_id)),
+        travel_end_time: List.last(travel_times(params["schedule_start"], route_id))
       }
       |> Subscription.add_latlong_to_subscription(origin, destination)
       |> add_return_subscription(params)
     end)
     |> Enum.flat_map(&expand_multiroute_greenline_subscription(&1, subway_routes))
   end
+
+  defp travel_times(schedule, route_id), do: Map.get(schedule, route_id, [])
 
   defp expand_multiroute_greenline_subscription(%{route_type: 0, origin: origin, destination: destination} = subscription, subway_routes) do
     routes = get_route_intersection(subway_routes, origin, destination)
@@ -389,7 +419,8 @@ defmodule ConciergeSite.V2.TripController do
   defp add_return_subscription(subscription, %{
          "round_trip" => "true",
          "return_start_time" => return_start_time,
-         "return_end_time" => return_end_time
+         "return_end_time" => return_end_time,
+         "schedule_return" => schedule_return
        }) do
     return_subscription = %{
       subscription
@@ -402,7 +433,9 @@ defmodule ConciergeSite.V2.TripController do
         destination_lat: subscription.origin_lat,
         destination_long: subscription.origin_long,
         direction_id: flip_direction(subscription.direction_id),
-        return_trip: true
+        return_trip: true,
+        travel_start_time: List.first(travel_times(schedule_return, subscription.route)),
+        travel_end_time: List.last(travel_times(schedule_return, subscription.route))
     }
 
     [subscription, return_subscription]
@@ -461,6 +494,36 @@ defmodule ConciergeSite.V2.TripController do
       else
         {elem(acc, 0), part}
       end
+    end)
+  end
+
+  defp update_trip_legs(_, %{"schedule_start" => nil, "schedule_return" => nil}), do: {:ok, true}
+  defp update_trip_legs(subscriptions, %{"schedule_start" => schedule_start, "schedule_return" => schedule_return}) do
+    for subscription <- subscriptions do
+      trip_times = if subscription.return_trip, do: schedule_return, else: schedule_start
+      update_leg_travel_time(subscription, Map.get(trip_times, subscription.route));
+    end
+    {:ok, true}
+  end
+
+  defp update_leg_travel_time(_, nil), do: :ok
+  defp update_leg_travel_time(subscription, trip_times) do
+    subscription
+    |> Subscription.create_changeset(%{travel_start_time: List.first(trip_times), travel_end_time: List.last(trip_times)})
+    |> Repo.update!()
+  end
+
+  defp sanitize_leg_params(params) do
+    leg_params = %{"schedule_start" => sanitize_travel_times(Map.get(params, "schedule_start")),
+                   "schedule_return" => sanitize_travel_times(Map.get(params, "schedule_return"))}
+
+    {:sanitized, leg_params, Map.drop(params, ["schedule_start", "schedule_return"])}
+  end
+
+  defp sanitize_travel_times(nil), do: nil
+  defp sanitize_travel_times(travel_times) do
+    Enum.reduce(travel_times, %{}, fn({route_id, times}, acc) ->
+      Map.put(acc, route_id, Enum.map(times, &Time.from_iso8601!(&1)))
     end)
   end
 

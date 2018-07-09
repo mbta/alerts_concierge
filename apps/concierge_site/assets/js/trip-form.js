@@ -1,9 +1,15 @@
+import { validateTravelTimeSelected } from "./schedule/validate";
+
 export default () => {
   const tripLegFormEl = document.getElementById("tripleg-form");
-  if (!tripLegFormEl) {
-    return;
+  if (tripLegFormEl) {
+    tripLegFormEl.addEventListener("submit", handleLegFormSubmit, false);
   }
-  tripLegFormEl.addEventListener("submit", handleLegFormSubmit, false);
+
+  const tripTimeFormEl = document.getElementById("triptime-form");
+  if (tripTimeFormEl) {
+    tripTimeFormEl.addEventListener("submit", handleTimeFormSubmit, false);
+  }
 };
 
 const handleLegFormSubmit = e => {
@@ -21,9 +27,15 @@ const handleLegFormSubmit = e => {
       originErrorEl.innerHTML = errorMessage("Origin is a required field.");
     }
     if (!destinationInputEl.value) {
-      destinationErrorEl.innerHTML = errorMessage("Destination is a required field.");
+      destinationErrorEl.innerHTML = errorMessage(
+        "Destination is a required field."
+      );
     }
   }
+};
+
+const handleTimeFormSubmit = e => {
+  validateTravelTimeSelected(e);
 };
 
 const errorMessage = message => {

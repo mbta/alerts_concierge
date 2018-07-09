@@ -2,67 +2,21 @@
 <%= flash_error(@conn) %>
 <%
 time_label = if @round_trip == "true" do
-  "When would you like to receive alerts for your trips?"
+  "When would you like to receive alerts for your first trip?"
 else
   "When would you like to receive alerts for your trip?"
 end
-first_trip_label = if @round_trip == "true", do: "First trip", else: "Starting at"
 first_trip_padding_class = if @round_trip == "true", do: "", else: "form__section"
 %>
 
 <div class="container container__inner">
   <div class="row justify-content-md-center">
     <div class="col-sm-12">
-      <%= form_for @conn, v2_trip_path(@conn, :create), [as: :trip, method: :post], fn form -> %>
+      <%= form_for @conn, v2_trip_path(@conn, :create), [as: :trip, method: :post, id: "triptime-form"], fn form -> %>
         <div class="form-group form__section--top">
           <%= label form, :days, "What days do you usually travel?", class: "form__label" %>
           <%= ConciergeSite.DaySelectHelper.render(:trip, ["monday", "tuesday", "wednesday", "thursday", "friday", "weekdays"]) %>
         </div>
-
-        <div class="form-group <%= first_trip_padding_class %>">
-          <span class="form__label"><%= time_label %></span>
-          <div class="form-group form-inline form__group--inline">
-            <%= label form, :start_time, first_trip_label, class: "form__label--inline" %>
-            <div class="flatpickr-calendar-container">
-              <%= text_input form, :start_time, type: "text", class: "form-control form__time--inline", step: "60", required: true, value: "8:00 AM", data: [type: "time"]  %>
-            </div>
-            <%= label form, :end_time, "until", class: "form__label--inline-divider" %>
-            <div class="flatpickr-calendar-container">
-              <%= text_input form, :end_time, type: "text", class: "form-control form__time--inline", step: "60", required: true, value: "9:00 AM", data: [type: "time"] %>
-            </div>
-          </div>
-          <%= ConciergeSite.ScheduleHelper.render(@schedules, "trip_start_time", "trip_end_time") %>
-        </div>
-
-        <%= if @round_trip == "true" do %>
-          <div class="form-group form__section">
-            <div class="form-group form-inline form__group--inline">
-              <%= label form, :return_start_time, "Return trip", class: "form__label--inline" %>
-              <div class="flatpickr-calendar-container">
-                <%= text_input form, :return_start_time, type: "text", class: "form-control form__time--inline", step: "60", required: true, value: "5:00 PM", data: [type: "time"] %>
-              </div>
-              <%= label form, :return_end_time, "until", class: "form__label--inline-divider" %>
-              <div class="flatpickr-calendar-container">
-                <%= text_input form, :return_end_time, type: "text", class: "form-control form__time--inline", step: "60", required: true, value: "6:00 PM", data: [type: "time"] %>
-              </div>
-            </div>
-            <%= ConciergeSite.ScheduleHelper.render(@return_schedules, "trip_return_start_time", "trip_return_end_time") %>
-          </div>
-        <% end %>
-
-        <%= hidden_input form, :round_trip, value: @round_trip %>
-        <%= for leg <- @legs do %>
-          <%= hidden_input form, :legs, name: "trip[legs][]", value: leg %>
-        <% end %>
-        <%= for origin <- @origins do %>
-          <%= hidden_input form, :origins, name: "trip[origins][]", value: origin %>
-        <% end %>
-        <%= for destination <- @destinations do %>
-          <%= hidden_input form, :destinations, name: "trip[destinations][]", value: destination %>
-        <% end %>
-        <%= for mode <- @modes do %>
-          <%= hidden_input form, :modes, name: "trip[modes][]", value: mode %>
-        <% end %>
 
         <div class="form-group form__section">
           <%= label form, :elevator, "Would you like alerts about any of these station features?", class: "form__label" %>
@@ -89,6 +43,56 @@ first_trip_padding_class = if @round_trip == "true", do: "", else: "form__sectio
             </label>
           </div>
         </div>
+
+        <div class="form-group <%= first_trip_padding_class %>">
+          <%= if @round_trip == "true" do %>
+            <h3>First trip</h3>
+          <% end %>
+          <span class="form__label"><%= time_label %></span>
+          <div class="form-group form-inline form__group--inline">
+            <%= label form, :start_time, "From", class: "form__label--inline" %>
+            <div class="flatpickr-calendar-container">
+              <%= text_input form, :start_time, type: "text", class: "form-control form__time--inline", step: "60", required: true, value: "8:00 AM", data: [type: "time"]  %>
+            </div>
+            <%= label form, :end_time, "until", class: "form__label--inline-divider" %>
+            <div class="flatpickr-calendar-container">
+              <%= text_input form, :end_time, type: "text", class: "form-control form__time--inline", step: "60", required: true, value: "9:00 AM", data: [type: "time"] %>
+            </div>
+          </div>
+          <%= ConciergeSite.ScheduleHelper.render(@schedules, "trip_start_time", "trip_end_time") %>
+        </div>
+
+        <%= if @round_trip == "true" do %>
+          <div class="form-group form__section my-5">
+            <h3>Return trip</h3>
+            <span class="form__label">When would you like to receive alerts for your return trip?</span>
+            <div class="form-group form-inline form__group--inline">
+              <%= label form, :return_start_time, "From", class: "form__label--inline" %>
+              <div class="flatpickr-calendar-container">
+                <%= text_input form, :return_start_time, type: "text", class: "form-control form__time--inline", step: "60", required: true, value: "5:00 PM", data: [type: "time"] %>
+              </div>
+              <%= label form, :return_end_time, "until", class: "form__label--inline-divider" %>
+              <div class="flatpickr-calendar-container">
+                <%= text_input form, :return_end_time, type: "text", class: "form-control form__time--inline", step: "60", required: true, value: "6:00 PM", data: [type: "time"] %>
+              </div>
+            </div>
+            <%= ConciergeSite.ScheduleHelper.render(@return_schedules, "trip_return_start_time", "trip_return_end_time") %>
+          </div>
+        <% end %>
+
+        <%= hidden_input form, :round_trip, value: @round_trip %>
+        <%= for leg <- @legs do %>
+          <%= hidden_input form, :legs, name: "trip[legs][]", value: leg %>
+        <% end %>
+        <%= for origin <- @origins do %>
+          <%= hidden_input form, :origins, name: "trip[origins][]", value: origin %>
+        <% end %>
+        <%= for destination <- @destinations do %>
+          <%= hidden_input form, :destinations, name: "trip[destinations][]", value: destination %>
+        <% end %>
+        <%= for mode <- @modes do %>
+          <%= hidden_input form, :modes, name: "trip[modes][]", value: mode %>
+        <% end %>
 
         <div class="form__action-buttons--container">
           <%= submit "Finish", class: "btn btn-primary float-right form__action-button" %>

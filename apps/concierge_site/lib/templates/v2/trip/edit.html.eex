@@ -19,7 +19,7 @@ first_trip_padding_class = if @trip.roundtrip == true, do: "", else: "form__sect
         <%= ConciergeSite.TripCardHelper.display(@conn, @trip) %>
       </div>
 
-      <%= form_for @changeset, v2_trip_path(@conn, :update, @trip), [as: :trip], fn form -> %>
+      <%= form_for @changeset, v2_trip_path(@conn, :update, @trip), [as: :trip, id: "commute-edit-form"], fn form -> %>
         <div class="form-group form__section my-5">
           <%= label form, :relevant_days, "I usually travel on these days:", class: "form__label" %>
           <%= ConciergeSite.DaySelectHelper.render(:trip, @trip.relevant_days) %>
@@ -37,7 +37,7 @@ first_trip_padding_class = if @trip.roundtrip == true, do: "", else: "form__sect
               <%= text_input form, :end_time, type: "text", class: "form-control form__time--inline", step: "60", required: true, value: ConciergeSite.TimeHelper.format_time(@trip.end_time), data: [type: "time"] %>
             </div>
           </div>
-          <%= ConciergeSite.ScheduleHelper.render(@schedules, "trip_start_time", "trip_end_time") %>
+          <%= ConciergeSite.ScheduleHelper.render(@schedules, "trip_start_time", "trip_end_time", @travel_times) %>
         </div>
 
         <%= if @trip.roundtrip do %>
@@ -52,7 +52,7 @@ first_trip_padding_class = if @trip.roundtrip == true, do: "", else: "form__sect
                 <%= text_input form, :return_end_time, type: "text", class: "form-control form__time--inline", step: "60", required: true, value: ConciergeSite.TimeHelper.format_time(@trip.return_end_time), data: [type: "time"] %>
               </div>
             </div>
-            <%= ConciergeSite.ScheduleHelper.render(@return_schedules, "trip_return_start_time", "trip_return_end_time") %>
+            <%= ConciergeSite.ScheduleHelper.render(@return_schedules, "trip_return_start_time", "trip_return_end_time", @return_travel_times) %>
           </div>
         <% end %>
 

@@ -17,6 +17,10 @@ function toggleCheckbox(pubsub, $) {
     const $targetLabelEl = $(e.target);
     const isChecked = $targetLabelEl.find("input[type='checkbox']").attr("checked");
     setTimeout(() => {
+      pubsub.publishSync("checkbox-change", {
+        changedEl: $targetLabelEl,
+        isChecked: !isChecked
+      });
       if (isChecked == "checked") {
         $targetLabelEl.find("input[type='checkbox']").removeAttr("checked");
         $targetLabelEl.find("input[type='hidden']").attr("value", "false");
@@ -28,7 +32,7 @@ function toggleCheckbox(pubsub, $) {
         $targetLabelEl.attr("aria-checked", "true");
         $targetLabelEl.addClass("active"); 
       }
-    }, 250);
+    }, 10);
   };
 }
 

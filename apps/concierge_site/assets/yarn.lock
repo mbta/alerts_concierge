@@ -3265,6 +3265,10 @@ set-immediate-shim@^1.0.1:
   version "1.0.1"
   resolved "https://registry.yarnpkg.com/set-immediate-shim/-/set-immediate-shim-1.0.1.tgz#4b2b1b27eb808a9f8dcc481a58e5e56f599f3f61"
 
+set-manipulator@^0.3.1:
+  version "0.3.1"
+  resolved "https://registry.yarnpkg.com/set-manipulator/-/set-manipulator-0.3.1.tgz#47ecbceae18405058cfcc92c7a1e4d7120916afe"
+
 setprototypeof@1.0.3:
   version "1.0.3"
   resolved "https://registry.yarnpkg.com/setprototypeof/-/setprototypeof-1.0.3.tgz#66567e37043eeb4f04d91bd658c0cbefb55b8e04"
