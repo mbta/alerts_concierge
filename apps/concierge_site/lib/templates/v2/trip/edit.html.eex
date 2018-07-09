@@ -19,7 +19,7 @@ first_trip_padding_class = if @trip.roundtrip == true, do: "", else: "form__sect
         <%= ConciergeSite.TripCardHelper.display(@conn, @trip) %>
       </div>
 
-      <%= form_for @changeset, v2_trip_path(@conn, :update, @trip), [as: :trip], fn form -> %>
+      <%= form_for @changeset, v2_trip_path(@conn, :update, @trip), [as: :trip, id: "commute-edit-form"], fn form -> %>
         <div class="form-group form__section my-5">
           <%= label form, :relevant_days, "I usually travel on these days:", class: "form__label" %>
           <%= ConciergeSite.DaySelectHelper.render(:trip, @trip.relevant_days) %>

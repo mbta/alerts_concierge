@@ -32,7 +32,7 @@ defmodule ConciergeSite.ScheduleHelper do
               end
             end
           end,
-          content_tag :div, class: "error-block-container", data: [type: "leg-error"] do
+          content_tag :div, class: "error-block-container", tabindex: "0", data: [type: "leg-error"] do
             content_tag :span, class: "error-block" do
               "Select at least one #{vehicle(mode)} from the list."
             end

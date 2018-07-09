@@ -34,6 +34,7 @@ import tripCard from "./trip-card";
 import flashFocus from "./flash-focus";
 import pubsubFactory from "PubSub";
 import tripForm from "./trip-form";
+import commuteEditForm from "./commute-edit-form";
 import accessibilityForm from "./accessibility-form";
 const pubsub = new pubsubFactory();
 
@@ -49,5 +50,6 @@ customTimeSelect(pubsub);
 deleteModal();
 tripCard();
 tripForm();
+commuteEditForm();
 accessibilityForm();
 flashFocus();
