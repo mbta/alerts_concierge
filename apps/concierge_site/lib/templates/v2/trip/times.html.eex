@@ -6,7 +6,6 @@ time_label = if @round_trip == "true" do
 else
   "When would you like to receive alerts for your trip?"
 end
-first_trip_label = if @round_trip == "true", do: "First trip", else: "Starting at"
 first_trip_padding_class = if @round_trip == "true", do: "", else: "form__section"
 %>
 
@@ -51,7 +50,7 @@ first_trip_padding_class = if @round_trip == "true", do: "", else: "form__sectio
           <% end %>
           <span class="form__label"><%= time_label %></span>
           <div class="form-group form-inline form__group--inline">
-            <%= label form, :start_time, first_trip_label, class: "form__label--inline" %>
+            <%= label form, :start_time, "From", class: "form__label--inline" %>
             <div class="flatpickr-calendar-container">
               <%= text_input form, :start_time, type: "text", class: "form-control form__time--inline", step: "60", required: true, value: "8:00 AM", data: [type: "time"]  %>
             </div>
@@ -66,8 +65,9 @@ first_trip_padding_class = if @round_trip == "true", do: "", else: "form__sectio
         <%= if @round_trip == "true" do %>
           <div class="form-group form__section my-5">
             <h3>Return trip</h3>
+            <span class="form__label">When would you like to receive alerts for your return trip?</span>
             <div class="form-group form-inline form__group--inline">
-              <%= label form, :return_start_time, "Return trip", class: "form__label--inline" %>
+              <%= label form, :return_start_time, "From", class: "form__label--inline" %>
               <div class="flatpickr-calendar-container">
                 <%= text_input form, :return_start_time, type: "text", class: "form-control form__time--inline", step: "60", required: true, value: "5:00 PM", data: [type: "time"] %>
               </div>

@@ -84,7 +84,7 @@ defmodule ConciergeSite.ScheduleHelper do
         content_tag :div do
           [
             ConciergeSite.IconViewHelper.icon(:ferry),
-            "#{elem(trip.origin, 0)} from #{format_time_string(time_to_string(trip.departure_time), "%l:%M%P")}"
+            "Ferry from #{elem(trip.origin, 0)}, #{format_time_string(time_to_string(trip.departure_time), "%l:%M%P")}"
           ]
         end,
         content_tag :i, class: "fa fa-check" do
