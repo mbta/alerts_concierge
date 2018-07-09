@@ -101,8 +101,8 @@ export function processSchedule(scheduleEl, showDefaultTravelTimes) {
     }, 0);
     markLastMatchedTrip(scheduleEl);
     matchedTrips === 0
-      ? toggleBlankSlate(scheduleEl, "block")
-      : toggleBlankSlate(scheduleEl, "none");
+      ? toggleBlankSlate(legEl, "block")
+      : toggleBlankSlate(legEl, "none");
     if (matchedTrips === 1) {
       setAllVisibleToChecked(trips);
     }
