@@ -34,6 +34,7 @@ defmodule ConciergeSite.Dissemination.NotificationEmail do
     |> subject(notification_email_subject)
     |> html_body(html_email(notification, manage_subscriptions_url, feedback_url))
     |> text_body(text_email(notification, manage_subscriptions_url, feedback_url))
+    |> Bamboo.Email.put_private(:notification_id, notification.id)
   end
 
   @spec base_email() :: Elixir.Bamboo.Email.t
