@@ -53,7 +53,7 @@ defmodule ConciergeSite.V2.TripController do
          {:changeset, changeset} <- {:changeset, Trip.update_changeset(trip)} do
       schedules = get_schedules_for_trip(trip.subscriptions, false)
       return_schedules = get_schedules_for_trip(trip.subscriptions, true)
-        
+
       render(
         conn,
         "edit.html",
@@ -109,7 +109,9 @@ defmodule ConciergeSite.V2.TripController do
           trip: Trip.find_by_id(id),
           changeset: changeset,
           schedules: %{},
-          return_schedules: %{}
+          return_schedules: %{},
+          travel_times: %{},
+          return_travel_times: %{}
         )
     end
   end
