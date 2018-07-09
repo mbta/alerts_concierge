@@ -62,6 +62,15 @@
   &[data-last-match="true"] {
     .btn__radio--toggle {
       border-bottom: 0;
+      border-bottom-left-radius: 5px;
+      border-bottom-right-radius: 5px;
+    }
+  }
+
+  &[data-first-match="true"] {
+    .btn__radio--toggle {
+      border-top-left-radius: 5px;
+      border-top-right-radius: 5px;
     }
   }
 

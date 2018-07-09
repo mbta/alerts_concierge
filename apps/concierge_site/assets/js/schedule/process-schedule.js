@@ -54,17 +54,17 @@ function toggleBlankSlate(scheduleEl, display) {
   });
 }
 
-function markLastMatchedTrip(scheduleEl) {
-  const legs = [...scheduleEl.getElementsByClassName("schedules__trips--leg")];
-  legs.forEach(leg => {
-    const matchedTrips = [...leg.querySelectorAll("li[data-matched='true']")];
-    if (matchedTrips.length === 0) {
-      return;
-    }
-    matchedTrips.forEach(trip => trip.setAttribute("data-last-match", "false"));
-    const lastMatchedTrip = matchedTrips.slice(-1)[0];
-    lastMatchedTrip.setAttribute("data-last-match", "true");
-  });
+function markFirstAndLastMatchedTrip(legEl) {
+  const matchedTrips = [...legEl.querySelectorAll("li[data-matched='true']")];
+  if (matchedTrips.length === 0) {
+    return;
+  }
+  matchedTrips.forEach(trip => trip.setAttribute("data-last-match", "false"));
+  const lastMatchedTrip = matchedTrips.slice(-1)[0];
+  lastMatchedTrip.setAttribute("data-last-match", "true");
+
+  const firstMatchedTrip = matchedTrips.slice(0, 1)[0];
+  firstMatchedTrip.setAttribute("data-first-match", "true");
 }
 
 function setAllVisibleToChecked(trips) {
@@ -99,7 +99,7 @@ export function processSchedule(scheduleEl, showDefaultTravelTimes) {
         )
       );
     }, 0);
-    markLastMatchedTrip(scheduleEl);
+    markFirstAndLastMatchedTrip(legEl);
     matchedTrips === 0
       ? toggleBlankSlate(legEl, "block")
       : toggleBlankSlate(legEl, "none");
