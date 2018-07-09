@@ -1,0 +1,25 @@
+<div class="form-group form__section">
+  <%= label @form, :elevator, "Would you like alerts about any of these station features?", class: "form__label" %>
+  <div class="btn-group btn-group-toggle btn__radio--toggle-container" data-toggle="buttons" role="radiogroup">
+    <label role="checkbox" class="<%= ConciergeSite.FacilitiesHelper.checkbox_label_class(@trip, :elevator) %>" tabindex="0">
+      <%= render ConciergeSite.V2.LayoutView, "_icon_elevator.html" %>
+      <%= checkbox @form, :elevator, value: ConciergeSite.FacilitiesHelper.facility_type_value(@trip, :elevator), tabindex: "-1" %>
+      <div>Elevators</div>
+    </label>
+    <label role="checkbox" class="<%= ConciergeSite.FacilitiesHelper.checkbox_label_class(@trip, :escalator) %>" tabindex="0">
+      <%= render ConciergeSite.V2.LayoutView, "_icon_escalator.html" %>
+      <%= checkbox @form, :escalator, value: ConciergeSite.FacilitiesHelper.facility_type_value(@trip, :escalator), tabindex: "-1" %>
+      <div>Escalators</div>
+    </label>
+    <label role="checkbox" class="<%= ConciergeSite.FacilitiesHelper.checkbox_label_class(@trip, :parking_area) %>" tabindex="0">
+      <%= render ConciergeSite.V2.LayoutView, "_icon_parking.html" %>
+      <%= checkbox @form, :parking_area, value: ConciergeSite.FacilitiesHelper.facility_type_value(@trip, :parking_area), tabindex: "-1" %>
+      <div>Parking</div>
+    </label>
+    <label role="checkbox" class="<%= ConciergeSite.FacilitiesHelper.checkbox_label_class(@trip, :bike_storage) %>" tabindex="0">
+      <%= render ConciergeSite.V2.LayoutView, "_icon_bike.html" %>
+      <%= checkbox @form, :bike_storage, value: ConciergeSite.FacilitiesHelper.facility_type_value(@trip, :bike_storage), tabindex: "-1" %>
+      <div>Bike Storage</div>
+    </label>
+  </div>
+</div>

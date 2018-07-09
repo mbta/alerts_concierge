@@ -61,6 +61,7 @@ defmodule AlertProcessor.Model.Trip do
     end_time
     return_start_time
     return_end_time
+    facility_types
   )a
 
   @doc """

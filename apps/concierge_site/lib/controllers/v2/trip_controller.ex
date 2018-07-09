@@ -86,8 +86,10 @@ defmodule ConciergeSite.V2.TripController do
   def update(conn, %{"id" => id, "trip" => trip_params}, user, _claims) do
     with {:trip, %Trip{} = trip} <- {:trip, Trip.find_by_id(id)},
          {:authorized, true} <- {:authorized, user.id == trip.user_id},
-         {:sanitized, leg_params, updated_trip_params} <- sanitize_leg_params(trip_params),
+         {:collated_facility_types, collated_trip_params} <- {:collated_facility_types, collate_facility_types(trip_params)},
+         {:sanitized, leg_params, updated_trip_params} <- sanitize_leg_params(collated_trip_params),
          {:sanitized, sanitized_trip_params} <- {:sanitized, sanitize_trip_params(updated_trip_params)},
+
          {:ok, %Trip{}} <- Trip.update(trip, sanitized_trip_params),
          {:ok, true} <- update_trip_legs(trip.subscriptions, leg_params) do
       conn
@@ -457,8 +459,17 @@ defmodule ConciergeSite.V2.TripController do
     }
   end
 
+  @valid_facility_types ~w(bike_storage elevator escalator parking_area)
+  defp collate_facility_types(params) do
+    {facility_type_params, non_facility_type_params} = params |> Map.split(@valid_facility_types)
+    Map.merge(
+      non_facility_type_params,
+      %{"facility_types" => input_to_facility_types(facility_type_params)}
+    )
+  end
+
   defp input_to_facility_types(params) do
-    ["bike_storage", "elevator", "escalator", "parking_area"]
+    @valid_facility_types
     |> Enum.reduce([], fn type, acc ->
       if params[type] == "true" do
         acc ++ [String.to_atom(type)]
@@ -532,17 +543,18 @@ defmodule ConciergeSite.V2.TripController do
     |> Enum.map(&sanitize_trip_param/1)
     |> Enum.into(%{})
   end
-
+  
+  @valid_time_keys ~w(start_time end_time return_start_time return_end_time alert_time)
+  defp sanitize_trip_param({time_key, time_value}) when time_key in @valid_time_keys do
+    {time_key, to_time(time_value)}
+  end
+  
   defp sanitize_trip_param({"relevant_days" = key, relevant_days}) do
     days_as_atoms = Enum.map(relevant_days, &String.to_existing_atom/1)
     {key, days_as_atoms}
   end
-
-  @valid_time_keys ~w(start_time end_time return_start_time return_end_time alert_time)
-
-  defp sanitize_trip_param({time_key, time_value}) when time_key in @valid_time_keys do
-    {time_key, to_time(time_value)}
-  end
+  
+  defp sanitize_trip_param({"facility_types" = key, facility_types}), do: {key, facility_types}
 
   defp get_schedules_for_input(legs, origins, destinations, modes) do
     Enum.zip([
