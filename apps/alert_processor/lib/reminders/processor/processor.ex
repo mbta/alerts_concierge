@@ -53,7 +53,7 @@ defmodule AlertProcessor.Reminders.Processor do
   defp schedule_notifications(notifications) do
     # save notification in the database before adding to sending queue
     # do this now incase we re-match the same notificaiton before finishing
-    # sending from a previous iterration
+    # sending from a previous iteration
     for notification <- notifications do
       {:ok, _} = Notification.save(notification, :sent)
     end

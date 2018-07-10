@@ -27,7 +27,9 @@ defmodule AlertProcessor.Reminders.ProcessorTest do
       alert = %Alert{
         id: "123",
         last_push_notification: monday_april_2_at_8am,
-        reminder_times: [monday_april_9_at_7_30am]
+        reminder_times: [monday_april_9_at_7_30am],
+        header: "test",
+        service_effect: "test"
       }
       notification_details = %{
         alert_id: "123",
