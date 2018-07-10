@@ -1,10 +1,11 @@
 defmodule ConciergeSite.V2.TripController do
   use ConciergeSite.Web, :controller
   use Guardian.Phoenix.Controller
-  alias AlertProcessor.{ApiClient, Repo}
-  alias AlertProcessor.Model.{Trip, Subscription, User, TripInfo}
+  alias AlertProcessor.Repo
+  alias AlertProcessor.Model.{Trip, Subscription, User}
   alias AlertProcessor.ServiceInfoCache
   alias ConciergeSite.ParamParsers.{ParamTime, TripParams}
+  alias ConciergeSite.Schedule
   alias Ecto.Multi
 
   plug(:scrub_params, "trip" when action in [:create, :leg])
@@ -54,8 +55,8 @@ defmodule ConciergeSite.V2.TripController do
     with {:trip, %Trip{} = trip} <- {:trip, Trip.find_by_id(id)},
          {:authorized, true} <- {:authorized, user.id == trip.user_id},
          {:changeset, changeset} <- {:changeset, Trip.update_changeset(trip)} do
-      schedules = get_schedules_for_trip(trip.subscriptions, false)
-      return_schedules = get_schedules_for_trip(trip.subscriptions, true)
+      schedules = Schedule.get_schedules_for_trip(trip.subscriptions, false)
+      return_schedules = Schedule.get_schedules_for_trip(trip.subscriptions, true)
 
       render(
         conn,
@@ -174,8 +175,8 @@ defmodule ConciergeSite.V2.TripController do
           parse_legs(trip, saved_leg, origin, destination, saved_mode)
 
         conn = %{conn | params: %{}}
-        schedules = get_schedules_for_input(legs, origins, destinations, modes)
-        return_schedules = get_schedules_for_input(legs, destinations, origins, modes)
+        schedules = Schedule.get_schedules_for_input(legs, origins, destinations, modes)
+        return_schedules = Schedule.get_schedules_for_input(legs, destinations, origins, modes)
 
         render(
           conn,
@@ -215,21 +216,21 @@ defmodule ConciergeSite.V2.TripController do
   end
 
   def times(
-        conn,
-        %{
-          "trip" => %{
-            "legs" => legs,
-            "origins" => origins,
-            "destinations" => destinations,
-            "modes" => modes,
-            "round_trip" => round_trip
-          }
-        },
-        _user,
-        _claims
-      ) do
-    schedules = get_schedules_for_input(legs, origins, destinations, modes)
-    return_schedules = get_schedules_for_input(legs, destinations, origins, modes)
+    conn,
+    %{
+      "trip" => %{
+        "legs" => legs,
+        "origins" => origins,
+        "destinations" => destinations,
+        "modes" => modes,
+        "round_trip" => round_trip
+      }
+    },
+    _user,
+    _claims
+  ) do
+    schedules = Schedule.get_schedules_for_input(legs, origins, destinations, modes)
+    return_schedules = Schedule.get_schedules_for_input(legs, destinations, origins, modes)
 
     render(
       conn,
@@ -360,7 +361,7 @@ defmodule ConciergeSite.V2.TripController do
         type: type,
         route: route_id,
         route_type: route.route_type,
-        direction_id: determine_direction_id(route.stop_list, direction, origin, destination),
+        direction_id: Schedule.determine_direction_id(route.stop_list, direction, origin, destination),
         rank: rank,
         return_trip: false,
         travel_start_time: List.first(travel_times(params["schedule_start"], route_id)),
@@ -447,20 +448,6 @@ defmodule ConciergeSite.V2.TripController do
   defp flip_direction(0), do: 1
   defp flip_direction(1), do: 0
 
-  defp determine_direction_id(_, "0", _, _), do: 0
-  defp determine_direction_id(_, "1", _, _), do: 1
-
-  defp determine_direction_id(stop_list, _, origin, destination) do
-    case stop_list
-         |> Enum.filter(fn {_name, id, _latlong, _wheelchair} ->
-           Enum.member?([origin, destination], id)
-         end)
-         |> Enum.map(fn {_name, id, _latlong, _wheelchair} -> id end) do
-      [^origin, ^destination] -> 1
-      [^destination, ^origin] -> 0
-    end
-  end
-
   defp determine_route(route_id) do
     route_id
     |> String.split(" - ")
@@ -502,125 +489,10 @@ defmodule ConciergeSite.V2.TripController do
       Map.put(acc, route_id, Enum.map(times, &Time.from_iso8601!(&1)))
     end)
   end
-  
-  defp get_schedules_for_input(legs, origins, destinations, modes) do
-    Enum.zip([
-      Enum.reverse(modes),
-      Enum.reverse(legs),
-      Enum.reverse(origins),
-      Enum.reverse(destinations)
-    ])
-    |> Enum.reduce(%{}, fn {mode, route, origin, destination}, acc ->
-      case mode do
-        "subway" -> acc
-        "bus" -> acc
-        _ -> Map.put(acc, {mode, route}, get_schedule(route, origin, destination))
-      end
-    end)
-  end
-
-  defp get_schedules_for_trip(subscriptions, return_trip) do
-    subscriptions
-    |> Enum.filter(&(&1.return_trip == return_trip))
-    |> Enum.reduce(%{}, fn %{type: type, route: route, origin: origin, destination: destination},
-                           acc ->
-      case type do
-        :subway -> acc
-        :bus -> acc
-        _ -> Map.put(acc, {Atom.to_string(type), route}, get_schedule(route, origin, destination))
-      end
-    end)
-  end
 
   defp get_headsigns(route_id) do
     with {:ok, %{headsigns: headsigns}} <- ServiceInfoCache.get_route(String.replace_suffix(route_id, " - 1", "")) do
       headsigns
     end
-  end
-
-  defp get_schedule(route_id, origin, destination) do
-    with {:ok, route} <- ServiceInfoCache.get_route(route_id) do
-      direction_id = determine_direction_id(route.stop_list, nil, origin, destination)
-
-      {:ok, schedules, trips} =
-        ApiClient.schedules(
-          origin,
-          destination,
-          direction_id,
-          [route.route_id],
-          Calendar.Date.today!("America/New_York")
-        )
-
-      trip_name_map = map_trip_names(trips)
-      {:ok, origin_stop} = ServiceInfoCache.get_stop(origin)
-      {:ok, destination_stop} = ServiceInfoCache.get_stop(destination)
-
-      trip = %TripInfo{
-        origin: origin_stop,
-        destination: destination_stop,
-        direction_id: direction_id
-      }
-
-      map_common_trips(schedules, trip_name_map, trip)
-    end
-  end
-
-  defp map_trip_names(trips) do
-    Map.new(trips, &do_map_trip_name/1)
-  end
-
-  defp do_map_trip_name(%{"type" => "trip", "id" => id, "attributes" => %{"name" => name}}),
-    do: {id, name}
-
-  defp do_map_trip_name(_), do: {nil, nil}
-
-  defp map_common_trips([], _, _), do: :error
-
-  defp map_common_trips(schedules, trip_names_map, trip) do
-    schedules
-    |> Enum.group_by(fn %{"relationships" => %{"trip" => %{"data" => %{"id" => id}}}} -> id end)
-    |> Enum.filter(fn {_id, schedules} -> Enum.count(schedules) > 1 end)
-    |> Enum.map(fn {_id, schedules} ->
-      [departure_schedule, arrival_schedule] =
-        Enum.sort_by(schedules, fn %{"attributes" => %{"departure_time" => departure_timestamp}} ->
-          departure_timestamp
-        end)
-
-      %{
-        "attributes" => %{
-          "departure_time" => departure_timestamp
-        },
-        "relationships" => %{
-          "trip" => %{
-            "data" => %{
-              "id" => trip_id
-            }
-          },
-          "route" => %{
-            "data" => %{
-              "id" => route_id
-            }
-          }
-        }
-      } = departure_schedule
-
-      %{"attributes" => %{"arrival_time" => arrival_timestamp}} = arrival_schedule
-      {:ok, route} = ServiceInfoCache.get_route(route_id)
-
-      %{
-        trip
-        | arrival_time: map_schedule_time(arrival_timestamp),
-          departure_time: map_schedule_time(departure_timestamp),
-          trip_number: Map.get(trip_names_map, trip_id),
-          route: route
-      }
-    end)
-    |> Enum.sort_by(fn %TripInfo{departure_time: departure_time} ->
-      {~T[05:00:00] > departure_time, departure_time}
-    end)
-  end
-
-  defp map_schedule_time(schedule_datetime) do
-    schedule_datetime |> NaiveDateTime.from_iso8601!() |> NaiveDateTime.to_time()
   end
 end
