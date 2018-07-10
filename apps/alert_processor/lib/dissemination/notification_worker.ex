@@ -37,11 +37,10 @@ defmodule AlertProcessor.NotificationWorker do
 
   defp send_notification(notification) do
     with :ok <- RateLimiter.check_rate_limit(notification.user.id),
-      {:ok, notification} <- Notification.save(notification, :sent),
       {:ok, _} <- Dispatcher.send_notification(notification) do
     else
-      {:error, :rate_exceeded} -> Logger.warn("Sending rate exceeded for user: #{notification.user.id}")
-      {:error, _} -> Notification.save(notification, :failed)
+      {:error, :rate_exceeded} -> Logger.warn("Sending rate exceeded for user: #{notification.user.id}, alert: #{notification.alert_id}")
+      {:error, _} -> Logger.warn("Sending failed for user: #{notification.user.id}, alert: #{notification.alert_id}")
     end
   end
 
