@@ -25,8 +25,9 @@ defmodule AlertProcessor.SchedulerTest do
       sub = insert(:subscription, user: user)
       alert = %Alert{
         id: "1",
-        header: nil,
-        active_period: [%{start: time.two_days_from_now, end: time.three_days_from_now}]
+        header: "test",
+        active_period: [%{start: time.two_days_from_now, end: time.three_days_from_now}],
+        service_effect: "test"
       }
 
       {:ok, [notification]} = Scheduler.schedule_notifications([{user, [sub]}], alert)
