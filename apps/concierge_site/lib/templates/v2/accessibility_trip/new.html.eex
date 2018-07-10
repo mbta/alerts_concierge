@@ -5,22 +5,7 @@
   <div class="row justify-content-md-center">
     <div class="col-sm-12">
       <%= form_for @changeset, v2_accessibility_trip_path(@conn, :create), [as: :trip, method: :post, id: "accessibility-form"], fn form -> %>
-        <div class="form-group form__section--top">
-          <%= label form, :facility_types, "Which station features would you like to receive alerts about?", class: "form__label" %>
-          <div class="btn-group btn-group-toggle btn__radio--toggle-container" data-toggle="buttons" role="radiogroup">
-            <label data-id="roundtrip" role="checkbox" class="btn btn-outline-primary btn__radio--toggle btn__radio--toggle-item-connected" tabindex="0">
-              <%= render ConciergeSite.V2.LayoutView, "_icon_elevator.html" %>
-              <%= checkbox form, :elevator, tabindex: "-1" %>
-              <div>Elevators</div>
-            </label>
-            <label data-id="oneway" role="checkbox" class="btn btn-outline-primary btn__radio--toggle btn__radio--toggle-item-connected" tabindex="0">
-              <%= render ConciergeSite.V2.LayoutView, "_icon_escalator.html" %>
-              <%= checkbox form, :escalator, tabindex: "-1" %>
-              <div>Escalators</div>
-            </label>
-          </div>
-          <%= if @changeset.errors[:escalator], do: error_tag @changeset, :escalator %>
-        </div>
+        <%= render "_facilities.html", form: form, trip: %AlertProcessor.Model.Trip{}, changeset: @changeset %>
 
         <div class="form-group form__section">
           <%= label form, :stops, "Would you like alerts for specific stations?", class: "form__label" %>

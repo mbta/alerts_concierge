@@ -4,11 +4,14 @@ defmodule ConciergeSite.V2.TripController do
   alias AlertProcessor.{ApiClient, Repo}
   alias AlertProcessor.Model.{Trip, Subscription, User, TripInfo}
   alias AlertProcessor.ServiceInfoCache
+  alias ConciergeSite.ParamParsers.{ParamTime, TripParams}
   alias Ecto.Multi
 
   plug(:scrub_params, "trip" when action in [:create, :leg])
 
   action_fallback(ConciergeSite.V2.FallbackController)
+
+  @valid_facility_types ~w(bike_storage elevator escalator parking_area)
 
   def index(conn, _params, user, _claims) do
     trips = Trip.get_trips_by_user(user.id)
@@ -86,9 +89,9 @@ defmodule ConciergeSite.V2.TripController do
   def update(conn, %{"id" => id, "trip" => trip_params}, user, _claims) do
     with {:trip, %Trip{} = trip} <- {:trip, Trip.find_by_id(id)},
          {:authorized, true} <- {:authorized, user.id == trip.user_id},
-         {:collated_facility_types, collated_trip_params} <- {:collated_facility_types, collate_facility_types(trip_params)},
+         {:collated_facility_types, collated_trip_params} <- {:collated_facility_types, TripParams.collate_facility_types(trip_params, @valid_facility_types)},
          {:sanitized, leg_params, updated_trip_params} <- sanitize_leg_params(collated_trip_params),
-         {:sanitized, sanitized_trip_params} <- {:sanitized, sanitize_trip_params(updated_trip_params)},
+         {:sanitized, sanitized_trip_params} <- {:sanitized, TripParams.sanitize_trip_params(updated_trip_params)},
 
          {:ok, %Trip{}} <- Trip.update(trip, sanitized_trip_params),
          {:ok, true} <- update_trip_legs(trip.subscriptions, leg_params) do
@@ -280,24 +283,6 @@ defmodule ConciergeSite.V2.TripController do
     {legs, origins, destinations, modes}
   end
 
-  defp to_time(nil), do: nil
-
-  defp to_time(form_time) do
-    {time_input, add_hours} = time_meridian(form_time)
-    [hour, minute] = Enum.map(String.split(time_input, ":"), &String.to_integer/1)
-    {:ok, time} = Time.new(hour + add_hours, minute, 0)
-
-    time
-  end
-
-  defp time_meridian(form_time) do
-    [time, meridian] = String.split(form_time, " ")
-    [hour, _] = String.split(time, ":")
-    pm_add_hours = if meridian == "PM" && hour != "12", do: 12, else: 0
-    am_subtract_hours = if meridian == "AM" && hour == "12", do: 12, else: 0
-    {time, pm_add_hours - am_subtract_hours}
-  end
-
   defp build_trip_transaction(trip, subscriptions, user, originator) do
     trip_id = Ecto.UUID.generate()
     trip = Map.put(trip, :id, trip_id)
@@ -334,10 +319,10 @@ defmodule ConciergeSite.V2.TripController do
   defp parse_input(params) do
     params
     |> Map.put("relevant_days", Map.get(params, "relevant_days", []))
-    |> Map.put("start_time", to_time(params["start_time"]))
-    |> Map.put("end_time", to_time(params["end_time"]))
-    |> Map.put("return_start_time", to_time(params["return_start_time"]))
-    |> Map.put("return_end_time", to_time(params["return_end_time"]))
+    |> Map.put("start_time", ParamTime.to_time(params["start_time"]))
+    |> Map.put("end_time", ParamTime.to_time(params["end_time"]))
+    |> Map.put("return_start_time", ParamTime.to_time(params["return_start_time"]))
+    |> Map.put("return_end_time", ParamTime.to_time(params["return_end_time"]))
     |> Map.put("schedule_start", parse_schedule_input(params, "schedule_start"))
     |> Map.put("schedule_return", parse_schedule_input(params, "schedule_return"))
   end
@@ -454,29 +439,9 @@ defmodule ConciergeSite.V2.TripController do
       end_time: params["end_time"],
       return_start_time: params["return_start_time"],
       return_end_time: params["return_end_time"],
-      facility_types: input_to_facility_types(params),
+      facility_types: TripParams.input_to_facility_types(params, @valid_facility_types),
       roundtrip: params["round_trip"] == "true"
     }
-  end
-
-  @valid_facility_types ~w(bike_storage elevator escalator parking_area)
-  defp collate_facility_types(params) do
-    {facility_type_params, non_facility_type_params} = params |> Map.split(@valid_facility_types)
-    Map.merge(
-      non_facility_type_params,
-      %{"facility_types" => input_to_facility_types(facility_type_params)}
-    )
-  end
-
-  defp input_to_facility_types(params) do
-    @valid_facility_types
-    |> Enum.reduce([], fn type, acc ->
-      if params[type] == "true" do
-        acc ++ [String.to_atom(type)]
-      else
-        acc
-      end
-    end)
   end
 
   defp flip_direction(0), do: 1
@@ -537,25 +502,7 @@ defmodule ConciergeSite.V2.TripController do
       Map.put(acc, route_id, Enum.map(times, &Time.from_iso8601!(&1)))
     end)
   end
-
-  defp sanitize_trip_params(trip_params) when is_map(trip_params) do
-    trip_params
-    |> Enum.map(&sanitize_trip_param/1)
-    |> Enum.into(%{})
-  end
   
-  @valid_time_keys ~w(start_time end_time return_start_time return_end_time alert_time)
-  defp sanitize_trip_param({time_key, time_value}) when time_key in @valid_time_keys do
-    {time_key, to_time(time_value)}
-  end
-  
-  defp sanitize_trip_param({"relevant_days" = key, relevant_days}) do
-    days_as_atoms = Enum.map(relevant_days, &String.to_existing_atom/1)
-    {key, days_as_atoms}
-  end
-  
-  defp sanitize_trip_param({"facility_types" = key, facility_types}), do: {key, facility_types}
-
   defp get_schedules_for_input(legs, origins, destinations, modes) do
     Enum.zip([
       Enum.reverse(modes),

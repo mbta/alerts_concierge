@@ -10,6 +10,8 @@
       </div>
 
       <%= form_for @changeset, v2_accessibility_trip_path(@conn, :update, @trip), [as: :trip], fn form -> %>
+        <%= render "_facilities.html", form: form, trip: @trip, changeset: @changeset %>
+
         <div class="form-group my-5">
           <%= label form, :relevant_days, "I usually travel on these days:", class: "form__label" %>
           <%= ConciergeSite.DaySelectHelper.render(:trip, @trip.relevant_days) %>

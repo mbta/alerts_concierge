@@ -1,0 +1,8 @@
+<div class="form-group form__section--top">
+  <%= label @form, :facility_types, "Which station features would you like to receive alerts about?", class: "form__label" %>
+  <div class="btn-group btn-group-toggle btn__radio--toggle-container" data-toggle="buttons" role="radiogroup">
+    <%= ConciergeSite.FacilitiesHelper.facility_checkbox(@form, @trip, :elevator, "Elevators") %>
+    <%= ConciergeSite.FacilitiesHelper.facility_checkbox(@form, @trip, :escalator, "Escalators") %>
+  </div>
+  <%= if @changeset.errors[:escalator], do: error_tag @changeset, :escalator %>
+</div>
