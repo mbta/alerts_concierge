@@ -2,10 +2,13 @@ defmodule ConciergeSite.V2.AccessibilityTripController do
   use ConciergeSite.Web, :controller
   use Guardian.Phoenix.Controller
   alias AlertProcessor.Model.{Trip, Subscription, User}
+  alias ConciergeSite.ParamParsers.TripParams
   alias Ecto.Multi
   import Ecto.Changeset
 
   action_fallback ConciergeSite.V2.FallbackController
+
+  @valid_facility_types ~w(elevator escalator)
 
   def new(conn, _params, _user, _claims) do
     render conn, "new.html", changeset: make_changeset()
@@ -36,7 +39,8 @@ defmodule ConciergeSite.V2.AccessibilityTripController do
   def update(conn, %{"id" => id, "trip" => trip_params}, user, _claims) do
     with {:trip, %Trip{} = trip} <- {:trip, Trip.find_by_id(id)},
          {:authorized, true} <- {:authorized, user.id == trip.user_id},
-         {:sanitized, sanitized_trip_params} <- {:sanitized, sanitize_trip_params(trip_params)},
+         {:collated_facility_types, collated_trip_params} <- {:collated_facility_types, TripParams.collate_facility_types(trip_params, @valid_facility_types)},
+         {:sanitized, sanitized_trip_params} <- {:sanitized, TripParams.sanitize_trip_params(collated_trip_params)},
          {:ok, %Trip{} = updated_trip} <- Trip.update(trip, sanitized_trip_params) do
 
       conn
@@ -158,21 +162,11 @@ defmodule ConciergeSite.V2.AccessibilityTripController do
       relevant_days: Enum.map(relevant_days, &String.to_existing_atom/1),
       start_time: ~T[03:20:00],
       end_time: ~T[01:50:00],
-      facility_types: input_to_facility_types(%{"elevator" => elevator, "escalator" => escalator}),
+      facility_types: TripParams.input_to_facility_types(%{"elevator" => elevator, "escalator" => escalator}, @valid_facility_types),
+
       roundtrip: false,
       trip_type: :accessibility
     }
-  end
-
-  defp input_to_facility_types(params) do
-    ["elevator", "escalator"]
-    |> Enum.reduce([], fn(type, acc) ->
-      if params[type] == "true" do
-        acc ++ [String.to_existing_atom(type)]
-      else
-        acc
-      end
-    end)
   end
 
   defp make_stop_subscriptions(%{changes: %{stops: stops}}, trip) do
@@ -216,16 +210,5 @@ defmodule ConciergeSite.V2.AccessibilityTripController do
       facility_types: trip.facility_types,
       return_trip: false
     }
-  end
-
-  defp sanitize_trip_params(trip_params) when is_map(trip_params) do
-    trip_params
-    |> Enum.map(&sanitize_trip_param/1)
-    |> Enum.into(%{})
-  end
-
-  defp sanitize_trip_param({"relevant_days" = key, relevant_days}) do
-    days_as_atoms = Enum.map(relevant_days, &String.to_existing_atom/1)
-    {key, days_as_atoms}
   end
 end

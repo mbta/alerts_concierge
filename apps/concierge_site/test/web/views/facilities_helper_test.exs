@@ -3,37 +3,51 @@ defmodule ConciergeSite.FacilitiesHelperTest do
   alias ConciergeSite.FacilitiesHelper
   alias AlertProcessor.Model.Trip
 
-  setup do
-    trip_with_escalator = %Trip{
-      id: Ecto.UUID.generate(),
-      alert_priority_type: :low,
-      relevant_days: [:monday],
-      start_time: ~T[09:00:00],
-      end_time: ~T[10:00:00],
-      roundtrip: false,
-      facility_types: [:elevator, :escalator, :parking_area]
-    }
-    
-    trip_without_escalator = %Trip{
-      id: Ecto.UUID.generate(),
-      alert_priority_type: :low,
-      relevant_days: [:monday],
-      start_time: ~T[09:00:00],
-      end_time: ~T[10:00:00],
-      roundtrip: false,
-      facility_types: [:elevator, :parking_area]
-    }
+  describe "facility_checkbox/4" do
+    setup do
+      trip_with_escalator = %Trip{
+        id: Ecto.UUID.generate(),
+        alert_priority_type: :low,
+        relevant_days: [:monday],
+        start_time: ~T[09:00:00],
+        end_time: ~T[10:00:00],
+        roundtrip: false,
+        facility_types: [:elevator, :escalator, :parking_area]
+      }
+      trip_without_escalator = %Trip{
+        id: Ecto.UUID.generate(),
+        alert_priority_type: :low,
+        relevant_days: [:monday],
+        start_time: ~T[09:00:00],
+        end_time: ~T[10:00:00],
+        roundtrip: false,
+        facility_types: [:elevator, :parking_area]
+      }
 
-    {:ok, trips: [trip_with_escalator, trip_without_escalator]}
-  end
+      checked_escalator_html = Phoenix.HTML.safe_to_string(FacilitiesHelper.facility_checkbox(:mock_form, trip_with_escalator, :escalator, "Escalators"))
+      unchecked_escalator_html = Phoenix.HTML.safe_to_string(FacilitiesHelper.facility_checkbox(:mock_form, trip_without_escalator, :escalator, "Escalators"))
 
-  test "checkbox_label_class/2", %{trips: [trip_with_escalator, trip_without_escalator]} do
-    assert FacilitiesHelper.checkbox_label_class(trip_with_escalator, :escalator) == "btn btn-outline-primary btn__radio--toggle btn__radio--toggle-item-connected active"
-    assert FacilitiesHelper.checkbox_label_class(trip_without_escalator, :escalator) == "btn btn-outline-primary btn__radio--toggle btn__radio--toggle-item-connected"
-  end
+      {:ok, outputs: [checked_escalator_html, unchecked_escalator_html]}
+    end
 
-  test "facility_type_value/2", %{trips: [trip_with_escalator, trip_without_escalator]} do
-    assert FacilitiesHelper.facility_type_value(trip_with_escalator, :escalator) == "true"
-    assert FacilitiesHelper.facility_type_value(trip_without_escalator, :escalator) == "false"
+    test "active class on label", %{outputs: [checked_escalator_html, unchecked_escalator_html]} do
+      assert checked_escalator_html =~ "active"
+      refute unchecked_escalator_html =~ "active"
+    end
+
+    test "name", %{outputs: [checked_escalator_html, unchecked_escalator_html]} do
+      assert checked_escalator_html =~ "Escalators"
+      assert unchecked_escalator_html =~ "Escalators"
+    end
+
+    test "icon", %{outputs: [checked_escalator_html, unchecked_escalator_html]} do
+      assert checked_escalator_html =~ "Icon/Facilities/Escalator"
+      assert unchecked_escalator_html =~ "Icon/Facilities/Escalator"
+    end
+
+    test "checked", %{outputs: [checked_escalator_html, unchecked_escalator_html]} do
+      assert checked_escalator_html =~ ~r/<input.*escalator.*value=\"true\".*checked.*?>/
+      refute unchecked_escalator_html =~ ~r/<input.*escalator.*value=\"true\".*checked.*?>/
+    end
   end
 end
