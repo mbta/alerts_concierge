@@ -15,7 +15,8 @@ defmodule AlertProcessor.SubscriptionFilterEngineTest do
       id: "1",
       informed_entities: [%InformedEntity{route_type: 1, activities: InformedEntity.default_entity_activities()}],
       severity: :minor,
-      last_push_notification: start_time
+      last_push_notification: start_time,
+      service_effect: "test"
     }
     {:ok, alert: alert}
   end
