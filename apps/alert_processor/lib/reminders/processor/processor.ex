@@ -51,6 +51,9 @@ defmodule AlertProcessor.Reminders.Processor do
   end
 
   defp schedule_notifications(notifications) do
+    for notification <- notifications do
+      {:ok, _} = Notification.save(notification, :sent)
+    end
     SendingQueue.list_enqueue(notifications)
   end
 end
