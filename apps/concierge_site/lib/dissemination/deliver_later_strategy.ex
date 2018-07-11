@@ -7,7 +7,13 @@ defmodule ConciergeSite.Dissemination.DeliverLaterStrategy do
     Task.async(fn ->
       try do
         result = adapter.deliver(email, config)
-        Logger.info(fn -> "Email result: #{inspect(result)}, notification_id: #{email.private.notification_id}" end)
+        info = "Email result: #{inspect(result)}"
+        info = if Map.has_key?(email, :private) and Map.has_key?(email.private, :notification_id) do
+          info <> ", notification_id: #{email.private.notification_id}"
+        else
+          info
+        end
+        Logger.info(info)
         result
       rescue
         # Consciously dropping the email on the floor if we get an SMTP error.

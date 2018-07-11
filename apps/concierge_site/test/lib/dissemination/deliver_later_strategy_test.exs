@@ -8,7 +8,7 @@ defmodule ConciergeSite.Dissemination.DeliverLaterStrategyTest do
 
   describe "deliver_later/3" do
     test "delivers email" do
-      task = DeliverLaterStrategy.deliver_later(MockSuccessAdapter, "Mock email", %{})
+      task = DeliverLaterStrategy.deliver_later(MockSuccessAdapter, %{to: "Mock email address"}, %{})
       ref = Process.monitor(task.pid)
 
       assert_receive {:DOWN, ^ref, :process, _pid, :normal}, 1
