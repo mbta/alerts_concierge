@@ -41,5 +41,17 @@ defmodule ConciergeSite.RouteSelectHelperTest do
 
       refute html =~ "Silver Line SL5"
     end
+
+    test "collapsed Green Line" do
+      html = Phoenix.HTML.safe_to_string(ConciergeSite.RouteSelectHelper.render(:foo, :bar, [], multiple: "multiple", no_default: true))
+      assert html =~ "<option data-icon=\"green\" value=\"Green~~Green Line~~subway\">Green Line</option>"
+      refute html =~ "<option data-icon=\"green-b\" value=\"Green-B~~Green Line B~~subway_all_green\">Green Line B</option>"
+    end
+
+    test "expanded Green Line" do
+      html = Phoenix.HTML.safe_to_string(ConciergeSite.RouteSelectHelper.render(:foo, :bar, [], multiple: "multiple", no_default: true, separate_green: true))
+      assert html =~ "<option data-icon=\"green-b\" value=\"Green-B~~Green Line B~~subway_all_green\">Green Line B</option>"
+      refute html =~ "<option data-icon=\"green\" value=\"Green~~Green Line~~subway\">Green Line</option>"
+    end
   end
 end
