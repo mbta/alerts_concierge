@@ -1,7 +1,7 @@
 defmodule ConciergeSite.Dissemination.DeliverLaterStrategyTest do
   use ExUnit.Case
   alias ConciergeSite.Dissemination.DeliverLaterStrategy
-  alias ConciergeSite.Dissemination.DeliverLaterStrategyTest.{MockSuccessAdapter, MockErrorAdapter}
+  alias ConciergeSite.Dissemination.DeliverLaterStrategyTest.{MockSuccessAdapter, MockSMTPErrorAdapter, MockRuntimeErrorAdapter}
   alias Bamboo.SMTPAdapter.SMTPError
 
   @moduletag :capture_log
@@ -15,7 +15,14 @@ defmodule ConciergeSite.Dissemination.DeliverLaterStrategyTest do
     end
 
     test "handles SMTPError" do
-      task = DeliverLaterStrategy.deliver_later(MockErrorAdapter, %{to: "Mock email address"}, %{})
+      task = DeliverLaterStrategy.deliver_later(MockSMTPErrorAdapter, %{to: "Mock email address"}, %{})
+      ref = Process.monitor(task.pid)
+
+      assert_receive {:DOWN, ^ref, :process, _pid, :normal}, 100
+    end
+
+    test "handles unexpected errors" do
+      task = DeliverLaterStrategy.deliver_later(MockRuntimeErrorAdaptertimeErrorAdapter, %{to: "Mock email address"}, %{})
       ref = Process.monitor(task.pid)
 
       assert_receive {:DOWN, ^ref, :process, _pid, :normal}, 100
@@ -26,9 +33,15 @@ defmodule ConciergeSite.Dissemination.DeliverLaterStrategyTest do
     def deliver(_email, _config), do: nil
   end
 
-  defmodule MockErrorAdapter do
+  defmodule MockSMTPErrorAdapter do
     def deliver(_email, _config) do
       raise SMTPError, {"mock reason", "mock detail"}
+    end
+  end
+
+  defmodule MockRuntimeErrorAdapter do
+    def deliver(_email, _config) do
+      raise "mock runtime error"
     end
   end
 end
