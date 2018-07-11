@@ -1,0 +1,40 @@
+.trip-review {
+  h3 {
+    font-size: 1.17rem;
+  }
+}
+
+.trip-review--trip {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 1rem;
+}
+
+@include media-breakpoint-down(sm) {
+  .trip-review--trip + .trip-review--trip {
+    margin-top: 1rem;
+  }
+}
+
+.trip-review--card {
+  border-color: #b0b5c0;
+  flex: 1 1 auto;
+  line-height: 1.5rem;
+  padding: .75rem;
+}
+
+.trip-review--trip-leg + .trip-review--trip-leg {
+  margin-top: 0.5rem;
+}
+
+.trip-review--route-icon {
+  display: inline-block;
+  margin-right: 4px;
+  transform: translate(0px, 4px);
+}
+
+.trip-review--route {
+  font-weight: bold;
+  overflow-x: hidden;
+  text-overflow: ellipsis;
+}

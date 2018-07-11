@@ -542,9 +542,9 @@ defmodule ConciergeSite.V2.TripControllerTest do
 
     test "bus", %{conn: conn, user: user} do
       trip = %{
-        destinations: [""],
-        legs: ["741"],
-        origins: [""],
+        destinations: [],
+        legs: ["41 - 1"],
+        origins: [],
         round_trip: "true",
         modes: ["bus"]
       }

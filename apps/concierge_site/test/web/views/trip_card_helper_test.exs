@@ -130,9 +130,6 @@ defmodule ConciergeSite.TripCardHelperTest do
       refute html =~ "One-way"
       assert html =~ "Round-trip"
       assert html =~ "9:00A - 10:00A,  1:00P -  2:00P"
-
-      html = Phoenix.HTML.safe_to_string(TripCardHelper.display(conn, trip_with_subscriptions))
-      assert html =~ "<div class=\"card trip__card trip__card--display btn"
     end
 
     test "accessiblity", %{conn: conn} do
