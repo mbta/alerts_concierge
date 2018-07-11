@@ -178,7 +178,7 @@ defmodule ConciergeSite.V2.TripControllerTest do
     end
   end
 
-  test "GET /trip/new", %{conn: conn, user: user} do
+  test "GET /trip/new (first)", %{conn: conn, user: user} do
     conn =
       user
       |> guardian_login(conn)
@@ -186,6 +186,18 @@ defmodule ConciergeSite.V2.TripControllerTest do
 
     assert html_response(conn, 200) =~ "What kind of trip is this?"
     assert html_response(conn, 200) =~ "Which line or route do you take first?"
+    assert html_response(conn, 200) =~ "Once we get to know more about your trips"
+  end
+
+  test "GET /trip/new (subsequent)", %{conn: conn, user: user} do
+    insert(:trip, %{user: user})
+
+    conn =
+      user
+      |> guardian_login(conn)
+      |> get(v2_trip_path(conn, :new))
+
+    refute html_response(conn, 200) =~ "Once we get to know more about your trips"
   end
 
   describe "POST /trip" do
