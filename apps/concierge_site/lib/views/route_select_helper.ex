@@ -10,10 +10,11 @@ defmodule ConciergeSite.RouteSelectHelper do
     content_tag :select, attributes(input_name, field, attrs) do
       default = if attrs[:no_default] == true, do: [], else: default_option()
       bus_options = if attrs[:no_bus] == true, do: [], else: option_group("Bus", :bus, selected)
+      subway_option = if attrs[:separate_green] == true, do: :subway_all_green, else: :subway
 
       [
         default,
-        option_group("Subway", :subway, selected),
+        option_group("Subway", subway_option, selected),
         option_group("Commuter Rail", :cr, selected),
         option_group("Ferry", :ferry, selected),
         bus_options
@@ -66,6 +67,19 @@ defmodule ConciergeSite.RouteSelectHelper do
       {:red, "Red", "Red Line"},
       {:orange, "Orange", "Orange Line"},
       {:green, "Green", "Green Line"},
+      {:blue, "Blue", "Blue Line"},
+      {:mattapan, "Mattapan", "Mattapan Trolley"}
+    ]
+  end
+
+  defp get_routes(:subway_all_green) do
+    [
+      {:red, "Red", "Red Line"},
+      {:orange, "Orange", "Orange Line"},
+      {:"green-b", "Green-B", "Green Line B"},
+      {:"green-c", "Green-C", "Green Line C"},
+      {:"green-d", "Green-D", "Green Line D"},
+      {:"green-e", "Green-E", "Green Line E"},
       {:blue, "Blue", "Blue Line"},
       {:mattapan, "Mattapan", "Mattapan Trolley"}
     ]
