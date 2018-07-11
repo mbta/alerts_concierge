@@ -236,6 +236,12 @@ defmodule AlertProcessor.SentAlertFilterTest do
 
       notifications = Notification.most_recent_for_subscriptions_and_alerts([alert])
 
+      loaded_subscription = notifications
+      |> List.first
+      |> Map.get(:subscriptions)
+      |> List.first
+      assert loaded_subscription.start_time == ~T[10:00:00.000000]
+      
       assert {[], []} ==
         SentAlertFilter.filter(subscriptions, alert, notifications, @monday_at_8am)
 
