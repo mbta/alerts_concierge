@@ -12,7 +12,11 @@ defmodule AlertProcessor.AlertParserMock do
   process_alerts/1 send messages to self for tests to be able
   to verify that process_alerts has properly been called.
   """
-  def process_alerts do
+  def process_alerts(:recent) do
+    send self(), :processed_alerts
+    [{:ok, []}]
+  end
+  def process_alerts() do
     send self(), :processed_alerts
     [{:ok, []}]
   end

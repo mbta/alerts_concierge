@@ -5,7 +5,7 @@ defmodule AlertProcessor.AlertParser do
   """
   require Logger
   alias AlertProcessor.{AlertsClient, CachedApiClient,
-    Helpers.StringHelper, Parser, ServiceInfoCache,
+    Helpers.StringHelper, Parser, ServiceInfoCache, AlertFilters,
     SubscriptionFilterEngine, Helpers.DateTimeHelper, Reminders}
   alias AlertProcessor.Model.{Alert, InformedEntity, Notification, SavedAlert}
 
@@ -15,14 +15,21 @@ defmodule AlertProcessor.AlertParser do
   process_alerts/0 entry point for fetching json data from api and, transforming, storing and passing to
   subscription engine to process before sending.
   """
-  @spec process_alerts() :: [{:ok, [Notification.t]}]
-  def process_alerts() do
+  @spec process_alerts(atom | nil) :: [{:ok, [Notification.t]}]
+  def process_alerts(alert_filter_duration_type \\ :anytime) do
     with {:ok, alerts, feed_timestamp} <- AlertsClient.get_alerts(),
          {:ok, facility_map} <- ServiceInfoCache.get_facility_map() do
       SavedAlert.save!(alerts)
-      alerts_needing_notifications = parse_alerts({alerts, facility_map, feed_timestamp})
-      Reminders.async_schedule_reminders(alerts_needing_notifications)
-      SubscriptionFilterEngine.schedule_all_notifications(alerts_needing_notifications)
+      alerts_needing_notifications = {alerts, facility_map, feed_timestamp}
+      |> parse_alerts()
+      |> AlertFilters.filter_by_duration_type(alert_filter_duration_type)
+      Logger.info(fn ->
+        "alert filter, duration_type=#{alert_filter_duration_type} alert_count=#{length(alerts_needing_notifications)}"
+      end)
+      if alert_filter_duration_type == :anytime do
+        Reminders.async_schedule_reminders(alerts_needing_notifications)
+      end
+      SubscriptionFilterEngine.schedule_all_notifications(alerts_needing_notifications, alert_filter_duration_type)
     end
   end
 

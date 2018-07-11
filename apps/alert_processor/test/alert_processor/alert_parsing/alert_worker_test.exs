@@ -3,7 +3,7 @@ defmodule AlertProcessor.AlertWorkerTest do
   alias AlertProcessor.AlertWorker
 
   test "worker calls alert parser" do
-    {:noreply, _} = AlertWorker.handle_info(:work, nil)
+    {:noreply, _} = AlertWorker.handle_info({:work, 0}, nil)
     assert_received :processed_alerts
   end
 end
