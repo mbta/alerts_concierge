@@ -7,6 +7,7 @@ defmodule AlertProcessor.AlertWorker do
   alias AlertProcessor.Helpers.ConfigHelper
 
   @alert_parser Application.get_env(:alert_processor, :alert_parser)
+  @older_duration_frequency 5
 
   @doc false
   def start_link(opts \\ [name: __MODULE__]) do
@@ -26,8 +27,8 @@ defmodule AlertProcessor.AlertWorker do
   Every fifth run it will pass :older to process_alerts, otherwise it passes :recent.
   """
   def handle_info({:work, count}, _) do
-    alert_duration_type = if count == 5, do: :older, else: :recent
-    count = if count == 5, do: 0, else: count
+    alert_duration_type = if count == @older_duration_frequency, do: :older, else: :recent
+    count = if count == @older_duration_frequency, do: 0, else: count
     @alert_parser.process_alerts(alert_duration_type)
     schedule_work(count + 1)
     {:noreply, nil}
