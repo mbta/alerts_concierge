@@ -53,9 +53,6 @@ defmodule ConciergeSite.TripCardHelper do
             "Station features"
           end,
           content_tag :div, class: "trip__card--type" do
-            "#{facility_types(facility_types)}"
-          end,
-          content_tag :div, class: "trip__card--type" do
             "#{stops_and_routes(subscriptions)}"
           end
         ]
@@ -63,6 +60,9 @@ defmodule ConciergeSite.TripCardHelper do
       content_tag :div, class: "trip__card--bottom" do
         [
           edit_link(conn, :accessibility, id),
+          content_tag :div, class: "trip__card--type" do
+            "#{facility_types(facility_types)}"
+          end,
           content_tag :div, class: "trip__card--type" do
             "#{days(relevant_days)}"
           end
@@ -82,9 +82,6 @@ defmodule ConciergeSite.TripCardHelper do
           routes(subscriptions),
           content_tag :div, class: "trip__card--top-details" do
             [
-              content_tag :div, class: "trip__card--type" do
-                "#{facility_types(facility_types)}"
-              end,
               roundtrip(roundtrip),
               stops(subscriptions)
             ]
@@ -94,6 +91,9 @@ defmodule ConciergeSite.TripCardHelper do
       content_tag :div, class: "trip__card--bottom" do
         [
           edit_link(conn, :commute, id),
+          content_tag :div, class: "trip__card--type" do
+            "#{facility_types(facility_types)}"
+          end,
           days(relevant_days),
           trip_times({start_time, end_time}, {return_start_time, return_end_time})
         ]
