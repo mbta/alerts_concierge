@@ -6,54 +6,60 @@ defmodule ConciergeSite.ScheduleTest do
   doctest Schedule
 
   test "get_schedules_for_input/4" do
-    legs = ["CR-Worcester"]
-    origins = ["place-sstat"]
-    destinations = ["Yawkey"]
+    legs = ["CR-Newburyport"]
+    origins = ["place-north"]
+    destinations = ["Gloucester"]
     modes = ["cr"]
 
     result = Schedule.get_schedules_for_input(legs, origins, destinations, modes)
 
     assert is_map(result)
-    assert Map.keys(result) == [{"cr", "CR-Worcester"}]
-    assert is_list(result[{"cr", "CR-Worcester"}])
-    assert Enum.all?(result[{"cr", "CR-Worcester"}], &(is_trip_info(&1)))
-    assert List.first(result[{"cr", "CR-Worcester"}]) == %TripInfo{
-      arrival_time: ~T[05:40:00],
-      departure_time: ~T[05:30:00],
-      destination: {"Yawkey", "Yawkey", {42.347581, -71.099974}, 1},
+    assert Map.keys(result) == [{"cr", "CR-Newburyport"}]
+    
+    assert is_list(result[{"cr", "CR-Newburyport"}])
+    assert Enum.all?(result[{"cr", "CR-Newburyport"}], &(is_trip_info(&1)))
+    assert Enum.all?(result[{"cr", "CR-Newburyport"}], &(Map.has_key?(&1, :weekend?)))
+    assert List.first(result[{"cr", "CR-Newburyport"}]) == %TripInfo{
+      arrival_time: ~T[07:39:00],
+      departure_time: ~T[06:39:00],
+      arrival_datetime: time_today(~T[07:39:00]),
+      departure_datetime: time_today(~T[06:39:00]),
+      destination: {"Gloucester", "Gloucester", {42.616799, -70.668345}, 1},
       direction_id: 0,
-      origin: {"South Station", "place-sstat", {42.352271, -71.055242}, 1},
+      origin: {"North Station", "place-north", {42.365577, -71.06129}, 1},
       route: %Route{
         direction_names: ["Outbound", "Inbound"],
         headsigns: nil,
-        long_name: "Framingham/Worcester Line",
-        order: 2,
-        route_id: "CR-Worcester",
+        route_id: "CR-Newburyport",
         route_type: 2,
         short_name: "",
+        long_name: "Newburyport/Rockport Line",
+        order: 10,
         stop_list: [
-          {"Worcester", "Worcester", {42.261461, -71.794888}, 1},
-          {"Grafton", "Grafton", {42.2466, -71.685325}, 1},
-          {"Westborough", "Westborough", {42.269644, -71.647076}, 1},
-          {"Southborough", "Southborough", {42.267024, -71.524371}, 1},
-          {"Ashland", "Ashland", {42.26149, -71.482161}, 1},
-          {"Framingham", "Framingham", {42.276719, -71.416792}, 1},
-          {"West Natick", "West Natick", {42.283064, -71.391797}, 1},
-          {"Natick Center", "Natick Center", {42.285719, -71.347133}, 2},
-          {"Wellesley Square", "Wellesley Square", {42.297526, -71.294173}, 2},
-          {"Wellesley Hills", "Wellesley Hills", {42.31037, -71.277044}, 2},
-          {"Wellesley Farms", "Wellesley Farms", {42.323608, -71.272288}, 2},
-          {"Auburndale", "Auburndale", {42.345725, -71.250826}, 2},
-          {"West Newton", "West Newton", {42.347878, -71.230528}, 2},
-          {"Newtonville", "Newtonville", {42.351603, -71.207338}, 2},
-          {"Boston Landing", "Boston Landing", {42.357293, -71.139883}, 1},
-          {"Yawkey", "Yawkey", {42.347581, -71.099974}, 1},
-          {"Back Bay", "place-bbsta", {42.34735, -71.075727}, 1},
-          {"South Station", "place-sstat", {42.352271, -71.055242}, 1}
+          {"Rockport", "Rockport", {42.655491, -70.627055}, 1},
+          {"Gloucester", "Gloucester", {42.616799, -70.668345}, 1},
+          {"West Gloucester", "West Gloucester", {42.611933, -70.705417}, 1},
+          {"Manchester", "Manchester", {42.573687, -70.77009}, 1},
+          {"Beverly Farms", "Beverly Farms", {42.561651, -70.811405}, 1},
+          {"Prides Crossing", "Prides Crossing", {42.559446, -70.825541}, 2},
+          {"Montserrat", "Montserrat", {42.562171, -70.869254}, 1},
+          {"Newburyport", "Newburyport", {42.797837, -70.87797}, 1},
+          {"Rowley", "Rowley", {42.726845, -70.859034}, 1},
+          {"Ipswich", "Ipswich", {42.676921, -70.840589}, 1},
+          {"Hamilton/Wenham", "Hamilton/ Wenham", {42.609212, -70.874801}, 1},
+          {"North Beverly", "North Beverly", {42.583779, -70.883851}, 1},
+          {"Beverly", "Beverly", {42.547276, -70.885432}, 1},
+          {"Salem", "Salem", {42.524792, -70.895876}, 1},
+          {"Swampscott", "Swampscott", {42.473743, -70.922537}, 1},
+          {"Lynn", "Lynn", {42.462953, -70.945421}, 1},
+          {"River Works", "River Works / GE Employees Only", {42.449927, -70.969848}, 2},
+          {"Chelsea", "Chelsea", {42.395689, -71.034281}, 2},
+          {"North Station", "place-north", {42.365577, -71.06129}, 1}
         ]
       },
       selected: false,
-      trip_number: "583"
+      trip_number: "101",
+      weekend?: false
     }
   end
 
@@ -125,6 +131,8 @@ defmodule ConciergeSite.ScheduleTest do
     assert List.first(first_trip_result[{"cr", "CR-Worcester"}]) == %TripInfo{
       arrival_time: ~T[05:40:00],
       departure_time: ~T[05:30:00],
+      arrival_datetime: time_today(~T[05:40:00]),
+      departure_datetime: time_today(~T[05:30:00]),
       destination: {"Yawkey", "Yawkey", {42.347581, -71.099974}, 1},
       direction_id: 0,
       origin: {"South Station", "place-sstat", {42.352271, -71.055242}, 1},
@@ -168,6 +176,8 @@ defmodule ConciergeSite.ScheduleTest do
     assert List.first(return_trip_result[{"cr", "CR-Worcester"}]) == %TripInfo{
       arrival_time: ~T[06:20:00],
       departure_time: ~T[06:09:00],
+      arrival_datetime: time_today(~T[06:20:00]),
+      departure_datetime: time_today(~T[06:09:00]),
       destination: {"South Station", "place-sstat", {42.352271, -71.055242}, 1},
       direction_id: 1,
       origin: {"Yawkey", "Yawkey", {42.347581, -71.099974}, 1},
@@ -207,4 +217,8 @@ defmodule ConciergeSite.ScheduleTest do
 
   defp is_trip_info(%TripInfo{}), do: true
   defp is_trip_info(_), do: false
+
+  defp time_today(time) do
+    with {:ok, datetime} <- NaiveDateTime.new(Date.utc_today, time), do: datetime
+  end
 end
