@@ -56,12 +56,12 @@ defmodule AlertProcessor.TextReplacement do
   end
 
   defp replace_schedule(replacement_data, alert) do
-    for {key, replacement_pairs} <- replacement_data, into: %{} do
+    for {key, [replacement_pairs | _]} <- replacement_data, into: %{} do
       if replacement_pairs == [] do
         {key, Map.get(alert, key)}
       else
         text =
-          replacement_pairs
+          [replacement_pairs]
           |> Enum.map(fn({_original, replacement, text}) ->
             new_text = serialize(replacement)
             substitute(text, new_text)
