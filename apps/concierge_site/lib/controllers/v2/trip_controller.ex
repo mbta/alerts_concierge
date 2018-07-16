@@ -130,7 +130,7 @@ defmodule ConciergeSite.V2.TripController do
     |> render("new.html")
   end
 
-  def leg(conn, %{"trip" => trip}, _user, _claims) do
+  def leg(conn, %{"trip" => trip}, user, _claims) do
     case trip do
       %{
         "route" => route,
@@ -188,7 +188,16 @@ defmodule ConciergeSite.V2.TripController do
           round_trip: round_trip,
           modes: modes,
           schedules: schedules,
-          return_schedules: return_schedules
+          return_schedules: return_schedules,
+          partial_subscriptions: input_to_subscriptions(user, %{
+            "partial" => true,
+            "modes" => modes,
+            "legs" => legs,
+            "origins" => origins,
+            "destinations" => destinations,
+            "round_trip" => round_trip,
+            "combine_greenline_routes" => true
+          })
         )
 
       %{"route" => route, "round_trip" => round_trip, "from_new_trip" => "true"} ->
@@ -227,7 +236,7 @@ defmodule ConciergeSite.V2.TripController do
         "round_trip" => round_trip
       }
     },
-    _user,
+    user,
     _claims
   ) do
     schedules = Schedule.get_schedules_for_input(legs, origins, destinations, modes)
@@ -242,7 +251,16 @@ defmodule ConciergeSite.V2.TripController do
       modes: modes,
       round_trip: round_trip,
       schedules: schedules,
-      return_schedules: return_schedules
+      return_schedules: return_schedules,
+      partial_subscriptions: input_to_subscriptions(user, %{
+        "partial" => true,
+        "modes" => modes,
+        "legs" => legs,
+        "origins" => origins,
+        "destinations" => destinations,
+        "round_trip" => round_trip,
+        "combine_greenline_routes" => true
+      })
     )
   end
 
@@ -354,7 +372,7 @@ defmodule ConciergeSite.V2.TripController do
       %Subscription{
         alert_priority_type: "low",
         user_id: user.id,
-        relevant_days: Enum.map(params["relevant_days"], &String.to_existing_atom/1),
+        relevant_days: Enum.map(params["relevant_days"] || [], &String.to_existing_atom/1),
         start_time: params["start_time"],
         end_time: params["end_time"],
         origin: origin,
@@ -365,23 +383,27 @@ defmodule ConciergeSite.V2.TripController do
         direction_id: Schedule.determine_direction_id(route.stop_list, direction, origin, destination),
         rank: rank,
         return_trip: false,
-        travel_start_time: List.first(travel_times(params["schedule_start"], route_id)),
-        travel_end_time: List.last(travel_times(params["schedule_start"], route_id))
+        travel_start_time: List.first(travel_times(params["schedule_start"] || %{}, route_id)),
+        travel_end_time: List.last(travel_times(params["schedule_start"] || %{}, route_id))
       }
       |> Subscription.add_latlong_to_subscription(origin, destination)
       |> add_return_subscription(params)
     end)
-    |> Enum.flat_map(&expand_multiroute_greenline_subscription(&1, subway_routes))
+    |> Enum.flat_map(&expand_multiroute_greenline_subscription(&1, subway_routes, params["combine_greenline_routes"]))
   end
 
   defp travel_times(schedule, route_id), do: Map.get(schedule, route_id, [])
 
-  defp expand_multiroute_greenline_subscription(%{route_type: 0, origin: origin, destination: destination} = subscription, subway_routes) do
+  defp expand_multiroute_greenline_subscription(%{route_type: 0, origin: origin, destination: destination} = subscription, subway_routes, combine_greenline_routes) do
     routes = get_route_intersection(subway_routes, origin, destination)
-    copy_subscription_for_routes(routes, subscription)
+    if combine_greenline_routes do
+      [Map.put(subscription, :route, MapSet.to_list(routes))]
+    else
+      copy_subscription_for_routes(routes, subscription)
+    end
   end
 
-  defp expand_multiroute_greenline_subscription(subscription, _routes), do: [subscription]
+  defp expand_multiroute_greenline_subscription(subscription, _routes, _combine_greenline_routes), do: [subscription]
 
   defp copy_subscription_for_routes(routes, subscription) do
     Enum.map(routes, fn route_id ->
@@ -429,6 +451,23 @@ defmodule ConciergeSite.V2.TripController do
 
     [subscription, return_subscription]
   end
+
+  defp add_return_subscription(subscription, %{"partial" => true, "round_trip" => "true"}) do
+    return_subscription = %{
+      subscription
+      | origin: subscription.destination,
+        origin_lat: subscription.destination_lat,
+        origin_long: subscription.destination_long,
+        destination: subscription.origin,
+        destination_lat: subscription.origin_lat,
+        destination_long: subscription.origin_long,
+        direction_id: flip_direction(subscription.direction_id),
+        return_trip: true
+    }
+  
+    [subscription, return_subscription]
+  end
+  
 
   defp add_return_subscription(subscription, _), do: [subscription]
 

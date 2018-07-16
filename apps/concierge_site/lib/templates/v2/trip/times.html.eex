@@ -1,5 +1,3 @@
-<h1 class="heading__title">Personalize my subscription</h1>
-<%= flash_error(@conn) %>
 <%
 time_label = if @round_trip == "true" do
   "When would you like to receive alerts for your first trip?"
@@ -8,6 +6,11 @@ else
 end
 first_trip_padding_class = if @round_trip == "true", do: "", else: "form__section"
 %>
+
+<h1 class="heading__title">Personalize my subscription</h1>
+<%= flash_error(@conn) %>
+
+<%= ConciergeSite.TripReviewCardHelper.render(@partial_subscriptions) %>
 
 <div class="container container__inner">
   <div class="row justify-content-md-center">

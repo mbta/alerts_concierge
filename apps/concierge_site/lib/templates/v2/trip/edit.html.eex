@@ -15,8 +15,8 @@ first_trip_padding_class = if @trip.roundtrip == true, do: "", else: "form__sect
 <div class="container container__inner">
   <div class="row justify-content-md-center">
     <div class="col-sm-12">
-      <div class="my-4 trip__editpage">
-        <%= ConciergeSite.TripCardHelper.display(@conn, @trip) %>
+      <div class="trip__editpage">
+        <%= ConciergeSite.TripReviewCardHelper.render(@trip) %>
       </div>
 
       <%= form_for @changeset, v2_trip_path(@conn, :update, @trip), [as: :trip, id: "commute-edit-form"], fn form -> %>

@@ -4,8 +4,8 @@ defmodule ConciergeSite.TripCardHelper do
   import Phoenix.HTML.Link, only: [link: 2]
   import Phoenix.Controller, only: [get_csrf_token: 0]
   import ConciergeSite.TimeHelper, only: [format_time_string: 2, time_to_string: 1]
-  alias AlertProcessor.ServiceInfoCache
   alias AlertProcessor.Model.{Trip, Subscription}
+  alias ConciergeSite.{IconViewHelper, RouteHelper}
 
   @station_features [elevator: "Elevators", escalator: "Escalators", bike_storage: "Bike storage", parking_area: "Parking"]
 
@@ -32,11 +32,6 @@ defmodule ConciergeSite.TripCardHelper do
       accessibility_content(trip, conn, id)
     end
   end
-  def display(conn, %Trip{id: id} = trip) do
-    content_tag :div, class: "card trip__card trip__card--display btn btn-outline-primary" do
-      commute_content(trip, conn, id)
-    end
-  end
   def display(_), do: ""
 
   @spec accessibility_content(Trip.t, Plug.Conn.t, String.t) :: [Phoenix.HTML.safe]
@@ -47,7 +42,7 @@ defmodule ConciergeSite.TripCardHelper do
         [
           delete_link(id),
           content_tag :span, class: "trip__card--route-icon" do
-            ConciergeSite.IconViewHelper.icon(:t)
+            IconViewHelper.icon(:t)
           end,
           content_tag :span, class: "trip__card--route" do
             "Station features"
@@ -105,15 +100,15 @@ defmodule ConciergeSite.TripCardHelper do
   defp routes(subscriptions) do
     subscriptions
     |> exclude_return_trip_subscriptions()
-    |> collapse_duplicate_green_legs()
+    |> RouteHelper.collapse_duplicate_green_legs()
     |> Enum.map(fn (subscription) ->
       content_tag :div, class: "trip__card--route-container" do
         [
           content_tag :span, class: "trip__card--route-icon" do
-            icon(subscription.type, subscription.route)
+            IconViewHelper.icon_for_route(subscription.type, subscription.route)
           end,
           content_tag :span, class: "trip__card--route" do
-            route_name(subscription.route)
+            RouteHelper.route_name(subscription.route)
           end
         ]
       end
@@ -130,38 +125,12 @@ defmodule ConciergeSite.TripCardHelper do
     content_tag :span, class: "trip__card--stops" do
       case {origin, destination} do
         {nil, nil} -> ""
-        {nil, destination} -> ["to ", stop_name(destination)]
-        {origin, nil} -> ["from ", stop_name(origin)]
-        {origin, destination} -> ": #{stop_name(origin)} — #{stop_name(destination)}"
+        {nil, destination} -> ["to ", RouteHelper.stop_name(destination)]
+        {origin, nil} -> ["from ", RouteHelper.stop_name(origin)]
+        {origin, destination} -> ": #{RouteHelper.stop_name(origin)} — #{RouteHelper.stop_name(destination)}"
       end
     end
   end
-
-  @spec collapse_duplicate_green_legs([Subscription.t]) :: [Subscription.t] 
-  defp collapse_duplicate_green_legs(subscriptions) do
-    Enum.reduce(subscriptions, [], fn(subscription, unique_subscriptions) ->
-      case Enum.find_index(unique_subscriptions, fn(%{origin: origin, destination: destination}) ->
-        subscription.route_type == 0 && origin == subscription.origin && destination == subscription.destination
-      end) do
-        nil -> unique_subscriptions ++ [subscription]
-        index -> List.update_at(unique_subscriptions, index, fn(original_subscription) ->
-          %{original_subscription | route: add_route_to_subscription(original_subscription.route, subscription.route) }
-        end)
-      end
-    end)
-  end
-
-  @spec add_route_to_subscription([String.t] | String.t, String.t) :: [String.t] 
-  defp add_route_to_subscription(original, additional) when is_list(original), do: original ++ [additional]
-  defp add_route_to_subscription(original, additional), do: [original, additional]
-
-  @spec icon(atom, String.t) :: Phoenix.HTML.safe
-  defp icon(_, "Mattapan"), do: ConciergeSite.IconViewHelper.icon(:mattapan)
-  defp icon(:subway, routes) when is_list(routes), do: Enum.map(routes, fn(route) -> icon(:subway, route) end)
-  defp icon(:subway, route), do: ConciergeSite.IconViewHelper.icon(String.to_atom(String.downcase(route)))
-  defp icon(:cr, _), do: ConciergeSite.IconViewHelper.icon(:commuter_rail)
-  defp icon(:bus, _), do: ConciergeSite.IconViewHelper.icon(:bus)
-  defp icon(:ferry, _), do: ConciergeSite.IconViewHelper.icon(:ferry)
 
   @spec roundtrip(boolean) :: String.t
   defp roundtrip(true), do: "Round-trip"
@@ -207,32 +176,11 @@ defmodule ConciergeSite.TripCardHelper do
     subscriptions
     |> Enum.map(fn(subscription) ->
       case {subscription.origin, subscription.route} do
-        {stop_id, nil} -> stop_name(stop_id)
-        {nil, route_id} -> route_name(route_id)
+        {stop_id, nil} -> RouteHelper.stop_name(stop_id)
+        {nil, route_id} -> RouteHelper.route_name(route_id)
       end
     end)
     |> Enum.intersperse(", ")
-  end
-
-  @spec stop_name(String.t) :: String.t
-  defp stop_name(stop_id) do
-    {:ok, {name, _, _, _}} = ServiceInfoCache.get_stop(stop_id)
-    name
-  end
-
-  @spec route_name(String.t) :: String.t
-  defp route_name(routes) when is_list(routes), do: "Green Line"
-  defp route_name("Green"), do: "Green Line"
-  defp route_name("Green-B"), do: "Green Line B"
-  defp route_name("Green-C"), do: "Green Line C"
-  defp route_name("Green-D"), do: "Green Line D"
-  defp route_name("Green-E"), do: "Green Line E"
-  defp route_name(route_id) do
-    {:ok, route} = ServiceInfoCache.get_route(route_id)
-    case route.long_name do
-      "" -> route.short_name
-      _ -> route.long_name
-    end
   end
 
   @spec edit_link(Plug.Conn.t, atom, String.t) :: Phoenix.HTML.safe
