@@ -42,6 +42,7 @@
     right: 10px;
     top: 12px;
     display: none;
+    pointer-events: none;
   }
 
   svg {
@@ -49,6 +50,7 @@
     margin: 0 .25rem;
     width: 18px;
     transform: translate(0px, 3px);
+    pointer-events: none;
   }
 
   .btn__radio--toggle {
@@ -64,6 +66,10 @@
       .fa-check {
         display: block;
       }
+    }
+
+    div {
+      width: 90%;
     }
   }
 
