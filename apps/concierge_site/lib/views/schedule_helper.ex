@@ -20,7 +20,7 @@ defmodule ConciergeSite.ScheduleHelper do
       content_tag :div, class: "schedules__trips--leg", data: [type: "schedule-leg"] ++ selected_travel_times(travel_times) do
         [
           content_tag :p, class: "schedules__header" do
-            "Which #{header(mode)} would you like alerts about?"
+            "I take these #{header(mode)}:"
           end,
           content_tag :p, class: "schedules__blankslate" do
             "#{blank_slate(mode)}"
