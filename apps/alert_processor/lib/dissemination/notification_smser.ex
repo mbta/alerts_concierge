@@ -10,13 +10,19 @@ defmodule AlertProcessor.NotificationSmser do
   @spec notification_sms(Notification.t) :: ExAws.Operation.Query.t
   def notification_sms(%Notification{header: header, type: type, phone_number: phone_number}) do
     header
-    |> add_type_prefix(type)
+    |> add_prefix(type)
     |> ExAws.SNS.publish([phone_number: "+1#{phone_number}"])
   end
 
-  defp add_type_prefix(text, :all_clear) do
-    "All clear (re: #{text})"
+  @spec add_prefix(String.t, atom) :: String.t
+  defp add_prefix(header, :all_clear) do
+    "All clear (re: #{header})"
   end
-
-  defp add_type_prefix(text, _), do: text
+  defp add_prefix(header, :update) do
+    "Update (re: #{header})"
+  end
+  defp add_prefix(header, :reminder) do
+    "Reminder (re: #{header})"
+  end
+  defp add_prefix(header, _), do: header
 end
