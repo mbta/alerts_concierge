@@ -14,7 +14,7 @@ defmodule ConciergeSite.ConfirmationMessage do
   def send_sms_confirmation("", _), do: {:ok, nil}
   def send_sms_confirmation(phone_number, "true") do
     %Notification{
-      header: "You have been subscribed to MBTA alerts. To stop receiving texts, reply STOP (cannot resubscribe for 30 days) or visit alerts.mbta.com. Data rates may apply.",
+      header: "You have been subscribed to T-Alerts. To stop receiving texts, reply STOP (cannot resubscribe for 30 days) or visit beta.alerts.mbta.com. Data rates may apply.",
       phone_number: phone_number
     }
     |> NotificationSmser.notification_sms()
