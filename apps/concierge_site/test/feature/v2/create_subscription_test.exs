@@ -15,7 +15,7 @@ defmodule ConciergeSite.V2.CreateSubscriptionTest do
 
   test "new account", %{session: session} do
     session
-    |> visit("/")
+    |> visit("/account/new")
     |> fill_in(text_field("user_email"), with: "test@test.com")
     |> fill_in(text_field("user_password"), with: @password)
     |> click(button("Create my account"))

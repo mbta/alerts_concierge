@@ -1,0 +1,29 @@
+<div class="landing-page row">
+
+  <div class="landing-page__content col-12 col-lg-7">
+    <h1 class="landing-page__title">Try the new and<br>improved <span>T-Alerts!</span></h1>
+    <%= flash_error(@conn) %>
+    <%= flash_info(@conn) %>
+
+    <p class="landing-page__description">
+      Tell us about your regular trips and receive text or email alerts that are relevant to you, at times that you want them.
+    </p>
+
+    <div class="landing-page__buttons row">
+      <div class="col-12 offset-0 col-lg-8 offset-lg-2">
+        <%= link "Create an account", to: v2_account_path(@conn, :new), class: "btn btn-primary btn-block" %>
+        <%= link "Sign in", to: v2_session_path(@conn, :new), class: "btn btn-outline-primary btn-block" %>
+
+        <p class="landing-page__faq">
+            Have questions? <%= link "See our FAQ", to: "https://www.mbta.com/about-t-alerts-beta" %>
+        </p>
+      </div>
+    </div>
+
+  </div>
+
+  <div class="landing-page__example d-none d-lg-block col-lg-5">
+    <%= img_tag(static_path(@conn, "/images/landing-phone.png"), alt: "Example text alerts") %>
+  </div>
+
+</div>

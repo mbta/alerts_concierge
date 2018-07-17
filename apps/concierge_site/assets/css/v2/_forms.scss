@@ -118,12 +118,18 @@ label.form__label--inline-divider {
   border-color: $brand-primary;
 }
 
+.form-control__details {
+  font-size: $font-size-xs;
+  font-style: italic;
+  line-height: 1.3125rem;
+}
+
 .form-check-input {
   margin-top: .1rem;
 }
 
 .form__action--secondary-link {
-  margin-top: 1rem;
+  margin-bottom: 1rem;
 }
 
 .btn__radio--toggle-container {

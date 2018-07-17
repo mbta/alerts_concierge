@@ -43,11 +43,18 @@
           <% end %>
         <% else %>
           <%= link(to: v2_session_path(@conn, :new)) do %>
-            Already have a beta account? Log in
+            Sign in
           <% end %>
         <% end %>
       </div>
     </header>
+    <%= if assigns[:header_note] do %>
+    <header class="header__sub--container_note">
+      <div class="container">
+        <%= raw assigns[:header_note] %>
+      </div>
+    </header>
+    <% end %>
     <div class="container page__content">
       <div class="row justify-content-md-center">
         <% cols = if (assigns[:wide_layout]), do: "col-md-12", else: "col-md-8" %>
@@ -56,13 +63,6 @@
         </main>
       </div>
     </div>
-    <%= if assigns[:footer_note] do %>
-    <footer class="footer__sub--container">
-      <div class="container">
-        <%= raw assigns[:footer_note] %>
-      </div>
-    </footer>
-    <% end %>
     <footer class="footer__container">
       <div class="container">
         <p class="footer__links">

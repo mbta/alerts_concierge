@@ -2,6 +2,13 @@
 <%= flash_error(@conn) %>
 <%= flash_info(@conn) %>
 
+<div class="form__action--secondary-link">Don't have an account?
+  <%= link(to: v2_account_path(@conn, :new)) do %>
+    Sign up
+    <i aria-hidden="true" class="fa fa-arrow-right "></i>
+  <% end %>
+</div>
+
 <div class="container container__inner">
   <div class="row justify-content-md-center">
     <div class="col-md-10 col-sm-12">
@@ -21,12 +28,6 @@
         </div>
         <div class="form__action-buttons--container">
           <%= submit "Go to my account", class: "btn btn-primary btn btn-block" %>
-          <div class="form__action--secondary-link text-center">Don't have an account?
-            <%= link(to: v2_account_path(@conn, :new)) do %>
-              Sign up
-              <i aria-hidden="true" class="fa fa-arrow-right "></i>
-            <% end %>
-          </div>
         </div>
       <% end %>
     </div>
