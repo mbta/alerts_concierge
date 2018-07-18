@@ -1,5 +1,6 @@
 defmodule ConciergeSite.Schedule do
   alias AlertProcessor.ApiClient
+  alias AlertProcessor.DayType
   alias AlertProcessor.ServiceInfoCache
   alias AlertProcessor.Model.{Route, Subscription, TripInfo}
 
@@ -39,19 +40,24 @@ defmodule ConciergeSite.Schedule do
   """
   @spec get_schedules_for_input([String.t], [String.t], [String.t], [String.t]) :: map
   def get_schedules_for_input(legs, origins, destinations, modes) do
-    Enum.zip([
+    input_tuples = Enum.zip([
       Enum.reverse(modes),
       Enum.reverse(legs),
       Enum.reverse(origins),
       Enum.reverse(destinations)
     ])
-    |> Enum.reduce(%{}, fn {mode, route, origin, destination}, acc ->
-      case mode do
-        "subway" -> acc
-        "bus" -> acc
-        _ -> Map.put(acc, {mode, route}, get_schedule(route, origin, destination))
-      end
-    end)
+
+    weekday_schedules =
+      input_tuples
+      |> get_schedules_for_input_and_date(DayType.next_weekday())
+      |> categorize_by_day_type(false)
+    
+    weekend_schedules =
+      input_tuples
+      |> get_schedules_for_input_and_date(DayType.next_weekend_day())
+      |> categorize_by_day_type(true)
+
+    interleave_schedule_trips(weekday_schedules, weekend_schedules)
   end
 
   @doc """
@@ -71,31 +77,41 @@ defmodule ConciergeSite.Schedule do
     end)
   end
 
-  @spec get_schedule(String.t, String.t, String.t) :: [TripInfo.t]
-  defp get_schedule(route_id, origin, destination) do
-    with {:ok, route} <- ServiceInfoCache.get_route(route_id) do
-      direction_id = determine_direction_id(route.stop_list, nil, origin, destination)
+  @spec get_schedules_for_input_and_date([tuple], Date.t) :: [map]
+  defp get_schedules_for_input_and_date(input_tuples, date) do
+    input_tuples
+    |> Enum.reduce(%{}, fn {mode, route, origin, destination}, acc ->
+      case mode do
+        "subway" -> acc
+        "bus" -> acc
+        _ -> Map.put(acc, {mode, route}, get_schedule(route, origin, destination, date))
+      end
+    end)
+  end
 
-      {:ok, schedules, trips} =
-        ApiClient.schedules(
-          origin,
-          destination,
-          direction_id,
-          [route.route_id],
-          Calendar.Date.today!("America/New_York")
-        )
-
-      trip_name_map = map_trip_names(trips)
-      {:ok, origin_stop} = ServiceInfoCache.get_stop(origin)
-      {:ok, destination_stop} = ServiceInfoCache.get_stop(destination)
-
-      trip = %TripInfo{ 
-        origin: origin_stop,
-        destination: destination_stop,
-        direction_id: direction_id
-      }
-
-      map_common_trips(schedules, trip_name_map, trip)
+  @spec get_schedule(String.t, String.t, String.t, Date.t) :: [TripInfo.t]
+  defp get_schedule(route_id, origin, destination, date \\ Calendar.Date.today!("America/New_York")) do
+    with {:ok, route} <- ServiceInfoCache.get_route(route_id),
+         direction_id <- determine_direction_id(route.stop_list, nil, origin, destination),
+         {:ok, origin_stop} <- ServiceInfoCache.get_stop(origin),
+         {:ok, destination_stop} <- ServiceInfoCache.get_stop(destination),
+         trip <- %TripInfo{
+           origin: origin_stop,
+           destination: destination_stop,
+           direction_id: direction_id
+         } do
+      case ApiClient.schedules(
+        origin,
+        destination,
+        direction_id,
+        [route.route_id],
+        date
+      ) do
+        {:ok, schedules, trips} ->
+          map_common_trips(schedules, map_trip_names(trips), trip)
+        {:ok, _} ->
+          []
+      end
     end
   end
 
@@ -142,10 +158,15 @@ defmodule ConciergeSite.Schedule do
       %{"attributes" => %{"arrival_time" => arrival_timestamp}} = arrival_schedule
       {:ok, route} = ServiceInfoCache.get_route(route_id)
 
+      departure_datetime = NaiveDateTime.from_iso8601!(departure_timestamp)
+      arrival_datetime = NaiveDateTime.from_iso8601!(arrival_timestamp)
+
       %{
         trip
-        | arrival_time: map_schedule_time(arrival_timestamp),
-          departure_time: map_schedule_time(departure_timestamp),
+        | arrival_time: map_schedule_time(arrival_datetime),
+          departure_time: map_schedule_time(departure_datetime),
+          arrival_datetime: arrival_datetime,
+          departure_datetime: departure_datetime,
           trip_number: Map.get(trip_names_map, trip_id),
           route: route
       }
@@ -156,7 +177,31 @@ defmodule ConciergeSite.Schedule do
   end
 
   defp map_schedule_time(schedule_datetime) do
-    schedule_datetime |> NaiveDateTime.from_iso8601!() |> NaiveDateTime.to_time()
+    schedule_datetime |> NaiveDateTime.to_time()
+  end
+
+  @spec categorize_by_day_type([map], boolean) :: map
+  defp categorize_by_day_type(schedules, weekend?) do
+    schedules
+    |> Enum.map(fn({key, trips}) -> {key, trips |> Enum.map(&(Map.put(&1, :weekend?, weekend?)))} end)
+    |> Enum.into(%{})
+  end
+
+  @spec interleave_schedule_trips(map, map) :: map
+  defp interleave_schedule_trips(weekday_schedules, weekend_schedules) do
+    # weekday_schedules and weekend_schedules should contain the same keys
+    weekday_schedules
+    |> Enum.map(fn {key, _} -> {
+        key,
+        merge_and_sort_trips(weekday_schedules[key], weekend_schedules[key])
+      } end)
+    |> Enum.into(%{})
+  end
+
+  @spec merge_and_sort_trips([map], [map]) :: [map]
+  defp merge_and_sort_trips(weekday_trips, weekend_trips) do
+    weekday_trips ++ weekend_trips
+    |> Enum.sort(&(NaiveDateTime.compare(&1.departure_datetime, &2.departure_datetime) in [:lt, :eq]))
   end
 
 end
