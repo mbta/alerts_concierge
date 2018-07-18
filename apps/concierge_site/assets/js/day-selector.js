@@ -1,12 +1,12 @@
-export default function($) {
-  $ = $ || window.jQuery;
+export default function(pubsub) {
+  $ = window.jQuery;
 
   $("div[data-selector='date']").each(function (i, div) {
-    new DaySelector($(div));
+    new DaySelector($(div), pubsub);
   });
 }
 
-function DaySelector($div) {
+function DaySelector($div, pubsub) {
   enable($div);
 
   this.inputs = {
@@ -26,6 +26,8 @@ function DaySelector($div) {
   this.labelsFromInputs();
   this.stateFromHtml();
   this.addListeners();
+
+  this.pubsub = pubsub;
 }
 
 DaySelector.prototype.labelsFromInputs = function() {
@@ -119,7 +121,7 @@ DaySelector.prototype.toggleState = function(day) {
       state.weekend = false;
     }
   }
-
+  
   return this;
 };
 
@@ -140,6 +142,9 @@ function renderFn(that, day) {
 
     that.toggleState(day);
     that.htmlFromState();
+
+    // let other components know that a change occurred
+    that.pubsub.publishSync("day-change", {});
   };
 }
 

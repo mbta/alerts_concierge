@@ -27,7 +27,7 @@ defmodule ConciergeSite.ScheduleHelper do
           end,
           content_tag :ul, class: "schedules__trips--container" do
             for trip <- schedule do
-              content_tag :li, class: "schedules__trips--item", data: [time: trip.departure_time] do
+              content_tag :li, class: "schedules__trips--item", data: [time: trip.departure_time, weekend: trip.weekend?] do
                 trip(mode, id, trip)
               end
             end
@@ -68,6 +68,7 @@ defmodule ConciergeSite.ScheduleHelper do
         content_tag :div do
           [
             ConciergeSite.IconViewHelper.icon(:commuter_rail),
+            weekend_indicator(trip),
             "Train #{trip.trip_number} from #{elem(trip.origin, 0)}, #{format_time_string(time_to_string(trip.departure_time), "%l:%M%P")}"
           ]
         end,
@@ -85,6 +86,7 @@ defmodule ConciergeSite.ScheduleHelper do
         content_tag :div do
           [
             ConciergeSite.IconViewHelper.icon(:ferry),
+            weekend_indicator(trip),
             "Ferry from #{elem(trip.origin, 0)}, #{format_time_string(time_to_string(trip.departure_time), "%l:%M%P")}"
           ]
         end,
@@ -94,4 +96,7 @@ defmodule ConciergeSite.ScheduleHelper do
       ]
     end
   end
+
+  defp weekend_indicator(%{weekend?: true}), do: content_tag(:span, "Weekend — ")
+  defp weekend_indicator(%{weekend?: false}), do: ""
 end

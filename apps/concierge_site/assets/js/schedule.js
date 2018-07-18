@@ -8,6 +8,14 @@ export default pubSub => {
     processSchedule(scheduleEl, false);
   });
 
+  // subscribe to the day change event
+  pubSub.subscribe("day-change", e => {
+    // reconsider each schedule block
+    [...document.querySelectorAll("div[data-type='schedule-viewer']")].forEach(
+      scheduleEl => processSchedule(scheduleEl, false)
+    )
+  });
+
   // subscribe to checkbox change event
   pubSub.subscribe("checkbox-change", e => handleTripChange(e));
 
