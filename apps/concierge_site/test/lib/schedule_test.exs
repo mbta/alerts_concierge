@@ -1,6 +1,7 @@
 defmodule ConciergeSite.ScheduleTest do
   use ExUnit.Case
   alias ConciergeSite.Schedule
+  alias AlertProcessor.ExtendedTime
   alias AlertProcessor.Model.{Route, Subscription, TripInfo}
 
   doctest Schedule
@@ -24,6 +25,8 @@ defmodule ConciergeSite.ScheduleTest do
       departure_time: ~T[06:39:00],
       arrival_datetime: time_today(~T[07:39:00]),
       departure_datetime: time_today(~T[06:39:00]),
+      arrival_extended_time: %ExtendedTime{relative_day: 1, time: ~T[07:39:00]},
+      departure_extended_time: %ExtendedTime{relative_day: 1, time: ~T[06:39:00]},
       destination: {"Gloucester", "Gloucester", {42.616799, -70.668345}, 1},
       direction_id: 0,
       origin: {"North Station", "place-north", {42.365577, -71.06129}, 1},
@@ -61,13 +64,15 @@ defmodule ConciergeSite.ScheduleTest do
       trip_number: "101",
       weekend?: false
     }
+
+    assert Enum.find_index(result[{"cr", "CR-Newburyport"}], &(&1.weekend?)) == 2
   end
 
   test "get_schedules_for_trip/2" do
     subscriptions = [
       %Subscription{
         alert_priority_type: :low,
-        destination: "Yawkey",
+        destination: "Worcester",
         destination_lat: 42.347581,
         destination_long: -71.099974,
         direction_id: 0,
@@ -76,7 +81,7 @@ defmodule ConciergeSite.ScheduleTest do
         id: "9eb0d744-d1e5-477b-a78b-d466a182b990",
         inserted_at: ~N[2018-07-09 19:12:22.307235],
         notification_type_to_send: nil,
-        origin: "place-sstat",
+        origin: "Framingham",
         origin_lat: 42.352271,
         origin_long: -71.055242,
         rank: 0,
@@ -94,7 +99,7 @@ defmodule ConciergeSite.ScheduleTest do
       },
       %Subscription{
         alert_priority_type: :low,
-        destination: "place-sstat",
+        destination: "Framingham",
         destination_lat: 42.352271,
         destination_long: -71.055242,
         direction_id: 1,
@@ -103,7 +108,7 @@ defmodule ConciergeSite.ScheduleTest do
         id: "0d3ba736-420b-4c19-9f06-91ebeadb177a",
         inserted_at: ~N[2018-07-09 19:12:22.350058],
         notification_type_to_send: nil,
-        origin: "Yawkey",
+        origin: "Worcester",
         origin_lat: 42.347581,
         origin_long: -71.099974,
         rank: 0,
@@ -129,14 +134,16 @@ defmodule ConciergeSite.ScheduleTest do
     assert is_list(first_trip_result[{"cr", "CR-Worcester"}])
     assert Enum.all?(first_trip_result[{"cr", "CR-Worcester"}], &(is_trip_info(&1)))
     assert List.first(first_trip_result[{"cr", "CR-Worcester"}]) == %TripInfo{
-      arrival_time: ~T[05:40:00],
-      departure_time: ~T[05:30:00],
-      arrival_datetime: time_today(~T[05:40:00]),
-      departure_datetime: time_today(~T[05:30:00]),
-      destination: {"Yawkey", "Yawkey", {42.347581, -71.099974}, 1},
+      arrival_datetime: ~N[2018-07-18 06:01:00],
+      arrival_extended_time: %ExtendedTime{relative_day: 1, time: ~T[06:01:00]},
+      arrival_time: ~T[06:01:00],
+      departure_datetime: ~N[2018-07-18 05:25:00],
+      departure_extended_time: %ExtendedTime{relative_day: 1,time: ~T[05:25:00]},
+      departure_time: ~T[05:25:00],
+      destination: {"Worcester", "Worcester", {42.261461, -71.794888}, 1},
       direction_id: 0,
-      origin: {"South Station", "place-sstat", {42.352271, -71.055242}, 1},
-      route: %AlertProcessor.Model.Route{
+      origin: {"Framingham", "Framingham", {42.276719, -71.416792}, 1},
+      route: %Route{
         direction_names: ["Outbound", "Inbound"],
         headsigns: nil,
         long_name: "Framingham/Worcester Line",
@@ -166,22 +173,26 @@ defmodule ConciergeSite.ScheduleTest do
         ]
       },
       selected: false,
-      trip_number: "583"    
+      trip_number: "501",
+      weekend?: false
     }
-
+    assert Enum.find_index(first_trip_result[{"cr", "CR-Worcester"}], &(&1.weekend?)) == 3
+    
     assert is_map(return_trip_result)
     assert Map.keys(return_trip_result) == [{"cr", "CR-Worcester"}]
     assert is_list(return_trip_result[{"cr", "CR-Worcester"}])
     assert Enum.all?(return_trip_result[{"cr", "CR-Worcester"}], &(is_trip_info(&1)))
     assert List.first(return_trip_result[{"cr", "CR-Worcester"}]) == %TripInfo{
-      arrival_time: ~T[06:20:00],
-      departure_time: ~T[06:09:00],
-      arrival_datetime: time_today(~T[06:20:00]),
-      departure_datetime: time_today(~T[06:09:00]),
-      destination: {"South Station", "place-sstat", {42.352271, -71.055242}, 1},
+      arrival_datetime: ~N[2018-07-18 05:26:00],
+      arrival_extended_time: %ExtendedTime{relative_day: 1, time: ~T[05:26:00]},
+      arrival_time: ~T[05:26:00],
+      departure_datetime: ~N[2018-07-18 04:45:00],
+      departure_extended_time: %ExtendedTime{relative_day: 1,time: ~T[04:45:00]},
+      departure_time: ~T[04:45:00],
+      destination: {"Framingham", "Framingham", {42.276719, -71.416792}, 1},
       direction_id: 1,
-      origin: {"Yawkey", "Yawkey", {42.347581, -71.099974}, 1},
-      route: %AlertProcessor.Model.Route{
+      origin: {"Worcester", "Worcester", {42.261461, -71.794888}, 1},
+      route: %Route{
         direction_names: ["Outbound", "Inbound"],
         headsigns: nil,
         long_name: "Framingham/Worcester Line",
@@ -211,8 +222,10 @@ defmodule ConciergeSite.ScheduleTest do
         ]
       },
       selected: false,
-      trip_number: "500"    
+      trip_number: "500",
+      weekend?: false,
     }
+    assert Enum.find_index(return_trip_result[{"cr", "CR-Worcester"}], &(&1.weekend?)) == 5
   end
 
   defp is_trip_info(%TripInfo{}), do: true
