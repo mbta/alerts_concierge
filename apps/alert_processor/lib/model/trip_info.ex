@@ -3,11 +3,15 @@ defmodule AlertProcessor.Model.TripInfo do
   Module used for storing information
   about trips for displaying
   """
+  alias AlertProcessor.ExtendedTime
+
   defstruct [
     :arrival_time,
     :departure_time,
     :arrival_datetime,
     :departure_datetime,
+    :arrival_extendedday_time,
+    :departure_extendedday_time,
     :destination,
     :direction_id,
     :route,
@@ -25,6 +29,8 @@ defmodule AlertProcessor.Model.TripInfo do
     departure_time: Time.t,
     arrival_datetime: NaiveDateTime.t,
     departure_datetime: NaiveDateTime.t,
+    arrival_extendedday_time: ExtendedTime.t,
+    departure_extendedday_time: ExtendedTime.t,
     destination: Route.stop,
     direction_id: Route.direction_id,
     route: Route.t,

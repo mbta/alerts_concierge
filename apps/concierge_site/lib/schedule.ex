@@ -1,7 +1,5 @@
 defmodule ConciergeSite.Schedule do
-  alias AlertProcessor.ApiClient
-  alias AlertProcessor.DayType
-  alias AlertProcessor.ServiceInfoCache
+  alias AlertProcessor.{ApiClient, DayType, ExtendedTime, ServiceInfoCache}
   alias AlertProcessor.Model.{Route, Subscription, TripInfo}
 
   @doc """
@@ -108,7 +106,7 @@ defmodule ConciergeSite.Schedule do
         date
       ) do
         {:ok, schedules, trips} ->
-          map_common_trips(schedules, map_trip_names(trips), trip)
+          map_common_trips(schedules, map_trip_names(trips), trip, date)
         {:ok, _} ->
           []
       end
@@ -125,9 +123,9 @@ defmodule ConciergeSite.Schedule do
 
   defp map_trip_name(_), do: {nil, nil}
 
-  defp map_common_trips([], _, _), do: :error
+  defp map_common_trips([], _, _, _), do: :error
 
-  defp map_common_trips(schedules, trip_names_map, trip) do
+  defp map_common_trips(schedules, trip_names_map, trip, date) do
     schedules
     |> Enum.group_by(fn %{"relationships" => %{"trip" => %{"data" => %{"id" => id}}}} -> id end)
     |> Enum.filter(fn {_id, schedules} -> Enum.count(schedules) > 1 end)
@@ -158,15 +156,20 @@ defmodule ConciergeSite.Schedule do
       %{"attributes" => %{"arrival_time" => arrival_timestamp}} = arrival_schedule
       {:ok, route} = ServiceInfoCache.get_route(route_id)
 
-      departure_datetime = NaiveDateTime.from_iso8601!(departure_timestamp)
       arrival_datetime = NaiveDateTime.from_iso8601!(arrival_timestamp)
+      departure_datetime = NaiveDateTime.from_iso8601!(departure_timestamp)
+
+      {:ok, arrival_extendedday_time} = ExtendedTime.new(arrival_datetime, date)
+      {:ok, departure_extendedday_time} = ExtendedTime.new(departure_datetime, date)
 
       %{
         trip
-        | arrival_time: map_schedule_time(arrival_datetime),
-          departure_time: map_schedule_time(departure_datetime),
+        | arrival_time: NaiveDateTime.to_time(arrival_datetime),
+          departure_time: NaiveDateTime.to_time(departure_datetime),
           arrival_datetime: arrival_datetime,
           departure_datetime: departure_datetime,
+          arrival_extendedday_time: arrival_extendedday_time,
+          departure_extendedday_time: departure_extendedday_time,
           trip_number: Map.get(trip_names_map, trip_id),
           route: route
       }
@@ -174,10 +177,6 @@ defmodule ConciergeSite.Schedule do
     |> Enum.sort_by(fn %TripInfo{departure_time: departure_time} ->
       {~T[05:00:00] > departure_time, departure_time}
     end)
-  end
-
-  defp map_schedule_time(schedule_datetime) do
-    schedule_datetime |> NaiveDateTime.to_time()
   end
 
   @spec categorize_by_day_type([map], boolean) :: map
@@ -201,7 +200,7 @@ defmodule ConciergeSite.Schedule do
   @spec merge_and_sort_trips([map], [map]) :: [map]
   defp merge_and_sort_trips(weekday_trips, weekend_trips) do
     weekday_trips ++ weekend_trips
-    |> Enum.sort(&(NaiveDateTime.compare(&1.departure_datetime, &2.departure_datetime) in [:lt, :eq]))
+    |> Enum.sort(&(ExtendedTime.compare(&1.departure_extendedday_time, &2.departure_extendedday_time) in [:lt, :eq]))
   end
 
 end

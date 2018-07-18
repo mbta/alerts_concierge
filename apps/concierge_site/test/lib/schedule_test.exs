@@ -1,6 +1,7 @@
 defmodule ConciergeSite.ScheduleTest do
   use ExUnit.Case
   alias ConciergeSite.Schedule
+  alias AlertProcessor.ExtendedTime
   alias AlertProcessor.Model.{Route, Subscription, TripInfo}
 
   doctest Schedule
@@ -24,6 +25,8 @@ defmodule ConciergeSite.ScheduleTest do
       departure_time: ~T[06:39:00],
       arrival_datetime: time_today(~T[07:39:00]),
       departure_datetime: time_today(~T[06:39:00]),
+      arrival_extendedday_time: %ExtendedTime{relative_day: 1, time: ~T[07:39:00]},
+      departure_extendedday_time: %ExtendedTime{relative_day: 1, time: ~T[06:39:00]},
       destination: {"Gloucester", "Gloucester", {42.616799, -70.668345}, 1},
       direction_id: 0,
       origin: {"North Station", "place-north", {42.365577, -71.06129}, 1},
@@ -61,6 +64,8 @@ defmodule ConciergeSite.ScheduleTest do
       trip_number: "101",
       weekend?: false
     }
+
+    assert Enum.find_index(result[{"cr", "CR-Newburyport"}], &(&1.weekend?)) == 2
   end
 
   test "get_schedules_for_trip/2" do
@@ -133,6 +138,8 @@ defmodule ConciergeSite.ScheduleTest do
       departure_time: ~T[05:30:00],
       arrival_datetime: time_today(~T[05:40:00]),
       departure_datetime: time_today(~T[05:30:00]),
+      arrival_extendedday_time: %ExtendedTime{relative_day: 1, time: ~T[05:40:00]},
+      departure_extendedday_time: %ExtendedTime{relative_day: 1, time: ~T[05:30:00]},
       destination: {"Yawkey", "Yawkey", {42.347581, -71.099974}, 1},
       direction_id: 0,
       origin: {"South Station", "place-sstat", {42.352271, -71.055242}, 1},
@@ -178,6 +185,8 @@ defmodule ConciergeSite.ScheduleTest do
       departure_time: ~T[06:09:00],
       arrival_datetime: time_today(~T[06:20:00]),
       departure_datetime: time_today(~T[06:09:00]),
+      arrival_extendedday_time: %ExtendedTime{relative_day: 1, time: ~T[06:20:00]},
+      departure_extendedday_time: %ExtendedTime{relative_day: 1, time: ~T[06:09:00]},
       destination: {"South Station", "place-sstat", {42.352271, -71.055242}, 1},
       direction_id: 1,
       origin: {"Yawkey", "Yawkey", {42.347581, -71.099974}, 1},
