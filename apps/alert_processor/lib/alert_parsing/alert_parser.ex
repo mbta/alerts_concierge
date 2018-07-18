@@ -26,7 +26,7 @@ defmodule AlertProcessor.AlertParser do
       Logger.info(fn ->
         "alert filter, duration_type=#{alert_filter_duration_type} alert_count=#{length(alerts_needing_notifications)}"
       end)
-      if alert_filter_duration_type == :anytime do
+      if alert_filter_duration_type == :recent do
         Reminders.async_schedule_reminders(alerts_needing_notifications)
       end
       SubscriptionFilterEngine.schedule_all_notifications(alerts_needing_notifications, alert_filter_duration_type)
