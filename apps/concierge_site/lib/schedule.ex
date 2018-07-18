@@ -61,18 +61,19 @@ defmodule ConciergeSite.Schedule do
   @doc """
   Retrieve TripInfo records for a list of Subscriptions and whether or not it is a return trip.
   """
-  @spec get_schedules_for_trip([Subscription.t], boolean) :: [TripInfo.t]
+  @spec get_schedules_for_trip([Subscription.t], boolean) :: map
   def get_schedules_for_trip(subscriptions, return_trip) do
-    subscriptions
-    |> Enum.filter(&(&1.return_trip == return_trip))
-    |> Enum.reduce(%{}, fn %{type: type, route: route, origin: origin, destination: destination},
-                           acc ->
-      case type do
-        :subway -> acc
-        :bus -> acc
-        _ -> Map.put(acc, {Atom.to_string(type), route}, get_schedule(route, origin, destination))
-      end
-    end)
+    weekday_schedules =
+      subscriptions
+      |> get_schedules_for_subscriptions_and_date(return_trip, DayType.next_weekday())
+      |> categorize_by_day_type(false)
+
+    weekend_schedules =
+      subscriptions
+      |> get_schedules_for_subscriptions_and_date(return_trip, DayType.next_weekend_day())
+      |> categorize_by_day_type(true)
+
+    interleave_schedule_trips(weekday_schedules, weekend_schedules)
   end
 
   @spec get_schedules_for_input_and_date([tuple], Date.t) :: [map]
@@ -87,8 +88,22 @@ defmodule ConciergeSite.Schedule do
     end)
   end
 
+  @spec get_schedules_for_subscriptions_and_date([Subscription.t], boolean, Date.t) :: [map]
+  defp get_schedules_for_subscriptions_and_date(subscriptions, return_trip, date) do
+    subscriptions
+    |> Enum.filter(&(&1.return_trip == return_trip))
+    |> Enum.reduce(%{}, fn %{type: type, route: route, origin: origin, destination: destination},
+                           acc ->
+      case type do
+        :subway -> acc
+        :bus -> acc
+        _ -> Map.put(acc, {Atom.to_string(type), route}, get_schedule(route, origin, destination, date))
+      end
+    end)
+  end
+
   @spec get_schedule(String.t, String.t, String.t, Date.t) :: [TripInfo.t]
-  defp get_schedule(route_id, origin, destination, date \\ Calendar.Date.today!("America/New_York")) do
+  defp get_schedule(route_id, origin, destination, date) do
     with {:ok, route} <- ServiceInfoCache.get_route(route_id),
          direction_id <- determine_direction_id(route.stop_list, nil, origin, destination),
          {:ok, origin_stop} <- ServiceInfoCache.get_stop(origin),
@@ -159,8 +174,8 @@ defmodule ConciergeSite.Schedule do
       arrival_datetime = NaiveDateTime.from_iso8601!(arrival_timestamp)
       departure_datetime = NaiveDateTime.from_iso8601!(departure_timestamp)
 
-      {:ok, arrival_extendedday_time} = ExtendedTime.new(arrival_datetime, date)
-      {:ok, departure_extendedday_time} = ExtendedTime.new(departure_datetime, date)
+      {:ok, arrival_extended_time} = ExtendedTime.new(arrival_datetime, date)
+      {:ok, departure_extended_time} = ExtendedTime.new(departure_datetime, date)
 
       %{
         trip
@@ -168,8 +183,8 @@ defmodule ConciergeSite.Schedule do
           departure_time: NaiveDateTime.to_time(departure_datetime),
           arrival_datetime: arrival_datetime,
           departure_datetime: departure_datetime,
-          arrival_extendedday_time: arrival_extendedday_time,
-          departure_extendedday_time: departure_extendedday_time,
+          arrival_extended_time: arrival_extended_time,
+          departure_extended_time: departure_extended_time,
           trip_number: Map.get(trip_names_map, trip_id),
           route: route
       }
@@ -200,7 +215,7 @@ defmodule ConciergeSite.Schedule do
   @spec merge_and_sort_trips([map], [map]) :: [map]
   defp merge_and_sort_trips(weekday_trips, weekend_trips) do
     weekday_trips ++ weekend_trips
-    |> Enum.sort(&(ExtendedTime.compare(&1.departure_extendedday_time, &2.departure_extendedday_time) in [:lt, :eq]))
+    |> Enum.sort(&(ExtendedTime.compare(&1.departure_extended_time, &2.departure_extended_time) in [:lt, :eq]))
   end
 
 end
