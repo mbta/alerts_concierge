@@ -3,7 +3,7 @@ import { checkItem, unCheckItem } from "./handle-trip-change";
 
 const makeDate = timeString => new Date(`1/1/2000 ${timeString}`);
 
-function isMatched(tripTime, startTime, endTime) {
+function isTimeMatched(tripTime, startTime, endTime) {
   const tripDate = makeDate(tripTime);
   if (!(tripDate instanceof Date)) {
     return false;
@@ -13,22 +13,45 @@ function isMatched(tripTime, startTime, endTime) {
   return tripDate >= startDate && tripDate <= endDate;
 }
 
+function isDayMatched(dayType, weekday, weekend) {
+  if (weekday && weekend) {
+    // any day
+    return true;
+  } else if (!weekday && !weekend) {
+    // no days selected
+    return false;
+  } else if (weekday && dayType === "weekday") {
+    // weekdays
+    return true;
+  } else if (weekend && dayType === "weekend") {
+    // weekend
+    return true;
+  } else {
+    return false;
+  }
+}
+
 function processTrip(
   tripEl,
   startTime,
   endTime,
+  weekday,
+  weekend,
   travelStartTime,
   travelEndTime
 ) {
   const dataset = elemDataset(tripEl);
   const tripTime = dataset.time;
-  const matched = isMatched(tripTime, startTime, endTime);
+  const dayType = dataset.weekend === "true" ? "weekend" : "weekday";
+  const matched =
+    isTimeMatched(tripTime, startTime, endTime) &&
+    isDayMatched(dayType, weekday, weekend);
   tripEl.style.display = matched ? "block" : "none";
   tripEl.setAttribute("data-matched", matched ? "true" : "false");
   if (
     travelStartTime &&
     travelEndTime &&
-    isMatched(tripTime, travelStartTime, travelEndTime)
+    isTimeMatched(tripTime, travelStartTime, travelEndTime)
   ) {
     checkItem(tripEl);
   }
@@ -73,7 +96,21 @@ function setAllVisibleToChecked(trips) {
     .forEach(tripEl => checkItem(tripEl));
 }
 
+const weekdays = ["monday", "tuesday", "wednesday", "thursday", "friday"];
+const weekends = ["saturday", "sunday"];
+
+const checkdDays = days =>
+  days.reduce(
+    (accumulator, day) =>
+      accumulator === true
+        ? true
+        : document.querySelector(`input[value='${day}']`).checked,
+    false
+  );
+
 export function processSchedule(scheduleEl, showDefaultTravelTimes) {
+  const weekdaySelected = checkdDays(weekdays);
+  const weekendSelected = checkdDays(weekends);
   const scheduleDataset = elemDataset(scheduleEl);
   const startTime = document.getElementById(scheduleDataset.start).value;
   const endTime = document.getElementById(scheduleDataset.end).value;
@@ -94,6 +131,8 @@ export function processSchedule(scheduleEl, showDefaultTravelTimes) {
           tripEl,
           startTime,
           endTime,
+          weekdaySelected,
+          weekendSelected,
           legDataset.travelStartTime,
           legDataset.travelEndTime
         )

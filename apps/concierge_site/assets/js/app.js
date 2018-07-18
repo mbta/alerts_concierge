@@ -43,7 +43,7 @@ selectRouteChoices();
 radioToggle(pubsub);
 selectStopChoices();
 helpText();
-daySelector();
+daySelector(pubsub);
 schedule(pubsub);
 phoneMask();
 customTimeSelect(pubsub);
