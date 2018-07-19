@@ -26,7 +26,7 @@ defmodule AlertProcessor.Reminders.Processor do
 
   """
   @spec process_alerts([Alert.t()], DateTime.t()) :: :ok
-  def process_alerts(alerts, now \\ Calendar.DateTime.now!("America/New_York")) do
+  def process_alerts(alerts, now \\ Calendar.DateTime.now!("Etc/UTC")) do
     latest_notifications = Notification.most_recent_for_alerts(alerts)
     for alert <- alerts do
       relevant_notifications = relevant_notifications(latest_notifications, alert)
