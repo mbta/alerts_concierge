@@ -134,10 +134,10 @@ defmodule ConciergeSite.ScheduleTest do
     assert is_list(first_trip_result[{"cr", "CR-Worcester"}])
     assert Enum.all?(first_trip_result[{"cr", "CR-Worcester"}], &(is_trip_info(&1)))
     assert List.first(first_trip_result[{"cr", "CR-Worcester"}]) == %TripInfo{
-      arrival_datetime: ~N[2018-07-18 06:01:00],
+      arrival_datetime: time_today(~T[06:01:00]),
       arrival_extended_time: %ExtendedTime{relative_day: 1, time: ~T[06:01:00]},
       arrival_time: ~T[06:01:00],
-      departure_datetime: ~N[2018-07-18 05:25:00],
+      departure_datetime: time_today(~T[05:25:00]),
       departure_extended_time: %ExtendedTime{relative_day: 1,time: ~T[05:25:00]},
       departure_time: ~T[05:25:00],
       destination: {"Worcester", "Worcester", {42.261461, -71.794888}, 1},
@@ -183,10 +183,10 @@ defmodule ConciergeSite.ScheduleTest do
     assert is_list(return_trip_result[{"cr", "CR-Worcester"}])
     assert Enum.all?(return_trip_result[{"cr", "CR-Worcester"}], &(is_trip_info(&1)))
     assert List.first(return_trip_result[{"cr", "CR-Worcester"}]) == %TripInfo{
-      arrival_datetime: ~N[2018-07-18 05:26:00],
+      arrival_datetime: time_today(~T[05:26:00]),
       arrival_extended_time: %ExtendedTime{relative_day: 1, time: ~T[05:26:00]},
       arrival_time: ~T[05:26:00],
-      departure_datetime: ~N[2018-07-18 04:45:00],
+      departure_datetime: time_today(~T[04:45:00]),
       departure_extended_time: %ExtendedTime{relative_day: 1,time: ~T[04:45:00]},
       departure_time: ~T[04:45:00],
       destination: {"Framingham", "Framingham", {42.276719, -71.416792}, 1},
