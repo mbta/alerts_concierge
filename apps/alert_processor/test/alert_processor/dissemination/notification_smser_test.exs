@@ -43,7 +43,7 @@ defmodule AlertProcessor.NotificationSmserTest do
       type: :update
     }
     sms_operation = NotificationSmser.notification_sms(notification)
-    assert sms_operation.params["Message"] == "Update (re: This is a test sms)"
+    assert sms_operation.params["Message"] == "Update: This is a test sms"
   end
 
   test "notification_sms/2 with a reminder alert" do
@@ -55,6 +55,6 @@ defmodule AlertProcessor.NotificationSmserTest do
       type: :reminder
     }
     sms_operation = NotificationSmser.notification_sms(notification)
-    assert sms_operation.params["Message"] == "Reminder (re: This is a test sms)"
+    assert sms_operation.params["Message"] == "Reminder: This is a test sms"
   end
 end

@@ -19,10 +19,10 @@ defmodule AlertProcessor.NotificationSmser do
     "All clear (re: #{header})"
   end
   defp add_prefix(header, :update) do
-    "Update (re: #{header})"
+    "Update: #{header}"
   end
   defp add_prefix(header, :reminder) do
-    "Reminder (re: #{header})"
+    "Reminder: #{header}"
   end
   defp add_prefix(header, _), do: header
 end
