@@ -63,10 +63,10 @@ defmodule ConciergeSite.Router do
   scope "/", ConciergeSite, as: :v2 do
     pipe_through [:redirect_prod_http, :browser, :v2_layout]
 
-    get "/", V2.AccountController, :new
+    get "/", V2.PageController, :landing
     get "/deleted", V2.PageController, :account_deleted
     resources "/login", V2.SessionController, only: [:new, :create, :delete], singleton: true
-    resources "/account", V2.AccountController, only: [:create]
+    resources "/account", V2.AccountController, only: [:new, :create]
     resources "/password_resets",V2.PasswordResetController, only: [:new, :create, :edit, :update]
   end
 
