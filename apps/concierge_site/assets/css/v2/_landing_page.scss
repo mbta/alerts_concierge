@@ -1,16 +1,17 @@
 body.landing-page {
   .page__content {
     display: flex;
-    max-height: 32rem;
+    max-height: 28.5rem;
     padding-bottom: 0;
     position: relative;
 
     @media all and (-ms-high-contrast: none), (-ms-high-contrast: active) {
-      height: 32rem;
+      height: 28.5rem;
     }
 
     @media screen and (max-width: 1088px) {
       max-height: none;
+      padding-top: 0.9rem;
     }
 
     main {
@@ -25,27 +26,6 @@ body.landing-page {
     }
   }
 
-  @media screen and (min-width: 1089px) {
-    .form-row > .col,
-    .form-row > [class*="col-"] {
-      padding: 0;
-
-      .form-control {
-        border-radius: 0;
-        border-left-width: 0;
-      }
-      &:first-of-type .form-control {
-        border-left-width: 1px;
-        border-top-left-radius: 0.25rem;
-        border-bottom-left-radius: 0.25rem;
-      }
-      &:last-of-type .form-control {
-        border-top-right-radius: 0.25rem;
-        border-bottom-right-radius: 0.25rem;
-      }
-    }
-  }
-
   .footer__container {
     box-shadow: 0 50vh 0 50vh $dark-blue;
   }
@@ -56,9 +36,14 @@ body.landing-page {
 }
 
 .landing-page__title {
-  font-size: 36px;
-  line-height: 2.5rem;
+  font-size: 2.5rem;
+  line-height: 3rem;
   margin-top: 1rem;
+
+  @media screen and (max-width: 1088px) {
+    font-size: 1.75rem;
+    line-height: 2.1875rem;
+  }
 
   span {
     white-space: nowrap;
@@ -67,36 +52,55 @@ body.landing-page {
 
 .landing-page__description {
   font-size: $font-size-xxl;
-  margin-bottom: 4rem;
+  line-height: 1.6875rem;
+  margin-bottom: 3.5rem;
 
   @media screen and (max-width: 1088px) {
-    margin-bottom: 2rem;
+    font-size: 1rem;
+    line-height: 1.5rem;
+    margin-bottom: 3rem;
   }
 }
 
-.form-control__details {
-  font-size: $font-size-xs;
-  font-style: italic;
+.landing-page__buttons {
+  .btn + .btn {
+    margin-top: 12px;
+  }
+}
+
+.landing-page__faq {
+  font-size: 0.875rem;
   line-height: 1.3125rem;
-}
+  margin-top: 0.8rem;
+  text-align: center;
 
-.form__action-buttons--container {
-  margin-top: 0;
-}
-
-.form__action--secondary-link {
-  margin-bottom: 3rem;
+  @media screen and (max-width: 1088px) {
+    margin-bottom: 3rem;
+  }
 }
 
 .landing-page__example {
   align-items: flex-end;
 
+  @media screen and (max-width: 1088px) {
+    text-align: center;
+  }
+
   img {
-    margin: 0 -20px -15px auto;  // Move phone image down a bit to compensate for space at bottom
-    width: 90%;
+    margin-top: -8px;
+    margin-left: 50px;
+    width: 85%;
 
     @media screen and (min-width: 1344px) {
-      margin-bottom: -20px;
+      margin-top: -7px;
+      width: 75%;
+    }
+
+    @media screen and (max-width: 1088px) {
+      margin-top: 0;
+      margin-left: 0;
+      margin-bottom: -13px;
+      width: 100%;
     }
   }
 }
