@@ -8,8 +8,6 @@ defmodule AlertProcessor.Model.TripInfo do
   defstruct [
     :arrival_time,
     :departure_time,
-    :arrival_datetime,
-    :departure_datetime,
     :arrival_extended_time,
     :departure_extended_time,
     :destination,
@@ -27,8 +25,6 @@ defmodule AlertProcessor.Model.TripInfo do
   @type t :: %__MODULE__{
     arrival_time: Time.t,
     departure_time: Time.t,
-    arrival_datetime: NaiveDateTime.t,
-    departure_datetime: NaiveDateTime.t,
     arrival_extended_time: ExtendedTime.t,
     departure_extended_time: ExtendedTime.t,
     destination: Route.stop,
