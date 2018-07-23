@@ -7,14 +7,13 @@ Path.join(["rel", "plugins", "*.exs"])
 |> Enum.map(&Code.eval_file(&1))
 
 use Mix.Releases.Config,
-    # This sets the default release built by `mix release`
-    default_release: :default,
-    # This sets the default environment used by `mix release`
-    default_environment: Mix.env()
+  # This sets the default release built by `mix release`
+  default_release: :default,
+  # This sets the default environment used by `mix release`
+  default_environment: Mix.env()
 
 # For a full list of config options for both releases
 # and environments, visit https://hexdocs.pm/distillery/configuration.html
-
 
 # You may define one or more environments in this file,
 # an environment's settings will override those of a release
@@ -22,9 +21,9 @@ use Mix.Releases.Config,
 # and environment configuration is called a profile
 
 environment :prod do
-  set include_erts: true
-  set include_src: false
-  set cookie: :";=M!```gFQ$}jAUj(N2_%dhCerD]s^3w7J.`bx=w[i.&h%InUY^V4J,]vyKH!~Ds"
+  set(include_erts: true)
+  set(include_src: false)
+  set(cookie: :";=M!```gFQ$}jAUj(N2_%dhCerD]s^3w7J.`bx=w[i.&h%InUY^V4J,]vyKH!~Ds")
 end
 
 # You may define one or more releases in this file.
@@ -33,11 +32,13 @@ end
 # will be used by default
 
 release :alerts_concierge do
-  set version: "current"
-  set applications: [
-    :runtime_tools,
-    alert_processor: :permanent,
-    concierge_site: :permanent
-  ]
-end
+  set(version: "current")
 
+  set(
+    applications: [
+      :runtime_tools,
+      alert_processor: :permanent,
+      concierge_site: :permanent
+    ]
+  )
+end

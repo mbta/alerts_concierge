@@ -12,31 +12,22 @@ defmodule ConciergeSite.Helpers.MailHelper do
   alias AlertProcessor.Helpers.ConfigHelper
   require EEx
 
-  EEx.function_from_file(
-    :def,
-    :html_footer,
-    Path.join(@template_dir, "_footer.html.eex"),
-    [:manage_subscriptions_url, :feedback_url]
-  )
+  EEx.function_from_file(:def, :html_footer, Path.join(@template_dir, "_footer.html.eex"), [
+    :manage_subscriptions_url,
+    :feedback_url
+  ])
 
-  EEx.function_from_file(
-    :def,
-    :text_footer,
-    Path.join(@template_dir, "_footer.txt.eex"),
-    [:manage_subscriptions_url, :feedback_url]
-  )
+  EEx.function_from_file(:def, :text_footer, Path.join(@template_dir, "_footer.txt.eex"), [
+    :manage_subscriptions_url,
+    :feedback_url
+  ])
 
-  EEx.function_from_file(
-    :def,
-    :html_header,
-    Path.join(@template_dir, "_header.html.eex"),
-    []
-  )
+  EEx.function_from_file(:def, :html_header, Path.join(@template_dir, "_header.html.eex"), [])
 
   @doc """
   For a given alert, returns the icon URL of it's route_type
   """
-  @spec logo_for_alert(Alert.t) :: iodata
+  @spec logo_for_alert(Alert.t()) :: iodata
   def logo_for_alert(%Alert{informed_entities: [ie | _]}) do
     logo_for_route_type(ie)
   end
@@ -44,7 +35,7 @@ defmodule ConciergeSite.Helpers.MailHelper do
   @doc """
   For a given alert, return the alt text of it's route_type
   """
-  @spec alt_text_for_alert(Alert.t) :: iodata
+  @spec alt_text_for_alert(Alert.t()) :: iodata
   def alt_text_for_alert(%Alert{informed_entities: [ie | _]}) do
     alt_text_for_route_type(ie)
   end
@@ -57,28 +48,35 @@ defmodule ConciergeSite.Helpers.MailHelper do
     Helpers.static_url(ConciergeSite.Endpoint, "/images/icons/t-logo@2x.png")
   end
 
-  @spec logo_for_route_type(InformedEntity.t) :: iodata
+  @spec logo_for_route_type(InformedEntity.t()) :: iodata
   defp logo_for_route_type(%InformedEntity{route_type: 0, route: r}) do
     logo_for_subway(r)
   end
+
   defp logo_for_route_type(%InformedEntity{route_type: 1, route: r}) do
     logo_for_subway(r)
   end
+
   defp logo_for_route_type(%InformedEntity{route_type: 2}) do
     Helpers.static_url(ConciergeSite.Endpoint, "/images/icons/icn_commuter.png")
   end
+
   defp logo_for_route_type(%InformedEntity{route_type: 3}) do
     Helpers.static_url(ConciergeSite.Endpoint, "/images/icons/icn_bus.png")
   end
+
   defp logo_for_route_type(%InformedEntity{route_type: 4}) do
     Helpers.static_url(ConciergeSite.Endpoint, "/images/icons/icn_ferry.png")
   end
+
   defp logo_for_route_type(%InformedEntity{facility_type: ft}) when not is_nil(ft) do
     Helpers.static_url(ConciergeSite.Endpoint, "/images/icons/icn_facility.png")
   end
+
   defp logo_for_route_type(%InformedEntity{facility_type: ft}) when not is_nil(ft) do
     Helpers.static_url(ConciergeSite.Endpoint, "/images/icons/icn_facility.png")
   end
+
   defp logo_for_route_type(_) do
     Helpers.static_url(ConciergeSite.Endpoint, "/images/icons/icn_facility.png")
   end
@@ -110,13 +108,20 @@ defmodule ConciergeSite.Helpers.MailHelper do
   defp logo_for_subway(nil),
     do: Helpers.static_url(ConciergeSite.Endpoint, "/images/icons/icn_facility.png")
 
-  @spec alt_text_for_route_type(InformedEntity.t) :: iodata
-  defp alt_text_for_route_type(%InformedEntity{route_type: 0, route: r}), do: alt_text_for_subway(r)
-  defp alt_text_for_route_type(%InformedEntity{route_type: 1, route: r}), do: alt_text_for_subway(r)
+  @spec alt_text_for_route_type(InformedEntity.t()) :: iodata
+  defp alt_text_for_route_type(%InformedEntity{route_type: 0, route: r}),
+    do: alt_text_for_subway(r)
+
+  defp alt_text_for_route_type(%InformedEntity{route_type: 1, route: r}),
+    do: alt_text_for_subway(r)
+
   defp alt_text_for_route_type(%InformedEntity{route_type: 2}), do: "logo-commuter-rail"
   defp alt_text_for_route_type(%InformedEntity{route_type: 3}), do: "logo-bus"
   defp alt_text_for_route_type(%InformedEntity{route_type: 4}), do: "logo-ferry"
-  defp alt_text_for_route_type(%InformedEntity{facility_type: ft}) when not is_nil(ft), do: "logo-facility"
+
+  defp alt_text_for_route_type(%InformedEntity{facility_type: ft}) when not is_nil(ft),
+    do: "logo-facility"
+
   defp alt_text_for_route_type(_), do: "logo-facility"
 
   defp alt_text_for_subway(route) do

@@ -8,6 +8,7 @@ defmodule ConciergeSite.Helpers.DateHelper do
   @time_zone "America/New_York"
 
   def format_datetime(datetime), do: Strftime.strftime!(datetime, "%b %d %Y %I:%M %p")
+
   def format_datetime(datetime, :local) do
     datetime
     |> Calendar.DateTime.shift_zone!(@time_zone)

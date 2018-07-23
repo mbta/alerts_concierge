@@ -6,9 +6,10 @@ defmodule ConciergeSite.DaySelectHelper do
   @days @weekdays ++ @weekend
   @short_days ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"]
 
-  @spec render(atom) :: Phoenix.HTML.safe
+  @spec render(atom) :: Phoenix.HTML.safe()
   def render(input_name, checked \\ []) do
     checked_set = prepare_checked_set(checked)
+
     content_tag :div, class: "day-selector", data: [selector: "date"] do
       [title(), day(input_name, checked_set), group(checked_set)]
     end
@@ -48,24 +49,36 @@ defmodule ConciergeSite.DaySelectHelper do
 
   defp title do
     content_tag :div, class: "title-part" do
-      Enum.map(@short_days, & content_tag(:div, &1, class: "day-header"))
+      Enum.map(@short_days, &content_tag(:div, &1, class: "day-header"))
     end
   end
 
   defp day(input_name, checked_set) do
     content_tag :div, class: "day-part" do
       content_tag :div, class: "btn-group btn-group-toggle" do
-        Enum.map(@days, & label(input_name, &1, Enum.member?(checked_set, &1)))
+        Enum.map(@days, &label(input_name, &1, Enum.member?(checked_set, &1)))
       end
     end
   end
 
   defp label(input_name, day, selected?) do
-    content_tag :label, class: label_class(selected?), tabindex: "0", role: "button",
-                        aria_label: day_aria_label(day), aria_pressed: aria_pressed?(selected?) do
-      [tag(:input, type: "checkbox", autocomplete: "off", value: day,
-           name: "#{input_name}[relevant_days][]", checked: selected?),
-       check_icon(selected?)]
+    content_tag :label,
+      class: label_class(selected?),
+      tabindex: "0",
+      role: "button",
+      aria_label: day_aria_label(day),
+      aria_pressed: aria_pressed?(selected?) do
+      [
+        tag(
+          :input,
+          type: "checkbox",
+          autocomplete: "off",
+          value: day,
+          name: "#{input_name}[relevant_days][]",
+          checked: selected?
+        ),
+        check_icon(selected?)
+      ]
     end
   end
 
@@ -83,16 +96,22 @@ defmodule ConciergeSite.DaySelectHelper do
   defp group(checked_set) do
     content_tag :div, class: "group-part invisible-no-js" do
       content_tag :div, class: "btn-group btn-group-toggle" do
-        Enum.map(["weekdays", "weekend"], & group_label(&1, Enum.member?(checked_set, &1)))
+        Enum.map(["weekdays", "weekend"], &group_label(&1, Enum.member?(checked_set, &1)))
       end
     end
   end
 
   defp group_label(name, selected?) do
-    content_tag :label, class: "#{label_class(selected?)} btn-#{name}", tabindex: "0",
-                        role: "button", aria_label: group_aria_label(name), aria_pressed: aria_pressed?(selected?) do
-      [tag(:input, type: "checkbox", autocomplete: "off", value: name, checked: selected?),
-       String.capitalize(name)]
+    content_tag :label,
+      class: "#{label_class(selected?)} btn-#{name}",
+      tabindex: "0",
+      role: "button",
+      aria_label: group_aria_label(name),
+      aria_pressed: aria_pressed?(selected?) do
+      [
+        tag(:input, type: "checkbox", autocomplete: "off", value: name, checked: selected?),
+        String.capitalize(name)
+      ]
     end
   end
 

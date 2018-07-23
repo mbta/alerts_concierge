@@ -15,8 +15,7 @@ config :concierge_site, ConciergeSite.Endpoint,
   url: [host: "localhost"],
   secret_key_base: "wxQjfCkbnND+H2kYSmvtNl+77BiBDB3qM7ytsJaOTZp2aBcEhcGvdkoa55pYbER0",
   render_errors: [view: ConciergeSite.ErrorView, accepts: ~w(html json)],
-  pubsub: [name: ConciergeSite.PubSub,
-           adapter: Phoenix.PubSub.PG2]
+  pubsub: [name: ConciergeSite.PubSub, adapter: Phoenix.PubSub.PG2]
 
 config :concierge_site, temp_state_key: {:system, "TEMP_STATE_KEY", "top_secret_temp_state_key"}
 
@@ -35,6 +34,7 @@ config :concierge_site, feedback_url: {:system, "FEEDBACK_URL", nil}
 config :logger, :console,
   format: "$date $time $metadata[$level] $message\n",
   metadata: [:request_id]
+
 # Include referrer in Logster request log
 config :logster, :allowed_headers, ["referer"]
 
@@ -75,4 +75,4 @@ config :concierge_site, ConciergeSite.ViewHelpers,
 
 # Import environment specific config. This must remain at the bottom
 # of this file so it overrides the configuration defined above.
-import_config "#{Mix.env}.exs"
+import_config "#{Mix.env()}.exs"

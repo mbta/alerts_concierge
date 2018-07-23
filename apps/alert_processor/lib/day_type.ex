@@ -1,5 +1,4 @@
 defmodule AlertProcessor.DayType do
-  
   @doc """
   Determine whether a date is a weekday (Monday–Friday).
 
@@ -12,7 +11,7 @@ defmodule AlertProcessor.DayType do
       iex> {2015, 7, 5} |> AlertProcessor.DayType.weekday?() # Sunday
       false
   """
-  @spec weekday?(Date.t | tuple) :: boolean
+  @spec weekday?(Date.t() | tuple) :: boolean
   def weekday?(date) do
     Calendar.Date.day_of_week(date) < 6
   end
@@ -29,7 +28,7 @@ defmodule AlertProcessor.DayType do
       iex> {2015, 7, 5} |> AlertProcessor.DayType.weekend?() # Sunday
       true
   """
-  @spec weekend?(Date.t | tuple) :: boolean
+  @spec weekend?(Date.t() | tuple) :: boolean
   def weekend?(date) do
     not weekday?(date)
   end
@@ -42,10 +41,10 @@ defmodule AlertProcessor.DayType do
       iex> AlertProcessor.DayType.next_weekday(~D[2015-07-04])
       ~D[2015-07-06]
   """
-  @spec next_weekday(Date.t | nil) :: Date.t
+  @spec next_weekday(Date.t() | nil) :: Date.t()
   def next_weekday(date \\ today()) do
     date
-    |> Stream.unfold(&({&1, next_day(&1)}))
+    |> Stream.unfold(&{&1, next_day(&1)})
     |> Enum.find(&weekday?/1)
   end
 
@@ -57,10 +56,10 @@ defmodule AlertProcessor.DayType do
       iex> AlertProcessor.DayType.next_weekend_day(~D[2015-07-06])
       ~D[2015-07-11]
   """
-  @spec next_weekend_day(Date.t | nil) :: Date.t
+  @spec next_weekend_day(Date.t() | nil) :: Date.t()
   def next_weekend_day(date \\ today()) do
     date
-    |> Stream.unfold(&({&1, next_day(&1)}))
+    |> Stream.unfold(&{&1, next_day(&1)})
     |> Enum.find(&weekend?/1)
   end
 
@@ -70,10 +69,10 @@ defmodule AlertProcessor.DayType do
     iex> AlertProcessor.DayType.take_weekdays(4, ~D[2015-07-09])
     [~D[2015-07-09], ~D[2015-07-10], ~D[2015-07-13], ~D[2015-07-14]]
   """
-  @spec take_weekdays(non_neg_integer, Date.t | nil) :: [Date.t]
+  @spec take_weekdays(non_neg_integer, Date.t() | nil) :: [Date.t()]
   def take_weekdays(amount, date \\ today()) do
     date
-    |> Stream.unfold(&({&1, &1 |> next_day() |> next_weekday()}))
+    |> Stream.unfold(&{&1, &1 |> next_day() |> next_weekday()})
     |> Enum.take(amount)
   end
 
@@ -83,17 +82,17 @@ defmodule AlertProcessor.DayType do
     iex> AlertProcessor.DayType.take_weekend_days(4, ~D[2015-07-05])
     [~D[2015-07-05], ~D[2015-07-11], ~D[2015-07-12], ~D[2015-07-18]]
   """
-  @spec take_weekend_days(non_neg_integer, Date.t | nil) :: [Date.t]
+  @spec take_weekend_days(non_neg_integer, Date.t() | nil) :: [Date.t()]
   def take_weekend_days(amount, date \\ today()) do
     date
-    |> Stream.unfold(&({&1, &1 |> next_day() |> next_weekend_day()}))
+    |> Stream.unfold(&{&1, &1 |> next_day() |> next_weekend_day()})
     |> Enum.take(amount)
   end
 
-  @spec today() :: Date.t
+  @spec today() :: Date.t()
   defp today, do: Calendar.Date.today!("America/New_York")
 
-  @spec next_day(Date.t) :: Date.t
+  @spec next_day(Date.t()) :: Date.t()
   defp next_day(date) do
     with {:ok, next_date} = Calendar.Date.add(date, 1), do: next_date
   end

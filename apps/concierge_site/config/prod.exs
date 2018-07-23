@@ -41,8 +41,10 @@ config :concierge_site, ConciergeSite.Dissemination.Mailer,
   adapter: Bamboo.SMTPAdapter,
   server: "email-smtp.us-east-1.amazonaws.com",
   port: 587,
-  tls: :always, # can be `:always` or `:never`
-  ssl: false, # can be `true`
+  # can be `:always` or `:never`
+  tls: :always,
+  # can be `true`
+  ssl: false,
   retries: 3,
   username: "${SMTP_USERNAME}",
   password: "${SMTP_PASSWORD}"
@@ -80,10 +82,10 @@ config :concierge_site, ConciergeSite.ViewHelpers,
 # If you are doing OTP releases, you need to instruct Phoenix
 # to start the server for all endpoints:
 #
-   # config :phoenix, :serve_endpoints, true
+# config :phoenix, :serve_endpoints, true
 #
 # Alternatively, you can configure exactly which server to
 # start per endpoint:
 #
-    # config :concierge_site, ConciergeSite.Endpoint, server: true
+# config :concierge_site, ConciergeSite.Endpoint, server: true
 #

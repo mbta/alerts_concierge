@@ -7,19 +7,21 @@ defmodule AlertProcessor.Subscription.BikeStorageMapper do
   import AlertProcessor.Subscription.Mapper, except: [map_timeframe: 1]
   alias AlertProcessor.Model.Subscription
 
-  defdelegate build_subscription_transaction(subscriptions, user, originator), to: AlertProcessor.Subscription.Mapper
+  defdelegate build_subscription_transaction(subscriptions, user, originator),
+    to: AlertProcessor.Subscription.Mapper
 
   @doc """
   map_subscription/1 receives a map of bike_storage subscription params and returns
   arrays of subscription_info to create in the database
   to be used for matching against alerts.
   """
-  @spec map_subscriptions(map) :: {:ok, [Subscription.subscription_info]} | :error
+  @spec map_subscriptions(map) :: {:ok, [Subscription.subscription_info()]} | :error
   def map_subscriptions(params) do
-    params = params
-    |> remove_empty_strings()
-    |> map_stop_names()
-    |> set_alert_priority()
+    params =
+      params
+      |> remove_empty_strings()
+      |> map_stop_names()
+      |> set_alert_priority()
 
     params
     |> map_timeframe
@@ -33,9 +35,9 @@ defmodule AlertProcessor.Subscription.BikeStorageMapper do
   end
 
   defp remove_empty_strings(params) do
-    Enum.reduce(params, %{}, fn({k, v}, acc) ->
+    Enum.reduce(params, %{}, fn {k, v}, acc ->
       if is_list(v) do
-        Map.put(acc, k, Enum.reject(v, & &1 == ""))
+        Map.put(acc, k, Enum.reject(v, &(&1 == "")))
       else
         Map.put(acc, k, v)
       end
@@ -57,16 +59,18 @@ defmodule AlertProcessor.Subscription.BikeStorageMapper do
   end
 
   defp with_entities(subscriptions) do
-    Enum.filter(subscriptions, fn({_, ie}) ->
+    Enum.filter(subscriptions, fn {_, ie} ->
       length(ie) > 0
     end)
   end
 
   defp map_timeframe(%{"relevant_days" => relevant_days}) do
-    [%Subscription{
-      start_time: ~T[00:00:00],
-      end_time: ~T[23:59:59],
-      relevant_days: Enum.map(relevant_days, &String.to_existing_atom/1)
-    }]
+    [
+      %Subscription{
+        start_time: ~T[00:00:00],
+        end_time: ~T[23:59:59],
+        relevant_days: Enum.map(relevant_days, &String.to_existing_atom/1)
+      }
+    ]
   end
 end

@@ -1,5 +1,4 @@
 defmodule ConciergeSite.TripCardHelper do
-
   import Phoenix.HTML.Tag, only: [content_tag: 3]
   import Phoenix.HTML.Link, only: [link: 2]
   import Phoenix.Controller, only: [get_csrf_token: 0]
@@ -7,36 +6,52 @@ defmodule ConciergeSite.TripCardHelper do
   alias AlertProcessor.Model.{Trip, Subscription}
   alias ConciergeSite.{IconViewHelper, RouteHelper}
 
-  @station_features [elevator: "Elevators", escalator: "Escalators", bike_storage: "Bike storage", parking_area: "Parking"]
+  @station_features [
+    elevator: "Elevators",
+    escalator: "Escalators",
+    bike_storage: "Bike storage",
+    parking_area: "Parking"
+  ]
 
-  @spec render(Plug.Conn.t, atom | Trip.t) :: Phoenix.HTML.safe
+  @spec render(Plug.Conn.t(), atom | Trip.t()) :: Phoenix.HTML.safe()
   def render(conn, %Trip{trip_type: :accessibility, id: id} = trip) do
-    content_tag :div, class: "card trip__card btn btn-outline-primary", data: [trip_card: "link",
-                                                                               link_type: "accessibility",
-                                                                               trip_id: id] do
+    content_tag :div,
+      class: "card trip__card btn btn-outline-primary",
+      data: [trip_card: "link", link_type: "accessibility", trip_id: id] do
       accessibility_content(trip, conn, id)
     end
   end
+
   def render(conn, %Trip{id: id} = trip) do
-    content_tag :div, class: "card trip__card btn btn-outline-primary", data: [trip_card: "link",
-                                                                               link_type: "commute",
-                                                                               trip_id: id] do
+    content_tag :div,
+      class: "card trip__card btn btn-outline-primary",
+      data: [trip_card: "link", link_type: "commute", trip_id: id] do
       commute_content(trip, conn, id)
     end
   end
+
   def render(_), do: ""
 
-  @spec display(Plug.Conn.t, atom | Trip.t) :: Phoenix.HTML.safe
+  @spec display(Plug.Conn.t(), atom | Trip.t()) :: Phoenix.HTML.safe()
   def display(conn, %Trip{trip_type: :accessibility, id: id} = trip) do
     content_tag :div, class: "card trip__card trip__card--display btn btn-outline-primary" do
       accessibility_content(trip, conn, id)
     end
   end
+
   def display(_), do: ""
 
-  @spec accessibility_content(Trip.t, Plug.Conn.t, String.t) :: [Phoenix.HTML.safe]
-  defp accessibility_content(%Trip{trip_type: :accessibility, relevant_days: relevant_days,
-                                  facility_types: facility_types, subscriptions: subscriptions}, conn, id) do
+  @spec accessibility_content(Trip.t(), Plug.Conn.t(), String.t()) :: [Phoenix.HTML.safe()]
+  defp accessibility_content(
+         %Trip{
+           trip_type: :accessibility,
+           relevant_days: relevant_days,
+           facility_types: facility_types,
+           subscriptions: subscriptions
+         },
+         conn,
+         id
+       ) do
     [
       content_tag :div, class: "trip__card--top" do
         [
@@ -66,10 +81,21 @@ defmodule ConciergeSite.TripCardHelper do
     ]
   end
 
-  @spec commute_content(Trip.t, Plug.Conn.t, String.t) :: [Phoenix.HTML.safe]
-  defp commute_content(%Trip{subscriptions: subscriptions, roundtrip: roundtrip, relevant_days: relevant_days,
-  start_time: start_time, end_time: end_time, return_start_time: return_start_time,
-  return_end_time: return_end_time, facility_types: facility_types}, conn, id) do
+  @spec commute_content(Trip.t(), Plug.Conn.t(), String.t()) :: [Phoenix.HTML.safe()]
+  defp commute_content(
+         %Trip{
+           subscriptions: subscriptions,
+           roundtrip: roundtrip,
+           relevant_days: relevant_days,
+           start_time: start_time,
+           end_time: end_time,
+           return_start_time: return_start_time,
+           return_end_time: return_end_time,
+           facility_types: facility_types
+         },
+         conn,
+         id
+       ) do
     [
       content_tag :div, class: "trip__card--top" do
         [
@@ -96,12 +122,12 @@ defmodule ConciergeSite.TripCardHelper do
     ]
   end
 
-  @spec routes([Subscription.t]) :: [Phoenix.HTML.safe]
+  @spec routes([Subscription.t()]) :: [Phoenix.HTML.safe()]
   defp routes(subscriptions) do
     subscriptions
     |> exclude_return_trip_subscriptions()
     |> RouteHelper.collapse_duplicate_green_legs()
-    |> Enum.map(fn (subscription) ->
+    |> Enum.map(fn subscription ->
       content_tag :div, class: "trip__card--route-container" do
         [
           content_tag :span, class: "trip__card--route-icon" do
@@ -115,66 +141,82 @@ defmodule ConciergeSite.TripCardHelper do
     end)
   end
 
-  @spec stops([Subscription.t]) :: Phoenix.HTML.safe
+  @spec stops([Subscription.t()]) :: Phoenix.HTML.safe()
   defp stops(subscriptions) do
-    first_trip_subscriptions = subscriptions |>
-      exclude_return_trip_subscriptions()
+    first_trip_subscriptions =
+      subscriptions
+      |> exclude_return_trip_subscriptions()
+
     origin = List.first(first_trip_subscriptions).origin
     destination = List.last(first_trip_subscriptions).destination
 
     content_tag :span, class: "trip__card--stops" do
       case {origin, destination} do
-        {nil, nil} -> ""
-        {nil, destination} -> ["to ", RouteHelper.stop_name(destination)]
-        {origin, nil} -> ["from ", RouteHelper.stop_name(origin)]
-        {origin, destination} -> ": #{RouteHelper.stop_name(origin)} — #{RouteHelper.stop_name(destination)}"
+        {nil, nil} ->
+          ""
+
+        {nil, destination} ->
+          ["to ", RouteHelper.stop_name(destination)]
+
+        {origin, nil} ->
+          ["from ", RouteHelper.stop_name(origin)]
+
+        {origin, destination} ->
+          ": #{RouteHelper.stop_name(origin)} — #{RouteHelper.stop_name(destination)}"
       end
     end
   end
 
-  @spec roundtrip(boolean) :: String.t
+  @spec roundtrip(boolean) :: String.t()
   defp roundtrip(true), do: "Round-trip"
   defp roundtrip(false), do: "One-way"
 
-  @spec days([atom]) :: String.t
+  @spec days([atom]) :: String.t()
   defp days([:monday, :tuesday, :wednesday, :thursday, :friday]), do: "Weekdays"
   defp days([:saturday, :sunday]), do: "Weekends"
-  defp days([:monday, :tuesday, :wednesday, :thursday, :friday, :saturday, :sunday]), do: "Every day"
+
+  defp days([:monday, :tuesday, :wednesday, :thursday, :friday, :saturday, :sunday]),
+    do: "Every day"
+
   defp days(days) do
     days
-    |> Enum.map(& String.slice(String.capitalize(Atom.to_string(&1)), 0..2))
+    |> Enum.map(&String.slice(String.capitalize(Atom.to_string(&1)), 0..2))
     |> Enum.join(", ")
   end
 
-  @spec trip_times({Time.t, Time.t}, {Time.t, Time.t} | {nil, nil}) :: Phoenix.HTML.safe
+  @spec trip_times({Time.t(), Time.t()}, {Time.t(), Time.t()} | {nil, nil}) :: Phoenix.HTML.safe()
   defp trip_times(start_time, {nil, nil}) do
     content_tag :div, class: "trip__card--times" do
       format_time(start_time)
     end
   end
+
   defp trip_times(start_time, end_time) do
     content_tag :div, class: "trip__card--times" do
       "#{format_time(start_time)}, #{format_time(end_time)}"
     end
   end
 
-  @spec format_time({Time.t, Time.t}) :: String.t
+  @spec format_time({Time.t(), Time.t()}) :: String.t()
   defp format_time({start_time, end_time}) do
-    "#{String.slice(format_time_string(time_to_string(start_time), "%l:%M%p"), 0..-2)} - #{String.slice(format_time_string(time_to_string(end_time), "%l:%M%p"), 0..-2)}"
+    "#{String.slice(format_time_string(time_to_string(start_time), "%l:%M%p"), 0..-2)} - #{
+      String.slice(format_time_string(time_to_string(end_time), "%l:%M%p"), 0..-2)
+    }"
   end
 
-  @spec facility_types([atom] | nil) :: String.t
+  @spec facility_types([atom] | nil) :: String.t()
   defp facility_types(nil), do: ""
+
   defp facility_types(facility_types) do
     facility_types
-    |> Enum.map(& @station_features[&1])
+    |> Enum.map(&@station_features[&1])
     |> Enum.intersperse(", ")
   end
 
-  @spec stops_and_routes([Subscription.t]) :: [String.t]
+  @spec stops_and_routes([Subscription.t()]) :: [String.t()]
   defp stops_and_routes(subscriptions) do
     subscriptions
-    |> Enum.map(fn(subscription) ->
+    |> Enum.map(fn subscription ->
       case {subscription.origin, subscription.route} do
         {stop_id, nil} -> RouteHelper.stop_name(stop_id)
         {nil, route_id} -> RouteHelper.route_name(route_id)
@@ -183,20 +225,29 @@ defmodule ConciergeSite.TripCardHelper do
     |> Enum.intersperse(", ")
   end
 
-  @spec edit_link(Plug.Conn.t, atom, String.t) :: Phoenix.HTML.safe
+  @spec edit_link(Plug.Conn.t(), atom, String.t()) :: Phoenix.HTML.safe()
   defp edit_link(conn, :commute, id) do
-    link("Edit", to: ConciergeSite.Router.Helpers.trip_path(conn, :edit, id), class: "trip__card--edit-link")
-  end
-  defp edit_link(conn, :accessibility, id) do
-    link("Edit", to: ConciergeSite.Router.Helpers.accessibility_trip_path(conn, :edit, id), class: "trip__card--edit-link")
+    link(
+      "Edit",
+      to: ConciergeSite.Router.Helpers.trip_path(conn, :edit, id),
+      class: "trip__card--edit-link"
+    )
   end
 
-  @spec delete_link(String.t) :: Phoenix.HTML.safe
+  defp edit_link(conn, :accessibility, id) do
+    link(
+      "Edit",
+      to: ConciergeSite.Router.Helpers.accessibility_trip_path(conn, :edit, id),
+      class: "trip__card--edit-link"
+    )
+  end
+
+  @spec delete_link(String.t()) :: Phoenix.HTML.safe()
   defp delete_link(trip_id) do
-    content_tag :a, class: "trip__card--delete-link", tabindex: "0", data: [toggle: "modal",
-                                                                            target: "#deleteModal",
-                                                                            trip_id: trip_id,
-                                                                            token: get_csrf_token()] do
+    content_tag :a,
+      class: "trip__card--delete-link",
+      tabindex: "0",
+      data: [toggle: "modal", target: "#deleteModal", trip_id: trip_id, token: get_csrf_token()] do
       "Delete"
     end
   end

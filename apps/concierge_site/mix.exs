@@ -2,21 +2,23 @@ defmodule ConciergeSite.Mixfile do
   use Mix.Project
 
   def project do
-    [app: :concierge_site,
-     version: app_version("0.0.59"),
-     build_path: "../../_build",
-     config_path: "../../config/config.exs",
-     deps_path: "../../deps",
-     lockfile: "../../mix.lock",
-     elixir: "~> 1.6",
-     elixirc_paths: elixirc_paths(Mix.env),
-     compilers: [:phoenix, :gettext, :yecc, :leex, :erlang, :elixir, :xref, :app],
-     preferred_cli_env: [coveralls: :test, "coveralls.json": :test],
-     build_embedded: Mix.env == :prod,
-     start_permanent: Mix.env == :prod,
-     dialyzer: [plt_add_deps: :transitive],
-     test_coverage: [tool: ExCoveralls],
-     deps: deps()]
+    [
+      app: :concierge_site,
+      version: app_version("0.0.59"),
+      build_path: "../../_build",
+      config_path: "../../config/config.exs",
+      deps_path: "../../deps",
+      lockfile: "../../mix.lock",
+      elixir: "~> 1.6",
+      elixirc_paths: elixirc_paths(Mix.env()),
+      compilers: [:phoenix, :gettext, :yecc, :leex, :erlang, :elixir, :xref, :app],
+      preferred_cli_env: [coveralls: :test, "coveralls.json": :test],
+      build_embedded: Mix.env() == :prod,
+      start_permanent: Mix.env() == :prod,
+      dialyzer: [plt_add_deps: :transitive],
+      test_coverage: [tool: ExCoveralls],
+      deps: deps()
+    ]
   end
 
   # Configuration for the OTP application.
@@ -33,19 +35,19 @@ defmodule ConciergeSite.Mixfile do
       :runtime_tools
     ]
 
-    apps = if Mix.env == :prod do
-      [:sasl, :ehmon, :diskusage_logger | apps]
-    else
-      apps
-    end
+    apps =
+      if Mix.env() == :prod do
+        [:sasl, :ehmon, :diskusage_logger | apps]
+      else
+        apps
+      end
 
-    [mod: {ConciergeSite, []},
-     extra_applications: apps]
+    [mod: {ConciergeSite, []}, extra_applications: apps]
   end
 
   # Specifies which paths to compile per environment.
   defp elixirc_paths(:test), do: ["lib", "test/support"]
-  defp elixirc_paths(_),     do: ["lib"]
+  defp elixirc_paths(_), do: ["lib"]
 
   # Specifies your project dependencies.
   #

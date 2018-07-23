@@ -18,7 +18,7 @@ defmodule ConciergeSite.Logster.SafeStringFormatter do
   end
 
   defp format_value(value) when is_float(value) do
-    :erlang.float_to_binary(value, [decimals: 3])
+    :erlang.float_to_binary(value, decimals: 3)
   end
 
   defp format_value(value) when is_atom(value) or is_integer(value) do

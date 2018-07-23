@@ -11,8 +11,8 @@ defmodule AlertProcessor.ActivePeriodFilter do
   subscriptions to be considered in the form of an ecto queryable which have
   been matched based on the active period(s) in the alert.
   """
-  @spec filter([Subscription.t], Keyword.t) :: [Subscription.t]
-  def filter(subscriptions, [alert: alert]) do
+  @spec filter([Subscription.t()], Keyword.t()) :: [Subscription.t()]
+  def filter(subscriptions, alert: alert) do
     do_filter(subscriptions, alert)
   end
 
@@ -22,8 +22,8 @@ defmodule AlertProcessor.ActivePeriodFilter do
     active_period_timeframe_maps = Alert.timeframe_maps(alert)
 
     for sub <- subscriptions,
-      sub_map = Subscription.timeframe_map(sub),
-      Enum.any?(active_period_timeframe_maps, &TimeFrameComparison.match?(&1, sub_map)) do
+        sub_map = Subscription.timeframe_map(sub),
+        Enum.any?(active_period_timeframe_maps, &TimeFrameComparison.match?(&1, sub_map)) do
       sub
     end
   end

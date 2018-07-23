@@ -19,7 +19,7 @@ defmodule ConciergeSite.SignInHelper do
   When resetting password, admin users are redirected to admin my-account page
   and normal users are redirected to the base my-account page.
   """
-  @spec sign_in(Plug.Conn.t, User.t, [redirect: atom]) :: Plug.Conn.t
+  @spec sign_in(Plug.Conn.t(), User.t(), redirect: atom) :: Plug.Conn.t()
   def sign_in(conn, user, opts) do
     conn
     |> sign_in_user(user)
@@ -29,7 +29,7 @@ defmodule ConciergeSite.SignInHelper do
   defp sign_in_user(conn, %User{role: "customer_support"} = user) do
     Guardian.Plug.sign_in(conn, user, :access, %{
       perms: %{
-        default: Guardian.Permissions.max,
+        default: Guardian.Permissions.max(),
         admin: [:customer_support]
       }
     })
@@ -38,7 +38,7 @@ defmodule ConciergeSite.SignInHelper do
   defp sign_in_user(conn, %User{role: "application_administration"} = user) do
     Guardian.Plug.sign_in(conn, user, :access, %{
       perms: %{
-        default: Guardian.Permissions.max,
+        default: Guardian.Permissions.max(),
         admin: [:customer_support, :application_administration]
       }
     })
@@ -46,7 +46,7 @@ defmodule ConciergeSite.SignInHelper do
 
   defp sign_in_user(conn, user) do
     Guardian.Plug.sign_in(conn, user, :access, %{
-      perms: %{default: Guardian.Permissions.max}
+      perms: %{default: Guardian.Permissions.max()}
     })
   end
 

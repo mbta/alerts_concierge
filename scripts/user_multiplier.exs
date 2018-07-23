@@ -26,7 +26,7 @@ defmodule UserMultiplier do
 
   def create_new_users(count) do
     for index <- 1..count do
-      IO.puts "Creating new user: #{index}"
+      IO.puts("Creating new user: #{index}")
 
       user = random_user()
       trips = user.trips
@@ -55,12 +55,14 @@ defmodule UserMultiplier do
 
   def random_user() do
     Repo.all(
-      from u in User,
-      join: t in assoc(u, :trips),
-      join: s in assoc(t, :subscriptions),
-      limit: 200,
-      preload: [trips: :subscriptions],
-      select: u
+      from(
+        u in User,
+        join: t in assoc(u, :trips),
+        join: s in assoc(t, :subscriptions),
+        limit: 200,
+        preload: [trips: :subscriptions],
+        select: u
+      )
     )
     |> Enum.random()
   end
@@ -70,15 +72,15 @@ defmodule UserMultiplier do
     |> Map.delete(:id)
     |> Map.delete(:inserted_at)
     |> Map.delete(:subscription)
-    |> Map.update(:trips, [], &(Enum.drop_every(&1, 1)))
-    |> Map.update(:email, nil, &("Copy#{index}-#{:rand.uniform(10_000)}Of#{&1}"))
+    |> Map.update(:trips, [], &Enum.drop_every(&1, 1))
+    |> Map.update(:email, nil, &"Copy#{index}-#{:rand.uniform(10_000)}Of#{&1}")
   end
 
   def prepare_trip(trip, user) do
     trip
     |> Map.delete(:id)
     |> Map.delete(:inserted_at)
-    |> Map.update(:subscriptions, [], &(Enum.drop_every(&1, 1)))
+    |> Map.update(:subscriptions, [], &Enum.drop_every(&1, 1))
     |> Map.delete(:user)
     |> Map.put(:user_id, user.id)
   end
@@ -90,10 +92,10 @@ defmodule UserMultiplier do
     |> Map.put(:user_id, user.id)
     |> Map.delete(:user)
     |> Map.delete(:trip)
-    |> Map.update(:notifications, [], &(Enum.drop_every(&1, 1)))
-    |> Map.update(:notification_subscriptions, [], &(Enum.drop_every(&1, 1)))
+    |> Map.update(:notifications, [], &Enum.drop_every(&1, 1))
+    |> Map.update(:notification_subscriptions, [], &Enum.drop_every(&1, 1))
     |> Map.put(:trip_id, trip.id)
-    |> Map.update(:informed_entities, [], &(Enum.drop_every(&1, 1)))
+    |> Map.update(:informed_entities, [], &Enum.drop_every(&1, 1))
   end
 end
 

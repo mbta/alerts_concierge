@@ -14,7 +14,6 @@ defmodule ConciergeSite.Plugs.TokenRefresh do
     with token <- get_session(conn, "guardian_default"),
          {:ok, claims} <- Guardian.decode_and_verify(token),
          true <- token_expires_within_fifteen_minutes?(claims) do
-
       current_user = current_resource(conn)
       sign_in(conn, current_user, :access, %{perms: map_permissions(claims["pem"])})
     else
@@ -22,12 +21,14 @@ defmodule ConciergeSite.Plugs.TokenRefresh do
     end
   end
 
-  defp map_permissions(%{"admin" => admin, "default" => default}), do: %{admin: admin, default: default}
+  defp map_permissions(%{"admin" => admin, "default" => default}),
+    do: %{admin: admin, default: default}
+
   defp map_permissions(%{"default" => default}), do: %{default: default}
 
   defp token_expires_within_fifteen_minutes?(%{"exp" => exp}) do
     now = DateTime.utc_now() |> DateTime.to_unix()
-    fifteen_minutes_from_now = (15 * 60) + now
+    fifteen_minutes_from_now = 15 * 60 + now
     exp > now and exp < fifteen_minutes_from_now
   end
 end

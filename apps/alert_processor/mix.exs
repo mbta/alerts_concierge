@@ -2,27 +2,30 @@ defmodule AlertProcessor.Mixfile do
   use Mix.Project
 
   def project do
-    [app: :alert_processor,
-     version: "0.0.59",
-     build_path: "../../_build",
-     config_path: "../../config/config.exs",
-     deps_path: "../../deps",
-     lockfile: "../../mix.lock",
-     elixir: "~> 1.6",
-     elixirc_paths: elixirc_paths(Mix.env),
-     compilers: [:gettext] ++ Mix.compilers,
-     build_embedded: Mix.env == :prod,
-     start_permanent: Mix.env == :prod,
-     dialyzer: [plt_add_deps: :transitive],
-     test_coverage: [tool: ExCoveralls],
-     deps: deps()]
+    [
+      app: :alert_processor,
+      version: "0.0.59",
+      build_path: "../../_build",
+      config_path: "../../config/config.exs",
+      deps_path: "../../deps",
+      lockfile: "../../mix.lock",
+      elixir: "~> 1.6",
+      elixirc_paths: elixirc_paths(Mix.env()),
+      compilers: [:gettext] ++ Mix.compilers(),
+      build_embedded: Mix.env() == :prod,
+      start_permanent: Mix.env() == :prod,
+      dialyzer: [plt_add_deps: :transitive],
+      test_coverage: [tool: ExCoveralls],
+      deps: deps()
+    ]
   end
 
   # Configuration for the OTP application.
   #
   # Type `mix help compile.app` for more information.
   def application do
-    [mod: {AlertProcessor, []},
+    [
+      mod: {AlertProcessor, []},
       extra_applications: [
         :elixir_make,
         :ex2ms,
@@ -32,7 +35,8 @@ defmodule AlertProcessor.Mixfile do
         :crypto,
         :calendar,
         :comeonin,
-        :sweet_xml, # Must come before ex_aws
+        # Must come before ex_aws
+        :sweet_xml,
         :exactor,
         :ex_aws,
         :ex_rated,
@@ -43,14 +47,14 @@ defmodule AlertProcessor.Mixfile do
         :poolboy,
         :postgrex,
         :runtime_tools,
-        :scrivener_ecto,
-     ]
+        :scrivener_ecto
+      ]
     ]
   end
 
   # Specifies which paths to compile per environment.
   defp elixirc_paths(:test), do: ["lib", "test/support"]
-  defp elixirc_paths(_),     do: ["lib"]
+  defp elixirc_paths(_), do: ["lib"]
 
   # Specifies your project dependencies.
   #
@@ -68,10 +72,12 @@ defmodule AlertProcessor.Mixfile do
       {:exactor, "~> 2.2.0"},
       {:excoveralls, "~> 0.5", only: [:dev, :test]},
       {:ex_aws, "~> 2.0"},
-      {:ex_aws_sns, git: "https://github.com/ex-aws/ex_aws_sns", ref: "7a681400876774cf8ea9825a07b7d361715e4362"},
+      {:ex_aws_sns,
+       git: "https://github.com/ex-aws/ex_aws_sns",
+       ref: "7a681400876774cf8ea9825a07b7d361715e4362"},
       {:ex_machina, "~> 2.0", only: :test},
       {:ex_rated, "~> 1.3"},
-      {:exvcr, "~> 0.10.1", runtime: :false},
+      {:exvcr, "~> 0.10.1", runtime: false},
       {:fast_local_datetime, "~> 0.3.0"},
       {:gettext, "~> 0.11"},
       {:hackney, "~> 1.12", override: true},

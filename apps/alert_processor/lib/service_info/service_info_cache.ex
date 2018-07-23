@@ -85,14 +85,16 @@ defmodule AlertProcessor.ServiceInfoCache do
 
   def get_route(name, %{route_id: "Red", stop_ids: stop_ids}) do
     {:ok, routes} = GenServer.call(name, :get_routes, @timeout)
+
     route =
       Enum.find(routes, fn route ->
-        route.route_id == "Red"
-        && Enum.all?(stop_ids, fn stop_id ->
-          route_stop_ids = Enum.map(route.stop_list, & elem(&1, 1))
-          stop_id in route_stop_ids
-        end)
+        route.route_id == "Red" &&
+          Enum.all?(stop_ids, fn stop_id ->
+            route_stop_ids = Enum.map(route.stop_list, &elem(&1, 1))
+            stop_id in route_stop_ids
+          end)
       end)
+
     {:ok, route}
   end
 
@@ -422,10 +424,11 @@ defmodule AlertProcessor.ServiceInfoCache do
       case ApiClient.schedule_for_trip(trip_id) do
         {:ok, []} ->
           {trip_id,
-            map_generalized_trip_id(trip_id, trip_info_map, %{
-              origin_id: nil,
-              departure_time: nil
-            })}
+           map_generalized_trip_id(trip_id, trip_info_map, %{
+             origin_id: nil,
+             departure_time: nil
+           })}
+
         {:ok, schedule} ->
           [departure_schedule | _t] = Enum.sort_by(schedule, & &1["attributes"]["departure_time"])
 
@@ -438,10 +441,10 @@ defmodule AlertProcessor.ServiceInfoCache do
             departure_timestamp |> NaiveDateTime.from_iso8601!() |> NaiveDateTime.to_time()
 
           {trip_id,
-            map_generalized_trip_id(trip_id, trip_info_map, %{
-              origin_id: origin_id,
-              departure_time: departure_time
-            })}
+           map_generalized_trip_id(trip_id, trip_info_map, %{
+             origin_id: origin_id,
+             departure_time: departure_time
+           })}
       end
     end
   end
@@ -552,8 +555,9 @@ defmodule AlertProcessor.ServiceInfoCache do
   defp fetch_stops(3, route_id) when route_id in @silver_line_route_ids do
     stop_ids_with_elevator_or_escalator = stop_ids_with_elevator_or_escalator()
     {:ok, route_stops} = ApiClient.route_stops(route_id)
+
     route_stops
-    |> Enum.filter(& MapSet.member?(stop_ids_with_elevator_or_escalator, &1["id"]))
+    |> Enum.filter(&MapSet.member?(stop_ids_with_elevator_or_escalator, &1["id"]))
     |> prepare_stops_for_cache()
   end
 
@@ -566,8 +570,10 @@ defmodule AlertProcessor.ServiceInfoCache do
 
   defp stop_ids_with_elevator_or_escalator() do
     {:ok, facilities} = ApiClient.facilities()
+
     Enum.reduce(facilities, MapSet.new(), fn facility, stop_ids ->
       attributes_type = get_in(facility, ["attributes", "type"])
+
       if attributes_type in ["ELEVATOR", "ESCALATOR"] do
         stop_id = get_in(facility, ["relationships", "stop", "data", "id"])
         MapSet.put(stop_ids, stop_id)

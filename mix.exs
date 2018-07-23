@@ -2,13 +2,15 @@ defmodule AlertsConcierge.Mixfile do
   use Mix.Project
 
   def project do
-    [apps_path: "apps",
-     build_embedded: Mix.env == :prod,
-     start_permanent: Mix.env == :prod,
-     aliases: aliases(),
-     deps: deps(),
-     test_coverage: [tool: ExCoveralls],
-     preferred_cli_env: [vcr: :test, coveralls: :test]]
+    [
+      apps_path: "apps",
+      build_embedded: Mix.env() == :prod,
+      start_permanent: Mix.env() == :prod,
+      aliases: aliases(),
+      deps: deps(),
+      test_coverage: [tool: ExCoveralls],
+      preferred_cli_env: [vcr: :test, coveralls: :test]
+    ]
   end
 
   # Dependencies can be Hex packages:
@@ -28,13 +30,15 @@ defmodule AlertsConcierge.Mixfile do
       {:credo, "~> 0.7", only: [:dev, :test]},
       {:distillery, "~> 1.5", runtime: false},
       {:excoveralls, "~> 0.5", only: [:dev, :test]},
-      {:mix_test_watch, "~> 0.6", only: :dev, runtime: false},
+      {:mix_test_watch, "~> 0.6", only: :dev, runtime: false}
     ]
   end
 
   defp aliases do
-    ["ecto.setup": ["ecto.create", "ecto.migrate"],
-     "ecto.reset": ["ecto.drop", "ecto.setup"],
-     "test.all": ["ecto.create --quiet", "ecto.migrate", "coveralls.json", "test"]]
+    [
+      "ecto.setup": ["ecto.create", "ecto.migrate"],
+      "ecto.reset": ["ecto.drop", "ecto.setup"],
+      "test.all": ["ecto.create --quiet", "ecto.migrate", "coveralls.json", "test"]
+    ]
   end
 end

@@ -6,12 +6,12 @@ defmodule ConciergeSite.AccessibilityTripController do
   alias Ecto.Multi
   import Ecto.Changeset
 
-  action_fallback ConciergeSite.FallbackController
+  action_fallback(ConciergeSite.FallbackController)
 
   @valid_facility_types ~w(elevator escalator)
 
   def new(conn, _params, _user, _claims) do
-    render conn, "new.html", changeset: make_changeset()
+    render(conn, "new.html", changeset: make_changeset())
   end
 
   def create(conn, %{"trip" => trip}, user, {:ok, claims}) do
@@ -26,11 +26,11 @@ defmodule ConciergeSite.AccessibilityTripController do
     with {:trip, %Trip{} = trip} <- {:trip, Trip.find_by_id(id)},
          {:authorized, true} <- {:authorized, user.id == trip.user_id},
          {:changeset, changeset} <- {:changeset, Trip.update_changeset(trip)} do
-
       render(conn, "edit.html", trip: trip, changeset: changeset)
     else
       {:trip, nil} ->
         {:error, :not_found}
+
       {:authorized, false} ->
         {:error, :not_found}
     end
@@ -39,23 +39,33 @@ defmodule ConciergeSite.AccessibilityTripController do
   def update(conn, %{"id" => id, "trip" => trip_params}, user, _claims) do
     with {:trip, %Trip{} = trip} <- {:trip, Trip.find_by_id(id)},
          {:authorized, true} <- {:authorized, user.id == trip.user_id},
-         {:collated_facility_types, collated_trip_params} <- {:collated_facility_types, TripParams.collate_facility_types(trip_params, @valid_facility_types)},
-         {:sanitized, sanitized_trip_params} <- {:sanitized, TripParams.sanitize_trip_params(collated_trip_params)},
+         {:collated_facility_types, collated_trip_params} <-
+           {:collated_facility_types,
+            TripParams.collate_facility_types(trip_params, @valid_facility_types)},
+         {:sanitized, sanitized_trip_params} <-
+           {:sanitized, TripParams.sanitize_trip_params(collated_trip_params)},
          {:ok, %Trip{} = updated_trip} <- Trip.update(trip, sanitized_trip_params) do
-
       conn
       |> put_flash(:info, "Subscription updated.")
       |> render("edit.html", trip: updated_trip, changeset: Trip.update_changeset(updated_trip))
     else
       {:trip, nil} ->
         {:error, :not_found}
+
       {:authorized, false} ->
         {:error, :not_found}
+
       {:error, %Ecto.Changeset{} = changeset} ->
         conn
         |> put_status(:unprocessable_entity)
         |> put_flash(:error, "Trip could not be updated. Please see errors below.")
-        |> render("edit.html", trip: Trip.find_by_id(id), changeset: changeset, schedules: %{}, return_schedules: %{})
+        |> render(
+          "edit.html",
+          trip: Trip.find_by_id(id),
+          changeset: changeset,
+          schedules: %{},
+          return_schedules: %{}
+        )
     end
   end
 
@@ -68,7 +78,14 @@ defmodule ConciergeSite.AccessibilityTripController do
   end
 
   defp default_values(trip_params) do
-    default_params = %{"routes" => [], "stops" => [], "elevator" => "false", "escalator" => "false", "relevant_days" => []}
+    default_params = %{
+      "routes" => [],
+      "stops" => [],
+      "elevator" => "false",
+      "escalator" => "false",
+      "relevant_days" => []
+    }
+
     Map.merge(default_params, trip_params)
   end
 
@@ -80,14 +97,18 @@ defmodule ConciergeSite.AccessibilityTripController do
 
   defp save_trip(changeset, conn, user, claims) do
     trip = make_trip(changeset, user)
-    subscriptions = make_stop_subscriptions(changeset, trip) ++ make_route_subscriptions(changeset, trip)
+
+    subscriptions =
+      make_stop_subscriptions(changeset, trip) ++ make_route_subscriptions(changeset, trip)
 
     multi = build_trip_transaction(trip, subscriptions, user, Map.get(claims, "imp", user.id))
+
     case Subscription.set_versioned_subscription(multi) do
       :ok ->
         conn
         |> put_flash(:info, "Success! Your subscription has been created.")
         |> redirect(to: trip_path(conn, :index))
+
       :error ->
         conn
         |> put_flash(:error, "There was an error creating your trip. Please try again.")
@@ -96,21 +117,27 @@ defmodule ConciergeSite.AccessibilityTripController do
   end
 
   defp build_trip_transaction(trip, subscriptions, user, originator) do
-    multi = Multi.run(Multi.new, {:trip, 0}, fn _ ->
-      PaperTrail.insert(trip, originator: User.wrap_id(originator), meta: %{owner: user.id})
-    end)
+    multi =
+      Multi.run(Multi.new(), {:trip, 0}, fn _ ->
+        PaperTrail.insert(trip, originator: User.wrap_id(originator), meta: %{owner: user.id})
+      end)
 
     subscriptions
-    |> Enum.with_index
-    |> Enum.reduce(multi, fn({sub, index}, acc) ->
-      sub_to_insert = sub
-      |> Map.merge(%{id: Ecto.UUID.generate, rank: index})
-      |> Subscription.create_changeset()
+    |> Enum.with_index()
+    |> Enum.reduce(multi, fn {sub, index}, acc ->
+      sub_to_insert =
+        sub
+        |> Map.merge(%{id: Ecto.UUID.generate(), rank: index})
+        |> Subscription.create_changeset()
 
       acc
       |> Multi.run({:subscription, index}, fn _ ->
-           PaperTrail.insert(sub_to_insert, originator: User.wrap_id(originator), meta: %{owner: user.id})
-         end)
+        PaperTrail.insert(
+          sub_to_insert,
+          originator: User.wrap_id(originator),
+          meta: %{owner: user.id}
+        )
+      end)
     end)
   end
 
@@ -120,7 +147,8 @@ defmodule ConciergeSite.AccessibilityTripController do
       stops: {:array, :string},
       routes: {:array, :string},
       elevator: :string,
-      escalator: :string}
+      escalator: :string
+    }
 
     {%{}, types}
     |> cast(params, Map.keys(types))
@@ -135,42 +163,52 @@ defmodule ConciergeSite.AccessibilityTripController do
   end
 
   defp validate_days(%{changes: %{relevant_days: []}} = changeset) do
-    add_error changeset, :relevant_days, "at least one day must be selected"
+    add_error(changeset, :relevant_days, "at least one day must be selected")
   end
+
   defp validate_days(changeset), do: changeset
 
   defp validate_features(%{changes: %{elevator: "false", escalator: "false"}} = changeset) do
-    add_error changeset, :escalator, "at least one accessibility feature must be selected"
+    add_error(changeset, :escalator, "at least one accessibility feature must be selected")
   end
+
   defp validate_features(changeset), do: changeset
 
   defp validate_stops(%{changes: %{stops: [], routes: []}} = changeset) do
-    add_error changeset, :stops, "must choose at least one stop or line"
+    add_error(changeset, :stops, "must choose at least one stop or line")
   end
+
   defp validate_stops(changeset), do: changeset
 
   defp validate_routes(%{changes: %{stops: [], routes: []}} = changeset) do
-    add_error changeset, :stops, "must choose at least one stop or line"
+    add_error(changeset, :stops, "must choose at least one stop or line")
   end
+
   defp validate_routes(changeset), do: changeset
 
-  defp make_trip(%{changes: %{relevant_days: relevant_days, elevator: elevator, escalator: escalator}}, user) do
+  defp make_trip(
+         %{changes: %{relevant_days: relevant_days, elevator: elevator, escalator: escalator}},
+         user
+       ) do
     %Trip{
-      id: Ecto.UUID.generate,
+      id: Ecto.UUID.generate(),
       user_id: user.id,
       alert_priority_type: "low",
       relevant_days: Enum.map(relevant_days, &String.to_existing_atom/1),
       start_time: ~T[03:20:00],
       end_time: ~T[01:50:00],
-      facility_types: TripParams.input_to_facility_types(%{"elevator" => elevator, "escalator" => escalator}, @valid_facility_types),
-
+      facility_types:
+        TripParams.input_to_facility_types(
+          %{"elevator" => elevator, "escalator" => escalator},
+          @valid_facility_types
+        ),
       roundtrip: false,
       trip_type: :accessibility
     }
   end
 
   defp make_stop_subscriptions(%{changes: %{stops: stops}}, trip) do
-    Enum.map(stops, fn(stop) ->
+    Enum.map(stops, fn stop ->
       trip
       |> make_subscription()
       |> Map.put(:origin, stop)
@@ -182,8 +220,9 @@ defmodule ConciergeSite.AccessibilityTripController do
   defp make_route_subscriptions(%{changes: %{routes: routes}}, trip) do
     routes
     |> clean_routes_input()
-    |> Enum.map(fn(route) ->
+    |> Enum.map(fn route ->
       route_type = if route == "Green", do: 0, else: 1
+
       trip
       |> make_subscription()
       |> Map.put(:route, route)
@@ -192,7 +231,7 @@ defmodule ConciergeSite.AccessibilityTripController do
   end
 
   defp clean_routes_input(routes) do
-    Enum.map(routes, fn(route_input) ->
+    Enum.map(routes, fn route_input ->
       [route_name, _, _] = String.split(route_input, "~~")
       route_name
     end)

@@ -18,14 +18,11 @@ config :concierge_site, ConciergeSite.Dissemination.Mailer,
 config :concierge_site, :sql_sandbox, true
 
 # Google Tag Manager
-config :concierge_site, ConciergeSite.ViewHelpers,
-  google_tag_manager_id: "GOOGLE_TAG_MANAGER_ID"
+config :concierge_site, ConciergeSite.ViewHelpers, google_tag_manager_id: "GOOGLE_TAG_MANAGER_ID"
 
-config :exvcr, [
+config :exvcr,
   vcr_cassette_library_dir: "test/fixture/vcr_cassettes",
   custom_cassette_library_dir: "test/fixture/custom_cassettes",
   filter_request_headers: ["x-api-key"]
-]
 
-config :wallaby,
-  driver: Wallaby.Experimental.Chrome
+config :wallaby, driver: Wallaby.Experimental.Chrome

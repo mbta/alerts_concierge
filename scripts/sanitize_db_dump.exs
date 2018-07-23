@@ -10,7 +10,7 @@ defmodule SanitizeDbDump do
   PGPASSWORD=<PROD PASSWORD> pg_dump --host=alerts-concierge-prod.cw84s0ixvuei.us-east-1.rds.amazonaws.com --port=5432 --username=alerts_concierge --dbname=alerts_concierge_prod --table=users --table=trips --table=subscriptions --no-owner --data-only | elixir ./scripts/sanitize_db_dump.exs | psql -d alert_concierge_dev
   ```
   """
-  
+
   def run() do
     :stdio
     |> IO.stream(:line)
@@ -33,9 +33,13 @@ defmodule SanitizeDbDump do
 
   defp mock_email() do
     chars = String.split("abcdefghijklmnopqrstuvwxyz0123456789", "")
-    address = Enum.reduce((1..10), [], fn (_i, acc) ->
-      [Enum.random(chars) | acc]
-    end) |> Enum.join("")
+
+    address =
+      Enum.reduce(1..10, [], fn _i, acc ->
+        [Enum.random(chars) | acc]
+      end)
+      |> Enum.join("")
+
     "#{address}@example.com"
   end
 end

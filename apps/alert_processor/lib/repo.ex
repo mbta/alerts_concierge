@@ -9,6 +9,6 @@ defmodule AlertProcessor.Repo do
   DATABASE_URL environment variable.
   """
   def init(_, opts) do
-   {:ok, Keyword.put(opts, :url, ConfigHelper.get_string(:database_url))}
+    {:ok, Keyword.put(opts, :url, ConfigHelper.get_string(:database_url))}
   end
 end

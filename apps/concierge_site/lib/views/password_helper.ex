@@ -7,7 +7,7 @@ defmodule ConciergeSite.PasswordHelper do
   Returns a regular expression for validating passwords in the pattern option
   for HTML.Form.password_input/3
   """
-  @spec password_regex_string :: String.t
+  @spec password_regex_string :: String.t()
   def password_regex_string do
     "(?=^.{6,}$)((?=.*\\d)|(?=.*\\W+))(?![.\\n])(?=.*[a-zA-Z]).*$"
   end

@@ -4,12 +4,12 @@ defmodule AlertProcessor.Helpers.ConfigHelper do
   {:system, env, default} format.
   """
 
-  @spec get_string(atom, atom) :: String.t | integer | nil
+  @spec get_string(atom, atom) :: String.t() | integer | nil
   def get_string(name, app \\ :alert_processor) do
     do_get(name, app)
   end
 
-  @spec get_int(atom, atom) :: String.t | integer
+  @spec get_int(atom, atom) :: String.t() | integer
   def get_int(name, app \\ :alert_processor) do
     name |> do_get(app) |> String.to_integer()
   end

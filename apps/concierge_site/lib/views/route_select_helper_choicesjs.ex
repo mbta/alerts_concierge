@@ -34,18 +34,25 @@ defmodule ConciergeSite.RouteSelectHelperChoicesJS do
   @spec attributes(atom, atom, atom, keyword, boolean) :: keyword(String.t())
   defp attributes(input_name, field, mode, attrs, selected) do
     suffix = if selected, do: "", else: "-hidden"
+
     name =
       if attrs[:multiple] == "multiple",
         do: "#{input_name}#{suffix}[#{field}][]",
         else: "#{input_name}#{suffix}[#{field}]"
 
-    [data: [type: "route"], class: "form-control", id: "#{input_name}_#{field}_#{mode}", name: name]
+    [
+      data: [type: "route"],
+      class: "form-control",
+      id: "#{input_name}_#{field}_#{mode}",
+      name: name
+    ]
     |> Keyword.merge(attrs)
   end
 
   @spec options(atom, [String.t()]) :: [Phoenix.HTML.safe()]
   defp options(mode, selected) do
     options = get_routes(mode)
+
     for {icon, id, name} <- options do
       value = value(id, name, mode)
       selected = if Enum.member?(selected, value), do: [selected: "selected"], else: []

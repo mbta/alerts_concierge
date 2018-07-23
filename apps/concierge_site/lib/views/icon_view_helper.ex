@@ -199,7 +199,7 @@ defmodule ConciergeSite.IconViewHelper do
     """)
   end
 
-  @spec icon_for_route(atom | String.t, atom | String.t) :: Phoenix.HTML.safe
+  @spec icon_for_route(atom | String.t(), atom | String.t()) :: Phoenix.HTML.safe()
   def icon_for_route(mode, route) when is_bitstring(mode) do
     mode
     |> atomize()
@@ -211,13 +211,16 @@ defmodule ConciergeSite.IconViewHelper do
   end
 
   def icon_for_route(_, "Mattapan"), do: icon(:mattapan)
-  def icon_for_route(:subway, routes) when is_list(routes), do: Enum.map(routes, fn(route) -> icon_for_route(:subway, route) end)
+
+  def icon_for_route(:subway, routes) when is_list(routes),
+    do: Enum.map(routes, fn route -> icon_for_route(:subway, route) end)
+
   def icon_for_route(:subway, route), do: icon(route)
   def icon_for_route(:cr, _), do: icon(:commuter_rail)
   def icon_for_route(:bus, _), do: icon(:bus)
   def icon_for_route(:ferry, _), do: icon(:ferry)
 
-  @spec atomize(String.t) :: atom
+  @spec atomize(String.t()) :: atom
   defp atomize(str) do
     str
     |> String.downcase()

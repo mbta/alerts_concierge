@@ -16,10 +16,18 @@ defmodule ConciergeSite.AdminUserPolicy do
     show_user_subscriptions
   )a
 
-  def can?(%User{role: "application_administration"}, action) when action in @application_admin_only_actions, do: true
-  def can?(%User{role: "application_administration"}, action) when action in @customer_service_actions, do: true
+  def can?(%User{role: "application_administration"}, action)
+      when action in @application_admin_only_actions,
+      do: true
+
+  def can?(%User{role: "application_administration"}, action)
+      when action in @customer_service_actions,
+      do: true
+
   def can?(%User{}, action) when action in @application_admin_only_actions, do: false
 
-  def can?(%User{role: "customer_support"}, action) when action in @customer_service_actions, do: true
+  def can?(%User{role: "customer_support"}, action) when action in @customer_service_actions,
+    do: true
+
   def can?(%User{}, action) when action in @customer_service_actions, do: false
 end

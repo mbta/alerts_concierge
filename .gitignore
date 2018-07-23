@@ -16,6 +16,7 @@ npm-debug.log
 excoveralls.json
 releases
 .vscode
+.elixir_ls
 
 # dev and test cache files for faster loading
 *.terms

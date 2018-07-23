@@ -21,9 +21,9 @@ defmodule AlertProcessor.NotificationWindowFilter do
   that could be notified on a given day and time per their notification window.
 
   """
-  @spec filter([Subscription.t], DateTime.t) :: [Subscription.t]
+  @spec filter([Subscription.t()], DateTime.t()) :: [Subscription.t()]
   def filter(subscriptions, now) do
-    Enum.filter(subscriptions, fn(subscription) ->
+    Enum.filter(subscriptions, fn subscription ->
       within_notification_window?(subscription, now)
     end)
   end
@@ -33,14 +33,14 @@ defmodule AlertProcessor.NotificationWindowFilter do
   window. Returns false if it's not.
 
   """
-  @spec within_notification_window?(Subscription.t, DateTime.t) :: boolean
+  @spec within_notification_window?(Subscription.t(), DateTime.t()) :: boolean
   def within_notification_window?(subscription, now) do
     start_time = subscription.start_time
     end_time = subscription.end_time
     multiday? = span_multiple_days?(start_time, end_time)
 
-    day_of_week(now) in relevant_days(subscription)
-    && time_within_notification_window?(subscription, start_time, end_time, now, multiday?)
+    day_of_week(now) in relevant_days(subscription) &&
+      time_within_notification_window?(subscription, start_time, end_time, now, multiday?)
   end
 
   defp day_of_week(now) do
@@ -57,10 +57,12 @@ defmodule AlertProcessor.NotificationWindowFilter do
       saturday: 6,
       sunday: 7
     }
+
     Enum.map(subscription.relevant_days, &Map.get(days, &1))
   end
 
-  defp span_multiple_days?(start_time, end_time), do: Time.compare(start_time, end_time) in [:gt, :eq]
+  defp span_multiple_days?(start_time, end_time),
+    do: Time.compare(start_time, end_time) in [:gt, :eq]
 
   defp time_within_notification_window?(%Subscription{type: :accessibility}, _, _, _, _) do
     # For subscriptions with type of `:accessibility` it doesn't matter what
@@ -71,9 +73,10 @@ defmodule AlertProcessor.NotificationWindowFilter do
   end
 
   defp time_within_notification_window?(subscription, start_time, end_time, now, true) do
-    time_within_notification_window?(subscription, start_time, ~T[23:59:59], now, false)
-    || time_within_notification_window?(subscription, ~T[00:00:00], end_time, now, false)
+    time_within_notification_window?(subscription, start_time, ~T[23:59:59], now, false) ||
+      time_within_notification_window?(subscription, ~T[00:00:00], end_time, now, false)
   end
+
   defp time_within_notification_window?(_subscription, start_time, end_time, now, false) do
     time_now = DateTime.to_time(now)
     start_time_ok? = Time.compare(time_now, start_time) in [:gt, :eq]
