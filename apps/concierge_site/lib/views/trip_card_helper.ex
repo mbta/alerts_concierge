@@ -185,10 +185,10 @@ defmodule ConciergeSite.TripCardHelper do
 
   @spec edit_link(Plug.Conn.t, atom, String.t) :: Phoenix.HTML.safe
   defp edit_link(conn, :commute, id) do
-    link("Edit", to: ConciergeSite.Router.Helpers.v2_trip_path(conn, :edit, id), class: "trip__card--edit-link")
+    link("Edit", to: ConciergeSite.Router.Helpers.trip_path(conn, :edit, id), class: "trip__card--edit-link")
   end
   defp edit_link(conn, :accessibility, id) do
-    link("Edit", to: ConciergeSite.Router.Helpers.v2_accessibility_trip_path(conn, :edit, id), class: "trip__card--edit-link")
+    link("Edit", to: ConciergeSite.Router.Helpers.accessibility_trip_path(conn, :edit, id), class: "trip__card--edit-link")
   end
 
   @spec delete_link(String.t) :: Phoenix.HTML.safe

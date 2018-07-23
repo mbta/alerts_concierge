@@ -135,7 +135,7 @@ defmodule ConciergeSite.Helpers.MailHelper do
 
   def manage_subscriptions_url(user) do
     {:ok, token, _permissions} = Token.issue(user, [:manage_subscriptions], {30, :days})
-    Helpers.v2_trip_url(ConciergeSite.Endpoint, :index, token: token)
+    Helpers.trip_url(ConciergeSite.Endpoint, :index, token: token)
   end
 
   def feedback_url do
@@ -147,6 +147,6 @@ defmodule ConciergeSite.Helpers.MailHelper do
   end
 
   def reset_password_url(reset_token) do
-    Helpers.v2_password_reset_url(ConciergeSite.Endpoint, :edit, reset_token)
+    Helpers.password_reset_url(ConciergeSite.Endpoint, :edit, reset_token)
   end
 end

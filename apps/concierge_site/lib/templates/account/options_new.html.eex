@@ -1,0 +1,44 @@
+<h1 class="heading__title">Customize my settings</h1>
+<%= flash_error(@conn) %>
+
+<div class="container container__inner">
+  <div class="row justify-content-md-center">
+    <div class="col-md-10 col-sm-12">
+      <%= form_for @changeset, account_path(@conn, :options_create), [as: :user, method: :post], fn form -> %>
+        <div class="form-group form__section--top">
+          <%= label form, :sms_toggle, "How would you like to receive alerts?", class: "form__label" %>
+          <div class="btn-group btn-group-toggle btn__radio--toggle-container" data-toggle="buttons" role="radiogroup">
+            <label data-id="email" role="radio" aria-checked="<%= if @changeset.data.phone_number == nil, do: "true", else: "false" %>" class="btn btn-outline-primary btn__radio--toggle btn__radio--toggle-item <%= if @changeset.data.phone_number == nil, do: "active" %>" tabindex="0">
+              <%= render ConciergeSite.LayoutView, "_icon_email.html" %>
+              <%= radio_button form, :sms_toggle, "false", tabindex: "-1", required: true, checked: @changeset.data.phone_number == nil %>
+              <div>Email me</div>
+            </label>
+            <label data-id="sms" role="radio" aria-checked="<%= if @changeset.data.phone_number != nil, do: "true", else: "false" %>" class="btn btn-outline-primary btn__radio--toggle btn__radio--toggle-item <%= if @changeset.data.phone_number != nil, do: "active" %>" tabindex="0">
+              <%= render ConciergeSite.LayoutView, "_icon_sms.html" %>
+              <%= radio_button form, :sms_toggle, "true", tabindex: "-1", required: true, checked: @changeset.data.phone_number != nil %>
+              <div>Text me</div>
+            </label>
+          </div>
+        </div>
+
+        <div class="form-group my-4 d-none" data-phone="input">
+          <%= label form, :phone_number, "What’s your mobile phone number?", class: "form__label d-block" %>
+          <%= error_tag form, :phone_number %>
+          <%= telephone_input form, :phone_number, autocomplete: "off", placeholder: "###-###-####", class: "form-control d-inline-block form__phone--input", data: [toggle: "input"] %>
+          <span class="form__phone--note">Your mobile provider’s message rates may apply.</span>
+        </div>
+
+        <div class="form-group form__section form-check">
+          <%= checkbox form, :digest_opt_in, class: "form-check-input" %>
+          <%= label form, :digest_opt_in, "Yes, send me a weekly email about planned service disruptions across the MBTA", class: "form__label--radio" %>
+          <div>Even if you receive text alerts, this will be sent to the email address you signed up with.  This feature will be coming soon.</div>
+        </div>
+
+        <div class="form__action-buttons--container">
+          <%= submit "Next", class: "btn btn-primary float-right form__action-button" %>
+          <a href="javascript:history.back()" class="btn btn-outline-primary form__action-button">Back</a>
+        </div>
+      <% end %>
+    </div>
+  </div>
+</div>

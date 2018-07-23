@@ -1,0 +1,91 @@
+<h1 class="heading__title">Personalize my subscription</h1>
+<%= flash_error(@conn) %>
+
+<div class="container container__inner">
+  <div class="row justify-content-md-center">
+    <div class="col-sm-12">
+      <%= if @conn.assigns[:trips] && List.first(@trips) == nil do %>
+        <p>Once we get to know more about your trips, we can customize alerts just for you. Create as many subscriptions you’d like. Let’s start with a trip you regularly take.</p>
+      <% end %>
+      <div class="callout">
+        <div class="callout__head">
+          Looking for elevator/escalator alerts that aren't a part of a regular commute?
+        </div>
+
+        <div class="callout__subhead">
+          <%= link(to: accessibility_trip_path(@conn, :new), class: "") do %>
+            Sign up for accessibility alerts for specific stations
+            <i aria-hidden="true" class="fa fa-arrow-right "></i>
+          <% end %>
+        </div>
+
+        <div class="callout__content-container">
+          <div class="callout__content">
+            You can also sign up for these alerts as a part of your trip.
+          </div>
+
+          <div class="callout__icons">
+            <%= render ConciergeSite.LayoutView, "_icon_elevator.html" %>
+            <%= render ConciergeSite.LayoutView, "_icon_escalator.html" %>
+          </div>
+        </div>
+      </div>
+
+      <%= form_for @conn, trip_trip_path(@conn, :leg), [as: :trip, method: :post], fn form -> %>
+        <div class="form-group my-4">
+          <%= label form, :round_trip, "What kind of trip is this?", class: "form__label" %>
+          <div class="btn-group btn-group-toggle btn__radio--toggle-container" data-toggle="buttons" role="radiogroup">
+            <label data-id="roundtrip" aria-checked="true" role="radio" class="btn btn-outline-primary btn__radio--toggle btn__radio--toggle-item active" tabindex="0">
+              <%= render ConciergeSite.LayoutView, "_icon_roundtrip.html" %>
+              <%= radio_button form, :round_trip, true, tabindex: "-1", required: true, checked: "checked" %>
+              <div>Round-trip</div>
+            </label>
+            <label data-id="oneway" role="radio" class="btn btn-outline-primary btn__radio--toggle btn__radio--toggle-item" tabindex="0">
+              <%= render ConciergeSite.LayoutView, "_icon_oneway.html" %>
+              <%= radio_button form, :round_trip, false, tabindex: "-1", required: true %>
+              <div>One-way</div>
+            </label>
+          </div>
+        </div>
+
+        <div>If your trip involves transfers, you can tell us about those later.</div>
+
+        <%= hidden_input form, :from_new_trip, value: "true" %>
+
+        <div class="form-group my-4">
+          <%= label form, :route, "Which line or route do you take first?", class: "form__label" %>
+          <div class="route__selector--container">
+            <div class="btn-group btn-group-toggle btn__radio--toggle-container" role="radiogroup">
+              <label aria-checked="true" class="btn btn-outline-primary btn__radio--toggle btn__radio--toggle-item-connected active" data-id="subway" role="radio" tabindex="0">
+                <input checked="checked" name="mode_toggle" tabindex="-1" type="radio" value="subway">
+                <%= render ConciergeSite.LayoutView, "_icon_mode_subway.html" %>
+                <div>Subway</div>
+              </label>
+              <label aria-checked="false" class="btn btn-outline-primary btn__radio--toggle btn__radio--toggle-item-connected " data-id="bus" role="radio" tabindex="0">
+                <input name="mode_toggle" tabindex="-1" type="radio" value="bus">
+                <%= render ConciergeSite.LayoutView, "_icon_mode_bus.html" %>
+                <div>Bus</div>
+              </label>
+              <label aria-checked="false" class="btn btn-outline-primary btn__radio--toggle btn__radio--toggle-item-connected " data-id="cr" role="radio" tabindex="0">
+                <input name="mode_toggle" tabindex="-1" type="radio" value="cr">
+                <%= render ConciergeSite.LayoutView, "_icon_mode_cr.html" %>
+                <div>Commuter Rail</div>
+              </label>
+              <label aria-checked="false" class="btn btn-outline-primary btn__radio--toggle btn__radio--toggle-item-connected " data-id="ferry" role="radio" tabindex="0">
+                <input name="mode_toggle" tabindex="-1" type="radio" value="ferry">
+                <%= render ConciergeSite.LayoutView, "_icon_mode_ferry.html" %>
+                <div>Ferry</div>
+              </label>
+            </div>
+            <%= ConciergeSite.RouteSelectHelperChoicesJS.render(:trip, :route, [], required: true) %>
+          </div>
+        </div>
+
+        <div class="form__action-buttons--container">
+          <%= submit "Next", class: "btn btn-primary float-right form__action-button" %>
+          <a href="javascript:history.back()" class="btn btn-outline-primary form__action-button">Back</a>
+        </div>
+      <% end %>
+    </div>
+  </div>
+</div>
