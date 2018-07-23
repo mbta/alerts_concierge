@@ -1,6 +1,14 @@
 defmodule ConciergeSite.Schedule do
   alias AlertProcessor.{ApiClient, DayType, ExtendedTime, ServiceInfoCache}
   alias AlertProcessor.Model.{Route, Subscription, TripInfo}
+  alias ConciergeSite.Schedule
+
+  @typedoc """
+  A tuple of a mode and route ID
+  """
+  @type route_mode_id_key :: {String.t, String.t}
+
+  @type t :: %{route_mode_id_key: TripInfo.t}
 
   @doc """
   Determine the direction (0 for outbound or 1 for inbound) from some combination of a route stop list, string-formatted direction, origin, and destination.
@@ -36,59 +44,82 @@ defmodule ConciergeSite.Schedule do
   @doc """
   Retrieve TripInfo records given Lists of correlated legs, origins, destination and modes.
   """
-  @spec get_schedules_for_input([String.t], [String.t], [String.t], [String.t]) :: map
+  @spec get_schedules_for_input([String.t], [String.t], [String.t], [String.t]) :: Schedule.t
   def get_schedules_for_input(legs, origins, destinations, modes) do
-    input_tuples = Enum.zip([
+    return_trip = false
+    Enum.zip([
       Enum.reverse(modes),
       Enum.reverse(legs),
       Enum.reverse(origins),
       Enum.reverse(destinations)
     ])
-
-    weekday_schedules =
-      input_tuples
-      |> get_schedules_for_input_and_date(DayType.next_weekday())
-      |> categorize_by_day_type(false)
-    
-    weekend_schedules =
-      input_tuples
-      |> get_schedules_for_input_and_date(DayType.next_weekend_day())
-      |> categorize_by_day_type(true)
-
-    interleave_schedule_trips(weekday_schedules, weekend_schedules)
+    |> Enum.map(fn input_tuple ->
+      {type, route, origin, destination} = input_tuple
+      subscription = %Subscription{
+        type: String.to_atom(type),
+        route: route,
+        origin: origin,
+        destination: destination,
+        return_trip: return_trip
+      }
+      subscription
+    end)
+    |> get_schedules_for_trip(return_trip)
   end
 
   @doc """
   Retrieve TripInfo records for a list of Subscriptions and whether or not it is a return trip.
   """
-  @spec get_schedules_for_trip([Subscription.t], boolean) :: map
+  @spec get_schedules_for_trip([Subscription.t], boolean) :: Schedule.t
   def get_schedules_for_trip(subscriptions, return_trip) do
     weekday_schedules =
       subscriptions
-      |> get_schedules_for_subscriptions_and_date(return_trip, DayType.next_weekday())
-      |> categorize_by_day_type(false)
+      |> get_typical_weekday_schedules(return_trip)
+      |> categorize_by_weekend(false)
 
     weekend_schedules =
       subscriptions
-      |> get_schedules_for_subscriptions_and_date(return_trip, DayType.next_weekend_day())
-      |> categorize_by_day_type(true)
+      |> get_typical_weekend_schedules(return_trip)
+      |> categorize_by_weekend(true)
 
     interleave_schedule_trips(weekday_schedules, weekend_schedules)
   end
 
-  @spec get_schedules_for_input_and_date([tuple], Date.t) :: [map]
-  defp get_schedules_for_input_and_date(input_tuples, date) do
-    input_tuples
-    |> Enum.reduce(%{}, fn {mode, route, origin, destination}, acc ->
-      case mode do
-        "subway" -> acc
-        "bus" -> acc
-        _ -> Map.put(acc, {mode, route}, get_schedule(route, origin, destination, date))
-      end
-    end)
+  @spec get_typical_weekday_schedules([Subscription.t], boolean) :: [Schedule.t]
+  defp get_typical_weekday_schedules(subscriptions, return_trip) do
+    # Get schedules for 5 weekdays to figure out what the typical schedule is. We need to get enough days such that the majority of them will be non-holidays. The worst case scenario is 2 holiday days in a row, so we need 3 extra days more than this.
+    5
+    |> DayType.take_weekdays()
+    |> typical_schedules_for_days(subscriptions, return_trip)
   end
 
-  @spec get_schedules_for_subscriptions_and_date([Subscription.t], boolean, Date.t) :: [map]
+  @spec get_typical_weekend_schedules([Subscription.t], boolean) :: [Schedule.t]
+  defp get_typical_weekend_schedules(subscriptions, return_trip) do
+    # Get schedules for 7 weekend days to figure out what the typical schedule is. We need to get enough days such that the majority of them will be non-holidays. Since Christmas day, New Years Eve, and New Years Day all run on holiday schedules, the worst case scenario is asking for a schedule on Christmas Day on a Sunday in which case there will be three weekend holiday days in a row. Therefore we need 4 extra days more than this.
+    7
+    |> DayType.take_weekend_days()
+    |> typical_schedules_for_days(subscriptions, return_trip)
+  end
+
+  @spec typical_schedules_for_days([Date.T], [Subscription.t], boolean) :: [Schedule.t]
+  defp typical_schedules_for_days(days, subscriptions, return_trip) do
+    days
+    |> Enum.map(&(get_schedules_for_subscriptions_and_date(subscriptions, return_trip, &1)))
+    |> most_common_schedule()
+  end
+
+  @spec most_common_schedule([map]) :: [Schedule.t]
+  defp most_common_schedule(daily_schedules) do
+    {most_common_schedule, _count} =
+      daily_schedules
+      |> Enum.reduce(%{}, fn (schedule, acc) -> Map.update(acc, schedule, 1, &(&1 + 1)) end)
+      |> Enum.sort_by(&(elem(&1, 1)))
+      |> List.last()
+
+    most_common_schedule
+  end
+
+  @spec get_schedules_for_subscriptions_and_date([Subscription.t], boolean, Date.t) :: [Schedule.t]
   defp get_schedules_for_subscriptions_and_date(subscriptions, return_trip, date) do
     subscriptions
     |> Enum.filter(&(&1.return_trip == return_trip))
@@ -133,11 +164,13 @@ defmodule ConciergeSite.Schedule do
     Map.new(trips, &map_trip_name/1)
   end
 
+  @spec map_trip_name(map) :: tuple
   defp map_trip_name(%{"type" => "trip", "id" => id, "attributes" => %{"name" => name}}),
     do: {id, name}
 
   defp map_trip_name(_), do: {nil, nil}
 
+  @spec map_common_trips([map], map, map, Date.t) :: [TripInfo.t] | :error
   defp map_common_trips([], _, _, _), do: :error
 
   defp map_common_trips(schedules, trip_names_map, trip, date) do
@@ -181,27 +214,23 @@ defmodule ConciergeSite.Schedule do
         trip
         | arrival_time: NaiveDateTime.to_time(arrival_datetime),
           departure_time: NaiveDateTime.to_time(departure_datetime),
-          arrival_datetime: arrival_datetime,
-          departure_datetime: departure_datetime,
           arrival_extended_time: arrival_extended_time,
           departure_extended_time: departure_extended_time,
           trip_number: Map.get(trip_names_map, trip_id),
           route: route
       }
     end)
-    |> Enum.sort_by(fn %TripInfo{departure_time: departure_time} ->
-      {~T[05:00:00] > departure_time, departure_time}
-    end)
+    |> Enum.sort(&by_departure_extended_time/2)
   end
 
-  @spec categorize_by_day_type([map], boolean) :: map
-  defp categorize_by_day_type(schedules, weekend?) do
+  @spec categorize_by_weekend([Schedule.t], boolean) :: Schedule.t
+  defp categorize_by_weekend(schedules, weekend?) do
     schedules
     |> Enum.map(fn({key, trips}) -> {key, trips |> Enum.map(&(Map.put(&1, :weekend?, weekend?)))} end)
     |> Enum.into(%{})
   end
 
-  @spec interleave_schedule_trips(map, map) :: map
+  @spec interleave_schedule_trips(Schedule.t, Schedule.t) :: Schedule.t
   defp interleave_schedule_trips(weekday_schedules, weekend_schedules) do
     # weekday_schedules and weekend_schedules should contain the same keys
     weekday_schedules
@@ -212,10 +241,14 @@ defmodule ConciergeSite.Schedule do
     |> Enum.into(%{})
   end
 
-  @spec merge_and_sort_trips([map], [map]) :: [map]
+  @spec merge_and_sort_trips([TripInfo.t], [TripInfo.t]) :: [TripInfo.t]
   defp merge_and_sort_trips(weekday_trips, weekend_trips) do
     weekday_trips ++ weekend_trips
-    |> Enum.sort(&(ExtendedTime.compare(&1.departure_extended_time, &2.departure_extended_time) in [:lt, :eq]))
+    |> Enum.sort(&by_departure_extended_time/2)
   end
+
+  @spec by_departure_extended_time(TripInfo.t, TripInfo.t) :: boolean
+  defp by_departure_extended_time(%TripInfo{departure_extended_time: departure_extended_time_a}, %TripInfo{departure_extended_time: departure_extended_time_b}), do:
+    ExtendedTime.compare(departure_extended_time_a, departure_extended_time_b) in [:lt, :eq]
 
 end
