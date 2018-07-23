@@ -193,8 +193,10 @@
       <div
          style="font-family:Lato, Arial;font-size:16px;line-height:19px;text-align:left;color:#000000;"
       >
-        <p>Thanks for signing up for T-Alerts Beta!<br /><br /> If you have immediate feedback about the sign up process, or related to any alerts as you start to receive them, we’d love to hear it. <a style="color: #165c96" href="<%= feedback_url %>">Provide feedback now!</a><br
-            /><br />
+        <p>Thanks for signing up for T-Alerts Beta!<br /><br /> If you have immediate feedback about the sign up process, or related to any alerts as you start to receive them, we’d love to hear it. <a style="color: #165c96" href="<%= feedback_url %>">Provide feedback now!</a>
+            <br /><br />
+            <em>If you have an <a href="https://public.govdelivery.com/accounts/MABTA/subscriber/new">old T-Alerts account</a>, signing up for a beta account doesn’t affect that account.  You can <a href="https://public.govdelivery.com/accounts/MABTA/subscriber/new">delete your old account</a> now to prevent receiving duplicate notifications.</em>
+            <br /><br />
             <strong>Get the most from your T-Alerts account by signing in!  You can:</strong>
           </p>
       </div>
