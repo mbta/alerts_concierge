@@ -74,15 +74,49 @@ defmodule ConciergeSite.Schedule do
   def get_schedules_for_trip(subscriptions, return_trip) do
     weekday_schedules =
       subscriptions
-      |> get_schedules_for_subscriptions_and_date(return_trip, DayType.next_weekday())
+      |> get_typical_weekday_schedules(return_trip)
       |> categorize_by_weekend(false)
 
     weekend_schedules =
       subscriptions
-      |> get_schedules_for_subscriptions_and_date(return_trip, DayType.next_weekend_day())
+      |> get_typical_weekend_schedules(return_trip)
       |> categorize_by_weekend(true)
 
     interleave_schedule_trips(weekday_schedules, weekend_schedules)
+  end
+
+  @spec get_typical_weekday_schedules([Subscription.t], boolean) :: [Schedule.t]
+  defp get_typical_weekday_schedules(subscriptions, return_trip) do
+    # Get schedules for 5 weekdays to figure out what the typical schedule is. We need to get enough days such that the majority of them will be non-holidays. The worst case scenario is 2 holiday days in a row, so we need 3 extra days more than this.
+    5
+    |> DayType.take_weekdays()
+    |> typical_schedules_for_days(subscriptions, return_trip)
+  end
+
+  @spec get_typical_weekend_schedules([Subscription.t], boolean) :: [Schedule.t]
+  defp get_typical_weekend_schedules(subscriptions, return_trip) do
+    # Get schedules for 7 weekend days to figure out what the typical schedule is. We need to get enough days such that the majority of them will be non-holidays. Since Christmas day, New Years Eve, and New Years Day all run on holiday schedules, the worst case scenario is asking for a schedule on Christmas Day on a Sunday in which case there will be three weekend holiday days in a row. Therefore we need 4 extra days more than this.
+    7
+    |> DayType.take_weekend_days()
+    |> typical_schedules_for_days(subscriptions, return_trip)
+  end
+
+  @spec typical_schedules_for_days([Date.T], [Subscription.t], boolean) :: [Schedule.t]
+  defp typical_schedules_for_days(days, subscriptions, return_trip) do
+    days
+    |> Enum.map(&(get_schedules_for_subscriptions_and_date(subscriptions, return_trip, &1)))
+    |> most_common_schedule()
+  end
+
+  @spec most_common_schedule([map]) :: [Schedule.t]
+  defp most_common_schedule(daily_schedules) do
+    {most_common_schedule, _count} =
+      daily_schedules
+      |> Enum.reduce(%{}, fn (schedule, acc) -> Map.update(acc, schedule, 1, &(&1 + 1)) end)
+      |> Enum.sort_by(&(elem(&1, 1)))
+      |> List.last()
+
+    most_common_schedule
   end
 
   @spec get_schedules_for_subscriptions_and_date([Subscription.t], boolean, Date.t) :: [Schedule.t]
