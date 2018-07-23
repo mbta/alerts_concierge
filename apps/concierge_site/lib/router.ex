@@ -16,7 +16,7 @@ defmodule ConciergeSite.Router do
     plug Guardian.Plug.VerifySession
     plug Guardian.Plug.LoadResource
     plug Guardian.Plug.EnsureAuthenticated,
-      handler: ConciergeSite.V2.SessionController
+      handler: ConciergeSite.SessionController
     plug ConciergeSite.Plugs.TokenRefresh
     plug ConciergeSite.Plugs.Authorized
   end
@@ -37,8 +37,8 @@ defmodule ConciergeSite.Router do
     plug Guardian.Plug.EnsurePermissions, handler: ConciergeSite.Admin.SessionController, admin: [:customer_support]
   end
 
-  pipeline :v2_layout do
-    plug :put_layout, {ConciergeSite.V2.LayoutView, :app}
+  pipeline :layout do
+    plug :put_layout, {ConciergeSite.LayoutView, :app}
   end
 
   pipeline :redirect_prod_http do
@@ -60,33 +60,33 @@ defmodule ConciergeSite.Router do
     post "/rejected_email", RejectedEmailController, :handle_rejected_email
   end
 
-  scope "/", ConciergeSite, as: :v2 do
-    pipe_through [:redirect_prod_http, :browser, :v2_layout]
+  scope "/", ConciergeSite do
+    pipe_through [:redirect_prod_http, :browser, :layout]
 
-    get "/", V2.PageController, :landing
-    get "/deleted", V2.PageController, :account_deleted
-    resources "/login", V2.SessionController, only: [:new, :create, :delete], singleton: true
-    resources "/account", V2.AccountController, only: [:new, :create]
-    resources "/password_resets",V2.PasswordResetController, only: [:new, :create, :edit, :update]
+    get "/", PageController, :landing
+    get "/deleted", PageController, :account_deleted
+    resources "/login", SessionController, only: [:new, :create, :delete], singleton: true
+    resources "/account", AccountController, only: [:new, :create]
+    resources "/password_resets",PasswordResetController, only: [:new, :create, :edit, :update]
   end
 
-  scope "/", ConciergeSite, as: :v2 do
-    pipe_through [:redirect_prod_http, :browser, :browser_auth, :subscription_auth, :v2_layout]
+  scope "/", ConciergeSite do
+    pipe_through [:redirect_prod_http, :browser, :browser_auth, :subscription_auth, :layout]
 
-    get "/account/options", V2.AccountController, :options_new
-    post "/account/options", V2.AccountController, :options_create
-    get "/account/edit", V2.AccountController, :edit
-    post "/account/edit", V2.AccountController, :update
-    delete "/account/delete", V2.AccountController, :delete
-    get "/password/edit", V2.AccountController, :edit_password
-    post "/password/edit", V2.AccountController, :update_password
-    resources "/trips", V2.TripController, only: [:index, :edit, :update, :delete]
-    resources "/trip", V2.TripController, only: [:new, :create], singleton: true do
-      post "/leg", V2.TripController, :leg
-      post "/times", V2.TripController, :times
-      get "/type", V2.TripController, :type
+    get "/account/options", AccountController, :options_new
+    post "/account/options", AccountController, :options_create
+    get "/account/edit", AccountController, :edit
+    post "/account/edit", AccountController, :update
+    delete "/account/delete", AccountController, :delete
+    get "/password/edit", AccountController, :edit_password
+    post "/password/edit", AccountController, :update_password
+    resources "/trips", TripController, only: [:index, :edit, :update, :delete]
+    resources "/trip", TripController, only: [:new, :create], singleton: true do
+      post "/leg", TripController, :leg
+      post "/times", TripController, :times
+      get "/type", TripController, :type
     end
-    resources "/accessibility_trips", V2.AccessibilityTripController, only: [:new, :create, :edit, :update]
+    resources "/accessibility_trips", AccessibilityTripController, only: [:new, :create, :edit, :update]
   end
 
   if Mix.env == :dev do

@@ -1,0 +1,31 @@
+<div class="modal fade" id="deleteModal" tabindex="-1" role="dialog" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-body text-center">
+        <div class="my-2">
+          Are you sure you want to delete
+          <%= if assigns[:conn].request_path == "/account/edit" do %>
+            your account?
+          <% else %>
+            this subscription?
+          <% end %>
+        </div>
+        <div class="my-3" data-modal="action_container">
+          <button type="button" class="btn btn-outline-primary" data-dismiss="modal">No, cancel</button>
+          <%# Editing an individual trip %>
+          <%= if assigns[:trip] do %>
+            <%= link to: trip_path(@conn, :delete, assigns[:trip]), method: :delete, class: "btn btn-primary" do %>
+              Yes, delete
+            <% end %>
+          <% end %>
+          <%# Editing an account %>
+          <%= if assigns[:conn].request_path == "/account/edit" do %>
+            <%= link to: account_path(@conn, :delete), method: :delete, class: "btn btn-primary" do %>
+              Yes, delete
+            <% end %>
+          <% end %>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

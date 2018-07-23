@@ -1,0 +1,28 @@
+<h1 class="heading__title">Reset your password</h1>
+
+<div class="container container__inner">
+  <div class="row justify-content-md-center">
+    <div class="col-md-10 col-sm-12">
+      <div class="form-header">
+        <%= flash_error(@conn) %>
+        <div class="my-4">
+        Enter the email address you use to sign into your T-Alerts account. We’ll
+        send you instructions on how to reset your password.
+        </div>
+      </div>
+
+      <%= form_for @conn, password_reset_path(@conn, :create), [as: :password_reset], fn f -> %>
+        <div class="form-group form__section">
+          <%= label f, :email, "Email Address", class: "form__label" %>
+          <%= error_tag f, :email %>
+          <%= email_input f, :email, placeholder: "your@email.com", class: "form-control", required: true %>
+          <span></span>
+        </div>
+        <div class="form__action-buttons--container">
+          <%= submit "Send reset link", class: "btn btn-primary float-right form__action-button" %>
+          <a href="javascript:history.back()" class="btn btn-outline-primary form__action-button">Back</a>
+        </div>
+      <% end %>
+    </div>
+  </div>
+</div>

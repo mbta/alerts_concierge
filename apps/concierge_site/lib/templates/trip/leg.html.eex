@@ -1,0 +1,121 @@
+<h1 class="heading__title">Personalize my subscription</h1>
+<%
+new_leg_label = if @route_name == "Green Line" || @route_name == "Red Line" do
+  "Do you transfer to another route, line, or branch?"
+else
+  "Do you transfer to another route or line?"
+end
+%>
+
+<div class="container container__inner">
+  <div class="row justify-content-md-center">
+    <div class="col-sm-12">
+      <%= form_for @conn, trip_trip_path(@conn, :leg), [as: :trip, method: :post, id: "tripleg-form"], fn form -> %>
+        <%= if @saved_mode != "bus" do %>
+          <div class="form-group form__section--top">
+            <%= label form, :origin, "Where do you get on the #{@route_name}?", class: "form__label" %>
+            <%= ConciergeSite.StopSelectHelper.render(@saved_leg, :trip, :origin, @default_origin, [data_mode: @saved_mode]) %>
+            <div id="trip_origin_error"></div>
+          </div>
+
+          <div class="form-group form__section">
+            <%= label form, :destination, "Where do you exit?", class: "form__label" %>
+            <%= if @route_name == "Green Line" || @route_name == "Red Line" do %>
+              <div class="form__label--text">Only stops on the same branch can be selected.</div>
+            <% end %>
+            <%= ConciergeSite.StopSelectHelper.render(@saved_leg, :trip, :destination, []) %>
+            <div id="trip_destination_error"></div>
+          </div>
+        <% else %>
+          <%= hidden_input form, :origin, value: "" %>
+          <%= hidden_input form, :destination, value: "" %>
+        <% end %>
+
+        <%= if @saved_mode == "bus" do %>
+          <div class="form-group form__section--top">
+            <%= label form, :direction, "Which direction do you take #{@route_name} first?", class: "form__label" %>
+            <div class="btn-group btn-group-toggle btn__radio--toggle-container" data-toggle="buttons" role="radiogroup">
+            <label data-id="inbound" role="radio" aria-checked="true" class="btn btn-outline-primary btn__radio--toggle btn__radio--toggle-item active" tabindex="0">
+              <%= radio_button form, :direction, "1", tabindex: "-1", required: true, checked: true %>
+              <div><%= Enum.intersperse(Map.get(@headsigns, 1, ["Inbound"]), " ● ") %></div>
+            </label>
+            <label data-id="outbound" role="radio" aria-checked="false" class="btn btn-outline-primary btn__radio--toggle btn__radio--toggle-item" tabindex="0">
+              <%= radio_button form, :direction, "0", tabindex: "-1", required: true, checked: false %>
+              <div><%= Enum.intersperse(Map.get(@headsigns, 0, ["Outbound"]), " ● ") %></div>
+            </label>
+          </div>
+          </div>
+        <% end %>
+
+        <div class="form-group form__section">
+          <%= label form, :new_leg, new_leg_label, class: "form__label" %>
+          <%= if @route_name == "Green Line" do %>
+            <div class="form__label--text">If you take one branch of the Green Line to another, then you make a transfer.</div>
+          <% end %>
+
+          <div class="btn-group btn-group-toggle btn__radio--toggle-container-wrap" data-toggle="buttons" role="radiogroup">
+            <label data-id="connection" role="radio" class="btn btn-outline-primary btn__radio--toggle btn__radio--toggle-item" tabindex="0">
+              <%= radio_button form, :new_leg, true, tabindex: "-1", required: true %>
+              <div>Yes</div>
+            </label>
+            <label data-id="no-connection" aria-checked="true" role="radio" class="btn btn-outline-primary btn__radio--toggle btn__radio--toggle-item active" tabindex="0">
+              <%= radio_button form, :new_leg, false, tabindex: "-1", required: true, checked: "checked" %>
+              <div>No</div>
+            </label>
+          </div>
+        </div>
+
+        <%= hidden_input form, :round_trip, value: @round_trip %>
+        <%= hidden_input form, :saved_leg, value: @saved_leg %>
+        <%= hidden_input form, :saved_mode, value: @saved_mode %>
+
+        <%= for leg <- @legs do %>
+          <%= hidden_input form, :legs, name: "trip[legs][]", value: leg %>
+        <% end %>
+        <%= for origin <- @origins do %>
+          <%= hidden_input form, :origins, name: "trip[origins][]", value: origin %>
+        <% end %>
+        <%= for destination <- @destinations do %>
+          <%= hidden_input form, :destinations, name: "trip[destinations][]", value: destination %>
+        <% end %>
+        <%= for mode <- @modes do %>
+          <%= hidden_input form, :modes, name: "trip[modes][]", value: mode %>
+        <% end %>
+
+        <div class="form-group form__section d-none" data-type="connection">
+          <%= label form, :route, "Which line or route do you transfer to?", class: "form__label", data: [toggle: "label"] %>
+          <div class="route__selector--container">
+            <div class="btn-group btn-group-toggle btn__radio--toggle-container" role="radiogroup">
+              <label aria-checked="true" class="btn btn-outline-primary btn__radio--toggle btn__radio--toggle-item-connected active" data-id="subway" role="radio" tabindex="0">
+                <input checked="checked" name="mode_toggle" tabindex="-1" type="radio" value="subway">
+                <%= render ConciergeSite.LayoutView, "_icon_mode_subway.html" %>
+                <div>Subway</div>
+              </label>
+              <label aria-checked="false" class="btn btn-outline-primary btn__radio--toggle btn__radio--toggle-item-connected " data-id="bus" role="radio" tabindex="0">
+                <input name="mode_toggle" tabindex="-1" type="radio" value="bus">
+                <%= render ConciergeSite.LayoutView, "_icon_mode_bus.html" %>
+                <div>Bus</div>
+              </label>
+              <label aria-checked="false" class="btn btn-outline-primary btn__radio--toggle btn__radio--toggle-item-connected " data-id="cr" role="radio" tabindex="0">
+                <input name="mode_toggle" tabindex="-1" type="radio" value="cr">
+                <%= render ConciergeSite.LayoutView, "_icon_mode_cr.html" %>
+                <div>Commuter Rail</div>
+              </label>
+              <label aria-checked="false" class="btn btn-outline-primary btn__radio--toggle btn__radio--toggle-item-connected " data-id="ferry" role="radio" tabindex="0">
+                <input name="mode_toggle" tabindex="-1" type="radio" value="ferry">
+                <%= render ConciergeSite.LayoutView, "_icon_mode_ferry.html" %>
+                <div>Ferry</div>
+              </label>
+            </div>
+            <%= ConciergeSite.RouteSelectHelperChoicesJS.render(:trip, :route, [], data: [toggle: "input", type: "route"]) %>
+          </div>
+        </div>
+
+        <div class="form__action-buttons--container">
+          <%= submit "Next", class: "btn btn-primary float-right form__action-button" %>
+          <a href="javascript:history.back()" class="btn btn-outline-primary form__action-button">Back</a>
+        </div>
+      <% end %>
+    </div>
+  </div>
+</div>

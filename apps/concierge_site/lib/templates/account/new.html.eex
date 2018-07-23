@@ -1,0 +1,37 @@
+<h1 class="heading__title">Sign up</h1>
+<%= flash_error(@conn) %>
+<%= flash_info(@conn) %>
+
+<div class="form__action--secondary-link">Already have a beta account?
+  <%= link(to: session_path(@conn, :new)) do %>
+    Log in
+    <i aria-hidden="true" class="fa fa-arrow-right "></i>
+  <% end %>
+</div>
+
+<div class="container container__inner">
+  <div class="row justify-content-md-center">
+    <div class="col-md-10 col-sm-12">
+      <%= form_for @account_changeset, account_path(@conn, :create), fn f -> %>
+
+        <div class="form-group my-4">
+          <%= label f, :email, "Enter your email", class: "form__label" %>
+          <%= error_tag f, :email %>
+          <%= email_input f, :email, placeholder: "your@email.com", class: "form-control", required: true %>
+        </div>
+
+        <div class="form-group my-4">
+          <%= label f, :password, "Create a password", class: "form__label" %>
+          <%= error_tag f, :password %>
+          <%= password_input f, :password, placeholder: "Enter your password", class: "form-control", pattern: password_regex_string(), required: true %>
+          <div class="my-1 form-control__details">At least 6 characters, with one number or special character</div>
+        </div>
+
+        <div class="form__action-buttons--container">
+          <%= submit "Create my account", class: "btn btn-primary btn-login btn-block" %>
+        </div>
+
+      <% end %>
+    </div>
+  </div>
+</div>

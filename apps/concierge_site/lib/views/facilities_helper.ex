@@ -29,9 +29,9 @@ defmodule ConciergeSite.FacilitiesHelper do
     ]
   end
 
-  defp icon(:bike_storage), do: render(ConciergeSite.V2.LayoutView, "_icon_bike.html", %{})
-  defp icon(:parking_area), do: render(ConciergeSite.V2.LayoutView, "_icon_parking.html", %{})
-  defp icon(facility_type), do: render(ConciergeSite.V2.LayoutView, "_icon_#{to_string(facility_type)}.html", %{})
+  defp icon(:bike_storage), do: render(ConciergeSite.LayoutView, "_icon_bike.html", %{})
+  defp icon(:parking_area), do: render(ConciergeSite.LayoutView, "_icon_parking.html", %{})
+  defp icon(facility_type), do: render(ConciergeSite.LayoutView, "_icon_#{to_string(facility_type)}.html", %{})
 
   defp facility_type_value(trip, type) do
     to_string(includes_facility_type(trip, type))

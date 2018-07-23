@@ -1,0 +1,102 @@
+@import "variables";
+@import "lato";
+@import "bootstrap";
+@import "font-awesome";
+@import "callout";
+@import "font-sizes";
+@import "header";
+@import "footer";
+@import "forms";
+@import "trip-card";
+@import "trip-review-card";
+@import "vendor/select2/select2";
+@import "vendor/select2/select2-bootstrap4";
+@import "help_text";
+@import "day_selector";
+@import "landing_page";
+@import "schedule";
+@import "route_selector";
+@import "stop_selector";
+@import "vendor/flatpickr/light";
+@import "./../node_modules/choices.js/src/styles/choices.scss";
+
+body {
+  -moz-osx-font-smoothing: grayscale;
+  -webkit-font-smoothing: antialiased;
+  min-width: 20rem;
+  text-rendering: optimizeLegibility;
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+.h1, .h2, .h3, .h4, .h5, .h6,
+h1, h2, h3, h4, h5, h6 {
+  font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+}
+
+.container__inner {
+  margin: 0;
+  padding: 0;
+}
+
+.page__content {
+  padding-bottom: 4.5rem;
+  padding-top: 1.75rem;
+  flex: 1 0 auto;
+}
+
+.btn {
+  cursor: pointer;
+
+  &:disabled {
+    opacity: 1;
+    background-color: $gray !important;
+    border-color: $gray !important;
+  }
+}
+
+.btn.active {
+  background-color: $light-blue;
+  color: $gray-dark;
+}
+
+.btn.btn-outline-primary {
+  border-color: $brand-primary;
+  color: $brand-primary;
+
+  &:hover {
+    background-color: $light-blue;
+    color: $gray-dark;
+  }
+
+  &.active, &:active {
+    background-color: $light-blue !important;
+    border-color: $brand-primary !important;
+    color: $gray-dark !important;
+
+    div {
+      color: $gray-dark;
+    }
+
+    &[data-id="roundtrip"],
+    &[data-id="oneway"] {
+      path {
+        fill: $gray-dark;
+        mask: none;
+      }
+    }
+  }
+}
+
+.btn.btn-primary {
+  background-color: $brand-primary;
+  border-color: $brand-primary;
+
+  &.active,
+  &:active,
+  &:hover {
+    background-color: $dark-blue !important;
+    border-color: $dark-blue !important;
+  }
+}
