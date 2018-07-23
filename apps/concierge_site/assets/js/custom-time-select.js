@@ -1,64 +1,63 @@
-import flatpickr from "flatpickr";
 import { timeToInt, timeFromInt } from "time-number";
 
 const oneHourInSeconds = 3600;
 const oneDayInSeconds = 86400;
 
-// when the user is changing the start time, shift the end time 1 hour forward when the times are the same
+const timeBaseId = id => id.match(/^.+_time/)[0];
+const hourEl = baseId => document.getElementById(`${baseId}_hour`);
+const minuteEl = baseId => document.getElementById(`${baseId}_minute`);
+const amPmEl = baseId => document.getElementById(`${baseId}_am_pm`);
+
+const parseTime = id => {
+  const baseId = timeBaseId(id);
+  const hour = hourEl(baseId).value;
+  const minute = minuteEl(baseId).value;
+  const amPm = amPmEl(baseId).value;
+
+  return timeToInt(`${hour}:${minute} ${amPm}`)
+}
+
+const setTime = (id, timeInSeconds) => {
+  const baseId = timeBaseId(id);
+  const time = timeFromInt(timeInSeconds, {
+    format: 12,
+    leadingZero: false
+  });
+  const [_match, hour, minute, amPm] = time.match(/(\d+):(\d+) ([AP]M)/);
+
+  hourEl(baseId).value = parseInt(hour);
+  minuteEl(baseId).value = parseInt(minute);
+  amPmEl(baseId).value = amPm;
+}
+
+// when the user is changing the start time, shift the end time 1 hour forward when the start time is equal to or greater than the end time
 const shiftEndTime = e => {
   const startTimeEl = e.changedEl;
   const startTimeElId = startTimeEl.getAttribute("id");
   const isStartTime = startTimeElId.indexOf("_start_time") != -1 ? true : false;
-  if (!isStartTime) {
-    return;
-  }
+  if (!isStartTime) return;
 
   const endTimeElId = startTimeElId.replace("_start_time", "_end_time");
   const endTimeEl = document.getElementById(endTimeElId);
-  const startTime = startTimeEl.value.trim();
-  const endTime = endTimeEl.value.trim();
+  const startTimeInSeconds = parseTime(startTimeElId);
+  const endTimeInSeconds = parseTime(endTimeElId);
+  if (startTimeInSeconds < endTimeInSeconds) return;
 
-  if (startTime != endTime) {
-    return;
-  }
-
-  const startTimeInSeconds = timeToInt(startTime);
   const newEndTimeInSeconds =
     startTimeInSeconds + oneHourInSeconds > oneDayInSeconds - 1
       ? 0
       : startTimeInSeconds + oneHourInSeconds;
-  endTimeEl.value = timeFromInt(newEndTimeInSeconds, {
-    format: 12,
-    leadingZero: false
-  });
+  setTime(endTimeElId, newEndTimeInSeconds);
 };
 
 export default pubsub => {
-  const config = {
-    enableTime: true,
-    noCalendar: true,
-    dateFormat: "h:i K",
-    time_24hr: false,
-    minuteIncrement: 15,
-    onChange: (selectedDates, dateStr, instance) => {
-      const mode =
-        instance.element.id == "trip_return_start_time" ||
-        instance.element.id == "trip_return_end_time"
-          ? "return"
-          : "start";
+  [...document.querySelectorAll("select[data-type='time']")].forEach(select =>
+    select.onchange = event => {
+      const changedEl = event.target;
+      const mode = (changedEl.id.startsWith("trip_return")) ? "return" : "start";
 
-      const changedEl = document.getElementById(instance.element.id);
-
-      pubsub.publishSync("time-change", {
-        mode: mode,
-        changedEl: changedEl
-      });
-    }
-  };
+      pubsub.publishSync("time-change", { changedEl, mode });
+    });
 
   pubsub.subscribe("time-change", shiftEndTime);
-
-  [...document.querySelectorAll("input[data-type='time']")].forEach(input => {
-    flatpickr(input, Object.assign({}, config, {appendTo: input.parentNode}));
-  });
 };

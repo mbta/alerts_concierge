@@ -108,12 +108,20 @@ const checkdDays = days =>
     false
   );
 
+const timeForTrip = (tripType) => {
+  const hour = document.getElementById(`${tripType}_hour`).value;
+  const minute = document.getElementById(`${tripType}_minute`).value;
+  const amPm = document.getElementById(`${tripType}_am_pm`).value;
+
+  return `${hour}:${minute} ${amPm}`;
+};
+
 export function processSchedule(scheduleEl, showDefaultTravelTimes) {
   const weekdaySelected = checkdDays(weekdays);
   const weekendSelected = checkdDays(weekends);
   const scheduleDataset = elemDataset(scheduleEl);
-  const startTime = document.getElementById(scheduleDataset.start).value;
-  const endTime = document.getElementById(scheduleDataset.end).value;
+  const startTime = timeForTrip(scheduleDataset.start);
+  const endTime = timeForTrip(scheduleDataset.end);
   const legs = [
     ...scheduleEl.querySelectorAll("div[data-type='schedule-leg']")
   ];
