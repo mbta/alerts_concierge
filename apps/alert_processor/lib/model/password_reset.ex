@@ -3,13 +3,13 @@ defmodule AlertProcessor.Model.PasswordReset do
   Data to support user password recovery
   """
   @type t :: %__MODULE__{
-    id: String.t,
-    user_id: String.t,
-    expired_at: DateTime.t,
-    redeemed_at: DateTime.t
-  }
+          id: String.t(),
+          user_id: String.t(),
+          expired_at: DateTime.t(),
+          redeemed_at: DateTime.t()
+        }
 
-  @type id :: String.t
+  @type id :: String.t()
 
   use Ecto.Schema
   import Ecto.Changeset
@@ -18,10 +18,10 @@ defmodule AlertProcessor.Model.PasswordReset do
   @primary_key {:id, :binary_id, autogenerate: true}
 
   schema "password_resets" do
-    belongs_to :user, AlertProcessor.Model.User, type: :binary_id
-    field :expired_at, :utc_datetime
-    field :redeemed_at, :utc_datetime
-    field :email, :string, virtual: true
+    belongs_to(:user, AlertProcessor.Model.User, type: :binary_id)
+    field(:expired_at, :utc_datetime)
+    field(:redeemed_at, :utc_datetime)
+    field(:email, :string, virtual: true)
 
     timestamps()
   end

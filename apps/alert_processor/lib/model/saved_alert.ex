@@ -6,17 +6,17 @@ defmodule AlertProcessor.Model.SavedAlert do
   alias AlertProcessor.Repo
 
   @type t :: %__MODULE__{
-    id: String.t | nil,
-    last_modified: DateTime.t | nil,
-    data: map | nil
-  }
+          id: String.t() | nil,
+          last_modified: DateTime.t() | nil,
+          data: map | nil
+        }
 
   @primary_key {:id, :binary_id, autogenerate: true}
 
   schema "alerts" do
-    field :alert_id, :string
-    field :last_modified, :utc_datetime
-    field :data, :map
+    field(:alert_id, :string)
+    field(:last_modified, :utc_datetime)
+    field(:data, :map)
 
     timestamps()
   end
@@ -27,7 +27,7 @@ defmodule AlertProcessor.Model.SavedAlert do
   @doc """
   Changeset for persisting a Subscription
   """
-  @spec create_changeset(__MODULE__.t, map) :: Ecto.Changeset.t
+  @spec create_changeset(__MODULE__.t(), map) :: Ecto.Changeset.t()
   def create_changeset(struct, params \\ %{}) do
     struct
     |> cast(params, @create_fields)
@@ -56,9 +56,8 @@ defmodule AlertProcessor.Model.SavedAlert do
   end
 
   def save!(alerts) do
-    alert_ids = Enum.map(alerts, &(&1["id"]))
-    query = from a in __MODULE__,
-      where: a.alert_id in ^alert_ids
+    alert_ids = Enum.map(alerts, & &1["id"])
+    query = from(a in __MODULE__, where: a.alert_id in ^alert_ids)
 
     existing_alerts = Repo.all(query)
     alert_pairs = pair_alerts(alerts, existing_alerts)

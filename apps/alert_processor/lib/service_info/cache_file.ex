@@ -10,7 +10,7 @@ defmodule AlertProcessor.ServiceInfo.CacheFile do
   alias AlertProcessor.Helpers.EnvHelper
   require Logger
 
-  @directory Path.join([File.cwd!, "priv/service_info_cache"])
+  @directory Path.join([File.cwd!(), "priv/service_info_cache"])
 
   @dev_filename "dev_cache.terms"
   @test_filename "test_cache.terms"
@@ -63,12 +63,12 @@ defmodule AlertProcessor.ServiceInfo.CacheFile do
     filepath = generate_filepath(filename)
     load_service_info(filepath)
   end
+
   def load_service_info(filepath) when is_binary(filepath) do
     Logger.info(fn -> "Loading service info cache from file #{filepath}" end)
-    with \
-      {:ok, binary_cache} <- File.read(filepath),
-      {:ok, state} when is_map(state) <- binary_to_term(binary_cache)
-    do
+
+    with {:ok, binary_cache} <- File.read(filepath),
+         {:ok, state} when is_map(state) <- binary_to_term(binary_cache) do
       Logger.info(fn -> "Loaded service info cache from file #{filepath}" end)
       {:ok, state}
     else
@@ -77,6 +77,7 @@ defmodule AlertProcessor.ServiceInfo.CacheFile do
         {:error, :cache_not_loaded}
     end
   end
+
   def load_service_info(_) do
     Logger.info(fn -> "Failed to load service info cache from file" end)
     {:error, :cache_not_loaded}
@@ -87,6 +88,7 @@ defmodule AlertProcessor.ServiceInfo.CacheFile do
   """
   def save_service_info(state) do
     filename = cache_filename()
+
     if is_binary(filename) do
       filepath = generate_filepath(filename)
       Logger.info(fn -> "Saving service info cache to file #{filepath}" end)
@@ -95,10 +97,12 @@ defmodule AlertProcessor.ServiceInfo.CacheFile do
       {:error, :cache_file_not_saved}
     end
   end
+
   def save_service_info(state, filepath) when is_map(state) and is_binary(filepath) do
     bin = :erlang.term_to_binary(state)
     File.write(filepath, bin)
   end
+
   def save_service_info(_, _) do
     {:error, :cache_file_not_saved}
   end
@@ -111,5 +115,4 @@ defmodule AlertProcessor.ServiceInfo.CacheFile do
         {:error, :invalid_erlang_term_binary}
     end
   end
-
 end

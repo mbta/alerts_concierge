@@ -15,7 +15,7 @@ defmodule ConciergeSite.ParamParsers.ParamTime do
       iex> ConciergeSite.ParamParsers.ParamTime.to_time(nil)
       nil
   """
-  @spec to_time(String.t) :: Time.t
+  @spec to_time(String.t()) :: Time.t()
   def to_time(nil), do: nil
 
   def to_time(form_time) do

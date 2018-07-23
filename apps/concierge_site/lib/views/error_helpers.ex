@@ -11,7 +11,7 @@ defmodule ConciergeSite.ErrorHelpers do
   def error_tag(form, field) do
     if error = form.errors[field] do
       content_tag :div, class: "error-block-container" do
-        content_tag :span, translate_error(error), class: "error-block"
+        content_tag(:span, translate_error(error), class: "error-block")
       end
     end
   end

@@ -16,8 +16,12 @@ defmodule AlertProcessor.NotificationBuilder do
     case TextReplacement.replace_text(alert, subscriptions) do
       {:ok, modified_alert} ->
         modified_alert
+
       {:error, error} ->
-        Logger.warn(fn -> "Error replacing text: alert_id=#{inspect alert.id} error=#{inspect error}" end)
+        Logger.warn(fn ->
+          "Error replacing text: alert_id=#{inspect(alert.id)} error=#{inspect(error)}"
+        end)
+
         alert
     end
   end
@@ -36,7 +40,11 @@ defmodule AlertProcessor.NotificationBuilder do
       status: :unsent,
       last_push_notification: alert.last_push_notification,
       alert: alert,
-      notification_subscriptions: Enum.map(subscriptions, & %AlertProcessor.Model.NotificationSubscription{subscription_id: &1.id}),
+      notification_subscriptions:
+        Enum.map(
+          subscriptions,
+          &%AlertProcessor.Model.NotificationSubscription{subscription_id: &1.id}
+        ),
       closed_timestamp: alert.closed_timestamp,
       type: List.first(subscriptions).notification_type_to_send || :initial
     }

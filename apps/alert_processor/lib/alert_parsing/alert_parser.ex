@@ -4,9 +4,19 @@ defmodule AlertProcessor.AlertParser do
   relevant information to subscription filter engine.
   """
   require Logger
-  alias AlertProcessor.{AlertsClient, CachedApiClient,
-    Helpers.StringHelper, Parser, ServiceInfoCache, AlertFilters,
-    SubscriptionFilterEngine, Helpers.DateTimeHelper, Reminders}
+
+  alias AlertProcessor.{
+    AlertsClient,
+    CachedApiClient,
+    Helpers.StringHelper,
+    Parser,
+    ServiceInfoCache,
+    AlertFilters,
+    SubscriptionFilterEngine,
+    Helpers.DateTimeHelper,
+    Reminders
+  }
+
   alias AlertProcessor.Model.{Alert, InformedEntity, Notification, SavedAlert}
 
   @behaviour Parser
@@ -15,33 +25,49 @@ defmodule AlertProcessor.AlertParser do
   process_alerts/0 entry point for fetching json data from api and, transforming, storing and passing to
   subscription engine to process before sending.
   """
-  @spec process_alerts(atom | nil) :: [{:ok, [Notification.t]}]
+  @spec process_alerts(atom | nil) :: [{:ok, [Notification.t()]}]
   def process_alerts(alert_filter_duration_type \\ :anytime) do
     with {:ok, alerts, feed_timestamp} <- AlertsClient.get_alerts(),
          {:ok, facility_map} <- ServiceInfoCache.get_facility_map() do
       SavedAlert.save!(alerts)
-      alerts_needing_notifications = {alerts, facility_map, feed_timestamp}
-      |> parse_alerts()
-      |> AlertFilters.filter_by_duration_type(alert_filter_duration_type)
+
+      alerts_needing_notifications =
+        {alerts, facility_map, feed_timestamp}
+        |> parse_alerts()
+        |> AlertFilters.filter_by_duration_type(alert_filter_duration_type)
+
       Logger.info(fn ->
-        "alert filter, duration_type=#{alert_filter_duration_type} alert_count=#{length(alerts_needing_notifications)}"
+        "alert filter, duration_type=#{alert_filter_duration_type} alert_count=#{
+          length(alerts_needing_notifications)
+        }"
       end)
+
       if alert_filter_duration_type == :older do
         Reminders.async_schedule_reminders(alerts_needing_notifications)
       end
-      SubscriptionFilterEngine.schedule_all_notifications(alerts_needing_notifications, alert_filter_duration_type)
+
+      SubscriptionFilterEngine.schedule_all_notifications(
+        alerts_needing_notifications,
+        alert_filter_duration_type
+      )
     end
   end
 
   @doc false
   def parse_alerts({alerts, facilities_map, feed_timestamp}) do
     start_time = Time.utc_now()
-    parsed_alerts = for alert_json <- remove_ignored(alerts) do
-      parse_alert(alert_json, facilities_map, feed_timestamp)
-    end
+
+    parsed_alerts =
+      for alert_json <- remove_ignored(alerts) do
+        parse_alert(alert_json, facilities_map, feed_timestamp)
+      end
+
     Logger.info(fn ->
-      "alert parsing, time=#{Time.diff(Time.utc_now(), start_time, :millisecond)} alert_count=#{length(alerts)}"
+      "alert parsing, time=#{Time.diff(Time.utc_now(), start_time, :millisecond)} alert_count=#{
+        length(alerts)
+      }"
     end)
+
     parsed_alerts
   end
 
@@ -52,7 +78,7 @@ defmodule AlertProcessor.AlertParser do
     |> filter_invalid_key_value("informed_entity")
   end
 
-  @spec filter_invalid_key_value([map], String.t) :: [map]
+  @spec filter_invalid_key_value([map], String.t()) :: [map]
   defp filter_invalid_key_value(alerts, key) do
     filter_fun = fn
       %{^key => ""} -> false
@@ -66,18 +92,23 @@ defmodule AlertProcessor.AlertParser do
     |> Enum.filter(filter_fun)
   end
 
-  def parse_alert(%{
-      "id" => id,
-      "created_timestamp" => created_timestamp,
-      "duration_certainty" => duration_certainty,
-      "effect_detail" => effect_detail,
-      "header_text" => header_text,
-      "informed_entity" => informed_entity,
-      "service_effect_text" => service_effect_text,
-      "severity" => severity,
-      "last_push_notification_timestamp" => last_push_notification_timestamp
-    } = alert_data, facilities_map, feed_timestamp) do
+  def parse_alert(
+        %{
+          "id" => id,
+          "created_timestamp" => created_timestamp,
+          "duration_certainty" => duration_certainty,
+          "effect_detail" => effect_detail,
+          "header_text" => header_text,
+          "informed_entity" => informed_entity,
+          "service_effect_text" => service_effect_text,
+          "severity" => severity,
+          "last_push_notification_timestamp" => last_push_notification_timestamp
+        } = alert_data,
+        facilities_map,
+        feed_timestamp
+      ) do
     active_period = Map.get(alert_data, "active_period")
+
     %Alert{}
     |> parse_duration_certainty(duration_certainty, active_period, feed_timestamp)
     |> parse_active_periods(active_period, created_timestamp)
@@ -112,7 +143,12 @@ defmodule AlertProcessor.AlertParser do
 
   defp parse_duration_certainty(alert, _, nil, _), do: alert
 
-  defp parse_duration_certainty(alert, "ESTIMATED", [%{"start" => _start_timestamp, "end" => end_timestamp}], feed_timestamp) do
+  defp parse_duration_certainty(
+         alert,
+         "ESTIMATED",
+         [%{"start" => _start_timestamp, "end" => end_timestamp}],
+         feed_timestamp
+       ) do
     estimated_duration = round((end_timestamp - feed_timestamp) / 900) * 900
     %{alert | duration_certainty: {:estimated, estimated_duration}}
   end
@@ -121,9 +157,13 @@ defmodule AlertProcessor.AlertParser do
 
   defp parse_active_periods(alert, nil, _), do: alert
 
-  defp parse_active_periods(%Alert{duration_certainty: {:estimated, _}} = alert, [%{"start" => start_timestamp, "end" => _end_timestamp}], created_timestamp) do
+  defp parse_active_periods(
+         %Alert{duration_certainty: {:estimated, _}} = alert,
+         [%{"start" => start_timestamp, "end" => _end_timestamp}],
+         created_timestamp
+       ) do
     {:ok, start_datetime} = DateTimeHelper.parse_unix_timestamp(start_timestamp)
-    {:ok, end_datetime} = DateTimeHelper.parse_unix_timestamp(created_timestamp + (36 * 60 * 60))
+    {:ok, end_datetime} = DateTimeHelper.parse_unix_timestamp(created_timestamp + 36 * 60 * 60)
 
     %{alert | active_period: [%{start: start_datetime, end: end_datetime}]}
   end
@@ -134,29 +174,34 @@ defmodule AlertProcessor.AlertParser do
 
   defp parse_active_period(active_period) do
     active_period
-    |> Map.new(fn({k, v}) ->
-        with {:ok, datetime} <- DateTimeHelper.parse_unix_timestamp(v) do
-          {String.to_existing_atom(k), datetime}
-        else
-          _ -> {String.to_existing_atom(k), nil}
-        end
-      end)
+    |> Map.new(fn {k, v} ->
+      with {:ok, datetime} <- DateTimeHelper.parse_unix_timestamp(v) do
+        {String.to_existing_atom(k), datetime}
+      else
+        _ -> {String.to_existing_atom(k), nil}
+      end
+    end)
     |> Map.put_new(:end, nil)
   end
 
   defp parse_informed_entities(alert, informed_entities, facilities_map) do
     informed_entities =
-      Enum.flat_map(informed_entities, fn(ie) ->
-        struct_params = ie
+      Enum.flat_map(informed_entities, fn ie ->
+        struct_params =
+          ie
           |> parse_informed_entity()
           |> remove_stops_for_bus()
           |> Enum.flat_map(&set_route_for_amenity/1)
 
-        Enum.map(struct_params, fn(sp) ->
+        Enum.map(struct_params, fn sp ->
           informed_entity = struct(InformedEntity, sp)
+
           with {:facility_id, facility_id} <- Enum.find(sp, &(elem(&1, 0) == :facility_id)),
-              %{^facility_id => facility_type} <- facilities_map do
-            %{informed_entity | facility_type: facility_type |> String.downcase() |> String.to_existing_atom()}
+               %{^facility_id => facility_type} <- facilities_map do
+            %{
+              informed_entity
+              | facility_type: facility_type |> String.downcase() |> String.to_existing_atom()
+            }
           else
             _ -> informed_entity
           end
@@ -167,22 +212,29 @@ defmodule AlertProcessor.AlertParser do
   end
 
   defp parse_informed_entity(informed_entity) do
-    Enum.reduce(informed_entity, %{}, fn({k, v}, acc) ->
+    Enum.reduce(informed_entity, %{}, fn {k, v}, acc ->
       case k do
         "trip" ->
           Map.merge(acc, parse_trip(v, informed_entity))
+
         "stop_id" ->
           Map.merge(acc, parse_stop(v))
+
         "route_id" ->
           Map.put(acc, :route, v)
+
         "route_type" ->
           Map.put(acc, :route_type, v)
+
         "facility_id" ->
           Map.put(acc, :facility_id, v)
+
         "direction_id" ->
           Map.put(acc, :direction_id, v)
+
         "activities" ->
           Map.put(acc, :activities, v)
+
         _ ->
           acc
       end
@@ -194,26 +246,29 @@ defmodule AlertProcessor.AlertParser do
 
   defp set_route_for_amenity(%{facility_id: fid, stop: stop} = entity) when not is_nil(fid) do
     with {:ok, subway_infos} <- ServiceInfoCache.get_subway_info(),
-      {:ok, cr_infos} <- ServiceInfoCache.get_commuter_rail_info(),
-      {:ok, bus_infos} <- ServiceInfoCache.get_bus_info(),
-      routes <- get_routes_for_stop(stop, subway_infos ++ cr_infos ++ bus_infos) do
-        Enum.map(routes, & Map.put(entity, :route, &1))
+         {:ok, cr_infos} <- ServiceInfoCache.get_commuter_rail_info(),
+         {:ok, bus_infos} <- ServiceInfoCache.get_bus_info(),
+         routes <- get_routes_for_stop(stop, subway_infos ++ cr_infos ++ bus_infos) do
+      Enum.map(routes, &Map.put(entity, :route, &1))
     else
       _ -> [entity]
     end
   end
+
   defp set_route_for_amenity(entity), do: [entity]
 
   defp get_routes_for_stop(stop, route_info) do
     route_info
-    |> Enum.filter(&(List.keymember?(&1.stop_list, stop, 1)))
-    |> Enum.map(&(&1.route_id))
+    |> Enum.filter(&List.keymember?(&1.stop_list, stop, 1))
+    |> Enum.map(& &1.route_id)
   end
 
   defp parse_trip(trip, informed_entity) do
-    %{trip: get_trip_name(trip, informed_entity),
+    %{
+      trip: get_trip_name(trip, informed_entity),
       direction_id: Map.get(trip, "direction_id"),
-      schedule: get_schedule(trip, informed_entity)}
+      schedule: get_schedule(trip, informed_entity)
+    }
   end
 
   defp get_trip_name(%{"trip_id" => trip_id}, %{"route_type" => 4}) do
@@ -222,6 +277,7 @@ defmodule AlertProcessor.AlertParser do
       _ -> nil
     end
   end
+
   defp get_trip_name(%{"trip_id" => trip_id}, _informed_enttiy) do
     case ServiceInfoCache.get_trip_name(trip_id) do
       {:ok, trip_name} -> trip_name
@@ -237,6 +293,7 @@ defmodule AlertProcessor.AlertParser do
       _ -> nil
     end
   end
+
   defp get_schedule(_, _), do: nil
 
   defp parse_schedule_event(event) do
@@ -278,16 +335,18 @@ defmodule AlertProcessor.AlertParser do
   we're working with works.
 
   """
-  @spec parse_translation(map | list) :: String.t | nil
+  @spec parse_translation(map | list) :: String.t() | nil
   def parse_translation(translations), do: do_parse_translation(translations)
 
   defp do_parse_translation(nil), do: nil
+
   defp do_parse_translation(%{"translation" => translations}) do
     case Enum.find(translations, &(&1["language"] == "en")) do
       %{"text" => text} -> text
       _ -> nil
     end
   end
+
   defp do_parse_translation(translations) when is_list(translations) do
     case Enum.find(translations, &(&1["translation"]["language"] == "en")) do
       %{"translation" => %{"language" => "en", "text" => text}} -> text
@@ -296,7 +355,8 @@ defmodule AlertProcessor.AlertParser do
   end
 
   defp parse_reminder_times(reminder_times) when is_list(reminder_times) do
-    Enum.map(reminder_times, & parse_datetime(&1))
+    Enum.map(reminder_times, &parse_datetime(&1))
   end
+
   defp parse_reminder_times(_), do: []
 end

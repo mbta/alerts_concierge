@@ -3,8 +3,15 @@ defmodule AlertProcessor.SubscriptionFilterEngine do
   Entry point for susbcription engine to filter users to alert users
   with relevant subscriptions to alert provided.
   """
-  alias AlertProcessor.{ActivePeriodFilter, InformedEntityFilter, Model,
-    Repo, Scheduler, SentAlertFilter}
+  alias AlertProcessor.{
+    ActivePeriodFilter,
+    InformedEntityFilter,
+    Model,
+    Repo,
+    Scheduler,
+    SentAlertFilter
+  }
+
   alias Model.{Alert, Notification, Subscription}
   require Logger
 
@@ -15,22 +22,31 @@ defmodule AlertProcessor.SubscriptionFilterEngine do
 
   We are intentionally not collecting the notifications that go out as our consumers don't need them and it is a performance hit.
   """
-  @spec schedule_all_notifications([Alert.t], atom | nil) :: any
+  @spec schedule_all_notifications([Alert.t()], atom | nil) :: any
   def schedule_all_notifications(alerts, alert_filter_duration_type \\ :anytime) do
     start_time = Time.utc_now()
     all_subscriptions = Subscription |> Repo.all() |> Repo.preload(:user)
     recent_notifications = Notification.most_recent_for_subscriptions_and_alerts(alerts)
     schedule_notifications(all_subscriptions, recent_notifications, alerts)
+
     Logger.info(fn ->
-      "alert matching #{alert_filter_duration_type}, time=#{Time.diff(Time.utc_now(), start_time, :millisecond)} alert_count=#{length(alerts)}"
+      "alert matching #{alert_filter_duration_type}, time=#{
+        Time.diff(Time.utc_now(), start_time, :millisecond)
+      } alert_count=#{length(alerts)}"
     end)
+
     :ok
   end
 
-  defp schedule_notifications(all_subscriptions, recent_notifications, alerts) when is_list(alerts) do
+  defp schedule_notifications(all_subscriptions, recent_notifications, alerts)
+       when is_list(alerts) do
     options = [ordered: false, timeout: 600_000]
+
     alerts
-    |> Task.async_stream(&(schedule_notifications(all_subscriptions, recent_notifications, &1)), options)
+    |> Task.async_stream(
+      &schedule_notifications(all_subscriptions, recent_notifications, &1),
+      options
+    )
     |> Stream.run()
   end
 
@@ -42,8 +58,15 @@ defmodule AlertProcessor.SubscriptionFilterEngine do
   @doc """
   determine_recipients/3 receives an alert and applies relevant filters to exclude users who should not be notified
   """
-  @spec determine_recipients(Alert.t, [Subscription.t], [Notification.t], DateTime.t) :: [Subscription.t]
-  def determine_recipients(alert, subscriptions, notifications, now \\ Calendar.DateTime.now!("America/New_York")) do
+  @spec determine_recipients(Alert.t(), [Subscription.t()], [Notification.t()], DateTime.t()) :: [
+          Subscription.t()
+        ]
+  def determine_recipients(
+        alert,
+        subscriptions,
+        notifications,
+        now \\ Calendar.DateTime.now!("America/New_York")
+      ) do
     {subscriptions_to_test, subscriptions_to_auto_resend} =
       SentAlertFilter.filter(subscriptions, alert, notifications, now)
 
@@ -54,7 +77,8 @@ defmodule AlertProcessor.SubscriptionFilterEngine do
     |> Kernel.++(subscriptions_to_auto_resend)
   end
 
-  @spec schedule_distinct_notifications(Alert.t, [Subscription.t]) :: {:ok, [Notification.t]} | :error
+  @spec schedule_distinct_notifications(Alert.t(), [Subscription.t()]) ::
+          {:ok, [Notification.t()]} | :error
   def schedule_distinct_notifications(alert, subscriptions) do
     subscriptions
     |> Enum.group_by(& &1.user)

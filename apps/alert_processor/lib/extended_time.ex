@@ -9,11 +9,11 @@ defmodule AlertProcessor.ExtendedTime do
     :time
   ]
 
-  @type id :: String.t
+  @type id :: String.t()
   @type t :: %__MODULE__{
-    relative_day: 1 | 2,
-    time: Time.t
-  }
+          relative_day: 1 | 2,
+          time: Time.t()
+        }
 
   @doc """
   Builds an ExtendedTime struct by comparing a NaiveDateTime with a base date.
@@ -23,9 +23,10 @@ defmodule AlertProcessor.ExtendedTime do
       iex> AlertProcessor.ExtendedTime.new(~N[2018-01-02 00:30:00], ~D[2018-01-01])
       {:ok, %AlertProcessor.ExtendedTime{relative_day: 2, time: ~T[00:30:00]}}
   """
-  @spec new(NaiveDateTime.t, Date.t) :: {:ok, t}
+  @spec new(NaiveDateTime.t(), Date.t()) :: {:ok, t}
   def new(%NaiveDateTime{} = date_time, %Date{} = base_date) do
-    relative_day = if Date.compare(NaiveDateTime.to_date(date_time), base_date) == :eq, do: 1, else: 2
+    relative_day =
+      if Date.compare(NaiveDateTime.to_date(date_time), base_date) == :eq, do: 1, else: 2
 
     extendedday_time = %ExtendedTime{
       relative_day: relative_day,
@@ -57,7 +58,18 @@ defmodule AlertProcessor.ExtendedTime do
       :eq
   """
   @spec compare(t, t) :: :lt | :eq | :gt
-  def compare(%ExtendedTime{relative_day: relative_day_a}, %ExtendedTime{relative_day: relative_day_b}) when relative_day_a < relative_day_b, do: :lt
-  def compare(%ExtendedTime{relative_day: relative_day_a}, %ExtendedTime{relative_day: relative_day_b}) when relative_day_a > relative_day_b, do: :gt
-  def compare(%ExtendedTime{time: time_a}, %ExtendedTime{time: time_b}), do: Time.compare(time_a, time_b)
+  def compare(%ExtendedTime{relative_day: relative_day_a}, %ExtendedTime{
+        relative_day: relative_day_b
+      })
+      when relative_day_a < relative_day_b,
+      do: :lt
+
+  def compare(%ExtendedTime{relative_day: relative_day_a}, %ExtendedTime{
+        relative_day: relative_day_b
+      })
+      when relative_day_a > relative_day_b,
+      do: :gt
+
+  def compare(%ExtendedTime{time: time_a}, %ExtendedTime{time: time_b}),
+    do: Time.compare(time_a, time_b)
 end

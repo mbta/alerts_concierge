@@ -11,19 +11,21 @@ defmodule ConciergeSite.Dissemination.NotificationEmail do
          ConfigHelper.get_string(:send_from_email, :concierge_site)}
   @template_dir Application.get_env(:concierge_site, :mail_template_dir)
 
-  EEx.function_from_file(
-    :def,
-    :html_email,
-    Path.join(@template_dir, "notification.html.eex"),
-    [:notification, :manage_subscriptions_url, :feedback_url])
+  EEx.function_from_file(:def, :html_email, Path.join(@template_dir, "notification.html.eex"), [
+    :notification,
+    :manage_subscriptions_url,
+    :feedback_url
+  ])
+
   EEx.function_from_file(
     :def,
     :text_email,
-    Path.join(~w(#{System.cwd!} lib mail_templates notification.txt.eex)),
-    [:notification, :manage_subscriptions_url, :feedback_url])
+    Path.join(~w(#{System.cwd!()} lib mail_templates notification.txt.eex)),
+    [:notification, :manage_subscriptions_url, :feedback_url]
+  )
 
   @doc "notification_email/1 takes a notification and builds an email to be sent to user."
-  @spec notification_email(Notification.t) :: Elixir.Bamboo.Email.t
+  @spec notification_email(Notification.t()) :: Elixir.Bamboo.Email.t()
   def notification_email(%Notification{user: user} = notification) do
     manage_subscriptions_url = MailHelper.manage_subscriptions_url(user)
     feedback_url = MailHelper.feedback_url()
@@ -37,17 +39,18 @@ defmodule ConciergeSite.Dissemination.NotificationEmail do
     |> Bamboo.Email.put_private(:notification_id, notification.id)
   end
 
-  @spec base_email() :: Elixir.Bamboo.Email.t
+  @spec base_email() :: Elixir.Bamboo.Email.t()
   defp base_email do
     new_email(from: @from)
   end
 
   def email_subject(notification) do
-    {_, subject} = {notification, ""}
-    |> subject_body()
-    |> subject_prefix()
-    |> subject_suffix()
-    |> subject_closed()
+    {_, subject} =
+      {notification, ""}
+      |> subject_body()
+      |> subject_prefix()
+      |> subject_suffix()
+      |> subject_closed()
 
     subject
   end
@@ -57,11 +60,13 @@ defmodule ConciergeSite.Dissemination.NotificationEmail do
   end
 
   defp subject_prefix({%Notification{alert: %{timeframe: nil}}, _} = pair), do: pair
+
   defp subject_prefix({%Notification{alert: %{timeframe: timeframe}} = notification, subject}) do
     {notification, "#{capitalize_first(timeframe)}: #{subject}"}
   end
 
   defp subject_suffix({%Notification{alert: %{recurrence: nil}}, _} = pair), do: pair
+
   defp subject_suffix({%Notification{alert: %{recurrence: recurrence}} = notification, subject}) do
     {notification, "#{subject} #{recurrence}"}
   end
@@ -69,11 +74,14 @@ defmodule ConciergeSite.Dissemination.NotificationEmail do
   defp subject_closed({%Notification{type: :all_clear} = notification, subject}) do
     {notification, "All clear (re: #{subject})"}
   end
+
   defp subject_closed({%Notification{type: :update} = notification, subject}) do
     {notification, "Update (re: #{subject})"}
   end
+
   defp subject_closed({%Notification{type: :reminder} = notification, subject}) do
     {notification, "Reminder (re: #{subject})"}
   end
+
   defp subject_closed({_, _} = pair), do: pair
 end

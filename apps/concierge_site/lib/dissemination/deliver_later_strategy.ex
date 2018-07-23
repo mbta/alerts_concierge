@@ -7,13 +7,18 @@ defmodule ConciergeSite.Dissemination.DeliverLaterStrategy do
     Task.async(fn ->
       try do
         result = adapter.deliver(email, config)
-        Logger.info(fn -> "Email result: #{inspect(result)}, notification_id: #{email.private[:notification_id]}" end)
+
+        Logger.info(fn ->
+          "Email result: #{inspect(result)}, notification_id: #{email.private[:notification_id]}"
+        end)
+
         result
       rescue
         # Consciously dropping the email on the floor if we get an SMTP error.
         # Once we learn more about why we are getting these occasionally we might want to take better action.
         e in SMTPError ->
           Logger.error(fn -> "SMTP error sending to #{email.to}: #{e.message}" end)
+
         e ->
           Logger.error(fn -> "Unknown error sending to #{email.to}: #{inspect(e)}" end)
       end

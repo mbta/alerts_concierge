@@ -22,32 +22,36 @@ defmodule AlertProcessor.TextReplacement do
         header: parse_target(alert.header)
       }
 
-      trip_mapping = for {key, targets} <- match_targets, into: %{} do
-        trips =
-          targets
-          |> Enum.flat_map(fn({index, {{train, stop, time}, _text}}) ->
-            trip = Map.get(stop_schedules, {stop, time})
-            Enum.reduce(subscriptions, %{}, fn(sub, acc) ->
-              case trip_schedules[{sub.origin, trip}] do
-                {%Time{} = time, trip_name} -> Map.put(acc, index, {train, trip_name, time})
-                _ -> acc
+      trip_mapping =
+        for {key, targets} <- match_targets, into: %{} do
+          trips =
+            targets
+            |> Enum.flat_map(fn {index, {{train, stop, time}, _text}} ->
+              trip = Map.get(stop_schedules, {stop, time})
+
+              Enum.reduce(subscriptions, %{}, fn sub, acc ->
+                case trip_schedules[{sub.origin, trip}] do
+                  {%Time{} = time, trip_name} -> Map.put(acc, index, {train, trip_name, time})
+                  _ -> acc
+                end
+              end)
+            end)
+            |> Enum.map(fn {k, replacement} ->
+              {original, text} = match_targets[key][k]
+
+              if original != replacement do
+                {original, replacement, text}
+              else
+                {original, original, text}
               end
             end)
-          end)
-          |> Enum.map(fn({k, replacement}) ->
-            {original, text} = match_targets[key][k]
-            if original != replacement do
-              {original, replacement, text}
-            else
-              {original, original, text}
-            end
-          end)
-        {key, trips}
-      end
+
+          {key, trips}
+        end
 
       trip_mapping
       |> replace_schedule(alert)
-      |> Enum.reduce(alert, fn({k, v}, alert) ->
+      |> Enum.reduce(alert, fn {k, v}, alert ->
         Map.put(alert, k, v)
       end)
     else
@@ -62,20 +66,23 @@ defmodule AlertProcessor.TextReplacement do
       else
         text =
           [replacement_pairs]
-          |> Enum.map(fn({_original, replacement, text}) ->
+          |> Enum.map(fn {_original, replacement, text} ->
             new_text = serialize(replacement)
             substitute(text, new_text)
           end)
-          |> IO.iodata_to_binary
+          |> IO.iodata_to_binary()
+
         {key, text}
       end
     end
   end
 
   defp serialize({train, stop, time}) do
-    time_string = time
+    time_string =
+      time
       |> Strftime.strftime!("%k:%M %P")
       |> String.trim_leading()
+
     "#{train} (#{time_string} from #{stop})"
   end
 
@@ -99,10 +106,11 @@ defmodule AlertProcessor.TextReplacement do
     schedule_regex()
     |> Regex.scan(text)
     |> Enum.with_index()
-    |> Enum.reduce(%{}, fn({[_, train, time, station], index}, acc) ->
+    |> Enum.reduce(%{}, fn {[_, train, time, station], index}, acc ->
       Map.put(acc, index, {{train, station, parse_time(time)}, text})
     end)
   end
+
   def parse_target(_), do: %{}
 
   defp parse_time(time_with_ampm) do
@@ -124,16 +132,29 @@ defmodule AlertProcessor.TextReplacement do
 
   defp build_schedule_mapping(informed_entities) do
     informed_entities
-    |> Enum.reject(& is_nil(&1.schedule))
-    |> Enum.reduce({%{}, %{}}, fn(informed_entity, {stop_time_trips, trip_schedules}) ->
-      Enum.reduce(informed_entity.schedule, {stop_time_trips, trip_schedules}, fn(schedule, {stop_time_trips, trip_schedules}) ->
+    |> Enum.reject(&is_nil(&1.schedule))
+    |> Enum.reduce({%{}, %{}}, fn informed_entity, {stop_time_trips, trip_schedules} ->
+      Enum.reduce(informed_entity.schedule, {stop_time_trips, trip_schedules}, fn schedule,
+                                                                                  {stop_time_trips,
+                                                                                   trip_schedules} ->
         case ServiceInfoCache.get_stop(schedule.stop_id) do
           {:ok, {stop_name, _, _, _}} ->
             departure_time = extract_time(schedule.departure_time)
-            stop_time_trips = Map.put(stop_time_trips, {schedule.stop_id, departure_time}, schedule.trip_id)
-            trip_schedules = Map.put(trip_schedules, {schedule.stop_id, schedule.trip_id}, {departure_time, stop_name})
+
+            stop_time_trips =
+              Map.put(stop_time_trips, {schedule.stop_id, departure_time}, schedule.trip_id)
+
+            trip_schedules =
+              Map.put(
+                trip_schedules,
+                {schedule.stop_id, schedule.trip_id},
+                {departure_time, stop_name}
+              )
+
             {stop_time_trips, trip_schedules}
-          _ -> {stop_time_trips, trip_schedules}
+
+          _ ->
+            {stop_time_trips, trip_schedules}
         end
       end)
     end)

@@ -6,5 +6,5 @@ defmodule AlertProcessor.Parser do
   """
   alias AlertProcessor.Model.Notification
 
-  @callback process_alerts() :: [{:ok, [Notification.t]}]
+  @callback process_alerts() :: [{:ok, [Notification.t()]}]
 end

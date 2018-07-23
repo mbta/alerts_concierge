@@ -16,6 +16,7 @@ defmodule ConciergeSite.Plugs.TokenLogin do
         claims
         |> Map.get(:key, :default)
         |> Guardian.Keys.base_key()
+
       put_session(conn, key, token)
     else
       _ -> conn

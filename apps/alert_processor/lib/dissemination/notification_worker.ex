@@ -4,8 +4,16 @@ defmodule AlertProcessor.NotificationWorker do
   """
   use GenServer
   require Logger
-  alias AlertProcessor.{SendingQueue, Dispatcher, Model.Notification, RateLimiter, Helpers.ConfigHelper}
-  @type notifications :: [Notification.t]
+
+  alias AlertProcessor.{
+    SendingQueue,
+    Dispatcher,
+    Model.Notification,
+    RateLimiter,
+    Helpers.ConfigHelper
+  }
+
+  @type notifications :: [Notification.t()]
 
   @doc false
   def start_link(opts \\ [name: __MODULE__]) do
@@ -22,25 +30,37 @@ defmodule AlertProcessor.NotificationWorker do
   Checks sending queue for alert and sends it out to user
   """
   def handle_info(:notification, state) do
-    case SendingQueue.pop do
+    case SendingQueue.pop() do
       {:ok, %Notification{} = notification} ->
         send_notification(notification)
         Process.send_after(self(), :notification, send_rate())
+
       :error ->
         Process.send_after(self(), :notification, 100)
     end
+
     {:noreply, state}
   end
+
   def handle_info(_, state) do
     {:noreply, state}
   end
 
   defp send_notification(notification) do
     with :ok <- RateLimiter.check_rate_limit(notification.user.id),
-      {:ok, _} <- Dispatcher.send_notification(notification) do
+         {:ok, _} <- Dispatcher.send_notification(notification) do
     else
-      {:error, :rate_exceeded} -> Logger.warn("Sending rate exceeded for user: #{notification.user.id}, alert: #{notification.alert_id}")
-      {:error, _} -> Logger.warn("Sending failed for user: #{notification.user.id}, alert: #{notification.alert_id}")
+      {:error, :rate_exceeded} ->
+        Logger.warn(
+          "Sending rate exceeded for user: #{notification.user.id}, alert: #{
+            notification.alert_id
+          }"
+        )
+
+      {:error, _} ->
+        Logger.warn(
+          "Sending failed for user: #{notification.user.id}, alert: #{notification.alert_id}"
+        )
     end
   end
 

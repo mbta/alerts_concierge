@@ -7,23 +7,33 @@ defmodule AlertProcessor.Model.Trip do
   alias AlertProcessor.Model.{Trip, Subscription, User}
   alias AlertProcessor.Repo
 
-  @type relevant_day :: :monday | :tuesday | :wednesday | :thursday | :friday | :saturday | :sunday
-  @type facility_type :: :bike_storage | :electric_car_chargers | :elevator | :escalator | :parking_area | :pick_drop | :portable_boarding_lift | :tty_phone | :elevated_subplatform
+  @type relevant_day ::
+          :monday | :tuesday | :wednesday | :thursday | :friday | :saturday | :sunday
+  @type facility_type ::
+          :bike_storage
+          | :electric_car_chargers
+          | :elevator
+          | :escalator
+          | :parking_area
+          | :pick_drop
+          | :portable_boarding_lift
+          | :tty_phone
+          | :elevated_subplatform
   @type alert_priority_type :: :low | :high
   @type trip_type :: :commute | :accessibility
 
   @type t :: %__MODULE__{
-    user_id: String.t | nil,
-    alert_priority_type: alert_priority_type | nil,
-    relevant_days: [relevant_day] | nil,
-    start_time: Time.t | nil,
-    end_time: Time.t | nil,
-    return_start_time: Time.t | nil,
-    return_end_time: Time.t | nil,
-    facility_types: [facility_type] | [],
-    roundtrip: boolean,
-    trip_type: trip_type
-  }
+          user_id: String.t() | nil,
+          alert_priority_type: alert_priority_type | nil,
+          relevant_days: [relevant_day] | nil,
+          start_time: Time.t() | nil,
+          end_time: Time.t() | nil,
+          return_start_time: Time.t() | nil,
+          return_end_time: Time.t() | nil,
+          facility_types: [facility_type] | [],
+          roundtrip: boolean,
+          trip_type: trip_type
+        }
 
   use Ecto.Schema
   import Ecto.Changeset
@@ -32,18 +42,18 @@ defmodule AlertProcessor.Model.Trip do
   @primary_key {:id, :binary_id, autogenerate: true}
 
   schema "trips" do
-    belongs_to :user, User, type: :binary_id
-    has_many :subscriptions, Subscription, on_delete: :delete_all
+    belongs_to(:user, User, type: :binary_id)
+    has_many(:subscriptions, Subscription, on_delete: :delete_all)
 
-    field :alert_priority_type, AlertProcessor.AtomType, null: false
-    field :relevant_days, {:array, AlertProcessor.AtomType}, null: false
-    field :start_time, :time, null: false
-    field :end_time, :time, null: false
-    field :return_start_time, :time, null: true
-    field :return_end_time, :time, null: true
-    field :facility_types, {:array, AlertProcessor.AtomType}, null: false
-    field :roundtrip, :boolean, null: false
-    field :trip_type, AlertProcessor.AtomType, null: false, default: :commute
+    field(:alert_priority_type, AlertProcessor.AtomType, null: false)
+    field(:relevant_days, {:array, AlertProcessor.AtomType}, null: false)
+    field(:start_time, :time, null: false)
+    field(:end_time, :time, null: false)
+    field(:return_start_time, :time, null: true)
+    field(:return_end_time, :time, null: true)
+    field(:facility_types, {:array, AlertProcessor.AtomType}, null: false)
+    field(:roundtrip, :boolean, null: false)
+    field(:trip_type, AlertProcessor.AtomType, null: false, default: :commute)
 
     timestamps()
   end
@@ -67,7 +77,7 @@ defmodule AlertProcessor.Model.Trip do
   @doc """
   Changeset for creating a trip
   """
-  @spec create_changeset(__MODULE__.t, map) :: Ecto.Changeset.t
+  @spec create_changeset(__MODULE__.t(), map) :: Ecto.Changeset.t()
   def create_changeset(struct, params \\ %{}) do
     struct
     |> cast(params, @permitted_fields)
@@ -89,7 +99,7 @@ defmodule AlertProcessor.Model.Trip do
   * return_end_time
 
   """
-  @spec update_changeset(__MODULE__.t, map) :: Ecto.Changeset.t
+  @spec update_changeset(__MODULE__.t(), map) :: Ecto.Changeset.t()
   def update_changeset(struct, params \\ %{}) do
     struct
     |> cast(params, @update_permitted_fields)
@@ -109,19 +119,27 @@ defmodule AlertProcessor.Model.Trip do
       {:error, %Ecto.Changeset{}}
 
   """
-  @spec update(__MODULE__.t, map) :: {:ok, __MODULE__.t} | {:error, Ecto.Changeset.t}
+  @spec update(__MODULE__.t(), map) :: {:ok, __MODULE__.t()} | {:error, Ecto.Changeset.t()}
   def update(%__MODULE__{} = trip, params) do
     update_result =
       trip
       |> update_changeset(params)
       |> Repo.update()
+
     sync_subscriptions(update_result)
     update_result
   end
 
   def get_trips_by_user(user_id) do
-    subscriptions_query = from s in Subscription, where: s.return_trip == false, order_by: s.rank
-    Repo.all(from t in __MODULE__, where: t.user_id == ^user_id, preload: [subscriptions: ^subscriptions_query])
+    subscriptions_query = from(s in Subscription, where: s.return_trip == false, order_by: s.rank)
+
+    Repo.all(
+      from(
+        t in __MODULE__,
+        where: t.user_id == ^user_id,
+        preload: [subscriptions: ^subscriptions_query]
+      )
+    )
   end
 
   @doc """
@@ -136,7 +154,7 @@ defmodule AlertProcessor.Model.Trip do
       {:error, %Ecto.Changeset{}}
 
   """
-  @spec delete(Trip.t) :: {:ok, Trip.t} | {:error, Ecto.Changeset.t}
+  @spec delete(Trip.t()) :: {:ok, Trip.t()} | {:error, Ecto.Changeset.t()}
   def delete(%Trip{} = trip) do
     Repo.delete(trip)
   end
@@ -155,19 +173,24 @@ defmodule AlertProcessor.Model.Trip do
       nil
 
   """
-  @spec find_by_id(String.t) :: Trip.t | nil | no_return
+  @spec find_by_id(String.t()) :: Trip.t() | nil | no_return
   def find_by_id(id) do
     query =
-      from t in __MODULE__,
+      from(
+        t in __MODULE__,
         left_join: s in assoc(t, :subscriptions),
         where: t.id == ^id,
         preload: [subscriptions: s]
+      )
+
     Repo.one(query)
   end
 
   defp sync_subscriptions({:error, _}), do: :ignore
+
   defp sync_subscriptions({:ok, %Trip{} = trip}) do
     trip = Repo.preload(trip, :subscriptions)
+
     for subscription <- trip.subscriptions do
       Subscription.sync_with_trip(subscription, trip)
     end

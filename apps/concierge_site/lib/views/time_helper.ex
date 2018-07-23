@@ -13,9 +13,9 @@ defmodule ConciergeSite.TimeHelper do
   def travel_time_options do
     10_800
     |> Stream.iterate(&(&1 + 900))
-    |> Stream.map(&(rem(&1, 86_400)))
+    |> Stream.map(&rem(&1, 86_400))
     |> Stream.map(&T.from_second_in_day/1)
-    |> Stream.map((& {Strftime.strftime!(&1, "%I:%M %p"), Strftime.strftime!(&1, "%H:%M:%S")}))
+    |> Stream.map(&{Strftime.strftime!(&1, "%I:%M %p"), Strftime.strftime!(&1, "%H:%M:%S")})
     |> Enum.take(96)
   end
 
@@ -24,6 +24,7 @@ defmodule ConciergeSite.TimeHelper do
   """
   def format_time(time, format \\ "%l:%M %p")
   def format_time(nil, _), do: ""
+
   def format_time(time, format) do
     time
     |> time_to_string()
@@ -37,15 +38,15 @@ defmodule ConciergeSite.TimeHelper do
     time_string
     |> String.split(":")
     |> Enum.map(&String.to_integer/1)
-    |> List.to_tuple
-    |> Time.from_erl!
+    |> List.to_tuple()
+    |> Time.from_erl!()
     |> Strftime.strftime!(format)
   end
 
   @doc """
   Converts a Time.t to a string with the H:M:S format
   """
-  @spec time_to_string(Time.t | nil) :: String.t | nil
+  @spec time_to_string(Time.t() | nil) :: String.t() | nil
   def time_to_string(nil), do: nil
   def time_to_string(time), do: Strftime.strftime!(time, "%H:%M:%S")
 end

@@ -20,16 +20,20 @@ defmodule CreateUsers do
   def run(:help) do
     IO.write(@moduledoc)
   end
+
   def run({:create, count}) do
     create_users(count)
   end
+
   def run({:create_delete, count}) do
     run({:create, count})
     run(:delete)
   end
+
   def run(:delete) do
     delete()
   end
+
   def run(:exit) do
     run(:help)
     System.halt(1)
@@ -37,7 +41,7 @@ defmodule CreateUsers do
 
   defp create_users(count, index \\ 0) do
     index
-    |> Stream.iterate(& &1 + 1)
+    |> Stream.iterate(&(&1 + 1))
     |> Stream.map(&create_user/1)
     |> Stream.map(&create_subscription/1)
     |> Enum.take(count)
@@ -47,65 +51,85 @@ defmodule CreateUsers do
     params = %{
       email: "send-alerts-test-#{count}@example.com",
       phone_number: "5555555555",
-      encrypted_password: "$2b$12$BwbCgTrrnXytfn733NZvV.RkLpMyO8Ga/zON5mSZAFz4/50kYYDhK" # p@ssw0rd
+      # p@ssw0rd
+      encrypted_password: "$2b$12$BwbCgTrrnXytfn733NZvV.RkLpMyO8Ga/zON5mSZAFz4/50kYYDhK"
     }
 
     %AlertProcessor.Model.User{}
     |> Ecto.Changeset.cast(params, @user_fields)
-    |> PaperTrail.insert
+    |> PaperTrail.insert()
     |> normalize_papertrail_result
   end
 
   defp normalize_papertrail_result({:ok, %{model: user}}), do: user
 
   defp create_subscription(%{id: id} = user) do
-    {:ok, subscription_infos} = %{
-      "alert_priority_type" => "medium",
-      "departure_end" => "02:45:00",
-      "departure_start" => "03:00:00",
-      "destination" => "place-dwnxg",
-      "origin" => "place-alfcl",
-      "route_type" => "1",
-      "saturday" => "true",
-      "sunday" => "true",
-      "trip_type" => "one_way",
-      "weekday" => "true"
-    }
-    |> Map.put("user_id", id)
-    |> ConciergeSite.Subscriptions.SubwayParams.prepare_for_mapper
-    |> AlertProcessor.Subscription.SubwayMapper.map_subscriptions
+    {:ok, subscription_infos} =
+      %{
+        "alert_priority_type" => "medium",
+        "departure_end" => "02:45:00",
+        "departure_start" => "03:00:00",
+        "destination" => "place-dwnxg",
+        "origin" => "place-alfcl",
+        "route_type" => "1",
+        "saturday" => "true",
+        "sunday" => "true",
+        "trip_type" => "one_way",
+        "weekday" => "true"
+      }
+      |> Map.put("user_id", id)
+      |> ConciergeSite.Subscriptions.SubwayParams.prepare_for_mapper()
+      |> AlertProcessor.Subscription.SubwayMapper.map_subscriptions()
 
     subscription_infos
     |> AlertProcessor.Subscription.SubwayMapper.build_subscription_transaction(user, id)
-    |> AlertProcessor.Model.Subscription.set_versioned_subscription
+    |> AlertProcessor.Model.Subscription.set_versioned_subscription()
   end
 
   defp delete do
-    Ecto.Adapters.SQL.query!(AlertProcessor.Repo,
-      "DELETE FROM notifications WHERE user_id IN (SELECT id FROM users WHERE email LIKE 'send-alerts-test%')", [],
-      [timeout: :infinity])
+    Ecto.Adapters.SQL.query!(
+      AlertProcessor.Repo,
+      "DELETE FROM notifications WHERE user_id IN (SELECT id FROM users WHERE email LIKE 'send-alerts-test%')",
+      [],
+      timeout: :infinity
+    )
 
-    Ecto.Adapters.SQL.query!(AlertProcessor.Repo,
-      "DELETE FROM versions WHERE originator_id IN (SELECT id FROM users WHERE email LIKE 'send-alerts-test%')", [],
-      [timeout: :infinity])
+    Ecto.Adapters.SQL.query!(
+      AlertProcessor.Repo,
+      "DELETE FROM versions WHERE originator_id IN (SELECT id FROM users WHERE email LIKE 'send-alerts-test%')",
+      [],
+      timeout: :infinity
+    )
 
-    Ecto.Adapters.SQL.query!(AlertProcessor.Repo,
-      "DELETE FROM versions WHERE item_id IN (SELECT id FROM users WHERE email LIKE 'send-alerts-test%')", [],
-      [timeout: :infinity])
+    Ecto.Adapters.SQL.query!(
+      AlertProcessor.Repo,
+      "DELETE FROM versions WHERE item_id IN (SELECT id FROM users WHERE email LIKE 'send-alerts-test%')",
+      [],
+      timeout: :infinity
+    )
 
-    Ecto.Adapters.SQL.query!(AlertProcessor.Repo,
-      "DELETE FROM subscriptions WHERE user_id IN (SELECT id FROM users WHERE email LIKE 'send-alerts-test%')", [],
-      [timeout: :infinity])
+    Ecto.Adapters.SQL.query!(
+      AlertProcessor.Repo,
+      "DELETE FROM subscriptions WHERE user_id IN (SELECT id FROM users WHERE email LIKE 'send-alerts-test%')",
+      [],
+      timeout: :infinity
+    )
 
-    Ecto.Adapters.SQL.query!(AlertProcessor.Repo,
-      "DELETE FROM users WHERE id IN (SELECT id FROM users WHERE email LIKE 'send-alerts-test%')", [],
-      [timeout: :infinity])
+    Ecto.Adapters.SQL.query!(
+      AlertProcessor.Repo,
+      "DELETE FROM users WHERE id IN (SELECT id FROM users WHERE email LIKE 'send-alerts-test%')",
+      [],
+      timeout: :infinity
+    )
   end
 end
 
-opts = OptionParser.parse(System.argv(),
-  switches: [help: :boolean , count: :integer, delete: :boolean],
-  aliases: [h: :help, c: :count, d: :delete])
+opts =
+  OptionParser.parse(
+    System.argv(),
+    switches: [help: :boolean, count: :integer, delete: :boolean],
+    aliases: [h: :help, c: :count, d: :delete]
+  )
 
 case opts do
   {[help: true], _, _} -> :help

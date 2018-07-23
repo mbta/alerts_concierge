@@ -21,18 +21,18 @@ defmodule AlertProcessor.Model.TripInfo do
 
   alias AlertProcessor.Model.Route
 
-  @type id :: String.t
+  @type id :: String.t()
   @type t :: %__MODULE__{
-    arrival_time: Time.t,
-    departure_time: Time.t,
-    arrival_extended_time: ExtendedTime.t,
-    departure_extended_time: ExtendedTime.t,
-    destination: Route.stop,
-    direction_id: Route.direction_id,
-    route: Route.t,
-    origin: Route.stop,
-    selected: boolean,
-    trip_number: id,
-    weekend?: boolean
-  }
+          arrival_time: Time.t(),
+          departure_time: Time.t(),
+          arrival_extended_time: ExtendedTime.t(),
+          departure_extended_time: ExtendedTime.t(),
+          destination: Route.stop(),
+          direction_id: Route.direction_id(),
+          route: Route.t(),
+          origin: Route.stop(),
+          selected: boolean,
+          trip_number: id,
+          weekend?: boolean
+        }
 end

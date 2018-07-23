@@ -5,6 +5,7 @@ defmodule AlertProcessor.Supervisor do
   to the correct users.
   """
   use Supervisor
+
   alias AlertProcessor.{
     AlertWorker,
     CachedApiClient,
@@ -36,16 +37,13 @@ defmodule AlertProcessor.Supervisor do
     children = [
       supervisor(Registry, [:unique, :mailer_process_registry]),
       supervisor(AlertProcessor.Repo, []),
-      supervisor(
-        ConCache,
+      supervisor(ConCache, [
         [
-          [
-            ttl_check: :timer.seconds(60),
-            ttl: :timer.minutes(60)
-          ],
-          [name: CachedApiClient.cache_name()]
-        ]
-      ),
+          ttl_check: :timer.seconds(60),
+          ttl: :timer.minutes(60)
+        ],
+        [name: CachedApiClient.cache_name()]
+      ]),
       worker(ServiceInfoCache, []),
       worker(Metrics, []),
       worker(Reminders, []),

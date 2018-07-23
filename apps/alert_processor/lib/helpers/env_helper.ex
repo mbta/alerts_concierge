@@ -1,5 +1,4 @@
 defmodule AlertProcessor.Helpers.EnvHelper do
-
   @doc """
   Returns true if mix is loaded. Will return false for releases.
 
@@ -37,5 +36,4 @@ defmodule AlertProcessor.Helpers.EnvHelper do
       Mix.env()
     end
   end
-
 end
