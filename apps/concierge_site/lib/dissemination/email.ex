@@ -44,7 +44,7 @@ defmodule ConciergeSite.Dissemination.Email do
     feedback_url = MailHelper.feedback_url()
     base_email()
     |> to(user.email)
-    |> subject("T-Alerts Account Confirmation")
+    |> subject("Welcome to T-Alerts")
     |> html_body(confirmation_html_email(manage_subscriptions_url, feedback_url))
     |> text_body(confirmation_text_email(manage_subscriptions_url, feedback_url))
   end

@@ -4,6 +4,8 @@ If you have immediate feedback about the sign up process, or related to any aler
 
 Provide feedback now! <%= feedback_url %>
 
+If you have an old T-Alerts account, signing up for a beta account doesn’t affect that account.  You can delete your old account now to prevent receiving duplicate notifications: https://public.govdelivery.com/accounts/MABTA/subscriber/new
+
 Get the most from your T-Alerts account by signing in!  You can:
 
 * Build multiple subscriptions
