@@ -3,21 +3,7 @@ defmodule ConciergeSite.TimeHelper do
   Time functions for subscription views
   """
 
-  alias Calendar.Time, as: T
   alias Calendar.Strftime
-
-  @doc """
-  Returns stringified times to populate a dropdown list of a full day of times at
-  fifteen-minute intervals
-  """
-  def travel_time_options do
-    10_800
-    |> Stream.iterate(&(&1 + 900))
-    |> Stream.map(&rem(&1, 86_400))
-    |> Stream.map(&T.from_second_in_day/1)
-    |> Stream.map(&{Strftime.strftime!(&1, "%I:%M %p"), Strftime.strftime!(&1, "%H:%M:%S")})
-    |> Enum.take(96)
-  end
 
   @doc """
   Takes a time struct and returns HH:MM AM/PM
