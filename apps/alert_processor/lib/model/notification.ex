@@ -21,7 +21,9 @@ defmodule AlertProcessor.Model.Notification do
           last_push_notification: DateTime.t() | nil,
           alert: Alert.t() | nil,
           closed_timestamp: DateTime.t() | nil,
-          type: notification_type | nil
+          type: notification_type | nil,
+          tracking_optimal_time: DateTime.t() | nil,
+          tracking_matched_time: DateTime.t() | nil
         }
 
   use Ecto.Schema
@@ -48,6 +50,8 @@ defmodule AlertProcessor.Model.Notification do
     field(:alert, :string, virtual: true)
     field(:closed_timestamp, :utc_datetime)
     field(:type, AlertProcessor.AtomType)
+    field(:tracking_optimal_time, :utc_datetime, virtual: true)
+    field(:tracking_matched_time, :utc_datetime, virtual: true)
 
     timestamps()
   end

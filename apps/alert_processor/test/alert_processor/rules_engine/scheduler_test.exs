@@ -23,15 +23,17 @@ defmodule AlertProcessor.SchedulerTest do
     test "schedules notifications in sending queue", %{time: time} do
       user = insert(:user)
       sub = insert(:subscription, user: user)
+
       alert = %Alert{
         id: "1",
         header: "test",
         active_period: [%{start: time.two_days_from_now, end: time.three_days_from_now}],
-        service_effect: "test"
+        service_effect: "test",
+        last_push_notification: DateTime.utc_now()
       }
 
       {:ok, [notification]} = Scheduler.schedule_notifications([{user, [sub]}], alert)
-      {:ok, queued_notification} = SendingQueue.pop
+      {:ok, queued_notification} = SendingQueue.pop()
       assert notification == queued_notification
     end
   end

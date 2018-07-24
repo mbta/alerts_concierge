@@ -71,6 +71,25 @@ defmodule AlertProcessor.Helpers.DateTimeHelper do
     end
   end
 
+  @spec datetime_to_local(DateTime.t(), String.t()) :: DateTime.t()
+  def datetime_to_local(datetime, time_zone \\ @time_zone) do
+    {:ok, local_datetime} =
+      datetime
+      |> DateTime.to_unix()
+      |> FastLocalDatetime.unix_to_datetime(time_zone)
+
+    local_datetime
+  end
+
+  @spec time_to_local_datetime(Time.t(), DateTime.t(), String.t()) :: DateTime.t()
+  def time_to_local_datetime(time, utc_date, time_zone \\ @time_zone) do
+    utc_date
+    |> datetime_to_local(time_zone)
+    |> Map.put(:hour, time.hour)
+    |> Map.put(:minute, time.minute)
+    |> Map.put(:second, time.second)
+  end
+
   @doc "Returns full name of month for a DateTime"
   @spec month_name(DateTime.t()) :: String.t()
   def month_name(date) do
