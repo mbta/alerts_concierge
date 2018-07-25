@@ -30,6 +30,7 @@ defmodule AlertProcessor.Dispatcher do
 
   def send_notification(
         %Notification{
+          id: notification_id,
           phone_number: phone_number,
           header: header,
           closed_timestamp: closed_timestamp,
@@ -46,9 +47,9 @@ defmodule AlertProcessor.Dispatcher do
       |> AwsClient.request()
 
     Logger.info(fn ->
-      "SMS notification: header=#{header} user_id=#{user.id} alert_id=#{alert_id} closed_timestamp=#{
-        closed_timestamp
-      } result=#{inspect(result)}"
+      "SMS notification: notification_id=#{notification_id} header=#{header} user_id=#{user.id} alert_id=#{
+        alert_id
+      } closed_timestamp=#{closed_timestamp} result=#{inspect(result)}"
     end)
 
     result
