@@ -933,15 +933,15 @@ brunch-skeletons@~0.1.4:
   version "0.1.5"
   resolved "https://registry.yarnpkg.com/brunch-skeletons/-/brunch-skeletons-0.1.5.tgz#2b35112b8c792d8f11087653d3fc8febf892375b"
 
-brunch@2.10.7:
-  version "2.10.7"
-  resolved "https://registry.yarnpkg.com/brunch/-/brunch-2.10.7.tgz#55d638a83ee86cbce8e0eca50489c5e5c70008c8"
+brunch@^2.10.12:
+  version "2.10.12"
+  resolved "https://registry.yarnpkg.com/brunch/-/brunch-2.10.12.tgz#3aa0c515c216beb2e53a0c35a30546d0a04cee50"
   dependencies:
     anymatch "~1.3"
     anysort "~1.0"
     check-dependencies "~1.0.1"
     chokidar "^1.6"
-    coffee-script "~1.11"
+    coffee-script "~1.12.7"
     commander "~2.9"
     commonjs-require-definition "~0.6.2"
     debug "~2.2"
@@ -949,7 +949,7 @@ brunch@2.10.7:
     deps-install "~0.1"
     fcache "~0.3"
     init-skeleton "~1.0"
-    loggy "~1.0"
+    loggy "~1.0.2"
     micro-es7-shim "^0.1"
     micro-promisify "~0.1"
     mkdirp "~0.5"
@@ -1131,9 +1131,9 @@ code-point-at@^1.0.0:
   version "1.1.0"
   resolved "https://registry.yarnpkg.com/code-point-at/-/code-point-at-1.1.0.tgz#0d070b4d043a5bea33a2f1a40e2edb3d9a4ccf77"
 
-coffee-script@~1.11:
-  version "1.11.1"
-  resolved "https://registry.yarnpkg.com/coffee-script/-/coffee-script-1.11.1.tgz#bf1c47ad64443a0d95d12df2b147cc0a4daad6e9"
+coffee-script@~1.12.7:
+  version "1.12.7"
+  resolved "https://registry.yarnpkg.com/coffee-script/-/coffee-script-1.12.7.tgz#c05dae0cb79591d05b3070a8433a98c9a89ccc53"
 
 color-convert@^1.9.0:
   version "1.9.0"
@@ -1658,10 +1658,6 @@ findup-sync@^0.4.2:
     is-glob "^2.0.1"
     micromatch "^2.3.7"
     resolve-dir "^0.1.0"
-
-flatpickr@^4.4.6:
-  version "4.4.6"
-  resolved "https://registry.yarnpkg.com/flatpickr/-/flatpickr-4.4.6.tgz#8ec6e063d9c9cb0f27b8a2f092f2d0d9d02e48cc"
 
 fn-args@^1.0.0:
   version "1.0.0"
@@ -2299,7 +2295,7 @@ lodash@~4.16.4:
   version "4.16.6"
   resolved "https://registry.yarnpkg.com/lodash/-/lodash-4.16.6.tgz#d22c9ac660288f3843e16ba7d2b5d06cca27d777"
 
-loggy@^1, loggy@~1.0:
+loggy@^1:
   version "1.0.2"
   resolved "https://registry.yarnpkg.com/loggy/-/loggy-1.0.2.tgz#d0ca31c421395f8c462d04870dd2228de3c4e219"
   dependencies:
@@ -2320,6 +2316,13 @@ loggy@~0.3.0, loggy@~0.3.5:
   dependencies:
     ansicolors "~0.3.2"
     growl "~1.8.1"
+
+loggy@~1.0.2:
+  version "1.0.3"
+  resolved "https://registry.yarnpkg.com/loggy/-/loggy-1.0.3.tgz#8ef7e13a688b4b997724fe16ca6e9d5d55befd76"
+  dependencies:
+    native-notifier "~0.1.0"
+    turbocolor "^2.2.0"
 
 longest@^1.0.1:
   version "1.0.1"
@@ -3512,6 +3515,10 @@ tunnel-agent@^0.6.0:
   resolved "https://registry.yarnpkg.com/tunnel-agent/-/tunnel-agent-0.6.0.tgz#27a5dea06b36b04a0a9966774b290868f0fc40fd"
   dependencies:
     safe-buffer "^5.0.1"
+
+turbocolor@^2.2.0:
+  version "2.4.1"
+  resolved "https://registry.yarnpkg.com/turbocolor/-/turbocolor-2.4.1.tgz#92c10c3aa4f77704f29c5cdc92f29bc54166347d"
 
 tweetnacl@^0.14.3, tweetnacl@~0.14.0:
   version "0.14.5"
