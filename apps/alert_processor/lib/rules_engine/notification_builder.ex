@@ -62,10 +62,10 @@ defmodule AlertProcessor.NotificationBuilder do
 
     Enum.reduce(subscriptions, local_alert_start_time, fn %{start_time: start_time},
                                                           last_start_time ->
-      start_date_time = DateTimeHelper.time_to_local_datetime(start_time, now)
+      notification_window_start_date_time = DateTimeHelper.time_to_local_datetime(start_time, now)
 
-      if DateTime.compare(start_date_time, last_start_time) == :gt,
-        do: start_date_time,
+      if DateTime.compare(notification_window_start_date_time, last_start_time) == :gt,
+        do: notification_window_start_date_time,
         else: last_start_time
     end)
   end
