@@ -15,7 +15,7 @@ defmodule AlertProcessor.DispatcherTest do
     ]
   }
 
-  test "notification_email/1 requires a header" do
+  test "send_notification/1 requires a header" do
     notification = %Notification{
       header: nil,
       email: @email,
@@ -26,17 +26,18 @@ defmodule AlertProcessor.DispatcherTest do
     assert {:error, _} = response
   end
 
-  test "notification_email/1 requires an email or phone number" do
+  test "send_notification/1 requires an email or phone number" do
     notification = %Notification{
       header: @body,
       email: nil,
       phone_number: nil
     }
+
     response = Dispatcher.send_notification(notification)
     assert {:error, _} = response
   end
 
-  test "notification_email/1 can send sms" do
+  test "send_notification/1 can send sms" do
     notification = %Notification{
       header: @body,
       email: nil,
@@ -47,7 +48,7 @@ defmodule AlertProcessor.DispatcherTest do
     assert_received :publish
   end
 
-  test "notification_email/1 can send email" do
+  test "send_notification/1 can send email" do
     notification = %Notification{
       header: @body,
       email: @email,
@@ -59,13 +60,14 @@ defmodule AlertProcessor.DispatcherTest do
     assert_received {:sent_notification_email, ^notification}
   end
 
-  test "notification_email/1 cannot send both sms and email" do
+  test "send_notification/1 cannot send both sms and email" do
     notification = %Notification{
       header: @body,
       email: @email,
       phone_number: @phone_number,
       alert: @alert
     }
+
     {:ok, _} = Dispatcher.send_notification(notification)
     refute_received {:sent_notification_email, ^notification}
     assert_received :publish

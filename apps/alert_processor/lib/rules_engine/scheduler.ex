@@ -25,9 +25,10 @@ defmodule AlertProcessor.Scheduler do
     # save notification in the database before adding to sending queue
     # do this now incase we re-match the same notificaiton before finishing
     # sending from a previous iteration
-    for notification <- notifications do
-      {:ok, _} = Notification.save(notification, :sent)
-    end
+    Enum.map(notifications, fn notification ->
+      {:ok, notification} = Notification.save(notification, :sent)
+      notification
+    end)
 
     SendingQueue.list_enqueue(notifications)
   end
