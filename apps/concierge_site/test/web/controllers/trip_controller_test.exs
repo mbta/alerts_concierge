@@ -73,7 +73,7 @@ defmodule ConciergeSite.TripControllerTest do
   end
 
   describe "PATCH /trips/:id" do
-    test "with HH:MM time format", %{conn: conn, user: user} do
+    test "with map time format", %{conn: conn, user: user} do
       # Time format comes through with `HH:MM` format after a user updates them
       # in the trip edit page.
       trip = insert(:trip, %{user: user})
@@ -81,34 +81,10 @@ defmodule ConciergeSite.TripControllerTest do
       params = [
         trip: %{
           relevant_days: [:tuesday, :thursday],
-          start_time: "1:30 PM",
-          end_time: "2:00 PM",
-          return_start_time: "3:30 PM",
-          return_end_time: "4:00 PM"
-        }
-      ]
-
-      conn =
-        user
-        |> guardian_login(conn)
-        |> patch(trip_path(conn, :update, trip.id, params))
-
-      assert html_response(conn, 302) =~ trip_path(conn, :index)
-    end
-
-    test "with HH:MM:SS time format", %{conn: conn, user: user} do
-      # Time is sent with `HH:MM:SS` format if the user doesn't update them.
-      # They come through with `HH:MM` format if they do update them. So we
-      # need to correctly handle both formats.
-      trip = insert(:trip, %{user: user})
-
-      params = [
-        trip: %{
-          relevant_days: [:tuesday, :thursday],
-          start_time: "1:30 PM",
-          end_time: "2:00 PM",
-          return_start_time: "3:30 PM",
-          return_end_time: "4:00 PM"
+          start_time: %{"am_pm" => "PM", "hour" => "1", "minute" => "30"},
+          end_time: %{"am_pm" => "PM", "hour" => "2", "minute" => "00"},
+          return_start_time: %{"am_pm" => "PM", "hour" => "3", "minute" => "30"},
+          return_end_time: %{"am_pm" => "PM", "hour" => "4", "minute" => "00"}
         }
       ]
 
@@ -122,6 +98,7 @@ defmodule ConciergeSite.TripControllerTest do
 
     test "with invalid relevant day", %{conn: conn, user: user} do
       trip = insert(:trip, %{user: user})
+
       insert(:subscription, %{
         trip_id: trip.id,
         type: :cr,
@@ -129,6 +106,7 @@ defmodule ConciergeSite.TripControllerTest do
         destination: "Newmarket",
         route: "CR-Fairmount"
       })
+
       params = [trip: %{relevant_days: [:invalid]}]
 
       conn =
@@ -207,16 +185,16 @@ defmodule ConciergeSite.TripControllerTest do
         relevant_days: ["monday", "tuesday", "wednesday", "thursday", "friday"],
         destinations: ["place-pktrm"],
         elevator: "true",
-        end_time: "12:00 PM",
+        end_time: %{"am_pm" => "PM", "hour" => "12", "minute" => "00"},
         escalator: "false",
         legs: ["Red"],
         modes: ["subway"],
         origins: ["place-alfcl"],
         parking_area: "true",
-        return_end_time: "6:00 PM",
-        return_start_time: "5:00 PM",
+        return_end_time: %{"am_pm" => "PM", "hour" => "6", "minute" => "00"},
+        return_start_time: %{"am_pm" => "PM", "hour" => "5", "minute" => "00"},
         round_trip: "true",
-        start_time: "12:00 AM"
+        start_time: %{"am_pm" => "AM", "hour" => "12", "minute" => "00"}
       }
 
       conn =
@@ -242,16 +220,16 @@ defmodule ConciergeSite.TripControllerTest do
         relevant_days: ["monday", "tuesday", "wednesday", "thursday", "friday"],
         destinations: ["place-gover"],
         elevator: "true",
-        end_time: "9:00 AM",
+        end_time: %{"am_pm" => "AM", "hour" => "9", "minute" => "00"},
         escalator: "false",
         legs: ["Green"],
         modes: ["subway"],
         origins: ["place-boyls"],
         parking_area: "true",
-        return_end_time: "6:00 PM",
-        return_start_time: "5:00 PM",
+        return_end_time: %{"am_pm" => "PM", "hour" => "6", "minute" => "00"},
+        return_start_time: %{"am_pm" => "PM", "hour" => "5", "minute" => "00"},
         round_trip: "true",
-        start_time: "8:00 AM"
+        start_time: %{"am_pm" => "AM", "hour" => "8", "minute" => "00"}
       }
 
       conn =
@@ -277,16 +255,16 @@ defmodule ConciergeSite.TripControllerTest do
         relevant_days: ["monday", "tuesday", "wednesday", "thursday", "friday"],
         destinations: ["place-north"],
         elevator: "true",
-        end_time: "9:00 AM",
+        end_time: %{"am_pm" => "AM", "hour" => "9", "minute" => "00"},
         escalator: "false",
         legs: ["Green"],
         modes: ["subway"],
         origins: ["place-lech"],
         parking_area: "true",
-        return_end_time: "6:00 PM",
-        return_start_time: "5:00 PM",
+        return_end_time: %{"am_pm" => "PM", "hour" => "6", "minute" => "00"},
+        return_start_time: %{"am_pm" => "PM", "hour" => "5", "minute" => "00"},
         round_trip: "true",
-        start_time: "8:00 AM"
+        start_time: %{"am_pm" => "AM", "hour" => "8", "minute" => "00"}
       }
 
       conn =
@@ -310,16 +288,16 @@ defmodule ConciergeSite.TripControllerTest do
         relevant_days: ["monday", "tuesday", "wednesday", "thursday", "friday"],
         destinations: [""],
         elevator: "false",
-        end_time: "9:00 AM",
+        end_time: %{"am_pm" => "AM", "hour" => "9", "minute" => "00"},
         escalator: "false",
         legs: ["741 - 1"],
         modes: ["bus"],
         origins: [""],
         parking: "false",
-        return_end_time: "6:00 PM",
-        return_start_time: "5:00 PM",
+        return_end_time: %{"am_pm" => "PM", "hour" => "6", "minute" => "00"},
+        return_start_time: %{"am_pm" => "PM", "hour" => "5", "minute" => "00"},
         round_trip: "true",
-        start_time: "8:00 AM"
+        start_time: %{"am_pm" => "AM", "hour" => "8", "minute" => "00"}
       }
 
       conn =
@@ -342,16 +320,16 @@ defmodule ConciergeSite.TripControllerTest do
         bike_storage: "false",
         destinations: [""],
         elevator: "false",
-        end_time: "9:00 AM",
+        end_time: %{"am_pm" => "AM", "hour" => "9", "minute" => "00"},
         escalator: "false",
         legs: ["741 - 1"],
         modes: ["bus"],
         origins: [""],
         parking: "false",
-        return_end_time: "6:00 PM",
-        return_start_time: "5:00 PM",
+        return_end_time: %{"am_pm" => "PM", "hour" => "6", "minute" => "00"},
+        return_start_time: %{"am_pm" => "PM", "hour" => "5", "minute" => "00"},
         round_trip: "true",
-        start_time: "8:00 AM"
+        start_time: %{"am_pm" => "AM", "hour" => "8", "minute" => "00"}
       }
 
       conn =
@@ -403,7 +381,9 @@ defmodule ConciergeSite.TripControllerTest do
     assert html_response(conn, 200) =~ "Where do you get on the Green Line?"
     assert html_response(conn, 200) =~ "Do you transfer to another route, line, or branch?"
     assert html_response(conn, 200) =~ "Only stops on the same branch can be selected."
-    assert html_response(conn, 200) =~ "selected=\"selected\" value=\"place-pktrm\">Park Street</option>"
+
+    assert html_response(conn, 200) =~
+             "selected=\"selected\" value=\"place-pktrm\">Park Street</option>"
   end
 
   test "leg/3 with same origin and destination", %{conn: conn, user: user} do
@@ -572,13 +552,13 @@ defmodule ConciergeSite.TripControllerTest do
       })
 
       data = %{
-        "end_time" => "9:00 AM",
+        "end_time" => %{"am_pm" => "AM", "hour" => "9", "minute" => "00"},
         "relevant_days" => ["monday", "tuesday", "wednesday", "thursday", "friday"],
-        "return_end_time" => "6:00 PM",
-        "return_start_time" => "5:00 PM",
+        "return_end_time" => %{"am_pm" => "PM", "hour" => "6", "minute" => "00"},
+        "return_start_time" => %{"am_pm" => "PM", "hour" => "5", "minute" => "00"},
         "schedule_return" => %{"CR-Fairmount" => ["17:45:00"]},
         "schedule_start" => %{"CR-Fairmount" => ["08:48:00"]},
-        "start_time" => "8:00 AM"
+        "start_time" => %{"am_pm" => "AM", "hour" => "8", "minute" => "00"}
       }
 
       conn =

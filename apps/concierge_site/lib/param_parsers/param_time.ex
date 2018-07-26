@@ -8,29 +8,46 @@ defmodule ConciergeSite.ParamParsers.ParamTime do
 
   ## Examples
 
-      iex> ConciergeSite.ParamParsers.ParamTime.to_time("1:30 AM")
+      iex> ConciergeSite.ParamParsers.ParamTime.to_time(%{"am_pm" => "AM", "hour" => "01", "minute" => "30"})
       ~T[01:30:00]
-      iex> ConciergeSite.ParamParsers.ParamTime.to_time("2:00 PM")
+      iex> ConciergeSite.ParamParsers.ParamTime.to_time(%{"am_pm" => "PM", "hour" => "02", "minute" => "00"})
       ~T[14:00:00]
+      iex> ConciergeSite.ParamParsers.ParamTime.to_time(%{"am_pm" => "AM", "hour" => "00", "minute" => "00"})
+      ~T[00:00:00]
+      iex> ConciergeSite.ParamParsers.ParamTime.to_time(%{"am_pm" => "AM", "hour" => "12", "minute" => "00"})
+      ~T[00:00:00]
+      iex> ConciergeSite.ParamParsers.ParamTime.to_time(%{"am_pm" => "PM", "hour" => "12", "minute" => "00"})
+      ~T[12:00:00]
       iex> ConciergeSite.ParamParsers.ParamTime.to_time(nil)
       nil
   """
-  @spec to_time(String.t()) :: Time.t()
+  @spec to_time(map) :: Time.t()
   def to_time(nil), do: nil
 
   def to_time(form_time) do
-    {time_input, add_hours} = time_meridian(form_time)
-    [hour, minute] = Enum.map(String.split(time_input, ":"), &String.to_integer/1)
-    {:ok, time} = Time.new(hour + add_hours, minute, 0)
+    hour = hour(form_time["hour"], form_time["am_pm"])
+    minute = String.to_integer(form_time["minute"])
+    second = 0
+
+    {:ok, time} = Time.from_erl({hour, minute, second})
 
     time
   end
 
-  defp time_meridian(form_time) do
-    [time, meridian] = String.split(form_time, " ")
-    [hour, _] = String.split(time, ":")
-    pm_add_hours = if meridian == "PM" && hour != "12", do: 12, else: 0
-    am_subtract_hours = if meridian == "AM" && hour == "12", do: 12, else: 0
-    {time, pm_add_hours - am_subtract_hours}
+  @spec hour(number | String.t(), String.t()) :: number
+  defp hour(hour_string, am_pm) when is_bitstring(hour_string),
+    do: hour(String.to_integer(hour_string), am_pm)
+
+  defp hour(hour, am_pm) do
+    cond do
+      am_pm == "PM" and hour != 12 ->
+        hour + 12
+
+      am_pm == "AM" and hour == 12 ->
+        0
+
+      true ->
+        hour
+    end
   end
 end

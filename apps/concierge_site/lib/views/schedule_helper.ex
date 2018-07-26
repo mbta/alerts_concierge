@@ -58,8 +58,8 @@ defmodule ConciergeSite.ScheduleHelper do
 
   defp selected_travel_times({start_time, end_time}) do
     [
-      travel_start_time: format_time_string(time_to_string(start_time), "%T"),
-      travel_end_time: format_time_string(time_to_string(end_time), "%T")
+      travel_start_time: start_time |> time_to_string() |> format_time_string("%T"),
+      travel_end_time: end_time |> time_to_string() |> format_time_string("%T")
     ]
   end
 
@@ -91,7 +91,7 @@ defmodule ConciergeSite.ScheduleHelper do
             ConciergeSite.IconViewHelper.icon(:commuter_rail),
             weekend_indicator(trip),
             "Train #{trip.trip_number} from #{elem(trip.origin, 0)}, #{
-              format_time_string(time_to_string(trip.departure_time), "%l:%M%P")
+              trip.departure_time |> time_to_string() |> format_time_string("%I:%M%P")
             }"
           ]
         end,
@@ -121,7 +121,7 @@ defmodule ConciergeSite.ScheduleHelper do
             ConciergeSite.IconViewHelper.icon(:ferry),
             weekend_indicator(trip),
             "Ferry from #{elem(trip.origin, 0)}, #{
-              format_time_string(time_to_string(trip.departure_time), "%l:%M%P")
+              trip.departure_time |> time_to_string() |> format_time_string("%I:%M%P")
             }"
           ]
         end,
