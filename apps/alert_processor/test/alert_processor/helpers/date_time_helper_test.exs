@@ -141,21 +141,38 @@ defmodule AlertProcessor.Helpers.DateTimeHelperTest do
 
   describe "parse_unix_timestamp/2" do
     test "parses a unix timestamp with the default time zone" do
-      {:ok, datetime} = DTH.parse_unix_timestamp(1500306651)
+      {:ok, datetime} = DTH.parse_unix_timestamp(1_500_306_651)
       assert datetime == DT.from_erl!({{2017, 7, 17}, {11, 50, 51}}, "America/New_York")
     end
 
     test "parses a unix timestamp with the given time zone" do
-      {:ok, datetime} = DTH.parse_unix_timestamp(1500306651, "Etc/UTC")
+      {:ok, datetime} = DTH.parse_unix_timestamp(1_500_306_651, "Etc/UTC")
       assert datetime == DT.from_erl!({{2017, 7, 17}, {15, 50, 51}}, "Etc/UTC")
     end
 
     test "returns :error when the timestamp can't be parsed" do
-      assert :error == DTH.parse_unix_timestamp(-218937198213123)
+      assert :error == DTH.parse_unix_timestamp(-218_937_198_213_123)
     end
 
     test "returns :error when the given time zone can't be parsed" do
-      assert :error == DTH.parse_unix_timestamp(1500306651, "not a time zone")
+      assert :error == DTH.parse_unix_timestamp(1_500_306_651, "not a time zone")
+    end
+  end
+
+  describe "datetime_to_local/2" do
+    test "UTC time accurately converted to localtime" do
+      assert DT.from_erl!({{2017, 10, 13}, {8, 0, 0}}, "America/New_York") ==
+               DTH.datetime_to_local(DT.from_erl!({{2017, 10, 13}, {12, 0, 0}}, "Etc/UTC"))
+    end
+  end
+
+  describe "time_to_local_datetime/2" do
+    test "time accurated converted to a local DateTime relative to the day provided" do
+      assert DT.from_erl!({{2017, 10, 13}, {9, 0, 0}}, "America/New_York") ==
+               DTH.time_to_local_datetime(
+                 Time.from_erl!({9, 0, 0}),
+                 DT.from_erl!({{2017, 10, 13}, {12, 0, 0}}, "Etc/UTC")
+               )
     end
   end
 end

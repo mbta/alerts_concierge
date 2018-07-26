@@ -5,6 +5,7 @@ defmodule AlertProcessor.Dispatcher do
 
   @mailer Application.get_env(:alert_processor, :mailer)
   alias AlertProcessor.{Aws.AwsClient, Model.Notification, NotificationSmser}
+  alias AlertProcessor.Helpers.DateTimeHelper
   require Logger
 
   @doc """
@@ -22,6 +23,7 @@ defmodule AlertProcessor.Dispatcher do
 
   def send_notification(%Notification{email: email, phone_number: nil} = notification)
       when not is_nil(email) do
+    log_times(notification)
     email = @mailer.send_notification_email(notification)
     {:ok, email}
   end
@@ -36,6 +38,8 @@ defmodule AlertProcessor.Dispatcher do
         } = notification
       )
       when not is_nil(phone_number) do
+    log_times(notification)
+
     result =
       notification
       |> NotificationSmser.notification_sms()
@@ -52,5 +56,35 @@ defmodule AlertProcessor.Dispatcher do
 
   def send_notification(_) do
     {:error, "invalid or missing params"}
+  end
+
+  defp log_times(notification, now \\ DateTime.utc_now())
+  defp log_times(%{tracking_optimal_time: nil}, _), do: nil
+  defp log_times(%{tracking_matched_time: nil}, _), do: nil
+
+  defp log_times(
+         %{
+           tracking_optimal_time: tracking_optimal_time,
+           tracking_matched_time: tracking_matched_time,
+           alert: %{last_push_notification: last_push_notification}
+         },
+         now
+       ) do
+    tracking_sent_time = DateTimeHelper.datetime_to_local(now)
+
+    seconds_until_match = DateTime.diff(tracking_matched_time, tracking_optimal_time)
+    seconds_in_sending_queue = DateTime.diff(tracking_sent_time, tracking_matched_time)
+    seconds_processing = seconds_until_match + seconds_in_sending_queue
+    alert_age_in_seconds = DateTime.diff(now, last_push_notification)
+
+    Logger.info(fn ->
+      "notification time, alert_age_in_seconds=#{alert_age_in_seconds} seconds_until_match=#{
+        seconds_until_match
+      } seconds_in_sending_queue=#{seconds_in_sending_queue} seconds_processing=#{
+        seconds_processing
+      } time_optimal=#{tracking_optimal_time} time_matched=#{tracking_matched_time} time_sent=#{
+        tracking_sent_time
+      }"
+    end)
   end
 end

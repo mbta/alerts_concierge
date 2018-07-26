@@ -3,6 +3,7 @@ defmodule AlertProcessor.NotificationBuilderTest do
   import AlertProcessor.Factory
   alias AlertProcessor.{Model, NotificationBuilder}
   alias AlertProcessor.Model.{Notification, InformedEntity}
+  alias AlertProcessor.Helpers.DateTimeHelper
   alias Model.Alert
   alias Calendar.DateTime, as: DT
 
@@ -27,23 +28,31 @@ defmodule AlertProcessor.NotificationBuilderTest do
       three_days_from_now: three_days_from_now
     }
 
-    est_time = for {key, val} <- utc_time, into: %{} do
-      {key, DT.shift_zone!(val, "America/New_York")}
-    end
+    est_time =
+      for {key, val} <- utc_time, into: %{} do
+        {key, DT.shift_zone!(val, "America/New_York")}
+      end
 
-    {:ok, est_time: est_time}
+    {:ok, est_time: est_time, now: now}
   end
 
-  test "build notification struct", %{est_time: est_time} do
+  test "build notification struct", %{est_time: est_time, now: now} do
     user = insert(:user)
     sub = insert(:subscription, user: user)
+
     alert = %Alert{
       id: "1",
       header: nil,
-      active_period: [%{start: est_time.two_days_from_now, end: est_time.three_days_from_now}]
+      active_period: [%{start: est_time.two_days_from_now, end: est_time.three_days_from_now}],
+      last_push_notification: now
     }
 
-    notification = NotificationBuilder.build_notification({user, [sub]}, alert)
+    notification = NotificationBuilder.build_notification({user, [sub]}, alert, now)
+    local_now = DateTimeHelper.datetime_to_local(now)
+
+    subscription_start =
+      DT.from_date_and_time_and_zone!({2018, 1, 11}, {10, 0, 0}, "America/New_York")
+
     expected_notification = %Notification{
       alert_id: "1",
       user: user,
@@ -57,33 +66,40 @@ defmodule AlertProcessor.NotificationBuilderTest do
       status: :unsent,
       last_push_notification: alert.last_push_notification,
       alert: alert,
-      notification_subscriptions: [%AlertProcessor.Model.NotificationSubscription{
-        subscription_id: sub.id
-      }],
+      notification_subscriptions: [
+        %AlertProcessor.Model.NotificationSubscription{
+          subscription_id: sub.id
+        }
+      ],
       closed_timestamp: alert.closed_timestamp,
-      type: :initial
+      type: :initial,
+      tracking_matched_time: local_now,
+      tracking_optimal_time: subscription_start
     }
 
     assert expected_notification == notification
   end
 
-  test "logs warning if it errors replacing text" do
+  test "logs warning if it errors replacing text", %{now: now} do
     user = build(:user)
     subscription = build(:subscription, user: user)
+
     alert = %Alert{
       header: "Newburyport Train 180 (25:25 pm from Newburyport)",
       id: "115346",
-      informed_entities: [%InformedEntity{route_type: 2}]
+      informed_entities: [%InformedEntity{route_type: 2}],
+      last_push_notification: now
     }
 
     function = fn ->
-      NotificationBuilder.build_notification({user, [subscription]}, alert)
+      NotificationBuilder.build_notification({user, [subscription]}, alert, now)
     end
 
     expected_log =
-      "Error replacing text: alert_id=\"115346\" "
-      <> "error=%ArgumentError{message: \"cannot convert {25, 25, 0} to time, "
-      <> "reason: :invalid_time\"}"
+      "Error replacing text: alert_id=\"115346\" " <>
+        "error=%ArgumentError{message: \"cannot convert {25, 25, 0} to time, " <>
+        "reason: :invalid_time\"}"
+
     assert ExUnit.CaptureLog.capture_log(function) =~ expected_log
   end
 end
