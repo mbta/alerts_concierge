@@ -7,6 +7,7 @@ defmodule AlertProcessor.AlertParser do
 
   alias AlertProcessor.{
     AlertsClient,
+    ApiClient,
     CachedApiClient,
     Helpers.StringHelper,
     Parser,
@@ -28,11 +29,14 @@ defmodule AlertProcessor.AlertParser do
   @spec process_alerts(atom | nil) :: [{:ok, [Notification.t()]}]
   def process_alerts(alert_filter_duration_type \\ :anytime) do
     with {:ok, alerts, feed_timestamp} <- AlertsClient.get_alerts(),
+         {:ok, api_alerts, _} <- ApiClient.get_alerts(),
          {:ok, facility_map} <- ServiceInfoCache.get_facility_map() do
-      SavedAlert.save!(alerts)
+      updated_alerts = swap_informed_entities(alerts, api_alerts)
+
+      SavedAlert.save!(updated_alerts)
 
       alerts_needing_notifications =
-        {alerts, facility_map, feed_timestamp}
+        {updated_alerts, facility_map, feed_timestamp}
         |> parse_alerts()
         |> AlertFilters.filter_by_duration_type(alert_filter_duration_type)
 
@@ -50,6 +54,8 @@ defmodule AlertProcessor.AlertParser do
         alerts_needing_notifications,
         alert_filter_duration_type
       )
+
+      {alerts, api_alerts, updated_alerts}
     end
   end
 
@@ -266,7 +272,6 @@ defmodule AlertProcessor.AlertParser do
   defp parse_trip(trip, informed_entity) do
     %{
       trip: get_trip_name(trip, informed_entity),
-      direction_id: Map.get(trip, "direction_id"),
       schedule: get_schedule(trip, informed_entity)
     }
   end
@@ -359,4 +364,53 @@ defmodule AlertProcessor.AlertParser do
   end
 
   defp parse_reminder_times(_), do: []
+
+  @doc """
+  Some trips run on multiple routes. Currently the API adds these additional routes
+  to the list of the informed entities, but the IBI feed does not. Rather than re-do
+  that work in this project we replace the informed entities from the feed with the 
+  informed entities from the API
+  """
+  def swap_informed_entities(alerts, api_alerts) do
+    api_alerts_by_id =
+      Enum.reduce(api_alerts, %{}, fn alert, accumulator ->
+        Map.put(accumulator, alert["id"], alert)
+      end)
+
+    Enum.reduce(alerts, [], fn alert, accumulator ->
+      accumulator ++
+        [
+          if Map.has_key?(api_alerts_by_id, alert["id"]) do
+            Map.put(
+              alert,
+              "informed_entity",
+              translate_api_informed_entities(
+                api_alerts_by_id[alert["id"]]["attributes"]["informed_entity"]
+              )
+            )
+          else
+            alert
+          end
+        ]
+    end)
+  end
+
+  defp translate_api_informed_entities(api_entities) do
+    Enum.map(api_entities, fn entity ->
+      entity
+      |> Enum.map(&translate_api_informed_entity_key(&1, entity))
+      |> Enum.into(%{})
+    end)
+  end
+
+  defp translate_api_informed_entity_key({"route", value}, _), do: {"route_id", value}
+  defp translate_api_informed_entity_key({"stop", value}, _), do: {"stop_id", value}
+  defp translate_api_informed_entity_key({"route_type", value}, _), do: {"route_type", value}
+  defp translate_api_informed_entity_key({"direction_id", value}, _), do: {"direction_id", value}
+  defp translate_api_informed_entity_key({"activities", value}, _), do: {"activities", value}
+  defp translate_api_informed_entity_key({"facility", value}, _), do: {"facility", value}
+
+  defp translate_api_informed_entity_key({"trip", value}, informed_entity) do
+    {"trip", %{"route_id" => Map.get(informed_entity, "route"), "trip_id" => value}}
+  end
 end
