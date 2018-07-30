@@ -72,7 +72,7 @@ defmodule AlertProcessor.ApiClient do
   end
 
   @doc """
-  endpoint to fetch stop info per route including name and id
+  endpoint to fetch stop info per route including name and id for the inbound direction only
   """
   @spec route_stops(String.t()) :: {:ok, [map]} | {:error, String.t()}
   def route_stops(route) do
