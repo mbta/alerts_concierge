@@ -29,8 +29,7 @@ defmodule AlertsConcierge.Mixfile do
     [
       {:credo, "~> 0.7", only: [:dev, :test]},
       {:distillery, "~> 1.5", runtime: false},
-      {:excoveralls, "~> 0.5", only: [:dev, :test]},
-      {:mix_test_watch, "~> 0.6", only: :dev, runtime: false}
+      {:excoveralls, "~> 0.5", only: [:dev, :test]}
     ]
   end
 
