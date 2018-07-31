@@ -46,7 +46,8 @@ defmodule AlertProcessor.Model.Subscription do
           destination_long: float | nil,
           rank: integer | nil,
           return_trip: boolean | nil,
-          facility_types: [facility_type] | []
+          facility_types: [facility_type] | [],
+          paused: boolean | nil
         }
 
   @alert_priority_type_values %{
@@ -96,14 +97,15 @@ defmodule AlertProcessor.Model.Subscription do
     field(:return_trip, :boolean)
     field(:facility_types, {:array, AlertProcessor.AtomType})
     field(:notification_type_to_send, AlertProcessor.AtomType, virtual: true)
+    field(:paused, :boolean)
 
     timestamps()
   end
 
   @permitted_fields ~w(alert_priority_type user_id trip_id relevant_days start_time
-    end_time travel_start_time travel_end_time type rank route return_trip route_type)a
+    end_time travel_start_time travel_end_time type rank route return_trip route_type paused)a
   @required_fields ~w(alert_priority_type user_id start_time end_time)a
-  @update_permitted_fields ~w(alert_priority_type relevant_days start_time end_time travel_start_time travel_end_time)a
+  @update_permitted_fields ~w(alert_priority_type relevant_days start_time end_time travel_start_time travel_end_time paused)a
   @valid_days ~w(weekday monday tuesday wednesday thursday friday saturday sunday)a
 
   @doc """

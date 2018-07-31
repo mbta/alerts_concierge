@@ -186,6 +186,32 @@ defmodule AlertProcessor.Model.Trip do
     Repo.one(query)
   end
 
+  @doc """
+  True if any of the subscriptions associated with this trip are paused.
+
+  (If any subscriptions are paused they all should be.)
+  """
+  @spec paused?(Trip.t()) :: boolean
+  def paused?(%Trip{} = trip) do
+    Enum.any?(trip.subscriptions, & &1.paused)
+  end
+
+  @spec pause(Trip.t(), String.t()) :: :ok
+  def pause(%Trip{subscriptions: subscriptions}, user_id) do
+    subscriptions
+    |> Enum.each(fn subscription ->
+      Subscription.update_subscription(subscription, %{paused: true}, user_id)
+    end)
+  end
+
+  @spec resume(Trip.t(), String.t()) :: :ok
+  def resume(%Trip{subscriptions: subscriptions}, user_id) do
+    subscriptions
+    |> Enum.each(fn subscription ->
+      Subscription.update_subscription(subscription, %{paused: false}, user_id)
+    end)
+  end
+
   defp sync_subscriptions({:error, _}), do: :ignore
 
   defp sync_subscriptions({:ok, %Trip{} = trip}) do

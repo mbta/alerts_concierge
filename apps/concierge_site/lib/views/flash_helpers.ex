@@ -18,6 +18,15 @@ defmodule ConciergeSite.FlashHelpers do
   end
 
   @doc """
+  Generates flash warning tag
+  """
+  def flash_warning(conn) do
+    if warning = get_flash(conn, :warning) do
+      content_tag(:div, warning, class: "alert alert-warning", tabindex: "0")
+    end
+  end
+
+  @doc """
   Generates flash info tag
   """
   def flash_info(conn) do

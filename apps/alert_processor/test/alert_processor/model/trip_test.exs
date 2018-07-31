@@ -72,9 +72,21 @@ defmodule AlertProcessor.Model.TripTest do
   end
 
   test "get_trips_by_user/1" do
-    user = Repo.insert!(%User{email: "test@email.com", role: "user", encrypted_password: @encrypted_password})
-    Repo.insert!(%Trip{user_id: user.id, alert_priority_type: :low, relevant_days: [:monday], start_time: ~T[12:00:00],
-                       end_time: ~T[18:00:00], facility_types: [:elevator]})
+    user =
+      Repo.insert!(%User{
+        email: "test@email.com",
+        role: "user",
+        encrypted_password: @encrypted_password
+      })
+
+    Repo.insert!(%Trip{
+      user_id: user.id,
+      alert_priority_type: :low,
+      relevant_days: [:monday],
+      start_time: ~T[12:00:00],
+      end_time: ~T[18:00:00],
+      facility_types: [:elevator]
+    })
 
     assert [trip] = Trip.get_trips_by_user(user.id)
     assert trip.user_id == user.id
@@ -86,7 +98,8 @@ defmodule AlertProcessor.Model.TripTest do
       trip =
         %Trip{}
         |> Trip.create_changeset(valid_attrs)
-        |> Repo.insert!
+        |> Repo.insert!()
+
       assert [%Trip{}] = Trip.get_trips_by_user(user.id)
       assert {:ok, %Trip{}} = Trip.delete(trip)
       assert [] = Trip.get_trips_by_user(user.id)
@@ -97,6 +110,7 @@ defmodule AlertProcessor.Model.TripTest do
         %Trip{}
         |> Trip.create_changeset(trip_attrs)
         |> Repo.insert!()
+
       subscription_attrs = %{
         user_id: user.id,
         trip_id: trip.id,
@@ -104,9 +118,11 @@ defmodule AlertProcessor.Model.TripTest do
         start_time: ~T[12:00:00],
         end_time: ~T[18:00:00]
       }
+
       %Subscription{}
       |> Subscription.create_changeset(subscription_attrs)
       |> Repo.insert!()
+
       assert [_] = Repo.all(Subscription)
       Trip.delete(trip)
       assert [] = Repo.all(Subscription)
@@ -129,7 +145,9 @@ defmodule AlertProcessor.Model.TripTest do
         return_end_time: ~T[18:30:00],
         facility_types: [:elevator]
       }
+
       trip = insert(:trip, trip_details)
+
       params = %{
         start_time: ~T[13:00:00],
         end_time: ~T[13:30:00],
@@ -138,6 +156,7 @@ defmodule AlertProcessor.Model.TripTest do
         relevant_days: [:tuesday],
         facility_types: [:escalator]
       }
+
       {:ok, %Trip{} = _} = Trip.update(trip, params)
       updated_trip = Trip.find_by_id(trip.id)
       assert updated_trip.start_time == ~T[13:00:00.000000]
@@ -161,12 +180,15 @@ defmodule AlertProcessor.Model.TripTest do
       relevant_days = [:monday]
       start_time = ~T[12:00:00.000000]
       end_time = ~T[12:30:00.000000]
+
       trip_details = %{
         relevant_days: relevant_days,
         start_time: start_time,
         end_time: end_time
       }
+
       trip = insert(:trip, trip_details)
+
       subscription_details_1 = %{
         relevant_days: relevant_days,
         start_time: start_time,
@@ -175,6 +197,7 @@ defmodule AlertProcessor.Model.TripTest do
         destination: "some-destination",
         trip: trip
       }
+
       subscription_details_2 = %{
         relevant_days: relevant_days,
         start_time: start_time,
@@ -183,8 +206,10 @@ defmodule AlertProcessor.Model.TripTest do
         destination: "some-other-destination",
         trip: trip
       }
+
       subscription_1 = insert(:subscription, subscription_details_1)
       subscription_2 = insert(:subscription, subscription_details_2)
+
       params = %{
         relevant_days: [:tuesday],
         start_time: ~T[13:00:00.000000],
@@ -213,6 +238,7 @@ defmodule AlertProcessor.Model.TripTest do
       end_time = ~T[12:30:00.000000]
       return_start_time = ~T[14:00:00.000000]
       return_end_time = ~T[14:30:00.000000]
+
       trip_details = %{
         relevant_days: relevant_days,
         start_time: start_time,
@@ -220,7 +246,9 @@ defmodule AlertProcessor.Model.TripTest do
         return_start_time: return_start_time,
         return_end_time: return_end_time
       }
+
       trip = insert(:trip, trip_details)
+
       departure_subscription_details = %{
         return_trip: false,
         relevant_days: relevant_days,
@@ -230,6 +258,7 @@ defmodule AlertProcessor.Model.TripTest do
         destination: "some-destination",
         trip: trip
       }
+
       return_subscription_details = %{
         return_trip: true,
         relevant_days: relevant_days,
@@ -239,8 +268,10 @@ defmodule AlertProcessor.Model.TripTest do
         destination: "some-other-destination",
         trip: trip
       }
+
       departure_subscription = insert(:subscription, departure_subscription_details)
       return_subscription = insert(:subscription, return_subscription_details)
+
       params = %{
         relevant_days: [:tuesday],
         start_time: ~T[13:00:00.000000],
@@ -261,6 +292,123 @@ defmodule AlertProcessor.Model.TripTest do
       assert updated_return_subscription.relevant_days == params.relevant_days
       assert updated_return_subscription.start_time == params.return_start_time
       assert updated_return_subscription.end_time == params.return_end_time
+    end
+  end
+
+  test "paused?/1 returns true if any subscriptions are paused" do
+    paused_trip = %Trip{
+      subscriptions: [
+        %Subscription{paused: true}
+      ]
+    }
+
+    unpaused_trip = %Trip{
+      subscriptions: [
+        %Subscription{paused: false}
+      ]
+    }
+
+    assert Trip.paused?(paused_trip) == true
+    assert Trip.paused?(unpaused_trip) == false
+  end
+
+  test "pause/2 pauses all of the subscriptions for a trip" do
+    user = insert(:user)
+    relevant_days = [:monday]
+    start_time = ~T[12:00:00.000000]
+    end_time = ~T[12:30:00.000000]
+
+    trip_details = %{
+      relevant_days: relevant_days,
+      start_time: start_time,
+      end_time: end_time
+    }
+
+    trip = insert(:trip, trip_details)
+
+    subscription_details_1 = %{
+      relevant_days: relevant_days,
+      start_time: start_time,
+      end_time: end_time,
+      origin: "some-origin",
+      destination: "some-destination",
+      trip: trip,
+      paused: false
+    }
+
+    subscription_details_2 = %{
+      relevant_days: relevant_days,
+      start_time: start_time,
+      end_time: end_time,
+      origin: "some-other-origin",
+      destination: "some-other-destination",
+      trip: trip,
+      paused: false
+    }
+
+    subscription_1 = insert(:subscription, subscription_details_1)
+    subscription_2 = insert(:subscription, subscription_details_2)
+
+    # Pull from DB to load subscriptions
+    trip = Trip.find_by_id(trip.id)
+
+    :ok = Trip.pause(trip, user.id)
+
+    updated_subscription_1 = Repo.get!(Subscription, subscription_1.id)
+    updated_subscription_2 = Repo.get!(Subscription, subscription_2.id)
+
+    for updated_subscription <- [updated_subscription_1, updated_subscription_2] do
+      assert updated_subscription.paused == true
+    end
+  end
+
+  test "resume/2 un-pauses all of the subscriptions for a trip" do
+    user = insert(:user)
+    relevant_days = [:monday]
+    start_time = ~T[12:00:00.000000]
+    end_time = ~T[12:30:00.000000]
+
+    trip_details = %{
+      relevant_days: relevant_days,
+      start_time: start_time,
+      end_time: end_time
+    }
+
+    trip = insert(:trip, trip_details)
+
+    subscription_details_1 = %{
+      relevant_days: relevant_days,
+      start_time: start_time,
+      end_time: end_time,
+      origin: "some-origin",
+      destination: "some-destination",
+      trip: trip,
+      paused: true
+    }
+
+    subscription_details_2 = %{
+      relevant_days: relevant_days,
+      start_time: start_time,
+      end_time: end_time,
+      origin: "some-other-origin",
+      destination: "some-other-destination",
+      trip: trip,
+      paused: true
+    }
+
+    subscription_1 = insert(:subscription, subscription_details_1)
+    subscription_2 = insert(:subscription, subscription_details_2)
+
+    # Pull from DB to load subscriptions
+    trip = Trip.find_by_id(trip.id)
+
+    :ok = Trip.resume(trip, user.id)
+
+    updated_subscription_1 = Repo.get!(Subscription, subscription_1.id)
+    updated_subscription_2 = Repo.get!(Subscription, subscription_2.id)
+
+    for updated_subscription <- [updated_subscription_1, updated_subscription_2] do
+      assert updated_subscription.paused == false
     end
   end
 end

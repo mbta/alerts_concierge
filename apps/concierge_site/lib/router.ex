@@ -95,7 +95,11 @@ defmodule ConciergeSite.Router do
     delete("/account/delete", AccountController, :delete)
     get("/password/edit", AccountController, :edit_password)
     post("/password/edit", AccountController, :update_password)
-    resources("/trips", TripController, only: [:index, :edit, :update, :delete])
+
+    resources("/trips", TripController, only: [:index, :edit, :update, :delete]) do
+      patch("/pause", TripController, :pause, as: :pause)
+      patch("/resume", TripController, :resume, as: :resume)
+    end
 
     resources "/trip", TripController, only: [:new, :create], singleton: true do
       post("/leg", TripController, :leg)

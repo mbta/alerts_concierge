@@ -1,5 +1,6 @@
 <h1 class="heading__title">Edit subscription</h1>
 <%= flash_error(@conn) %>
+<%= flash_warning(@conn) %>
 <%= flash_info(@conn) %>
 
 <div class="container container__inner">

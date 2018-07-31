@@ -4,7 +4,7 @@ defmodule ConciergeSite.TripCardHelper do
   import Phoenix.Controller, only: [get_csrf_token: 0]
   import ConciergeSite.TimeHelper, only: [format_time_string: 2, time_to_string: 1]
   alias AlertProcessor.Model.{Trip, Subscription}
-  alias ConciergeSite.{IconViewHelper, RouteHelper}
+  alias ConciergeSite.{FontAwesomeHelpers, IconViewHelper, RouteHelper}
 
   @station_features [
     elevator: "Elevators",
@@ -16,7 +16,7 @@ defmodule ConciergeSite.TripCardHelper do
   @spec render(Plug.Conn.t(), atom | Trip.t()) :: Phoenix.HTML.safe()
   def render(conn, %Trip{trip_type: :accessibility, id: id} = trip) do
     content_tag :div,
-      class: "card trip__card btn btn-outline-primary",
+      class: "card trip__card #{paused_class(trip)}",
       data: [trip_card: "link", link_type: "accessibility", trip_id: id] do
       accessibility_content(trip, conn, id)
     end
@@ -24,7 +24,7 @@ defmodule ConciergeSite.TripCardHelper do
 
   def render(conn, %Trip{id: id} = trip) do
     content_tag :div,
-      class: "card trip__card btn btn-outline-primary",
+      class: "card trip__card #{paused_class(trip)}",
       data: [trip_card: "link", link_type: "commute", trip_id: id] do
       commute_content(trip, conn, id)
     end
@@ -34,7 +34,7 @@ defmodule ConciergeSite.TripCardHelper do
 
   @spec display(Plug.Conn.t(), atom | Trip.t()) :: Phoenix.HTML.safe()
   def display(conn, %Trip{trip_type: :accessibility, id: id} = trip) do
-    content_tag :div, class: "card trip__card trip__card--display btn btn-outline-primary" do
+    content_tag :div, class: "card trip__card trip__card--display #{paused_class(trip)}" do
       accessibility_content(trip, conn, id)
     end
   end
@@ -48,14 +48,13 @@ defmodule ConciergeSite.TripCardHelper do
            relevant_days: relevant_days,
            facility_types: facility_types,
            subscriptions: subscriptions
-         },
+         } = trip,
          conn,
          id
        ) do
     [
       content_tag :div, class: "trip__card--top" do
         [
-          delete_link(id),
           content_tag :span, class: "trip__card--route-icon" do
             IconViewHelper.icon(:t)
           end,
@@ -69,7 +68,6 @@ defmodule ConciergeSite.TripCardHelper do
       end,
       content_tag :div, class: "trip__card--bottom" do
         [
-          edit_link(conn, :accessibility, id),
           content_tag :div, class: "trip__card--type" do
             "#{facility_types(facility_types)}"
           end,
@@ -77,7 +75,8 @@ defmodule ConciergeSite.TripCardHelper do
             "#{days(relevant_days)}"
           end
         ]
-      end
+      end,
+      footer(conn, :accessibility, id, Trip.paused?(trip))
     ]
   end
 
@@ -92,14 +91,13 @@ defmodule ConciergeSite.TripCardHelper do
            return_start_time: return_start_time,
            return_end_time: return_end_time,
            facility_types: facility_types
-         },
+         } = trip,
          conn,
          id
        ) do
     [
       content_tag :div, class: "trip__card--top" do
         [
-          delete_link(id),
           routes(subscriptions),
           content_tag :div, class: "trip__card--top-details" do
             [
@@ -111,15 +109,26 @@ defmodule ConciergeSite.TripCardHelper do
       end,
       content_tag :div, class: "trip__card--bottom" do
         [
-          edit_link(conn, :commute, id),
           content_tag :div, class: "trip__card--type" do
             "#{facility_types(facility_types)}"
           end,
           days(relevant_days),
           trip_times({start_time, end_time}, {return_start_time, return_end_time})
         ]
-      end
+      end,
+      footer(conn, :commute, id, Trip.paused?(trip))
     ]
+  end
+
+  @spec footer(Plug.Conn.t(), atom, String.t(), boolean) :: Phoenix.HTML.safe()
+  defp footer(conn, trip_type, id, trip_paused?) do
+    content_tag :div, class: "trip__card--footer" do
+      [
+        delete_link(id),
+        edit_link(conn, trip_type, id),
+        pause_link(conn, id, trip_paused?)
+      ]
+    end
   end
 
   @spec routes([Subscription.t()]) :: [Phoenix.HTML.safe()]
@@ -159,7 +168,7 @@ defmodule ConciergeSite.TripCardHelper do
           ["to ", RouteHelper.stop_name(destination)]
 
         {origin, nil} ->
-          ["from ", RouteHelper.stop_name(origin)]
+          [" from ", RouteHelper.stop_name(origin)]
 
         {origin, destination} ->
           ": #{RouteHelper.stop_name(origin)} — #{RouteHelper.stop_name(destination)}"
@@ -204,13 +213,11 @@ defmodule ConciergeSite.TripCardHelper do
     }"
   end
 
-  @spec facility_types([atom] | nil) :: String.t()
-  defp facility_types(nil), do: ""
-
+  @spec facility_types([atom]) :: String.t()
   defp facility_types(facility_types) do
     facility_types
     |> Enum.map(&@station_features[&1])
-    |> Enum.intersperse(", ")
+    |> Enum.join(", ")
   end
 
   @spec stops_and_routes([Subscription.t()]) :: [String.t()]
@@ -225,35 +232,82 @@ defmodule ConciergeSite.TripCardHelper do
     |> Enum.intersperse(", ")
   end
 
-  @spec edit_link(Plug.Conn.t(), atom, String.t()) :: Phoenix.HTML.safe()
-  defp edit_link(conn, :commute, id) do
-    link(
-      "Edit",
-      to: ConciergeSite.Router.Helpers.trip_path(conn, :edit, id),
-      class: "trip__card--edit-link"
-    )
-  end
-
-  defp edit_link(conn, :accessibility, id) do
-    link(
-      "Edit",
-      to: ConciergeSite.Router.Helpers.accessibility_trip_path(conn, :edit, id),
-      class: "trip__card--edit-link"
-    )
-  end
-
   @spec delete_link(String.t()) :: Phoenix.HTML.safe()
   defp delete_link(trip_id) do
     content_tag :a,
       class: "trip__card--delete-link",
       tabindex: "0",
       data: [toggle: "modal", target: "#deleteModal", trip_id: trip_id, token: get_csrf_token()] do
-      "Delete"
+      [
+        "Delete",
+        FontAwesomeHelpers.fa("trash")
+      ]
     end
+  end
+
+  @spec edit_link(Plug.Conn.t(), atom, String.t()) :: Phoenix.HTML.safe()
+  defp edit_link(conn, :commute, id) do
+    conn
+    |> ConciergeSite.Router.Helpers.trip_path(:edit, id)
+    |> edit_link_for_path()
+  end
+
+  defp edit_link(conn, :accessibility, id) do
+    conn
+    |> ConciergeSite.Router.Helpers.accessibility_trip_path(:edit, id)
+    |> edit_link_for_path()
+  end
+
+  @spec edit_link_for_path(String.t()) :: Phoenix.HTML.safe()
+  defp edit_link_for_path(path) do
+    link to: path, class: "trip__card--edit-link" do
+      [
+        "Edit",
+        FontAwesomeHelpers.fa("pencil")
+      ]
+    end
+  end
+
+  @spec pause_link(Plug.Conn.t(), String.t(), boolean) :: Phoenix.HTML.safe()
+  defp pause_link(conn, trip_id, trip_paused? = false) do
+    conn
+    |> ConciergeSite.Router.Helpers.trip_pause_path(:pause, trip_id)
+    |> pause_link_for_path(trip_paused?)
+  end
+
+  defp pause_link(conn, trip_id, trip_paused? = true) do
+    conn
+    |> ConciergeSite.Router.Helpers.trip_resume_path(:resume, trip_id)
+    |> pause_link_for_path(trip_paused?)
+  end
+
+  @spec pause_link_for_path(String.t(), boolean) :: Phoenix.HTML.safe()
+  defp pause_link_for_path(path, trip_paused?) do
+    link to: path, method: :patch, class: "trip__card--pause-link" do
+      pause_link_content(trip_paused?)
+    end
+  end
+
+  @spec pause_link_content(boolean) :: [Phoenix.HTML.safe()]
+  defp pause_link_content(_trip_paused? = false) do
+    [
+      "Pause",
+      FontAwesomeHelpers.fa("pause-circle")
+    ]
+  end
+
+  defp pause_link_content(_trip_paused? = true) do
+    [
+      "Resume",
+      FontAwesomeHelpers.fa("play-circle")
+    ]
   end
 
   defp exclude_return_trip_subscriptions(subscriptions) do
     subscriptions
     |> Enum.reject(& &1.return_trip)
   end
+
+  @spec paused_class(Trip.t()) :: String.t()
+  defp paused_class(%Trip{} = trip), do: if(Trip.paused?(trip), do: "paused", else: "")
 end
