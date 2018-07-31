@@ -27,3 +27,5 @@
   </div>
 
 </div>
+
+<%= render "_ie10_overlay.html", conn: @conn %>
