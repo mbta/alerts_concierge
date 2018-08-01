@@ -7,8 +7,9 @@ defmodule ConciergeSite.FeedbackPlugTest do
   end
 
   test "adds feedback url to assigns" do
-    conn = build_conn()
-    |> FeedbackPlug.call(%{})
+    conn =
+      build_conn()
+      |> FeedbackPlug.call(%{})
 
     assert conn.assigns.feedback_url == "http://mbtafeedback.com/"
   end

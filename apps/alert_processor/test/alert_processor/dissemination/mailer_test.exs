@@ -5,7 +5,7 @@ defmodule AlertProcessor.Dissemination.MailerTest do
   @lookup_tuple {:via, Registry, {:mailer_process_registry, :fake_mailer}}
 
   setup_all do
-    GenServer.start_link(AlertProcessor.Dissemination.ResponseServer, [], [name: @lookup_tuple])
+    GenServer.start_link(AlertProcessor.Dissemination.ResponseServer, [], name: @lookup_tuple)
 
     :ok
   end

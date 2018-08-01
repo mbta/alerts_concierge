@@ -21,8 +21,19 @@ defmodule ConciergeSite.Dissemination.NotificationEmailTest do
     description: "There is a fire in at south station so it is closed",
     url: "http://www.example.com/alert-info",
     alert: @alert,
-    last_push_notification: %DateTime{year: 2017, month: 1, day: 18, zone_abbr: "UTC", hour: 19, minute: 0, second: 0,
-      microsecond: {0, 0}, utc_offset: 0, std_offset: 0, time_zone: "Etc/UTC"},
+    last_push_notification: %DateTime{
+      year: 2017,
+      month: 1,
+      day: 18,
+      zone_abbr: "UTC",
+      hour: 19,
+      minute: 0,
+      second: 0,
+      microsecond: {0, 0},
+      utc_offset: 0,
+      std_offset: 0,
+      time_zone: "Etc/UTC"
+    },
     closed_timestamp: nil
   }
 
@@ -39,10 +50,11 @@ defmodule ConciergeSite.Dissemination.NotificationEmailTest do
 
   test "text_email/1 includes content for closed alerts" do
     notification = %{
-      @notification |
-      closed_timestamp: DateTime.utc_now(),
-      type: :all_clear
+      @notification
+      | closed_timestamp: DateTime.utc_now(),
+        type: :all_clear
     }
+
     email = NotificationEmail.notification_email(notification)
     body = email.text_body
 
@@ -65,10 +77,11 @@ defmodule ConciergeSite.Dissemination.NotificationEmailTest do
 
   test "html_email/1 includes content for closed alerts" do
     notification = %{
-      @notification |
-      closed_timestamp: DateTime.utc_now(),
-      type: :all_clear
+      @notification
+      | closed_timestamp: DateTime.utc_now(),
+        type: :all_clear
     }
+
     email = NotificationEmail.notification_email(notification)
     body = email.html_body
 
@@ -110,12 +123,14 @@ defmodule ConciergeSite.Dissemination.NotificationEmailTest do
 
     test "closed alert" do
       alert = %{@alert | timeframe: "starting September 1", recurrence: "on weekends"}
+
       notification = %{
-        @notification |
-        alert: alert,
-        closed_timestamp: DateTime.utc_now(),
-        type: :all_clear
+        @notification
+        | alert: alert,
+          closed_timestamp: DateTime.utc_now(),
+          type: :all_clear
       }
+
       subject = NotificationEmail.email_subject(notification)
 
       assert subject == "All clear (re: Starting September 1: Red line delay on weekends)"
@@ -123,12 +138,14 @@ defmodule ConciergeSite.Dissemination.NotificationEmailTest do
 
     test "updated alert" do
       alert = %{@alert | timeframe: "starting September 1", recurrence: "on weekends"}
+
       notification = %{
-        @notification |
-        alert: alert,
-        closed_timestamp: DateTime.utc_now(),
-        type: :update
+        @notification
+        | alert: alert,
+          closed_timestamp: DateTime.utc_now(),
+          type: :update
       }
+
       subject = NotificationEmail.email_subject(notification)
 
       assert subject == "Update (re: Starting September 1: Red line delay on weekends)"
@@ -136,12 +153,14 @@ defmodule ConciergeSite.Dissemination.NotificationEmailTest do
 
     test "reminder alert" do
       alert = %{@alert | timeframe: "starting September 1", recurrence: "on weekends"}
+
       notification = %{
-        @notification |
-        alert: alert,
-        closed_timestamp: DateTime.utc_now(),
-        type: :reminder
+        @notification
+        | alert: alert,
+          closed_timestamp: DateTime.utc_now(),
+          type: :reminder
       }
+
       subject = NotificationEmail.email_subject(notification)
 
       assert subject == "Reminder (re: Starting September 1: Red line delay on weekends)"

@@ -54,11 +54,12 @@ defmodule AlertProcessor.NotificationWorkerTest do
       alert: @alert
     }
 
-    {:ok, notification: notification, notification_2: notification_2, notification_3: notification_3}
+    {:ok,
+     notification: notification, notification_2: notification_2, notification_3: notification_3}
   end
 
   test "Worker passes jobs from sending queue to notification", %{notification: notification} do
-    user = insert :user
+    user = insert(:user)
     notification = Map.put(notification, :user, user)
 
     {:ok, pid} = start_supervised(NotificationWorker)
@@ -70,13 +71,15 @@ defmodule AlertProcessor.NotificationWorkerTest do
   end
 
   test "Does not exceed rate limit", %{notification: notification} do
-    user = insert :user
+    user = insert(:user)
     notification = Map.put(notification, :user, user)
 
     old_config = Application.get_all_env(:alert_processor)
-    on_exit fn ->
+
+    on_exit(fn ->
       for {k, v} <- old_config, do: Application.put_env(:alert_processor, k, v)
-    end
+    end)
+
     Application.put_env(:alert_processor, :rate_limit_scale, "1000000")
     Application.put_env(:alert_processor, :rate_limit, "1")
 

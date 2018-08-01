@@ -4,7 +4,7 @@ defmodule AlertProcessor.QueryHelper do
   alias AlertProcessor.Repo
 
   def execute_query(query) do
-    Repo.all(from q in subquery(query), distinct: true, select: q.id)
+    Repo.all(from(q in subquery(query), distinct: true, select: q.id))
   end
 
   def generate_query(module, id_array) do

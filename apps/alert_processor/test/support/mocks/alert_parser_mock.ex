@@ -29,7 +29,7 @@ defmodule AlertProcessor.AlertParserMock do
   end
 
   defp send_to_self do
-    send self(), :processed_alerts
+    send(self(), :processed_alerts)
     [{:ok, []}]
   end
 end

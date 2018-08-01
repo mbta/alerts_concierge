@@ -27,7 +27,9 @@ defmodule AlertProcessor.Model.SubscriptionTest do
     assert changeset.valid?
   end
 
-  test "create_changeset/2 permits travel_start_time and travel_end_time", %{valid_attrs: valid_attrs} do
+  test "create_changeset/2 permits travel_start_time and travel_end_time", %{
+    valid_attrs: valid_attrs
+  } do
     changeset = Subscription.create_changeset(%Subscription{}, valid_attrs)
     assert Map.has_key?(changeset.changes, :travel_start_time)
     assert Map.has_key?(changeset.changes, :travel_end_time)
@@ -78,14 +80,16 @@ defmodule AlertProcessor.Model.SubscriptionTest do
         end_time: ~T[18:00:00],
         relevant_days: [:weekday]
       }
+
       timeframe_map = Subscription.timeframe_map(subscription)
+
       assert %{
-        monday: %{start: 43_200, end: 64_800},
-        tuesday: %{start: 43_200, end: 64_800},
-        wednesday: %{start: 43_200, end: 64_800},
-        thursday: %{start: 43_200, end: 64_800},
-        friday: %{start: 43_200, end: 64_800}
-      } == timeframe_map
+               monday: %{start: 43_200, end: 64_800},
+               tuesday: %{start: 43_200, end: 64_800},
+               wednesday: %{start: 43_200, end: 64_800},
+               thursday: %{start: 43_200, end: 64_800},
+               friday: %{start: 43_200, end: 64_800}
+             } == timeframe_map
     end
 
     test "maps timeframe for monday" do
@@ -94,10 +98,12 @@ defmodule AlertProcessor.Model.SubscriptionTest do
         end_time: ~T[16:00:00],
         relevant_days: [:monday]
       }
+
       timeframe_map = Subscription.timeframe_map(subscription)
+
       assert %{
-        monday: %{start: 36_000, end: 57_600}
-      } == timeframe_map
+               monday: %{start: 36_000, end: 57_600}
+             } == timeframe_map
     end
 
     test "maps timeframe for saturday" do
@@ -106,10 +112,12 @@ defmodule AlertProcessor.Model.SubscriptionTest do
         end_time: ~T[16:00:00],
         relevant_days: [:saturday]
       }
+
       timeframe_map = Subscription.timeframe_map(subscription)
+
       assert %{
-        saturday: %{start: 36_000, end: 57_600}
-      } == timeframe_map
+               saturday: %{start: 36_000, end: 57_600}
+             } == timeframe_map
     end
 
     test "maps timeframe for sunday" do
@@ -118,10 +126,12 @@ defmodule AlertProcessor.Model.SubscriptionTest do
         end_time: ~T[14:00:00],
         relevant_days: [:sunday]
       }
+
       timeframe_map = Subscription.timeframe_map(subscription)
+
       assert %{
-        sunday: %{start: 28_800, end: 50_400}
-      } == timeframe_map
+               sunday: %{start: 28_800, end: 50_400}
+             } == timeframe_map
     end
 
     test "maps timeframe for multiple relevant days" do
@@ -130,15 +140,17 @@ defmodule AlertProcessor.Model.SubscriptionTest do
         end_time: ~T[18:00:00],
         relevant_days: [:weekday, :saturday]
       }
+
       timeframe_map = Subscription.timeframe_map(subscription)
+
       assert %{
-        monday: %{start: 43_200, end: 64_800},
-        tuesday: %{start: 43_200, end: 64_800},
-        wednesday: %{start: 43_200, end: 64_800},
-        thursday: %{start: 43_200, end: 64_800},
-        friday: %{start: 43_200, end: 64_800},
-        saturday: %{start: 43_200, end: 64_800}
-      } == timeframe_map
+               monday: %{start: 43_200, end: 64_800},
+               tuesday: %{start: 43_200, end: 64_800},
+               wednesday: %{start: 43_200, end: 64_800},
+               thursday: %{start: 43_200, end: 64_800},
+               friday: %{start: 43_200, end: 64_800},
+               saturday: %{start: 43_200, end: 64_800}
+             } == timeframe_map
     end
 
     test "maps timeframe to next timeframe for late night service" do
@@ -147,14 +159,16 @@ defmodule AlertProcessor.Model.SubscriptionTest do
         end_time: ~T[04:00:00],
         relevant_days: [:weekday]
       }
+
       timeframe_map = Subscription.timeframe_map(subscription)
+
       assert %{
-        tuesday: %{start: 3600, end: 14_400},
-        wednesday: %{start: 3600, end: 14_400},
-        thursday: %{start: 3600, end: 14_400},
-        friday: %{start: 3600, end: 14_400},
-        saturday: %{start: 3600, end: 14_400}
-      } == timeframe_map
+               tuesday: %{start: 3600, end: 14_400},
+               wednesday: %{start: 3600, end: 14_400},
+               thursday: %{start: 3600, end: 14_400},
+               friday: %{start: 3600, end: 14_400},
+               saturday: %{start: 3600, end: 14_400}
+             } == timeframe_map
     end
 
     test "maps timeframe to next timeframe for late night service for saturday" do
@@ -163,10 +177,12 @@ defmodule AlertProcessor.Model.SubscriptionTest do
         end_time: ~T[04:00:00],
         relevant_days: [:saturday]
       }
+
       timeframe_map = Subscription.timeframe_map(subscription)
+
       assert %{
-        sunday: %{start: 3600, end: 14_400}
-      } == timeframe_map
+               sunday: %{start: 3600, end: 14_400}
+             } == timeframe_map
     end
 
     test "maps timeframe to next timeframe for late night service for sunday" do
@@ -175,10 +191,12 @@ defmodule AlertProcessor.Model.SubscriptionTest do
         end_time: ~T[04:00:00],
         relevant_days: [:sunday]
       }
+
       timeframe_map = Subscription.timeframe_map(subscription)
+
       assert %{
-        monday: %{start: 3600, end: 14_400}
-      } == timeframe_map
+               monday: %{start: 3600, end: 14_400}
+             } == timeframe_map
     end
 
     test "maps early segment for timeframes that go over midnight for weekday" do
@@ -187,15 +205,17 @@ defmodule AlertProcessor.Model.SubscriptionTest do
         end_time: ~T[04:00:00],
         relevant_days: [:weekday]
       }
+
       timeframe_map = Subscription.timeframe_map(subscription)
+
       assert %{
-        monday: %{start: 43_200, end: 86_399},
-        tuesday: %{start: 43_200, end: 14_400},
-        wednesday: %{start: 43_200, end: 14_400},
-        thursday: %{start: 43_200, end: 14_400},
-        friday: %{start: 43_200, end: 14_400},
-        saturday: %{start: 0, end: 14_400}
-      } == timeframe_map
+               monday: %{start: 43_200, end: 86_399},
+               tuesday: %{start: 43_200, end: 14_400},
+               wednesday: %{start: 43_200, end: 14_400},
+               thursday: %{start: 43_200, end: 14_400},
+               friday: %{start: 43_200, end: 14_400},
+               saturday: %{start: 0, end: 14_400}
+             } == timeframe_map
     end
 
     test "maps early segment for timeframes that go over midnight for saturday" do
@@ -204,11 +224,13 @@ defmodule AlertProcessor.Model.SubscriptionTest do
         end_time: ~T[04:00:00],
         relevant_days: [:saturday]
       }
+
       timeframe_map = Subscription.timeframe_map(subscription)
+
       assert %{
-        saturday: %{start: 43_200, end: 86_399},
-        sunday: %{start: 0, end: 14_400}
-      } == timeframe_map
+               saturday: %{start: 43_200, end: 86_399},
+               sunday: %{start: 0, end: 14_400}
+             } == timeframe_map
     end
 
     test "maps early segment for timeframes that go over midnight for sunday" do
@@ -217,11 +239,13 @@ defmodule AlertProcessor.Model.SubscriptionTest do
         end_time: ~T[04:00:00],
         relevant_days: [:sunday]
       }
+
       timeframe_map = Subscription.timeframe_map(subscription)
+
       assert %{
-        sunday: %{start: 43_200, end: 86_399},
-        monday: %{start: 0, end: 14_400}
-      } == timeframe_map
+               sunday: %{start: 43_200, end: 86_399},
+               monday: %{start: 0, end: 14_400}
+             } == timeframe_map
     end
 
     test "maps early segment for timeframes that go over midnight for multiple relevant days" do
@@ -230,16 +254,18 @@ defmodule AlertProcessor.Model.SubscriptionTest do
         end_time: ~T[04:00:00],
         relevant_days: [:weekday, :saturday]
       }
+
       timeframe_map = Subscription.timeframe_map(subscription)
+
       assert %{
-        monday: %{start: 43_200, end: 86_399},
-        tuesday: %{start: 43_200, end: 14_400},
-        wednesday: %{start: 43_200, end: 14_400},
-        thursday: %{start: 43_200, end: 14_400},
-        friday: %{start: 43_200, end: 14_400},
-        saturday: %{start: 43_200, end: 14_400},
-        sunday: %{start: 0, end: 14_400}
-      } == timeframe_map
+               monday: %{start: 43_200, end: 86_399},
+               tuesday: %{start: 43_200, end: 14_400},
+               wednesday: %{start: 43_200, end: 14_400},
+               thursday: %{start: 43_200, end: 14_400},
+               friday: %{start: 43_200, end: 14_400},
+               saturday: %{start: 43_200, end: 14_400},
+               sunday: %{start: 0, end: 14_400}
+             } == timeframe_map
     end
 
     test "maps early segment for timeframes that go over midnight for all relevant days" do
@@ -248,16 +274,18 @@ defmodule AlertProcessor.Model.SubscriptionTest do
         end_time: ~T[04:00:00],
         relevant_days: [:weekday, :saturday, :sunday]
       }
+
       timeframe_map = Subscription.timeframe_map(subscription)
+
       assert %{
-        monday: %{start: 43_200, end: 14_400},
-        tuesday: %{start: 43_200, end: 14_400},
-        wednesday: %{start: 43_200, end: 14_400},
-        thursday: %{start: 43_200, end: 14_400},
-        friday: %{start: 43_200, end: 14_400},
-        saturday: %{start: 43_200, end: 14_400},
-        sunday: %{start: 43_200, end: 14_400}
-      } == timeframe_map
+               monday: %{start: 43_200, end: 14_400},
+               tuesday: %{start: 43_200, end: 14_400},
+               wednesday: %{start: 43_200, end: 14_400},
+               thursday: %{start: 43_200, end: 14_400},
+               friday: %{start: 43_200, end: 14_400},
+               saturday: %{start: 43_200, end: 14_400},
+               sunday: %{start: 43_200, end: 14_400}
+             } == timeframe_map
     end
 
     test "maps early segment for timeframes that go over midnight for all relevant days different order" do
@@ -266,16 +294,18 @@ defmodule AlertProcessor.Model.SubscriptionTest do
         end_time: ~T[04:00:00],
         relevant_days: [:saturday, :weekday, :sunday]
       }
+
       timeframe_map = Subscription.timeframe_map(subscription)
+
       assert %{
-        monday: %{start: 43_200, end: 14_400},
-        tuesday: %{start: 43_200, end: 14_400},
-        wednesday: %{start: 43_200, end: 14_400},
-        thursday: %{start: 43_200, end: 14_400},
-        friday: %{start: 43_200, end: 14_400},
-        saturday: %{start: 43_200, end: 14_400},
-        sunday: %{start: 43_200, end: 14_400}
-      } == timeframe_map
+               monday: %{start: 43_200, end: 14_400},
+               tuesday: %{start: 43_200, end: 14_400},
+               wednesday: %{start: 43_200, end: 14_400},
+               thursday: %{start: 43_200, end: 14_400},
+               friday: %{start: 43_200, end: 14_400},
+               saturday: %{start: 43_200, end: 14_400},
+               sunday: %{start: 43_200, end: 14_400}
+             } == timeframe_map
     end
 
     test "maps early segment for timeframes that go over midnight for all relevant days different order still doesnt matter" do
@@ -284,16 +314,18 @@ defmodule AlertProcessor.Model.SubscriptionTest do
         end_time: ~T[04:00:00],
         relevant_days: [:sunday, :saturday, :weekday]
       }
+
       timeframe_map = Subscription.timeframe_map(subscription)
+
       assert %{
-        monday: %{start: 43_200, end: 14_400},
-        tuesday: %{start: 43_200, end: 14_400},
-        wednesday: %{start: 43_200, end: 14_400},
-        thursday: %{start: 43_200, end: 14_400},
-        friday: %{start: 43_200, end: 14_400},
-        saturday: %{start: 43_200, end: 14_400},
-        sunday: %{start: 43_200, end: 14_400}
-      } == timeframe_map
+               monday: %{start: 43_200, end: 14_400},
+               tuesday: %{start: 43_200, end: 14_400},
+               wednesday: %{start: 43_200, end: 14_400},
+               thursday: %{start: 43_200, end: 14_400},
+               friday: %{start: 43_200, end: 14_400},
+               saturday: %{start: 43_200, end: 14_400},
+               sunday: %{start: 43_200, end: 14_400}
+             } == timeframe_map
     end
   end
 
@@ -311,33 +343,38 @@ defmodule AlertProcessor.Model.SubscriptionTest do
 
     test "creates subscription and informed entities from Ecto.Multi" do
       user = insert(:user)
-      {:ok, [info|_]} = BusMapper.map_subscription(@params)
+      {:ok, [info | _]} = BusMapper.map_subscription(@params)
       multi = Mapper.build_subscription_transaction([info], user, user.id)
       Subscription.set_versioned_subscription(multi)
 
-      assert [sub|_] = Subscription |> Repo.all() |> Repo.preload(:informed_entities)
+      assert [sub | _] = Subscription |> Repo.all() |> Repo.preload(:informed_entities)
       refute length(sub.informed_entities) == 0
     end
 
     test "associates versions of informed entities with version of subscription" do
       user = insert(:user)
-      {:ok, [info|_]} = BusMapper.map_subscription(@params)
+      {:ok, [info | _]} = BusMapper.map_subscription(@params)
       multi = Mapper.build_subscription_transaction([info], user, user.id)
       Subscription.set_versioned_subscription(multi)
 
-      [sub|_] = Subscription |> Repo.all() |> Repo.preload(:informed_entities)
+      [sub | _] = Subscription |> Repo.all() |> Repo.preload(:informed_entities)
       sub_version = PaperTrail.get_version(sub)
-      informed_entity_version_ids = Enum.map(sub.informed_entities, fn(ie) ->
-        PaperTrail.get_version(ie).id
-      end)
+
+      informed_entity_version_ids =
+        Enum.map(sub.informed_entities, fn ie ->
+          PaperTrail.get_version(ie).id
+        end)
 
       assert MapSet.new(sub_version.meta["informed_entity_version_ids"]) ==
-        MapSet.new(informed_entity_version_ids)
+               MapSet.new(informed_entity_version_ids)
     end
 
     test "creates round_trip subscription and informed entities from Ecto.Multi" do
       user = insert(:user)
-      {:ok, [info1, info2 | _]} = BusMapper.map_subscription(Map.put(@params, "trip_type", "round_trip"))
+
+      {:ok, [info1, info2 | _]} =
+        BusMapper.map_subscription(Map.put(@params, "trip_type", "round_trip"))
+
       multi = Mapper.build_subscription_transaction([info1, info2], user, user.id)
       Subscription.set_versioned_subscription(multi)
 
@@ -348,52 +385,73 @@ defmodule AlertProcessor.Model.SubscriptionTest do
 
     test "associates versions of informed entities with version of round_trip subscription" do
       user = insert(:user)
-      {:ok, [info1, info2 | _]} = BusMapper.map_subscription(Map.put(@params, "trip_type", "round_trip"))
+
+      {:ok, [info1, info2 | _]} =
+        BusMapper.map_subscription(Map.put(@params, "trip_type", "round_trip"))
+
       multi = Mapper.build_subscription_transaction([info1, info2], user, user.id)
       Subscription.set_versioned_subscription(multi)
 
       [sub1, sub2 | _] = Subscription |> Repo.all() |> Repo.preload(:informed_entities)
 
       sub_version1 = PaperTrail.get_version(sub1)
-      informed_entity_version_ids = Enum.map(sub1.informed_entities, fn(ie) ->
-        PaperTrail.get_version(ie).id
-      end)
+
+      informed_entity_version_ids =
+        Enum.map(sub1.informed_entities, fn ie ->
+          PaperTrail.get_version(ie).id
+        end)
 
       assert MapSet.new(sub_version1.meta["informed_entity_version_ids"]) ==
-        MapSet.new(informed_entity_version_ids)
+               MapSet.new(informed_entity_version_ids)
 
       sub_version2 = PaperTrail.get_version(sub2)
-      informed_entity_version_ids = Enum.map(sub2.informed_entities, fn(ie) ->
-        PaperTrail.get_version(ie).id
-      end)
+
+      informed_entity_version_ids =
+        Enum.map(sub2.informed_entities, fn ie ->
+          PaperTrail.get_version(ie).id
+        end)
 
       assert MapSet.new(sub_version2.meta["informed_entity_version_ids"]) ==
-        MapSet.new(informed_entity_version_ids)
+               MapSet.new(informed_entity_version_ids)
     end
   end
 
   describe "update_subscription" do
     test "updates subscription" do
       user = insert(:user)
+
       subscription =
         subscription_factory()
         |> bus_subscription()
         |> Map.merge(%{user_id: user.id})
         |> insert()
 
-      assert {:ok, subscription} = Subscription.update_subscription(subscription, %{"alert_priority_type" => :low}, user.id)
+      assert {:ok, subscription} =
+               Subscription.update_subscription(
+                 subscription,
+                 %{"alert_priority_type" => :low},
+                 user.id
+               )
+
       assert subscription.alert_priority_type == :low
     end
 
     test "does not update subscription" do
       user = insert(:user)
+
       subscription =
         subscription_factory()
         |> bus_subscription()
         |> Map.merge(%{user_id: user.id})
         |> insert()
 
-      assert {:error, changeset} = Subscription.update_subscription(subscription, %{"alert_priority_type" => :super_high}, user.id)
+      assert {:error, changeset} =
+               Subscription.update_subscription(
+                 subscription,
+                 %{"alert_priority_type" => :super_high},
+                 user.id
+               )
+
       refute changeset.valid?
     end
   end
@@ -401,6 +459,7 @@ defmodule AlertProcessor.Model.SubscriptionTest do
   describe "delete_subscription" do
     test "deletes subscription" do
       user = insert(:user)
+
       subscription =
         subscription_factory()
         |> bus_subscription()
@@ -436,7 +495,13 @@ defmodule AlertProcessor.Model.SubscriptionTest do
     end
 
     test "converts weekday, saturday, sunday subscription relevant days into human friendly iodata" do
-      subscription = :subscription |> build() |> sunday_subscription() |> saturday_subscription() |> weekday_subscription()
+      subscription =
+        :subscription
+        |> build()
+        |> sunday_subscription()
+        |> saturday_subscription()
+        |> weekday_subscription()
+
       relevant_days_string = Subscription.relevant_days_string(subscription)
       assert IO.iodata_to_binary(relevant_days_string) == "Weekdays, Saturdays, Sundays"
     end
@@ -445,6 +510,7 @@ defmodule AlertProcessor.Model.SubscriptionTest do
   describe "route_count/1" do
     test "returns the number of route entities in a subscription" do
       user = build(:user)
+
       {:ok, subscription} =
         :subscription
         |> build(user: user)
@@ -460,6 +526,7 @@ defmodule AlertProcessor.Model.SubscriptionTest do
 
     test "returns the number of route entities in a subscription for multiple" do
       user = build(:user)
+
       {:ok, subscription} =
         :subscription
         |> build(user: user)
@@ -467,7 +534,10 @@ defmodule AlertProcessor.Model.SubscriptionTest do
         |> bus_subscription()
         |> Repo.preload(:informed_entities)
         |> Ecto.Changeset.change()
-        |> Ecto.Changeset.put_assoc(:informed_entities, bus_subscription_entities() ++ bus_subscription_entities("87"))
+        |> Ecto.Changeset.put_assoc(
+          :informed_entities,
+          bus_subscription_entities() ++ bus_subscription_entities("87")
+        )
         |> Repo.insert()
 
       assert 2 == Subscription.route_count(subscription)
@@ -475,6 +545,7 @@ defmodule AlertProcessor.Model.SubscriptionTest do
 
     test "treats same route in opposite direction as separate route" do
       user = build(:user)
+
       {:ok, subscription} =
         :subscription
         |> build(user: user)
@@ -482,7 +553,13 @@ defmodule AlertProcessor.Model.SubscriptionTest do
         |> bus_subscription()
         |> Repo.preload(:informed_entities)
         |> Ecto.Changeset.change()
-        |> Ecto.Changeset.put_assoc(:informed_entities, Enum.uniq(bus_subscription_entities("87", :inbound) ++ bus_subscription_entities("87", :outbound)))
+        |> Ecto.Changeset.put_assoc(
+          :informed_entities,
+          Enum.uniq(
+            bus_subscription_entities("87", :inbound) ++
+              bus_subscription_entities("87", :outbound)
+          )
+        )
         |> Repo.insert()
 
       assert 2 == Subscription.route_count(subscription)
@@ -491,7 +568,9 @@ defmodule AlertProcessor.Model.SubscriptionTest do
 
   describe "add_latlong_to_subscription/3" do
     test "with stop values" do
-      subscription = Subscription.add_latlong_to_subscription(%Subscription{}, "place-alfcl", "place-dwnxg")
+      subscription =
+        Subscription.add_latlong_to_subscription(%Subscription{}, "place-alfcl", "place-dwnxg")
+
       assert subscription.destination_lat == 42.355518000000004
       assert subscription.destination_long == -71.060225
       assert subscription.origin_lat == 42.395428

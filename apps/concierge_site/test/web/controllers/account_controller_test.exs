@@ -35,9 +35,10 @@ defmodule ConciergeSite.AccountControllerTest do
   test "GET /account/options", %{conn: conn} do
     user = insert(:user)
 
-    conn = user
-    |> guardian_login(conn)
-    |> get(account_path(conn, :options_new))
+    conn =
+      user
+      |> guardian_login(conn)
+      |> get(account_path(conn, :options_new))
 
     assert html_response(conn, 200) =~ "Customize my settings"
     assert html_response(conn, 200) =~ "How would you like to receive alerts?"
@@ -52,9 +53,10 @@ defmodule ConciergeSite.AccountControllerTest do
       digest_opt_in: false
     }
 
-    conn = user
-    |> guardian_login(conn)
-    |> post(account_path(conn, :options_create), %{user: user_params})
+    conn =
+      user
+      |> guardian_login(conn)
+      |> post(account_path(conn, :options_create), %{user: user_params})
 
     updated_user = Repo.get(User, user.id)
 
@@ -71,9 +73,10 @@ defmodule ConciergeSite.AccountControllerTest do
       phone_number: "5555555555"
     }
 
-    conn = user
-    |> guardian_login(conn)
-    |> post(account_path(conn, :options_create), %{user: user_params})
+    conn =
+      user
+      |> guardian_login(conn)
+      |> post(account_path(conn, :options_create), %{user: user_params})
 
     updated_user = Repo.get!(User, user.id)
 
@@ -89,9 +92,10 @@ defmodule ConciergeSite.AccountControllerTest do
       phone_number: "123"
     }
 
-    conn = user
-    |> guardian_login(conn)
-    |> post(account_path(conn, :options_create), %{user: user_params})
+    conn =
+      user
+      |> guardian_login(conn)
+      |> post(account_path(conn, :options_create), %{user: user_params})
 
     assert html_response(conn, 200) =~ "Customize my settings"
     assert html_response(conn, 200) =~ "How would you like to receive alerts?"
@@ -102,9 +106,10 @@ defmodule ConciergeSite.AccountControllerTest do
     test "GET /account/edit", %{conn: conn} do
       user = insert(:user)
 
-      conn = user
-      |> guardian_login(conn)
-      |> get(account_path(conn, :edit))
+      conn =
+        user
+        |> guardian_login(conn)
+        |> get(account_path(conn, :edit))
 
       assert html_response(conn, 200) =~ "My account settings"
     end
@@ -116,13 +121,14 @@ defmodule ConciergeSite.AccountControllerTest do
         sms_toggle: "true",
         phone_number: "5555555555"
       }
-  
-      conn = user
-      |> guardian_login(conn)
-      |> post(account_path(conn, :update), %{user: user_params})
-  
+
+      conn =
+        user
+        |> guardian_login(conn)
+        |> post(account_path(conn, :update), %{user: user_params})
+
       updated_user = Repo.get!(User, user.id)
-  
+
       assert html_response(conn, 302) =~ "/trips"
       assert updated_user.phone_number == "5555555555"
     end
@@ -134,11 +140,12 @@ defmodule ConciergeSite.AccountControllerTest do
         sms_toggle: "true",
         phone_number: "5"
       }
-  
-      conn = user
-      |> guardian_login(conn)
-      |> post(account_path(conn, :update), %{user: user_params})
-    
+
+      conn =
+        user
+        |> guardian_login(conn)
+        |> post(account_path(conn, :update), %{user: user_params})
+
       assert html_response(conn, 200) =~ "Phone number is not in a valid format"
     end
   end
@@ -147,9 +154,10 @@ defmodule ConciergeSite.AccountControllerTest do
     test "GET /password/edit", %{conn: conn} do
       user = insert(:user)
 
-      conn = user
-      |> guardian_login(conn)
-      |> get(account_path(conn, :edit_password))
+      conn =
+        user
+        |> guardian_login(conn)
+        |> get(account_path(conn, :edit_password))
 
       assert html_response(conn, 200) =~ "Update password"
     end
@@ -158,11 +166,12 @@ defmodule ConciergeSite.AccountControllerTest do
       user = insert(:user, encrypted_password: Comeonin.Bcrypt.hashpwsalt("Password1!"))
 
       user_params = %{current_password: "Password1!", password: "Password2!"}
-  
-      conn = user
-      |> guardian_login(conn)
-      |> post(account_path(conn, :update_password), %{user: user_params})
-    
+
+      conn =
+        user
+        |> guardian_login(conn)
+        |> post(account_path(conn, :update_password), %{user: user_params})
+
       assert html_response(conn, 302) =~ "/trips"
     end
 
@@ -170,11 +179,12 @@ defmodule ConciergeSite.AccountControllerTest do
       user = insert(:user, encrypted_password: Comeonin.Bcrypt.hashpwsalt("Password1!"))
 
       user_params = %{current_password: "Password3!", password: "Password2!"}
-  
-      conn = user
-      |> guardian_login(conn)
-      |> post(account_path(conn, :update_password), %{user: user_params})
-   
+
+      conn =
+        user
+        |> guardian_login(conn)
+        |> post(account_path(conn, :update_password), %{user: user_params})
+
       assert html_response(conn, 200) =~ "Current password is incorrect"
     end
   end
@@ -184,10 +194,11 @@ defmodule ConciergeSite.AccountControllerTest do
 
     user_params = %{current_password: "Password1!", password: "Password"}
 
-    conn = user
-    |> guardian_login(conn)
-    |> post(account_path(conn, :update_password), %{user: user_params})
- 
+    conn =
+      user
+      |> guardian_login(conn)
+      |> post(account_path(conn, :update_password), %{user: user_params})
+
     assert html_response(conn, 200) =~ "New password format is incorrect"
   end
 
@@ -195,12 +206,22 @@ defmodule ConciergeSite.AccountControllerTest do
     test "DELETE /account/delete", %{conn: conn} do
       user = insert(:user)
       trip = insert(:trip, %{user: user})
-      insert(:subscription, %{user_id: user.id, trip_id: trip.id, type: :cr, origin: "Readville", destination: "Newmarket", route: "CR-Fairmount"})
+
+      insert(:subscription, %{
+        user_id: user.id,
+        trip_id: trip.id,
+        type: :cr,
+        origin: "Readville",
+        destination: "Newmarket",
+        route: "CR-Fairmount"
+      })
+
       insert(:notification, %{alert_id: "Test", status: :sent, user_id: user.id})
 
-      conn = user
-      |> guardian_login(conn)
-      |> delete(account_path(conn, :delete))
+      conn =
+        user
+        |> guardian_login(conn)
+        |> delete(account_path(conn, :delete))
 
       assert html_response(conn, 302) =~ "/deleted"
     end

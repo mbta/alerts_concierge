@@ -19,16 +19,41 @@ defmodule ConcerigeSite.Helpers.MailHelperTest do
 
   describe "Route type icon functions" do
     test "logo_for_alert/1 for subway returns correct line icon" do
-      red_alert = Map.merge(@alert, %{informed_entities: [%InformedEntity{route_type: 0, route: "Red"}]})
-      blue_alert = Map.merge(@alert, %{informed_entities: [%InformedEntity{route_type: 1, route: "Blue"}]})
-      orange_alert = Map.merge(@alert, %{informed_entities: [%InformedEntity{route_type: 0, route: "Orange"}]})
-      mattapan_alert = Map.merge(@alert, %{informed_entities: [%InformedEntity{route_type: 0, route: "Mattapan"}]})
-      green_b_alert = Map.merge(@alert, %{informed_entities: [%InformedEntity{route_type: 0, route: "Green-B"}]})
-      green_c_alert = Map.merge(@alert, %{informed_entities: [%InformedEntity{route_type: 0, route: "Green-C"}]})
-      green_d_alert = Map.merge(@alert, %{informed_entities: [%InformedEntity{route_type: 0, route: "Green-D"}]})
-      green_e_alert = Map.merge(@alert, %{informed_entities: [%InformedEntity{route_type: 0, route: "Green-E"}]})
-      facility_alert = Map.merge(@alert, %{informed_entities: [%InformedEntity{route_type: nil, facility_type: :elevator}]})
-      unparsed_facility_alert = Map.merge(@alert, %{informed_entities: [%InformedEntity{route_type: nil, facility_type: nil}]})
+      red_alert =
+        Map.merge(@alert, %{informed_entities: [%InformedEntity{route_type: 0, route: "Red"}]})
+
+      blue_alert =
+        Map.merge(@alert, %{informed_entities: [%InformedEntity{route_type: 1, route: "Blue"}]})
+
+      orange_alert =
+        Map.merge(@alert, %{informed_entities: [%InformedEntity{route_type: 0, route: "Orange"}]})
+
+      mattapan_alert =
+        Map.merge(@alert, %{
+          informed_entities: [%InformedEntity{route_type: 0, route: "Mattapan"}]
+        })
+
+      green_b_alert =
+        Map.merge(@alert, %{informed_entities: [%InformedEntity{route_type: 0, route: "Green-B"}]})
+
+      green_c_alert =
+        Map.merge(@alert, %{informed_entities: [%InformedEntity{route_type: 0, route: "Green-C"}]})
+
+      green_d_alert =
+        Map.merge(@alert, %{informed_entities: [%InformedEntity{route_type: 0, route: "Green-D"}]})
+
+      green_e_alert =
+        Map.merge(@alert, %{informed_entities: [%InformedEntity{route_type: 0, route: "Green-E"}]})
+
+      facility_alert =
+        Map.merge(@alert, %{
+          informed_entities: [%InformedEntity{route_type: nil, facility_type: :elevator}]
+        })
+
+      unparsed_facility_alert =
+        Map.merge(@alert, %{
+          informed_entities: [%InformedEntity{route_type: nil, facility_type: nil}]
+        })
 
       red = "/images/icons/icn_red-line.png"
       blue = "/images/icons/icn_blue-line.png"
@@ -79,16 +104,41 @@ defmodule ConcerigeSite.Helpers.MailHelperTest do
 
   describe "Alt text functions" do
     test "alt_text_for_alert/1 for subway returns correct line icon" do
-      red_alert = Map.merge(@alert, %{informed_entities: [%InformedEntity{route_type: 0, route: "Red"}]})
-      blue_alert = Map.merge(@alert, %{informed_entities: [%InformedEntity{route_type: 1, route: "Blue"}]})
-      orange_alert = Map.merge(@alert, %{informed_entities: [%InformedEntity{route_type: 0, route: "Orange"}]})
-      mattapan_alert = Map.merge(@alert, %{informed_entities: [%InformedEntity{route_type: 0, route: "Mattapan"}]})
-      green_b_alert = Map.merge(@alert, %{informed_entities: [%InformedEntity{route_type: 0, route: "Green-B"}]})
-      green_c_alert = Map.merge(@alert, %{informed_entities: [%InformedEntity{route_type: 0, route: "Green-C"}]})
-      green_d_alert = Map.merge(@alert, %{informed_entities: [%InformedEntity{route_type: 0, route: "Green-D"}]})
-      green_e_alert = Map.merge(@alert, %{informed_entities: [%InformedEntity{route_type: 0, route: "Green-E"}]})
-      facility_alert = Map.merge(@alert, %{informed_entities: [%InformedEntity{route_type: nil, facility_type: :elevator}]})
-      unparsed_facility_alert = Map.merge(@alert, %{informed_entities: [%InformedEntity{route_type: nil, facility_type: nil}]})
+      red_alert =
+        Map.merge(@alert, %{informed_entities: [%InformedEntity{route_type: 0, route: "Red"}]})
+
+      blue_alert =
+        Map.merge(@alert, %{informed_entities: [%InformedEntity{route_type: 1, route: "Blue"}]})
+
+      orange_alert =
+        Map.merge(@alert, %{informed_entities: [%InformedEntity{route_type: 0, route: "Orange"}]})
+
+      mattapan_alert =
+        Map.merge(@alert, %{
+          informed_entities: [%InformedEntity{route_type: 0, route: "Mattapan"}]
+        })
+
+      green_b_alert =
+        Map.merge(@alert, %{informed_entities: [%InformedEntity{route_type: 0, route: "Green-B"}]})
+
+      green_c_alert =
+        Map.merge(@alert, %{informed_entities: [%InformedEntity{route_type: 0, route: "Green-C"}]})
+
+      green_d_alert =
+        Map.merge(@alert, %{informed_entities: [%InformedEntity{route_type: 0, route: "Green-D"}]})
+
+      green_e_alert =
+        Map.merge(@alert, %{informed_entities: [%InformedEntity{route_type: 0, route: "Green-E"}]})
+
+      facility_alert =
+        Map.merge(@alert, %{
+          informed_entities: [%InformedEntity{route_type: nil, facility_type: :elevator}]
+        })
+
+      unparsed_facility_alert =
+        Map.merge(@alert, %{
+          informed_entities: [%InformedEntity{route_type: nil, facility_type: nil}]
+        })
 
       red = "logo-red-line"
       blue = "logo-blue-line"
@@ -129,8 +179,10 @@ defmodule ConcerigeSite.Helpers.MailHelperTest do
       assert MailHelper.alt_text_for_alert(alert) == ferry
     end
 
-     test "alt_text_for_alert/1 return facility" do
-      alert = Map.merge(@alert, %{informed_entities: [%InformedEntity{facility_type: :escalator}]})
+    test "alt_text_for_alert/1 return facility" do
+      alert =
+        Map.merge(@alert, %{informed_entities: [%InformedEntity{facility_type: :escalator}]})
+
       facility = "logo-facility"
 
       assert MailHelper.alt_text_for_alert(alert) == facility

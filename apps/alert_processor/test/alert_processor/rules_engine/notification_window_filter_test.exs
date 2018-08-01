@@ -6,12 +6,14 @@ defmodule AlertProcessor.NotificationWindowFilterTest do
   describe "filter/2" do
     test "within notification window" do
       trip = build(:trip)
+
       subscription_details = [
         relevant_days: ~w(monday)a,
         start_time: ~T[08:00:00],
         end_time: ~T[09:00:00],
         trip: trip
       ]
+
       subscription = build(:subscription, subscription_details)
       monday_at_7am = DateTime.from_naive!(~N[2018-04-02 08:00:00], "Etc/UTC")
       result = NotificationWindowFilter.filter([subscription], monday_at_7am)
@@ -20,12 +22,14 @@ defmodule AlertProcessor.NotificationWindowFilterTest do
 
     test "within notification window (start after end)" do
       trip = build(:trip)
+
       subscription_details = [
         relevant_days: ~w(monday)a,
         start_time: ~T[22:00:00],
         end_time: ~T[09:00:00],
         trip: trip
       ]
+
       subscription = build(:subscription, subscription_details)
       monday_at_7am = DateTime.from_naive!(~N[2018-04-02 07:00:00], "Etc/UTC")
       result = NotificationWindowFilter.filter([subscription], monday_at_7am)
@@ -34,12 +38,14 @@ defmodule AlertProcessor.NotificationWindowFilterTest do
 
     test "outside notification window (start after end)" do
       trip = build(:trip)
+
       subscription_details = [
         relevant_days: ~w(monday)a,
         start_time: ~T[22:00:00],
         end_time: ~T[09:00:00],
         trip: trip
       ]
+
       subscription = build(:subscription, subscription_details)
       monday_at_10am = DateTime.from_naive!(~N[2018-04-02 10:00:00], "Etc/UTC")
       result = NotificationWindowFilter.filter([subscription], monday_at_10am)
@@ -48,12 +54,14 @@ defmodule AlertProcessor.NotificationWindowFilterTest do
 
     test "outside notification window (day mismatch: sunday)" do
       trip = build(:trip)
+
       subscription_details = [
         relevant_days: ~w(monday)a,
         start_time: ~T[08:00:00],
         end_time: ~T[09:00:00],
         trip: trip
       ]
+
       subscription = build(:subscription, subscription_details)
       sunday_at_7am = DateTime.from_naive!(~N[2018-04-01 07:00:00], "Etc/UTC")
       result = NotificationWindowFilter.filter([subscription], sunday_at_7am)
@@ -62,6 +70,7 @@ defmodule AlertProcessor.NotificationWindowFilterTest do
 
     test "outside notification window (day mismatch: thursday)" do
       trip = build(:trip)
+
       subscription_details = [
         # Thursday is missing from `relevant_days`
         relevant_days: ~w(monday tuesday wednesday friday saturday sunday)a,
@@ -69,6 +78,7 @@ defmodule AlertProcessor.NotificationWindowFilterTest do
         end_time: ~T[09:00:00],
         trip: trip
       ]
+
       subscription = build(:subscription, subscription_details)
       thursday_at_7am = DateTime.from_naive!(~N[2018-04-05 07:00:00], "Etc/UTC")
       result = NotificationWindowFilter.filter([subscription], thursday_at_7am)
@@ -77,12 +87,14 @@ defmodule AlertProcessor.NotificationWindowFilterTest do
 
     test "outside notification window (day match but time before window)" do
       trip = build(:trip)
+
       subscription_details = [
         relevant_days: ~w(monday)a,
         start_time: ~T[08:00:00],
         end_time: ~T[09:00:00],
         trip: trip
       ]
+
       subscription = build(:subscription, subscription_details)
       monday_at_6am = DateTime.from_naive!(~N[2018-04-02 06:00:00], "Etc/UTC")
       result = NotificationWindowFilter.filter([subscription], monday_at_6am)
@@ -91,12 +103,14 @@ defmodule AlertProcessor.NotificationWindowFilterTest do
 
     test "outside notification window (day match but time after window)" do
       trip = build(:trip)
+
       subscription_details = [
         relevant_days: ~w(monday)a,
         start_time: ~T[08:00:00],
         end_time: ~T[09:00:00],
         trip: trip
       ]
+
       subscription = build(:subscription, subscription_details)
       monday_at_10am = DateTime.from_naive!(~N[2018-04-02 10:00:00], "Etc/UTC")
       result = NotificationWindowFilter.filter([subscription], monday_at_10am)

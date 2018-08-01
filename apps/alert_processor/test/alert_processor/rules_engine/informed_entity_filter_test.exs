@@ -9,22 +9,27 @@ defmodule AlertProcessor.InformedEntityFilterTest do
         route_type: nil,
         direction_id: nil,
         route: nil,
-        origin:  "Fairmount",
+        origin: "Fairmount",
         destination: "Newmarket",
         facility_types: [],
         start_time: ~T[08:00:00],
         end_time: ~T[09:00:00]
       ]
+
       subscription = build(:subscription, subscription_details)
+
       scheduled_origin_event = %{
         stop_id: "Fairmount",
         departure_time: "2018-04-02T08:00:00-04:00"
       }
+
       scheduled_destination_event = %{
         stop_id: "Newmarket",
         departure_time: nil
       }
+
       schedule = [scheduled_origin_event, scheduled_destination_event]
+
       informed_entity_details = [
         route_type: nil,
         direction_id: nil,
@@ -34,31 +39,37 @@ defmodule AlertProcessor.InformedEntityFilterTest do
         schedule: schedule,
         trip: "767"
       ]
+
       informed_entity = build(:informed_entity, informed_entity_details)
       assert InformedEntityFilter.subscription_match?(subscription, informed_entity)
     end
-  
+
     test "returns false for trip mismatch per subscription start time" do
       subscription_details = [
         route_type: nil,
         direction_id: nil,
         route: nil,
-        origin:  "Fairmount",
+        origin: "Fairmount",
         destination: "Newmarket",
         facility_types: [],
         start_time: ~T[08:00:00],
         end_time: ~T[09:00:00]
       ]
+
       subscription = build(:subscription, subscription_details)
+
       scheduled_origin_event = %{
         stop_id: "Fairmount",
         departure_time: "2018-04-02T07:45:00-04:00"
       }
+
       scheduled_destination_event = %{
         stop_id: "Newmarket",
         departure_time: nil
       }
+
       schedule = [scheduled_origin_event, scheduled_destination_event]
+
       informed_entity_details = [
         route_type: nil,
         direction_id: nil,
@@ -68,6 +79,7 @@ defmodule AlertProcessor.InformedEntityFilterTest do
         schedule: schedule,
         trip: "767"
       ]
+
       informed_entity = build(:informed_entity, informed_entity_details)
       refute InformedEntityFilter.subscription_match?(subscription, informed_entity)
     end
@@ -77,22 +89,27 @@ defmodule AlertProcessor.InformedEntityFilterTest do
         route_type: nil,
         direction_id: nil,
         route: nil,
-        origin:  "Fairmount",
+        origin: "Fairmount",
         destination: "Newmarket",
         facility_types: [],
         start_time: ~T[08:00:00],
         end_time: ~T[08:05:00]
       ]
+
       subscription = build(:subscription, subscription_details)
+
       scheduled_origin_event = %{
         stop_id: "Fairmount",
         departure_time: "2018-04-02T08:10:00-04:00"
       }
+
       scheduled_destination_event = %{
         stop_id: "Newmarket",
         departure_time: nil
       }
+
       schedule = [scheduled_origin_event, scheduled_destination_event]
+
       informed_entity_details = [
         route_type: nil,
         direction_id: nil,
@@ -102,6 +119,7 @@ defmodule AlertProcessor.InformedEntityFilterTest do
         schedule: schedule,
         trip: "767"
       ]
+
       informed_entity = build(:informed_entity, informed_entity_details)
       refute InformedEntityFilter.subscription_match?(subscription, informed_entity)
     end
@@ -111,7 +129,7 @@ defmodule AlertProcessor.InformedEntityFilterTest do
         route_type: nil,
         direction_id: nil,
         route: nil,
-        origin:  "Fairmount",
+        origin: "Fairmount",
         destination: "Newmarket",
         facility_types: [],
         start_time: ~T[07:00:00],
@@ -119,16 +137,21 @@ defmodule AlertProcessor.InformedEntityFilterTest do
         travel_start_time: ~T[08:00:00],
         travel_end_time: ~T[08:05:00]
       ]
+
       subscription = build(:subscription, subscription_details)
+
       scheduled_origin_event = %{
         stop_id: "Fairmount",
         departure_time: "2018-04-02T08:00:00-04:00"
       }
+
       scheduled_destination_event = %{
         stop_id: "Newmarket",
         departure_time: nil
       }
+
       schedule = [scheduled_origin_event, scheduled_destination_event]
+
       informed_entity_details = [
         route_type: nil,
         direction_id: nil,
@@ -138,6 +161,7 @@ defmodule AlertProcessor.InformedEntityFilterTest do
         schedule: schedule,
         trip: "767"
       ]
+
       informed_entity = build(:informed_entity, informed_entity_details)
       assert InformedEntityFilter.subscription_match?(subscription, informed_entity)
     end
@@ -147,7 +171,7 @@ defmodule AlertProcessor.InformedEntityFilterTest do
         route_type: nil,
         direction_id: nil,
         route: nil,
-        origin:  "Fairmount",
+        origin: "Fairmount",
         destination: "Newmarket",
         facility_types: [],
         start_time: ~T[08:00:00],
@@ -155,16 +179,21 @@ defmodule AlertProcessor.InformedEntityFilterTest do
         travel_start_time: ~T[08:05:00],
         travel_end_time: ~T[08:10:00]
       ]
+
       subscription = build(:subscription, subscription_details)
+
       scheduled_origin_event = %{
         stop_id: "Fairmount",
         departure_time: "2018-04-02T08:00:00-04:00"
       }
+
       scheduled_destination_event = %{
         stop_id: "Newmarket",
         departure_time: nil
       }
+
       schedule = [scheduled_origin_event, scheduled_destination_event]
+
       informed_entity_details = [
         route_type: nil,
         direction_id: nil,
@@ -174,6 +203,7 @@ defmodule AlertProcessor.InformedEntityFilterTest do
         schedule: schedule,
         trip: "767"
       ]
+
       informed_entity = build(:informed_entity, informed_entity_details)
       refute InformedEntityFilter.subscription_match?(subscription, informed_entity)
     end
@@ -183,7 +213,7 @@ defmodule AlertProcessor.InformedEntityFilterTest do
         route_type: nil,
         direction_id: nil,
         route: nil,
-        origin:  "Fairmount",
+        origin: "Fairmount",
         destination: "Newmarket",
         facility_types: [],
         start_time: ~T[08:00:00],
@@ -191,16 +221,21 @@ defmodule AlertProcessor.InformedEntityFilterTest do
         travel_start_time: ~T[08:00:00],
         travel_end_time: ~T[08:05:00]
       ]
+
       subscription = build(:subscription, subscription_details)
+
       scheduled_origin_event = %{
         stop_id: "Fairmount",
         departure_time: "2018-04-02T08:10:00-04:00"
       }
+
       scheduled_destination_event = %{
         stop_id: "Newmarket",
         departure_time: nil
       }
+
       schedule = [scheduled_origin_event, scheduled_destination_event]
+
       informed_entity_details = [
         route_type: nil,
         direction_id: nil,
@@ -210,21 +245,24 @@ defmodule AlertProcessor.InformedEntityFilterTest do
         schedule: schedule,
         trip: "767"
       ]
+
       informed_entity = build(:informed_entity, informed_entity_details)
       refute InformedEntityFilter.subscription_match?(subscription, informed_entity)
     end
-  
+
     test "returns false for trip mismatch if schedule missing event for origin" do
       subscription_details = [
         route_type: nil,
         direction_id: nil,
         route: nil,
-        origin:  "Fairmount",
+        origin: "Fairmount",
         destination: "Newmarket",
         facility_types: [],
         start_time: ~T[08:00:00]
       ]
+
       subscription = build(:subscription, subscription_details)
+
       informed_entity_details = [
         route_type: nil,
         direction_id: nil,
@@ -234,21 +272,24 @@ defmodule AlertProcessor.InformedEntityFilterTest do
         schedule: [],
         trip: "767"
       ]
+
       informed_entity = build(:informed_entity, informed_entity_details)
       refute InformedEntityFilter.subscription_match?(subscription, informed_entity)
     end
-  
+
     test "returns false for trip mismatch if nil schedule and trip given" do
       subscription_details = [
         route_type: nil,
         direction_id: nil,
         route: nil,
-        origin:  "Fairmount",
+        origin: "Fairmount",
         destination: "Newmarket",
         facility_types: [],
         start_time: ~T[08:00:00]
       ]
+
       subscription = build(:subscription, subscription_details)
+
       informed_entity_details = [
         route_type: nil,
         direction_id: nil,
@@ -258,21 +299,25 @@ defmodule AlertProcessor.InformedEntityFilterTest do
         schedule: nil,
         trip: "767"
       ]
+
       informed_entity = build(:informed_entity, informed_entity_details)
       refute InformedEntityFilter.subscription_match?(subscription, informed_entity)
     end
 
     test "returns true with route type match" do
-      route_type =  1
+      route_type = 1
+
       subscription_details = [
         route_type: route_type,
         direction_id: 0,
         route: "some route",
         origin: "some origin",
         destination: "some destination",
-        facility_types: [],
+        facility_types: []
       ]
+
       subscription = build(:subscription, subscription_details)
+
       informed_entity_details = [
         route_type: route_type,
         direction_id: nil,
@@ -280,6 +325,7 @@ defmodule AlertProcessor.InformedEntityFilterTest do
         stop: nil,
         activities: nil
       ]
+
       informed_entity = build(:informed_entity, informed_entity_details)
       assert InformedEntityFilter.subscription_match?(subscription, informed_entity)
     end
@@ -291,9 +337,11 @@ defmodule AlertProcessor.InformedEntityFilterTest do
         route: "some route",
         origin: "some origin",
         destination: "some destination",
-        facility_types: [],
+        facility_types: []
       ]
+
       subscription = build(:subscription, subscription_details)
+
       informed_entity_details = [
         route_type: 2,
         direction_id: nil,
@@ -301,6 +349,7 @@ defmodule AlertProcessor.InformedEntityFilterTest do
         stop: nil,
         activities: nil
       ]
+
       informed_entity = build(:informed_entity, informed_entity_details)
       refute InformedEntityFilter.subscription_match?(subscription, informed_entity)
     end
@@ -312,9 +361,11 @@ defmodule AlertProcessor.InformedEntityFilterTest do
         route: "some route",
         origin: "some origin",
         destination: "some destination",
-        facility_types: [],
+        facility_types: []
       ]
+
       subscription = build(:subscription, subscription_details)
+
       informed_entity_details = [
         route_type: nil,
         direction_id: 0,
@@ -322,6 +373,7 @@ defmodule AlertProcessor.InformedEntityFilterTest do
         stop: nil,
         activities: nil
       ]
+
       informed_entity = build(:informed_entity, informed_entity_details)
       assert InformedEntityFilter.subscription_match?(subscription, informed_entity)
     end
@@ -333,9 +385,11 @@ defmodule AlertProcessor.InformedEntityFilterTest do
         route: "some route",
         origin: "some origin",
         destination: "some destination",
-        facility_types: [],
+        facility_types: []
       ]
+
       subscription = build(:subscription, subscription_details)
+
       informed_entity_details = [
         route_type: nil,
         direction_id: 1,
@@ -343,21 +397,25 @@ defmodule AlertProcessor.InformedEntityFilterTest do
         stop: nil,
         activities: nil
       ]
+
       informed_entity = build(:informed_entity, informed_entity_details)
       refute InformedEntityFilter.subscription_match?(subscription, informed_entity)
     end
 
     test "returns true with route match" do
       route = "some route"
+
       subscription_details = [
         route_type: 1,
         direction_id: 0,
         route: route,
         origin: "some origin",
         destination: "some destination",
-        facility_types: [],
+        facility_types: []
       ]
+
       subscription = build(:subscription, subscription_details)
+
       informed_entity_details = [
         route_type: nil,
         direction_id: nil,
@@ -365,6 +423,7 @@ defmodule AlertProcessor.InformedEntityFilterTest do
         stop: nil,
         activities: nil
       ]
+
       informed_entity = build(:informed_entity, informed_entity_details)
       assert InformedEntityFilter.subscription_match?(subscription, informed_entity)
     end
@@ -376,9 +435,11 @@ defmodule AlertProcessor.InformedEntityFilterTest do
         route: "some route",
         origin: "some origin",
         destination: "some destination",
-        facility_types: [],
+        facility_types: []
       ]
+
       subscription = build(:subscription, subscription_details)
+
       informed_entity_details = [
         route_type: nil,
         direction_id: nil,
@@ -386,21 +447,25 @@ defmodule AlertProcessor.InformedEntityFilterTest do
         stop: nil,
         activities: nil
       ]
+
       informed_entity = build(:informed_entity, informed_entity_details)
       refute InformedEntityFilter.subscription_match?(subscription, informed_entity)
     end
 
     test "returns true with stop match (on origin)" do
       stop = "some stop"
+
       subscription_details = [
         route_type: 1,
         direction_id: 0,
         route: "some route",
         origin: stop,
         destination: "some destination",
-        facility_types: [],
+        facility_types: []
       ]
+
       subscription = build(:subscription, subscription_details)
+
       informed_entity_details = [
         route_type: nil,
         direction_id: nil,
@@ -408,21 +473,25 @@ defmodule AlertProcessor.InformedEntityFilterTest do
         stop: stop,
         activities: nil
       ]
+
       informed_entity = build(:informed_entity, informed_entity_details)
       assert InformedEntityFilter.subscription_match?(subscription, informed_entity)
     end
 
     test "returns true with stop match (on destination)" do
       stop = "some stop"
+
       subscription_details = [
         route_type: 1,
         direction_id: 0,
         route: "some route",
         origin: "some origin",
         destination: stop,
-        facility_types: [],
+        facility_types: []
       ]
+
       subscription = build(:subscription, subscription_details)
+
       informed_entity_details = [
         route_type: nil,
         direction_id: nil,
@@ -430,6 +499,7 @@ defmodule AlertProcessor.InformedEntityFilterTest do
         stop: stop,
         activities: nil
       ]
+
       informed_entity = build(:informed_entity, informed_entity_details)
       assert InformedEntityFilter.subscription_match?(subscription, informed_entity)
     end
@@ -444,9 +514,11 @@ defmodule AlertProcessor.InformedEntityFilterTest do
         route: "Orange",
         origin: "place-sbmnl",
         destination: "place-astao",
-        facility_types: [],
+        facility_types: []
       ]
+
       subscription_1 = build(:subscription, subscription_details_1)
+
       informed_entity_details_1 = [
         route_type: nil,
         direction_id: nil,
@@ -454,6 +526,7 @@ defmodule AlertProcessor.InformedEntityFilterTest do
         stop: "place-bbsta",
         activities: ["RIDE"]
       ]
+
       informed_entity_1 = build(:informed_entity, informed_entity_details_1)
       assert InformedEntityFilter.subscription_match?(subscription_1, informed_entity_1)
 
@@ -464,9 +537,11 @@ defmodule AlertProcessor.InformedEntityFilterTest do
         route: "Orange",
         origin: "place-astao",
         destination: "place-sbmnl",
-        facility_types: [],
+        facility_types: []
       ]
+
       subscription_2 = build(:subscription, subscription_details_2)
+
       informed_entity_details_2 = [
         route_type: nil,
         direction_id: nil,
@@ -474,6 +549,7 @@ defmodule AlertProcessor.InformedEntityFilterTest do
         stop: "place-bbsta",
         activities: ["RIDE"]
       ]
+
       informed_entity_2 = build(:informed_entity, informed_entity_details_2)
       assert InformedEntityFilter.subscription_match?(subscription_2, informed_entity_2)
     end
@@ -488,9 +564,11 @@ defmodule AlertProcessor.InformedEntityFilterTest do
         route: "Red",
         origin: "place-alfcl",
         destination: "place-asmnl",
-        facility_types: [],
+        facility_types: []
       ]
+
       subscription_1 = build(:subscription, subscription_details_1)
+
       informed_entity_details_1 = [
         route_type: nil,
         direction_id: nil,
@@ -498,6 +576,7 @@ defmodule AlertProcessor.InformedEntityFilterTest do
         stop: "place-smmnl",
         activities: ["RIDE"]
       ]
+
       informed_entity_1 = build(:informed_entity, informed_entity_details_1)
       assert InformedEntityFilter.subscription_match?(subscription_1, informed_entity_1)
     end
@@ -512,9 +591,11 @@ defmodule AlertProcessor.InformedEntityFilterTest do
         route: "Red",
         origin: "place-alfcl",
         destination: "place-brntn",
-        facility_types: [],
+        facility_types: []
       ]
+
       subscription_1 = build(:subscription, subscription_details_1)
+
       informed_entity_details_1 = [
         route_type: nil,
         direction_id: nil,
@@ -522,6 +603,7 @@ defmodule AlertProcessor.InformedEntityFilterTest do
         stop: "place-qamnl",
         activities: ["RIDE"]
       ]
+
       informed_entity_1 = build(:informed_entity, informed_entity_details_1)
       assert InformedEntityFilter.subscription_match?(subscription_1, informed_entity_1)
     end
@@ -533,9 +615,11 @@ defmodule AlertProcessor.InformedEntityFilterTest do
         route: "some route",
         origin: "some origin",
         destination: "some destination",
-        facility_types: [],
+        facility_types: []
       ]
+
       subscription = build(:subscription, subscription_details)
+
       informed_entity_details = [
         route_type: 2,
         direction_id: nil,
@@ -544,6 +628,7 @@ defmodule AlertProcessor.InformedEntityFilterTest do
         activities: ["BOARD", "EXIT"],
         schedule: [%{stop_id: "some origin"}, %{stop_id: "some destination"}]
       ]
+
       informed_entity = build(:informed_entity, informed_entity_details)
       assert InformedEntityFilter.subscription_match?(subscription, informed_entity)
     end
@@ -555,9 +640,11 @@ defmodule AlertProcessor.InformedEntityFilterTest do
         route: "some route",
         origin: "some origin",
         destination: "some destination",
-        facility_types: [],
+        facility_types: []
       ]
+
       subscription = build(:subscription, subscription_details)
+
       informed_entity_details = [
         route_type: nil,
         direction_id: nil,
@@ -565,11 +652,12 @@ defmodule AlertProcessor.InformedEntityFilterTest do
         stop: "some stop that is not origin or destination",
         activities: nil
       ]
+
       informed_entity = build(:informed_entity, informed_entity_details)
       refute InformedEntityFilter.subscription_match?(subscription, informed_entity)
     end
 
-   test "returns false with stop mismatch (bus subscription and BOARD activity)" do
+    test "returns false with stop mismatch (bus subscription and BOARD activity)" do
       # Bus subscriptions don't have an origin and destination
       subscription_details = [
         route_type: 3,
@@ -577,9 +665,11 @@ defmodule AlertProcessor.InformedEntityFilterTest do
         route: "some route",
         origin: nil,
         destination: nil,
-        facility_types: [],
+        facility_types: []
       ]
+
       subscription = build(:subscription, subscription_details)
+
       informed_entity_details = [
         route_type: nil,
         direction_id: nil,
@@ -587,6 +677,7 @@ defmodule AlertProcessor.InformedEntityFilterTest do
         stop: "some stop",
         activities: ["BOARD"]
       ]
+
       informed_entity = build(:informed_entity, informed_entity_details)
       refute InformedEntityFilter.subscription_match?(subscription, informed_entity)
     end
@@ -599,9 +690,11 @@ defmodule AlertProcessor.InformedEntityFilterTest do
         route: "some route",
         origin: nil,
         destination: nil,
-        facility_types: [],
+        facility_types: []
       ]
+
       subscription = build(:subscription, subscription_details)
+
       informed_entity_details = [
         route_type: nil,
         direction_id: nil,
@@ -609,6 +702,7 @@ defmodule AlertProcessor.InformedEntityFilterTest do
         stop: "some stop",
         activities: ["EXIT"]
       ]
+
       informed_entity = build(:informed_entity, informed_entity_details)
       refute InformedEntityFilter.subscription_match?(subscription, informed_entity)
     end
@@ -620,9 +714,11 @@ defmodule AlertProcessor.InformedEntityFilterTest do
         route: "some route",
         origin: "some origin",
         destination: "some stop",
-        facility_types: [],
+        facility_types: []
       ]
+
       subscription = build(:subscription, subscription_details)
+
       informed_entity_details = [
         route_type: 2,
         direction_id: nil,
@@ -631,6 +727,7 @@ defmodule AlertProcessor.InformedEntityFilterTest do
         activities: nil,
         schedule: [%{stop_id: "some other stop"}]
       ]
+
       informed_entity = build(:informed_entity, informed_entity_details)
       refute InformedEntityFilter.subscription_match?(subscription, informed_entity)
     end
@@ -644,9 +741,11 @@ defmodule AlertProcessor.InformedEntityFilterTest do
         route: "some route",
         origin: "some origin",
         destination: "some destination",
-        facility_types: [],
+        facility_types: []
       ]
+
       subscription = build(:subscription, subscription_details)
+
       informed_entity_details = [
         route_type: 2,
         direction_id: nil,
@@ -655,6 +754,7 @@ defmodule AlertProcessor.InformedEntityFilterTest do
         activities: nil,
         schedule: [%{stop_id: "some origin"}]
       ]
+
       informed_entity = build(:informed_entity, informed_entity_details)
       refute InformedEntityFilter.subscription_match?(subscription, informed_entity)
     end
@@ -670,9 +770,11 @@ defmodule AlertProcessor.InformedEntityFilterTest do
         route: "Red",
         origin: "place-alfcl",
         destination: "place-portr",
-        facility_types: [],
+        facility_types: []
       ]
+
       subscription = build(:subscription, subscription_details)
+
       informed_entity_details = [
         route_type: nil,
         direction_id: nil,
@@ -680,6 +782,7 @@ defmodule AlertProcessor.InformedEntityFilterTest do
         stop: "place-harsq",
         activities: ["RIDE"]
       ]
+
       informed_entity = build(:informed_entity, informed_entity_details)
       refute InformedEntityFilter.subscription_match?(subscription, informed_entity)
     end
@@ -694,9 +797,11 @@ defmodule AlertProcessor.InformedEntityFilterTest do
         route: "Red",
         origin: "Alewife",
         destination: "Porter",
-        facility_types: [],
+        facility_types: []
       ]
+
       subscription = build(:subscription, subscription_details)
+
       informed_entity_details = [
         route_type: nil,
         direction_id: nil,
@@ -704,6 +809,7 @@ defmodule AlertProcessor.InformedEntityFilterTest do
         stop: "Davis",
         activities: ["BOARD"]
       ]
+
       informed_entity = build(:informed_entity, informed_entity_details)
       refute InformedEntityFilter.subscription_match?(subscription, informed_entity)
     end
@@ -713,15 +819,18 @@ defmodule AlertProcessor.InformedEntityFilterTest do
       # activities includes "BOARD" and it's stop equals the subscription's
       # origin value. It can also happen if the informed_entity's stop is nil.
       stop = "some stop"
+
       subscription_details = [
         route_type: 1,
         direction_id: 0,
         route: "some route",
         origin: stop,
         destination: "some destination",
-        facility_types: [],
+        facility_types: []
       ]
+
       subscription = build(:subscription, subscription_details)
+
       informed_entity_details = [
         route_type: nil,
         direction_id: nil,
@@ -729,6 +838,7 @@ defmodule AlertProcessor.InformedEntityFilterTest do
         stop: stop,
         activities: ["BOARD"]
       ]
+
       informed_entity = build(:informed_entity, informed_entity_details)
       assert InformedEntityFilter.subscription_match?(subscription, informed_entity)
     end
@@ -738,15 +848,18 @@ defmodule AlertProcessor.InformedEntityFilterTest do
       # activities includes "BOARD" and it's stop equals the subscription's
       # origin value. It can also happen if the informed_entity's stop is nil.
       stop = "some stop"
+
       subscription_details = [
         route_type: 1,
         direction_id: 0,
         route: "some route",
         origin: stop,
         destination: "some destination",
-        facility_types: [],
+        facility_types: []
       ]
+
       subscription = build(:subscription, subscription_details)
+
       informed_entity_details = [
         route_type: nil,
         direction_id: nil,
@@ -754,6 +867,7 @@ defmodule AlertProcessor.InformedEntityFilterTest do
         stop: nil,
         activities: ["BOARD"]
       ]
+
       informed_entity = build(:informed_entity, informed_entity_details)
       assert InformedEntityFilter.subscription_match?(subscription, informed_entity)
     end
@@ -764,15 +878,18 @@ defmodule AlertProcessor.InformedEntityFilterTest do
       # origin or destination value. It can also happen if the
       # informed_entity's stop is nil.
       stop = "some stop"
+
       subscription_details = [
         route_type: 1,
         direction_id: 0,
         route: "some route",
         origin: stop,
         destination: "some destination",
-        facility_types: [],
+        facility_types: []
       ]
+
       subscription = build(:subscription, subscription_details)
+
       informed_entity_details = [
         route_type: nil,
         direction_id: nil,
@@ -780,6 +897,7 @@ defmodule AlertProcessor.InformedEntityFilterTest do
         stop: stop,
         activities: ["RIDE"]
       ]
+
       informed_entity = build(:informed_entity, informed_entity_details)
       assert InformedEntityFilter.subscription_match?(subscription, informed_entity)
     end
@@ -789,15 +907,18 @@ defmodule AlertProcessor.InformedEntityFilterTest do
       # activities but the stop match is on the subscription's destination.
       # This is not an activities match because users "EXIT" at destinations.
       stop = "some stop"
+
       subscription_details = [
         route_type: 1,
         direction_id: 0,
         route: "some route",
         origin: "some origin",
         destination: stop,
-        facility_types: [],
+        facility_types: []
       ]
+
       subscription = build(:subscription, subscription_details)
+
       informed_entity_details = [
         route_type: nil,
         direction_id: nil,
@@ -805,6 +926,7 @@ defmodule AlertProcessor.InformedEntityFilterTest do
         stop: stop,
         activities: ["BOARD"]
       ]
+
       informed_entity = build(:informed_entity, informed_entity_details)
       refute InformedEntityFilter.subscription_match?(subscription, informed_entity)
     end
@@ -814,15 +936,18 @@ defmodule AlertProcessor.InformedEntityFilterTest do
       # activities includes "EXIT" and it's stop equals the subscription's
       # destination value.
       stop = "some stop"
+
       subscription_details = [
         route_type: 1,
         direction_id: 0,
         route: "some route",
         origin: "some origin",
         destination: stop,
-        facility_types: [],
+        facility_types: []
       ]
+
       subscription = build(:subscription, subscription_details)
+
       informed_entity_details = [
         route_type: nil,
         direction_id: nil,
@@ -830,6 +955,7 @@ defmodule AlertProcessor.InformedEntityFilterTest do
         stop: stop,
         activities: ["EXIT"]
       ]
+
       informed_entity = build(:informed_entity, informed_entity_details)
       assert InformedEntityFilter.subscription_match?(subscription, informed_entity)
     end
@@ -839,15 +965,18 @@ defmodule AlertProcessor.InformedEntityFilterTest do
       # activities includes "EXIT" and it's stop equals the subscription's
       # destination value. It can also happen if the informed_entity's stop is nil.
       stop = "some stop"
+
       subscription_details = [
         route_type: 1,
         direction_id: 0,
         route: "some route",
         origin: "some origin",
         destination: stop,
-        facility_types: [],
+        facility_types: []
       ]
+
       subscription = build(:subscription, subscription_details)
+
       informed_entity_details = [
         route_type: nil,
         direction_id: nil,
@@ -855,6 +984,7 @@ defmodule AlertProcessor.InformedEntityFilterTest do
         stop: nil,
         activities: ["EXIT"]
       ]
+
       informed_entity = build(:informed_entity, informed_entity_details)
       assert InformedEntityFilter.subscription_match?(subscription, informed_entity)
     end
@@ -864,15 +994,18 @@ defmodule AlertProcessor.InformedEntityFilterTest do
       # activities but the stop match is on the subscription's origin.
       # This is not an activities match because users "BOARD" at origins.
       stop = "some stop"
+
       subscription_details = [
         route_type: 1,
         direction_id: 0,
         route: "some route",
         origin: stop,
         destination: "some destination",
-        facility_types: [],
+        facility_types: []
       ]
+
       subscription = build(:subscription, subscription_details)
+
       informed_entity_details = [
         route_type: nil,
         direction_id: nil,
@@ -880,6 +1013,7 @@ defmodule AlertProcessor.InformedEntityFilterTest do
         stop: stop,
         activities: ["EXIT"]
       ]
+
       informed_entity = build(:informed_entity, informed_entity_details)
       refute InformedEntityFilter.subscription_match?(subscription, informed_entity)
     end
@@ -891,9 +1025,11 @@ defmodule AlertProcessor.InformedEntityFilterTest do
         route: "some route",
         origin: "some origin",
         destination: "some destination",
-        facility_types: [:elevator],
+        facility_types: [:elevator]
       ]
+
       subscription = build(:subscription, subscription_details)
+
       informed_entity_details = [
         route_type: nil,
         direction_id: nil,
@@ -901,6 +1037,7 @@ defmodule AlertProcessor.InformedEntityFilterTest do
         stop: nil,
         activities: ["USING_WHEELCHAIR"]
       ]
+
       informed_entity = build(:informed_entity, informed_entity_details)
       assert InformedEntityFilter.subscription_match?(subscription, informed_entity)
     end
@@ -912,9 +1049,11 @@ defmodule AlertProcessor.InformedEntityFilterTest do
         route: "some route",
         origin: "some origin",
         destination: "some destination",
-        facility_types: [:escalator],
+        facility_types: [:escalator]
       ]
+
       subscription = build(:subscription, subscription_details)
+
       informed_entity_details = [
         route_type: nil,
         direction_id: nil,
@@ -922,6 +1061,7 @@ defmodule AlertProcessor.InformedEntityFilterTest do
         stop: nil,
         activities: ["USING_ESCALATOR"]
       ]
+
       informed_entity = build(:informed_entity, informed_entity_details)
       assert InformedEntityFilter.subscription_match?(subscription, informed_entity)
     end
@@ -933,9 +1073,11 @@ defmodule AlertProcessor.InformedEntityFilterTest do
         route: "some route",
         origin: "some origin",
         destination: "some destination",
-        facility_types: [:parking_area],
+        facility_types: [:parking_area]
       ]
+
       subscription = build(:subscription, subscription_details)
+
       informed_entity_details = [
         route_type: nil,
         direction_id: nil,
@@ -943,6 +1085,7 @@ defmodule AlertProcessor.InformedEntityFilterTest do
         stop: nil,
         activities: ["PARK_CAR"]
       ]
+
       informed_entity = build(:informed_entity, informed_entity_details)
       assert InformedEntityFilter.subscription_match?(subscription, informed_entity)
     end
@@ -954,9 +1097,11 @@ defmodule AlertProcessor.InformedEntityFilterTest do
         route: "some route",
         origin: "some origin",
         destination: "some destination",
-        facility_types: [:bike_storage],
+        facility_types: [:bike_storage]
       ]
+
       subscription = build(:subscription, subscription_details)
+
       informed_entity_details = [
         route_type: nil,
         direction_id: nil,
@@ -964,6 +1109,7 @@ defmodule AlertProcessor.InformedEntityFilterTest do
         stop: nil,
         activities: ["STORE_BIKE"]
       ]
+
       informed_entity = build(:informed_entity, informed_entity_details)
       assert InformedEntityFilter.subscription_match?(subscription, informed_entity)
     end
@@ -974,12 +1120,14 @@ defmodule AlertProcessor.InformedEntityFilterTest do
         route_type: nil,
         direction_id: nil,
         route: "some route",
-        origin:  nil,
+        origin: nil,
         destination: nil,
         facility_types: [:elevator],
         type: :accessibility
       ]
+
       subscription = build(:subscription, subscription_details)
+
       informed_entity_details = [
         route_type: nil,
         direction_id: nil,
@@ -987,6 +1135,7 @@ defmodule AlertProcessor.InformedEntityFilterTest do
         stop: nil,
         activities: ["BOARD"]
       ]
+
       informed_entity = build(:informed_entity, informed_entity_details)
       refute InformedEntityFilter.subscription_match?(subscription, informed_entity)
     end
@@ -1002,7 +1151,9 @@ defmodule AlertProcessor.InformedEntityFilterTest do
         facility_types: [:elevator],
         type: :accessibility
       ]
+
       subscription = build(:subscription, subscription_details)
+
       informed_entity_details = [
         route_type: nil,
         direction_id: nil,
@@ -1010,6 +1161,7 @@ defmodule AlertProcessor.InformedEntityFilterTest do
         stop: nil,
         activities: ["EXIT"]
       ]
+
       informed_entity = build(:informed_entity, informed_entity_details)
       refute InformedEntityFilter.subscription_match?(subscription, informed_entity)
     end
@@ -1025,15 +1177,18 @@ defmodule AlertProcessor.InformedEntityFilterTest do
       # but the alert's informed_entity doesn't.
       #
       stop = "some stop"
+
       subscription_details = [
         route_type: nil,
         direction_id: nil,
         route: nil,
         origin: stop,
         destination: stop,
-        facility_types: [:bike_storage],
+        facility_types: [:bike_storage]
       ]
+
       subscription = build(:subscription, subscription_details)
+
       informed_entity_details = [
         route_type: 1,
         direction_id: 0,
@@ -1041,6 +1196,7 @@ defmodule AlertProcessor.InformedEntityFilterTest do
         stop: stop,
         activities: ["STORE_BIKE"]
       ]
+
       informed_entity = build(:informed_entity, informed_entity_details)
       assert InformedEntityFilter.subscription_match?(subscription, informed_entity)
     end
@@ -1051,15 +1207,18 @@ defmodule AlertProcessor.InformedEntityFilterTest do
       #   * origin and it's destination are equal
       #
       stop = "some stop"
+
       subscription_details = [
         route_type: nil,
         direction_id: nil,
         route: nil,
         origin: stop,
         destination: stop,
-        facility_types: [:bike_storage],
+        facility_types: [:bike_storage]
       ]
+
       subscription = build(:subscription, subscription_details)
+
       informed_entity_details = [
         route_type: nil,
         direction_id: nil,
@@ -1067,6 +1226,7 @@ defmodule AlertProcessor.InformedEntityFilterTest do
         stop: stop,
         activities: ["USING_ESCALATOR"]
       ]
+
       informed_entity = build(:informed_entity, informed_entity_details)
       refute InformedEntityFilter.subscription_match?(subscription, informed_entity)
     end
@@ -1077,6 +1237,7 @@ defmodule AlertProcessor.InformedEntityFilterTest do
       #   * origin and it's destination are equal
       #
       stop = "some stop"
+
       subscription_details = [
         route_type: nil,
         direction_id: nil,
@@ -1086,7 +1247,9 @@ defmodule AlertProcessor.InformedEntityFilterTest do
         facility_types: [:bike_storage],
         type: :accessibility
       ]
+
       subscription = build(:subscription, subscription_details)
+
       informed_entity_details = [
         route_type: nil,
         direction_id: nil,
@@ -1094,6 +1257,7 @@ defmodule AlertProcessor.InformedEntityFilterTest do
         stop: stop,
         activities: ["BOARD"]
       ]
+
       informed_entity = build(:informed_entity, informed_entity_details)
       refute InformedEntityFilter.subscription_match?(subscription, informed_entity)
     end
@@ -1104,15 +1268,18 @@ defmodule AlertProcessor.InformedEntityFilterTest do
       #   * origin and it's destination are equal
       #
       stop = "some stop"
+
       subscription_details = [
         route_type: nil,
         direction_id: nil,
         route: nil,
         origin: stop,
         destination: stop,
-        facility_types: [:bike_storage],
+        facility_types: [:bike_storage]
       ]
+
       subscription = build(:subscription, subscription_details)
+
       informed_entity_details = [
         route_type: nil,
         direction_id: nil,
@@ -1120,6 +1287,7 @@ defmodule AlertProcessor.InformedEntityFilterTest do
         stop: stop,
         activities: ["EXIT"]
       ]
+
       informed_entity = build(:informed_entity, informed_entity_details)
       refute InformedEntityFilter.subscription_match?(subscription, informed_entity)
     end
@@ -1135,9 +1303,11 @@ defmodule AlertProcessor.InformedEntityFilterTest do
         route: nil,
         origin: "some stop",
         destination: "some stop",
-        facility_types: [:escalator],
+        facility_types: [:escalator]
       ]
+
       subscription = build(:subscription, subscription_details)
+
       informed_entity_details = [
         route_type: nil,
         direction_id: nil,
@@ -1145,6 +1315,7 @@ defmodule AlertProcessor.InformedEntityFilterTest do
         stop: "some other stop",
         activities: ["USING_ESCALATOR"]
       ]
+
       informed_entity = build(:informed_entity, informed_entity_details)
       refute InformedEntityFilter.subscription_match?(subscription, informed_entity)
     end
@@ -1158,11 +1329,13 @@ defmodule AlertProcessor.InformedEntityFilterTest do
         route_type: nil,
         direction_id: nil,
         route: nil,
-        origin:  "some stop",
+        origin: "some stop",
         destination: "some stop",
-        facility_types: [:elevator],
+        facility_types: [:elevator]
       ]
+
       subscription = build(:subscription, subscription_details)
+
       informed_entity_details = [
         route_type: 1,
         direction_id: nil,
@@ -1170,6 +1343,7 @@ defmodule AlertProcessor.InformedEntityFilterTest do
         stop: nil,
         activities: ["USING_WHEELCHAIR"]
       ]
+
       informed_entity = build(:informed_entity, informed_entity_details)
       refute InformedEntityFilter.subscription_match?(subscription, informed_entity)
     end
@@ -1182,12 +1356,14 @@ defmodule AlertProcessor.InformedEntityFilterTest do
         route_type: nil,
         direction_id: nil,
         route: "Red",
-        origin:  nil,
+        origin: nil,
         destination: nil,
         facility_types: [:elevator],
         type: :accessibility
       ]
+
       subscription = build(:subscription, subscription_details)
+
       informed_entity_details = [
         route_type: 1,
         direction_id: nil,
@@ -1195,6 +1371,7 @@ defmodule AlertProcessor.InformedEntityFilterTest do
         stop: "place-harsq",
         activities: ["USING_WHEELCHAIR"]
       ]
+
       informed_entity = build(:informed_entity, informed_entity_details)
       assert InformedEntityFilter.subscription_match?(subscription, informed_entity)
     end
