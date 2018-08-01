@@ -569,4 +569,46 @@ defmodule ConciergeSite.TripControllerTest do
       assert html_response(conn, 302) =~ "redirected"
     end
   end
+
+  test "PATCH /trips/:trip_id/pause", %{conn: conn, user: user} do
+    trip = insert(:trip, %{user: user})
+
+    insert(:subscription, %{
+      trip_id: trip.id,
+      type: :cr,
+      origin: "Readville",
+      destination: "Newmarket",
+      route: "CR-Fairmount",
+      user_id: user.id,
+      paused: false
+    })
+
+    conn =
+      user
+      |> guardian_login(conn)
+      |> patch("/trips/#{trip.id}/pause")
+
+    assert html_response(conn, 302) =~ "redirected"
+  end
+
+  test "PATCH /trips/:trip_id/resume", %{conn: conn, user: user} do
+    trip = insert(:trip, %{user: user})
+
+    insert(:subscription, %{
+      trip_id: trip.id,
+      type: :cr,
+      origin: "Readville",
+      destination: "Newmarket",
+      route: "CR-Fairmount",
+      user_id: user.id,
+      paused: true
+    })
+
+    conn =
+      user
+      |> guardian_login(conn)
+      |> patch("/trips/#{trip.id}/resume")
+
+    assert html_response(conn, 302) =~ "redirected"
+  end
 end

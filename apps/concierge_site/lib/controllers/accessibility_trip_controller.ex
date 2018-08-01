@@ -1,6 +1,7 @@
 defmodule ConciergeSite.AccessibilityTripController do
   use ConciergeSite.Web, :controller
   use Guardian.Phoenix.Controller
+  import Phoenix.HTML.Link
   alias AlertProcessor.Model.{Trip, Subscription, User}
   alias ConciergeSite.ParamParsers.TripParams
   alias Ecto.Multi
@@ -26,7 +27,9 @@ defmodule ConciergeSite.AccessibilityTripController do
     with {:trip, %Trip{} = trip} <- {:trip, Trip.find_by_id(id)},
          {:authorized, true} <- {:authorized, user.id == trip.user_id},
          {:changeset, changeset} <- {:changeset, Trip.update_changeset(trip)} do
-      render(conn, "edit.html", trip: trip, changeset: changeset)
+      conn
+      |> message_if_paused(trip)
+      |> render("edit.html", trip: trip, changeset: changeset)
     else
       {:trip, nil} ->
         {:error, :not_found}
@@ -249,5 +252,21 @@ defmodule ConciergeSite.AccessibilityTripController do
       facility_types: trip.facility_types,
       return_trip: false
     }
+  end
+
+  defp message_if_paused(conn, %Trip{} = trip) do
+    if Trip.paused?(trip) do
+      put_flash(
+        conn,
+        :warning,
+        [
+          "This subscription is currently paused. You can resume alerts on your ",
+          link("subscriptions", to: trip_path(conn, :index)),
+          " page."
+        ]
+      )
+    else
+      conn
+    end
   end
 end

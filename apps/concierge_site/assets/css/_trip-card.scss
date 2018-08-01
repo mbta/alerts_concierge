@@ -2,23 +2,100 @@
   display: block;
   line-height: 1.5rem;
   padding: 0;
-  border-color: $steel;
-  color: $black !important;
+  border: 0;
+  color: $black;
   text-align: left;
   white-space: normal;
+
+  &.paused {
+    color: rgba($black, .4);
+  }
+}
+
+.trip__card--top {
+  background-color: $white;
+  border-top: 1px solid $steel;
+  border-right: 1px solid $steel;
+  border-left: 1px solid $steel;
+  border-radius: .25rem .25rem 0 0;
+  padding: .75rem;
+
+  .paused & {
+    border-top-color: rgba($steel, .4);
+    border-right-color: rgba($steel, .4);
+    border-left-color: rgba($steel, .4);
+  }
+}
+
+.trip__card--top-details {
+  padding-top: .5rem;
+}
+
+.trip__card--bottom {
+  border-top: 1px solid $pale-grey;
+  border-right: 1px solid $steel;
+  border-left: 1px solid $steel;
+  padding: .75rem;
+
+  .paused & {
+    border-right-color: rgba($steel, .4);
+    border-left-color: rgba($steel, .4);
+  }
+}
+
+.trip__card--footer {
+  border: 1px solid $steel;
+  border-radius: 0 0 .25rem .25rem;
+  display: flex;
+
+  a {
+    border-right: 1px solid $steel;
+    cursor: pointer;
+    display: block;
+    flex: 1 1 auto;
+    padding: 0.585rem 0.75rem;
+    text-align: center;
+
+    &:last-child {
+      border-right: 0;
+    }
+
+    &:hover,
+    &:active,
+    &:focus {
+      text-decoration: none;
+    }
+
+    .fa {
+      margin-left: 0.5em;
+    }
+  }
+}
+
+.trip__card--delete-link {
+  color: $brand-danger;
 
   &:hover,
   &:active,
   &:focus {
-    color: $black;
-    text-decoration: none;
+    background-color: $brand-danger;
+    color: #fff;
   }
 }
 
-.trip__card--route {
-  font-weight: bold;
-  overflow-x: hidden;
-  text-overflow: ellipsis;
+.trip__card--edit-link,
+.trip__card--pause-link {
+  color: $brand-primary;
+
+  &:hover,
+  &:active,
+  &:focus {
+    background-color: $light-blue;
+  }
+}
+
+.trip__card--pause-link {
+  min-width: 6.3em;
 }
 
 .trip__card--route-container {
@@ -31,16 +108,33 @@
   }
 }
 
+.trip__card--route {
+  font-weight: bold;
+  overflow-x: hidden;
+  text-overflow: ellipsis;
+}
+
 .trip__card--route-icon {
   display: inline-block;
   margin-right: 4px;
   transform: translate(0px, 4px);
+
+  .paused & {
+    opacity: 0.4;
+  }
 }
 
 .trip__card--type,
 .trip__card--times {
   overflow-x: hidden;
   text-overflow: ellipsis;
+}
+
+.trip__card--btn {
+  display: flex;
+  justify-content: center;
+  flex-direction: column;
+  text-align: center;
 }
 
 .trip__card--container {
@@ -53,73 +147,4 @@
   &:last-child {
     padding-bottom: 1rem;
   }
-}
-
-.trip__card--edit-link {
-  float: right;
-  color: $brand-primary;
-}
-
-.trip__card--delete-link {
-  float: right;
-  color: $brand-danger;
-}
-
-.trip__editpage .trip__card--edit-link,
-.trip__editpage .trip__card--delete-link {
-  display: none;
-}
-
-.trip__card--display {
-  cursor: auto !important;
-
-  &:hover {
-    background-color: #fff !important;
-  }
-}
-
-.trip__card--btn {
-  display: flex;
-  justify-content: center;
-  flex-direction: column;
-  text-align: center;
-}
-
-.trip__card--bottom {
-  border-top: 1px solid $pale-grey;
-  padding: .75rem;
-  border-radius: 0 0 .25rem .25rem;
-}
-
-.trip__card--top {
-  padding: .75rem;
-  border-radius: .25rem .25rem 0 0;
-  background-color: $white;
-}
-
-.trip__card--top-details {
-  padding-top: .5rem;
-}
-
-.trip__card {
-  &:hover {
-    .trip__card--bottom {
-      background-color: $light-blue;
-    }
-  }
-}
-
-.trip__editpage {
-  .trip__card {
-    &:hover {
-      .trip__card--bottom {
-        background-color: $white;
-      }
-    }
-  }
-}
-
-.trip__editpage {
-  border-bottom: 1px solid $pale-grey;
-  padding-bottom: 2.5rem;
 }

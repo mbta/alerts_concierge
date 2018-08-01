@@ -12,6 +12,7 @@ defmodule ConciergeSite.TripCardHelperTest do
         relevant_days: [:monday],
         start_time: ~T[09:00:00],
         end_time: ~T[10:00:00],
+        facility_types: [:elevator],
         roundtrip: false
       }
 
@@ -101,7 +102,7 @@ defmodule ConciergeSite.TripCardHelperTest do
       refute html =~ "Round-trip"
       assert html =~ "Mon"
       assert html =~ "9:00A - 10:00A"
-      assert html =~ "<div class=\"card trip__card btn"
+      assert html =~ "<div class=\"card trip__card"
 
       trip_all_weekdays = %{
         trip_with_subscriptions
@@ -115,7 +116,11 @@ defmodule ConciergeSite.TripCardHelperTest do
       html = Phoenix.HTML.safe_to_string(TripCardHelper.render(conn, trip_all_weekends))
       assert html =~ "Weekends"
 
-      trip_all_days = %{trip_with_subscriptions | relevant_days: [:monday, :tuesday, :wednesday, :thursday, :friday, :saturday, :sunday]}
+      trip_all_days = %{
+        trip_with_subscriptions
+        | relevant_days: [:monday, :tuesday, :wednesday, :thursday, :friday, :saturday, :sunday]
+      }
+
       html = Phoenix.HTML.safe_to_string(TripCardHelper.render(conn, trip_all_days))
       assert html =~ "Every day"
 
@@ -157,7 +162,7 @@ defmodule ConciergeSite.TripCardHelperTest do
       assert html =~ "Mon, Tue"
       assert html =~ "Station features"
       assert html =~ "Elevators"
-      assert html =~ "<div class=\"card trip__card btn"
+      assert html =~ "<div class=\"card trip__card"
 
       trip_escalator = %{trip_with_subscriptions | facility_types: [:escalator]}
       html = Phoenix.HTML.safe_to_string(TripCardHelper.render(conn, trip_escalator))
@@ -168,7 +173,7 @@ defmodule ConciergeSite.TripCardHelperTest do
       assert html =~ "Elevators, Escalators"
 
       html = Phoenix.HTML.safe_to_string(TripCardHelper.display(conn, trip_with_subscriptions))
-      assert html =~ "<div class=\"card trip__card trip__card--display btn"
+      assert html =~ "<div class=\"card trip__card trip__card--display"
     end
   end
 

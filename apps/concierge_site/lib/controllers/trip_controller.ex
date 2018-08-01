@@ -1,6 +1,7 @@
 defmodule ConciergeSite.TripController do
   use ConciergeSite.Web, :controller
   use Guardian.Phoenix.Controller
+  import Phoenix.HTML.Link
   alias AlertProcessor.Repo
   alias AlertProcessor.Model.{Trip, Subscription, User}
   alias AlertProcessor.ServiceInfoCache
@@ -60,8 +61,9 @@ defmodule ConciergeSite.TripController do
       schedules = Schedule.get_schedules_for_trip(trip.subscriptions, false)
       return_schedules = Schedule.get_schedules_for_trip(trip.subscriptions, true)
 
-      render(
-        conn,
+      conn
+      |> message_if_paused(trip)
+      |> render(
         "edit.html",
         trip: trip,
         changeset: changeset,
@@ -276,6 +278,32 @@ defmodule ConciergeSite.TripController do
          {:ok, %Trip{}} <- Trip.delete(trip) do
       conn
       |> put_flash(:info, "Subscription deleted.")
+      |> redirect(to: trip_path(conn, :index))
+    else
+      _ ->
+        {:error, :not_found}
+    end
+  end
+
+  def pause(conn, %{"trip_id" => id}, user, __claims) do
+    with %Trip{} = trip <- Trip.find_by_id(id),
+         {:authorized, true} <- {:authorized, user.id == trip.user_id},
+         :ok <- Trip.pause(trip, user.id) do
+      conn
+      |> put_flash(:info, "Subscription paused.")
+      |> redirect(to: trip_path(conn, :index))
+    else
+      _ ->
+        {:error, :not_found}
+    end
+  end
+
+  def resume(conn, %{"trip_id" => id}, user, __claims) do
+    with %Trip{} = trip <- Trip.find_by_id(id),
+         {:authorized, true} <- {:authorized, user.id == trip.user_id},
+         :ok <- Trip.resume(trip, user.id) do
+      conn
+      |> put_flash(:info, "Subscription resumed.")
       |> redirect(to: trip_path(conn, :index))
     else
       _ ->
@@ -565,6 +593,22 @@ defmodule ConciergeSite.TripController do
     with {:ok, %{headsigns: headsigns}} <-
            ServiceInfoCache.get_route(String.replace_suffix(route_id, " - 1", "")) do
       headsigns
+    end
+  end
+
+  defp message_if_paused(conn, %Trip{} = trip) do
+    if Trip.paused?(trip) do
+      put_flash(
+        conn,
+        :warning,
+        [
+          "This subscription is currently paused. You can resume alerts on your ",
+          link("subscriptions", to: trip_path(conn, :index)),
+          " page."
+        ]
+      )
+    else
+      conn
     end
   end
 end

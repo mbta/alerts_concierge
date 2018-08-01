@@ -9,6 +9,7 @@ first_trip_label = if @trip.roundtrip == true, do: "First trip", else: "Starting
 
 <h1 class="heading__title">Edit subscription</h1>
 <%= flash_error(@conn) %>
+<%= flash_warning(@conn) %>
 <%= flash_info(@conn) %>
 
 <div class="container container__inner">
