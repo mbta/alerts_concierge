@@ -100,7 +100,6 @@ defmodule ConciergeSite.Router do
     resources "/trip", TripController, only: [:new, :create], singleton: true do
       post("/leg", TripController, :leg)
       post("/times", TripController, :times)
-      get("/type", TripController, :type)
     end
 
     resources(
