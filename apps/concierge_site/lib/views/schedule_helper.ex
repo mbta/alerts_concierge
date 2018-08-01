@@ -3,7 +3,13 @@ defmodule ConciergeSite.ScheduleHelper do
   import ConciergeSite.TimeHelper, only: [format_time_string: 2, time_to_string: 1]
 
   @spec render(map, String.t(), String.t(), map) :: Phoenix.HTML.safe()
-  def render(schedules, start_field_id, end_field_id, travel_times \\ %{}) do
+  def render(
+        schedules,
+        start_field_id,
+        end_field_id,
+        travel_times \\ %{},
+        pose_as_question? \\ false
+      ) do
     id = id(start_field_id)
 
     content_tag :div,
@@ -11,7 +17,7 @@ defmodule ConciergeSite.ScheduleHelper do
       class: "schedules__container",
       data: [type: "schedule-viewer", start: start_field_id, end: end_field_id] do
       for {{mode, route_id}, schedule} <- schedules do
-        do_route_schedule(mode, id, schedule, Map.get(travel_times, route_id))
+        do_route_schedule(mode, id, schedule, Map.get(travel_times, route_id), pose_as_question?)
       end
     end
   end
@@ -19,14 +25,18 @@ defmodule ConciergeSite.ScheduleHelper do
   defp id("trip_start_time"), do: "schedule_start"
   defp id("trip_return_start_time"), do: "schedule_return"
 
-  defp do_route_schedule(mode, id, schedule, travel_times) do
+  defp do_route_schedule(mode, id, schedule, travel_times, pose_as_question?) do
     [
       content_tag :div,
         class: "schedules__trips--leg",
         data: [type: "schedule-leg"] ++ selected_travel_times(travel_times) do
         [
           content_tag :p, class: "schedules__header" do
-            "I take these #{header(mode)}:"
+            if pose_as_question? do
+              "Which #{header(mode)} would you like alerts about?"
+            else
+              "I take these #{header(mode)}:"
+            end
           end,
           content_tag :p, class: "schedules__blankslate" do
             "#{blank_slate(mode)}"

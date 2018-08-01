@@ -1,5 +1,7 @@
+<% label_copy = assigns[:label] || "I want alerts about these station features:" %>
+
 <div class="form-group form__section">
-  <%= label @form, :elevator, "I want alerts about these station features:", class: "form__label" %>
+  <%= label @form, :elevator, label_copy, class: "form__label" %>
   <div class="btn-group btn-group-toggle btn__radio--toggle-container" data-toggle="buttons" role="radiogroup">
     <%= ConciergeSite.FacilitiesHelper.facility_checkbox(@form, @trip, :elevator, "Elevators") %>
     <%= ConciergeSite.FacilitiesHelper.facility_checkbox(@form, @trip, :escalator, "Escalators") %>

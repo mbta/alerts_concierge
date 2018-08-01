@@ -1,8 +1,8 @@
 <%
 time_label = if @round_trip == "true" do
-  "Send me alerts for my first trip during these times:"
+  "When would you like to receive alerts about your first trip?"
 else
-  "Send me alerts during these times"
+  "When would you like to receive alerts about your trip?"
 end
 first_trip_padding_class = if @round_trip == "true", do: "", else: "form__section"
 %>
@@ -17,11 +17,11 @@ first_trip_padding_class = if @round_trip == "true", do: "", else: "form__sectio
     <div class="col-sm-12">
       <%= form_for @conn, trip_path(@conn, :create), [as: :trip, method: :post, id: "triptime-form"], fn form -> %>
         <div class="form-group form__section--top">
-          <%= label form, :days, "I usually take this trip on these days:", class: "form__label" %>
+          <%= label form, :days, "What days do you take this trip?", class: "form__label" %>
           <%= ConciergeSite.DaySelectHelper.render(:trip, ["monday", "tuesday", "wednesday", "thursday", "friday", "weekdays"]) %>
         </div>
 
-        <%= render "_station_features.html", form: form, trip: %AlertProcessor.Model.Trip{} %>
+        <%= render "_station_features.html", form: form, trip: %AlertProcessor.Model.Trip{}, label: "Would you like alerts about any of these station features?" %>
 
         <div class="form-group <%= first_trip_padding_class %>">
           <%= if @round_trip == "true" do %>
@@ -36,13 +36,13 @@ first_trip_padding_class = if @round_trip == "true", do: "", else: "form__sectio
             <%= label form, :end_time, "Until", class: "form__label--inline" %>
             <%= ConciergeSite.TimeHelper.trip_time_select(form, :end_time, ~T[09:00:00]) %>
           </div>
-          <%= ConciergeSite.ScheduleHelper.render(@schedules, "trip_start_time", "trip_end_time") %>
+          <%= ConciergeSite.ScheduleHelper.render(@schedules, "trip_start_time", "trip_end_time", %{}, true) %>
         </div>
 
         <%= if @round_trip == "true" do %>
           <div class="form-group form__section my-5">
             <h3>Return trip</h3>
-            <span class="form__label">Send me alerts for my return trip during these times:</span>
+            <span class="form__label">When would you like to receive alerts about your return trip?</span>
             <div class="form-group form-inline form__group--inline">
               <%= label form, :return_start_time, "From", class: "form__label--inline" %>
               <%= ConciergeSite.TimeHelper.trip_time_select(form, :return_start_time, ~T[17:00:00]) %>
@@ -51,7 +51,7 @@ first_trip_padding_class = if @round_trip == "true", do: "", else: "form__sectio
               <%= label form, :return_end_time, "Until", class: "form__label--inline" %>
               <%= ConciergeSite.TimeHelper.trip_time_select(form, :return_end_time, ~T[18:00:00]) %>
             </div>
-            <%= ConciergeSite.ScheduleHelper.render(@return_schedules, "trip_return_start_time", "trip_return_end_time") %>
+            <%= ConciergeSite.ScheduleHelper.render(@return_schedules, "trip_return_start_time", "trip_return_end_time", %{}, true) %>
           </div>
         <% end %>
 
