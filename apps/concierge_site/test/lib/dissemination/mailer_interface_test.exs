@@ -20,7 +20,10 @@ defmodule ConciergeSite.Dissemination.MailerInterfaceTest do
         description: "There is a fire at south station so it is closed",
         alert: alert
       }
-      {:reply, sent_email, nil} = MailerInterface.handle_call({:send_notification_email, notification}, nil, nil)
+
+      {:reply, sent_email, nil} =
+        MailerInterface.handle_call({:send_notification_email, notification}, nil, nil)
+
       assert sent_email.to == [{nil, email}]
       assert sent_email.text_body =~ "Red line delay"
       assert sent_email.text_body =~ "Red line inbound from Alewife station closure"

@@ -11,9 +11,11 @@ defmodule AlertProcessor.Model.Subscription.SyncWithTripTest do
       trip_details = %{
         relevant_days: [:monday],
         start_time: ~T[12:00:00.000000],
-        end_time: ~T[12:30:00.000000],
+        end_time: ~T[12:30:00.000000]
       }
+
       trip = insert(:trip, trip_details)
+
       subscription_details = %{
         return_trip: false,
         relevant_days: [:tuesday],
@@ -21,6 +23,7 @@ defmodule AlertProcessor.Model.Subscription.SyncWithTripTest do
         end_time: ~T[11:30:00.000000],
         trip: trip
       }
+
       subscription = insert(:subscription, subscription_details)
 
       {:ok, %Subscription{}} = Subscription.sync_with_trip(subscription, trip)
@@ -37,9 +40,11 @@ defmodule AlertProcessor.Model.Subscription.SyncWithTripTest do
       trip_details = %{
         relevant_days: [:monday],
         return_start_time: ~T[15:00:00.000000],
-        return_end_time: ~T[15:30:00.000000],
+        return_end_time: ~T[15:30:00.000000]
       }
+
       trip = insert(:trip, trip_details)
+
       return_subscription_details = %{
         return_trip: true,
         relevant_days: [:tuesday],
@@ -47,6 +52,7 @@ defmodule AlertProcessor.Model.Subscription.SyncWithTripTest do
         end_time: ~T[11:30:00.000000],
         trip: trip
       }
+
       return_subscription = insert(:subscription, return_subscription_details)
 
       {:ok, %Subscription{}} = Subscription.sync_with_trip(return_subscription, trip)
@@ -59,4 +65,3 @@ defmodule AlertProcessor.Model.Subscription.SyncWithTripTest do
     end
   end
 end
-

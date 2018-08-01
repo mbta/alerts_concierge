@@ -49,6 +49,7 @@ defmodule ConciergeSite.TripReviewCardHelperTest do
         end_time: ~T[10:00:00],
         roundtrip: false
       }
+
       trip_with_subscriptions = %{
         trip
         | subscriptions: [

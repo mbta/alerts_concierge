@@ -3,5 +3,4 @@ defmodule ConciergeSite.RouteHelperTest do
   alias ConciergeSite.RouteHelper
 
   doctest RouteHelper
-
 end

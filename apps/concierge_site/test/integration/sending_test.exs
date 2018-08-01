@@ -47,7 +47,10 @@ defmodule ConciergeSite.Integration.Sending do
       insert(:subscription, Map.put(@subscription, :user_id, user.id))
       schedule_all_notifications([@alert], :anytime)
       {:ok, notification} = SendingQueue.pop()
-      {:reply, sent_email, nil} = MailerInterface.handle_call({:send_notification_email, notification}, nil, nil)
+
+      {:reply, sent_email, nil} =
+        MailerInterface.handle_call({:send_notification_email, notification}, nil, nil)
+
       assert sent_email.to == [{nil, user.email}]
     end
 

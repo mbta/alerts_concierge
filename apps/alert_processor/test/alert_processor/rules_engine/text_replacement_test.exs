@@ -18,15 +18,27 @@ defmodule AlertProcessor.TextReplacementTest do
         description: "test",
         informed_entities: []
       }
+
       subscription = %Subscription{}
 
       assert TextReplacement.replace_text!(alert, [subscription]) == alert
     end
 
     test "if user doesn't have matching subscription, return original text", %{user: user} do
-      sub = :subscription
-      |> build(user: user, alert_priority_type: :low, informed_entities: [%InformedEntity{route_type: 2, trip: "222", activities: InformedEntity.default_entity_activities()}])
-      |> weekday_subscription()
+      sub =
+        :subscription
+        |> build(
+          user: user,
+          alert_priority_type: :low,
+          informed_entities: [
+            %InformedEntity{
+              route_type: 2,
+              trip: "222",
+              activities: InformedEntity.default_entity_activities()
+            }
+          ]
+        )
+        |> weekday_subscription()
 
       alert = %Alert{
         header: "test",
@@ -51,7 +63,8 @@ defmodule AlertProcessor.TextReplacementTest do
 
       alert = %Alert{
         description: "Affected trips: Newburyport Train 180 (9:25 PM from Newburyport)",
-        header: "Newburyport Train 180 (9:25 pm from Newburyport) has departed Newburyport 20-40 minutes late and will operate at a reduced speed due to a mechanical issue.",
+        header:
+          "Newburyport Train 180 (9:25 pm from Newburyport) has departed Newburyport 20-40 minutes late and will operate at a reduced speed due to a mechanical issue.",
         id: "115346",
         informed_entities: [
           %InformedEntity{
@@ -60,15 +73,15 @@ defmodule AlertProcessor.TextReplacementTest do
             route_type: 2,
             schedule: [
               %{
-                 departure_time: "2017-10-30T21:25:00-04:00",
-                 stop_id: "Newburyport",
-                 trip_id: "CR-Weekday-Aug14th-17-NR-180"
-               },
-               %{
+                departure_time: "2017-10-30T21:25:00-04:00",
+                stop_id: "Newburyport",
+                trip_id: "CR-Weekday-Aug14th-17-NR-180"
+              },
+              %{
                 departure_time: "2017-10-30T22:17:00-04:00",
                 stop_id: "Chelsea",
                 trip_id: "CR-Weekday-Aug14th-17-NR-180"
-               },
+              },
               %{
                 departure_time: "2017-10-30T22:28:00-04:00",
                 stop_id: "North Station",
@@ -77,11 +90,12 @@ defmodule AlertProcessor.TextReplacementTest do
             ],
             trip: "180"
           }
-        ],
+        ]
       }
 
       expected = %{
-        header: "Newburyport Train 180 (22:17 pm from Chelsea) has departed Newburyport 20-40 minutes late and will operate at a reduced speed due to a mechanical issue.",
+        header:
+          "Newburyport Train 180 (22:17 pm from Chelsea) has departed Newburyport 20-40 minutes late and will operate at a reduced speed due to a mechanical issue.",
         description: "Affected trips: Newburyport Train 180 (22:17 pm from Chelsea)"
       }
 
@@ -102,7 +116,8 @@ defmodule AlertProcessor.TextReplacementTest do
 
       alert = %Alert{
         description: "Affected trips: Fairmount Train 752 (9:25 PM from Fairmount)",
-        header: "Fairmount Train 752 (9:25 pm from Fairmount) has departed Fairmount 20-40 minutes late and will operate at a reduced speed due to a mechanical issue.",
+        header:
+          "Fairmount Train 752 (9:25 pm from Fairmount) has departed Fairmount 20-40 minutes late and will operate at a reduced speed due to a mechanical issue.",
         id: "115346",
         informed_entities: [
           %InformedEntity{
@@ -111,15 +126,15 @@ defmodule AlertProcessor.TextReplacementTest do
             route_type: 2,
             schedule: [
               %{
-                 departure_time: "2017-10-30T21:25:00-04:00",
-                 stop_id: "Fairmount",
-                 trip_id: "CR-Weekday-Aug14th-17-NR-180"
-               },
-               %{
+                departure_time: "2017-10-30T21:25:00-04:00",
+                stop_id: "Fairmount",
+                trip_id: "CR-Weekday-Aug14th-17-NR-180"
+              },
+              %{
                 departure_time: "2017-10-30T22:17:00-04:00",
                 stop_id: "Four Corners / Geneva",
                 trip_id: "CR-Weekday-Aug14th-17-NR-180"
-               },
+              },
               %{
                 departure_time: "2017-10-30T22:28:00-04:00",
                 stop_id: "South Station",
@@ -128,17 +143,18 @@ defmodule AlertProcessor.TextReplacementTest do
             ],
             trip: "180"
           }
-        ],
+        ]
       }
 
       expected = %{
-        header: "Fairmount Train 752 (22:17 pm from Four Corners/Geneva) has departed Fairmount 20-40 minutes late and will operate at a reduced speed due to a mechanical issue.",
+        header:
+          "Fairmount Train 752 (22:17 pm from Four Corners/Geneva) has departed Fairmount 20-40 minutes late and will operate at a reduced speed due to a mechanical issue.",
         description: "Affected trips: Fairmount Train 752 (22:17 pm from Four Corners/Geneva)"
       }
 
       assert TextReplacement.replace_text!(alert, [sub]) == Map.merge(alert, expected)
     end
-    
+
     test "test that when an alert description contains multiple matches, only the first match is processed, Otherwise, the alerts text is duplicated." do
       sub = %Subscription{
         destination: "place-south",
@@ -153,11 +169,12 @@ defmodule AlertProcessor.TextReplacementTest do
 
       alert = %Alert{
         description: """
-Affected trips: Fairmount Train 752 (9:25 PM from Fairmount)
-Fairmount Train 753 (9:25 PM from Fairmount)
-Fairmount Train 754 (9:25 PM from Fairmount)
-""",
-        header: "Fairmount Train 752 (9:25 pm from Fairmount) has departed Fairmount 20-40 minutes late and will operate at a reduced speed due to a mechanical issue.",
+        Affected trips: Fairmount Train 752 (9:25 PM from Fairmount)
+        Fairmount Train 753 (9:25 PM from Fairmount)
+        Fairmount Train 754 (9:25 PM from Fairmount)
+        """,
+        header:
+          "Fairmount Train 752 (9:25 pm from Fairmount) has departed Fairmount 20-40 minutes late and will operate at a reduced speed due to a mechanical issue.",
         id: "115346",
         informed_entities: [
           %InformedEntity{
@@ -166,15 +183,15 @@ Fairmount Train 754 (9:25 PM from Fairmount)
             route_type: 2,
             schedule: [
               %{
-                 departure_time: "2017-10-30T21:25:00-04:00",
-                 stop_id: "Fairmount",
-                 trip_id: "CR-Weekday-Aug14th-17-NR-180"
-               },
-               %{
+                departure_time: "2017-10-30T21:25:00-04:00",
+                stop_id: "Fairmount",
+                trip_id: "CR-Weekday-Aug14th-17-NR-180"
+              },
+              %{
                 departure_time: "2017-10-30T22:17:00-04:00",
                 stop_id: "Four Corners / Geneva",
                 trip_id: "CR-Weekday-Aug14th-17-NR-180"
-               },
+              },
               %{
                 departure_time: "2017-10-30T22:28:00-04:00",
                 stop_id: "South Station",
@@ -183,12 +200,14 @@ Fairmount Train 754 (9:25 PM from Fairmount)
             ],
             trip: "180"
           }
-        ],
+        ]
       }
 
       expected = %{
-        header: "Fairmount Train 752 (22:17 pm from Four Corners/Geneva) has departed Fairmount 20-40 minutes late and will operate at a reduced speed due to a mechanical issue.",
-        description: "Affected trips: Fairmount Train 752 (22:17 pm from Four Corners/Geneva)\nFairmount Train 752 (22:17 pm from Four Corners/Geneva)\nFairmount Train 752 (22:17 pm from Four Corners/Geneva)\n"
+        header:
+          "Fairmount Train 752 (22:17 pm from Four Corners/Geneva) has departed Fairmount 20-40 minutes late and will operate at a reduced speed due to a mechanical issue.",
+        description:
+          "Affected trips: Fairmount Train 752 (22:17 pm from Four Corners/Geneva)\nFairmount Train 752 (22:17 pm from Four Corners/Geneva)\nFairmount Train 752 (22:17 pm from Four Corners/Geneva)\n"
       }
 
       assert TextReplacement.replace_text!(alert, [sub]) == Map.merge(alert, expected)
@@ -206,8 +225,9 @@ Fairmount Train 754 (9:25 PM from Fairmount)
     test "returns :error tuple with invalid hour" do
       alert = %Alert{
         header: "Newburyport Train 180 (25:25 pm from Newburyport)",
-        informed_entities: [%InformedEntity{route_type: 2}],
+        informed_entities: [%InformedEntity{route_type: 2}]
       }
+
       subscription = %Subscription{}
 
       assert {:error, _} = TextReplacement.replace_text(alert, [subscription])
@@ -226,10 +246,21 @@ Fairmount Train 754 (9:25 PM from Fairmount)
       third = "Lowell line 1234(11:20am from Lowell)"
       fourth = "Lowell line 123 (11:20am from Lowell)"
 
-      assert TextReplacement.parse_target(first) == %{0 => {{"12", "Lowell", ~T[11:20:00]}, first}}
-      assert TextReplacement.parse_target(second) == %{0 => {{"123", "Lowell", ~T[11:20:00]}, second}}
-      assert TextReplacement.parse_target(third) == %{0 => {{"1234", "Lowell", ~T[11:20:00]}, third}}
-      assert TextReplacement.parse_target(fourth) == %{0 => {{"123", "Lowell", ~T[11:20:00]}, fourth}}
+      assert TextReplacement.parse_target(first) == %{
+               0 => {{"12", "Lowell", ~T[11:20:00]}, first}
+             }
+
+      assert TextReplacement.parse_target(second) == %{
+               0 => {{"123", "Lowell", ~T[11:20:00]}, second}
+             }
+
+      assert TextReplacement.parse_target(third) == %{
+               0 => {{"1234", "Lowell", ~T[11:20:00]}, third}
+             }
+
+      assert TextReplacement.parse_target(fourth) == %{
+               0 => {{"123", "Lowell", ~T[11:20:00]}, fourth}
+             }
     end
 
     test "parses time with different AM/PM combinations" do
@@ -238,10 +269,21 @@ Fairmount Train 754 (9:25 PM from Fairmount)
       third = "Lowell line 12 (11:20 PM from Lowell)"
       fourth = "Lowell line 12 (11:20PM from Lowell)"
 
-      assert TextReplacement.parse_target(first) == %{0 => {{"12", "Lowell", ~T[11:20:00]}, first}}
-      assert TextReplacement.parse_target(second) == %{0 => {{"12", "Lowell", ~T[11:20:00]}, second}}
-      assert TextReplacement.parse_target(third) == %{0 => {{"12", "Lowell", ~T[23:20:00]}, third}}
-      assert TextReplacement.parse_target(fourth) == %{0 => {{"12", "Lowell", ~T[23:20:00]}, fourth}}
+      assert TextReplacement.parse_target(first) == %{
+               0 => {{"12", "Lowell", ~T[11:20:00]}, first}
+             }
+
+      assert TextReplacement.parse_target(second) == %{
+               0 => {{"12", "Lowell", ~T[11:20:00]}, second}
+             }
+
+      assert TextReplacement.parse_target(third) == %{
+               0 => {{"12", "Lowell", ~T[23:20:00]}, third}
+             }
+
+      assert TextReplacement.parse_target(fourth) == %{
+               0 => {{"12", "Lowell", ~T[23:20:00]}, fourth}
+             }
     end
 
     test "parses time for all hours of the day" do
@@ -269,7 +311,7 @@ Fairmount Train 754 (9:25 PM from Fairmount)
         "8:00pm" => ~T[20:00:00],
         "9:00pm" => ~T[21:00:00],
         "10:00pm" => ~T[22:00:00],
-        "11:00pm" => ~T[23:00:00],
+        "11:00pm" => ~T[23:00:00]
       }
 
       for hour <- 1..12, am_pm <- ["am", "pm"] do
@@ -286,19 +328,31 @@ Fairmount Train 754 (9:25 PM from Fairmount)
       third = "Lowell line 12 (11:20am from Anderson / Woburn)"
       fourth = "Lowell line 12 (11:20am from Anderson/ Woburn)"
 
-      assert TextReplacement.parse_target(first) == %{0 => {{"12", "Anderson/Woburn", ~T[11:20:00]}, first}}
-      assert TextReplacement.parse_target(second) == %{0 => {{"12", "Lowell", ~T[11:20:00]}, second}}
-      assert TextReplacement.parse_target(third) == %{0 => {{"12", "Anderson / Woburn", ~T[11:20:00]}, third}}
-      assert TextReplacement.parse_target(fourth) == %{0 => {{"12", "Anderson/ Woburn", ~T[11:20:00]}, fourth}}
+      assert TextReplacement.parse_target(first) == %{
+               0 => {{"12", "Anderson/Woburn", ~T[11:20:00]}, first}
+             }
+
+      assert TextReplacement.parse_target(second) == %{
+               0 => {{"12", "Lowell", ~T[11:20:00]}, second}
+             }
+
+      assert TextReplacement.parse_target(third) == %{
+               0 => {{"12", "Anderson / Woburn", ~T[11:20:00]}, third}
+             }
+
+      assert TextReplacement.parse_target(fourth) == %{
+               0 => {{"12", "Anderson/ Woburn", ~T[11:20:00]}, fourth}
+             }
     end
 
     test "parses multiple matches" do
-      text = "Lowell line 12 (11:20am from Anderson/Woburn) and Rockport line 456 (2:30pm from South Station)"
+      text =
+        "Lowell line 12 (11:20am from Anderson/Woburn) and Rockport line 456 (2:30pm from South Station)"
 
       assert TextReplacement.parse_target(text) == %{
-        0 => {{"12", "Anderson/Woburn", ~T[11:20:00]}, text},
-        1 => {{"456", "South Station", ~T[14:30:00]}, text}
-      }
+               0 => {{"12", "Anderson/Woburn", ~T[11:20:00]}, text},
+               1 => {{"456", "South Station", ~T[14:30:00]}, text}
+             }
     end
   end
 end

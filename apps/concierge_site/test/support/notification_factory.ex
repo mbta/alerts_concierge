@@ -39,7 +39,7 @@ defmodule ConciergeSite.NotificationFactory do
   defp earlier_push_notification(%Alert{last_push_notification: datetime}) do
     timestamp = DateTime.to_unix(datetime)
 
-    timestamp - 60 * 60 * 24
-    |> DateTime.from_unix!
+    (timestamp - 60 * 60 * 24)
+    |> DateTime.from_unix!()
   end
 end

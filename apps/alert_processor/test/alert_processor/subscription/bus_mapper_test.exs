@@ -12,7 +12,7 @@ defmodule AlertProcessor.Subscription.BusMapperTest do
     "return_start" => nil,
     "return_end" => nil,
     "alert_priority_type" => "low",
-    "trip_type" => "one_way",
+    "trip_type" => "one_way"
   }
 
   @round_trip_params %{
@@ -23,7 +23,7 @@ defmodule AlertProcessor.Subscription.BusMapperTest do
     "return_start" => ~T[18:00:00],
     "return_end" => ~T[20:00:00],
     "alert_priority_type" => "low",
-    "trip_type" => "round_trip",
+    "trip_type" => "round_trip"
   }
 
   describe "one way" do
@@ -46,29 +46,46 @@ defmodule AlertProcessor.Subscription.BusMapperTest do
 
     test "constructs subscription with route" do
       {:ok, [{_subscription, informed_entities}]} = BusMapper.map_subscription(@one_way_params)
+
       route_entity_count =
-        Enum.count(informed_entities, fn(informed_entity) ->
-          match?(%InformedEntity{route: "16", route_type: 3, stop: nil, direction_id: nil}, informed_entity)
+        Enum.count(informed_entities, fn informed_entity ->
+          match?(
+            %InformedEntity{route: "16", route_type: 3, stop: nil, direction_id: nil},
+            informed_entity
+          )
         end)
+
       assert route_entity_count == 1
+
       route_entity_count =
-        Enum.count(informed_entities, fn(informed_entity) ->
-          match?(%InformedEntity{route: "16", route_type: 3, stop: nil, direction_id: 0}, informed_entity)
+        Enum.count(informed_entities, fn informed_entity ->
+          match?(
+            %InformedEntity{route: "16", route_type: 3, stop: nil, direction_id: 0},
+            informed_entity
+          )
         end)
+
       assert route_entity_count == 0
+
       route_entity_count =
-        Enum.count(informed_entities, fn(informed_entity) ->
-          match?(%InformedEntity{route: "16", route_type: 3, stop: nil, direction_id: 1}, informed_entity)
+        Enum.count(informed_entities, fn informed_entity ->
+          match?(
+            %InformedEntity{route: "16", route_type: 3, stop: nil, direction_id: 1},
+            informed_entity
+          )
         end)
+
       assert route_entity_count == 1
     end
 
     test "constructs subscription with route type" do
       {:ok, [{_subscription, informed_entities}]} = BusMapper.map_subscription(@one_way_params)
+
       route_type_entity_count =
-        Enum.count(informed_entities, fn(informed_entity) ->
+        Enum.count(informed_entities, fn informed_entity ->
           match?(%InformedEntity{route: nil, route_type: 3}, informed_entity)
         end)
+
       assert route_type_entity_count == 1
     end
   end
@@ -98,67 +115,108 @@ defmodule AlertProcessor.Subscription.BusMapperTest do
 
     test "constructs subscription with route" do
       {:ok, [{_sub1, ie1}, {_sub2, ie2}]} = BusMapper.map_subscription(@round_trip_params)
+
       route_entity_count =
-        Enum.count(ie1, fn(informed_entity) ->
-          match?(%InformedEntity{route: "16", route_type: 3, stop: nil, direction_id: nil}, informed_entity)
+        Enum.count(ie1, fn informed_entity ->
+          match?(
+            %InformedEntity{route: "16", route_type: 3, stop: nil, direction_id: nil},
+            informed_entity
+          )
         end)
-      assert route_entity_count == 1
-      route_entity_count =
-        Enum.count(ie1, fn(informed_entity) ->
-          match?(%InformedEntity{route: "16", route_type: 3, stop: nil, direction_id: 0}, informed_entity)
-        end)
+
       assert route_entity_count == 1
 
       route_entity_count =
-        Enum.count(ie2, fn(informed_entity) ->
-          match?(%InformedEntity{route: "16", route_type: 3, stop: nil, direction_id: nil}, informed_entity)
+        Enum.count(ie1, fn informed_entity ->
+          match?(
+            %InformedEntity{route: "16", route_type: 3, stop: nil, direction_id: 0},
+            informed_entity
+          )
         end)
+
       assert route_entity_count == 1
+
       route_entity_count =
-        Enum.count(ie2, fn(informed_entity) ->
-          match?(%InformedEntity{route: "16", route_type: 3, stop: nil, direction_id: 1}, informed_entity)
+        Enum.count(ie2, fn informed_entity ->
+          match?(
+            %InformedEntity{route: "16", route_type: 3, stop: nil, direction_id: nil},
+            informed_entity
+          )
         end)
+
+      assert route_entity_count == 1
+
+      route_entity_count =
+        Enum.count(ie2, fn informed_entity ->
+          match?(
+            %InformedEntity{route: "16", route_type: 3, stop: nil, direction_id: 1},
+            informed_entity
+          )
+        end)
+
       assert route_entity_count == 1
     end
 
     test "constructs subscription with route in other direction" do
-      {:ok, [{_sub1, ie1}, {_sub2, ie2}]} = BusMapper.map_subscription(Map.merge(@round_trip_params, %{"routes" => ["16 - 1"]}))
-      route_entity_count =
-        Enum.count(ie1, fn(informed_entity) ->
-          match?(%InformedEntity{route: "16", route_type: 3, stop: nil, direction_id: nil}, informed_entity)
-        end)
-      assert route_entity_count == 1
-      route_entity_count =
-        Enum.count(ie1, fn(informed_entity) ->
-          match?(%InformedEntity{route: "16", route_type: 3, stop: nil, direction_id: 1}, informed_entity)
-        end)
-      assert route_entity_count == 1
-
+      {:ok, [{_sub1, ie1}, {_sub2, ie2}]} =
+        BusMapper.map_subscription(Map.merge(@round_trip_params, %{"routes" => ["16 - 1"]}))
 
       route_entity_count =
-        Enum.count(ie2, fn(informed_entity) ->
-          match?(%InformedEntity{route: "16", route_type: 3, stop: nil, direction_id: nil}, informed_entity)
+        Enum.count(ie1, fn informed_entity ->
+          match?(
+            %InformedEntity{route: "16", route_type: 3, stop: nil, direction_id: nil},
+            informed_entity
+          )
         end)
+
       assert route_entity_count == 1
+
       route_entity_count =
-        Enum.count(ie2, fn(informed_entity) ->
-          match?(%InformedEntity{route: "16", route_type: 3, stop: nil, direction_id: 0}, informed_entity)
+        Enum.count(ie1, fn informed_entity ->
+          match?(
+            %InformedEntity{route: "16", route_type: 3, stop: nil, direction_id: 1},
+            informed_entity
+          )
         end)
+
+      assert route_entity_count == 1
+
+      route_entity_count =
+        Enum.count(ie2, fn informed_entity ->
+          match?(
+            %InformedEntity{route: "16", route_type: 3, stop: nil, direction_id: nil},
+            informed_entity
+          )
+        end)
+
+      assert route_entity_count == 1
+
+      route_entity_count =
+        Enum.count(ie2, fn informed_entity ->
+          match?(
+            %InformedEntity{route: "16", route_type: 3, stop: nil, direction_id: 0},
+            informed_entity
+          )
+        end)
+
       assert route_entity_count == 1
     end
 
     test "constructs subscription with route type" do
       {:ok, [{_sub1, ie1}, {_sub2, ie2}]} = BusMapper.map_subscription(@round_trip_params)
+
       route_type_entity_count =
-        Enum.count(ie1, fn(informed_entity) ->
+        Enum.count(ie1, fn informed_entity ->
           match?(%InformedEntity{route: nil, route_type: 3}, informed_entity)
         end)
+
       assert route_type_entity_count == 1
 
       route_type_entity_count =
-        Enum.count(ie2, fn(informed_entity) ->
+        Enum.count(ie2, fn informed_entity ->
           match?(%InformedEntity{route: nil, route_type: 3}, informed_entity)
         end)
+
       assert route_type_entity_count == 1
     end
   end
@@ -172,7 +230,7 @@ defmodule AlertProcessor.Subscription.BusMapperTest do
       "return_start" => ~T[18:00:00],
       "return_end" => ~T[20:00:00],
       "alert_priority_type" => "low",
-      "trip_type" => "round_trip",
+      "trip_type" => "round_trip"
     }
 
     test "it builds a multi struct to persist subscriptions and informed_entities" do
