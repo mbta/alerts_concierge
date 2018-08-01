@@ -455,4 +455,11 @@ defmodule AlertProcessor.Model.Subscription do
       _ -> nil
     end
   end
+
+  @spec all_active() :: [__MODULE__.t()]
+  def all_active() do
+    from(s in __MODULE__, where: [paused: false])
+    |> Repo.all()
+    |> Repo.preload(:user)
+  end
 end
