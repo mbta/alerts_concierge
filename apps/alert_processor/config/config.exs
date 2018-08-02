@@ -52,8 +52,7 @@ config :alert_processor,
   pool_size: 2,
   overflow: 1,
   rate_limit_scale: {:system, "RATE_LIMIT_SCALE", "3600000"},
-  rate_limit: {:system, "RATE_LIMIT", "30"},
-  send_rate: {:system, "SEND_RATE", "100"}
+  rate_limit: {:system, "RATE_LIMIT", "30"}
 
 # Config for db migration function
 config :alert_processor, :migration_task, AlertProcessor.ReleaseTasks.Dev

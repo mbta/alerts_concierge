@@ -9,8 +9,7 @@ defmodule AlertProcessor.NotificationWorker do
     SendingQueue,
     Dispatcher,
     Model.Notification,
-    RateLimiter,
-    Helpers.ConfigHelper
+    RateLimiter
   }
 
   @type notifications :: [Notification.t()]
@@ -33,7 +32,7 @@ defmodule AlertProcessor.NotificationWorker do
     case SendingQueue.pop() do
       {:ok, %Notification{} = notification} ->
         send_notification(notification)
-        Process.send_after(self(), :notification, send_rate())
+        Process.send(self(), :notification, [])
 
       :error ->
         Process.send_after(self(), :notification, 100)
@@ -62,9 +61,5 @@ defmodule AlertProcessor.NotificationWorker do
           "Sending failed for user: #{notification.user.id}, alert: #{notification.alert_id}"
         )
     end
-  end
-
-  defp send_rate do
-    ConfigHelper.get_int(:send_rate)
   end
 end
