@@ -11,16 +11,26 @@ defmodule AlertProcessor.Subscription.MapperTest do
 
   describe "build_subscription_update_transaction" do
     test "it builds a multi struct to persist subscriptions and informed_entities" do
-      subscription = insert(:subscription, informed_entities: [%InformedEntity{stop: "place-north", facility_type: :bike_storage}])
+      subscription =
+        insert(
+          :subscription,
+          informed_entities: [%InformedEntity{stop: "place-north", facility_type: :bike_storage}]
+        )
+
       user = insert(:user)
       {:ok, subscription_infos} = BikeStorageMapper.map_subscriptions(@params)
-      multi = Mapper.build_subscription_update_transaction(subscription, subscription_infos, user.id)
+
+      multi =
+        Mapper.build_subscription_update_transaction(subscription, subscription_infos, user.id)
+
       result = Ecto.Multi.to_list(multi)
 
-      assert [{{:new_informed_entity, 0}, {:run, ie_fun}},
-        {{:new_informed_entity, 1}, {:run, _}},
-        {{:remove_current, 0}, {:run, remove_current_fun}},
-        {{:subscription}, {:run, sub_fun}}] = result
+      assert [
+               {{:new_informed_entity, 0}, {:run, ie_fun}},
+               {{:new_informed_entity, 1}, {:run, _}},
+               {{:remove_current, 0}, {:run, remove_current_fun}},
+               {{:subscription}, {:run, sub_fun}}
+             ] = result
 
       {:ok, %{model: %InformedEntity{} = ie}} = ie_fun.(nil)
       assert ie.id != nil

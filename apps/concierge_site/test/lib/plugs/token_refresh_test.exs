@@ -8,9 +8,11 @@ defmodule ConciergeSite.Plugs.TokenRefreshTest do
     user = insert(:user)
     {:ok, token, _} = Token.issue(user, {14, :minutes})
     conn = init_test_session(%{conn | params: %{"token" => token}}, %{})
+
     conn =
       conn
       |> TokenLogin.call(%{})
+
     refreshed_conn = TokenRefresh.call(conn, %{})
     new_token = get_session(conn, "guardian_default")
     refute refreshed_conn == conn
@@ -24,13 +26,18 @@ defmodule ConciergeSite.Plugs.TokenRefreshTest do
     user = insert(:user)
     {:ok, token, _} = Token.issue(user, {16, :minutes})
     conn = init_test_session(%{conn | params: %{"token" => token}}, %{})
+
     conn =
       conn
       |> TokenLogin.call(%{})
+
     refreshed_conn = TokenRefresh.call(conn, %{})
 
     assert refreshed_conn == conn
-    assert get_session(refreshed_conn, "guardian_default") == get_session(conn, "guardian_default")
+
+    assert get_session(refreshed_conn, "guardian_default") ==
+             get_session(conn, "guardian_default")
+
     assert {:ok, _claims} = Guardian.decode_and_verify(token)
   end
 

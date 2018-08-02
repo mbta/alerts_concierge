@@ -26,6 +26,7 @@ defmodule AlertProcessor.AlertFiltersTest do
   end
 
   test "match all alerts" do
-    assert [@old_alert, @recent_alert] == AlertFilters.filter_by_duration_type(@alerts, :anytime, @now)
+    assert [@old_alert, @recent_alert] ==
+             AlertFilters.filter_by_duration_type(@alerts, :anytime, @now)
   end
 end

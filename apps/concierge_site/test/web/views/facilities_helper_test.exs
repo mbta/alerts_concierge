@@ -14,6 +14,7 @@ defmodule ConciergeSite.FacilitiesHelperTest do
         roundtrip: false,
         facility_types: [:elevator, :escalator, :parking_area]
       }
+
       trip_without_escalator = %Trip{
         id: Ecto.UUID.generate(),
         alert_priority_type: :low,
@@ -24,8 +25,25 @@ defmodule ConciergeSite.FacilitiesHelperTest do
         facility_types: [:elevator, :parking_area]
       }
 
-      checked_escalator_html = Phoenix.HTML.safe_to_string(FacilitiesHelper.facility_checkbox(:mock_form, trip_with_escalator, :escalator, "Escalators"))
-      unchecked_escalator_html = Phoenix.HTML.safe_to_string(FacilitiesHelper.facility_checkbox(:mock_form, trip_without_escalator, :escalator, "Escalators"))
+      checked_escalator_html =
+        Phoenix.HTML.safe_to_string(
+          FacilitiesHelper.facility_checkbox(
+            :mock_form,
+            trip_with_escalator,
+            :escalator,
+            "Escalators"
+          )
+        )
+
+      unchecked_escalator_html =
+        Phoenix.HTML.safe_to_string(
+          FacilitiesHelper.facility_checkbox(
+            :mock_form,
+            trip_without_escalator,
+            :escalator,
+            "Escalators"
+          )
+        )
 
       {:ok, outputs: [checked_escalator_html, unchecked_escalator_html]}
     end

@@ -26,14 +26,14 @@ defmodule ConciergeSite.ConnCase do
 
       @customer_support_token_params %{
         perms: %{
-          default: Guardian.Permissions.max,
+          default: Guardian.Permissions.max(),
           admin: [:customer_support]
         }
       }
 
       @application_admin_token_params %{
         perms: %{
-          default: Guardian.Permissions.max,
+          default: Guardian.Permissions.max(),
           admin: [:application_administration, :customer_support]
         }
       }
@@ -41,23 +41,29 @@ defmodule ConciergeSite.ConnCase do
       # Import ExMachina Factories
       import AlertProcessor.Factory
 
-      def guardian_login(user, conn, type \\ :access, claims \\ %{perms: %{default: Guardian.Permissions.max}}) do
+      def guardian_login(
+            user,
+            conn,
+            type \\ :access,
+            claims \\ %{perms: %{default: Guardian.Permissions.max()}}
+          ) do
         conn
-          |> bypass_through(ConciergeSite.Router, [:browser])
-          |> get("/")
-          |> Guardian.Plug.sign_in(user, :access, claims)
-          |> send_resp(200, "Flush the session")
-          |> recycle()
+        |> bypass_through(ConciergeSite.Router, [:browser])
+        |> get("/")
+        |> Guardian.Plug.sign_in(user, :access, claims)
+        |> send_resp(200, "Flush the session")
+        |> recycle()
       end
     end
   end
 
-
   setup tags do
     :ok = Ecto.Adapters.SQL.Sandbox.checkout(AlertProcessor.Repo)
+
     unless tags[:async] do
       Ecto.Adapters.SQL.Sandbox.mode(AlertProcessor.Repo, {:shared, self()})
     end
+
     {:ok, conn: Phoenix.ConnTest.build_conn()}
   end
 end

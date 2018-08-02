@@ -12,38 +12,59 @@ defmodule AlertProcessor.ActivePeriodFilterTest do
   setup_all do
     alert1 = %Alert{
       active_period: [
-        %{start: datetime_from_native(~N[2017-04-26 09:00:00]), end: datetime_from_native(~N[2017-04-26 19:00:00])}
+        %{
+          start: datetime_from_native(~N[2017-04-26 09:00:00]),
+          end: datetime_from_native(~N[2017-04-26 19:00:00])
+        }
       ]
     }
 
     alert2 = %Alert{
       active_period: [
-        %{start: datetime_from_native(~N[2017-04-26 11:00:00]), end: datetime_from_native(~N[2017-04-26 13:00:00])}
+        %{
+          start: datetime_from_native(~N[2017-04-26 11:00:00]),
+          end: datetime_from_native(~N[2017-04-26 13:00:00])
+        }
       ]
     }
 
     alert3 = %Alert{
       active_period: [
-        %{start: datetime_from_native(~N[2017-04-26 07:00:00]), end: datetime_from_native(~N[2017-04-26 09:00:00])}
+        %{
+          start: datetime_from_native(~N[2017-04-26 07:00:00]),
+          end: datetime_from_native(~N[2017-04-26 09:00:00])
+        }
       ]
     }
 
     alert4 = %Alert{
       active_period: [
-        %{start: datetime_from_native(~N[2017-04-26 09:00:00]), end: datetime_from_native(~N[2017-04-26 19:00:00])},
-        %{start: datetime_from_native(~N[2017-04-29 07:00:00]), end: datetime_from_native(~N[2017-04-29 09:00:00])}
+        %{
+          start: datetime_from_native(~N[2017-04-26 09:00:00]),
+          end: datetime_from_native(~N[2017-04-26 19:00:00])
+        },
+        %{
+          start: datetime_from_native(~N[2017-04-29 07:00:00]),
+          end: datetime_from_native(~N[2017-04-29 09:00:00])
+        }
       ]
     }
 
     alert5 = %Alert{
       active_period: [
-        %{start: datetime_from_native(~N[2017-04-26 13:00:00]), end: datetime_from_native(~N[2017-04-27 02:00:00])}
+        %{
+          start: datetime_from_native(~N[2017-04-26 13:00:00]),
+          end: datetime_from_native(~N[2017-04-27 02:00:00])
+        }
       ]
     }
 
     alert6 = %Alert{
       active_period: [
-        %{start: datetime_from_native(~N[2017-04-28 19:00:00]), end: datetime_from_native(~N[2017-05-01 04:00:00])}
+        %{
+          start: datetime_from_native(~N[2017-04-28 19:00:00]),
+          end: datetime_from_native(~N[2017-05-01 04:00:00])
+        }
       ]
     }
 
@@ -55,42 +76,66 @@ defmodule AlertProcessor.ActivePeriodFilterTest do
 
     alert8 = %Alert{
       active_period: [
-        %{start: datetime_from_native(~N[2017-04-26 09:00:00]), end: datetime_from_native(~N[2017-04-26 19:00:00])},
-        %{start: datetime_from_native(~N[2017-04-27 09:00:00]), end: datetime_from_native(~N[2017-04-27 19:00:00])}
+        %{
+          start: datetime_from_native(~N[2017-04-26 09:00:00]),
+          end: datetime_from_native(~N[2017-04-26 19:00:00])
+        },
+        %{
+          start: datetime_from_native(~N[2017-04-27 09:00:00]),
+          end: datetime_from_native(~N[2017-04-27 19:00:00])
+        }
       ]
     }
 
-    {:ok, alert1: alert1, alert2: alert2, alert3: alert3, alert4: alert4, alert5: alert5, alert6: alert6, alert7: alert7, alert8: alert8}
+    {:ok,
+     alert1: alert1,
+     alert2: alert2,
+     alert3: alert3,
+     alert4: alert4,
+     alert5: alert5,
+     alert6: alert6,
+     alert7: alert7,
+     alert8: alert8}
   end
 
   describe "active period with end date" do
-    test "matches if subscription timeframe falls completely between active period", %{alert1: alert1} do
+    test "matches if subscription timeframe falls completely between active period", %{
+      alert1: alert1
+    } do
       subscription = :subscription |> build() |> weekday_subscription |> insert
       sunday_subscription = :subscription |> build() |> sunday_subscription |> insert
 
       assert [subscription] ==
-        ActivePeriodFilter.filter([subscription, sunday_subscription], alert: alert1)
+               ActivePeriodFilter.filter([subscription, sunday_subscription], alert: alert1)
     end
 
-    test "matches if active period falls completely between subscription timeframe", %{alert2: alert2} do
+    test "matches if active period falls completely between subscription timeframe", %{
+      alert2: alert2
+    } do
       subscription = :subscription |> build() |> weekday_subscription |> insert
       sunday_subscription = :subscription |> build() |> sunday_subscription |> insert
 
-      assert [subscription] == ActivePeriodFilter.filter([subscription, sunday_subscription], alert: alert2)
+      assert [subscription] ==
+               ActivePeriodFilter.filter([subscription, sunday_subscription], alert: alert2)
     end
 
-    test "does not match if active period is completely outside of subscription timeframe", %{alert3: alert3} do
+    test "does not match if active period is completely outside of subscription timeframe", %{
+      alert3: alert3
+    } do
       subscription = :subscription |> build() |> sunday_subscription |> insert
       weekday_subscription = :subscription |> build() |> weekday_subscription |> insert
 
       assert [] == ActivePeriodFilter.filter([subscription, weekday_subscription], alert: alert3)
     end
 
-    test "matches if one active period matches subscription timeframe and one does not", %{alert4: alert4} do
+    test "matches if one active period matches subscription timeframe and one does not", %{
+      alert4: alert4
+    } do
       subscription = :subscription |> build() |> weekday_subscription |> insert
       sunday_subscription = :subscription |> build() |> sunday_subscription |> insert
 
-      assert [subscription] == ActivePeriodFilter.filter([subscription, sunday_subscription], alert: alert4)
+      assert [subscription] ==
+               ActivePeriodFilter.filter([subscription, sunday_subscription], alert: alert4)
     end
 
     test "matches multiday active period", %{alert5: alert5} do
@@ -98,7 +143,7 @@ defmodule AlertProcessor.ActivePeriodFilterTest do
       sunday_subscription = :subscription |> build() |> sunday_subscription |> insert
 
       assert [subscription] ==
-        ActivePeriodFilter.filter([subscription, sunday_subscription], alert: alert5)
+               ActivePeriodFilter.filter([subscription, sunday_subscription], alert: alert5)
     end
 
     test "matches multiday active period more than 1 day difference", %{alert6: alert6} do
@@ -106,24 +151,28 @@ defmodule AlertProcessor.ActivePeriodFilterTest do
       sunday_subscription = :subscription |> build() |> sunday_subscription |> insert
 
       assert [sunday_subscription] ==
-        ActivePeriodFilter.filter([subscription, sunday_subscription], alert: alert6)
+               ActivePeriodFilter.filter([subscription, sunday_subscription], alert: alert6)
     end
 
     test "matches mutliple active periods but only returns subscription once", %{alert8: alert8} do
       user = insert(:user)
       subscription = :subscription |> build(user: user) |> weekday_subscription |> insert
 
-      assert [subscription] ==
-        ActivePeriodFilter.filter([subscription], alert: alert8)
+      assert [subscription] == ActivePeriodFilter.filter([subscription], alert: alert8)
     end
 
     test "matches for for individual weekday (e.g. Monday)" do
       alert = %Alert{
         active_period: [
-          %{start: datetime_from_native(~N[2018-03-26 09:00:00]), # <- Monday
-            end: datetime_from_native(~N[2018-03-26 19:00:00])}, # <- Monday
+          # <- Monday
+          %{
+            start: datetime_from_native(~N[2018-03-26 09:00:00]),
+            # <- Monday
+            end: datetime_from_native(~N[2018-03-26 19:00:00])
+          }
         ]
       }
+
       subscription = insert(:subscription, relevant_days: [:monday])
 
       subscriptions = ActivePeriodFilter.filter([subscription], alert: alert)
@@ -134,10 +183,15 @@ defmodule AlertProcessor.ActivePeriodFilterTest do
     test "does not match for for individual weekday (e.g. Tuesday)" do
       alert = %Alert{
         active_period: [
-          %{start: datetime_from_native(~N[2018-03-26 09:00:00]), # <- Monday
-            end: datetime_from_native(~N[2018-03-26 19:00:00])}, # <- Monday
+          # <- Monday
+          %{
+            start: datetime_from_native(~N[2018-03-26 09:00:00]),
+            # <- Monday
+            end: datetime_from_native(~N[2018-03-26 19:00:00])
+          }
         ]
       }
+
       subscription = insert(:subscription, relevant_days: [:tuesday])
 
       subscriptions = ActivePeriodFilter.filter([subscription], alert: alert)
@@ -153,7 +207,10 @@ defmodule AlertProcessor.ActivePeriodFilterTest do
       sunday_subscription = :subscription |> build() |> sunday_subscription |> insert
 
       assert [weekday_subscription, saturday_subscription, sunday_subscription] ==
-        ActivePeriodFilter.filter([weekday_subscription, saturday_subscription, sunday_subscription], alert: alert7)
+               ActivePeriodFilter.filter(
+                 [weekday_subscription, saturday_subscription, sunday_subscription],
+                 alert: alert7
+               )
     end
   end
 

@@ -7,18 +7,18 @@ defmodule AlertProcessor.SendingQueueTest do
   end
 
   test "Instantiates empty queue by default", %{test: test} do
-    SendingQueue.start_link([name: test])
+    SendingQueue.start_link(name: test)
     assert SendingQueue.pop(test) == :error
   end
 
   test "Alert can be added to the queue", %{test: test, notification: notification} do
-    SendingQueue.start_link([name: test])
+    SendingQueue.start_link(name: test)
     :ok = SendingQueue.enqueue(test, notification)
     assert SendingQueue.pop(test) == {:ok, notification}
   end
 
   test "Alert can be removed from the queue", %{test: test, notification: notification} do
-    SendingQueue.start_link([name: test])
+    SendingQueue.start_link(name: test)
     :ok = SendingQueue.enqueue(test, notification)
 
     assert SendingQueue.pop(test) == {:ok, notification}
@@ -28,7 +28,7 @@ defmodule AlertProcessor.SendingQueueTest do
   test "Duplicate notifications are not enqueued", %{test: test} do
     notification1 = %Notification{alert_id: "1", user_id: "1"}
     notification2 = %Notification{alert_id: "1", user_id: "1"}
-    SendingQueue.start_link([name: test])
+    SendingQueue.start_link(name: test)
     SendingQueue.enqueue(test, notification1)
     SendingQueue.enqueue(test, notification2)
 
@@ -42,7 +42,7 @@ defmodule AlertProcessor.SendingQueueTest do
     notification1 = %Notification{alert_id: "1"}
     notification2 = %Notification{alert_id: "2"}
     notification3 = %Notification{alert_id: "3"}
-    SendingQueue.start_link([name: test])
+    SendingQueue.start_link(name: test)
     SendingQueue.list_enqueue(test, [notification1])
     SendingQueue.list_enqueue(test, [notification2, notification3])
 
@@ -54,7 +54,7 @@ defmodule AlertProcessor.SendingQueueTest do
   test "We can get the number of items in the queue", %{test: test} do
     notification1 = %Notification{alert_id: "1"}
     notification2 = %Notification{alert_id: "2"}
-    SendingQueue.start_link([name: test])
+    SendingQueue.start_link(name: test)
     SendingQueue.enqueue(test, notification1)
     SendingQueue.enqueue(test, notification2)
 

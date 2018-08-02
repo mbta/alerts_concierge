@@ -24,7 +24,13 @@ defmodule AlertProcessor.ServiceInfo.CacheFileTest do
     end
 
     test "returns error for non-map" do
-      filepath = Path.join([System.cwd, "priv/service_info_cache", "load_service_info_1_test_non_map.terms"])
+      filepath =
+        Path.join([
+          System.cwd(),
+          "priv/service_info_cache",
+          "load_service_info_1_test_non_map.terms"
+        ])
+
       payload = [:non_map]
       assert CacheFile.save_service_info(payload, filepath) == {:error, :cache_file_not_saved}
     end

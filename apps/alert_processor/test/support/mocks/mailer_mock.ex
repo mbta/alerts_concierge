@@ -4,7 +4,7 @@ defmodule AlertProcessor.MailerMock do
   concierge site application during tests
   """
   def send_notification_email(notification) do
-    send self(), {:sent_notification_email, notification}
+    send(self(), {:sent_notification_email, notification})
     {:ok, %{}}
   end
 end

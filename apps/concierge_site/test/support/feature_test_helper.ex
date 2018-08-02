@@ -19,6 +19,7 @@ defmodule ConciergeSite.FeatureTestHelper do
     |> fill_in(text_field("Password"), with: password)
     |> click(button("Go to my account"))
   end
+
   def log_in(session, %User{email: email, password: password}) do
     session
     |> visit("/login/new")

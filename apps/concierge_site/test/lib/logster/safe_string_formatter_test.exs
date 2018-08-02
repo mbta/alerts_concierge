@@ -20,6 +20,7 @@ defmodule ConciergeSite.Logster.SafeStringFormatterTest do
         integer: 123,
         map: %{"a" => "b"}
       ]
+
       expected = ~s(binary=bin float=12.346 atom=atom integer=123 map={"a":"b"})
       assert IO.iodata_to_binary(format(params)) == expected
     end

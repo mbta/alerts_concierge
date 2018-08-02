@@ -30,6 +30,7 @@ defmodule AlertProcessor.NotificationSmserTest do
       closed_timestamp: DateTime.utc_now(),
       type: :all_clear
     }
+
     sms_operation = NotificationSmser.notification_sms(notification)
     assert sms_operation.params["Message"] == "All clear (re: This is a test sms)"
   end
@@ -42,6 +43,7 @@ defmodule AlertProcessor.NotificationSmserTest do
       closed_timestamp: DateTime.utc_now(),
       type: :update
     }
+
     sms_operation = NotificationSmser.notification_sms(notification)
     assert sms_operation.params["Message"] == "Update: This is a test sms"
   end
@@ -54,6 +56,7 @@ defmodule AlertProcessor.NotificationSmserTest do
       closed_timestamp: DateTime.utc_now(),
       type: :reminder
     }
+
     sms_operation = NotificationSmser.notification_sms(notification)
     assert sms_operation.params["Message"] == "Reminder: This is a test sms"
   end
