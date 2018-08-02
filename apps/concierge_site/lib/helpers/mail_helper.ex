@@ -33,14 +33,6 @@ defmodule ConciergeSite.Helpers.MailHelper do
   end
 
   @doc """
-  For a given alert, return the alt text of it's route_type
-  """
-  @spec alt_text_for_alert(Alert.t()) :: iodata
-  def alt_text_for_alert(%Alert{informed_entities: [ie | _]}) do
-    alt_text_for_route_type(ie)
-  end
-
-  @doc """
   Return the MBTA Logo URL
   """
   @spec mbta_logo() :: iodata
@@ -107,36 +99,6 @@ defmodule ConciergeSite.Helpers.MailHelper do
 
   defp logo_for_subway(nil),
     do: Helpers.static_url(ConciergeSite.Endpoint, "/images/icons/icn_facility.png")
-
-  @spec alt_text_for_route_type(InformedEntity.t()) :: iodata
-  defp alt_text_for_route_type(%InformedEntity{route_type: 0, route: r}),
-    do: alt_text_for_subway(r)
-
-  defp alt_text_for_route_type(%InformedEntity{route_type: 1, route: r}),
-    do: alt_text_for_subway(r)
-
-  defp alt_text_for_route_type(%InformedEntity{route_type: 2}), do: "logo-commuter-rail"
-  defp alt_text_for_route_type(%InformedEntity{route_type: 3}), do: "logo-bus"
-  defp alt_text_for_route_type(%InformedEntity{route_type: 4}), do: "logo-ferry"
-
-  defp alt_text_for_route_type(%InformedEntity{facility_type: ft}) when not is_nil(ft),
-    do: "logo-facility"
-
-  defp alt_text_for_route_type(_), do: "logo-facility"
-
-  defp alt_text_for_subway(route) do
-    case route do
-      "Red" -> "logo-red-line"
-      "Mattapan" -> "logo-red-line"
-      "Orange" -> "logo-orange-line"
-      "Blue" -> "logo-blue-line"
-      "Green-B" -> "logo-green-line"
-      "Green-C" -> "logo-green-line"
-      "Green-D" -> "logo-green-line"
-      "Green-E" -> "logo-green-line"
-      nil -> "logo-mbta"
-    end
-  end
 
   def manage_subscriptions_url(user) do
     {:ok, token, _permissions} = Token.issue(user, [:manage_subscriptions], {30, :days})
