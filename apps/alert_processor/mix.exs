@@ -28,7 +28,6 @@ defmodule AlertProcessor.Mixfile do
       mod: {AlertProcessor, []},
       extra_applications: [
         :elixir_make,
-        :ex2ms,
         :plug,
         :jsx,
         :public_key,
@@ -39,7 +38,6 @@ defmodule AlertProcessor.Mixfile do
         :sweet_xml,
         :exactor,
         :ex_aws,
-        :ex_rated,
         :hackney,
         :httpoison,
         :logger,
@@ -76,7 +74,6 @@ defmodule AlertProcessor.Mixfile do
        git: "https://github.com/ex-aws/ex_aws_sns",
        ref: "7a681400876774cf8ea9825a07b7d361715e4362"},
       {:ex_machina, "~> 2.0", only: :test},
-      {:ex_rated, "~> 1.3"},
       {:exvcr, "~> 0.10.1", runtime: false},
       {:fast_local_datetime, "~> 0.3.0"},
       {:gettext, "~> 0.11"},
