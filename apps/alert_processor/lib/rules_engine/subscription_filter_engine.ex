@@ -7,7 +7,6 @@ defmodule AlertProcessor.SubscriptionFilterEngine do
     ActivePeriodFilter,
     InformedEntityFilter,
     Model,
-    Repo,
     Scheduler,
     SentAlertFilter
   }
