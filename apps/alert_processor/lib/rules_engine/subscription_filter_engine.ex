@@ -24,7 +24,7 @@ defmodule AlertProcessor.SubscriptionFilterEngine do
   @spec schedule_all_notifications([Alert.t()], atom | nil) :: any
   def schedule_all_notifications(alerts, alert_filter_duration_type \\ :anytime) do
     start_time = Time.utc_now()
-    active_subscriptions = Subscription.all_active()
+    active_subscriptions = Subscription.all_active_for_alerts(alerts)
     recent_notifications = Notification.most_recent_for_subscriptions_and_alerts(alerts)
     schedule_notifications(active_subscriptions, recent_notifications, alerts)
 

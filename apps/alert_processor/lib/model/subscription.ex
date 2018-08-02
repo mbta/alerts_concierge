@@ -4,7 +4,7 @@ defmodule AlertProcessor.Model.Subscription do
   """
 
   alias AlertProcessor.{Repo, TimeFrameComparison}
-  alias AlertProcessor.Model.{InformedEntity, TripInfo, User, Trip, Subscription}
+  alias AlertProcessor.Model.{InformedEntity, TripInfo, User, Trip, Subscription, Alert}
   alias AlertProcessor.Helpers.DateTimeHelper
   alias AlertProcessor.ServiceInfoCache
   import Ecto.Query
@@ -456,10 +456,90 @@ defmodule AlertProcessor.Model.Subscription do
     end
   end
 
-  @spec all_active() :: [__MODULE__.t()]
-  def all_active() do
-    from(s in __MODULE__, where: [paused: false])
+  @spec all_active_for_alerts([Alert.t()]) :: [__MODULE__.t()]
+  def all_active_for_alerts(alerts) do
+    alerts
+    |> get_alert_entity_lists()
+    |> subscribers_match_query()
     |> Repo.all()
     |> Repo.preload(:user)
+  end
+
+  @spec subscribers_match_query(Keyword.t()) :: Ecto.Query.t()
+  defp subscribers_match_query(
+         route_ids: _,
+         routes: _,
+         stops: _,
+         wildcard: true
+       ) do
+    from(s in __MODULE__, where: [paused: false])
+  end
+
+  defp subscribers_match_query(
+         route_ids: route_ids,
+         routes: routes,
+         stops: stops,
+         wildcard: false
+       ) do
+    # group (route_type ANY(..) OR route ANY(..) OR origin ANY(..) OR destination ANY (...)) togther
+    base_query =
+      from(
+        s in __MODULE__,
+        where:
+          s.route_type in ^route_ids or s.route in ^routes or s.origin in ^stops or
+            s.destination in ^stops
+      )
+
+    # make paused and AND, not ORed with the other fields
+    from(s in base_query, where: s.paused == false)
+  end
+
+  @spec get_alert_entity_lists([Alert.t()]) :: Keyword.t()
+  defp get_alert_entity_lists(alerts) do
+    alerts
+    |> Enum.map(& &1.informed_entities)
+    |> List.flatten()
+    |> Enum.reduce(
+      [route_ids: MapSet.new(), routes: MapSet.new(), stops: MapSet.new(), wildcard: false],
+      fn entity, accumulator ->
+        [
+          route_ids: get_entity_value(accumulator[:route_ids], entity.route_type),
+          routes: get_entity_value(accumulator[:routes], entity.route),
+          stops: get_entity_value(accumulator[:stops], entity.stop),
+          wildcard: handle_wildcard_entity(accumulator[:wildcard], entity)
+        ]
+      end
+    )
+    |> entity_sets_to_lists()
+  end
+
+  @spec entity_sets_to_lists(Keyword.t()) :: Keyword.t()
+  defp entity_sets_to_lists(
+         route_ids: route_ids,
+         routes: routes,
+         stops: stops,
+         wildcard: wildcard
+       ) do
+    [
+      route_ids: MapSet.to_list(route_ids),
+      routes: MapSet.to_list(routes),
+      stops: MapSet.to_list(stops),
+      wildcard: wildcard
+    ]
+  end
+
+  @spec get_entity_value(MapSet.t(), any) :: MapSet.t()
+  defp get_entity_value(entity_set, nil), do: entity_set
+  defp get_entity_value(entity_set, value), do: MapSet.put(entity_set, value)
+
+  @spec handle_wildcard_entity(boolean, InformedEntity.t()) :: boolean
+  defp handle_wildcard_entity(true, _), do: true
+
+  defp handle_wildcard_entity(_, entity) do
+    if entity.route_type == nil && entity.route == nil && entity.stop == nil do
+      true
+    else
+      false
+    end
   end
 end
