@@ -16,6 +16,7 @@ defmodule ConciergeSite.FeatureCase do
 
   setup tags do
     :ok = Ecto.Adapters.SQL.Sandbox.checkout(AlertProcessor.Repo)
+
     unless tags[:async] do
       Ecto.Adapters.SQL.Sandbox.mode(AlertProcessor.Repo, {:shared, self()})
     end

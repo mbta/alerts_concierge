@@ -9,7 +9,7 @@ defmodule AlertProcessor.SmsOptOutWorkerTest do
     user = insert(:user, phone_number: "9999999999")
     {:noreply, _} = SmsOptOutWorker.handle_info(:work, [])
     assert_received :list_phone_numbers_opted_out
-    reloaded_user = Repo.one(from u in User, where: u.id == ^user.id)
+    reloaded_user = Repo.one(from(u in User, where: u.id == ^user.id))
     assert reloaded_user.phone_number == nil
   end
 
@@ -17,7 +17,7 @@ defmodule AlertProcessor.SmsOptOutWorkerTest do
     user = insert(:user, phone_number: "5555551234")
     {:noreply, _} = SmsOptOutWorker.handle_info(:work, [])
     assert_received :list_phone_numbers_opted_out
-    reloaded_user = Repo.one(from u in User, where: u.id == ^user.id)
+    reloaded_user = Repo.one(from(u in User, where: u.id == ^user.id))
     assert reloaded_user.phone_number == "5555551234"
   end
 
@@ -25,7 +25,7 @@ defmodule AlertProcessor.SmsOptOutWorkerTest do
     user = insert(:user, phone_number: "9999999999")
     {:noreply, new_state} = SmsOptOutWorker.handle_info(:work, ["2222222222", "3333333333"])
     assert_received :list_phone_numbers_opted_out
-    reloaded_user = Repo.one(from u in User, where: u.id == ^user.id)
+    reloaded_user = Repo.one(from(u in User, where: u.id == ^user.id))
     assert reloaded_user.phone_number == nil
     assert new_state == ["9999999999", "5555555555"]
   end
@@ -34,6 +34,8 @@ defmodule AlertProcessor.SmsOptOutWorkerTest do
     fetch_error = fn ->
       assert ["123"] == SmsOptOutWorker.fetch_opted_out_list("error", ["123"])
     end
-    assert capture_log(fetch_error) =~ "Unable to request SMS opted out list from AWS due to error"
+
+    assert capture_log(fetch_error) =~
+             "Unable to request SMS opted out list from AWS due to error"
   end
 end

@@ -8,7 +8,7 @@ defmodule ConciergeSite.PasswordResetControllerTest do
   end
 
   describe "create/2" do
-    test "existing user can request email to reset password", %{conn: conn}  do
+    test "existing user can request email to reset password", %{conn: conn} do
       user = insert(:user)
       params = %{"password_reset" => %{"email" => user.email}}
       conn = post(conn, password_reset_path(conn, :create), params)
@@ -35,12 +35,14 @@ defmodule ConciergeSite.PasswordResetControllerTest do
       user = insert(:user)
       reset_token = Phoenix.Token.sign(ConciergeSite.Endpoint, "password_reset", user.email)
       valid_password = "password1!"
+
       params = %{
         "password_reset" => %{
           "password" => valid_password,
           "password_confirmation" => valid_password
         }
       }
+
       conn = patch(conn, password_reset_path(conn, :update, reset_token), params)
       assert get_flash(conn)["info"] == "Your password has been updated."
     end
@@ -48,12 +50,14 @@ defmodule ConciergeSite.PasswordResetControllerTest do
     test "with invalid reset token", %{conn: conn} do
       reset_token = "some-invalid-token"
       valid_password = "password1!"
+
       params = %{
         "password_reset" => %{
           "password" => valid_password,
           "password_confirmation" => valid_password
         }
       }
+
       conn = patch(conn, password_reset_path(conn, :update, reset_token), params)
       assert html_response(conn, 404) =~ "cannot be found"
     end
@@ -62,12 +66,14 @@ defmodule ConciergeSite.PasswordResetControllerTest do
       user = insert(:user)
       reset_token = Phoenix.Token.sign(ConciergeSite.Endpoint, "password_reset", user.email)
       invalid_password = "invalid"
+
       params = %{
         "password_reset" => %{
           "password" => invalid_password,
           "password_confirmation" => invalid_password
         }
       }
+
       conn = patch(conn, password_reset_path(conn, :update, reset_token), params)
       assert html_response(conn, 422) =~ "Password must contain one number or special character"
     end
@@ -75,12 +81,14 @@ defmodule ConciergeSite.PasswordResetControllerTest do
     test "with invalid password confirmation", %{conn: conn} do
       user = insert(:user)
       reset_token = Phoenix.Token.sign(ConciergeSite.Endpoint, "password_reset", user.email)
+
       params = %{
         "password_reset" => %{
           "password" => "password1!",
           "password_confirmation" => "secret1!"
         }
       }
+
       conn = patch(conn, password_reset_path(conn, :update, reset_token), params)
       assert html_response(conn, 422) =~ "Password confirmation must match."
     end

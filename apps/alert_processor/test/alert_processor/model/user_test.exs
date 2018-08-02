@@ -28,26 +28,52 @@ defmodule AlertProcessor.Model.UserTest do
 
   describe "authenticate/1" do
     test "authenticates if email and password valid" do
-      Repo.insert!(%User{email: "test@email.com", role: "user", encrypted_password: @encrypted_password})
+      Repo.insert!(%User{
+        email: "test@email.com",
+        role: "user",
+        encrypted_password: @encrypted_password
+      })
+
       assert {:ok, _} = User.authenticate(%{"email" => "test@email.com", "password" => @password})
     end
 
     test "does not authenticate if invalid password for existing user" do
-      Repo.insert!(%User{email: "test@email.com", role: "user", encrypted_password: @encrypted_password})
-      assert {:error, _} = User.authenticate(%{"email" => "test@email.com", "password" => "different_password"})
+      Repo.insert!(%User{
+        email: "test@email.com",
+        role: "user",
+        encrypted_password: @encrypted_password
+      })
+
+      assert {:error, _} =
+               User.authenticate(%{
+                 "email" => "test@email.com",
+                 "password" => "different_password"
+               })
     end
 
     test "does not authenticate if user doesn't exist" do
-      assert {:error, _} = User.authenticate(%{"email" => "nope@invalid.com", "password" => @password})
+      assert {:error, _} =
+               User.authenticate(%{"email" => "nope@invalid.com", "password" => @password})
     end
 
     test "does not authenticate if user's account is disabled" do
-      Repo.insert!(%User{email: "test@email.com", role: "user", encrypted_password: @disabled_password})
-      assert {:error, :disabled} = User.authenticate(%{"email" => "test@email.com", "password" => @password})
+      Repo.insert!(%User{
+        email: "test@email.com",
+        role: "user",
+        encrypted_password: @disabled_password
+      })
+
+      assert {:error, :disabled} =
+               User.authenticate(%{"email" => "test@email.com", "password" => @password})
     end
 
     test "email is not case sensitive" do
-      Repo.insert!(%User{email: "test@email.com", role: "user", encrypted_password: @encrypted_password})
+      Repo.insert!(%User{
+        email: "test@email.com",
+        role: "user",
+        encrypted_password: @encrypted_password
+      })
+
       assert {:ok, _} = User.authenticate(%{"email" => "TEST@EMAIL.COM", "password" => @password})
     end
   end
@@ -59,7 +85,14 @@ defmodule AlertProcessor.Model.UserTest do
     end
 
     test "removes non digits from phone number input" do
-      assert {:ok, user} = User.create_account(Map.merge(@valid_account_attrs, %{"sms_toggle" => "true", "phone_number" => "555-555-1234"}))
+      assert {:ok, user} =
+               User.create_account(
+                 Map.merge(@valid_account_attrs, %{
+                   "sms_toggle" => "true",
+                   "phone_number" => "555-555-1234"
+                 })
+               )
+
       assert user.phone_number == "5555551234"
       assert user.id != nil
     end
@@ -72,34 +105,67 @@ defmodule AlertProcessor.Model.UserTest do
     end
 
     test "will create a valid changeset with password containing special characters and at least 6 characters" do
-      changeset = User.create_account_changeset(%User{}, Map.merge(@valid_account_attrs, %{"password" => "P@ssword"}))
+      changeset =
+        User.create_account_changeset(
+          %User{},
+          Map.merge(@valid_account_attrs, %{"password" => "P@ssword"})
+        )
+
       assert changeset.valid?
     end
 
     test "will create an invalid changeset with invalid password that is too short" do
-      changeset = User.create_account_changeset(%User{}, Map.merge(@valid_account_attrs, %{"password" => "Pass1"}))
+      changeset =
+        User.create_account_changeset(
+          %User{},
+          Map.merge(@valid_account_attrs, %{"password" => "Pass1"})
+        )
+
       refute changeset.valid?
     end
 
     test "will create an invalid changeset with invalid password that does not contain a digit or special character" do
-      changeset = User.create_account_changeset(%User{}, Map.merge(@valid_account_attrs, %{"password" => "Password"}))
+      changeset =
+        User.create_account_changeset(
+          %User{},
+          Map.merge(@valid_account_attrs, %{"password" => "Password"})
+        )
+
       refute changeset.valid?
     end
 
     test "will create an invalid changeset with an email that does not contain an @" do
-      changeset = User.create_account_changeset(%User{}, Map.merge(@valid_account_attrs, %{"email" => "emailatexample.com"}))
+      changeset =
+        User.create_account_changeset(
+          %User{},
+          Map.merge(@valid_account_attrs, %{"email" => "emailatexample.com"})
+        )
+
       refute changeset.valid?
     end
 
     test "if sms_toggle is true, will validate phone number" do
-      changeset = User.create_account_changeset(%User{}, Map.merge(@valid_account_attrs, %{"phone_number" => "2342342344", "sms_toggle" => "true"}))
+      changeset =
+        User.create_account_changeset(
+          %User{},
+          Map.merge(@valid_account_attrs, %{
+            "phone_number" => "2342342344",
+            "sms_toggle" => "true"
+          })
+        )
+
       %{changes: %{phone_number: phone_number}} = changeset
       assert phone_number == "2342342344"
       assert changeset.valid?
     end
 
     test "if sms_toggle is false, phone_number (if present) will be ignored" do
-      changeset = User.create_account_changeset(%User{}, Map.put(@valid_account_attrs, "phone_number", "2342342344"))
+      changeset =
+        User.create_account_changeset(
+          %User{},
+          Map.put(@valid_account_attrs, "phone_number", "2342342344")
+        )
+
       %{changes: changes} = changeset
       refute Map.has_key?(changes, :phone_number)
       assert changeset.valid?
@@ -127,7 +193,10 @@ defmodule AlertProcessor.Model.UserTest do
 
     test "does not update account" do
       user = insert(:user)
-      assert {:error, changeset} = User.update_account(user, %{"phone_number" => "not a phone number"}, user.id)
+
+      assert {:error, changeset} =
+               User.update_account(user, %{"phone_number" => "not a phone number"}, user.id)
+
       refute changeset.valid?
     end
   end
@@ -147,11 +216,11 @@ defmodule AlertProcessor.Model.UserTest do
       user1 = insert(:user)
 
       {:ok,
-        %{
-          {:user, 0} => %{model: user_0},
-          {:user, 1} => %{model: user_1},
-        }
-      } = User.remove_users_phone_number([user0.id, user1.id], "sms-opt-out")
+       %{
+         {:user, 0} => %{model: user_0},
+         {:user, 1} => %{model: user_1}
+       }} = User.remove_users_phone_number([user0.id, user1.id], "sms-opt-out")
+
       assert user_0.phone_number == nil
       assert user_1.phone_number == nil
     end
@@ -165,7 +234,11 @@ defmodule AlertProcessor.Model.UserTest do
     test "puts user on vacation with end time in year 9999" do
       user = insert(:user)
       {:ok, user} = User.put_user_on_indefinite_vacation(user, "email-unsubscribe")
-      assert DateTime.compare(user.vacation_end, DateTime.from_naive!(~N[9999-12-25 23:59:59], "Etc/UTC")) == :eq
+
+      assert DateTime.compare(
+               user.vacation_end,
+               DateTime.from_naive!(~N[9999-12-25 23:59:59], "Etc/UTC")
+             ) == :eq
     end
   end
 

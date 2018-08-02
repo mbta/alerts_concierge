@@ -12,16 +12,33 @@ defmodule AlertProcessor.Subscription.BikeStorageMapperTest do
   describe "bike_storage" do
     test "creates expected entities" do
       {:ok, [{_subscription, informed_entities}]} = BikeStorageMapper.map_subscriptions(@params)
+
       north_station_entities_count =
-        Enum.count(informed_entities, fn(informed_entity) ->
-          match?(%InformedEntity{facility_type: :bike_storage, stop: "place-north", activities: ["STORE_BIKE"]}, informed_entity)
+        Enum.count(informed_entities, fn informed_entity ->
+          match?(
+            %InformedEntity{
+              facility_type: :bike_storage,
+              stop: "place-north",
+              activities: ["STORE_BIKE"]
+            },
+            informed_entity
+          )
         end)
+
       assert north_station_entities_count == 1
 
       south_station_entities_count =
-        Enum.count(informed_entities, fn(informed_entity) ->
-          match?(%InformedEntity{facility_type: :bike_storage, stop: "place-sstat", activities: ["STORE_BIKE"]}, informed_entity)
+        Enum.count(informed_entities, fn informed_entity ->
+          match?(
+            %InformedEntity{
+              facility_type: :bike_storage,
+              stop: "place-sstat",
+              activities: ["STORE_BIKE"]
+            },
+            informed_entity
+          )
         end)
+
       assert south_station_entities_count == 1
     end
   end
