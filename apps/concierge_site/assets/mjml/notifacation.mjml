@@ -21,7 +21,7 @@
         <mj-raw>
           <div style="font-family:Lato, Arial; border-bottom-color: #15528D; border-bottom-style: solid; border-bottom-width: 3px; width: 100%; padding-bottom: 4px; padding-top: 24px; font-size: 28px">
             <span style="width: 24px; height: 24px;">
-            <img src="<%= ConciergeSite.Helpers.MailHelper.logo_for_alert(notification.alert) %>" alt="<%= ConciergeSite.Helpers.MailHelper.alt_text_for_alert(notification.alert) %>" style="border: 0; line-height: 100%; outline: none; text-decoration: none;">
+            <img src="<%= ConciergeSite.Helpers.MailHelper.logo_for_alert(notification.alert) %>" alt="" style="border: 0; line-height: 100%; outline: none; text-decoration: none;">
           </span>
             <%= if notification.closed_timestamp do %>
               All clear (re: <%= notification.service_effect %>)
