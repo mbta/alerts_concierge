@@ -1,0 +1,60 @@
+<div id="ie10-overlay" class="row">
+  <div class="landing-page__content col-12">
+
+    <h1 class="ie10-overlay--title">
+      Sorry, your web browser isn't supported.
+    </h1>
+
+    <p class="ie10-overlay--subtitle">
+      For the best experience, please use one of these browsers:
+    </p>
+
+    <div class="ie10-overlay__browsers">
+      <div class="ie10-overlay__browsers--browser">
+        <div class="ie10-overlay__browsers--icon">
+          <%= img_tag(static_path(@conn, "/images/browser_logos/chrome.png"), alt: "Chrome logo") %>
+        </div>
+        <div class="ie10-overlay__browsers--name">
+          Chrome
+        </div>
+        <div class="ie10-overlay__browsers--version">
+          current version
+        </div>
+      </div>
+      <div class="ie10-overlay__browsers--browser">
+        <div class="ie10-overlay__browsers--icon">
+          <%= img_tag(static_path(@conn, "/images/browser_logos/firefox.png"), alt: "Firefox logo") %>
+        </div>
+        <div class="ie10-overlay__browsers--name">
+          Firefox
+        </div>
+        <div class="ie10-overlay__browsers--version">
+          current version
+        </div>
+      </div>
+      <div class="ie10-overlay__browsers--browser">
+        <div class="ie10-overlay__browsers--icon">
+          <%= img_tag(static_path(@conn, "/images/browser_logos/safari.png"), alt: "Safari logo") %>
+        </div>
+        <div class="ie10-overlay__browsers--name">
+          Safari
+        </div>
+        <div class="ie10-overlay__browsers--version">
+          current version
+        </div>
+      </div>
+      <div class="ie10-overlay__browsers--browser">
+        <div class="ie10-overlay__browsers--icon">
+          <%= img_tag(static_path(@conn, "/images/browser_logos/ie.png"), alt: "Internet Explorer logo") %>
+        </div>
+        <div class="ie10-overlay__browsers--name">
+          Internet Explorer
+        </div>
+        <div class="ie10-overlay__browsers--version">
+          version 11 +
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
