@@ -3,7 +3,7 @@ defmodule AlertProcessor.Model.SubscriptionTest do
   use AlertProcessor.DataCase
   import AlertProcessor.Factory
 
-  alias AlertProcessor.Model.{Subscription, InformedEntity}
+  alias AlertProcessor.Model.{Subscription, Alert, InformedEntity}
   alias AlertProcessor.Subscription.{BusMapper, Mapper}
 
   @base_attrs %{
@@ -583,25 +583,127 @@ defmodule AlertProcessor.Model.SubscriptionTest do
     end
   end
 
-  describe "all_active/0" do
-    test "only selects active subscriptions" do
-      {:ok, user} =
-        :user
-        |> build()
-        |> Ecto.Changeset.change()
-        |> Repo.insert()
+  describe "all_active_filtered_by_alerts/1" do
+    @only_route_type_alert %Alert{
+      informed_entities: [%InformedEntity{route_type: 0, route: nil}]
+    }
 
+    @only_stop_alert %Alert{informed_entities: [%InformedEntity{stop: "place-nqnce"}]}
+
+    @route_type_and_red_line_alert %Alert{
+      informed_entities: [%InformedEntity{route_type: 0, route: "Red"}]
+    }
+
+    @route_type_route_and_stop_alert %Alert{
+      informed_entities: [
+        %InformedEntity{route_type: 2, route: "CR-Fairmount", stop: "Newmarket"}
+      ]
+    }
+
+    @wildcard_alert %Alert{
+      informed_entities: [%InformedEntity{route_type: nil, route: nil, stop: nil}]
+    }
+
+    test "only selects active, matches as subscription" do
+      user = insert_user()
       active_subscription = build(:subscription, user: user)
       paused_subscription = build(:subscription, user: user, paused: true)
+      insert_subscriptions([active_subscription, paused_subscription])
 
-      for subscription <- [active_subscription, paused_subscription] do
-        subscription
-        |> Ecto.Changeset.change()
-        |> Repo.insert()
-      end
+      alerts = [
+        @wildcard_alert
+      ]
 
-      subscriptions = Subscription.all_active()
-      assert length(subscriptions) == 1
+      assert [_subscription] = Subscription.all_active_for_alerts(alerts)
     end
+
+    test "subscriptions filtered by route, only selects red line subscription" do
+      user = insert_user()
+      red_line_subscription = build(:subscription, user: user, route: "Red")
+      orange_line_subscription = build(:subscription, user: user, route: "Orange")
+      insert_subscriptions([red_line_subscription, orange_line_subscription])
+
+      alerts = [
+        @route_type_and_red_line_alert
+      ]
+
+      [subscription] = Subscription.all_active_for_alerts(alerts)
+
+      assert subscription.route == "Red"
+    end
+
+    test "subscriptions filtered by route_type, only selects route_type 2 subscription" do
+      user = insert_user()
+      subway_subscription = build(:subscription, user: user, route_type: 0)
+      cr_subscription = build(:subscription, user: user, route_type: 2)
+      insert_subscriptions([subway_subscription, cr_subscription])
+
+      alerts = [
+        @route_type_route_and_stop_alert
+      ]
+
+      [subscription] = Subscription.all_active_for_alerts(alerts)
+
+      assert subscription.route_type == 2
+    end
+
+    test "subscriptions filtered by stop, only selects origin or destination place-nqnce" do
+      user = insert_user()
+      subway_subscription = build(:subscription, user: user, route_type: 0)
+      cr_subscription = build(:subscription, user: user, route_type: 2)
+      origin_subscription = build(:subscription, user: user, origin: "place-nqnce")
+      destination_subscription = build(:subscription, user: user, destination: "place-nqnce")
+
+      insert_subscriptions([
+        subway_subscription,
+        cr_subscription,
+        origin_subscription,
+        destination_subscription
+      ])
+
+      alerts = [
+        @only_stop_alert
+      ]
+
+      [subscription1, subscription2] = Subscription.all_active_for_alerts(alerts)
+
+      assert subscription1.origin == "place-nqnce"
+      assert subscription2.destination == "place-nqnce"
+    end
+  end
+
+  test "subscriptions filtered by route_type, no match to alert" do
+    user = insert_user()
+    origin_subscription = build(:subscription, user: user, origin: "place-nqnce")
+    destination_subscription = build(:subscription, user: user, destination: "place-nqnce")
+
+    insert_subscriptions([
+      origin_subscription,
+      destination_subscription
+    ])
+
+    alerts = [
+      @only_route_type_alert
+    ]
+
+    [] = Subscription.all_active_for_alerts(alerts)
+  end
+
+  defp insert_subscriptions(subscriptions) do
+    for subscription <- subscriptions do
+      subscription
+      |> Ecto.Changeset.change()
+      |> Repo.insert()
+    end
+  end
+
+  defp insert_user() do
+    {:ok, user} =
+      :user
+      |> build()
+      |> Ecto.Changeset.change()
+      |> Repo.insert()
+
+    user
   end
 end
