@@ -23,6 +23,15 @@ defmodule ConciergeSite.PasswordResetControllerTest do
       conn = post(conn, password_reset_path(conn, :create), params)
       assert html_response(conn, 200) =~ "Could not find that email address."
     end
+
+    test "lookup is not case-sensitive", %{conn: conn} do
+      user = insert(:user)
+      params = %{"password_reset" => %{"email" => String.capitalize(user.email)}}
+      conn = post(conn, password_reset_path(conn, :create), params)
+      assert html_response(conn, 302) =~ "/"
+      assert get_flash(conn)["info"] == "We've sent you a password reset email. Check your inbox!"
+      assert_delivered_with(to: [{nil, user.email}])
+    end
   end
 
   test "edit/2", %{conn: conn} do
