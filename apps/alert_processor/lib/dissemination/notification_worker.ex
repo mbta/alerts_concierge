@@ -8,8 +8,7 @@ defmodule AlertProcessor.NotificationWorker do
   alias AlertProcessor.{
     SendingQueue,
     Dispatcher,
-    Model.Notification,
-    RateLimiter
+    Model.Notification
   }
 
   @type notifications :: [Notification.t()]
@@ -46,16 +45,8 @@ defmodule AlertProcessor.NotificationWorker do
   end
 
   defp send_notification(notification) do
-    with :ok <- RateLimiter.check_rate_limit(notification.user.id),
-         {:ok, _} <- Dispatcher.send_notification(notification) do
+    with {:ok, _} <- Dispatcher.send_notification(notification) do
     else
-      {:error, :rate_exceeded} ->
-        Logger.warn(
-          "Sending rate exceeded for user: #{notification.user.id}, alert: #{
-            notification.alert_id
-          }"
-        )
-
       {:error, _} ->
         Logger.warn(
           "Sending failed for user: #{notification.user.id}, alert: #{notification.alert_id}"

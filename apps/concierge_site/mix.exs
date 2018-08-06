@@ -27,7 +27,6 @@ defmodule ConciergeSite.Mixfile do
   def application do
     apps = [
       :elixir_make,
-      :ex2ms,
       :public_key,
       :crypto,
       :bamboo,
