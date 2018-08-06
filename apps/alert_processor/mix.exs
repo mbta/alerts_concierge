@@ -69,7 +69,7 @@ defmodule AlertProcessor.Mixfile do
       {:ecto, "~> 2.1.0"},
       {:exactor, "~> 2.2.0"},
       {:excoveralls, "~> 0.5", only: [:dev, :test]},
-      {:ex_aws, "~> 2.0"},
+      {:ex_aws, "~> 2.1.0", override: true},
       {:ex_aws_sns,
        git: "https://github.com/ex-aws/ex_aws_sns",
        ref: "7a681400876774cf8ea9825a07b7d361715e4362"},
