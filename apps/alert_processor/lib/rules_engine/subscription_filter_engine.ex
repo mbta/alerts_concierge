@@ -4,6 +4,7 @@ defmodule AlertProcessor.SubscriptionFilterEngine do
   with relevant subscriptions to alert provided.
   """
   alias AlertProcessor.{
+    AlertFilters,
     ActivePeriodFilter,
     InformedEntityFilter,
     Model,
@@ -31,7 +32,9 @@ defmodule AlertProcessor.SubscriptionFilterEngine do
     Logger.info(fn ->
       "alert matching #{alert_filter_duration_type}, time=#{
         Time.diff(Time.utc_now(), start_time, :millisecond)
-      } alert_count=#{length(alerts)}"
+      } alert_count=#{length(alerts)} recent_alert_count=#{recent_alert_count(alerts)} older_alert_count=#{
+        older_alert_count(alerts)
+      }"
     end)
 
     :ok
@@ -83,5 +86,15 @@ defmodule AlertProcessor.SubscriptionFilterEngine do
     |> Enum.group_by(& &1.user)
     |> Map.to_list()
     |> Scheduler.schedule_notifications(alert)
+  end
+
+  defp recent_alert_count(alerts), do: alert_count_by_type(alerts, :recent)
+
+  defp older_alert_count(alerts), do: alert_count_by_type(alerts, :older)
+
+  defp alert_count_by_type(alerts, type) do
+    alerts
+    |> AlertFilters.filter_by_duration_type(type)
+    |> length()
   end
 end
