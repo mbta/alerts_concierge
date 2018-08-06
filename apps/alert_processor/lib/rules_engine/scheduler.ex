@@ -16,20 +16,30 @@ defmodule AlertProcessor.Scheduler do
       user_subscriptions
       |> Enum.map(&NotificationBuilder.build_notification(&1, alert))
 
-    enqueue_notifications(notifications)
+    notifications = enqueue_notifications(notifications)
     {:ok, notifications}
   end
 
-  @spec enqueue_notifications([Notification.t()]) :: :ok
+  @spec enqueue_notifications([Notification.t()]) :: [Notification.t()]
   defp enqueue_notifications(notifications) do
-    # save notification in the database before adding to sending queue
-    # do this now incase we re-match the same notificaiton before finishing
-    # sending from a previous iteration
-    Enum.map(notifications, fn notification ->
-      {:ok, notification} = Notification.save(notification, :sent)
-      notification
-    end)
+    # Save notification in the database before adding to sending queue.
+    # Do this now in case we re-match the same notificaiton before finishing
+    # sending from a previous iteration.
+
+    notifications =
+      Enum.map(notifications, fn notification ->
+        case Notification.save(notification, :sent) do
+          {:ok, notification} ->
+            notification
+
+          _ ->
+            # Ignore any notification we are unable to save
+            # e.g. the associated user record does not exist
+            nil
+        end
+      end)
 
     SendingQueue.list_enqueue(notifications)
+    notifications
   end
 end
