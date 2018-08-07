@@ -52,13 +52,10 @@ config :guardian, Guardian,
     default: [
       :reset_password,
       :unsubscribe,
-      :disable_account,
-      :full_permissions,
       :manage_subscriptions
     ],
     admin: [
-      :customer_support,
-      :application_administration
+      :admin
     ]
   }
 

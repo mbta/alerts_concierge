@@ -26,24 +26,6 @@ defmodule ConciergeSite.SignInHelper do
     |> redirect(to: redirect_path(user, Keyword.get(opts, :redirect, :default)))
   end
 
-  defp sign_in_user(conn, %User{role: "customer_support"} = user) do
-    Guardian.Plug.sign_in(conn, user, :access, %{
-      perms: %{
-        default: Guardian.Permissions.max(),
-        admin: [:customer_support]
-      }
-    })
-  end
-
-  defp sign_in_user(conn, %User{role: "application_administration"} = user) do
-    Guardian.Plug.sign_in(conn, user, :access, %{
-      perms: %{
-        default: Guardian.Permissions.max(),
-        admin: [:customer_support, :application_administration]
-      }
-    })
-  end
-
   defp sign_in_user(conn, user) do
     Guardian.Plug.sign_in(conn, user, :access, %{
       perms: %{default: Guardian.Permissions.max()}
