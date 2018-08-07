@@ -2,6 +2,7 @@ defmodule ConciergeSite.AccessibilityTripController do
   use ConciergeSite.Web, :controller
   use Guardian.Phoenix.Controller
   import Phoenix.HTML.Link
+  alias AlertProcessor.Authorizer.TripAuthorizer
   alias AlertProcessor.Model.{Trip, Subscription, User}
   alias ConciergeSite.ParamParsers.TripParams
   alias Ecto.Multi
@@ -25,7 +26,7 @@ defmodule ConciergeSite.AccessibilityTripController do
 
   def edit(conn, %{"id" => id}, user, _claims) do
     with {:trip, %Trip{} = trip} <- {:trip, Trip.find_by_id(id)},
-         {:authorized, true} <- {:authorized, user.id == trip.user_id},
+         {:ok, :authorized} <- TripAuthorizer.authorize(trip, user),
          {:changeset, changeset} <- {:changeset, Trip.update_changeset(trip)} do
       conn
       |> message_if_paused(trip)
@@ -34,14 +35,14 @@ defmodule ConciergeSite.AccessibilityTripController do
       {:trip, nil} ->
         {:error, :not_found}
 
-      {:authorized, false} ->
+      {:error, :unauthorized} ->
         {:error, :not_found}
     end
   end
 
   def update(conn, %{"id" => id, "trip" => trip_params}, user, _claims) do
     with {:trip, %Trip{} = trip} <- {:trip, Trip.find_by_id(id)},
-         {:authorized, true} <- {:authorized, user.id == trip.user_id},
+         {:ok, :authorized} <- TripAuthorizer.authorize(trip, user),
          {:collated_facility_types, collated_trip_params} <-
            {:collated_facility_types,
             TripParams.collate_facility_types(trip_params, @valid_facility_types)},
@@ -55,7 +56,7 @@ defmodule ConciergeSite.AccessibilityTripController do
       {:trip, nil} ->
         {:error, :not_found}
 
-      {:authorized, false} ->
+      {:error, :unauthorized} ->
         {:error, :not_found}
 
       {:error, %Ecto.Changeset{} = changeset} ->

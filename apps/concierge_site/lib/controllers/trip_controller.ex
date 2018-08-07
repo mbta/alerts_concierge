@@ -2,6 +2,7 @@ defmodule ConciergeSite.TripController do
   use ConciergeSite.Web, :controller
   use Guardian.Phoenix.Controller
   import Phoenix.HTML.Link
+  alias AlertProcessor.Authorizer.TripAuthorizer
   alias AlertProcessor.Repo
   alias AlertProcessor.Model.{Trip, Subscription, User}
   alias AlertProcessor.ServiceInfoCache
@@ -56,7 +57,7 @@ defmodule ConciergeSite.TripController do
 
   def edit(conn, %{"id" => id}, user, _claims) do
     with {:trip, %Trip{} = trip} <- {:trip, Trip.find_by_id(id)},
-         {:authorized, true} <- {:authorized, user.id == trip.user_id},
+         {:ok, :authorized} <- TripAuthorizer.authorize(trip, user),
          {:changeset, changeset} <- {:changeset, Trip.update_changeset(trip)} do
       schedules = Schedule.get_schedules_for_trip(trip.subscriptions, false)
       return_schedules = Schedule.get_schedules_for_trip(trip.subscriptions, true)
@@ -76,7 +77,7 @@ defmodule ConciergeSite.TripController do
       {:trip, nil} ->
         {:error, :not_found}
 
-      {:authorized, false} ->
+      {:error, :unauthorized} ->
         {:error, :not_found}
     end
   end
@@ -93,7 +94,7 @@ defmodule ConciergeSite.TripController do
 
   def update(conn, %{"id" => id, "trip" => trip_params}, user, _claims) do
     with {:trip, %Trip{} = trip} <- {:trip, Trip.find_by_id(id)},
-         {:authorized, true} <- {:authorized, user.id == trip.user_id},
+         {:ok, :authorized} <- TripAuthorizer.authorize(trip, user),
          {:collated_facility_types, collated_trip_params} <-
            {:collated_facility_types,
             TripParams.collate_facility_types(trip_params, @valid_facility_types)},
@@ -110,7 +111,7 @@ defmodule ConciergeSite.TripController do
       {:trip, nil} ->
         {:error, :not_found}
 
-      {:authorized, false} ->
+      {:error, :unauthorized} ->
         {:error, :not_found}
 
       {:error, %Ecto.Changeset{} = changeset} ->
@@ -287,7 +288,7 @@ defmodule ConciergeSite.TripController do
 
   def pause(conn, %{"trip_id" => id}, user, __claims) do
     with %Trip{} = trip <- Trip.find_by_id(id),
-         {:authorized, true} <- {:authorized, user.id == trip.user_id},
+         {:ok, :authorized} <- TripAuthorizer.authorize(trip, user),
          :ok <- Trip.pause(trip, user.id) do
       conn
       |> put_flash(:info, "Subscription paused.")
@@ -300,7 +301,7 @@ defmodule ConciergeSite.TripController do
 
   def resume(conn, %{"trip_id" => id}, user, __claims) do
     with %Trip{} = trip <- Trip.find_by_id(id),
-         {:authorized, true} <- {:authorized, user.id == trip.user_id},
+         {:ok, :authorized} <- TripAuthorizer.authorize(trip, user),
          :ok <- Trip.resume(trip, user.id) do
       conn
       |> put_flash(:info, "Subscription resumed.")
