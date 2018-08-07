@@ -28,6 +28,10 @@ defmodule ConciergeSite.SessionController do
     |> redirect(to: session_path(conn, :new))
   end
 
+  @doc """
+  Require a user to log in if not authenticated.
+  Callback for Guardian.Plug.EnsureAuthenticated.
+  """
   def unauthenticated(conn, _params) do
     conn
     |> put_flash(:info, "Please log in")

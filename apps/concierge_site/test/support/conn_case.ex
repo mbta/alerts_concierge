@@ -24,20 +24,6 @@ defmodule ConciergeSite.ConnCase do
       # The default endpoint for testing
       @endpoint ConciergeSite.Endpoint
 
-      @customer_support_token_params %{
-        perms: %{
-          default: Guardian.Permissions.max(),
-          admin: [:customer_support]
-        }
-      }
-
-      @application_admin_token_params %{
-        perms: %{
-          default: Guardian.Permissions.max(),
-          admin: [:application_administration, :customer_support]
-        }
-      }
-
       # Import ExMachina Factories
       import AlertProcessor.Factory
 

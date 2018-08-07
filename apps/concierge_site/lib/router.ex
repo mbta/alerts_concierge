@@ -20,35 +20,11 @@ defmodule ConciergeSite.Router do
     plug(ConciergeSite.Plugs.Authorized)
   end
 
-  pipeline :disable_account_auth do
-    plug(
-      Guardian.Plug.EnsurePermissions,
-      handler: ConciergeSite.Auth.ErrorHandler,
-      default: [:disable_account]
-    )
-  end
-
   pipeline :subscription_auth do
     plug(
       Guardian.Plug.EnsurePermissions,
       handler: ConciergeSite.Auth.ErrorHandler,
       default: [:manage_subscriptions]
-    )
-  end
-
-  pipeline :full_auth do
-    plug(
-      Guardian.Plug.EnsurePermissions,
-      handler: ConciergeSite.Auth.ErrorHandler,
-      default: [:full_permissions]
-    )
-  end
-
-  pipeline :admin_auth do
-    plug(
-      Guardian.Plug.EnsurePermissions,
-      handler: ConciergeSite.Admin.SessionController,
-      admin: [:customer_support]
     )
   end
 
