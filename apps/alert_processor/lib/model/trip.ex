@@ -142,6 +142,17 @@ defmodule AlertProcessor.Model.Trip do
     )
   end
 
+  def get_trip_count_by_user(user_id) do
+    Repo.aggregate(
+      from(
+        t in __MODULE__,
+        where: t.user_id == ^user_id
+      ),
+      :count,
+      :id
+    )
+  end
+
   @doc """
   Deletes a trip and associated subscriptions.
 
