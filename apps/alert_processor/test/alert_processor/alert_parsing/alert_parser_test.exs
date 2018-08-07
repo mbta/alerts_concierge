@@ -35,7 +35,7 @@ defmodule AlertProcessor.AlertParserTest do
       beginning_alerts = length(Repo.all(SavedAlert))
       assert AlertParser.process_alerts()
       ending_alerts = length(Repo.all(SavedAlert))
-      assert ending_alerts - beginning_alerts == 15
+      assert ending_alerts - beginning_alerts == 2
     end
 
     use_cassette "new_alerts", custom: true, clear_mock: true, match_requests_on: [:query] do
@@ -183,7 +183,7 @@ defmodule AlertProcessor.AlertParserTest do
       beginning_alerts = length(Repo.all(SavedAlert))
       assert AlertParser.process_alerts()
       ending_alerts = length(Repo.all(SavedAlert))
-      assert ending_alerts - beginning_alerts == 38
+      assert ending_alerts - beginning_alerts == 1
     end
   end
 
