@@ -56,7 +56,6 @@ defmodule ConciergeSite.Mixfile do
       {:alert_processor, in_umbrella: true},
       {:bamboo, "~> 0.8"},
       {:bamboo_smtp, "~> 1.3.0"},
-      {:bodyguard, "~> 1.0.0"},
       {:comeonin, "~> 3.0"},
       {:dialyxir, "~> 0.5.0", only: [:dev]},
       {:excoveralls, "~> 0.5", only: [:dev, :test]},
