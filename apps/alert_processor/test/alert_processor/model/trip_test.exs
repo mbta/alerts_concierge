@@ -86,6 +86,21 @@ defmodule AlertProcessor.Model.TripTest do
     assert [] == Trip.get_trips_by_user("ba51f08c-ad36-4dd5-a81a-557168c42f51")
   end
 
+  test "get_trip_count_by_user/1 returns a count of the trips for a given user" do
+    user = insert(:user)
+
+    Repo.insert!(%Trip{
+      user_id: user.id,
+      alert_priority_type: :low,
+      relevant_days: [:monday],
+      start_time: ~T[12:00:00],
+      end_time: ~T[18:00:00],
+      facility_types: [:elevator]
+    })
+
+    assert Trip.get_trip_count_by_user(user.id) == 1
+  end
+
   describe "delete/1" do
     test "returns `{:ok, Trip.t}` with valid trip", %{user: user, valid_attrs: valid_attrs} do
       trip =

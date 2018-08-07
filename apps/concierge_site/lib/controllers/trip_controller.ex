@@ -21,8 +21,8 @@ defmodule ConciergeSite.TripController do
   end
 
   def new(conn, _params, user, _claims) do
-    trips = Trip.get_trips_by_user(user.id)
-    render(conn, "new.html", trips: trips)
+    trip_count = Trip.get_trip_count_by_user(user.id)
+    render(conn, "new.html", trip_count: trip_count)
   end
 
   def create(conn, %{"trip" => trip_params}, user, {:ok, claims}) do

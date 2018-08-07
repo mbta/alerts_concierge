@@ -4,7 +4,7 @@
 <div class="container container__inner">
   <div class="row justify-content-md-center">
     <div class="col-sm-12">
-      <%= if @conn.assigns[:trips] && List.first(@trips) == nil do %>
+      <%= if @conn.assigns[:trip_count] && @trip_count == 0 do %>
         <p>Once we get to know more about your trips, we can customize alerts just for you. Create as many subscriptions you’d like. Let’s start with a trip you regularly take.</p>
       <% end %>
       <div class="callout">
