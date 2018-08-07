@@ -378,9 +378,9 @@ defmodule AlertProcessor.AlertParser do
       end)
 
     Enum.reduce(alerts, [], fn alert, accumulator ->
-      accumulator ++
-        [
-          if Map.has_key?(api_alerts_by_id, alert["id"]) do
+      if Map.has_key?(api_alerts_by_id, alert["id"]) do
+        accumulator ++
+          [
             Map.put(
               alert,
               "informed_entity",
@@ -388,10 +388,10 @@ defmodule AlertProcessor.AlertParser do
                 api_alerts_by_id[alert["id"]]["attributes"]["informed_entity"]
               )
             )
-          else
-            alert
-          end
-        ]
+          ]
+      else
+        accumulator
+      end
     end)
   end
 
