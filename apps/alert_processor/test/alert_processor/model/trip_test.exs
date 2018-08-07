@@ -3,10 +3,8 @@ defmodule AlertProcessor.Model.TripTest do
   use AlertProcessor.DataCase
   import AlertProcessor.Factory
   alias AlertProcessor.Repo
-  alias AlertProcessor.Model.{Trip, User, Subscription}
+  alias AlertProcessor.Model.{Trip, Subscription}
 
-  @password "password1"
-  @encrypted_password Comeonin.Bcrypt.hashpwsalt(@password)
   @base_attrs %{
     alert_priority_type: :low,
     relevant_days: [:monday],
@@ -72,12 +70,7 @@ defmodule AlertProcessor.Model.TripTest do
   end
 
   test "get_trips_by_user/1" do
-    user =
-      Repo.insert!(%User{
-        email: "test@email.com",
-        role: "user",
-        encrypted_password: @encrypted_password
-      })
+    user = insert(:user)
 
     Repo.insert!(%Trip{
       user_id: user.id,
