@@ -22,7 +22,7 @@ defmodule ConciergeSite.AccountController do
     case User.create_account(params) do
       {:ok, user} ->
         ConfirmationMessage.send_email_confirmation(user)
-        SignInHelper.sign_in(conn, user, redirect: :default)
+        SignInHelper.sign_in(conn, user)
 
       {:error, changeset} ->
         render(conn, "new.html", account_changeset: changeset, errors: errors(changeset))

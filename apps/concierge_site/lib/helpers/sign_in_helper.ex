@@ -19,11 +19,11 @@ defmodule ConciergeSite.SignInHelper do
   When resetting password, admin users are redirected to admin my-account page
   and normal users are redirected to the base my-account page.
   """
-  @spec sign_in(Plug.Conn.t(), User.t(), redirect: atom) :: Plug.Conn.t()
-  def sign_in(conn, user, opts) do
+  @spec sign_in(Plug.Conn.t(), User.t()) :: Plug.Conn.t()
+  def sign_in(conn, user) do
     conn
     |> sign_in_user(user)
-    |> redirect(to: redirect_path(user, Keyword.get(opts, :redirect, :default)))
+    |> redirect(to: redirect_path(user))
   end
 
   defp sign_in_user(conn, user) do
@@ -32,7 +32,7 @@ defmodule ConciergeSite.SignInHelper do
     })
   end
 
-  defp redirect_path(user, :default) do
+  defp redirect_path(user) do
     if Trip.get_trips_by_user(user.id) == [] do
       account_path(@endpoint, :options_new)
     else
