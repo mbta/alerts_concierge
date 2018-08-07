@@ -290,7 +290,8 @@ defmodule AlertProcessor.AlertParser do
     end
   end
 
-  defp get_schedule(%{"trip_id" => trip_id} = trip, %{"route_type" => 2}) do
+  defp get_schedule(%{"trip_id" => trip_id} = trip, %{"route_type" => route_type})
+       when route_type in [2, 4] do
     with nil <- Map.get(trip, "stop_id"),
          {:ok, schedule} <- CachedApiClient.schedule_for_trip(trip_id) do
       Enum.map(schedule, &parse_schedule_event/1)

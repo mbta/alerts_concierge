@@ -318,7 +318,7 @@ defmodule ConciergeSite.Integration.Matching do
       direction_id: 1,
       route: "Boat-F4",
       origin: "Boat-Charlestown",
-      destination: "Boat-Long",
+      destination: "Boat-Long-South",
       facility_types: [],
       start_time: ~T[08:00:00],
       end_time: ~T[08:30:00],
@@ -375,14 +375,8 @@ defmodule ConciergeSite.Integration.Matching do
     end
 
     test "similar: different direction" do
-      trip = %{
-        "direction_id" => 0,
-        "route_id" => "Boat-F4",
-        "trip_id" => "Boat-F4-Boat-Charlestown-08:00:00-weekday-1"
-      }
-
       refute_notify(
-        alert(informed_entity: [entity(:ferry, direction_id: 0, trip: trip)]),
+        alert(informed_entity: [entity(:ferry, direction_id: 0)]),
         @subscription
       )
     end
@@ -992,8 +986,8 @@ defmodule ConciergeSite.Integration.Matching do
       "route_type" => 2,
       "route_id" => "CR-Haverhill",
       "activities" => ["BOARD"],
+      "direction_id" => 1,
       "trip" => %{
-        "direction_id" => 1,
         "route_id" => "CR-Haverhill",
         "trip_id" => "CR-Weekday-Fall-17-288"
       }
@@ -1007,10 +1001,10 @@ defmodule ConciergeSite.Integration.Matching do
       "route_type" => 4,
       "route_id" => "Boat-F4",
       "activities" => ["BOARD"],
+      "direction_id" => 1,
       "trip" => %{
-        "direction_id" => 1,
         "route_id" => "Boat-F4",
-        "trip_id" => "Boat-F4-Boat-Charlestown-08:00:00-weekday-1"
+        "trip_id" => "Boat-F4-1415-Charlestown-Weekday"
       }
     }
 
