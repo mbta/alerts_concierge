@@ -12,7 +12,7 @@ defmodule ConciergeSite.SessionController do
   def create(conn, %{"user" => login_params}) do
     case User.authenticate(login_params) do
       {:ok, user} ->
-        SignInHelper.sign_in(conn, user, redirect: :default)
+        SignInHelper.sign_in(conn, user)
 
       {:error, changeset} ->
         conn
