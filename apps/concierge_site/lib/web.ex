@@ -23,7 +23,6 @@ defmodule ConciergeSite.Web do
       import ConciergeSite.Router.Helpers
       import ConciergeSite.Gettext
       import ConciergeSite.AuthorizationHelper
-      import Bodyguard.Controller
     end
   end
 
@@ -46,7 +45,6 @@ defmodule ConciergeSite.Web do
       import ConciergeSite.FontAwesomeHelpers
       import ConciergeSite.Gettext
       import ConciergeSite.ViewHelpers
-      import Bodyguard.ViewHelpers
     end
   end
 
