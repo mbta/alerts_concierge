@@ -15,7 +15,9 @@ function toggleCheckbox(pubsub, $) {
   return e => {
     e.preventDefault();
     const $targetLabelEl = $(e.target);
-    const isChecked = $targetLabelEl.find("input[type='checkbox']").attr("checked");
+    const isChecked = $targetLabelEl
+      .find("input[type='checkbox']")
+      .attr("checked");
     setTimeout(() => {
       pubsub.publishSync("checkbox-change", {
         changedEl: $targetLabelEl,
@@ -27,10 +29,12 @@ function toggleCheckbox(pubsub, $) {
         $targetLabelEl.attr("aria-checked", "false");
         $targetLabelEl.removeClass("active");
       } else {
-        $targetLabelEl.find("input[type='checkbox']").attr("checked", "checked");
+        $targetLabelEl
+          .find("input[type='checkbox']")
+          .attr("checked", "checked");
         $targetLabelEl.find("input[type='hidden']").attr("value", "true");
         $targetLabelEl.attr("aria-checked", "true");
-        $targetLabelEl.addClass("active"); 
+        $targetLabelEl.addClass("active");
       }
     }, 10);
   };
@@ -100,13 +104,11 @@ function toggleEvents($) {
         const $connectionContainerEl = $("div[data-type='connection']");
         if (inputValue == "true") {
           $connectionContainerEl.removeClass("d-none");
-          $connectionContainerEl.find("select").attr("required", "required");
           setTimeout(() => {
             $connectionContainerEl.find("select").focus();
           }, 250);
         } else {
           $connectionContainerEl.addClass("d-none");
-          $connectionContainerEl.find("select").removeAttr("required");
         }
         break;
 

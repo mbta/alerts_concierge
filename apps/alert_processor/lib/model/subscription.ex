@@ -47,7 +47,8 @@ defmodule AlertProcessor.Model.Subscription do
           rank: integer | nil,
           return_trip: boolean | nil,
           facility_types: [facility_type] | [],
-          paused: boolean | nil
+          paused: boolean | nil,
+          parent_id: String.t() | nil
         }
 
   @alert_priority_type_values %{
@@ -98,6 +99,7 @@ defmodule AlertProcessor.Model.Subscription do
     field(:facility_types, {:array, AlertProcessor.AtomType})
     field(:notification_type_to_send, AlertProcessor.AtomType, virtual: true)
     field(:paused, :boolean)
+    field(:parent_id, :binary_id)
 
     timestamps()
   end

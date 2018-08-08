@@ -24,7 +24,8 @@ defmodule ConciergeSite.RouteSelectHelperChoicesJS do
         end
       end,
       content_tag :div, data: [type: "mode-select", id: "bus"], class: "d-none" do
-        content_tag :select, attributes(input_name, field, :bus, attrs, false) do
+        content_tag :select,
+                    attributes(input_name, field, :bus, attrs ++ [multiple: true], false) do
           options(:bus, selected)
         end
       end

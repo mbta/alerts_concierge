@@ -23,7 +23,7 @@ defmodule ConciergeSite.TripController do
 
   def new(conn, _params, user, _claims) do
     trip_count = Trip.get_trip_count_by_user(user.id)
-    render(conn, "new.html", trip_count: trip_count)
+    render(conn, "new.html", trip_count: trip_count, alternate_routes: %{})
   end
 
   def create(conn, %{"trip" => trip_params}, user, {:ok, claims}) do
@@ -41,12 +41,12 @@ defmodule ConciergeSite.TripController do
       {:error, :relevant_days} ->
         conn
         |> put_flash(:error, "You must select at least one day for your trip.")
-        |> render("new.html")
+        |> render("new.html", alternate_routes: trip_params["alternate_routes"])
 
       _ ->
         conn
         |> put_flash(:error, "There was an error creating your trip. Please try again.")
-        |> render("new.html")
+        |> render("new.html", alternate_routes: trip_params["alternate_routes"])
     end
   end
 
@@ -130,11 +130,22 @@ defmodule ConciergeSite.TripController do
     end
   end
 
-  def leg(conn, %{"trip" => %{"origin" => origin, "destination" => destination}}, _, _)
+  def leg(
+        conn,
+        %{
+          "trip" => %{
+            "origin" => origin,
+            "destination" => destination,
+            "alternate_routes" => alternate_routes
+          }
+        },
+        _,
+        _
+      )
       when not is_nil(origin) and origin == destination do
     conn
     |> put_flash(:error, "There was an error. Trip origin and destination must be different.")
-    |> render("new.html")
+    |> render("new.html", alternate_routes: parse_alternate_routes(alternate_routes))
   end
 
   def leg(conn, %{"trip" => trip}, user, _claims) do
@@ -168,7 +179,8 @@ defmodule ConciergeSite.TripController do
           saved_leg: leg,
           saved_mode: mode,
           modes: modes,
-          default_origin: [List.first(destinations)]
+          default_origin: [List.first(destinations)],
+          alternate_routes: parse_alternate_routes(trip["alternate_routes"])
         )
 
       %{
@@ -177,7 +189,8 @@ defmodule ConciergeSite.TripController do
         "destination" => destination,
         "round_trip" => round_trip,
         "new_leg" => "false",
-        "saved_mode" => saved_mode
+        "saved_mode" => saved_mode,
+        "alternate_routes" => alternate_routes
       } ->
         {legs, origins, destinations, modes} =
           parse_legs(trip, saved_leg, origin, destination, saved_mode)
@@ -185,6 +198,7 @@ defmodule ConciergeSite.TripController do
         conn = %{conn | params: %{}}
         schedules = Schedule.get_schedules_for_input(legs, origins, destinations, modes)
         return_schedules = Schedule.get_schedules_for_input(legs, destinations, origins, modes)
+        alternate_routes = parse_alternate_routes(alternate_routes)
 
         render(
           conn,
@@ -196,6 +210,7 @@ defmodule ConciergeSite.TripController do
           modes: modes,
           schedules: schedules,
           return_schedules: return_schedules,
+          alternate_routes: alternate_routes,
           partial_subscriptions:
             input_to_subscriptions(user, %{
               "partial" => true,
@@ -204,11 +219,17 @@ defmodule ConciergeSite.TripController do
               "origins" => origins,
               "destinations" => destinations,
               "round_trip" => round_trip,
-              "combine_greenline_routes" => true
+              "combine_greenline_routes" => true,
+              "alternate_routes" => alternate_routes
             })
         )
 
-      %{"route" => route, "round_trip" => round_trip, "from_new_trip" => "true"} ->
+      %{
+        "route" => route,
+        "round_trip" => round_trip,
+        "from_new_trip" => "true",
+        "alternate_routes" => alternate_routes
+      } ->
         [leg, route_name, mode] = String.split(route, "~~")
         conn = %{conn | params: %{}}
 
@@ -224,12 +245,13 @@ defmodule ConciergeSite.TripController do
           saved_mode: mode,
           saved_leg: leg,
           modes: [],
-          default_origin: []
+          default_origin: [],
+          alternate_routes: parse_alternate_routes(alternate_routes)
         )
 
       _ ->
         conn = put_flash(conn, :error, "There was an error creating your trip. Please try again.")
-        render(conn, "new.html")
+        render(conn, "new.html", alternate_routes: %{})
     end
   end
 
@@ -241,7 +263,8 @@ defmodule ConciergeSite.TripController do
             "origins" => origins,
             "destinations" => destinations,
             "modes" => modes,
-            "round_trip" => round_trip
+            "round_trip" => round_trip,
+            "alternate_routes" => alternate_routes
           }
         },
         user,
@@ -249,6 +272,7 @@ defmodule ConciergeSite.TripController do
       ) do
     schedules = Schedule.get_schedules_for_input(legs, origins, destinations, modes)
     return_schedules = Schedule.get_schedules_for_input(legs, destinations, origins, modes)
+    alternate_routes = parse_alternate_routes(alternate_routes)
 
     render(
       conn,
@@ -260,6 +284,7 @@ defmodule ConciergeSite.TripController do
       round_trip: round_trip,
       schedules: schedules,
       return_schedules: return_schedules,
+      alternate_routes: alternate_routes,
       partial_subscriptions:
         input_to_subscriptions(user, %{
           "partial" => true,
@@ -268,7 +293,8 @@ defmodule ConciergeSite.TripController do
           "origins" => origins,
           "destinations" => destinations,
           "round_trip" => round_trip,
-          "combine_greenline_routes" => true
+          "combine_greenline_routes" => true,
+          "alternate_routes" => alternate_routes
         })
     )
   end
@@ -324,6 +350,14 @@ defmodule ConciergeSite.TripController do
   defp mode_list(%{"modes" => modes}), do: modes
   defp mode_list(_), do: []
 
+  defp parse_alternate_routes(nil), do: %{}
+
+  defp parse_alternate_routes(alternate_routes_encoded_string) do
+    alternate_routes_encoded_string
+    |> URI.decode()
+    |> Poison.decode!()
+  end
+
   defp parse_legs(trip, saved_leg, origin, destination, saved_mode) do
     legs = leg_list(trip)
     origins = origin_list(trip)
@@ -353,7 +387,6 @@ defmodule ConciergeSite.TripController do
       sub_to_insert =
         sub
         |> Map.merge(%{
-          id: Ecto.UUID.generate(),
           user_id: user.id,
           trip_id: trip.id,
           facility_types: trip.facility_types
@@ -380,6 +413,7 @@ defmodule ConciergeSite.TripController do
     |> Map.put("return_end_time", ParamTime.to_time(params["return_end_time"]))
     |> Map.put("schedule_start", parse_schedule_input(params, "schedule_start"))
     |> Map.put("schedule_return", parse_schedule_input(params, "schedule_return"))
+    |> Map.put("alternate_routes", parse_alternate_routes(params["alternate_routes"]))
   end
 
   defp parse_schedule_input(params, field) do
@@ -406,6 +440,7 @@ defmodule ConciergeSite.TripController do
       {:ok, route} = ServiceInfoCache.get_route(route_filter)
 
       %Subscription{
+        id: Ecto.UUID.generate(),
         alert_priority_type: "low",
         user_id: user.id,
         relevant_days: Enum.map(params["relevant_days"] || [], &String.to_existing_atom/1),
@@ -424,7 +459,8 @@ defmodule ConciergeSite.TripController do
         travel_end_time: List.last(travel_times(params["schedule_start"] || %{}, route_id))
       }
       |> Subscription.add_latlong_to_subscription(origin, destination)
-      |> add_return_subscription(params)
+      |> add_alternate_route_subscriptions(params["alternate_routes"][route_in])
+      |> Enum.flat_map(&add_return_subscription(&1, params))
     end)
     |> Enum.flat_map(
       &expand_multiroute_greenline_subscription(
@@ -456,7 +492,7 @@ defmodule ConciergeSite.TripController do
 
   defp copy_subscription_for_routes(routes, subscription) do
     Enum.map(routes, fn route_id ->
-      %{subscription | route: route_id}
+      %{subscription | route: route_id, id: Ecto.UUID.generate()}
     end)
   end
 
@@ -495,7 +531,8 @@ defmodule ConciergeSite.TripController do
         direction_id: flip_direction(subscription.direction_id),
         return_trip: true,
         travel_start_time: List.first(travel_times(schedule_return, subscription.route)),
-        travel_end_time: List.last(travel_times(schedule_return, subscription.route))
+        travel_end_time: List.last(travel_times(schedule_return, subscription.route)),
+        id: Ecto.UUID.generate()
     }
 
     [subscription, return_subscription]
@@ -511,13 +548,42 @@ defmodule ConciergeSite.TripController do
         destination_lat: subscription.origin_lat,
         destination_long: subscription.origin_long,
         direction_id: flip_direction(subscription.direction_id),
-        return_trip: true
+        return_trip: true,
+        id: Ecto.UUID.generate()
     }
 
     [subscription, return_subscription]
   end
 
   defp add_return_subscription(subscription, _), do: [subscription]
+
+  @spec add_alternate_route_subscriptions(Subscription.t(), map() | nil) :: [Subscription.t()]
+  defp add_alternate_route_subscriptions(subscription, nil), do: [subscription]
+
+  defp add_alternate_route_subscriptions(subscription, alternate_routes) do
+    alternate_subscriptions =
+      Enum.map(alternate_routes, fn alternate_route ->
+        leg =
+          alternate_route
+          |> String.split("~~")
+          |> List.first()
+
+        route =
+          leg
+          |> String.split(" - ")
+          |> List.first()
+
+        %{
+          subscription
+          | route: route,
+            direction_id: subscription.direction_id,
+            id: Ecto.UUID.generate(),
+            parent_id: subscription.id
+        }
+      end)
+
+    [subscription] ++ alternate_subscriptions
+  end
 
   defp input_to_trip(user, params) do
     %Trip{

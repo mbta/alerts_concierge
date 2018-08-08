@@ -1,5 +1,5 @@
 import Choices from "choices.js";
-import elemDataset from 'elem-dataset';
+import elemDataset from "elem-dataset";
 import getIcon from "./route-icons";
 import { say } from "./speak-to-screenreader";
 
@@ -10,9 +10,7 @@ let icons = {};
 export default () => {
   // wait for DOM to load
   document.addEventListener("DOMContentLoaded", () => {
-    const routeSelectEls = document.querySelectorAll(
-      "[data-type='route']"
-    );
+    const routeSelectEls = document.querySelectorAll("[data-type='route']");
     if (routeSelectEls.length < 1) {
       return;
     }
@@ -26,7 +24,6 @@ export default () => {
 const destroyChoicesJSForRoute = el => {
   const id = el.getAttribute("id");
   if (instances[id]) {
-    el.removeEventListener("choice", handleChoice, false);
     el.removeEventListener("showDropdown", handleShowDropdown, false);
     instances[id].destroy();
   }
@@ -60,7 +57,8 @@ const applyChoicesJSToRoute = (el, options = {}) => {
       containerOuter: `choices choices__bootstrap--theme choices__bootstrap--route-theme ${searchOptionClass(
         id
       )}`,
-      itemSelectable: 'choices__item--selectable choices__bootstrap--item-selectable'
+      itemSelectable:
+        "choices__item--selectable choices__bootstrap--item-selectable"
     },
     searchPlaceholderValue: `Type here to search for your ${modeNameFromId(
       id
@@ -84,9 +82,6 @@ const applyChoicesJSToRoute = (el, options = {}) => {
     if (options.focus === true) {
       el.addEventListener("showDropdown", handleShowDropdown, false);
     }
-
-    // callback to make the component appear closed when a selection is made
-    el.addEventListener("choice", handleChoice, false);
   }
 };
 
@@ -109,7 +104,11 @@ const itemTemplate = (id, template, removeItemButton) => (classNames, data) => {
         : ""
     }
     ${data.label}
-    ${removeItemButton ? `<button type="button" class="choices__button" data-button="" aria-label="">Remove item</button>` : ""}
+    ${
+      removeItemButton
+        ? `<button type="button" class="choices__button" data-button="" aria-label="">Remove item</button>`
+        : ""
+    }
   </div>
 `);
 };
@@ -144,20 +143,10 @@ const getContainerFromEventPath = eventPath =>
     .shift();
 
 const handleShowDropdown = event => {
-  const container = getContainerFromEventPath(event.path);
-  if (container.classList.contains("no-search")) {
+  const container = getContainerFromEventPath(event.path || []);
+  if (container && container.classList.contains("no-search")) {
     container.focus();
   }
-};
-
-const handleChoice = event => {
-  // remove the classes that make the component appear in an open state
-  const container = getContainerFromEventPath(event.path);
-  container.classList.remove("is-active");
-  container.classList.remove("is-open");
-  container
-    .querySelector(".choices__list--dropdown")
-    .classList.remove("is-active");
 };
 
 const handleHighlightChoice = event => {

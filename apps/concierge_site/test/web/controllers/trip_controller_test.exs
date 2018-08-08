@@ -297,7 +297,8 @@ defmodule ConciergeSite.TripControllerTest do
         return_end_time: %{"am_pm" => "PM", "hour" => "6", "minute" => "00"},
         return_start_time: %{"am_pm" => "PM", "hour" => "5", "minute" => "00"},
         round_trip: "true",
-        start_time: %{"am_pm" => "AM", "hour" => "8", "minute" => "00"}
+        start_time: %{"am_pm" => "AM", "hour" => "8", "minute" => "00"},
+        alternate_routes: "{}"
       }
 
       conn =
@@ -329,7 +330,8 @@ defmodule ConciergeSite.TripControllerTest do
         return_end_time: %{"am_pm" => "PM", "hour" => "6", "minute" => "00"},
         return_start_time: %{"am_pm" => "PM", "hour" => "5", "minute" => "00"},
         round_trip: "true",
-        start_time: %{"am_pm" => "AM", "hour" => "8", "minute" => "00"}
+        start_time: %{"am_pm" => "AM", "hour" => "8", "minute" => "00"},
+        alternate_routes: "{}"
       }
 
       conn =
@@ -396,7 +398,8 @@ defmodule ConciergeSite.TripControllerTest do
       round_trip: "true",
       route: "Green~~Green Line~~subway",
       saved_leg: "Red",
-      saved_mode: "subway"
+      saved_mode: "subway",
+      alternate_routes: "{}"
     }
 
     conn =
@@ -438,7 +441,8 @@ defmodule ConciergeSite.TripControllerTest do
       origin: "place-alfcl",
       round_trip: "true",
       saved_leg: "Red",
-      saved_mode: "subway"
+      saved_mode: "subway",
+      alternate_routes: "{}"
     }
 
     conn =
@@ -456,7 +460,8 @@ defmodule ConciergeSite.TripControllerTest do
     trip = %{
       from_new_trip: "true",
       round_trip: "true",
-      route: "Red~~Red Line~~subway"
+      route: "Red~~Red Line~~subway",
+      alternate_routes: "{}"
     }
 
     conn =
@@ -484,7 +489,8 @@ defmodule ConciergeSite.TripControllerTest do
         legs: ["Red"],
         origins: ["place-alfcl"],
         round_trip: "true",
-        modes: ["subway"]
+        modes: ["subway"],
+        alternate_routes: "{}"
       }
 
       conn =
@@ -506,7 +512,8 @@ defmodule ConciergeSite.TripControllerTest do
         round_trip: "true",
         modes: ["cr"],
         schedule_return: %{"CR-Fairmount" => ["17:45:00"]},
-        schedule_start: %{"CR-Fairmount" => ["08:48:00"]}
+        schedule_start: %{"CR-Fairmount" => ["08:48:00"]},
+        alternate_routes: "{}"
       }
 
       conn =
@@ -526,7 +533,8 @@ defmodule ConciergeSite.TripControllerTest do
         legs: ["41 - 1"],
         origins: [],
         round_trip: "true",
-        modes: ["bus"]
+        modes: ["bus"],
+        alternate_routes: "{}"
       }
 
       conn =

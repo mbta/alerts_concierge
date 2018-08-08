@@ -11,7 +11,7 @@
 //
 // If you no longer want to use a dependency, remember
 // to also remove its path from "config.paths.watched".
-import "phoenix_html"
+import "phoenix_html";
 
 // Import local files
 //
@@ -34,7 +34,7 @@ import flashFocus from "./flash-focus";
 import pubsubFactory from "PubSub";
 import tripForm from "./trip-form";
 import commuteEditForm from "./commute-edit-form";
-import accessibilityForm from "./accessibility-form";
+import selectMultiFix from "./select-multi-fix";
 const pubsub = new pubsubFactory();
 
 touchSupport();
@@ -49,5 +49,5 @@ customTimeSelect(pubsub);
 deleteModal();
 tripForm();
 commuteEditForm();
-accessibilityForm();
+selectMultiFix();
 flashFocus();
