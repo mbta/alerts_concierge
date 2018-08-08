@@ -1,6 +1,6 @@
-defmodule ConciergeSite.Plugs.Authorized do
+defmodule ConciergeSite.Plugs.SaveCurrentUser do
   @moduledoc """
-  Plug to check whether an admin user has signed in.
+  Plug to check whether an user has signed in.
   """
 
   import Plug.Conn

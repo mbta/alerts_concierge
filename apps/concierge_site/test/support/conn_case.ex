@@ -31,8 +31,11 @@ defmodule ConciergeSite.ConnCase do
             user,
             conn,
             type \\ :access,
-            claims \\ %{perms: %{default: Guardian.Permissions.max()}}
+            claims \\ nil
           ) do
+        claims =
+          if is_nil(claims), do: ConciergeSite.SignInHelper.permissions_for(user), else: claims
+
         conn
         |> bypass_through(ConciergeSite.Router, [:browser])
         |> get("/")

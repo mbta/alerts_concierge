@@ -1,13 +1,40 @@
 defmodule ConciergeSite.Router do
   use ConciergeSite.Web, :router
 
+  pipeline :redirect_prod_http do
+    if Application.get_env(:concierge_site, :redirect_http?) do
+      plug(Plug.SSL, rewrite_on: [:x_forwarded_proto])
+    end
+  end
+
+  pipeline :api do
+    plug(:accepts, ["json"])
+    plug(:fetch_session)
+    # We don't actually need flash, but for now it is required in web.ex for views
+    plug(:fetch_flash)
+    plug(:protect_from_forgery)
+    plug(:put_secure_browser_headers)
+    plug(ConciergeSite.Plugs.TokenLogin)
+    plug(Guardian.Plug.VerifySession)
+    plug(Guardian.Plug.LoadResource)
+    plug(Guardian.Plug.EnsureAuthenticated, handler: ConciergeSite.SessionController)
+    plug(ConciergeSite.Plugs.TokenRefresh)
+    plug(ConciergeSite.Plugs.SaveCurrentUser)
+
+    plug(
+      Guardian.Plug.EnsurePermissions,
+      handler: ConciergeSite.Auth.ErrorHandler,
+      admin: [:api]
+    )
+  end
+
   pipeline :browser do
     plug(:accepts, ["html"])
     plug(:fetch_session)
     plug(:fetch_flash)
     plug(:protect_from_forgery)
     plug(:put_secure_browser_headers)
-    plug(ConciergeSite.Plugs.Authorized)
+    plug(ConciergeSite.Plugs.SaveCurrentUser)
     plug(ConciergeSite.Plugs.FeedbackPlug)
   end
 
@@ -17,7 +44,7 @@ defmodule ConciergeSite.Router do
     plug(Guardian.Plug.LoadResource)
     plug(Guardian.Plug.EnsureAuthenticated, handler: ConciergeSite.SessionController)
     plug(ConciergeSite.Plugs.TokenRefresh)
-    plug(ConciergeSite.Plugs.Authorized)
+    plug(ConciergeSite.Plugs.SaveCurrentUser)
   end
 
   pipeline :subscription_auth do
@@ -30,12 +57,6 @@ defmodule ConciergeSite.Router do
 
   pipeline :layout do
     plug(:put_layout, {ConciergeSite.LayoutView, :app})
-  end
-
-  pipeline :redirect_prod_http do
-    if Application.get_env(:concierge_site, :redirect_http?) do
-      plug(Plug.SSL, rewrite_on: [:x_forwarded_proto])
-    end
   end
 
   scope "/", ConciergeSite do
@@ -62,7 +83,13 @@ defmodule ConciergeSite.Router do
   end
 
   scope "/", ConciergeSite do
-    pipe_through([:redirect_prod_http, :browser, :browser_auth, :subscription_auth, :layout])
+    pipe_through([
+      :redirect_prod_http,
+      :browser,
+      :browser_auth,
+      :subscription_auth,
+      :layout
+    ])
 
     get("/account/options", AccountController, :options_new)
     post("/account/options", AccountController, :options_create)
@@ -87,6 +114,13 @@ defmodule ConciergeSite.Router do
       AccessibilityTripController,
       only: [:new, :create, :edit, :update]
     )
+  end
+
+  scope "/api", ConciergeSite do
+    pipe_through([:redirect_prod_http, :api])
+
+    get("/search/:query", ApiSearchController, :index)
+    delete("/account/:user_id", ApiAccountController, :delete)
   end
 
   if Mix.env() == :dev do
