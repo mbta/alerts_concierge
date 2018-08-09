@@ -5,8 +5,7 @@ defmodule ConciergeSite.SignInHelper do
 
   import ConciergeSite.Router.Helpers
   import Phoenix.Controller, only: [redirect: 2]
-  alias AlertProcessor.Model.User
-  alias AlertProcessor.Model.Trip
+  alias AlertProcessor.Model.{Trip, User}
 
   @endpoint ConciergeSite.Endpoint
 
@@ -26,10 +25,22 @@ defmodule ConciergeSite.SignInHelper do
     |> redirect(to: redirect_path(user))
   end
 
+  @spec permissions_for(User.t()) :: map
+  def permissions_for(%User{role: "admin"}) do
+    %{
+      perms: %{
+        default: Guardian.Permissions.max(),
+        admin: Guardian.Permissions.max()
+      }
+    }
+  end
+
+  def permissions_for(_regular_user) do
+    %{perms: %{default: Guardian.Permissions.max()}}
+  end
+
   defp sign_in_user(conn, user) do
-    Guardian.Plug.sign_in(conn, user, :access, %{
-      perms: %{default: Guardian.Permissions.max()}
-    })
+    Guardian.Plug.sign_in(conn, user, :access, permissions_for(user))
   end
 
   defp redirect_path(user) do

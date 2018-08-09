@@ -55,7 +55,7 @@ config :guardian, Guardian,
       :manage_subscriptions
     ],
     admin: [
-      :admin
+      :api
     ]
   }
 

@@ -301,8 +301,19 @@ defmodule AlertProcessor.Model.User do
   defp normalize_papertrail_result({:ok, %{model: user}}), do: {:ok, user}
   defp normalize_papertrail_result(result), do: result
 
+  @spec for_email(String.t()) :: t | nil
   def for_email(email) do
     Repo.get_by(__MODULE__, email: email)
+  end
+
+  @spec find_by_email_search(String.t()) :: [t]
+  def find_by_email_search(query) do
+    Repo.all(from(u in __MODULE__, where: like(u.email, ^"%#{query}%")))
+  end
+
+  @spec find_by_phone_number_search(String.t()) :: [t]
+  def find_by_phone_number_search(query) do
+    Repo.all(from(u in __MODULE__, where: like(u.phone_number, ^"%#{query}%")))
   end
 
   @spec wrap_id(__MODULE__.t() | String.t()) :: __MODULE__.t()
