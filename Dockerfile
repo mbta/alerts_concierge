@@ -25,16 +25,15 @@ RUN git config --global url.https://github.com/.insteadOf git://github.com/
 
 # Install hex and rebar
 RUN mix local.hex --force && \
-    mix local.rebar --force && \
-    mix do deps.get --only prod, compile --force
+	mix local.rebar --force && \
+	mix do deps.get --only prod, compile --force
 
 WORKDIR /root/apps/concierge_site/assets/
 RUN curl -sL https://deb.nodesource.com/setup_8.x | bash - && \
-    apt-get install -y nodejs && \
-    npm install -g brunch && \
-    npm install -g yarn
+	apt-get install -y nodejs && \
+	npm install -g yarn
 RUN yarn install
-RUN brunch build --production
+RUN yarn run deploy
 
 WORKDIR /root/apps/concierge_site/
 RUN mix phx.digest
@@ -47,8 +46,8 @@ RUN mix release --verbose
 FROM debian:stretch
 
 RUN apt-get update && apt-get install -y --no-install-recommends \
-    libssl1.1 libsctp1 curl \
-  && rm -rf /var/lib/apt/lists/*
+	libssl1.1 libsctp1 curl \
+	&& rm -rf /var/lib/apt/lists/*
 
 WORKDIR /root
 EXPOSE 4000
