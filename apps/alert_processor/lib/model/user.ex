@@ -308,4 +308,14 @@ defmodule AlertProcessor.Model.User do
   @spec wrap_id(__MODULE__.t() | String.t()) :: __MODULE__.t()
   def wrap_id(%__MODULE__{} = user), do: user
   def wrap_id(user_id), do: %__MODULE__{id: user_id}
+
+  @spec make_admin(t()) :: tuple
+  def make_admin(user) do
+    update_account(user, %{"role" => "admin"}, user.id)
+  end
+
+  @spec make_not_admin(t()) :: tuple
+  def make_not_admin(user) do
+    update_account(user, %{"role" => "user"}, user.id)
+  end
 end

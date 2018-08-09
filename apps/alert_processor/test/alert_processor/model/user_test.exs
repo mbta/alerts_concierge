@@ -26,58 +26,6 @@ defmodule AlertProcessor.Model.UserTest do
     end
   end
 
-  describe "authenticate/1" do
-    test "authenticates if email and password valid" do
-      Repo.insert!(%User{
-        email: "test@email.com",
-        role: "user",
-        encrypted_password: @encrypted_password
-      })
-
-      assert {:ok, _} = User.authenticate(%{"email" => "test@email.com", "password" => @password})
-    end
-
-    test "does not authenticate if invalid password for existing user" do
-      Repo.insert!(%User{
-        email: "test@email.com",
-        role: "user",
-        encrypted_password: @encrypted_password
-      })
-
-      assert {:error, _} =
-               User.authenticate(%{
-                 "email" => "test@email.com",
-                 "password" => "different_password"
-               })
-    end
-
-    test "does not authenticate if user doesn't exist" do
-      assert {:error, _} =
-               User.authenticate(%{"email" => "nope@invalid.com", "password" => @password})
-    end
-
-    test "does not authenticate if user's account is disabled" do
-      Repo.insert!(%User{
-        email: "test@email.com",
-        role: "user",
-        encrypted_password: @disabled_password
-      })
-
-      assert {:error, :disabled} =
-               User.authenticate(%{"email" => "test@email.com", "password" => @password})
-    end
-
-    test "email is not case sensitive" do
-      Repo.insert!(%User{
-        email: "test@email.com",
-        role: "user",
-        encrypted_password: @encrypted_password
-      })
-
-      assert {:ok, _} = User.authenticate(%{"email" => "TEST@EMAIL.COM", "password" => @password})
-    end
-  end
-
   describe "create_account" do
     test "creates new account" do
       assert {:ok, user} = User.create_account(@valid_account_attrs)
@@ -95,6 +43,52 @@ defmodule AlertProcessor.Model.UserTest do
 
       assert user.phone_number == "5555551234"
       assert user.id != nil
+    end
+  end
+
+  describe "update_account" do
+    test "updates account" do
+      user = insert(:user)
+      assert {:ok, user} = User.update_account(user, %{"phone_number" => "5550000000"}, user.id)
+      assert user.phone_number == "5550000000"
+    end
+
+    test "opts in phone number when phone number changed" do
+      user = insert(:user)
+      assert {:ok, _} = User.update_account(user, %{"phone_number" => "5550000000"}, user.id)
+      assert_received :opt_in_phone_number
+    end
+
+    test "does not opt in phone number when phone number not changed" do
+      user = insert(:user)
+      assert {:ok, _} = User.update_account(user, %{}, user.id)
+      refute_received :opt_in_phone_number
+    end
+
+    test "does not update account" do
+      user = insert(:user)
+
+      assert {:error, changeset} =
+               User.update_account(user, %{"phone_number" => "not a phone number"}, user.id)
+
+      refute changeset.valid?
+    end
+  end
+
+  describe "delete/1" do
+    test "delete one user" do
+      user = insert(:user)
+      User.delete(user)
+      assert nil == User.for_email(user.email)
+    end
+  end
+
+  describe "update_password" do
+    test "updates password" do
+      user = insert(:user)
+      current_password = user.encrypted_password
+      assert {:ok, user} = User.update_password(user, %{"password" => "Password1"}, user.id)
+      assert current_password != user.encrypted_password
     end
   end
 
@@ -172,41 +166,55 @@ defmodule AlertProcessor.Model.UserTest do
     end
   end
 
-  describe "update_account" do
-    test "updates account" do
-      user = insert(:user)
-      assert {:ok, user} = User.update_account(user, %{"phone_number" => "5550000000"}, user.id)
-      assert user.phone_number == "5550000000"
+  describe "authenticate/1" do
+    test "authenticates if email and password valid" do
+      Repo.insert!(%User{
+        email: "test@email.com",
+        role: "user",
+        encrypted_password: @encrypted_password
+      })
+
+      assert {:ok, _} = User.authenticate(%{"email" => "test@email.com", "password" => @password})
     end
 
-    test "opts in phone number when phone number changed" do
-      user = insert(:user)
-      assert {:ok, _} = User.update_account(user, %{"phone_number" => "5550000000"}, user.id)
-      assert_received :opt_in_phone_number
+    test "does not authenticate if invalid password for existing user" do
+      Repo.insert!(%User{
+        email: "test@email.com",
+        role: "user",
+        encrypted_password: @encrypted_password
+      })
+
+      assert {:error, _} =
+               User.authenticate(%{
+                 "email" => "test@email.com",
+                 "password" => "different_password"
+               })
     end
 
-    test "does not opt in phone number when phone number not changed" do
-      user = insert(:user)
-      assert {:ok, _} = User.update_account(user, %{}, user.id)
-      refute_received :opt_in_phone_number
+    test "does not authenticate if user doesn't exist" do
+      assert {:error, _} =
+               User.authenticate(%{"email" => "nope@invalid.com", "password" => @password})
     end
 
-    test "does not update account" do
-      user = insert(:user)
+    test "does not authenticate if user's account is disabled" do
+      Repo.insert!(%User{
+        email: "test@email.com",
+        role: "user",
+        encrypted_password: @disabled_password
+      })
 
-      assert {:error, changeset} =
-               User.update_account(user, %{"phone_number" => "not a phone number"}, user.id)
-
-      refute changeset.valid?
+      assert {:error, :disabled} =
+               User.authenticate(%{"email" => "test@email.com", "password" => @password})
     end
-  end
 
-  describe "update_password" do
-    test "updates password" do
-      user = insert(:user)
-      current_password = user.encrypted_password
-      assert {:ok, user} = User.update_password(user, %{"password" => "Password1"}, user.id)
-      assert current_password != user.encrypted_password
+    test "email is not case sensitive" do
+      Repo.insert!(%User{
+        email: "test@email.com",
+        role: "user",
+        encrypted_password: @encrypted_password
+      })
+
+      assert {:ok, _} = User.authenticate(%{"email" => "TEST@EMAIL.COM", "password" => @password})
     end
   end
 
@@ -263,11 +271,29 @@ defmodule AlertProcessor.Model.UserTest do
     end
   end
 
-  describe "delete/1" do
-    test "delete one user" do
-      user = insert(:user)
-      User.delete(user)
-      assert nil == User.for_email(user.email)
-    end
+  test "make_admin/1" do
+    user = insert(:user)
+    # Check that user starts as a non-admin
+    assert user.role == "user"
+
+    User.make_admin(user)
+
+    # Refresh from database
+    user = User.for_email(user.email)
+
+    assert user.role == "admin"
+  end
+
+  test "make_not_admin/1" do
+    user = insert(:user, role: "admin")
+    # Check that user starts as an admin
+    assert user.role == "admin"
+
+    User.make_not_admin(user)
+
+    # Refresh from database
+    user = User.for_email(user.email)
+
+    assert user.role == "user"
   end
 end
