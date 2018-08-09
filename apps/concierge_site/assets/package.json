@@ -10,7 +10,7 @@
     "babel-polyfill": "^6.26.0",
     "babel-preset-env": "^1.7.0",
     "bootstrap": "^4.1.0",
-    "choices.js": "git+https://git@github.com/mbta/Choices.git#rpm-add-highlight-choice-event",
+    "choices.js": "git+https://git@github.com/jshjohnson/Choices.git#8dedc6f1e032bf9891e7ec6564daed058d61ead5",
     "elem-dataset": "^1.1.1",
     "font-awesome": "^4.7.0",
     "jquery": "^3.2.1",
