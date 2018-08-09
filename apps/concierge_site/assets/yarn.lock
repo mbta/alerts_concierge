@@ -1059,9 +1059,9 @@ check-dependencies@~1.0.1:
     minimist "^1.2.0"
     semver "^5.3.0"
 
-"choices.js@git+https://git@github.com/mbta/Choices.git#rpm-add-highlight-choice-event":
+"choices.js@git+https://git@github.com/jshjohnson/Choices.git#8dedc6f1e032bf9891e7ec6564daed058d61ead5":
   version "4.0.0"
-  resolved "git+https://git@github.com/mbta/Choices.git#7ef478b711f1fcb4daa0e6131fa96ab529efd0b4"
+  resolved "git+https://git@github.com/jshjohnson/Choices.git#8dedc6f1e032bf9891e7ec6564daed058d61ead5"
   dependencies:
     classnames "^2.2.5"
     core-js "^2.5.6"
