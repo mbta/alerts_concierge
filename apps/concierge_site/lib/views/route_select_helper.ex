@@ -112,7 +112,7 @@ defmodule ConciergeSite.RouteSelectHelper do
   @spec bus_route(Route.t(), String.t()) :: route_row
   defp bus_route(route, direction_id) do
     {:bus, "#{route.route_id} - #{direction_id}",
-     "Route #{Route.name(route)} - #{headsign(route, direction_id)}"}
+     "Route #{Route.bus_short_name(route)} - #{headsign(route, direction_id)}"}
   end
 
   @spec headsign(Route.t(), String.t()) :: [String.t()]

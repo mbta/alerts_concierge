@@ -39,4 +39,13 @@ defmodule AlertProcessor.Model.Route do
 
   def name(%__MODULE__{long_name: "", short_name: name}), do: name
   def name(%__MODULE__{long_name: name}), do: name
+
+  @spec bus_short_name(t()) :: String.t()
+  def bus_short_name(%__MODULE__{short_name: short_name}) do
+    if String.starts_with?(short_name, "SL") do
+      "Silver Line #{short_name}"
+    else
+      "Route #{short_name}"
+    end
+  end
 end
