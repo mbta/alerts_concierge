@@ -55,6 +55,7 @@ first_trip_padding_class = if @round_trip == "true", do: "", else: "form__sectio
           </div>
         <% end %>
 
+        <%= hidden_input form, :alternate_routes, value: URI.encode(Poison.encode!(@alternate_routes)) %>
         <%= hidden_input form, :round_trip, value: @round_trip %>
         <%= for leg <- @legs do %>
           <%= hidden_input form, :legs, name: "trip[legs][]", value: leg %>

@@ -31,7 +31,7 @@
         </div>
       </div>
 
-      <%= form_for @conn, trip_trip_path(@conn, :leg), [as: :trip, method: :post], fn form -> %>
+      <%= form_for @conn, trip_trip_path(@conn, :leg), [as: :trip, method: :post, id: "new-tripleg-form"], fn form -> %>
         <div class="form-group my-4">
           <%= label form, :round_trip, "What kind of trip is this?", class: "form__label" %>
           <div class="btn-group btn-group-toggle btn__radio--toggle-container" data-toggle="buttons" role="radiogroup">
@@ -51,6 +51,7 @@
         <div>If your trip involves transfers, you can tell us about those later.</div>
 
         <%= hidden_input form, :from_new_trip, value: "true" %>
+        <%= hidden_input form, :alternate_routes, value: URI.encode(Poison.encode!(@alternate_routes)) %>
 
         <div class="form-group my-4">
           <%= label form, :route, "Which line or route do you take first?", class: "form__label" %>
@@ -77,7 +78,7 @@
                 <div>Ferry</div>
               </label>
             </div>
-            <%= ConciergeSite.RouteSelectHelperChoicesJS.render(:trip, :route, [], required: true) %>
+            <%= ConciergeSite.RouteSelectHelperChoicesJS.render(:trip, :route) %>
           </div>
         </div>
 

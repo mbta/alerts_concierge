@@ -282,7 +282,7 @@ defmodule ConciergeSite.TripControllerTest do
       assert html_response(conn, 200) =~ "Green Line E"
     end
 
-    test "bus", %{conn: conn, user: user} do
+    test "bus, single route", %{conn: conn, user: user} do
       trip = %{
         bike_storage: "false",
         relevant_days: ["monday", "tuesday", "wednesday", "thursday", "friday"],
@@ -297,7 +297,8 @@ defmodule ConciergeSite.TripControllerTest do
         return_end_time: %{"am_pm" => "PM", "hour" => "6", "minute" => "00"},
         return_start_time: %{"am_pm" => "PM", "hour" => "5", "minute" => "00"},
         round_trip: "true",
-        start_time: %{"am_pm" => "AM", "hour" => "8", "minute" => "00"}
+        start_time: %{"am_pm" => "AM", "hour" => "8", "minute" => "00"},
+        alternate_routes: "{}"
       }
 
       conn =
@@ -311,6 +312,42 @@ defmodule ConciergeSite.TripControllerTest do
 
       assert html_response(conn, 200) =~
                "<span class=\"trip__card--route\">Silver Line SL1</span>"
+    end
+
+    test "bus, multi route", %{conn: conn, user: user} do
+      trip = %{
+        bike_storage: "false",
+        relevant_days: ["monday", "tuesday", "wednesday", "thursday", "friday"],
+        destinations: [""],
+        elevator: "false",
+        end_time: %{"am_pm" => "AM", "hour" => "9", "minute" => "00"},
+        escalator: "false",
+        legs: ["741 - 1"],
+        modes: ["bus"],
+        origins: [""],
+        parking: "false",
+        return_end_time: %{"am_pm" => "PM", "hour" => "6", "minute" => "00"},
+        return_start_time: %{"am_pm" => "PM", "hour" => "5", "minute" => "00"},
+        round_trip: "true",
+        start_time: %{"am_pm" => "AM", "hour" => "8", "minute" => "00"},
+        alternate_routes:
+          "%7B%22741%20-%201%22:[%22701%20-%201~~Route%20CT1~~bus%22,%22747%20-%201~~Route%20CT2~~bus%22]%7D"
+      }
+
+      conn =
+        user
+        |> guardian_login(conn)
+        |> post(trip_path(conn, :create), %{trip: trip})
+
+      assert html_response(conn, 302) =~ trip_path(conn, :index)
+
+      conn = get(conn, trip_path(conn, :index))
+
+      assert html_response(conn, 200) =~
+               "<span class=\"trip__card--route\">Silver Line SL1</span>"
+
+      assert html_response(conn, 200) =~ "<span class=\"trip__card--route\">Route CT1</span>"
+      assert html_response(conn, 200) =~ "<span class=\"trip__card--route\">Route CT2</span>"
     end
 
     test "returns error message with no day selected", %{conn: conn, user: user} do
@@ -329,7 +366,8 @@ defmodule ConciergeSite.TripControllerTest do
         return_end_time: %{"am_pm" => "PM", "hour" => "6", "minute" => "00"},
         return_start_time: %{"am_pm" => "PM", "hour" => "5", "minute" => "00"},
         round_trip: "true",
-        start_time: %{"am_pm" => "AM", "hour" => "8", "minute" => "00"}
+        start_time: %{"am_pm" => "AM", "hour" => "8", "minute" => "00"},
+        alternate_routes: "{}"
       }
 
       conn =
@@ -360,6 +398,23 @@ defmodule ConciergeSite.TripControllerTest do
     assert html_response(conn, 200) =~ "Where do you get on the Orange Line?"
     assert html_response(conn, 200) =~ "Do you transfer to another route or line?"
     refute html_response(conn, 200) =~ "Only stops on the same branch can be selected"
+  end
+
+  test "POST /trip/leg to create new trip leg (bus, multi-route)", %{conn: conn, user: user} do
+    trip = %{
+      alternate_routes:
+        "%7B%22741%20-%201%22:%5B%22701%20-%201~~Route%20CT1~~bus%22,%22747%20-%201~~Route%20CT2~~bus%22%5D%7D",
+      from_new_trip: "true",
+      round_trip: "true",
+      route: "741 - 1~~Silver Line SL1~~bus"
+    }
+
+    conn =
+      user
+      |> guardian_login(conn)
+      |> post(trip_trip_path(conn, :leg), %{trip: trip})
+
+    assert html_response(conn, 200) =~ "Which direction do you take Silver Line SL1 first?"
   end
 
   test "POST /trip/leg to create new trip leg (Green)", %{conn: conn, user: user} do
@@ -396,7 +451,8 @@ defmodule ConciergeSite.TripControllerTest do
       round_trip: "true",
       route: "Green~~Green Line~~subway",
       saved_leg: "Red",
-      saved_mode: "subway"
+      saved_mode: "subway",
+      alternate_routes: "{}"
     }
 
     conn =
@@ -438,7 +494,8 @@ defmodule ConciergeSite.TripControllerTest do
       origin: "place-alfcl",
       round_trip: "true",
       saved_leg: "Red",
-      saved_mode: "subway"
+      saved_mode: "subway",
+      alternate_routes: "{}"
     }
 
     conn =
@@ -456,7 +513,8 @@ defmodule ConciergeSite.TripControllerTest do
     trip = %{
       from_new_trip: "true",
       round_trip: "true",
-      route: "Red~~Red Line~~subway"
+      route: "Red~~Red Line~~subway",
+      alternate_routes: "{}"
     }
 
     conn =
@@ -484,7 +542,8 @@ defmodule ConciergeSite.TripControllerTest do
         legs: ["Red"],
         origins: ["place-alfcl"],
         round_trip: "true",
-        modes: ["subway"]
+        modes: ["subway"],
+        alternate_routes: "{}"
       }
 
       conn =
@@ -506,7 +565,8 @@ defmodule ConciergeSite.TripControllerTest do
         round_trip: "true",
         modes: ["cr"],
         schedule_return: %{"CR-Fairmount" => ["17:45:00"]},
-        schedule_start: %{"CR-Fairmount" => ["08:48:00"]}
+        schedule_start: %{"CR-Fairmount" => ["08:48:00"]},
+        alternate_routes: "{}"
       }
 
       conn =
@@ -526,7 +586,8 @@ defmodule ConciergeSite.TripControllerTest do
         legs: ["41 - 1"],
         origins: [],
         round_trip: "true",
-        modes: ["bus"]
+        modes: ["bus"],
+        alternate_routes: "{}"
       }
 
       conn =

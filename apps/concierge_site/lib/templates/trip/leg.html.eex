@@ -68,6 +68,7 @@ end
         <%= hidden_input form, :round_trip, value: @round_trip %>
         <%= hidden_input form, :saved_leg, value: @saved_leg %>
         <%= hidden_input form, :saved_mode, value: @saved_mode %>
+        <%= hidden_input form, :alternate_routes, value: URI.encode(Poison.encode!(@alternate_routes)) %>
 
         <%= for leg <- @legs do %>
           <%= hidden_input form, :legs, name: "trip[legs][]", value: leg %>
