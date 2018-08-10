@@ -1,6 +1,6 @@
 defmodule ConciergeSite.RouteHelper do
   alias AlertProcessor.ServiceInfoCache
-  alias AlertProcessor.Model.Subscription
+  alias AlertProcessor.Model.{Route, Subscription}
 
   @doc """
   Get the name of a given route or routes.
@@ -15,6 +15,8 @@ defmodule ConciergeSite.RouteHelper do
     "Framingham/Worcester Line"
     iex> ConciergeSite.RouteHelper.route_name("39")
     "Route 39"
+    iex> ConciergeSite.RouteHelper.route_name("741")
+    "Silver Line SL1"
   """
   @spec route_name(String.t()) :: String.t()
   def route_name(routes) when is_list(routes), do: "Green Line"
@@ -27,9 +29,11 @@ defmodule ConciergeSite.RouteHelper do
   def route_name(route_id) do
     {:ok, route} = ServiceInfoCache.get_route(route_id)
 
-    case route.long_name do
-      "" -> "Route #{route.short_name}"
-      _ -> route.long_name
+    # We never want long names for buses
+    if route.route_type == 3 || route.long_name == "" do
+      Route.bus_short_name(route)
+    else
+      route.long_name
     end
   end
 
