@@ -1,6 +1,7 @@
 import { getStopInstances } from "./select-stop-choices";
 import { getRouteInstances } from "./select-route-choices";
-
+import { makeErrorMessageEl } from "./error-message";
+import { insertAfterElByQuery, removeElByQuery } from "./dom-utils";
 // there is a bug in choices.js where multi-selects are not
 // setting their values properly. Before submit, this code
 // removes all of the selects and adds hidden inputs
@@ -27,6 +28,9 @@ export default () => {
 };
 
 const handleRouteFormSubmit = e => {
+  // delete any existing bus error
+  removeElByQuery("#bus-error");
+
   const existingAlternativeRoutes = JSON.parse(
     decodeURI(document.getElementById("trip_alternate_routes").value)
   );
@@ -48,7 +52,12 @@ const handleRouteFormSubmit = e => {
   const routeValues = busInstance.getValue();
   if (routeValues.length === 0) {
     e.preventDefault();
-    alert("Please select at least one bus route.");
+    const errorEl = makeErrorMessageEl(
+      "bus-error",
+      "Please select at least one bus route."
+    );
+    insertAfterElByQuery(".route__selector--container", errorEl);
+    return;
   }
 
   // separate the first route from the alternate routes
