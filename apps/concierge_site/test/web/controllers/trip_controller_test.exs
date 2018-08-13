@@ -415,6 +415,9 @@ defmodule ConciergeSite.TripControllerTest do
       |> post(trip_trip_path(conn, :leg), %{trip: trip})
 
     assert html_response(conn, 200) =~ "Which direction do you take Silver Line SL1 first?"
+
+    assert html_response(conn, 200) =~
+             "We’ll also apply this direction for Route CT1 and Route CT2."
   end
 
   test "POST /trip/leg to create new trip leg (Green)", %{conn: conn, user: user} do
