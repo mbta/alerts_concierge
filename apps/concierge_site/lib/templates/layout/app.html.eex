@@ -1,3 +1,5 @@
+<% current_user = assigns[:label] || nil %>
+
 <!DOCTYPE html>
 <html lang="en">
   <head>
@@ -25,13 +27,13 @@
       <div class="container position-relative">
         <%= render "_logo.html" %>
         <div class="header__right">
-          <%= render "_beta.html", conn: @conn, current_user: @current_user %>
+          <%= render "_beta.html", conn: @conn, current_user: current_user %>
         </div>
       </div>
     </header>
     <header class="header__sub--container">
       <div class="container">
-        <%= if @current_user do %>
+        <%= if current_user do %>
           <%= link to: trip_path(@conn, :index) do %>
             Subscriptions
           <% end %>

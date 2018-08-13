@@ -1,8 +1,7 @@
 defmodule ConciergeSite.ErrorViewTest do
   use ConciergeSite.ConnCase, async: true
-
-  # Bring render/3 and render_to_string/3 for testing custom views
-  import Phoenix.View
+  import Phoenix.Controller
+  import Phoenix.View, only: [render_to_string: 3]
 
   setup do
     conn = get(build_conn(), "/")
@@ -27,5 +26,20 @@ defmodule ConciergeSite.ErrorViewTest do
   test "render any other", %{conn: conn} do
     assert render_to_string(ConciergeSite.ErrorView, "505.html", conn: conn) ==
              "Internal server error"
+  end
+
+  test "render 500.html with a layout" do
+    # mimick the pipeline RenderErrors
+    conn =
+      Phoenix.ConnTest.build_conn()
+      |> accepts(["html"])
+      |> put_private(:phoenix_endpoint, ConciergeSite.Endpoint)
+      |> put_layout({ConciergeSite.LayoutView, "app.html"})
+      |> put_view(ConciergeSite.ErrorView)
+      |> put_status(500)
+
+    conn = render(conn, :"500", conn: conn)
+
+    assert html_response(conn, 500) =~ "Internal server error"
   end
 end

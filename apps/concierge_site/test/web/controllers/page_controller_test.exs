@@ -1,11 +1,11 @@
 defmodule ConciergeSite.PageControllerTest do
   use ConciergeSite.ConnCase
 
-  test "GET /", %{conn: conn} do
-    conn = get(conn, page_path(conn, :landing))
+  # test "GET /", %{conn: conn} do
+  #   conn = get(conn, page_path(conn, :landing))
 
-    assert html_response(conn, 200) =~ "Try the new"
-  end
+  #   assert html_response(conn, 200) =~ "Try the new"
+  # end
 
   test "GET /deleted", %{conn: conn} do
     conn = get(conn, page_path(conn, :account_deleted))
