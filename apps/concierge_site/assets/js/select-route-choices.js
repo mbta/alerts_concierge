@@ -16,7 +16,22 @@ export default () => {
     }
 
     // apply the chouices to the first element found
-    applyChoicesJSToRoute(routeSelectEls.item(0), { keepClosed: true });
+    applyChoicesJSToRoute(routeSelectEls.item(0), {
+      keepClosed: true,
+      removeItems: true,
+      removeItemButton: true
+    });
+
+    document.onclick = function(evt) {
+      evt = evt || window.event;
+      const element = evt.target || evt.srcElement;
+      if (element.getAttribute("data-type") === "remove-route") {
+        const value = element.getAttribute("data-value");
+        Object.keys(instances).forEach(instance => {
+          instances[instance].removeActiveItemsByValue(value);
+        });
+      }
+    };
   });
 };
 
@@ -95,7 +110,7 @@ const itemTemplate = (id, template, removeItemButton) => (classNames, data) => {
   return template(`
   <div class="${classNames.item} ${
     data.highlighted ? classNames.highlightedState : classNames.itemSelectable
-  }" data-item data-id="${data.id}" data-value="${data.value}" ${
+  }" data-item data-deletable data-id="${data.id}" data-value="${data.value}" ${
     data.active ? 'aria-selected="true"' : ""
   } ${data.disabled ? 'aria-disabled="true"' : ""}>
     ${
@@ -106,7 +121,16 @@ const itemTemplate = (id, template, removeItemButton) => (classNames, data) => {
     ${data.label}
     ${
       removeItemButton
-        ? `<button type="button" class="choices__button" data-button="" aria-label="">Remove item</button>`
+        ? `<button
+            type="button"
+            data-type="remove-route"
+            class="${classNames.button}"
+            data-button
+            data-value="${data.value}"
+            aria-label="Remove item: '${data.value}'"
+            >
+            Remove item
+          </button>`
         : ""
     }
   </div>
@@ -178,7 +202,11 @@ export const toggleVisibleSelector = inputValue => {
     if (dataset.id == inputValue) {
       el.classList.remove("d-none");
       selectEl.setAttribute("name", "trip[route]");
-      applyChoicesJSToRoute(selectEl, { focus: true });
+      applyChoicesJSToRoute(selectEl, {
+        focus: true,
+        removeItems: true,
+        removeItemButton: true
+      });
     } else {
       destroyChoicesJSForRoute(selectEl);
       el.classList.add("d-none");

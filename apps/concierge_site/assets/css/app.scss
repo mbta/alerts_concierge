@@ -10,8 +10,6 @@
 @import "flash";
 @import "trip-card";
 @import "trip-review-card";
-@import "vendor/select2/select2";
-@import "vendor/select2/select2-bootstrap4";
 @import "help_text";
 @import "day_selector";
 @import "landing_page";
@@ -30,8 +28,18 @@ body {
   min-height: 100vh;
 }
 
-.h1, .h2, .h3, .h4, .h5, .h6,
-h1, h2, h3, h4, h5, h6 {
+.h1,
+.h2,
+.h3,
+.h4,
+.h5,
+.h6,
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
   font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
 }
 
@@ -70,7 +78,8 @@ h1, h2, h3, h4, h5, h6 {
     color: $gray-dark;
   }
 
-  &.active, &:active {
+  &.active,
+  &:active {
     background-color: $light-blue !important;
     border-color: $brand-primary !important;
     color: $gray-dark !important;
