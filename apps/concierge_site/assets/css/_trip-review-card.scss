@@ -27,6 +27,14 @@
   margin-top: 0.5rem;
 }
 
+.trip-review--route-container {
+  display: inline-block;
+
+  .trip-review--route-container + & {
+    margin-left: 0.7rem;
+  }
+}
+
 .trip-review--route-icon {
   display: inline-block;
   margin-right: 4px;
