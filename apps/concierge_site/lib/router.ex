@@ -64,6 +64,7 @@ defmodule ConciergeSite.Router do
     get("/_health", HealthController, :index)
     get("/_five_hundred", ErrorController, :five_hundred)
     get("/_raise", ErrorController, :raise)
+    post("/_raise", ErrorController, :raise)
   end
 
   scope "/", ConciergeSite do
