@@ -176,6 +176,9 @@ defmodule ConciergeSite.Schedule do
 
         {:ok, _} ->
           []
+
+        {:error, _} ->
+          []
       end
     end
   end
