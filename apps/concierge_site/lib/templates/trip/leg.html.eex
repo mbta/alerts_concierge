@@ -34,16 +34,24 @@ end
         <%= if @saved_mode == "bus" do %>
           <div class="form-group form__section--top">
             <%= label form, :direction, "Which direction do you take #{@route_name} first?", class: "form__label" %>
-            <div class="btn-group btn-group-toggle btn__radio--toggle-container" data-toggle="buttons" role="radiogroup">
+            <div class="btn-group btn-group-toggle btn__radio--toggle-container btn__radio--description-container" data-toggle="buttons" role="radiogroup">
             <label data-id="inbound" role="radio" aria-checked="true" class="btn btn-outline-primary btn__radio--toggle btn__radio--toggle-item active" tabindex="0">
+              <div class="btn__radio__description-above font-italic">Inbound</div>
               <%= radio_button form, :direction, "1", tabindex: "-1", required: true, checked: true %>
               <div><%= Enum.intersperse(Map.get(@headsigns, 1, ["Inbound"]), " ● ") %></div>
             </label>
             <label data-id="outbound" role="radio" aria-checked="false" class="btn btn-outline-primary btn__radio--toggle btn__radio--toggle-item" tabindex="0">
+              <div class="btn__radio__description-above font-italic">Outbound</div>
               <%= radio_button form, :direction, "0", tabindex: "-1", required: true, checked: false %>
               <div><%= Enum.intersperse(Map.get(@headsigns, 0, ["Outbound"]), " ● ") %></div>
             </label>
           </div>
+          </div>
+        <% end %>
+
+        <%= if @alternate_routes[@saved_leg] && !Enum.empty?(@alternate_routes[@saved_leg]) do %>
+          <div class="form__section">
+            We’ll also apply this direction for <%= route_names_for_alternate_routes(@alternate_routes[@saved_leg]) %>.
           </div>
         <% end %>
 

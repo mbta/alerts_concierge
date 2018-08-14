@@ -12,7 +12,7 @@
 }
 
 .form__label--text {
-  margin-bottom: .5rem;
+  margin-bottom: 0.5rem;
 }
 
 .form__label--disabled {
@@ -36,34 +36,34 @@ label.form__label--inline {
 }
 
 .form__input {
-  padding: .75rem;
+  padding: 0.75rem;
 }
 
 .form__input--inline {
-  margin-left: .75rem;
-  margin-right: .75rem;
-  padding: .25rem;
+  margin-left: 0.75rem;
+  margin-right: 0.75rem;
+  padding: 0.25rem;
 }
 
 .form__select--inline-small {
   display: inline-block;
   width: 8rem;
-  margin-right: .5rem;
+  margin-right: 0.5rem;
 }
 
 .error-block-container {
   background-color: $form-error-message;
-  margin-top: .5rem;
+  margin-top: 0.5rem;
 
   span {
     display: block;
-    margin: .5rem;
-    padding: .4rem;
+    margin: 0.5rem;
+    padding: 0.4rem;
 
     &:before {
       @include fa-icon();
       content: $fa-var-exclamation-circle;
-      margin-right: .25rem;
+      margin-right: 0.25rem;
     }
   }
 }
@@ -87,11 +87,11 @@ label.form__label--inline {
 .form__phone--note {
   @include media-breakpoint-down(lg) {
     display: block;
-    padding-top: .5rem
+    padding-top: 0.5rem;
   }
 
   @include media-breakpoint-up(xxl) {
-    margin-left: .5rem;
+    margin-left: 0.5rem;
   }
 }
 
@@ -125,7 +125,7 @@ label.form__label--inline {
 }
 
 .form-check-input {
-  margin-top: .1rem;
+  margin-top: 0.1rem;
 }
 
 .form__action--secondary-link {
@@ -141,19 +141,19 @@ label.form__label--inline {
 }
 
 .btn__radio--toggle {
-
   white-space: normal;
   justify-content: center;
   display: flex;
   align-items: center;
   flex-direction: column;
 
-  div, svg {
+  div,
+  svg {
     pointer-events: none;
   }
 
   svg {
-    margin-top: .5rem;
+    margin-top: 0.5rem;
   }
 
   &.active div {
@@ -193,7 +193,7 @@ label.form__label--inline {
 
   @include media-breakpoint-down(md) {
     flex-direction: column;
-    
+
     .btn__radio--toggle-item {
       width: 100%;
 
@@ -204,13 +204,24 @@ label.form__label--inline {
   }
 }
 
+.btn__radio--description-container {
+  margin-top: 1.75rem;
+}
+
+.btn__radio__description-above {
+  position: absolute;
+  left: 0;
+  top: -1.75rem;
+  color: $gray-dark;
+}
+
 .form__time {
   select {
     appearance: none;
     -moz-appearance: none;
     -webkit-appearance: none;
     background-color: white;
-    background-image: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAh0lEQVQ4T93TMQrCUAzG8V9x8QziiYSuXdzFC7h4AcELOPQAdXYovZCHEATlgQV5GFTe1ozJlz/kS1IpjKqw3wQBVyy++JI0y1GTe7DCBbMAckeNIQKk/BanALBB+16LtnDELoMcsM/BESDlz2heDR3WePwKSLo5eoxz3z6NNcFD+vu3ij14Aqz/DxGbKB7CAAAAAElFTkSuQmCC');
+    background-image: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAh0lEQVQ4T93TMQrCUAzG8V9x8QziiYSuXdzFC7h4AcELOPQAdXYovZCHEATlgQV5GFTe1ozJlz/kS1IpjKqw3wQBVyy++JI0y1GTe7DCBbMAckeNIQKk/BanALBB+16LtnDELoMcsM/BESDlz2heDR3WePwKSLo5eoxz3z6NNcFD+vu3ij14Aqz/DxGbKB7CAAAAAElFTkSuQmCC");
     background-position: center right 3px;
     background-repeat: no-repeat;
     border: 1px solid $brand-primary;
