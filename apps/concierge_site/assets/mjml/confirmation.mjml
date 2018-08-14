@@ -59,7 +59,7 @@
           Going on vacation? Commute changing with the seasons? You can temporarily pause alerts and resume at any time. Sign into your account and press pause to activate.
         </mj-text>
         <mj-text align="center">
-          <img src="https://s3.amazonaws.com/mbta-alerts/html_email/welcome2/pause-icon.png" width="360" height="110" />
+          <img src="https://s3.amazonaws.com/mbta-alerts/html_email/welcome2/pause.png" width="360" height="110" />
         </mj-text>
       </mj-column>
     </mj-section>
