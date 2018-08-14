@@ -27,9 +27,9 @@ defmodule ConciergeSite.TripReviewCardHelper do
   end
 
   @spec row_content([Subscription.t()], boolean) :: Phoenix.HTML.safe()
-  defp row_content(subscriptions, false), do: one_way_trip(subscriptions)
+  defp row_content(subscriptions, _roundtrip? = false), do: one_way_trip(subscriptions)
 
-  defp row_content(subscriptions, true),
+  defp row_content(subscriptions, _roundtrip? = true),
     do: subscriptions |> split_round_trip_subscriptions() |> round_trip()
 
   @spec one_way_trip([Subscription.t()]) :: Phoenix.HTML.safe()
@@ -63,7 +63,7 @@ defmodule ConciergeSite.TripReviewCardHelper do
   @spec card([Subscription.t()]) :: Phoenix.HTML.safe()
   defp card(subscriptions) do
     content_tag :div, class: "card trip-review--card" do
-      for subscription <- subscriptions, do: leg(subscription)
+      for subscription <- Trip.nested_subscriptions(subscriptions), do: leg(subscription)
     end
   end
 
@@ -71,10 +71,20 @@ defmodule ConciergeSite.TripReviewCardHelper do
   defp leg(%Subscription{} = subscription) do
     content_tag :div, class: "trip-review--trip-leg" do
       [
-        route(subscription),
+        routes(subscription),
         route_description(subscription)
       ]
     end
+  end
+
+  @spec routes(Subscription.t()) :: Phoenix.HTML.safe()
+  defp routes(%{child_subscriptions: nil} = subscription) do
+    route(subscription)
+  end
+
+  defp routes(%{child_subscriptions: child_subscriptions} = subscription) do
+    [route(subscription)] ++
+      for child_subscription <- child_subscriptions, do: route(child_subscription)
   end
 
   @spec route(Subscription.t()) :: Phoenix.HTML.safe()

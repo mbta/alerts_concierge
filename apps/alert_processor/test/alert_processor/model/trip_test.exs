@@ -419,4 +419,127 @@ defmodule AlertProcessor.Model.TripTest do
       assert updated_subscription.paused == false
     end
   end
+
+  test "nested_subscriptions/1 nests child subscriptions (alternate routes) inside their parent subscriptions" do
+    subscriptions = [
+      %Subscription{
+        destination: nil,
+        user_id: "a429862d-23f4-4015-9303-cb2aa58c4108",
+        origin: nil,
+        type: "bus",
+        id: "cf224a42-3d74-4631-a9b6-abb16d8a491c",
+        rank: 0,
+        return_trip: false,
+        route: "742",
+        parent_id: nil,
+        direction_id: 1,
+        child_subscriptions: [],
+        route_type: 3
+      },
+      %Subscription{
+        destination: nil,
+        user_id: "a429862d-23f4-4015-9303-cb2aa58c4108",
+        origin: nil,
+        type: "bus",
+        id: "9e773429-5f24-4aa1-852c-9654e5d63fad",
+        rank: 0,
+        return_trip: false,
+        route: "708",
+        parent_id: "cf224a42-3d74-4631-a9b6-abb16d8a491c",
+        direction_id: 1,
+        child_subscriptions: [],
+        route_type: 3
+      },
+      %Subscription{
+        destination: nil,
+        user_id: "a429862d-23f4-4015-9303-cb2aa58c4108",
+        origin: nil,
+        type: "bus",
+        id: "a0173e95-1b08-419e-9c24-42b0633b4f49",
+        rank: 0,
+        return_trip: false,
+        route: "7",
+        parent_id: "cf224a42-3d74-4631-a9b6-abb16d8a491c",
+        direction_id: 1,
+        child_subscriptions: [],
+        route_type: 3
+      },
+      %Subscription{
+        destination: "place-brdwy",
+        user_id: "a429862d-23f4-4015-9303-cb2aa58c4108",
+        origin: "place-sstat",
+        type: "subway",
+        id: "cffea5dd-4593-4421-8b03-13d0384c7dad",
+        rank: 1,
+        return_trip: false,
+        route: "Red",
+        parent_id: nil,
+        direction_id: 0,
+        child_subscriptions: [],
+        route_type: 1
+      }
+    ]
+
+    expected_nested_subscriptions = [
+      %Subscription{
+        destination: nil,
+        user_id: "a429862d-23f4-4015-9303-cb2aa58c4108",
+        origin: nil,
+        type: "bus",
+        id: "cf224a42-3d74-4631-a9b6-abb16d8a491c",
+        rank: 0,
+        return_trip: false,
+        route: "742",
+        parent_id: nil,
+        direction_id: 1,
+        child_subscriptions: [
+          %Subscription{
+            destination: nil,
+            user_id: "a429862d-23f4-4015-9303-cb2aa58c4108",
+            origin: nil,
+            type: "bus",
+            id: "9e773429-5f24-4aa1-852c-9654e5d63fad",
+            rank: 0,
+            return_trip: false,
+            route: "708",
+            parent_id: "cf224a42-3d74-4631-a9b6-abb16d8a491c",
+            direction_id: 1,
+            child_subscriptions: [],
+            route_type: 3
+          },
+          %Subscription{
+            destination: nil,
+            user_id: "a429862d-23f4-4015-9303-cb2aa58c4108",
+            origin: nil,
+            type: "bus",
+            id: "a0173e95-1b08-419e-9c24-42b0633b4f49",
+            rank: 0,
+            return_trip: false,
+            route: "7",
+            parent_id: "cf224a42-3d74-4631-a9b6-abb16d8a491c",
+            direction_id: 1,
+            child_subscriptions: [],
+            route_type: 3
+          }
+        ],
+        route_type: 3
+      },
+      %Subscription{
+        destination: "place-brdwy",
+        user_id: "a429862d-23f4-4015-9303-cb2aa58c4108",
+        origin: "place-sstat",
+        type: "subway",
+        id: "cffea5dd-4593-4421-8b03-13d0384c7dad",
+        rank: 1,
+        return_trip: false,
+        route: "Red",
+        parent_id: nil,
+        direction_id: 0,
+        child_subscriptions: nil,
+        route_type: 1
+      }
+    ]
+
+    assert Trip.nested_subscriptions(subscriptions) == expected_nested_subscriptions
+  end
 end

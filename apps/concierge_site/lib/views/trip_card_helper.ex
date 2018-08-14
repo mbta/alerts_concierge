@@ -165,7 +165,7 @@ defmodule ConciergeSite.TripCardHelper do
           ""
 
         {nil, destination} ->
-          ["to ", RouteHelper.stop_name(destination)]
+          [" to ", RouteHelper.stop_name(destination)]
 
         {origin, nil} ->
           [" from ", RouteHelper.stop_name(origin)]

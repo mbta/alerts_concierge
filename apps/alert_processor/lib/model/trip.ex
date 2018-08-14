@@ -223,6 +223,28 @@ defmodule AlertProcessor.Model.Trip do
     end)
   end
 
+  @spec nested_subscriptions(t | [Subscription.t()]) :: [Subscription.t()]
+  def nested_subscriptions(%Trip{subscriptions: subscriptions}),
+    do: nested_subscriptions(subscriptions)
+
+  def nested_subscriptions(subscriptions) do
+    {parent_subscriptions, child_subscriptions} =
+      subscriptions
+      |> Enum.split_with(&(&1.parent_id == nil))
+
+    child_subscriptions_map =
+      child_subscriptions
+      |> Enum.map(&{&1.parent_id, &1})
+      |> Enum.reduce(%{}, fn {id, subscription}, acc ->
+        Map.put(acc, id, Map.get(acc, id, []) ++ [subscription])
+      end)
+
+    Enum.map(
+      parent_subscriptions,
+      &Map.put(&1, :child_subscriptions, child_subscriptions_map[&1.id])
+    )
+  end
+
   defp sync_subscriptions({:error, _}), do: :ignore
 
   defp sync_subscriptions({:ok, %Trip{} = trip}) do
