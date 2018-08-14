@@ -12,13 +12,13 @@ Get the most from your T-Alerts account by signing in!  You can:
 
 Have different travel plans on the weekends?  Alternate between a couple of different routes to work?  You can create multiple subscriptions to receive alerts that are relevant to all your travel plans
 
-* Change how you receive alerts
-
-Prefer to receive text over email notifications, or vice versa?  You can update this in your account settings.
-
 * Update when you receive alerts
 
 Has your schedule changed?  Need to change the times and days that you receive alerts?  Sign into your account and update your subscription preferences at any time.
+
+* Pause alerts at any time
+
+Going on vacation? Commute changing with the seasons? You can temporarily pause alerts and resume at any time. Sign into your account and press pause to activate.
 
 Sign In <%= manage_subscriptions_url %>
 
