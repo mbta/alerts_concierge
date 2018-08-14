@@ -459,8 +459,10 @@ defmodule ConciergeSite.TripController do
         travel_end_time: List.last(travel_times(params["schedule_start"] || %{}, route_id))
       }
       |> Subscription.add_latlong_to_subscription(origin, destination)
-      |> add_alternate_route_subscriptions(params["alternate_routes"][route_in])
-      |> Enum.flat_map(&add_return_subscription(&1, params))
+      |> add_return_subscription(params)
+      |> Enum.flat_map(
+        &add_alternate_route_subscriptions(&1, params["alternate_routes"][route_in])
+      )
     end)
     |> Enum.flat_map(
       &expand_multiroute_greenline_subscription(
