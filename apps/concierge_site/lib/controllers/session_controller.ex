@@ -37,4 +37,7 @@ defmodule ConciergeSite.SessionController do
     |> put_flash(:info, "Please log in")
     |> redirect(to: session_path(conn, :new))
   end
+
+  # this path has changed, so add a redirect incase anyone had bookmarked
+  def login_redirect(conn, _params), do: redirect(conn, to: "/login/new")
 end
