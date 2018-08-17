@@ -31,7 +31,7 @@ const setTime = (id, timeInSeconds) => {
 }
 
 // when the user is changing the start time, shift the end time 1 hour forward when the start time is equal to or greater than the end time
-const shiftEndTime = e => {
+const shiftEndTime = pubsub => e => {
   const startTimeEl = e.changedEl;
   const startTimeElId = startTimeEl.getAttribute("id");
   const isStartTime = startTimeElId.indexOf("_start_time") != -1 ? true : false;
@@ -48,6 +48,7 @@ const shiftEndTime = e => {
       ? 0
       : startTimeInSeconds + oneHourInSeconds;
   setTime(endTimeElId, newEndTimeInSeconds);
+  pubsub.publishSync("time-change", { changedEl: endTimeEl, mode: e.mode });
 };
 
 export default pubsub => {
@@ -59,5 +60,5 @@ export default pubsub => {
       pubsub.publishSync("time-change", { changedEl, mode });
     });
 
-  pubsub.subscribe("time-change", shiftEndTime);
+  pubsub.subscribe("time-change", shiftEndTime(pubsub));
 };
