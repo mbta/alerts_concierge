@@ -114,19 +114,20 @@ defmodule AlertProcessor.ApiClient do
           Date.t() | nil
         ) :: {:ok, [map], [map]} | {:ok, [map]} | {:error, String.t()}
   def schedules(origin, destination, direction_id, route_ids, date) do
-    sorted_stations = Enum.sort_by([origin, destination], &String.downcase/1)
-    # credo:disable-for-next-line Credo.Check.Readability.SpaceAfterCommas
-    "/schedules"
-    |> api_get(
-      "filter[stop]": Enum.join(sorted_stations, ","),
-      direction_id: direction_id,
-      "fields[schedule]": "departure_time,arrival_time",
-      "filter[route]": Enum.join(route_ids, ","),
-      date: date,
-      include: "trip,stop",
-      "fields[trip]": "name"
-    )
-    |> parse_response()
+    {:error, "DUMMY ERROR MESSAGE"}
+    # sorted_stations = Enum.sort_by([origin, destination], &String.downcase/1)
+    # # credo:disable-for-next-line Credo.Check.Readability.SpaceAfterCommas
+    # "/schedules"
+    # |> api_get(
+    #   "filter[stop]": Enum.join(sorted_stations, ","),
+    #   direction_id: direction_id,
+    #   "fields[schedule]": "departure_time,arrival_time",
+    #   "filter[route]": Enum.join(route_ids, ","),
+    #   date: date,
+    #   include: "trip,stop",
+    #   "fields[trip]": "name"
+    # )
+    # |> parse_response()
   end
 
   @spec schedules_for_stops([Route.stop_id()], Date.t()) ::
