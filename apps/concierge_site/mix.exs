@@ -61,7 +61,7 @@ defmodule ConciergeSite.Mixfile do
       {:excoveralls, "~> 0.5", only: [:dev, :test]},
       {:guardian, "~> 0.14"},
       {:guardian_db, "~> 0.8.0"},
-      {:phoenix, "~> 1.3.0-rc", override: true},
+      {:phoenix, "~> 1.3.4", override: true},
       {:phoenix_pubsub, "~> 1.0"},
       {:phoenix_ecto, "~> 3.2"},
       {:postgrex, ">= 0.0.0"},
