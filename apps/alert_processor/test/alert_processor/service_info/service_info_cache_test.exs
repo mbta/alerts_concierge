@@ -1,5 +1,5 @@
 defmodule AlertProcessor.ServiceInfoCacheTest do
-  use ExUnit.Case
+  use ExUnit.Case, async: true
   use ExVCR.Mock, adapter: ExVCR.Adapter.Hackney
   alias AlertProcessor.{Model.Route, ServiceInfoCache}
 

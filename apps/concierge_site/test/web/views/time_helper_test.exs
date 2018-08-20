@@ -1,6 +1,6 @@
 defmodule ConciergeSite.TimeHelperTest do
   @moduledoc false
-  use ExUnit.Case
+  use ExUnit.Case, async: true
   alias ConciergeSite.TimeHelper
 
   describe "format_time/1" do

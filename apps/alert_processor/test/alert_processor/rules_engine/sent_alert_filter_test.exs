@@ -1,5 +1,5 @@
 defmodule AlertProcessor.SentAlertFilterTest do
-  use AlertProcessor.DataCase
+  use AlertProcessor.DataCase, async: true
   alias AlertProcessor.{SentAlertFilter, Model}
   alias Model.{Alert, Notification, NotificationSubscription, Subscription}
   import AlertProcessor.Factory

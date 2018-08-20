@@ -1,5 +1,5 @@
 defmodule AlertProcessor.Subscription.SubwayMapperTest do
-  use AlertProcessor.DataCase
+  use AlertProcessor.DataCase, async: true
   import AlertProcessor.Factory
   alias AlertProcessor.Subscription.SubwayMapper
   alias AlertProcessor.Model.InformedEntity

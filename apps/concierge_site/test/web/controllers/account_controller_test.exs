@@ -1,5 +1,5 @@
 defmodule ConciergeSite.AccountControllerTest do
-  use ConciergeSite.ConnCase
+  use ConciergeSite.ConnCase, async: true
   import AlertProcessor.Factory
   alias AlertProcessor.{Model.User, Repo}
 

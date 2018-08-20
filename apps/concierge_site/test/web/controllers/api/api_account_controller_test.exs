@@ -1,5 +1,5 @@
 defmodule ConciergeSite.ApiAccountControllerTest do
-  use ConciergeSite.ConnCase
+  use ConciergeSite.ConnCase, async: true
 
   setup do
     regular_user = insert(:user)

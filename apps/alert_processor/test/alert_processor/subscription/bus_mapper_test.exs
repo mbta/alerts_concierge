@@ -1,5 +1,5 @@
 defmodule AlertProcessor.Subscription.BusMapperTest do
-  use AlertProcessor.DataCase
+  use AlertProcessor.DataCase, async: true
   import AlertProcessor.Factory
   alias AlertProcessor.Subscription.BusMapper
   alias AlertProcessor.Model.InformedEntity

@@ -1,5 +1,5 @@
 defmodule AlertProcessor.TripAuthorizerTest do
-  use AlertProcessor.DataCase
+  use AlertProcessor.DataCase, async: true
   import AlertProcessor.Factory
   alias AlertProcessor.Authorizer.TripAuthorizer
   alias AlertProcessor.Model.Trip

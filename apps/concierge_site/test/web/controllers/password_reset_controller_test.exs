@@ -1,5 +1,5 @@
 defmodule ConciergeSite.PasswordResetControllerTest do
-  use ConciergeSite.ConnCase
+  use ConciergeSite.ConnCase, async: true
   use Bamboo.Test
 
   test "new/2", %{conn: conn} do

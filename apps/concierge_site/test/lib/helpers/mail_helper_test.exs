@@ -1,6 +1,6 @@
 defmodule ConcerigeSite.Helpers.MailHelperTest do
   @moduledoc false
-  use ConciergeSite.DataCase
+  use ConciergeSite.DataCase, async: true
   import AlertProcessor.Factory
   alias ConciergeSite.Helpers.MailHelper
   alias AlertProcessor.{Model.Alert, Model.InformedEntity}

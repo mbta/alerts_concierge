@@ -1,5 +1,5 @@
 defmodule AlertProcessor.Model.InformedEntityTest do
-  use ExUnit.Case
+  use ExUnit.Case, async: true
   alias AlertProcessor.Model.InformedEntity
 
   describe "entity_type/1" do

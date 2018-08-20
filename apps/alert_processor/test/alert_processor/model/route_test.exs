@@ -1,5 +1,5 @@
 defmodule AlertProcessor.Model.RouteTest do
-  use ExUnit.Case
+  use ExUnit.Case, async: true
 
   alias AlertProcessor.Model.Route
 

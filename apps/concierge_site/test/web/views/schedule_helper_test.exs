@@ -1,6 +1,6 @@
 defmodule ConciergeSite.ScheduleHelperTest do
   @moduledoc false
-  use ExUnit.Case
+  use ExUnit.Case, async: true
   alias ConciergeSite.ScheduleHelper
 
   test "render/5" do

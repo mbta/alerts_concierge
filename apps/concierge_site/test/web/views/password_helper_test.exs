@@ -1,5 +1,5 @@
 defmodule ConciergeSite.PasswordHelperTest do
-  use ExUnit.Case
+  use ExUnit.Case, async: true
   alias ConciergeSite.PasswordHelper
 
   describe "password_regex_string" do

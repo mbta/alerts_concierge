@@ -1,6 +1,6 @@
 defmodule AlertProcessor.Metrics.UserMetricsTest do
   @moduledoc false
-  use AlertProcessor.DataCase
+  use AlertProcessor.DataCase, async: true
   import AlertProcessor.Factory
   alias AlertProcessor.Metrics.UserMetrics
 

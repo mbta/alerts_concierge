@@ -1,5 +1,5 @@
 defmodule AlertProcessor.ActivePeriodFilterTest do
-  use AlertProcessor.DataCase
+  use AlertProcessor.DataCase, async: true
   alias AlertProcessor.{ActivePeriodFilter, Model}
   alias Model.{Alert}
   import AlertProcessor.Factory

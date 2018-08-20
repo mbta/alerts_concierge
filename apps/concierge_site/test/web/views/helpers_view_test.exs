@@ -1,5 +1,5 @@
 defmodule ConciergeSite.ViewHelpersTest do
-  use ConciergeSite.ConnCase
+  use ConciergeSite.ConnCase, async: true
   import ConciergeSite.ViewHelpers
 
   describe "google_tag_manager_id/0" do

@@ -1,6 +1,6 @@
 defmodule ConciergeSite.TripCardHelperTest do
   @moduledoc false
-  use ConciergeSite.ConnCase
+  use ConciergeSite.ConnCase, async: true
   alias ConciergeSite.TripCardHelper
   alias AlertProcessor.{Model.Trip, Model.Subscription}
 

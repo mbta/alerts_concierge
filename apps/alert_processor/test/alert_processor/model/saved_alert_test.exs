@@ -1,6 +1,6 @@
 defmodule AlertProcessor.SavedAlertTest do
   @moduledoc false
-  use AlertProcessor.DataCase
+  use AlertProcessor.DataCase, async: true
 
   alias AlertProcessor.Repo
   alias AlertProcessor.Model.{SavedAlert}

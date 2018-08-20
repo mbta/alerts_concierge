@@ -1,6 +1,6 @@
 defmodule ConciergeSite.DaySelectHelperTest do
   @moduledoc false
-  use ExUnit.Case
+  use ExUnit.Case, async: true
   alias ConciergeSite.DaySelectHelper
 
   test "render/1" do

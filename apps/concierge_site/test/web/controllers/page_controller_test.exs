@@ -1,5 +1,5 @@
 defmodule ConciergeSite.PageControllerTest do
-  use ConciergeSite.ConnCase
+  use ConciergeSite.ConnCase, async: true
 
   test "GET /", %{conn: conn} do
     conn = get(conn, page_path(conn, :landing))

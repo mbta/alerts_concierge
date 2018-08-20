@@ -1,5 +1,5 @@
 defmodule AlertProcessor.AlertsClientTest do
-  use ExUnit.Case
+  use ExUnit.Case, async: true
   use ExVCR.Mock, adapter: ExVCR.Adapter.Hackney
 
   import ExUnit.CaptureLog

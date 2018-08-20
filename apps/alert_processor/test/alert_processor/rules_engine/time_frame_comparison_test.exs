@@ -1,5 +1,5 @@
 defmodule AlertProcessor.TimeFrameComparisonTest do
-  use ExUnit.Case
+  use ExUnit.Case, async: true
   alias AlertProcessor.TimeFrameComparison
 
   describe "match?" do

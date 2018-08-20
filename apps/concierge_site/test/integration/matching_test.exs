@@ -1,5 +1,5 @@
 defmodule ConciergeSite.Integration.Matching do
-  use ExUnit.Case
+  use ExUnit.Case, async: true
   import ConciergeSite.SubscriptionFactory
   import ConciergeSite.AlertFactory, only: [active_period: 3, severity_by_priority: 1]
   import ConciergeSite.NotificationFactory

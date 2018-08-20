@@ -1,5 +1,5 @@
 defmodule ConciergeSite.IconViewHelperTest do
-  use ExUnit.Case
+  use ExUnit.Case, async: true
   alias ConciergeSite.IconViewHelper
 
   test "icon/1 returns raw code for an svg" do

@@ -1,6 +1,6 @@
 defmodule ConciergeSite.HelpTextHelperTest do
   @moduledoc false
-  use ExUnit.Case
+  use ExUnit.Case, async: true
   alias ConciergeSite.HelpTextHelper
 
   test "link/1" do

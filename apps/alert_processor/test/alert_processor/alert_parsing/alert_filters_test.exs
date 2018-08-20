@@ -1,5 +1,5 @@
 defmodule AlertProcessor.AlertFiltersTest do
-  use ExUnit.Case
+  use ExUnit.Case, async: true
   alias AlertProcessor.Model.Alert
   alias AlertProcessor.AlertFilters
 

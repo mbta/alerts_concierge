@@ -1,5 +1,5 @@
 defmodule ConciergeSite.ParamParsers.TripParamsTest do
-  use ExUnit.Case
+  use ExUnit.Case, async: true
   alias ConciergeSite.ParamParsers.TripParams
 
   test "collate_facility_types/2" do
