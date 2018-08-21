@@ -36,6 +36,11 @@
     <header class="header__sub--container">
       <div class="container">
         <%= if @current_user do %>
+          <%= if AlertProcessor.Model.User.admin?(@current_user) do %>
+            <%= link to: admin_path(@conn, :index) do %>
+              Administration
+            <% end %>
+          <% end %>
           <%= link to: trip_path(@conn, :index) do %>
             Subscriptions
           <% end %>
