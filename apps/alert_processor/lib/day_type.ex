@@ -68,10 +68,13 @@ defmodule AlertProcessor.DayType do
 
     iex> AlertProcessor.DayType.take_weekdays(4, ~D[2015-07-09])
     [~D[2015-07-09], ~D[2015-07-10], ~D[2015-07-13], ~D[2015-07-14]]
+    iex> AlertProcessor.DayType.take_weekdays(2, ~D[2018-08-25])
+    [~D[2018-08-27], ~D[2018-08-28]]
   """
   @spec take_weekdays(non_neg_integer, Date.t() | nil) :: [Date.t()]
   def take_weekdays(amount, date \\ today()) do
     date
+    |> next_weekday()
     |> Stream.unfold(&{&1, &1 |> next_day() |> next_weekday()})
     |> Enum.take(amount)
   end
@@ -81,10 +84,13 @@ defmodule AlertProcessor.DayType do
 
     iex> AlertProcessor.DayType.take_weekend_days(4, ~D[2015-07-05])
     [~D[2015-07-05], ~D[2015-07-11], ~D[2015-07-12], ~D[2015-07-18]]
+    iex> AlertProcessor.DayType.take_weekend_days(3, ~D[2018-08-23])
+    [~D[2018-08-25], ~D[2018-08-26], ~D[2018-09-01]]
   """
   @spec take_weekend_days(non_neg_integer, Date.t() | nil) :: [Date.t()]
   def take_weekend_days(amount, date \\ today()) do
     date
+    |> next_weekend_day()
     |> Stream.unfold(&{&1, &1 |> next_day() |> next_weekend_day()})
     |> Enum.take(amount)
   end
