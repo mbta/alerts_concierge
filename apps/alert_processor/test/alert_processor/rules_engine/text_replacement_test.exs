@@ -5,12 +5,6 @@ defmodule AlertProcessor.TextReplacementTest do
   alias Model.{Alert, InformedEntity, Subscription}
   doctest TextReplacement
 
-  setup do
-    user = insert(:user)
-
-    {:ok, user: user}
-  end
-
   describe "replace_text!/2" do
     test "returns default text if not commuter rail subscription" do
       alert = %Alert{
@@ -24,11 +18,10 @@ defmodule AlertProcessor.TextReplacementTest do
       assert TextReplacement.replace_text!(alert, [subscription]) == alert
     end
 
-    test "if user doesn't have matching subscription, return original text", %{user: user} do
+    test "if subscriptions don't match , return original text" do
       sub =
         :subscription
         |> build(
-          user: user,
           alert_priority_type: :low,
           informed_entities: [
             %InformedEntity{
@@ -49,7 +42,7 @@ defmodule AlertProcessor.TextReplacementTest do
       assert TextReplacement.replace_text!(alert, [sub]) == alert
     end
 
-    test "if subscription matches alert, and user has different origin station, replace text" do
+    test "if subscription matches alert, and has a different origin station, replace text" do
       sub = %Subscription{
         destination: "place-north",
         informed_entities: [
@@ -95,8 +88,8 @@ defmodule AlertProcessor.TextReplacementTest do
 
       expected = %{
         header:
-          "Newburyport Train 180 (22:17 pm from Chelsea) has departed Newburyport 20-40 minutes late and will operate at a reduced speed due to a mechanical issue.",
-        description: "Affected trips: Newburyport Train 180 (22:17 pm from Chelsea)"
+          "Newburyport Train 180 (10:17 pm from Chelsea) has departed Newburyport 20-40 minutes late and will operate at a reduced speed due to a mechanical issue.",
+        description: "Affected trips: Newburyport Train 180 (10:17 pm from Chelsea)"
       }
 
       assert TextReplacement.replace_text!(alert, [sub]) == Map.merge(alert, expected)
@@ -148,8 +141,8 @@ defmodule AlertProcessor.TextReplacementTest do
 
       expected = %{
         header:
-          "Fairmount Train 752 (22:17 pm from Four Corners/Geneva) has departed Fairmount 20-40 minutes late and will operate at a reduced speed due to a mechanical issue.",
-        description: "Affected trips: Fairmount Train 752 (22:17 pm from Four Corners/Geneva)"
+          "Fairmount Train 752 (10:17 pm from Four Corners/Geneva) has departed Fairmount 20-40 minutes late and will operate at a reduced speed due to a mechanical issue.",
+        description: "Affected trips: Fairmount Train 752 (10:17 pm from Four Corners/Geneva)"
       }
 
       assert TextReplacement.replace_text!(alert, [sub]) == Map.merge(alert, expected)
@@ -168,13 +161,13 @@ defmodule AlertProcessor.TextReplacementTest do
       }
 
       alert = %Alert{
+        header:
+          "Fairmount Train 752 (9:25 PM from Fairmount) has departed Fairmount 20-40 minutes late and will operate at a reduced speed due to a mechanical issue.",
         description: """
         Affected trips: Fairmount Train 752 (9:25 PM from Fairmount)
-        Fairmount Train 753 (9:25 PM from Fairmount)
-        Fairmount Train 754 (9:25 PM from Fairmount)
+        Fairmount Train 753 (10:05 PM from Fairmount)
+        Fairmount Train 754 (10:45 PM from Fairmount)
         """,
-        header:
-          "Fairmount Train 752 (9:25 pm from Fairmount) has departed Fairmount 20-40 minutes late and will operate at a reduced speed due to a mechanical issue.",
         id: "115346",
         informed_entities: [
           %InformedEntity{
@@ -205,9 +198,12 @@ defmodule AlertProcessor.TextReplacementTest do
 
       expected = %{
         header:
-          "Fairmount Train 752 (22:17 pm from Four Corners/Geneva) has departed Fairmount 20-40 minutes late and will operate at a reduced speed due to a mechanical issue.",
-        description:
-          "Affected trips: Fairmount Train 752 (22:17 pm from Four Corners/Geneva)\nFairmount Train 752 (22:17 pm from Four Corners/Geneva)\nFairmount Train 752 (22:17 pm from Four Corners/Geneva)\n"
+          "Fairmount Train 752 (10:17 pm from Four Corners/Geneva) has departed Fairmount 20-40 minutes late and will operate at a reduced speed due to a mechanical issue.",
+        description: """
+        Affected trips: Fairmount Train 752 (10:17 pm from Four Corners/Geneva)
+        Fairmount Train 753 (10:05 PM from Fairmount)
+        Fairmount Train 754 (10:45 PM from Fairmount)
+        """
       }
 
       assert TextReplacement.replace_text!(alert, [sub]) == Map.merge(alert, expected)
