@@ -7,7 +7,8 @@ defmodule AlertProcessor.Model.User do
           email: String.t(),
           phone_number: String.t(),
           role: String.t(),
-          digest_opt_in: boolean
+          digest_opt_in: boolean,
+          sms_opted_out_at: DateTime.t()
         }
 
   @type id :: String.t()
@@ -28,13 +29,14 @@ defmodule AlertProcessor.Model.User do
     field(:role, :string)
     field(:encrypted_password, :string)
     field(:digest_opt_in, :boolean, default: true)
+    field(:sms_opted_out_at, :utc_datetime)
     field(:password, :string, virtual: true)
     field(:sms_toggle, :boolean, virtual: true)
 
     timestamps()
   end
 
-  @permitted_fields ~w(email phone_number role password digest_opt_in)a
+  @permitted_fields ~w(email phone_number role password digest_opt_in sms_opted_out_at)a
   @required_fields ~w(email password)a
 
   @doc """
