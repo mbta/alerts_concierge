@@ -9,7 +9,7 @@ defmodule ConciergeSite.RejectedEmailController do
   end
 
   defp do_handle_rejected_email(conn, %{"notificationType" => "Bounce", "bounce" => params}) do
-    put_users_in_vacation(params["bouncedRecipients"])
+    log_rejected_email(params["bouncedRecipients"])
 
     conn
     |> put_status(:ok)
@@ -17,14 +17,14 @@ defmodule ConciergeSite.RejectedEmailController do
   end
 
   defp do_handle_rejected_email(conn, %{"notificationType" => "Complaint", "complaint" => params}) do
-    put_users_in_vacation(params["complainedRecipients"])
+    log_rejected_email(params["complainedRecipients"])
 
     conn
     |> put_status(:ok)
     |> json(%{})
   end
 
-  defp put_users_in_vacation(users) do
+  defp log_rejected_email(users) do
     Enum.map(users, fn user_data ->
       case User.for_email(user_data["emailAddress"]) do
         nil ->
@@ -32,7 +32,6 @@ defmodule ConciergeSite.RejectedEmailController do
 
         user ->
           Logger.info(fn -> "Rejected Email: #{inspect(user)} #{inspect(user_data)}" end)
-          User.put_user_on_indefinite_vacation(user, "email-complaint-received")
       end
     end)
   end

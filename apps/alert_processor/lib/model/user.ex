@@ -7,8 +7,6 @@ defmodule AlertProcessor.Model.User do
           email: String.t(),
           phone_number: String.t(),
           role: String.t(),
-          vacation_start: DateTime.t() | nil,
-          vacation_end: DateTime.t() | nil,
           digest_opt_in: boolean
         }
 
@@ -28,8 +26,6 @@ defmodule AlertProcessor.Model.User do
     field(:email, :string, null: false)
     field(:phone_number, :string)
     field(:role, :string)
-    field(:vacation_start, :utc_datetime)
-    field(:vacation_end, :utc_datetime)
     field(:encrypted_password, :string)
     field(:digest_opt_in, :boolean, default: true)
     field(:password, :string, virtual: true)
@@ -219,12 +215,6 @@ defmodule AlertProcessor.Model.User do
     |> validate_required([:email, :password])
   end
 
-  @spec update_vacation_changeset(__MODULE__.t(), map) :: Ecto.Changeset.t()
-  def update_vacation_changeset(struct, params \\ %{}) do
-    struct
-    |> cast(params, ~w(vacation_start vacation_end)a)
-  end
-
   def opt_in_phone_number(%__MODULE__{phone_number: nil}), do: {:ok, nil}
 
   def opt_in_phone_number(%__MODULE__{phone_number: phone_number}) do
@@ -280,21 +270,6 @@ defmodule AlertProcessor.Model.User do
       end)
     end)
     |> Repo.transaction()
-    |> normalize_papertrail_result()
-  end
-
-  @doc """
-  take a user and put into vacation mode ending in the year 9999
-  """
-  @spec put_user_on_indefinite_vacation(__MODULE__.t(), String.t()) ::
-          {:ok, __MODULE__.t()} | {:error, Ecto.Changeset.t()}
-  def put_user_on_indefinite_vacation(user, origin) do
-    user
-    |> update_vacation_changeset(%{
-      vacation_start: DateTime.utc_now(),
-      vacation_end: DateTime.from_naive!(~N[9999-12-25 23:59:59], "Etc/UTC")
-    })
-    |> PaperTrail.update(origin: origin)
     |> normalize_papertrail_result()
   end
 
