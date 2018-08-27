@@ -1,6 +1,6 @@
 defmodule AlertProcessor.Model.TripTest do
   @moduledoc false
-  use AlertProcessor.DataCase
+  use AlertProcessor.DataCase, async: true
   import AlertProcessor.Factory
   alias AlertProcessor.Repo
   alias AlertProcessor.Model.{Trip, Subscription}

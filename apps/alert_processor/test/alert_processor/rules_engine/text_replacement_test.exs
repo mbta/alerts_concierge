@@ -1,5 +1,5 @@
 defmodule AlertProcessor.TextReplacementTest do
-  use AlertProcessor.DataCase
+  use AlertProcessor.DataCase, async: true
   import AlertProcessor.Factory
   alias AlertProcessor.{Model, TextReplacement}
   alias Model.{Alert, InformedEntity, Subscription}

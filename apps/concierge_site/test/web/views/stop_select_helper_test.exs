@@ -1,6 +1,6 @@
 defmodule ConciergeSite.StopSelectHelperTest do
   @moduledoc false
-  use ExUnit.Case
+  use ExUnit.Case, async: true
   alias ConciergeSite.StopSelectHelper
 
   test "render/3 Subway Line" do

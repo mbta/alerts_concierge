@@ -1,5 +1,5 @@
 defmodule AlertProcessor.AlertWorkerTest do
-  use ExUnit.Case
+  use ExUnit.Case, async: true
   alias AlertProcessor.AlertWorker
 
   test "worker calls alert parser" do

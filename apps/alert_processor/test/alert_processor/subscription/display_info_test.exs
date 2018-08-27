@@ -1,5 +1,5 @@
 defmodule AlertProcessor.Subscriptions.DisplayInfoTest do
-  use ExUnit.Case
+  use ExUnit.Case, async: true
   use ExVCR.Mock, adapter: ExVCR.Adapter.Hackney
   import AlertProcessor.Factory
   alias AlertProcessor.Subscription.DisplayInfo

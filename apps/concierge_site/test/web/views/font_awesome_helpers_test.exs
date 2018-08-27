@@ -1,5 +1,5 @@
 defmodule ConciergeSite.FontAwesomeHelpersTest do
-  use ConciergeSite.ConnCase
+  use ConciergeSite.ConnCase, async: true
   alias ConciergeSite.FontAwesomeHelpers
 
   describe "fa/2" do

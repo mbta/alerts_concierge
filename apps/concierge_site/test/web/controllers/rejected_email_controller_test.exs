@@ -1,5 +1,5 @@
 defmodule ConciergeSite.RejectedEmailControllerTest do
-  use ConciergeSite.ConnCase
+  use ConciergeSite.ConnCase, async: true
   alias AlertProcessor.{Model.User, Repo}
 
   @bounce %{

@@ -1,5 +1,5 @@
 defmodule AlertProcessor.NotificationBuilderTest do
-  use AlertProcessor.DataCase
+  use AlertProcessor.DataCase, async: true
   import AlertProcessor.Factory
   alias AlertProcessor.{Model, NotificationBuilder}
   alias AlertProcessor.Model.{Notification, InformedEntity}

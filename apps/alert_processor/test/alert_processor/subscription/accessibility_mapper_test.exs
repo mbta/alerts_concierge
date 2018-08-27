@@ -1,5 +1,5 @@
 defmodule AlertProcessor.Subscription.AccessibilityMapperTest do
-  use AlertProcessor.DataCase
+  use AlertProcessor.DataCase, async: true
   import AlertProcessor.Factory
   alias AlertProcessor.Subscription.AccessibilityMapper
   alias AlertProcessor.Model.InformedEntity

@@ -1,5 +1,5 @@
 defmodule AlertProcessor.Model.AlertTest do
-  use ExUnit.Case
+  use ExUnit.Case, async: true
   alias AlertProcessor.Model.{Alert, InformedEntity}
 
   @ie1 %InformedEntity{route_type: 0, route: nil}

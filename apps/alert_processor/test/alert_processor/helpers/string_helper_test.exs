@@ -1,5 +1,5 @@
 defmodule AlertProcessor.Helpers.StringHelperTest do
-  use ExUnit.Case
+  use ExUnit.Case, async: true
   alias AlertProcessor.Helpers.StringHelper
 
   test "capitalize_first/1 capitalizes the first character of a string and does not change the remaining characters" do

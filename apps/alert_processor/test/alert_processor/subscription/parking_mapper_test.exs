@@ -1,5 +1,5 @@
 defmodule AlertProcessor.Subscription.ParkingMapperTest do
-  use AlertProcessor.DataCase
+  use AlertProcessor.DataCase, async: true
   import AlertProcessor.Factory
   alias AlertProcessor.Subscription.ParkingMapper
   alias AlertProcessor.Model.InformedEntity

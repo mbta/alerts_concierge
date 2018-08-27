@@ -1,5 +1,5 @@
 defmodule ConciergeSite.FacilitiesHelperTest do
-  use ConciergeSite.ConnCase
+  use ConciergeSite.ConnCase, async: true
   alias ConciergeSite.FacilitiesHelper
   alias AlertProcessor.Model.Trip
 

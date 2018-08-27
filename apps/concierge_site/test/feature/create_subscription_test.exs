@@ -1,5 +1,5 @@
 defmodule ConciergeSite.CreateSubscriptionTest do
-  use ConciergeSite.FeatureCase, async: true
+  use ConciergeSite.FeatureCase
 
   import AlertProcessor.Factory
   import ConciergeSite.FeatureTestHelper

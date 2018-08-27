@@ -1,6 +1,6 @@
 defmodule ConciergeSite.RouteSelectHelperTest do
   @moduledoc false
-  use ExUnit.Case
+  use ExUnit.Case, async: true
   alias ConciergeSite.RouteSelectHelper
 
   test "render/2" do

@@ -1,5 +1,5 @@
 defmodule AlertProcessor.InformedEntityFilterTest do
-  use AlertProcessor.DataCase
+  use AlertProcessor.DataCase, async: true
   alias AlertProcessor.InformedEntityFilter
   import AlertProcessor.Factory
 

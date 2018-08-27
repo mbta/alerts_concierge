@@ -1,5 +1,5 @@
 defmodule ConciergeSite.AccessibilityTripControllerTest do
-  use ConciergeSite.ConnCase
+  use ConciergeSite.ConnCase, async: true
 
   setup do
     user = insert(:user)

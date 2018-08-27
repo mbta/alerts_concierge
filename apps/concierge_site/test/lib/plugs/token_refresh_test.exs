@@ -1,5 +1,5 @@
 defmodule ConciergeSite.Plugs.TokenRefreshTest do
-  use ConciergeSite.ConnCase
+  use ConciergeSite.ConnCase, async: true
   use Plug.Test
 
   alias ConciergeSite.{Auth.Token, Plugs.TokenLogin, Plugs.TokenRefresh}
