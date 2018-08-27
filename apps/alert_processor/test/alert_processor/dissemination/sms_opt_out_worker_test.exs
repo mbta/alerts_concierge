@@ -11,6 +11,8 @@ defmodule AlertProcessor.SmsOptOutWorkerTest do
     assert_received :list_phone_numbers_opted_out
     reloaded_user = Repo.one(from(u in User, where: u.id == ^user.id))
     assert reloaded_user.phone_number == nil
+    assert reloaded_user.sms_opted_out_at != nil
+    assert reloaded_user.communication_mode == "none"
   end
 
   test "worker fetches list of opted out phone numbers from aws sns and doesnt update for numbers not in list" do

@@ -109,6 +109,6 @@ defmodule AlertProcessor.SmsOptOutWorker do
 
   @spec update_users_opted_out([User.id()]) :: [User.id()]
   defp update_users_opted_out(user_ids) do
-    User.remove_users_phone_number(user_ids, "sms-opt-out")
+    User.opt_users_out_of_sms(user_ids)
   end
 end

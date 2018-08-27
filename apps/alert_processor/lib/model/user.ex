@@ -160,14 +160,17 @@ defmodule AlertProcessor.Model.User do
     params =
       case params do
         %{"sms_toggle" => "false"} ->
-          Map.put(params, "phone_number", nil)
+          params
+          |> Map.put("phone_number", nil)
+          |> Map.put("communication_mode", "email")
 
         %{"sms_toggle" => "true"} ->
-          Map.put(
-            params,
+          params
+          |> Map.put(
             "phone_number",
             String.replace(params["phone_number"] || "", ~r/\D/, "")
           )
+          |> Map.put("communication_mode", "sms")
 
         _ ->
           params
@@ -260,17 +263,24 @@ defmodule AlertProcessor.Model.User do
   end
 
   @doc """
-  Takes a list of user ids and puts on vacation mode ending in the year 9999
+  Takes a list of user ids and for each user:
+  • Remove their phone number
+  • Set an sms_opted_out_at time
+  • Set communication_mode to none
   """
-  def remove_users_phone_number(user_ids, origin) do
+  def opt_users_out_of_sms(user_ids) do
     user_ids
     |> Enum.with_index()
     |> Enum.reduce(Multi.new(), fn {user_id, index}, acc ->
       Multi.run(acc, {:user, index}, fn _ ->
         __MODULE__
         |> Repo.get(user_id)
-        |> update_account_changeset(%{phone_number: nil})
-        |> PaperTrail.update(origin: origin)
+        |> update_account_changeset(%{
+          phone_number: nil,
+          communication_mode: "none",
+          sms_opted_out_at: Calendar.DateTime.now_utc()
+        })
+        |> PaperTrail.update(origin: "sms-opt-out")
       end)
     end)
     |> Repo.transaction()
@@ -312,4 +322,9 @@ defmodule AlertProcessor.Model.User do
   def make_not_admin(user) do
     update_account(user, %{"role" => "user"}, user.id)
   end
+
+  def inside_opt_out_freeze_window?(%__MODULE__{sms_opted_out_at: nil}), do: false
+
+  def inside_opt_out_freeze_window?(%__MODULE__{sms_opted_out_at: sms_opted_out_at}),
+    do: Date.diff(Date.utc_today(), DateTime.to_date(sms_opted_out_at)) <= 30
 end

@@ -260,4 +260,40 @@ defmodule AlertProcessor.SubscriptionFilterEngineTest do
       assert {:ok, %Notification{}} = SendingQueue.pop()
     end
   end
+
+  test "we don't send to users with communication_mode set to none", %{alert: alert} do
+    comm_user = insert(:user, phone_number: nil)
+    no_comm_user = insert(:user, communication_mode: "none")
+
+    :subscription
+    |> build(
+      route_type: 1,
+      user: comm_user,
+      alert_priority_type: :low,
+      informed_entities: [
+        %InformedEntity{route_type: 1, activities: InformedEntity.default_entity_activities()}
+      ]
+    )
+    |> weekday_subscription
+    |> insert
+
+    :subscription
+    |> build(
+      route_type: 1,
+      user: no_comm_user,
+      alert_priority_type: :low,
+      informed_entities: [
+        %InformedEntity{route_type: 1, activities: InformedEntity.default_entity_activities()}
+      ]
+    )
+    |> weekday_subscription
+    |> insert
+
+    {:ok, beginning_queue_length} = SendingQueue.queue_length()
+    assert SubscriptionFilterEngine.schedule_all_notifications([alert])
+    {:ok, ending_queue_length} = SendingQueue.queue_length()
+
+    assert ending_queue_length - beginning_queue_length == 1
+    assert {:ok, %Notification{}} = SendingQueue.pop()
+  end
 end

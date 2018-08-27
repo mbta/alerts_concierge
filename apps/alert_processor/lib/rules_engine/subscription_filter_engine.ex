@@ -82,6 +82,12 @@ defmodule AlertProcessor.SubscriptionFilterEngine do
     subscriptions
     |> Enum.group_by(& &1.user)
     |> Map.to_list()
+    |> reject_users_with_no_communication_mode()
     |> Scheduler.schedule_notifications(alert)
+  end
+
+  defp reject_users_with_no_communication_mode(subscriptions_by_user) do
+    subscriptions_by_user
+    |> Enum.reject(fn {user, _subscriptions} -> user.communication_mode == "none" end)
   end
 end

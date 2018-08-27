@@ -97,6 +97,22 @@ h6 {
       }
     }
   }
+
+  &.disabled,
+  &.disabled:hover,
+  &.disabled:active,
+  &.disabled:focus {
+    background-color: #f0f4f5 !important;
+    border-color: #949899 !important;
+    color: #afb3b6;
+    cursor: not-allowed;
+
+    path,
+    circle {
+      fill: #f0f4f5;
+      stroke: #afb3b6;
+    }
+  }
 }
 
 .btn.btn-primary {
