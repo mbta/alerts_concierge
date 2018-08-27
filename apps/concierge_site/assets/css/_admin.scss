@@ -1,0 +1,70 @@
+.user-search-page {
+   h1 {
+     margin-bottom: 1rem;
+   }
+}
+
+.user-search--form {
+  position: relative;
+}
+
+.user-search--submit {
+  padding: 2px 7px;
+  position: absolute;
+  right: 5px;
+  top: 5px;
+}
+
+.user-search--field {
+  border-width: 2px;
+}
+
+.users-table {
+  margin-top: 2rem;
+
+  .thead-dark th {
+    background-color: $dark-blue;
+  }
+
+  .btn-link {
+    border: 0;
+    line-height: 1.25rem;
+    padding: 0;
+    vertical-align: top;
+  }
+}
+
+.users-table--row_no-users,
+.users-table--row_searching,
+.users-table--row_no-results {
+  background-color: white !important;
+  text-align: center;
+}
+
+.delete-user-confirmation-modal {
+  &.show {
+    display: block;
+  }
+
+  .modal-body {
+    padding: 2rem 1rem 0;
+    text-align: center;
+  }
+
+  .modal-footer {
+    border-top: 0;
+    justify-content: center;
+  }
+}
+
+.delete-user-confirmation-modal--user-details {
+  font-weight: bold;
+}
+
+.delete-user-confirmation-modal--backdrop {
+  display: none;
+
+  &.show {
+    display: block;
+  }
+}

@@ -9,25 +9,37 @@ const UglifyJsPlugin = require("uglifyjs-webpack-plugin");
 module.exports = function(env) {
   return {
     mode: env.production ? 'production' : 'development',
-    entry: ["babel-polyfill", "./js/app.js"],
+
+    entry: {
+      app: ["babel-polyfill", "./js/app.js"],
+      admin: "./js/admin/index.tsx"
+    },
+
     output: env.production
       ? {
         path: path.resolve(__dirname, '../priv/static/js'),
-        filename: 'app.js',
+        filename: '[name].js',
         publicPath: '/',
       }
       : {
         path: path.resolve(__dirname, 'public'),
-        filename: 'app.js',
+        filename: '[name].js',
         publicPath: 'http://localhost:8090/',
       },
+
     devtool: env.production ? 'source-map' : 'eval',
+
+    resolve: {
+      extensions: [".ts", ".tsx", ".js", ".json"]
+    },
+
     devServer: {
       headers: {
         'Access-Control-Allow-Origin': '*',
       },
       port: 8090
     },
+
     module: {
       rules: [
         {
@@ -45,6 +57,12 @@ module.exports = function(env) {
             }
           }
         },
+
+        {
+          test: /\.tsx?$/,
+          loader: "awesome-typescript-loader"
+        },
+
         {
           test: /\.scss$/,
           use: [
@@ -61,6 +79,7 @@ module.exports = function(env) {
         }
       ]
     },
+
     optimization: {
       minimizer: [
         new UglifyJsPlugin({
@@ -71,6 +90,7 @@ module.exports = function(env) {
         new OptimizeCSSAssetsPlugin({})
       ]
     },
+
     plugins: [
       new CopyWebpackPlugin(
         [

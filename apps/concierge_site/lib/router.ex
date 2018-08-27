@@ -20,12 +20,7 @@ defmodule ConciergeSite.Router do
     plug(Guardian.Plug.EnsureAuthenticated, handler: ConciergeSite.SessionController)
     plug(ConciergeSite.Plugs.TokenRefresh)
     plug(ConciergeSite.Plugs.SaveCurrentUser)
-
-    plug(
-      Guardian.Plug.EnsurePermissions,
-      handler: ConciergeSite.Auth.ErrorHandler,
-      admin: [:api]
-    )
+    plug(:admin_auth)
   end
 
   pipeline :browser do
@@ -45,6 +40,14 @@ defmodule ConciergeSite.Router do
     plug(Guardian.Plug.EnsureAuthenticated, handler: ConciergeSite.SessionController)
     plug(ConciergeSite.Plugs.TokenRefresh)
     plug(ConciergeSite.Plugs.SaveCurrentUser)
+  end
+
+  pipeline :admin_auth do
+    plug(
+      Guardian.Plug.EnsurePermissions,
+      handler: ConciergeSite.Auth.ErrorHandler,
+      admin: [:api]
+    )
   end
 
   pipeline :subscription_auth do
@@ -115,6 +118,11 @@ defmodule ConciergeSite.Router do
       AccessibilityTripController,
       only: [:new, :create, :edit, :update]
     )
+  end
+
+  scope "/admin", ConciergeSite do
+    pipe_through([:redirect_prod_http, :browser, :browser_auth, :admin_auth, :layout])
+    get("/", AdminController, :index)
   end
 
   scope "/api", ConciergeSite do

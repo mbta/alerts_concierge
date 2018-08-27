@@ -51,6 +51,10 @@
     a {
       display: inline-block;
       margin-left: 2rem;
+      
+      @media screen and (max-width: 1088px) {
+        margin-left: 0.4rem;
+      }
     }
   }
 }

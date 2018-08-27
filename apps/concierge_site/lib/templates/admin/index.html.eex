@@ -1,0 +1,15 @@
+<% alias AlertProcessor.Helpers.EnvHelper %>
+
+<div class="row">
+
+  <div id="admin-app" class="col-12" data-token="<%= get_csrf_token() %>">
+    <%# React app gets rendered here %>
+  </div>
+
+  <%= if EnvHelper.is_env?(:dev) do %>
+    <script src='http://localhost:8090/admin.js'></script>
+  <% else %>
+    <script src="<%= static_path(@conn, "/js/admin.js") %>"></script>
+  <% end %>
+
+</div>

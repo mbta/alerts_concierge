@@ -320,6 +320,10 @@ defmodule AlertProcessor.Model.User do
   def wrap_id(%__MODULE__{} = user), do: user
   def wrap_id(user_id), do: %__MODULE__{id: user_id}
 
+  @spec admin?(t()) :: boolean
+  def admin?(%__MODULE__{role: "admin"}), do: true
+  def admin?(_user), do: false
+
   @spec make_admin(t()) :: tuple
   def make_admin(user) do
     update_account(user, %{"role" => "admin"}, user.id)
