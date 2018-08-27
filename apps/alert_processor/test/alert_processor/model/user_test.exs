@@ -238,18 +238,6 @@ defmodule AlertProcessor.Model.UserTest do
     end
   end
 
-  describe "put_user_on_indefinite_vacation" do
-    test "puts user on vacation with end time in year 9999" do
-      user = insert(:user)
-      {:ok, user} = User.put_user_on_indefinite_vacation(user, "email-unsubscribe")
-
-      assert DateTime.compare(
-               user.vacation_end,
-               DateTime.from_naive!(~N[9999-12-25 23:59:59], "Etc/UTC")
-             ) == :eq
-    end
-  end
-
   describe "for_email/1" do
     test "returns a user if present" do
       user = insert(:user)
