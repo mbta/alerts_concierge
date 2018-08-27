@@ -15,48 +15,52 @@ defmodule AlertProcessor.TextReplacement do
 
   def replace_text!(alert, subscriptions) do
     if Alert.commuter_rail_alert?(alert) do
-      {stop_schedules, trip_schedules} = build_schedule_mapping(alert.informed_entities)
-
-      match_targets = %{
-        description: parse_target(alert.description),
-        header: parse_target(alert.header)
-      }
-
-      trip_mapping =
-        for {key, targets} <- match_targets, into: %{} do
-          trips =
-            targets
-            |> Enum.flat_map(fn {index, {{train, stop, time}, _text}} ->
-              trip = Map.get(stop_schedules, {stop, time})
-
-              Enum.reduce(subscriptions, %{}, fn sub, acc ->
-                case trip_schedules[{sub.origin, trip}] do
-                  {%Time{} = time, trip_name} -> Map.put(acc, index, {train, trip_name, time})
-                  _ -> acc
-                end
-              end)
-            end)
-            |> Enum.map(fn {k, replacement} ->
-              {original, text} = match_targets[key][k]
-
-              if original != replacement do
-                {original, replacement, text}
-              else
-                {original, original, text}
-              end
-            end)
-
-          {key, trips}
-        end
-
-      trip_mapping
-      |> replace_schedule(alert)
-      |> Enum.reduce(alert, fn {k, v}, alert ->
-        Map.put(alert, k, v)
-      end)
+      replace_cr_text(alert, subscriptions)
     else
       alert
     end
+  end
+
+  defp replace_cr_text(alert, subscriptions) do
+    {stop_schedules, trip_schedules} = build_schedule_mapping(alert.informed_entities)
+
+    match_targets = %{
+      description: parse_target(alert.description),
+      header: parse_target(alert.header)
+    }
+
+    trip_mapping =
+      for {key, targets} <- match_targets, into: %{} do
+        trips =
+          targets
+          |> Enum.flat_map(fn {index, {{train, stop, time}, _text}} ->
+            trip = Map.get(stop_schedules, {stop, time})
+
+            Enum.reduce(subscriptions, %{}, fn sub, acc ->
+              case trip_schedules[{sub.origin, trip}] do
+                {%Time{} = time, trip_name} -> Map.put(acc, index, {train, trip_name, time})
+                _ -> acc
+              end
+            end)
+          end)
+          |> Enum.map(fn {k, replacement} ->
+            {original, text} = match_targets[key][k]
+
+            if original != replacement do
+              {original, replacement, text}
+            else
+              {original, original, text}
+            end
+          end)
+
+        {key, trips}
+      end
+
+    trip_mapping
+    |> replace_schedule(alert)
+    |> Enum.reduce(alert, fn {k, v}, alert ->
+      Map.put(alert, k, v)
+    end)
   end
 
   defp replace_schedule(replacement_data, alert) do
@@ -66,9 +70,10 @@ defmodule AlertProcessor.TextReplacement do
       else
         text =
           [replacement_pairs]
-          |> Enum.map(fn {_original, replacement, text} ->
+          |> Enum.map(fn {original, replacement, text} ->
+            original_regex = regexify(original)
             new_text = serialize(replacement)
-            substitute(text, new_text)
+            String.replace(text, original_regex, new_text)
           end)
           |> IO.iodata_to_binary()
 
@@ -77,21 +82,35 @@ defmodule AlertProcessor.TextReplacement do
     end
   end
 
+  defp regexify({train, stop, time}) do
+    time_string =
+      time
+      |> Strftime.strftime!("%l:%M %P")
+      |> String.trim_leading()
+
+    ~r/#{train} \(#{regexify_time(time_string)} from #{stop}\)/
+  end
+
+  defp regexify_time(time_string) do
+    [time_part | [ampm_part | _]] = time_string |> String.split()
+
+    regexed_am_pm_part =
+      ampm_part
+      |> String.codepoints()
+      |> Enum.map(&[String.downcase(&1), String.upcase(&1)])
+      |> Enum.map(&"[#{Enum.join(&1)}]")
+      |> Enum.join()
+
+    "#{time_part} #{regexed_am_pm_part}"
+  end
+
   defp serialize({train, stop, time}) do
     time_string =
       time
-      |> Strftime.strftime!("%k:%M %P")
+      |> Strftime.strftime!("%l:%M %P")
       |> String.trim_leading()
 
     "#{train} (#{time_string} from #{stop})"
-  end
-
-  defp substitute(text, new) do
-    String.replace(text, schedule_regex(), new)
-  end
-
-  defp schedule_regex do
-    ~r/(?<train_number>\d{2,4})\s*\((?<time>\d{1,2}\:\d{2}\s*[aApP][mM])\sfrom\s(?<station>[\w\s\W]+)\)/U
   end
 
   @doc """
@@ -112,6 +131,10 @@ defmodule AlertProcessor.TextReplacement do
   end
 
   def parse_target(_), do: %{}
+
+  defp schedule_regex do
+    ~r/(?<train_number>\d{2,4})\s*\((?<time>\d{1,2}\:\d{2}\s*[aApP][mM])\sfrom\s(?<station>[\w\s\W]+)\)/U
+  end
 
   defp parse_time(time_with_ampm) do
     time_regex = ~r/\:|\s*[aApP][mM]/
