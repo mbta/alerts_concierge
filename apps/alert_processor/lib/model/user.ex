@@ -2,16 +2,17 @@ defmodule AlertProcessor.Model.User do
   @moduledoc """
   User struct and functions
   """
+  @type id :: String.t()
+  @type communication_mode :: :email | :sms | :none
   @type t :: %__MODULE__{
-          id: String.t(),
+          id: id,
           email: String.t(),
           phone_number: String.t(),
           role: String.t(),
           digest_opt_in: boolean,
-          sms_opted_out_at: DateTime.t()
+          sms_opted_out_at: DateTime.t(),
+          communication_mode: communication_mode
         }
-
-  @type id :: String.t()
 
   use Ecto.Schema
   import Ecto.{Changeset, Query}
@@ -30,13 +31,14 @@ defmodule AlertProcessor.Model.User do
     field(:encrypted_password, :string)
     field(:digest_opt_in, :boolean, default: true)
     field(:sms_opted_out_at, :utc_datetime)
+    field(:communication_mode, :string, null: false, default: "email")
     field(:password, :string, virtual: true)
     field(:sms_toggle, :boolean, virtual: true)
 
     timestamps()
   end
 
-  @permitted_fields ~w(email phone_number role password digest_opt_in sms_opted_out_at)a
+  @permitted_fields ~w(email phone_number role password digest_opt_in sms_opted_out_at communication_mode)a
   @required_fields ~w(email password)a
 
   @doc """
