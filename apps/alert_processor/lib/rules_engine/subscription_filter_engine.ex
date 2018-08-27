@@ -29,9 +29,9 @@ defmodule AlertProcessor.SubscriptionFilterEngine do
     schedule_notifications(active_subscriptions, recent_notifications, alerts)
 
     Logger.info(fn ->
-      "alert matching #{alert_filter_duration_type}, time=#{
-        Time.diff(Time.utc_now(), start_time, :millisecond)
-      } alert_count=#{length(alerts)}"
+      time = Time.diff(Time.utc_now(), start_time, :millisecond)
+      alert_type = if time > 0, do: "alert matching", else: "alert matching (bad time)"
+      "#{alert_type} #{alert_filter_duration_type}, time=#{time} alert_count=#{length(alerts)}"
     end)
 
     :ok
