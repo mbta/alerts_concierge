@@ -105,8 +105,8 @@ defmodule ConciergeSite.Schedule do
   @spec get_typical_weekend_schedules([Subscription.t()], boolean) :: [Schedule.t()]
   defp get_typical_weekend_schedules(subscriptions, return_trip) do
     # Get schedules for 7 weekend days to figure out what the typical schedule is. We need to get enough days such that the majority of them will be non-holidays. Since Christmas day, New Years Eve, and New Years Day all run on holiday schedules, the worst case scenario is asking for a schedule on Christmas Day on a Sunday in which case there will be three weekend holiday days in a row. Therefore we need 4 extra days more than this.
-    7
-    |> DayType.take_weekend_days()
+    3
+    |> DayType.take_saturdays()
     |> typical_schedules_for_days(subscriptions, return_trip)
   end
 
