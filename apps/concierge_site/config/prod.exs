@@ -49,6 +49,9 @@ config :concierge_site, ConciergeSite.Dissemination.Mailer,
   username: "${SMTP_USERNAME}",
   password: "${SMTP_PASSWORD}"
 
+# Load css as a static file
+config :concierge_site, load_css?: true
+
 config :concierge_site, ConciergeSite.ViewHelpers,
   google_tag_manager_id: "${GOOGLE_TAG_MANAGER_ID}"
 
