@@ -1,3 +1,5 @@
+<% alias AlertProcessor.Model.User %>
+
 <h1 class="heading__title">My account settings</h1>
 <%= flash_error(@conn) %>
 
@@ -13,15 +15,15 @@
               <%= radio_button form, :sms_toggle, "false", tabindex: "-1", required: true, checked: @changeset.data.phone_number == nil %>
               <div>Email me</div>
             </label>
-            <label data-id="sms" role="radio" aria-checked="<%= if @changeset.data.phone_number != nil, do: "true", else: "false" %>" class="btn btn-outline-primary btn__radio--toggle btn__radio--toggle-item <%= if @changeset.data.phone_number != nil, do: "active" %>" tabindex="0">
+            <label data-id="sms" role="radio" aria-checked="<%= if @changeset.data.phone_number != nil, do: "true", else: "false" %>" class="btn btn-outline-primary btn__radio--toggle btn__radio--toggle-item <%= if User.inside_opt_out_freeze_window?(%User{sms_opted_out_at: @changeset.data.sms_opted_out_at}), do: "disabled" %> <%= if !User.inside_opt_out_freeze_window?(%User{sms_opted_out_at: @changeset.data.sms_opted_out_at}) and @changeset.data.phone_number != nil, do: "active" %>" tabindex="0">
               <%= render ConciergeSite.LayoutView, "_icon_sms.html" %>
-              <%= radio_button form, :sms_toggle, "true", tabindex: "-1", required: true, checked: @changeset.data.phone_number != nil %>
+              <%= radio_button form, :sms_toggle, "true", tabindex: "-1", required: true, checked: @changeset.data.phone_number != nil, disabled: User.inside_opt_out_freeze_window?(%User{sms_opted_out_at: @changeset.data.sms_opted_out_at}) %>
               <div>Text me</div>
             </label>
           </div>
         </div>
 
-        <div class="form-group my-4 <%= if @changeset.data.phone_number == nil, do: "d-none" %>" data-phone="input">
+        <div class="form-group my-4 <%= if @changeset.data.communication_mode == "none" or @changeset.data.phone_number == nil, do: "d-none" %>" data-phone="input">
           <%= label form, :phone_number, "What’s your mobile phone number?", class: "form__label d-block" %>
           <%= error_tag form, :phone_number %>
           <%= telephone_input form, :phone_number, autocomplete: "off", placeholder: "###-###-####", class: "form-control d-inline-block form__phone--input", data: [toggle: "input"] %>
