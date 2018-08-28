@@ -4,10 +4,10 @@ defmodule AlertProcessor.AlertCourtesyEmail do
   """
   @mailer Application.get_env(:alert_processor, :mailer)
   alias AlertProcessor.NotificationBuilder
-  alias AlertProcessor.Model.{User, Subscription, SavedAlert, Alert}
+  alias AlertProcessor.Model.{User, Subscription, SavedAlert, Alert, Notification}
   alias AlertProcessor.Helpers.ConfigHelper
 
-  @spec send_courtesy_emails([SavedAlert.t()], [Alert.t()]) :: [map()]
+  @spec send_courtesy_emails([SavedAlert.t()], [Alert.t()]) :: [Notification.t()]
   def send_courtesy_emails([], _), do: []
 
   def send_courtesy_emails(saved_alerts, parsed_alerts) do
