@@ -65,7 +65,7 @@ defmodule AlertProcessor.SavedAlertTest do
 
       [alert] = Repo.all(SavedAlert)
 
-      assert saved_alert == alert
+      assert saved_alert == %{alert | notification_type: :initial}
       assert %PaperTrail.Version{} = PaperTrail.get_version(saved_alert)
     end
   end
@@ -82,7 +82,7 @@ defmodule AlertProcessor.SavedAlertTest do
       updated_alert = SavedAlert.update_existing_alert(saved_alert, update_params)
       [alert] = Repo.all(SavedAlert)
 
-      assert updated_alert == alert
+      assert updated_alert == %{alert | notification_type: :update}
       assert [_v1, _v2] = PaperTrail.get_versions(updated_alert)
     end
   end
