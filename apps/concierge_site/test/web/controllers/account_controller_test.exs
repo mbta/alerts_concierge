@@ -131,6 +131,7 @@ defmodule ConciergeSite.AccountControllerTest do
 
       assert html_response(conn, 302) =~ "/trips"
       assert updated_user.phone_number == "5555555555"
+      assert updated_user.communication_mode == "sms"
     end
 
     test "POST /account/edit error", %{conn: conn} do

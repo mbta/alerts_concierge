@@ -49,8 +49,16 @@ defmodule AlertProcessor.Model.UserTest do
   describe "update_account" do
     test "updates account" do
       user = insert(:user)
-      assert {:ok, user} = User.update_account(user, %{"phone_number" => "5550000000"}, user.id)
+
+      assert {:ok, user} =
+               User.update_account(
+                 user,
+                 %{"phone_number" => "5550000000", "sms_toggle" => "true"},
+                 user.id
+               )
+
       assert user.phone_number == "5550000000"
+      assert user.communication_mode == "sms"
     end
 
     test "opts in phone number when phone number changed" do
@@ -218,8 +226,8 @@ defmodule AlertProcessor.Model.UserTest do
     end
   end
 
-  describe "remove_users_phone_number" do
-    test "removes the phone numbers from the users" do
+  describe "opt_users_out_of_sms" do
+    test "removes the phone numbers from the users, records the time they opted out, sets communication_mode" do
       user0 = insert(:user)
       user1 = insert(:user)
 
@@ -227,14 +235,18 @@ defmodule AlertProcessor.Model.UserTest do
        %{
          {:user, 0} => %{model: user_0},
          {:user, 1} => %{model: user_1}
-       }} = User.remove_users_phone_number([user0.id, user1.id], "sms-opt-out")
+       }} = User.opt_users_out_of_sms([user0.id, user1.id])
 
       assert user_0.phone_number == nil
+      assert user_0.sms_opted_out_at != nil
+      assert user_0.communication_mode == "none"
       assert user_1.phone_number == nil
+      assert user_1.sms_opted_out_at != nil
+      assert user_1.communication_mode == "none"
     end
 
     test "doesnt do anything if no users are passed" do
-      assert {:ok, %{}} = User.remove_users_phone_number([], "sms-opt-out")
+      assert {:ok, %{}} = User.opt_users_out_of_sms([])
     end
   end
 

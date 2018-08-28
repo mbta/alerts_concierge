@@ -11,7 +11,9 @@ defmodule ConciergeSite.AccountController do
   end
 
   def edit(conn, _params, user, _claims) do
-    render(conn, "edit.html", changeset: User.changeset(user), user_id: user.id)
+    conn
+    |> message_if_opted_out(user)
+    |> render("edit.html", changeset: User.changeset(user), user_id: user.id)
   end
 
   def edit_password(conn, _params, _user, _claims) do
@@ -108,5 +110,24 @@ defmodule ConciergeSite.AccountController do
     Enum.map(changeset.errors, fn {field, _} ->
       field
     end)
+  end
+
+  defp message_if_opted_out(conn, %User{} = user) do
+    if User.inside_opt_out_freeze_window?(user) do
+      put_flash(
+        conn,
+        :error,
+        "You opted out of text messages on #{formatted_date(user.sms_opted_out_at)}. You cannot resubscribe for 30 days. If you’d like to continue receiving alerts, you can select to receive notifications by email."
+      )
+    else
+      conn
+    end
+  end
+
+  defp formatted_date(date) do
+    [date.month, date.day, date.year]
+    |> Enum.map(&to_string/1)
+    |> Enum.map(&String.pad_leading(&1, 2, "0"))
+    |> Enum.join("/")
   end
 end

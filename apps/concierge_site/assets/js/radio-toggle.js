@@ -88,7 +88,7 @@ function toggleEvents($) {
     switch (inputName) {
       case "user[sms_toggle]":
         const $phoneContainerEl = $("div[data-phone='input']");
-        if (inputValue == "true") {
+        if (inputValue == "true" && !$labelEl.hasClass("disabled")) {
           $phoneContainerEl.removeClass("d-none");
           $phoneContainerEl.find("input").attr("required", "required");
           setTimeout(() => {
