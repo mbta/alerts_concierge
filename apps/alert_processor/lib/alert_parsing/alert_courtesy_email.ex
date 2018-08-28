@@ -7,7 +7,7 @@ defmodule AlertProcessor.AlertCourtesyEmail do
   alias AlertProcessor.Model.{User, Subscription, SavedAlert, Alert}
   alias AlertProcessor.Helpers.ConfigHelper
 
-  @spec send_courtesy_emails([SavedAlert.t()], [Alert.t()]) :: [Map.t()]
+  @spec send_courtesy_emails([SavedAlert.t()], [Alert.t()]) :: [map()]
   def send_courtesy_emails([], _), do: []
 
   def send_courtesy_emails(saved_alerts, parsed_alerts) do
