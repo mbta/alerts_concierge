@@ -15,17 +15,32 @@ defmodule AlertProcessor.AlertCourtesyEmail do
     user = %User{email: email_address}
     subscription = %Subscription{start_time: ~T[07:00:00]}
     alert_ids = Enum.map(saved_alerts, & &1.alert_id)
+
+    saved_alerts_types =
+      Enum.reduce(saved_alerts, %{}, fn saved_alert, accumulator ->
+        Map.put(accumulator, saved_alert.alert_id, saved_alert.notification_type)
+      end)
+
     parsed_alerts_to_send = Enum.filter(parsed_alerts, &Enum.member?(alert_ids, &1.id))
 
     notifications =
-      Enum.map(
-        parsed_alerts_to_send,
-        &NotificationBuilder.build_notification({user, [subscription]}, &1)
-      )
+      parsed_alerts_to_send
+      |> Enum.map(&NotificationBuilder.build_notification({user, [subscription]}, &1))
+      |> Enum.map(fn notification ->
+        type =
+          if notification.alert.closed_timestamp,
+            do: :all_clear,
+            else: saved_alerts_types[notification.alert.id]
 
-    for notification <- notifications do
-      {:ok, email} = @mailer.send_notification_email(notification)
-      email
+        %{notification | type: type}
+      end)
+
+    if email_address != "" do
+      for notification <- notifications do
+        @mailer.send_notification_email(notification)
+      end
     end
+
+    notifications
   end
 end

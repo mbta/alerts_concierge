@@ -10,11 +10,35 @@ defmodule AlertProcessor.AlertCourtesyEmailTest do
   }
 
   @saved_alert %SavedAlert{
-    alert_id: "123"
+    alert_id: "123",
+    notification_type: :initial
   }
 
-  test "sends courtesy email" do
-    assert [%{}] == AlertCourtesyEmail.send_courtesy_emails([@saved_alert], [@alert])
+  test "send initial courtesy email" do
+    assert [notification] = AlertCourtesyEmail.send_courtesy_emails([@saved_alert], [@alert])
+    assert notification.type == :initial
+  end
+
+  test "send update courtesy email" do
+    assert [notification] =
+             AlertCourtesyEmail.send_courtesy_emails(
+               [%{@saved_alert | notification_type: :update}],
+               [@alert]
+             )
+
+    assert notification.type == :update
+  end
+
+  test "send all clear courtesy email" do
+    assert [notification] =
+             AlertCourtesyEmail.send_courtesy_emails([@saved_alert], [
+               %{
+                 @alert
+                 | closed_timestamp: DateTime.from_naive!(~N[2018-01-01 09:30:00.000], "Etc/UTC")
+               }
+             ])
+
+    assert notification.type == :all_clear
   end
 
   test "does not send courtesy email when ids do not match" do

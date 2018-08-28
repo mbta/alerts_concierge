@@ -17,6 +17,7 @@ defmodule AlertProcessor.Model.SavedAlert do
     field(:alert_id, :string)
     field(:last_modified, :utc_datetime)
     field(:data, :map)
+    field(:notification_type, AlertProcessor.AtomType, virtual: true)
 
     timestamps()
   end
@@ -47,12 +48,14 @@ defmodule AlertProcessor.Model.SavedAlert do
     struct
     |> create_changeset(params)
     |> PaperTrail.insert!()
+    |> Map.put(:notification_type, :initial)
   end
 
   def update_existing_alert(struct, params) do
     struct
     |> update_changeset(params)
     |> PaperTrail.update!()
+    |> Map.put(:notification_type, :update)
   end
 
   def save!(alerts) do

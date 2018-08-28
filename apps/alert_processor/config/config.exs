@@ -58,7 +58,7 @@ config :alert_processor,
 config :alert_processor, :migration_task, AlertProcessor.ReleaseTasks.Dev
 
 # Config for courtesy email address
-config :alert_processor, courtesy_email_address: "trisha@mbtace.com"
+config :alert_processor, courtesy_email_address: {:system, "COURTESY_EMAIL_ADDRESS", ""}
 
 # Import environment specific config. This must remain at the bottom
 # of this file so it overrides the configuration defined above.
