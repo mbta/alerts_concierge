@@ -15,7 +15,7 @@ defmodule ConciergeSite.Endpoint do
     Plug.Static,
     at: "/",
     from: :concierge_site,
-    gzip: false,
+    gzip: true,
     only: ~w(css fonts images js robots.txt),
     only_matching: ~w(favicon)
   )
