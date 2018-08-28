@@ -15,7 +15,8 @@ defmodule AlertProcessor.AlertParser do
     AlertFilters,
     SubscriptionFilterEngine,
     Helpers.DateTimeHelper,
-    Reminders
+    Reminders,
+    AlertCourtesyEmail
   }
 
   alias AlertProcessor.Model.{Alert, InformedEntity, Notification, SavedAlert}
@@ -33,7 +34,10 @@ defmodule AlertProcessor.AlertParser do
          {:ok, facility_map} <- ServiceInfoCache.get_facility_map() do
       updated_alerts = swap_informed_entities(alerts, api_alerts)
 
-      SavedAlert.save!(updated_alerts)
+      saved_alerts =
+        updated_alerts
+        |> SavedAlert.save!()
+        |> Enum.filter(&(&1 != nil))
 
       alerts_needing_notifications =
         {updated_alerts, facility_map, feed_timestamp}
@@ -54,6 +58,8 @@ defmodule AlertProcessor.AlertParser do
         alerts_needing_notifications,
         alert_filter_duration_type
       )
+
+      AlertCourtesyEmail.send_courtesy_emails(saved_alerts, alerts_needing_notifications)
 
       {alerts, api_alerts, updated_alerts}
     end
