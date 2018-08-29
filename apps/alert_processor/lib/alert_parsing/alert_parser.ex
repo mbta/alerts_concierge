@@ -39,10 +39,10 @@ defmodule AlertProcessor.AlertParser do
         |> SavedAlert.save!()
         |> Enum.filter(&(&1 != nil))
 
+      parsed_alerts = parse_alerts({updated_alerts, facility_map, feed_timestamp})
+
       alerts_needing_notifications =
-        {updated_alerts, facility_map, feed_timestamp}
-        |> parse_alerts()
-        |> AlertFilters.filter_by_duration_type(alert_filter_duration_type)
+        AlertFilters.filter_by_duration_type(parsed_alerts, alert_filter_duration_type)
 
       Logger.info(fn ->
         "alert filter, duration_type=#{alert_filter_duration_type} alert_count=#{
@@ -59,7 +59,7 @@ defmodule AlertProcessor.AlertParser do
         alert_filter_duration_type
       )
 
-      AlertCourtesyEmail.send_courtesy_emails(saved_alerts, alerts_needing_notifications)
+      AlertCourtesyEmail.send_courtesy_emails(saved_alerts, parsed_alerts)
 
       {alerts, api_alerts, updated_alerts}
     end
