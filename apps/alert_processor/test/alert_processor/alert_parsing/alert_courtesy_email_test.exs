@@ -34,11 +34,25 @@ defmodule AlertProcessor.AlertCourtesyEmailTest do
              AlertCourtesyEmail.send_courtesy_emails([@saved_alert], [
                %{
                  @alert
-                 | closed_timestamp: DateTime.from_naive!(~N[2018-01-01 09:30:00.000], "Etc/UTC")
+                 | closed_timestamp: DateTime.from_naive!(~N[2018-01-01 09:30:00.000], "Etc/UTC"),
+                   last_push_notification:
+                     DateTime.from_naive!(~N[2018-01-01 09:30:00.000], "Etc/UTC")
                }
              ])
 
     assert notification.type == :all_clear
+  end
+
+  test "do not send all clear courtesy email when closed_timestamp does not match last_push_notification" do
+    assert [] =
+             AlertCourtesyEmail.send_courtesy_emails([@saved_alert], [
+               %{
+                 @alert
+                 | closed_timestamp: DateTime.from_naive!(~N[2018-01-01 09:30:00.000], "Etc/UTC"),
+                   last_push_notification:
+                     DateTime.from_naive!(~N[2017-01-01 09:30:00.000], "Etc/UTC")
+               }
+             ])
   end
 
   test "does not send courtesy email when ids do not match" do
