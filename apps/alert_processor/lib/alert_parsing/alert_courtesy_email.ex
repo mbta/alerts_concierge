@@ -34,6 +34,7 @@ defmodule AlertProcessor.AlertCourtesyEmail do
 
         %{notification | type: type}
       end)
+      |> Enum.filter(&filter_out_silent_all_clears(&1))
 
     if email_address != "" do
       for notification <- notifications do
@@ -43,4 +44,23 @@ defmodule AlertProcessor.AlertCourtesyEmail do
 
     notifications
   end
+
+  # only remove :all_clear notification where the last_push_notification doesn't match the closed_timestamp
+  # this indicated that the notification has been closed but subscribers should not be notified
+  defp filter_out_silent_all_clears(%{
+         type: :all_clear,
+         alert: %{
+           last_push_notification: last_push_notification,
+           closed_timestamp: closed_timestamp
+         }
+       })
+       when last_push_notification == closed_timestamp,
+       do: true
+
+  defp filter_out_silent_all_clears(%{
+         type: :all_clear
+       }),
+       do: false
+
+  defp filter_out_silent_all_clears(_), do: true
 end
