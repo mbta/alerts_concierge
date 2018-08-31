@@ -282,7 +282,7 @@ defmodule AlertProcessor.SentAlertFilterTest do
         |> Repo.all()
         |> Repo.preload(:user)
 
-      notifications = Notification.most_recent_for_subscriptions_and_alerts([alert])
+      notifications = Notification.most_recent_for_alerts([alert])
 
       loaded_subscription =
         notifications
