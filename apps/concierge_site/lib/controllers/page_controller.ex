@@ -6,9 +6,7 @@ defmodule ConciergeSite.PageController do
       conn,
       "landing.html",
       wide_layout: true,
-      body_class: "landing-page",
-      header_note:
-        "The <a href='https://public.govdelivery.com/accounts/MABTA/subscriber/new' target='_blank'>old T-Alerts system</a> will be turned off in late August 2018. Sign up for a beta account to continue receiving alerts."
+      body_class: "landing-page"
     )
   end
 
