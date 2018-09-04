@@ -3,6 +3,8 @@ defmodule AlertProcessor.AlertFilters do
   @type duration_type :: :older | :recent | :anytime
   # 60 * 60, 1 hour
   @recent_threshold 3_600
+  # 60 * 60 * 24, 21 hours
+  @oldest_theshold 86_400
 
   @spec filter_by_duration_type([Alert.t()], duration_type, DateTime.t() | nil) :: [Alert.t()]
   def filter_by_duration_type(alerts, duration_type, now \\ DateTime.utc_now())
@@ -10,7 +12,14 @@ defmodule AlertProcessor.AlertFilters do
 
   def filter_by_duration_type(alerts, :older, now) do
     Enum.filter(alerts, fn %{last_push_notification: last_push_notification} ->
-      @recent_threshold <= DateTime.diff(now, last_push_notification, :second)
+      @recent_threshold <= DateTime.diff(now, last_push_notification, :second) &&
+        @oldest_theshold >= DateTime.diff(now, last_push_notification, :second)
+    end)
+  end
+
+  def filter_by_duration_type(alerts, :oldest, now) do
+    Enum.filter(alerts, fn %{last_push_notification: last_push_notification} ->
+      @oldest_theshold >= DateTime.diff(now, last_push_notification, :second)
     end)
   end
 

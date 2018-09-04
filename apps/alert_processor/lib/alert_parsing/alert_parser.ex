@@ -24,7 +24,7 @@ defmodule AlertProcessor.AlertParser do
   @behaviour Parser
 
   @doc """
-  process_alerts/0 entry point for fetching json data from api and, transforming, storing and passing to
+  process_alerts/1 entry point for fetching json data from api and, transforming, storing and passing to
   subscription engine to process before sending.
   """
   @spec process_alerts(atom | nil) :: [{:ok, [Notification.t()]}]
