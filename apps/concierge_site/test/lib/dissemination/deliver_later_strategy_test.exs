@@ -22,7 +22,11 @@ defmodule ConciergeSite.Dissemination.DeliverLaterStrategyTest do
 
     test "handles SMTPError" do
       task =
-        DeliverLaterStrategy.deliver_later(MockSMTPErrorAdapter, %{to: "Mock email address"}, %{})
+        DeliverLaterStrategy.deliver_later(
+          MockSMTPErrorAdapter,
+          %{to: [nil: "Mock email address"]},
+          %{}
+        )
 
       ref = Process.monitor(task.pid)
 
