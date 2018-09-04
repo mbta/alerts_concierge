@@ -10,23 +10,32 @@ defmodule AlertProcessor.AlertFiltersTest do
     header: "recent"
   }
 
-  @old_alert %Alert{
+  @older_alert %Alert{
+    last_push_notification: DateTime.from_naive!(~N[2018-01-01 08:30:00.000], "Etc/UTC"),
+    header: "old"
+  }
+
+  @oldest_alert %Alert{
     last_push_notification: DateTime.from_naive!(~N[2000-01-01 00:00:00.000], "Etc/UTC"),
     header: "old"
   }
 
-  @alerts [@old_alert, @recent_alert]
+  @alerts [@older_alert, @recent_alert, @oldest_alert]
 
   test "match recent alerts" do
     assert [@recent_alert] == AlertFilters.filter_by_duration_type(@alerts, :recent, @now)
   end
 
   test "match older alerts" do
-    assert [@old_alert] == AlertFilters.filter_by_duration_type(@alerts, :older, @now)
+    assert [@older_alert] == AlertFilters.filter_by_duration_type(@alerts, :older, @now)
+  end
+
+  test "match oldest alerts" do
+    assert [@oldest_alert] == AlertFilters.filter_by_duration_type(@alerts, :oldest, @now)
   end
 
   test "match all alerts" do
-    assert [@old_alert, @recent_alert] ==
+    assert [@older_alert, @recent_alert, @oldest_alert] ==
              AlertFilters.filter_by_duration_type(@alerts, :anytime, @now)
   end
 end

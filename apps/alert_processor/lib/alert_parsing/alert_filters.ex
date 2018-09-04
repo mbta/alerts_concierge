@@ -19,7 +19,7 @@ defmodule AlertProcessor.AlertFilters do
 
   def filter_by_duration_type(alerts, :oldest, now) do
     Enum.filter(alerts, fn %{last_push_notification: last_push_notification} ->
-      @oldest_theshold >= DateTime.diff(now, last_push_notification, :second)
+      @oldest_theshold <= DateTime.diff(now, last_push_notification, :second)
     end)
   end
 
