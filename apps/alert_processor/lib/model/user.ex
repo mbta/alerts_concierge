@@ -178,6 +178,7 @@ defmodule AlertProcessor.Model.User do
 
     struct
     |> changeset(params, [])
+    |> unique_constraint(:email, message: "Sorry, that email has already been taken.")
     |> validate_format(
       :phone_number,
       ~r/^[0-9]{10}$/,
