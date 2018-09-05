@@ -7,7 +7,6 @@ defmodule ConciergeSite.Helpers.MailHelper do
   @template_dir Application.get_env(:concierge_site, :mail_template_dir)
 
   alias AlertProcessor.Model.{Alert, InformedEntity}
-  alias ConciergeSite.Auth.Token
   alias ConciergeSite.Router.Helpers
   alias AlertProcessor.Helpers.ConfigHelper
   require EEx
@@ -100,10 +99,7 @@ defmodule ConciergeSite.Helpers.MailHelper do
   defp logo_for_subway(nil),
     do: Helpers.static_url(ConciergeSite.Endpoint, "/images/icons/icn_facility.png")
 
-  def manage_subscriptions_url(user) do
-    {:ok, token, _permissions} = Token.issue(user, [:manage_subscriptions], {30, :days})
-    Helpers.trip_url(ConciergeSite.Endpoint, :index, token: token)
-  end
+  def manage_subscriptions_url(), do: Helpers.trip_url(ConciergeSite.Endpoint, :index)
 
   def feedback_url do
     case ConfigHelper.get_string(:feedback_url, :concierge_site) do

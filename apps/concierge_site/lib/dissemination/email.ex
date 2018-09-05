@@ -46,7 +46,7 @@ defmodule ConciergeSite.Dissemination.Email do
   )
 
   def confirmation_email(user) do
-    manage_subscriptions_url = MailHelper.manage_subscriptions_url(user)
+    manage_subscriptions_url = MailHelper.manage_subscriptions_url()
     feedback_url = MailHelper.feedback_url()
 
     base_email()
@@ -71,7 +71,7 @@ defmodule ConciergeSite.Dissemination.Email do
   )
 
   def targeted_notification_email(user, subject, body) do
-    manage_subscriptions_url = MailHelper.manage_subscriptions_url(user)
+    manage_subscriptions_url = MailHelper.manage_subscriptions_url()
     feedback_url = MailHelper.feedback_url()
 
     base_email()
