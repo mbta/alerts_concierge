@@ -18,7 +18,7 @@ defmodule AlertProcessor.AlertWorker do
   Initialize GenServer and schedule recurring alert parsing.
   """
   def init(_) do
-    schedule_work(1)
+    schedule_work(1, DateTime.utc_now())
     {:ok, nil}
   end
 
@@ -26,11 +26,17 @@ defmodule AlertProcessor.AlertWorker do
   Process alerts and then reschedule next time to process.
   Every fifth run it will pass :older to process_alerts, otherwise it passes :recent.
   """
-  def handle_info({:work, count}, _) do
+  def handle_info({:work, count, last_process_oldest_alerts_time}, _) do
+    # process older or recent alerts
     alert_duration_type = if count == @older_duration_frequency, do: :older, else: :recent
     count = if count == @older_duration_frequency, do: 0, else: count
     @alert_parser.process_alerts(alert_duration_type)
-    schedule_work(count + 1)
+
+    # process older alerts once per hour
+    last_process_oldest_alerts_time = process_oldest_alerts(last_process_oldest_alerts_time)
+
+    # schedule next run
+    schedule_work(count + 1, last_process_oldest_alerts_time)
     {:noreply, nil}
   end
 
@@ -38,8 +44,17 @@ defmodule AlertProcessor.AlertWorker do
     {:noreply, state}
   end
 
-  defp schedule_work(count) do
-    Process.send_after(self(), {:work, count}, filter_interval())
+  defp process_oldest_alerts(last_process_oldest_alerts_time) do
+    if DateTime.diff(DateTime.utc_now(), last_process_oldest_alerts_time, :second) > 3_600 do
+      @alert_parser.process_alerts(:oldest)
+      DateTime.utc_now()
+    else
+      last_process_oldest_alerts_time
+    end
+  end
+
+  defp schedule_work(count, last_process_oldest_alerts_time) do
+    Process.send_after(self(), {:work, count, last_process_oldest_alerts_time}, filter_interval())
   end
 
   defp filter_interval do
