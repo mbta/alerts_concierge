@@ -1,7 +1,6 @@
 defmodule ConcerigeSite.Helpers.MailHelperTest do
   @moduledoc false
   use ConciergeSite.DataCase, async: true
-  import AlertProcessor.Factory
   alias ConciergeSite.Helpers.MailHelper
   alias AlertProcessor.{Model.Alert, Model.InformedEntity}
 
@@ -104,10 +103,9 @@ defmodule ConcerigeSite.Helpers.MailHelperTest do
 
   describe "manage_subscription_url" do
     test "generates url with token" do
-      user = insert(:user)
-      url = MailHelper.manage_subscriptions_url(user)
+      url = MailHelper.manage_subscriptions_url()
       assert url =~ "http"
-      assert url =~ ~r/trips\?token=(.+)/
+      assert url =~ ~r/trips$/
     end
   end
 
