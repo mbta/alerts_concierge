@@ -6,18 +6,19 @@ defmodule AlertProcessor.AlertParser do
   require Logger
 
   alias AlertProcessor.{
+    AlertCourtesyEmail,
+    AlertFilters,
     AlertsClient,
     ApiClient,
     CachedApiClient,
-    Helpers.StringHelper,
     Parser,
     ServiceInfoCache,
-    AlertFilters,
     SubscriptionFilterEngine,
-    Helpers.DateTimeHelper,
-    Reminders,
-    AlertCourtesyEmail
+    Memory,
+    Reminders
   }
+
+  alias AlertProcessor.Helpers.{DateTimeHelper, StringHelper}
 
   alias AlertProcessor.Model.{Alert, InformedEntity, Notification, SavedAlert}
 
@@ -54,10 +55,21 @@ defmodule AlertProcessor.AlertParser do
         Reminders.async_schedule_reminders(alerts_needing_notifications)
       end
 
+      memory_before = Memory.now()
+
       SubscriptionFilterEngine.schedule_all_notifications(
         alerts_needing_notifications,
         alert_filter_duration_type
       )
+
+      Logger.info(fn ->
+        mem_string =
+          Memory.now()
+          |> Memory.diff(memory_before)
+          |> Memory.to_string()
+
+        "Memory change due to scheduling notifications: #{mem_string}"
+      end)
 
       AlertCourtesyEmail.send_courtesy_emails(saved_alerts, parsed_alerts)
 
@@ -375,7 +387,7 @@ defmodule AlertProcessor.AlertParser do
   @doc """
   Some trips run on multiple routes. Currently the API adds these additional routes
   to the list of the informed entities, but the IBI feed does not. Rather than re-do
-  that work in this project we replace the informed entities from the feed with the 
+  that work in this project we replace the informed entities from the feed with the
   informed entities from the API
   """
   def swap_informed_entities(alerts, api_alerts) do
