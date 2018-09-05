@@ -3,7 +3,7 @@ defmodule AlertProcessor.AlertFilters do
   @type duration_type :: :older | :recent | :anytime
   # 60 * 60, 1 hour
   @recent_threshold 3_600
-  # 60 * 60 * 24, 21 hours
+  # 60 * 60 * 24, 24 hours
   @oldest_theshold 86_400
 
   @spec filter_by_duration_type([Alert.t()], duration_type, DateTime.t() | nil) :: [Alert.t()]
