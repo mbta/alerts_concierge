@@ -69,7 +69,6 @@ defmodule ConciergeSite.Dissemination.NotificationEmailTest do
     body = email.html_body
 
     assert email.to == @email
-    assert body =~ "Red line delay"
     assert body =~ "Red line inbound from Alewife station closure"
     assert body =~ "href=\"https://www.mbta.com/alerts\""
     assert body =~ "Last Updated: Jan 18 2017 02:00 PM"
@@ -86,7 +85,6 @@ defmodule ConciergeSite.Dissemination.NotificationEmailTest do
     body = email.html_body
 
     assert email.to == @email
-    assert body =~ "All clear (re: Red line delay)"
     assert body =~ "The issue described below has ended:"
     assert body =~ "Red line inbound from Alewife station closure"
   end
