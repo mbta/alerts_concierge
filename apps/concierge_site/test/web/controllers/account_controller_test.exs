@@ -111,7 +111,7 @@ defmodule ConciergeSite.AccountControllerTest do
         |> guardian_login(conn)
         |> get(account_path(conn, :edit))
 
-      assert html_response(conn, 200) =~ "My account settings"
+      assert html_response(conn, 200) =~ "Settings"
     end
 
     test "POST /account/edit", %{conn: conn} do
@@ -119,7 +119,8 @@ defmodule ConciergeSite.AccountControllerTest do
 
       user_params = %{
         sms_toggle: "true",
-        phone_number: "5555555555"
+        phone_number: "5555555555",
+        email: "test@test.com"
       }
 
       conn =
@@ -132,9 +133,27 @@ defmodule ConciergeSite.AccountControllerTest do
       assert html_response(conn, 302) =~ "/trips"
       assert updated_user.phone_number == "5555555555"
       assert updated_user.communication_mode == "sms"
+      assert updated_user.email == "test@test.com"
     end
 
-    test "POST /account/edit error", %{conn: conn} do
+    test "POST /account/edit error email in use", %{conn: conn} do
+      insert(:user, email: "taken@email.com")
+      user = insert(:user, email: "before@email.com")
+
+      user_params = %{
+        sms_toggle: "false",
+        email: "taken@email.com"
+      }
+
+      conn =
+        user
+        |> guardian_login(conn)
+        |> post(account_path(conn, :update), %{user: user_params})
+
+      assert html_response(conn, 200) =~ "Sorry, that email has already been taken"
+    end
+
+    test "POST /account/edit error invalid phone number", %{conn: conn} do
       user = insert(:user, phone_number: nil)
 
       user_params = %{
