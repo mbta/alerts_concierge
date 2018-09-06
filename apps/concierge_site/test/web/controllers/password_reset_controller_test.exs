@@ -84,7 +84,9 @@ defmodule ConciergeSite.PasswordResetControllerTest do
       }
 
       conn = patch(conn, password_reset_path(conn, :update, reset_token), params)
-      assert html_response(conn, 422) =~ "Password must contain one number or special character"
+
+      assert html_response(conn, 422) =~
+               "Password must contain at least 6 characters, with one number or symbol."
     end
 
     test "with invalid password confirmation", %{conn: conn} do

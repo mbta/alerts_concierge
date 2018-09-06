@@ -56,14 +56,12 @@ label.form__label--inline {
   margin-top: 0.5rem;
 
   span {
+    color: #b3000f;
     display: block;
-    margin: 0.5rem;
     padding: 0.4rem;
 
-    &:before {
-      @include fa-icon();
-      content: $fa-var-exclamation-circle;
-      margin-right: 0.25rem;
+    &:first-letter {
+      text-transform: capitalize;
     }
   }
 }

@@ -85,8 +85,8 @@ defmodule ConciergeSite.AccountController do
     redirect(conn, to: page_path(conn, :account_deleted))
   end
 
-  def options_new(conn, _params, user, _claims) do
-    changeset = User.update_account_changeset(user)
+  def options_new(conn, params, user, _claims) do
+    changeset = User.update_account_changeset(user, params)
 
     render(conn, "options_new.html", changeset: changeset, user: user, sms_toggle: false)
   end

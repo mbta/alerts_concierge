@@ -17,7 +17,9 @@ defmodule ConciergeSite.AccountControllerTest do
   test "POST /account bad password", %{conn: conn} do
     params = %{"user" => %{"password" => "password", "email" => "test@test.com"}}
     conn = post(conn, account_path(conn, :create), params)
-    assert html_response(conn, 200) =~ "Password must contain one number"
+
+    assert html_response(conn, 200) =~
+             "Password must contain at least 6 characters, with one number or symbol."
   end
 
   test "POST /account bad email", %{conn: conn} do
@@ -29,7 +31,8 @@ defmodule ConciergeSite.AccountControllerTest do
   test "POST /account empty values", %{conn: conn} do
     params = %{"user" => %{"password" => "", "email" => ""}}
     conn = post(conn, account_path(conn, :create), params)
-    assert html_response(conn, 200) =~ "be blank"
+    assert html_response(conn, 200) =~ "Password is required"
+    assert html_response(conn, 200) =~ "Email is required"
   end
 
   test "GET /account/options", %{conn: conn} do
@@ -48,7 +51,7 @@ defmodule ConciergeSite.AccountControllerTest do
     user = insert(:user, phone_number: nil)
 
     user_params = %{
-      sms_toggle: "true",
+      communication_mode: "sms",
       phone_number: "5555555555",
       digest_opt_in: false
     }
@@ -69,7 +72,7 @@ defmodule ConciergeSite.AccountControllerTest do
     user = insert(:user, phone_number: nil)
 
     user_params = %{
-      sms_toggle: "false",
+      communication_mode: "email",
       phone_number: "5555555555"
     }
 
@@ -88,7 +91,7 @@ defmodule ConciergeSite.AccountControllerTest do
     user = insert(:user)
 
     user_params = %{
-      sms_toggle: "true",
+      communication_mode: "sms",
       phone_number: "123"
     }
 
@@ -118,7 +121,7 @@ defmodule ConciergeSite.AccountControllerTest do
       user = insert(:user, phone_number: nil)
 
       user_params = %{
-        sms_toggle: "true",
+        communication_mode: "sms",
         phone_number: "5555555555",
         email: "test@test.com"
       }
@@ -141,7 +144,7 @@ defmodule ConciergeSite.AccountControllerTest do
       user = insert(:user, email: "before@email.com")
 
       user_params = %{
-        sms_toggle: "false",
+        communication_mode: "email",
         email: "taken@email.com"
       }
 
@@ -157,7 +160,7 @@ defmodule ConciergeSite.AccountControllerTest do
       user = insert(:user, phone_number: nil)
 
       user_params = %{
-        sms_toggle: "true",
+        communication_mode: "sms",
         phone_number: "5"
       }
 

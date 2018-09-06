@@ -167,19 +167,19 @@ defmodule ConciergeSite.AccessibilityTripController do
   end
 
   defp validate_days(%{changes: %{relevant_days: []}} = changeset) do
-    add_error(changeset, :relevant_days, "at least one day must be selected")
+    add_error(changeset, :relevant_days, "Please select at least one day to continue.")
   end
 
   defp validate_days(changeset), do: changeset
 
   defp validate_features(%{changes: %{elevator: "false", escalator: "false"}} = changeset) do
-    add_error(changeset, :escalator, "at least one accessibility feature must be selected")
+    add_error(changeset, :escalator, "Please select at least one station feature.")
   end
 
   defp validate_features(changeset), do: changeset
 
   defp validate_stops(%{changes: %{stops: [], routes: []}} = changeset) do
-    add_error(changeset, :stops, "must choose at least one stop or line")
+    add_error(changeset, :stops, "Please select a stop to continue.")
   end
 
   defp validate_stops(changeset), do: changeset

@@ -2,4 +2,8 @@
   .choices__list--dropdown .choices__item--selectable {
     padding-right: 0;
   }
+
+  &.choices {
+    margin-bottom: 0;
+  }
 }

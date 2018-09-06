@@ -47,8 +47,7 @@ defmodule AlertProcessor.Model.User do
   def changeset(struct, params \\ %{}, required_fields \\ []) do
     struct
     |> cast(params, @permitted_fields)
-    |> update_change(:email, &String.downcase/1)
-    |> validate_required(required_fields)
+    |> validate_required(required_fields, message: "This field is required.")
   end
 
   def create_account(params) do
@@ -115,80 +114,74 @@ defmodule AlertProcessor.Model.User do
   Builds changeset used for registering a new user account
   """
   def create_account_changeset(struct, params \\ %{}) do
-    params =
-      case params do
-        %{"sms_toggle" => "false"} ->
-          Map.put(params, "phone_number", nil)
-
-        %{"sms_toggle" => "true"} ->
-          Map.put(
-            params,
-            "phone_number",
-            String.replace(params["phone_number"] || "", ~r/\D/, "")
-          )
-
-        _ ->
-          params
-      end
-
     struct
     |> changeset(params, @required_fields)
-    |> validate_format(:email, ~r/@/, message: "Please enter a valid email address.")
-    |> unique_constraint(:email, message: "Sorry, that email has already been taken.")
-    |> validate_length(
-      :password,
-      min: 6,
-      message: "Password must be at least six characters long."
-    )
-    |> validate_format(
-      :password,
-      ~r/[^a-zA-Z\s:]{1}/,
-      message: "Password must contain one number or special character (? & % $ # !, etc)."
-    )
-    |> validate_format(
-      :phone_number,
-      ~r/^[0-9]{10}$/,
-      message: "Phone number is not in a valid format."
-    )
+    |> validate_email()
+    |> update_change(:email, &lowercase_email/1)
+    |> validate_password()
+    |> clear_phone_if_mode_is_email(params)
+    |> update_change(:phone_number, &clean_phone_number/1)
+    |> validate_phone_number()
     |> hash_password()
   end
 
   @doc """
   Builds changeset for updating an existing user account
   """
-  def update_account_changeset(struct, params \\ %{}) do
-    params =
-      case params do
-        %{"sms_toggle" => "false"} ->
-          params
-          |> Map.put("phone_number", nil)
-          |> Map.put("communication_mode", "email")
-
-        %{"sms_toggle" => "true"} ->
-          params
-          |> Map.put(
-            "phone_number",
-            String.replace(params["phone_number"] || "", ~r/\D/, "")
-          )
-          |> Map.put("communication_mode", "sms")
-
-        _ ->
-          params
-      end
-
+  def update_account_changeset(
+        struct,
+        %{"communication_mode" => "sms", "email" => _email} = params
+      ) do
     struct
-    |> changeset(params, [])
+    |> changeset(params, [:phone_number, :email])
+    |> update_change(:phone_number, &clean_phone_number/1)
+    |> validate_phone_number()
+    |> validate_email()
+    |> update_change(:email, &lowercase_email/1)
+  end
+
+  def update_account_changeset(struct, %{"communication_mode" => "sms"} = params) do
+    struct
+    |> changeset(params, [:phone_number])
+    |> update_change(:phone_number, &clean_phone_number/1)
+    |> validate_phone_number()
+  end
+
+  def update_account_changeset(struct, %{"communication_mode" => "email"} = params) do
+    struct
+    |> changeset(params, [:email])
+    |> validate_email()
+    |> update_change(:email, &lowercase_email/1)
+    |> update_change(:phone_number, &clear_value/1)
+  end
+
+  def update_account_changeset(struct, params), do: changeset(struct, params)
+
+  defp validate_email(changeset) do
+    changeset
+    |> validate_format(:email, ~r/@/, message: "Please enter a valid email address.")
     |> unique_constraint(:email, message: "Sorry, that email has already been taken.")
-    |> validate_format(
+  end
+
+  defp clear_phone_if_mode_is_email(changeset, %{"communication_mode" => "email"}) do
+    update_change(changeset, :phone_number, &clear_value/1)
+  end
+
+  defp clear_phone_if_mode_is_email(changeset, _), do: changeset
+
+  defp clear_value(_), do: nil
+
+  defp validate_phone_number(changeset) do
+    validate_format(
+      changeset,
       :phone_number,
       ~r/^[0-9]{10}$/,
       message: "Phone number is not in a valid format."
     )
   end
 
-  defp update_password_changeset(struct, params) do
-    struct
-    |> changeset(params, ~w(password)a)
+  defp validate_password(changeset) do
+    changeset
     |> validate_length(
       :password,
       min: 6,
@@ -197,8 +190,20 @@ defmodule AlertProcessor.Model.User do
     |> validate_format(
       :password,
       ~r/[^a-zA-Z\s:]{1}/,
-      message: "Password must contain one number or special character (? & % $ # !, etc)."
+      message: "Password must contain at least 6 characters, with one number or symbol."
     )
+  end
+
+  defp clean_phone_number(nil), do: nil
+  defp clean_phone_number(value), do: String.replace(value, ~r/\D/, "")
+
+  defp lowercase_email(nil), do: ""
+  defp lowercase_email(value), do: String.downcase(value)
+
+  defp update_password_changeset(struct, params) do
+    struct
+    |> changeset(params, ~w(password)a)
+    |> validate_password()
     |> hash_password()
   end
 
@@ -235,17 +240,25 @@ defmodule AlertProcessor.Model.User do
   Checks if user's login credentials are valid
   """
   def authenticate(%{"email" => email, "password" => password} = params) do
-    user = Repo.get_by(__MODULE__, email: String.downcase(email))
+    changeset = login_changeset(%__MODULE__{}, params)
 
-    cond do
-      user && user.encrypted_password == "" ->
-        {:error, :disabled}
+    case changeset.errors do
+      [] ->
+        user = Repo.get_by(__MODULE__, email: String.downcase(email))
 
-      check_password(user, password) ->
-        {:ok, user}
+        cond do
+          user && user.encrypted_password == "" ->
+            {:error, :disabled}
 
-      true ->
-        {:error, login_changeset(%__MODULE__{}, params)}
+          check_password(user, password) ->
+            {:ok, user}
+
+          true ->
+            {:error, changeset}
+        end
+
+      _ ->
+        {:error, changeset}
     end
   end
 

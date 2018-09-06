@@ -88,15 +88,16 @@ function toggleEvents($) {
     switch (inputName) {
       case "user[sms_toggle]":
         const $phoneContainerEl = $("div[data-phone='input']");
+        const $communicationModelEl = $("#user_communication_mode");
         if (inputValue == "true" && !$labelEl.hasClass("disabled")) {
           $phoneContainerEl.removeClass("d-none");
-          $phoneContainerEl.find("input").attr("required", "required");
+          $communicationModelEl.val("sms");
           setTimeout(() => {
             $phoneContainerEl.find("input").focus();
           }, 250);
         } else {
+          $communicationModelEl.val("email");
           $phoneContainerEl.addClass("d-none");
-          $phoneContainerEl.find("input").removeAttr("required");
         }
         break;
 
