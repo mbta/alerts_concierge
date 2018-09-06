@@ -19,32 +19,6 @@ defmodule ConciergeSite.Dissemination.DeliverLaterStrategyTest do
 
       assert_receive {:DOWN, ^ref, :process, _pid, :normal}, 1
     end
-
-    test "handles SMTPError" do
-      task =
-        DeliverLaterStrategy.deliver_later(
-          MockSMTPErrorAdapter,
-          %{to: [nil: "Mock email address"]},
-          %{}
-        )
-
-      ref = Process.monitor(task.pid)
-
-      assert_receive {:DOWN, ^ref, :process, _pid, :normal}, 100
-    end
-
-    test "handles unexpected errors" do
-      task =
-        DeliverLaterStrategy.deliver_later(
-          MockRuntimeErrorAdaptertimeErrorAdapter,
-          %{to: "Mock email address"},
-          %{}
-        )
-
-      ref = Process.monitor(task.pid)
-
-      assert_receive {:DOWN, ^ref, :process, _pid, :normal}, 100
-    end
   end
 
   defmodule MockSuccessAdapter do
