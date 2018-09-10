@@ -138,18 +138,6 @@ label.form__label--inline {
   select {
     display: none;
   }
-
-  @include media-breakpoint-down(xs) {
-    display: block;
-
-    .btn__radio--toggle-item {
-      width: 100%;
-
-      &:first-child {
-        margin-bottom: 1rem;
-      }
-    }
-  }
 }
 
 .btn__radio--toggle {
