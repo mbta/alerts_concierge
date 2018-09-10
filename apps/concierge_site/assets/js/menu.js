@@ -1,6 +1,9 @@
 export default () => {
   // find toggle control in page
   const toggle = document.querySelector("a[data-menu-toggle='up']");
+  if (!toggle) {
+    return;
+  }
 
   // add click handler
   toggle.addEventListener("click", e => {
