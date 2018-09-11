@@ -37,8 +37,10 @@
   transform: translateY(4px);
 }
 
-.header__logout {
-  margin-top: -0.25rem;
+.header__menu--list {
+  a {
+    margin-left: 1rem;
+  }
 }
 
 .header__sub--container {
