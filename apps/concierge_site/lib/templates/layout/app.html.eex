@@ -40,20 +40,7 @@
             <%= if @current_user do %>
               <a href="#toggle-menu" data-menu-toggle="up" class="d-md-none">Menu <i class="fa fa-angle-up"></i><i class="fa fa-angle-down"></i></a>
               <div class="d-none d-md-block header__menu--list">
-                <%= if AlertProcessor.Model.User.admin?(@current_user) do %>                
-                  <%= link to: admin_path(@conn, :index) do %>
-                    Administration
-                  <% end %>
-                <% end %>
-                <%= link to: trip_path(@conn, :index) do %>
-                  Subscriptions
-                <% end %>
-                <%= link to: account_path(@conn, :edit) do %>
-                  Settings
-                <% end %>
-                <%= link to: session_path(@conn, :delete), method: :delete do %>
-                  Logout
-                <% end %>
+                <%= render "_header_navigation_links.html", conn: @conn, current_user: @current_user %>
               </div>
             <% else %>
               <%= link(to: session_path(@conn, :new)) do %>
@@ -66,28 +53,7 @@
     <%= if @current_user do %>
       <header data-menu="items" class="header__sub--container d-none">
         <div class="container position-relative text-right font-weight-bold">
-          <%= if AlertProcessor.Model.User.admin?(@current_user) do %>
-            <div>
-              <%= link to: admin_path(@conn, :index) do %>
-                Administration
-              <% end %>
-            </div>
-          <% end %>
-          <div>
-            <%= link to: trip_path(@conn, :index) do %>
-              Subscriptions
-            <% end %>
-          </div>
-          <div>
-            <%= link to: account_path(@conn, :edit) do %>
-              Settings
-            <% end %>
-          </div>
-          <div >
-            <%= link to: session_path(@conn, :delete), method: :delete do %>
-              Logout
-            <% end %>
-          </div>
+          <%= render "_header_navigation_links.html", conn: @conn, current_user: @current_user %>
         </div>
       </header>
     <% end %>
