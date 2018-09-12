@@ -29,34 +29,34 @@
       <div class="container position-relative">
         <%= render "_logo.html" %>
         <div class="header__right">
-          <%= render "_beta.html", conn: @conn, current_user: @current_user %>
+          <a class="header__back" href="http://mbta.com">Back to mbta.com</a>
         </div>
       </div>
     </header>
     <header class="header__sub--container">
-      <div class="container">
-        <%= if @current_user do %>
-          <%= if AlertProcessor.Model.User.admin?(@current_user) do %>
-            <%= link to: admin_path(@conn, :index) do %>
-              Administration
+      <div class="container position-relative">
+        <%= render "_beta.html", conn: @conn, current_user: @current_user %>
+          <div class="header__right">
+            <%= if @current_user do %>
+              <a href="#toggle-menu" data-menu-toggle="up" class="d-md-none">Menu <i class="fa fa-angle-up"></i><i class="fa fa-angle-down"></i></a>
+              <div class="d-none d-md-block header__menu--list">
+                <%= render "_header_navigation_links.html", conn: @conn, current_user: @current_user %>
+              </div>
+            <% else %>
+              <%= link(to: session_path(@conn, :new)) do %>
+                Sign in
+              <% end %>
             <% end %>
-          <% end %>
-          <%= link to: trip_path(@conn, :index) do %>
-            Subscriptions
-          <% end %>
-          <%= link to: account_path(@conn, :edit) do %>
-            Settings
-          <% end %>
-          <%= link to: session_path(@conn, :delete), method: :delete do %>
-            Logout
-          <% end %>
-        <% else %>
-          <%= link(to: session_path(@conn, :new)) do %>
-            Sign in
-          <% end %>
-        <% end %>
+          </div>
       </div>
     </header>
+    <%= if @current_user do %>
+      <header data-menu="items" class="header__sub--container d-none">
+        <div class="container position-relative text-right font-weight-bold">
+          <%= render "_header_navigation_links.html", conn: @conn, current_user: @current_user %>
+        </div>
+      </header>
+    <% end %>
     <%= if assigns[:header_note] do %>
     <header class="header__sub--container_note">
       <div class="container">

@@ -18,9 +18,10 @@ import pubsubFactory from "PubSub";
 import tripForm from "./trip-form";
 import commuteEditForm from "./commute-edit-form";
 import selectMultiFix from "./select-multi-fix";
+import menuToggle from "./menu";
 
 // Import css
-import '../css/app.scss';
+import "../css/app.scss";
 
 const pubsub = new pubsubFactory();
 
@@ -38,3 +39,4 @@ tripForm();
 commuteEditForm();
 selectMultiFix();
 flashFocus();
+menuToggle();
