@@ -8,13 +8,21 @@ defmodule ConciergeSite.ErrorHelpers do
   @doc """
   Generates tag for inlined form input errors.
   """
-  def error_tag(form, field) do
+  def error_tag(form, field, name \\ nil) do
     if error = form.errors[field] do
       content_tag :div, class: "error-block-container" do
-        content_tag(:span, translate_error(error), class: "error-block")
+        message =
+          error
+          |> translate_error()
+          |> replace_field_name(name)
+
+        content_tag(:span, message, class: "error-block")
       end
     end
   end
+
+  defp replace_field_name(message, nil), do: message
+  defp replace_field_name(message, name), do: String.replace(message, "This field", name)
 
   @doc """
   Translates an error message using gettext.

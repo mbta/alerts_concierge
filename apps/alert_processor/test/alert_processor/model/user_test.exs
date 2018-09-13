@@ -7,7 +7,7 @@ defmodule AlertProcessor.Model.UserTest do
   @valid_account_attrs %{
     "email" => "test@email.com",
     "password" => "Password1",
-    "sms_toggle" => "false"
+    "communication_mode" => "email"
   }
   @invalid_attrs %{}
   @password "password1"
@@ -36,7 +36,7 @@ defmodule AlertProcessor.Model.UserTest do
       assert {:ok, user} =
                User.create_account(
                  Map.merge(@valid_account_attrs, %{
-                   "sms_toggle" => "true",
+                   "communication_mode" => "sms",
                    "phone_number" => "555-555-1234"
                  })
                )
@@ -53,7 +53,7 @@ defmodule AlertProcessor.Model.UserTest do
       assert {:ok, user} =
                User.update_account(
                  user,
-                 %{"phone_number" => "5550000000", "sms_toggle" => "true"},
+                 %{"phone_number" => "5550000000", "communication_mode" => "sms"},
                  user.id
                )
 
@@ -77,7 +77,11 @@ defmodule AlertProcessor.Model.UserTest do
       user = insert(:user)
 
       assert {:error, changeset} =
-               User.update_account(user, %{"phone_number" => "not a phone number"}, user.id)
+               User.update_account(
+                 user,
+                 %{"phone_number" => "not a phone number", "communication_mode" => "sms"},
+                 user.id
+               )
 
       refute changeset.valid?
     end
@@ -146,13 +150,13 @@ defmodule AlertProcessor.Model.UserTest do
       refute changeset.valid?
     end
 
-    test "if sms_toggle is true, will validate phone number" do
+    test "if communication_mode is sms, will validate phone number" do
       changeset =
         User.create_account_changeset(
           %User{},
           Map.merge(@valid_account_attrs, %{
             "phone_number" => "2342342344",
-            "sms_toggle" => "true"
+            "communication_mode" => "sms"
           })
         )
 
@@ -161,15 +165,19 @@ defmodule AlertProcessor.Model.UserTest do
       assert changeset.valid?
     end
 
-    test "if sms_toggle is false, phone_number (if present) will be ignored" do
+    test "if communication_mode is email, phone_number (if present) will be ignored" do
+      params =
+        @valid_account_attrs
+        |> Map.put("phone_number", "2342342344")
+
       changeset =
         User.create_account_changeset(
           %User{},
-          Map.put(@valid_account_attrs, "phone_number", "2342342344")
+          params
         )
 
       %{changes: changes} = changeset
-      refute Map.has_key?(changes, :phone_number)
+      assert changes.phone_number == nil
       assert changeset.valid?
     end
   end

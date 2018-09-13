@@ -15,13 +15,13 @@
       <%= form_for @login_changeset, session_path(@conn, :create), fn f -> %>
         <div class="form-group my-4">
           <%= label f, :email, "Email login", class: "form__label" %>
+          <%= email_input f, :email, placeholder: "your@email.com", class: "form-control" %>
           <%= error_tag f, :email %>
-          <%= email_input f, :email, placeholder: "your@email.com", class: "form-control", required: true %>
         </div>
         <div class="form-group my-4">
           <%= label f, :password, "Password", class: "form__label" %>
+          <%= password_input f, :password, placeholder: "Enter your password", class: "form-control", pattern: password_regex_string() %>
           <%= error_tag f, :password %>
-          <%= password_input f, :password, placeholder: "Enter your password", class: "form-control", pattern: password_regex_string(), required: true %>
           <div class="text-right">
             <%= link "Forgot password?", to: password_reset_path(@conn, :new) %>
         </div>
