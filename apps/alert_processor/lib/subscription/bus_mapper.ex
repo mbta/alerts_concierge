@@ -37,7 +37,6 @@ defmodule AlertProcessor.Subscription.BusMapper do
         subscriptions =
           params
           |> create_subscriptions
-          |> map_priority(params)
           |> map_type(:bus)
 
         map_entities(subscriptions, params, route)

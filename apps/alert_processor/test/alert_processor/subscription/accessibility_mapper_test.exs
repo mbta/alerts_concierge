@@ -12,11 +12,6 @@ defmodule AlertProcessor.Subscription.AccessibilityMapperTest do
   }
 
   describe "elevator only" do
-    test "constructs subscription with low severity" do
-      {:ok, [{subscription, _ie}]} = AccessibilityMapper.map_subscriptions(@params)
-      assert subscription.alert_priority_type == :low
-    end
-
     test "constructs subscription with type" do
       {:ok, [{subscription, _ie}]} = AccessibilityMapper.map_subscriptions(@params)
       assert subscription.type == :accessibility
@@ -217,15 +212,6 @@ defmodule AlertProcessor.Subscription.AccessibilityMapperTest do
   end
 
   describe "elevator and escalator" do
-    test "constructs subscription with low severity" do
-      {:ok, [{subscription, _ie}]} =
-        AccessibilityMapper.map_subscriptions(
-          Map.merge(@params, %{"accessibility" => ["elevator", "escalator"]})
-        )
-
-      assert subscription.alert_priority_type == :low
-    end
-
     test "constructs subscription with type" do
       {:ok, [{subscription, _ie}]} =
         AccessibilityMapper.map_subscriptions(

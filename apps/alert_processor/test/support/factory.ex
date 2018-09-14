@@ -29,7 +29,6 @@ defmodule AlertProcessor.Factory do
   def subscription_factory do
     %Subscription{
       relevant_days: [],
-      alert_priority_type: :medium,
       start_time: ~T[10:00:00],
       end_time: ~T[14:00:00]
     }
@@ -199,7 +198,7 @@ defmodule AlertProcessor.Factory do
   end
 
   def accessibility_subscription(%Subscription{} = subscription) do
-    %{subscription | alert_priority_type: :low, type: :accessibility}
+    %{subscription | type: :accessibility}
   end
 
   def accessibility_subscription_entities() do
@@ -210,7 +209,7 @@ defmodule AlertProcessor.Factory do
   end
 
   def parking_subscription(%Subscription{} = subscription) do
-    %{subscription | alert_priority_type: :low, type: :parking}
+    %{subscription | type: :parking}
   end
 
   def parking_subscription_entities() do
@@ -221,7 +220,7 @@ defmodule AlertProcessor.Factory do
   end
 
   def bike_storage_subscription(%Subscription{} = subscription) do
-    %{subscription | alert_priority_type: :low, type: :bike_storage}
+    %{subscription | type: :bike_storage}
   end
 
   def bike_storage_subscription_entities() do
@@ -250,7 +249,6 @@ defmodule AlertProcessor.Factory do
 
   def trip_factory do
     %Trip{
-      alert_priority_type: :low,
       relevant_days: [:monday],
       start_time: ~T[11:00:00],
       end_time: ~T[18:00:00],

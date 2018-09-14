@@ -7,7 +7,6 @@ defmodule AlertProcessor.Model.SubscriptionTest do
   alias AlertProcessor.Subscription.{BusMapper, Mapper}
 
   @base_attrs %{
-    alert_priority_type: :low,
     relevant_days: [:weekday],
     start_time: ~T[12:00:00],
     end_time: ~T[18:00:00],
@@ -44,20 +43,6 @@ defmodule AlertProcessor.Model.SubscriptionTest do
 
   test "create_changeset/2 validates relevant days", %{valid_attrs: valid_attrs} do
     attrs = Map.put(valid_attrs, :relevant_days, [:garbage])
-    changeset = Subscription.create_changeset(%Subscription{}, attrs)
-
-    refute changeset.valid?
-  end
-
-  test "create_changeset/2 requires alert priority type", %{valid_attrs: valid_attrs} do
-    attrs = Map.delete(valid_attrs, :alert_priority_type)
-    changeset = Subscription.create_changeset(%Subscription{}, attrs)
-
-    refute changeset.valid?
-  end
-
-  test "create_changeset/2 validates alert priority type", %{valid_attrs: valid_attrs} do
-    attrs = Map.put(valid_attrs, :alert_priority_type, :garbage)
     changeset = Subscription.create_changeset(%Subscription{}, attrs)
 
     refute changeset.valid?
@@ -337,7 +322,6 @@ defmodule AlertProcessor.Model.SubscriptionTest do
       "departure_end" => ~T[14:00:00],
       "return_start" => ~T[18:00:00],
       "return_end" => ~T[20:00:00],
-      "alert_priority_type" => "low",
       "trip_type" => "one_way"
     }
 
@@ -413,46 +397,6 @@ defmodule AlertProcessor.Model.SubscriptionTest do
 
       assert MapSet.new(sub_version2.meta["informed_entity_version_ids"]) ==
                MapSet.new(informed_entity_version_ids)
-    end
-  end
-
-  describe "update_subscription" do
-    test "updates subscription" do
-      user = insert(:user)
-
-      subscription =
-        subscription_factory()
-        |> bus_subscription()
-        |> Map.merge(%{user_id: user.id})
-        |> insert()
-
-      assert {:ok, subscription} =
-               Subscription.update_subscription(
-                 subscription,
-                 %{"alert_priority_type" => :low},
-                 user.id
-               )
-
-      assert subscription.alert_priority_type == :low
-    end
-
-    test "does not update subscription" do
-      user = insert(:user)
-
-      subscription =
-        subscription_factory()
-        |> bus_subscription()
-        |> Map.merge(%{user_id: user.id})
-        |> insert()
-
-      assert {:error, changeset} =
-               Subscription.update_subscription(
-                 subscription,
-                 %{"alert_priority_type" => :super_high},
-                 user.id
-               )
-
-      refute changeset.valid?
     end
   end
 

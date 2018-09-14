@@ -14,15 +14,9 @@ defmodule AlertProcessor.Subscription.CommuterRailMapperTest do
       "departure_end" => ~T[14:00:00],
       "return_start" => nil,
       "return_end" => nil,
-      "alert_priority_type" => "low",
       "route_id" => "CR-Lowell",
       "direction_id" => "1"
     }
-
-    test "constructs subscription with severity" do
-      {:ok, [{subscription, _ie}]} = CommuterRailMapper.map_subscriptions(@one_way_params)
-      assert subscription.alert_priority_type == :low
-    end
 
     test "constructs subscription with type" do
       {:ok, [{subscription, _ie}]} = CommuterRailMapper.map_subscriptions(@one_way_params)
@@ -332,18 +326,9 @@ defmodule AlertProcessor.Subscription.CommuterRailMapperTest do
       "departure_end" => ~T[14:00:00],
       "return_start" => ~T[18:00:00],
       "return_end" => ~T[20:00:00],
-      "alert_priority_type" => "low",
       "route_id" => "CR-Lowell",
       "direction_id" => "0"
     }
-
-    test "constructs subscription with severity" do
-      {:ok, [{sub1, _ie1}, {sub2, _ie2}]} =
-        CommuterRailMapper.map_subscriptions(@round_trip_params)
-
-      assert sub1.alert_priority_type == :low
-      assert sub2.alert_priority_type == :low
-    end
 
     test "constructs subscription with type" do
       {:ok, [{sub1, _ie1}, {sub2, _ie2}]} =
@@ -1649,7 +1634,6 @@ defmodule AlertProcessor.Subscription.CommuterRailMapperTest do
       "departure_end" => ~T[14:00:00],
       "return_start" => ~T[18:00:00],
       "return_end" => ~T[20:00:00],
-      "alert_priority_type" => "low",
       "route_id" => "CR-Lowell",
       "direction_id" => "0"
     }
@@ -1683,7 +1667,6 @@ defmodule AlertProcessor.Subscription.CommuterRailMapperTest do
         |> insert()
 
       params = %{
-        "alert_priority_type" => :high,
         "end_time" => ~T[20:59:00],
         "start_time" => ~T[20:35:00],
         "trips" => ["341"]

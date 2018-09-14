@@ -21,17 +21,11 @@ defmodule AlertProcessor.Subscription.AccessibilityMapper do
       params
       |> remove_empty_strings()
       |> map_stop_names()
-      |> set_alert_priority()
 
     params
     |> map_timeframe
-    |> map_priority(params)
     |> map_type(:accessibility)
     |> map_entities(params)
-  end
-
-  defp set_alert_priority(params) do
-    Map.put(params, "alert_priority_type", "low")
   end
 
   defp remove_empty_strings(params) do

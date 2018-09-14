@@ -11,7 +11,6 @@ defmodule AlertProcessor.Subscription.BusMapperTest do
     "departure_end" => ~T[14:00:00],
     "return_start" => nil,
     "return_end" => nil,
-    "alert_priority_type" => "low",
     "trip_type" => "one_way"
   }
 
@@ -22,16 +21,10 @@ defmodule AlertProcessor.Subscription.BusMapperTest do
     "departure_end" => ~T[14:00:00],
     "return_start" => ~T[18:00:00],
     "return_end" => ~T[20:00:00],
-    "alert_priority_type" => "low",
     "trip_type" => "round_trip"
   }
 
   describe "one way" do
-    test "constructs subscription with severity" do
-      {:ok, [{subscription, _ie}]} = BusMapper.map_subscription(@one_way_params)
-      assert subscription.alert_priority_type == :low
-    end
-
     test "constructs subscription with type" do
       {:ok, [{subscription, _ie}]} = BusMapper.map_subscription(@one_way_params)
       assert subscription.type == :bus
@@ -91,12 +84,6 @@ defmodule AlertProcessor.Subscription.BusMapperTest do
   end
 
   describe "round trip" do
-    test "constructs subscription with severity" do
-      {:ok, [{sub1, _ie1}, {sub2, _ie2}]} = BusMapper.map_subscription(@round_trip_params)
-      assert sub1.alert_priority_type == :low
-      assert sub2.alert_priority_type == :low
-    end
-
     test "constructs subscription with type" do
       {:ok, [{sub1, _ie1}, {sub2, _ie2}]} = BusMapper.map_subscription(@round_trip_params)
       assert sub1.type == :bus
@@ -229,7 +216,6 @@ defmodule AlertProcessor.Subscription.BusMapperTest do
       "departure_end" => ~T[14:00:00],
       "return_start" => ~T[18:00:00],
       "return_end" => ~T[20:00:00],
-      "alert_priority_type" => "low",
       "trip_type" => "round_trip"
     }
 

@@ -6,7 +6,6 @@ defmodule AlertProcessor.Model.TripTest do
   alias AlertProcessor.Model.{Trip, Subscription}
 
   @base_attrs %{
-    alert_priority_type: :low,
     relevant_days: [:monday],
     start_time: ~T[12:00:00],
     end_time: ~T[18:00:00],
@@ -48,13 +47,6 @@ defmodule AlertProcessor.Model.TripTest do
     refute changeset.valid?
   end
 
-  test "create_changeset/2 validates alert priority type", %{valid_attrs: valid_attrs} do
-    attrs = Map.put(valid_attrs, :alert_priority_type, :not_a_priority_type)
-    changeset = Trip.create_changeset(%Trip{}, attrs)
-
-    refute changeset.valid?
-  end
-
   test "create_changeset/2 allows empty facility types list", %{valid_attrs: valid_attrs} do
     attrs = Map.put(valid_attrs, :facility_types, [])
     changeset = Trip.create_changeset(%Trip{}, attrs)
@@ -74,7 +66,6 @@ defmodule AlertProcessor.Model.TripTest do
 
     Repo.insert!(%Trip{
       user_id: user.id,
-      alert_priority_type: :low,
       relevant_days: [:monday],
       start_time: ~T[12:00:00],
       end_time: ~T[18:00:00],
@@ -91,7 +82,6 @@ defmodule AlertProcessor.Model.TripTest do
 
     Repo.insert!(%Trip{
       user_id: user.id,
-      alert_priority_type: :low,
       relevant_days: [:monday],
       start_time: ~T[12:00:00],
       end_time: ~T[18:00:00],
@@ -122,7 +112,6 @@ defmodule AlertProcessor.Model.TripTest do
       subscription_attrs = %{
         user_id: user.id,
         trip_id: trip.id,
-        alert_priority_type: :low,
         start_time: ~T[12:00:00],
         end_time: ~T[18:00:00]
       }

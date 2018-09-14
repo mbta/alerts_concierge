@@ -91,15 +91,6 @@ defmodule AlertProcessor.Subscription.Mapper do
 
   def map_subscription_direction_id(subscriptions, []), do: subscriptions
 
-  def map_priority(subscriptions, %{"alert_priority_type" => alert_priority_type})
-      when is_list(subscriptions) do
-    Enum.map(subscriptions, fn subscription ->
-      %{subscription | alert_priority_type: String.to_existing_atom(alert_priority_type)}
-    end)
-  end
-
-  def map_priority(_, _), do: :error
-
   def map_type(subscriptions, type) do
     Enum.map(subscriptions, fn subscription ->
       Map.put(subscription, :type, type)
