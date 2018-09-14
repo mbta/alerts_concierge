@@ -27,7 +27,6 @@ defmodule AlertProcessor.Model.Subscription do
           | :tty_phone
           | :elevated_subplatform
   @type t :: %__MODULE__{
-          alert_priority_type: atom,
           user_id: String.t() | nil,
           trip_id: String.t() | nil,
           relevant_days: [relevant_day] | nil,
@@ -52,12 +51,6 @@ defmodule AlertProcessor.Model.Subscription do
           child_subscriptions: [t()] | nil
         }
 
-  @alert_priority_type_values %{
-    low: 1,
-    medium: 2,
-    high: 3
-  }
-
   @relevant_day_of_week_types %{
     1 => :monday,
     2 => :tuesday,
@@ -79,7 +72,6 @@ defmodule AlertProcessor.Model.Subscription do
     has_many(:informed_entities, InformedEntity)
     has_many(:notification_subscriptions, AlertProcessor.Model.NotificationSubscription)
     has_many(:notifications, through: [:notification_subscriptions, :notification])
-    field(:alert_priority_type, AlertProcessor.AtomType)
     field(:relevant_days, {:array, AlertProcessor.AtomType})
     field(:start_time, :time, null: false)
     field(:end_time, :time, null: false)
@@ -106,10 +98,10 @@ defmodule AlertProcessor.Model.Subscription do
     timestamps()
   end
 
-  @permitted_fields ~w(alert_priority_type user_id trip_id relevant_days start_time
+  @permitted_fields ~w(user_id trip_id relevant_days start_time
     end_time travel_start_time travel_end_time type rank route return_trip route_type paused)a
-  @required_fields ~w(alert_priority_type user_id start_time end_time)a
-  @update_permitted_fields ~w(alert_priority_type relevant_days start_time end_time travel_start_time travel_end_time paused)a
+  @required_fields ~w(user_id start_time end_time)a
+  @update_permitted_fields ~w(relevant_days start_time end_time travel_start_time travel_end_time paused)a
   @valid_days ~w(weekday monday tuesday wednesday thursday friday saturday sunday)a
 
   @doc """
@@ -120,7 +112,6 @@ defmodule AlertProcessor.Model.Subscription do
     struct
     |> cast(params, @permitted_fields)
     |> validate_required(@required_fields)
-    |> validate_inclusion(:alert_priority_type, [:low, :medium, :high])
     |> validate_subset(:relevant_days, @valid_days)
     |> validate_length(:relevant_days, min: 1)
   end
@@ -131,7 +122,6 @@ defmodule AlertProcessor.Model.Subscription do
   def update_changeset(struct, params \\ %{}) do
     struct
     |> cast(params, @update_permitted_fields)
-    |> validate_inclusion(:alert_priority_type, [:low, :medium, :high])
     |> validate_subset(:relevant_days, @valid_days)
     |> validate_length(:relevant_days, min: 1)
   end
@@ -238,27 +228,6 @@ defmodule AlertProcessor.Model.Subscription do
       id
     end)
   end
-
-  @doc """
-  return the numeric value for a subscription's alert priority type.
-  the higher the number, the fewer amount of alerts should be received.
-  """
-  @spec severity_value(atom) :: integer
-  def severity_value(alert_priority_type) do
-    @alert_priority_type_values[alert_priority_type]
-  end
-
-  @doc """
-  return string representation of severities that match subscription.
-  """
-  @spec severity_string(__MODULE__.t()) :: String.t()
-  def severity_string(%__MODULE__{alert_priority_type: :low}),
-    do: "High-, medium-, and low-priority alerts"
-
-  def severity_string(%__MODULE__{alert_priority_type: :medium}),
-    do: "High- and medium-priority alerts"
-
-  def severity_string(%__MODULE__{alert_priority_type: :high}), do: "High-priority alerts"
 
   @doc """
   Fetches subscriptions with users eager loaded for a list of ids

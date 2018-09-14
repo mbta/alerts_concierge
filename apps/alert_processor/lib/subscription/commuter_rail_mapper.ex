@@ -50,7 +50,6 @@ defmodule AlertProcessor.Subscription.CommuterRailMapper do
     subscriptions =
       params
       |> create_subscriptions
-      |> map_priority(params)
       |> map_type(:commuter_rail)
 
     {:ok, map_entities(subscriptions, params, route)}

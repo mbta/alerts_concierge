@@ -7,7 +7,6 @@ defmodule ConciergeSite.FacilitiesHelperTest do
     setup do
       trip_with_escalator = %Trip{
         id: Ecto.UUID.generate(),
-        alert_priority_type: :low,
         relevant_days: [:monday],
         start_time: ~T[09:00:00],
         end_time: ~T[10:00:00],
@@ -17,7 +16,6 @@ defmodule ConciergeSite.FacilitiesHelperTest do
 
       trip_without_escalator = %Trip{
         id: Ecto.UUID.generate(),
-        alert_priority_type: :low,
         relevant_days: [:monday],
         start_time: ~T[09:00:00],
         end_time: ~T[10:00:00],

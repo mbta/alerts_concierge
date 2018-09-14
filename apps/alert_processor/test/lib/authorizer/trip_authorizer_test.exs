@@ -11,7 +11,6 @@ defmodule AlertProcessor.TripAuthorizerTest do
     trip =
       Repo.insert!(%Trip{
         user_id: user_that_owns_trip.id,
-        alert_priority_type: :low,
         relevant_days: [:monday],
         start_time: ~T[12:00:00],
         end_time: ~T[18:00:00]

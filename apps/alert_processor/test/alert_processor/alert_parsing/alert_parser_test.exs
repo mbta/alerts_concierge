@@ -19,7 +19,6 @@ defmodule AlertProcessor.AlertParserTest do
     :subscription
     |> build(
       user: user,
-      alert_priority_type: :low,
       informed_entities: [
         %InformedEntity{
           route_type: 3,
@@ -54,8 +53,7 @@ defmodule AlertProcessor.AlertParserTest do
       route_type: 2,
       route: "CR-Needham",
       direction_id: 1,
-      user: user1,
-      alert_priority_type: :low
+      user: user1
     )
     |> weekday_subscription
     |> PaperTrail.insert()
@@ -67,8 +65,7 @@ defmodule AlertProcessor.AlertParserTest do
       route_type: 2,
       route: "CR-Lowell",
       direction_id: 1,
-      user: user3,
-      alert_priority_type: :low
+      user: user3
     )
     |> weekday_subscription
     |> PaperTrail.insert()
@@ -80,8 +77,7 @@ defmodule AlertProcessor.AlertParserTest do
       route_type: 2,
       route: "CR-Needham",
       direction_id: 1,
-      user: user4,
-      alert_priority_type: :low
+      user: user4
     )
     |> weekday_subscription
     |> PaperTrail.insert()

@@ -30,7 +30,6 @@ defmodule AlertProcessor.Subscription.SubwayMapper do
       params
       |> create_subscriptions
       |> map_subscription_direction_id(route)
-      |> map_priority(params)
       |> map_type(:subway)
 
     {:ok, map_entities(subscriptions, params, route)}

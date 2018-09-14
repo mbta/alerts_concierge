@@ -22,7 +22,6 @@ defmodule AlertProcessor.TextReplacementTest do
       sub =
         :subscription
         |> build(
-          alert_priority_type: :low,
           informed_entities: [
             %InformedEntity{
               route_type: 2,
