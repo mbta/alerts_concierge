@@ -527,7 +527,7 @@ defmodule AlertProcessor.Model.SubscriptionTest do
     end
   end
 
-  describe "all_active_filtered_by_alerts/1" do
+  describe "all_active_for_alert/1" do
     @only_route_type_alert %Alert{
       id: "101",
       informed_entities: [%InformedEntity{route_type: 0, route: nil}]
@@ -562,11 +562,19 @@ defmodule AlertProcessor.Model.SubscriptionTest do
       # Paused subscription
       insert(:subscription, user: user, paused: true)
 
-      alerts = [
-        @wildcard_alert
-      ]
+      alert = @wildcard_alert
 
-      assert [%Subscription{}] = Subscription.all_active_for_alerts(alerts)
+      assert [%Subscription{paused: false}] = Subscription.all_active_for_alert(alert)
+    end
+
+    test "preloads the user" do
+      user = insert(:user)
+      insert(:subscription, user: user)
+
+      alert = @wildcard_alert
+
+      [subscrption] = Subscription.all_active_for_alert(alert)
+      assert subscrption.user == user
     end
 
     test "subscriptions filtered by route, only selects red line subscription" do
@@ -574,11 +582,9 @@ defmodule AlertProcessor.Model.SubscriptionTest do
       insert(:subscription, user: user, route: "Red")
       insert(:subscription, user: user, route: "Orange")
 
-      alerts = [
-        @route_type_and_red_line_alert
-      ]
+      alert = @route_type_and_red_line_alert
 
-      assert [%Subscription{route: "Red"}] = Subscription.all_active_for_alerts(alerts)
+      assert [%Subscription{route: "Red"}] = Subscription.all_active_for_alert(alert)
     end
 
     test "subscriptions filtered by route_type, only selects route_type 2 subscription" do
@@ -586,11 +592,9 @@ defmodule AlertProcessor.Model.SubscriptionTest do
       insert(:subscription, user: user, route_type: 0)
       insert(:subscription, user: user, route_type: 2)
 
-      alerts = [
-        @route_type_route_and_stop_alert
-      ]
+      alert = @route_type_route_and_stop_alert
 
-      assert [%Subscription{route_type: 2}] = Subscription.all_active_for_alerts(alerts)
+      assert [%Subscription{route_type: 2}] = Subscription.all_active_for_alert(alert)
     end
 
     test "subscriptions filtered by stop, only selects origin or destination place-nqnce" do
@@ -600,11 +604,9 @@ defmodule AlertProcessor.Model.SubscriptionTest do
       insert(:subscription, user: user, origin: "place-nqnce")
       insert(:subscription, user: user, destination: "place-nqnce")
 
-      alerts = [
-        @only_stop_alert
-      ]
+      alert = @only_stop_alert
 
-      [subscription1, subscription2] = Subscription.all_active_for_alerts(alerts)
+      [subscription1, subscription2] = Subscription.all_active_for_alert(alert)
 
       assert subscription1.origin == "place-nqnce"
       assert subscription2.destination == "place-nqnce"
@@ -615,11 +617,31 @@ defmodule AlertProcessor.Model.SubscriptionTest do
       insert(:subscription, user: user, origin: "place-nqnce")
       insert(:subscription, user: user, destination: "place-nqnce")
 
-      alerts = [
-        @only_route_type_alert
-      ]
+      alert = @only_route_type_alert
 
-      assert [] = Subscription.all_active_for_alerts(alerts)
+      assert [] = Subscription.all_active_for_alert(alert)
+    end
+
+    test "rejects subscriptions for which a notification has been sent to that user for this alert" do
+      user = insert(:user)
+      subscription = insert(:subscription, user: user, origin: "place-nqnce")
+
+      # Sent notification for the subscription
+      notification =
+        insert(:notification, %{
+          alert_id: @only_stop_alert.id,
+          user_id: user.id,
+          status: :sent
+        })
+
+      insert(:notification_subscription, %{
+        subscription: subscription,
+        notification: notification
+      })
+
+      alert = @only_stop_alert
+
+      assert [] = Subscription.all_active_for_alert(alert)
     end
   end
 end

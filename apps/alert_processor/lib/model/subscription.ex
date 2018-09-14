@@ -4,7 +4,17 @@ defmodule AlertProcessor.Model.Subscription do
   """
 
   alias AlertProcessor.{Repo, TimeFrameComparison}
-  alias AlertProcessor.Model.{InformedEntity, TripInfo, User, Trip, Subscription, Alert}
+
+  alias AlertProcessor.Model.{
+    Alert,
+    InformedEntity,
+    NotificationSubscription,
+    Subscription,
+    Trip,
+    TripInfo,
+    User
+  }
+
   alias AlertProcessor.Helpers.DateTimeHelper
   alias AlertProcessor.ServiceInfoCache
   import Ecto.Query
@@ -70,7 +80,7 @@ defmodule AlertProcessor.Model.Subscription do
     belongs_to(:user, User, type: :binary_id)
     belongs_to(:trip, Trip, type: :binary_id)
     has_many(:informed_entities, InformedEntity)
-    has_many(:notification_subscriptions, AlertProcessor.Model.NotificationSubscription)
+    has_many(:notification_subscriptions, NotificationSubscription)
     has_many(:notifications, through: [:notification_subscriptions, :notification])
     field(:relevant_days, {:array, AlertProcessor.AtomType})
     field(:start_time, :time, null: false)
@@ -429,24 +439,24 @@ defmodule AlertProcessor.Model.Subscription do
     end
   end
 
-  @spec all_active_for_alerts([Alert.t()]) :: [__MODULE__.t()]
-  def all_active_for_alerts(alerts) do
-    alerts
+  @spec all_active_for_alert(Alert.t()) :: [__MODULE__.t()]
+  def all_active_for_alert(alert) do
+    alert
     |> get_alert_entity_lists()
     |> subscribers_match_query()
+    |> where_subscription_not_paused()
+    |> where_not_yet_notified(alert)
     |> Repo.all()
     |> Repo.preload(:user)
   end
 
-  @spec subscribers_match_query(Keyword.t()) :: Ecto.Query.t()
   defp subscribers_match_query(
          route_ids: _,
          routes: _,
          stops: _,
          wildcard: true
-       ) do
-    from(s in __MODULE__, where: [paused: false])
-  end
+       ),
+       do: from(s in __MODULE__)
 
   defp subscribers_match_query(
          route_ids: route_ids,
@@ -454,24 +464,31 @@ defmodule AlertProcessor.Model.Subscription do
          stops: stops,
          wildcard: false
        ) do
-    # group (route_type ANY(..) OR route ANY(..) OR origin ANY(..) OR destination ANY (...)) togther
-    base_query =
-      from(
-        s in __MODULE__,
-        where:
-          s.route_type in ^route_ids or s.route in ^routes or s.origin in ^stops or
-            s.destination in ^stops
-      )
-
-    # make paused and AND, not ORed with the other fields
-    from(s in base_query, where: s.paused == false)
+    # group (route_type ANY(..) OR route ANY(..) OR origin ANY(..) OR destination ANY (...)) together
+    from(
+      s in __MODULE__,
+      where:
+        s.route_type in ^route_ids or s.route in ^routes or s.origin in ^stops or
+          s.destination in ^stops
+    )
   end
 
-  @spec get_alert_entity_lists([Alert.t()]) :: Keyword.t()
-  defp get_alert_entity_lists(alerts) do
-    alerts
-    |> Enum.map(& &1.informed_entities)
-    |> List.flatten()
+  defp where_subscription_not_paused(query), do: from(s in query, where: s.paused == false)
+
+  defp where_not_yet_notified(query, %Alert{id: alert_id}),
+    do:
+      from(
+        s in query,
+        where:
+          not (s.user_id in fragment(
+                 "select distinct on (n.user_id) n.user_id from notifications as n where n.alert_id = ? and n.status = 'sent'",
+                 ^alert_id
+               ))
+      )
+
+  @spec get_alert_entity_lists(Alert.t()) :: Keyword.t()
+  defp get_alert_entity_lists(alert) do
+    alert.informed_entities
     |> Enum.reduce(
       [route_ids: MapSet.new(), routes: MapSet.new(), stops: MapSet.new(), wildcard: false],
       fn entity, accumulator ->

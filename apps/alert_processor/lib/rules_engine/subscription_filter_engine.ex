@@ -24,9 +24,7 @@ defmodule AlertProcessor.SubscriptionFilterEngine do
   @spec schedule_all_notifications([Alert.t()], atom | nil) :: any
   def schedule_all_notifications(alerts, alert_filter_duration_type \\ :anytime) do
     start_time = Time.utc_now()
-    active_subscriptions = Subscription.all_active_for_alerts(alerts)
-    recent_notifications = Notification.most_recent_for_alerts(alerts)
-    schedule_notifications(active_subscriptions, recent_notifications, alerts)
+    schedule_notifications(alerts)
 
     Logger.info(fn ->
       time = Time.diff(Time.utc_now(), start_time, :millisecond)
@@ -37,37 +35,29 @@ defmodule AlertProcessor.SubscriptionFilterEngine do
     :ok
   end
 
-  defp schedule_notifications(subscriptions, recent_notifications, alerts)
-       when is_list(alerts) do
+  defp schedule_notifications(alerts) do
     options = [ordered: false, timeout: 600_000]
 
     alerts
-    |> Task.async_stream(
-      &schedule_notifications(subscriptions, recent_notifications, &1),
-      options
-    )
+    |> Task.async_stream(&schedule_notification(&1), options)
     |> Stream.run()
   end
 
-  defp schedule_notifications(subscriptions, recent_notifications, %Alert{} = alert) do
-    matched_subscriptions = determine_recipients(alert, subscriptions, recent_notifications)
+  defp schedule_notification(%Alert{} = alert) do
+    matched_subscriptions = determine_recipients(alert)
     schedule_distinct_notifications(alert, matched_subscriptions)
   end
 
   @doc """
-  determine_recipients/3 receives an alert and applies relevant filters to exclude users who should not be notified
+  determine_recipients/1 receives an alert and applies relevant filters to exclude users who should not be notified
   """
-  @spec determine_recipients(Alert.t(), [Subscription.t()], [Notification.t()], DateTime.t()) :: [
-          Subscription.t()
-        ]
-  def determine_recipients(
-        alert,
-        subscriptions,
-        notifications,
-        now \\ Calendar.DateTime.now!("America/New_York")
-      ) do
-    {subscriptions_to_test, subscriptions_to_auto_resend} =
-      SentAlertFilter.filter(subscriptions, alert, notifications, now)
+  @spec determine_recipients(Alert.t(), DateTime.t()) :: [Subscription.t()]
+  def determine_recipients(alert, now \\ Calendar.DateTime.now!("America/New_York")) do
+    subscriptions_to_test = Subscription.all_active_for_alert(alert)
+    recent_outdated_notifications = Notification.most_recent_if_outdated_for_alert(alert)
+
+    subscriptions_to_auto_resend =
+      SentAlertFilter.filter(alert, recent_outdated_notifications, now)
 
     subscriptions_to_test
     |> @notification_window_filter.filter(now)
