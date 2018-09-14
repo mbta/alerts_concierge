@@ -19,12 +19,10 @@ defmodule AlertProcessor.Model.Trip do
           | :portable_boarding_lift
           | :tty_phone
           | :elevated_subplatform
-  @type alert_priority_type :: :low | :high
   @type trip_type :: :commute | :accessibility
 
   @type t :: %__MODULE__{
           user_id: String.t() | nil,
-          alert_priority_type: alert_priority_type | nil,
           relevant_days: [relevant_day] | nil,
           start_time: Time.t() | nil,
           end_time: Time.t() | nil,
@@ -45,7 +43,6 @@ defmodule AlertProcessor.Model.Trip do
     belongs_to(:user, User, type: :binary_id)
     has_many(:subscriptions, Subscription, on_delete: :delete_all)
 
-    field(:alert_priority_type, AlertProcessor.AtomType, null: false)
     field(:relevant_days, {:array, AlertProcessor.AtomType}, null: false)
     field(:start_time, :time, null: false)
     field(:end_time, :time, null: false)
@@ -58,13 +55,12 @@ defmodule AlertProcessor.Model.Trip do
     timestamps()
   end
 
-  @permitted_fields ~w(user_id alert_priority_type relevant_days start_time end_time
+  @permitted_fields ~w(user_id relevant_days start_time end_time
     facility_types roundtrip return_start_time return_end_time)a
-  @required_fields ~w(user_id alert_priority_type relevant_days start_time end_time
+  @required_fields ~w(user_id relevant_days start_time end_time
     facility_types roundtrip)a
   @valid_relevant_days ~w(monday tuesday wednesday thursday friday saturday sunday)a
   @valid_facility_types ~w(bike_storage electric_car_chargers elevator escalator parking_area pick_drop portable_boarding_lift tty_phone elevated_subplatform)a
-  @valid_alert_priority_types ~w(low high)a
   @update_permitted_fields ~w(
     relevant_days
     start_time
@@ -85,7 +81,6 @@ defmodule AlertProcessor.Model.Trip do
     |> validate_subset(:relevant_days, @valid_relevant_days)
     |> validate_length(:relevant_days, min: 1)
     |> validate_subset(:facility_types, @valid_facility_types)
-    |> validate_inclusion(:alert_priority_type, @valid_alert_priority_types)
   end
 
   @doc """
