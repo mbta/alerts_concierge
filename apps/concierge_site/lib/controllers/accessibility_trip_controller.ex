@@ -197,7 +197,6 @@ defmodule ConciergeSite.AccessibilityTripController do
     %Trip{
       id: Ecto.UUID.generate(),
       user_id: user.id,
-      alert_priority_type: "low",
       relevant_days: Enum.map(relevant_days, &String.to_existing_atom/1),
       start_time: ~T[03:20:00],
       end_time: ~T[01:50:00],
@@ -243,7 +242,6 @@ defmodule ConciergeSite.AccessibilityTripController do
 
   defp make_subscription(trip) do
     %Subscription{
-      alert_priority_type: "low",
       trip_id: trip.id,
       user_id: trip.user_id,
       relevant_days: trip.relevant_days,

@@ -70,7 +70,6 @@ defmodule ConciergeSite.ScheduleTest do
   test "get_schedules_for_trip/2" do
     subscriptions = [
       %Subscription{
-        alert_priority_type: :low,
         destination: "Worcester",
         destination_lat: 42.347581,
         destination_long: -71.099974,
@@ -97,7 +96,6 @@ defmodule ConciergeSite.ScheduleTest do
         user_id: "a429862d-23f4-4015-9303-cb2aa58c4108"
       },
       %Subscription{
-        alert_priority_type: :low,
         destination: "Framingham",
         destination_lat: 42.352271,
         destination_long: -71.055242,

@@ -441,7 +441,6 @@ defmodule ConciergeSite.TripController do
 
       %Subscription{
         id: Ecto.UUID.generate(),
-        alert_priority_type: "low",
         user_id: user.id,
         relevant_days: Enum.map(params["relevant_days"] || [], &String.to_existing_atom/1),
         start_time: params["start_time"],
@@ -590,7 +589,6 @@ defmodule ConciergeSite.TripController do
   defp input_to_trip(user, params) do
     %Trip{
       user_id: user.id,
-      alert_priority_type: "low",
       relevant_days: Enum.map(params["relevant_days"], &String.to_existing_atom/1),
       start_time: params["start_time"],
       end_time: params["end_time"],

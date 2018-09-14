@@ -10,7 +10,6 @@ defmodule ConciergeSite.Integration.Matching do
   import AlertProcessor.Factory
 
   @base %{
-    "alert_priority_type" => "medium",
     "departure_end" => ~T[08:30:00],
     "departure_start" => ~T[08:00:00],
     "relevant_days" => ["weekday"],
@@ -949,7 +948,7 @@ defmodule ConciergeSite.Integration.Matching do
 
   defp alert(overrides) do
     %{
-      "severity" => severity_by_priority(@base["alert_priority_type"]),
+      "severity" => severity_by_priority("medium"),
       "active_period" => @alert_active_period
     }
     |> override(overrides)

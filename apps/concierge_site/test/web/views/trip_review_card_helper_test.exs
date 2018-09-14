@@ -43,7 +43,6 @@ defmodule ConciergeSite.TripReviewCardHelperTest do
     test "generates html for a trip review card given a Trip" do
       trip = %Trip{
         id: Ecto.UUID.generate(),
-        alert_priority_type: :low,
         relevant_days: [:monday],
         start_time: ~T[09:00:00],
         end_time: ~T[10:00:00],
@@ -132,7 +131,6 @@ defmodule ConciergeSite.TripReviewCardHelperTest do
     %Subscription{
       user_id: trip.user_id,
       trip_id: trip.id,
-      alert_priority_type: trip.alert_priority_type,
       relevant_days: trip.relevant_days,
       start_time: trip.start_time,
       end_time: trip.end_time,

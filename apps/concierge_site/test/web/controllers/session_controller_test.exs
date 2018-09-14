@@ -34,7 +34,6 @@ defmodule ConciergeSite.SessionControllerTest do
 
     Repo.insert!(%Trip{
       user_id: user.id,
-      alert_priority_type: :low,
       relevant_days: [:monday],
       start_time: ~T[12:00:00],
       end_time: ~T[18:00:00],
