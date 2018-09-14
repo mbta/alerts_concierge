@@ -45,7 +45,6 @@ defmodule AlertProcessor.SubscriptionFilterEngineTest do
         |> build(
           route_type: 1,
           user: user,
-          alert_priority_type: :low,
           informed_entities: [
             %InformedEntity{route_type: 1, activities: InformedEntity.default_entity_activities()}
           ]
@@ -58,7 +57,6 @@ defmodule AlertProcessor.SubscriptionFilterEngineTest do
         |> build(
           route_type: 4,
           user: user,
-          alert_priority_type: :high,
           informed_entities: [
             %InformedEntity{route_type: 4, activities: InformedEntity.default_entity_activities()}
           ]
@@ -71,7 +69,6 @@ defmodule AlertProcessor.SubscriptionFilterEngineTest do
         |> build(
           route_type: 3,
           user: user2,
-          alert_priority_type: :low,
           informed_entities: [
             %InformedEntity{route_type: 3, activities: InformedEntity.default_entity_activities()}
           ]
@@ -84,7 +81,6 @@ defmodule AlertProcessor.SubscriptionFilterEngineTest do
         |> build(
           route_type: 2,
           user: user2,
-          alert_priority_type: :high,
           informed_entities: [
             %InformedEntity{route_type: 2, activities: InformedEntity.default_entity_activities()}
           ]
@@ -152,7 +148,6 @@ defmodule AlertProcessor.SubscriptionFilterEngineTest do
           route_type: 1,
           route: "Red",
           user: user_morning,
-          alert_priority_type: :low,
           start_time: ~T[08:00:00],
           end_time: ~T[10:00:00],
           informed_entities: informed_entities
@@ -169,7 +164,6 @@ defmodule AlertProcessor.SubscriptionFilterEngineTest do
           route_type: 1,
           route: "Red",
           user: user_evening,
-          alert_priority_type: :low,
           start_time: ~T[16:00:00],
           end_time: ~T[17:00:00],
           informed_entities: informed_entities
@@ -206,7 +200,6 @@ defmodule AlertProcessor.SubscriptionFilterEngineTest do
         |> build(
           route_type: 1,
           user: user,
-          alert_priority_type: :low,
           informed_entities: [
             %InformedEntity{route_type: 1, activities: InformedEntity.default_entity_activities()}
           ]
@@ -219,7 +212,6 @@ defmodule AlertProcessor.SubscriptionFilterEngineTest do
         |> build(
           route_type: 1,
           user: user,
-          alert_priority_type: :low,
           informed_entities: [
             %InformedEntity{route_type: 1, activities: InformedEntity.default_entity_activities()}
           ]
@@ -244,7 +236,6 @@ defmodule AlertProcessor.SubscriptionFilterEngineTest do
       |> build(
         route_type: 1,
         user: user,
-        alert_priority_type: :low,
         informed_entities: [
           %InformedEntity{route_type: 1, activities: InformedEntity.default_entity_activities()}
         ]
@@ -269,7 +260,6 @@ defmodule AlertProcessor.SubscriptionFilterEngineTest do
     |> build(
       route_type: 1,
       user: comm_user,
-      alert_priority_type: :low,
       informed_entities: [
         %InformedEntity{route_type: 1, activities: InformedEntity.default_entity_activities()}
       ]
@@ -281,7 +271,6 @@ defmodule AlertProcessor.SubscriptionFilterEngineTest do
     |> build(
       route_type: 1,
       user: no_comm_user,
-      alert_priority_type: :low,
       informed_entities: [
         %InformedEntity{route_type: 1, activities: InformedEntity.default_entity_activities()}
       ]
