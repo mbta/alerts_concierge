@@ -1,6 +1,6 @@
 defmodule AlertProcessor.AlertFilters do
   alias AlertProcessor.Model.Alert
-  @type duration_type :: :older | :recent | :anytime
+  @type duration_type :: :older | :oldest | :recent | :anytime
   # 60 * 60, 1 hour
   @recent_threshold 3_600
   # 60 * 60 * 24, 24 hours
