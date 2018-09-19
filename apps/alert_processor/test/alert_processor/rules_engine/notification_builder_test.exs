@@ -102,4 +102,23 @@ defmodule AlertProcessor.NotificationBuilderTest do
 
     assert ExUnit.CaptureLog.capture_log(function) =~ expected_log
   end
+
+  test "converts tracking_optimal_time to current time if it's in the future", %{
+    est_time: est_time,
+    now: now
+  } do
+    user = insert(:user)
+    subscription = insert(:subscription, user: user, start_time: ~T[09:00:00])
+
+    alert = %Alert{
+      id: "1",
+      header: nil,
+      active_period: [%{start: est_time.now, end: est_time.three_days_from_now}],
+      last_push_notification: est_time.thirty_minutes_from_now
+    }
+
+    notification = NotificationBuilder.build_notification({user, [subscription]}, alert, now)
+
+    assert notification.tracking_optimal_time == DateTimeHelper.datetime_to_local(now)
+  end
 end
