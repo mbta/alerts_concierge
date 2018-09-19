@@ -3,6 +3,9 @@ defmodule AlertProcessor.Model.Notification do
   An individual message generated from an alert
   """
 
+  use Ecto.Schema
+  import Ecto.{Changeset, Query}
+  alias AlertProcessor.Repo
   alias AlertProcessor.Model.{Alert, User}
 
   @type notification_type :: :initial | :update | :reminder | :all_clear
@@ -25,10 +28,6 @@ defmodule AlertProcessor.Model.Notification do
           tracking_optimal_time: DateTime.t() | nil,
           tracking_matched_time: DateTime.t() | nil
         }
-
-  use Ecto.Schema
-  import Ecto.{Changeset, Query}
-  alias AlertProcessor.{Model.User, Repo}
 
   @primary_key {:id, :binary_id, autogenerate: true}
 
