@@ -58,7 +58,7 @@ defmodule AlertProcessor.NotificationBuilder do
          subscriptions,
          now
        ) do
-    local_alert_start_time = DateTimeHelper.datetime_to_local(last_push_notification)
+    local_alert_start_time = local_date_time_no_later_than_now(last_push_notification, now)
 
     Enum.reduce(subscriptions, local_alert_start_time, fn %{start_time: start_time},
                                                           last_start_time ->
@@ -68,5 +68,12 @@ defmodule AlertProcessor.NotificationBuilder do
         do: notification_window_start_date_time,
         else: last_start_time
     end)
+  end
+
+  defp local_date_time_no_later_than_now(date_time, now) do
+    with local_now <- DateTimeHelper.datetime_to_local(now),
+         local_date_time <- DateTimeHelper.datetime_to_local(date_time) do
+      if local_date_time <= local_now, do: local_date_time, else: local_now
+    end
   end
 end
