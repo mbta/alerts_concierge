@@ -332,7 +332,7 @@ defmodule AlertProcessor.Model.SubscriptionTest do
       Subscription.set_versioned_subscription(multi)
 
       assert [sub | _] = Subscription |> Repo.all() |> Repo.preload(:informed_entities)
-      refute length(sub.informed_entities) == 0
+      refute Enum.empty?(sub.informed_entities)
     end
 
     test "associates versions of informed entities with version of subscription" do
@@ -363,8 +363,8 @@ defmodule AlertProcessor.Model.SubscriptionTest do
       Subscription.set_versioned_subscription(multi)
 
       assert [sub1, sub2 | _] = Subscription |> Repo.all() |> Repo.preload(:informed_entities)
-      refute length(sub1.informed_entities) == 0
-      refute length(sub2.informed_entities) == 0
+      refute Enum.empty?(sub1.informed_entities)
+      refute Enum.empty?(sub2.informed_entities)
     end
 
     test "associates versions of informed entities with version of round_trip subscription" do
