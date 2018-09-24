@@ -25,6 +25,7 @@
         </main>
       </div>
     </div>
+    <!-- cannot be found -->
     <%= render "_footer.html", conn: @conn %>
   </body>
 </html>
