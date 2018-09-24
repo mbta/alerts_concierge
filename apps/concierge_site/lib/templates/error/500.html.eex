@@ -4,6 +4,7 @@
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
+
     <link rel="apple-touch-icon" href="<%= static_path(@conn, "/images/mbta-logo-t-180.png") %>" type="image/png">
     <link rel="icon" href="<%= static_path(@conn, "/images/mbta-logo-t-favicon.png") %>" sizes="32x32" type="image/png">
     <link rel="icon" href="<%= static_path(@conn, "/favicon.ico") %>" sizes="16x16" type="image/vnd.microsoft.icon">
@@ -16,10 +17,10 @@
       <div class="row justify-content-md-center">
         <main id="main" class="col-md-8" tabindex="-1">
           <div class="error-page text-center">
-            <h1 class="heading__title">Oops! This stop can not be found.</h1>
-            <p><a href="/">Take me back home.</a></p>
+            <h1 class="heading__title">Sorry, we’re currently out of service.</h1>
+            <p>But we’ll be back up and running soon!</p>
             <div class="error-image">
-              <%= img_tag(static_url(@conn, "/images/404.gif")) %>
+              <%= img_tag(static_url(@conn, "/images/500-bus.svg")) %>
             </div>
           </div>
         </main>
