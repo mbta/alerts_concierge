@@ -4,26 +4,56 @@
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta name="description" content="">
-    <meta name="author" content="">
 
-    <title>T-Alerts</title>
-    <link rel="stylesheet" href="/css/app.css">
+    <link rel="apple-touch-icon" href="<%= static_path(@conn, "/images/mbta-logo-t-180.png") %>" type="image/png">
+    <link rel="icon" href="<%= static_path(@conn, "/images/mbta-logo-t-favicon.png") %>" sizes="32x32" type="image/png">
+    <link rel="icon" href="<%= static_path(@conn, "/favicon.ico") %>" sizes="16x16" type="image/vnd.microsoft.icon">
+    <title>T-Alerts</title>  
+    <link rel="stylesheet" href="<%= static_path(@conn, "/css/app.css") %>">
   </head>
-
   <body class="no-js">
-    <div class="container page-content">
-      <div class="error-page">
-        <h1><strong>404</strong></h1>
-        <p>Your stop cannot be found. This page is no longer in service.</p>
-        <p><a href="/">Return to the homepage.</a></p>
-        <div class="error-image">
-          <%= img_tag(static_url(@conn, "/images/error-bus.gif")) %>
+    <header class="header__container">
+      <div class="container position-relative">
+        <%= render ConciergeSite.LayoutView, "_logo.html" %>
+        <div class="header__right">
+          <a class="header__back" href="http://mbta.com">Back to mbta.com</a>
         </div>
       </div>
+    </header>
+    <header class="header__sub--container">
+      <div class="container position-relative">
+        <%= render ConciergeSite.LayoutView, "_beta.html", conn: @conn, current_user: nil %>
+          <div class="header__right">
+            <%= link(to: session_path(@conn, :new)) do %>
+              Sign in
+            <% end %>
+          </div>
+      </div>
+    </header>
+    <div class="container page__content">
+      <div class="row justify-content-md-center">
+        <main id="main" class="col-md-8" tabindex="-1">
+          <div class="error-page">
+            <h1><strong>404</strong></h1>
+            <p>Your stop cannot be found. This page is no longer in service.</p>
+            <p><a href="/">Return to the homepage.</a></p>
+            <div class="error-image">
+              <%= img_tag(static_url(@conn, "/images/error-bus.gif")) %>
+            </div>
+          </div>
+        </main>
+      </div>
     </div>
-    <footer class="footer">
-      <p>&copy; Massachusetts Bay Transportation Authority, all rights reserved.</p>
+    <footer class="footer__container">
+      <div class="container">
+        <p class="footer__links">
+          <%= link "Submit feedback", to: "https://www.mbta.com/beta-alerts-feedback" %> ●
+          <%= link "FAQ", to: "https://www.mbta.com/about-t-alerts-beta" %>
+        </p>
+        <p class="footer__copyright">
+          &copy; Massachusetts Bay Transportation Authority, all rights reserved. We will only use your information to provide you with the T-Alert services you have requested. See our <%= link "privacy policy", to: "https://www.mbta.com/policies/privacy-policy#4.6" %>.
+        </p>
+      </div>
     </footer>
   </body>
 </html>
