@@ -1,0 +1,18 @@
+<header class="header__container">
+    <div class="container position-relative">
+      <%= render ConciergeSite.LayoutView, "_logo.html" %>
+      <div class="header__right">
+        <a class="header__back" href="http://mbta.com">Back to mbta.com</a>
+      </div>
+    </div>
+  </header>
+  <header class="header__sub--container">
+    <div class="container position-relative">
+      <%= render ConciergeSite.LayoutView, "_beta.html", conn: @conn, current_user: nil %>
+        <div class="header__right">
+          <%= link(to: session_path(@conn, :new)) do %>
+            Sign in
+          <% end %>
+        </div>
+    </div>
+  </header>

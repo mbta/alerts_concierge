@@ -11,7 +11,7 @@ defmodule ConciergeSite.ErrorViewTest do
 
   test "renders 404.html", %{conn: conn} do
     assert render_to_string(ConciergeSite.ErrorView, "404.html", conn: conn) =~
-             "Your stop cannot be found. This page is no longer in service."
+             "Oops! This stop can not be found."
   end
 
   test "renders 403.html", %{conn: conn} do
@@ -20,12 +20,12 @@ defmodule ConciergeSite.ErrorViewTest do
   end
 
   test "render 500.html", %{conn: conn} do
-    assert render_to_string(ConciergeSite.ErrorView, "500.html", conn: conn) ==
-             "Internal server error"
+    assert render_to_string(ConciergeSite.ErrorView, "500.html", conn: conn) =~
+             "Sorry, we’re currently out of service"
   end
 
   test "render any other", %{conn: conn} do
-    assert render_to_string(ConciergeSite.ErrorView, "505.html", conn: conn) ==
-             "Internal server error"
+    assert render_to_string(ConciergeSite.ErrorView, "505.html", conn: conn) =~
+             "Sorry, we’re currently out of service"
   end
 end
