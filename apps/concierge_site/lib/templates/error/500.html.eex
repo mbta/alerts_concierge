@@ -17,7 +17,7 @@
       <div class="row justify-content-md-center">
         <main id="main" class="col-md-8" tabindex="-1">
           <div class="error-page text-center">
-            <h1 class="heading__title">Sorry, we’re currently out of service.</h1>
+            <h1 class="heading__title">Sorry, this page is currently out of service.</h1>
             <p>But we’ll be back up and running soon!</p>
             <div class="error-image">
               <%= img_tag(static_url(@conn, "/images/500-bus.svg")) %>

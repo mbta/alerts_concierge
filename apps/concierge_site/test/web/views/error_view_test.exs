@@ -21,11 +21,11 @@ defmodule ConciergeSite.ErrorViewTest do
 
   test "render 500.html", %{conn: conn} do
     assert render_to_string(ConciergeSite.ErrorView, "500.html", conn: conn) =~
-             "Sorry, we’re currently out of service"
+             "Sorry, this page is currently out of service."
   end
 
   test "render any other", %{conn: conn} do
     assert render_to_string(ConciergeSite.ErrorView, "505.html", conn: conn) =~
-             "Sorry, we’re currently out of service"
+             "Sorry, this page is currently out of service."
   end
 end
