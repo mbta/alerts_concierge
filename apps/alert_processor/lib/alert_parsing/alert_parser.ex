@@ -14,7 +14,6 @@ defmodule AlertProcessor.AlertParser do
     Parser,
     ServiceInfoCache,
     SubscriptionFilterEngine,
-    Memory,
     Reminders
   }
 
@@ -55,21 +54,10 @@ defmodule AlertProcessor.AlertParser do
         Reminders.async_schedule_reminders(alerts_needing_notifications)
       end
 
-      memory_before = Memory.now()
-
       SubscriptionFilterEngine.schedule_all_notifications(
         alerts_needing_notifications,
         alert_filter_duration_type
       )
-
-      Logger.info(fn ->
-        mem_string =
-          Memory.now()
-          |> Memory.diff(memory_before)
-          |> Memory.to_string()
-
-        "Memory change due to scheduling notifications: #{mem_string}"
-      end)
 
       AlertCourtesyEmail.send_courtesy_emails(saved_alerts, parsed_alerts)
 
