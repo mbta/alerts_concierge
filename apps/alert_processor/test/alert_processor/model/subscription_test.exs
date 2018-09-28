@@ -644,4 +644,13 @@ defmodule AlertProcessor.Model.SubscriptionTest do
       assert [] = Subscription.all_active_for_alert(alert)
     end
   end
+
+  test "paused_count returns the number of paused subscriptions" do
+    user = insert(:user)
+    insert(:subscription, user: user, route: "Red", paused: true)
+    insert(:subscription, user: user, route: "Orange")
+    insert(:subscription, user: user, route: "Blue", paused: true)
+
+    assert Subscription.paused_count() == 2
+  end
 end

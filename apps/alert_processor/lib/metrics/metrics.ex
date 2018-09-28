@@ -5,6 +5,7 @@ defmodule AlertProcessor.Metrics do
   use GenServer
   require Logger
   alias AlertProcessor.Metrics.UserMetrics
+  alias AlertProcessor.Model.Subscription
 
   @doc false
   def start_link(opts \\ [name: __MODULE__]) do
@@ -28,8 +29,14 @@ defmodule AlertProcessor.Metrics do
   """
   def handle_info(:work, _) do
     schedule_work()
+
     [phone_count, email_count] = UserMetrics.counts_by_type()
-    Logger.info("user_metrics phone_count=#{phone_count} email_count=#{email_count}")
+    paused_count = Subscription.paused_count()
+
+    Logger.info(
+      "user_metrics phone_count=#{phone_count} email_count=#{email_count} paused=#{paused_count}"
+    )
+
     {:noreply, nil}
   end
 
