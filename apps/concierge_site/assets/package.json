@@ -18,6 +18,7 @@
     "choices.js": "git+https://git@github.com/jshjohnson/Choices.git#8dedc6f1e032bf9891e7ec6564daed058d61ead5",
     "elem-dataset": "^1.1.1",
     "font-awesome": "^4.7.0",
+    "form-serialize": "^0.7.2",
     "jquery": "^3.2.1",
     "maskerjs": "^1.8.3",
     "moment": "^2.18.1",
@@ -29,7 +30,8 @@
     "react-dom": "^16.4.2",
     "set-manipulator": "^0.3.1",
     "time-number": "^1.1.0",
-    "whatwg-fetch": "^2.0.4"
+    "whatwg-fetch": "^2.0.4",
+    "xhr": "^2.5.0"
   },
   "devDependencies": {
     "@types/es6-promise": "^3.3.0",
