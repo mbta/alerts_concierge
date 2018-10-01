@@ -1209,6 +1209,43 @@ defmodule AlertProcessor.Integration.MatchingTest do
 
       refute_notify(alert_from_parsed_data(informed_entity_data))
     end
+
+    test "with a subscription origin outside of this trip's schedule" do
+      insert(
+        :subscription,
+        route_type: 2,
+        direction_id: 0,
+        route: "CR-Worcester",
+        origin: "Worcester",
+        destination: "place-sstat",
+        facility_types: [],
+        start_time: ~T[06:00:00],
+        end_time: ~T[09:00:00],
+        relevant_days: ~w(monday)a
+      )
+
+      informed_entity_data = [
+        %{
+          "route_type" => 2,
+          "route_id" => "CR-Worcester",
+          "activities" => ["BOARD", "EXIT", "RIDE"],
+          "trip" => %{
+            "route_id" => "CR-Worcester",
+            # Train 586 runs from Framingham to South Station, thus does not server Worcester
+            "trip_id" => "CR-Weekday-Spring-18-586",
+            "direction_id" => 0
+          }
+        }
+      ]
+
+      refute_notify(
+        alert_from_parsed_data(
+          informed_entity_data,
+          ~N[2018-01-01 06:00:00],
+          ~N[2018-01-01 09:00:00]
+        )
+      )
+    end
   end
 
   describe "travel window" do
@@ -1422,7 +1459,11 @@ defmodule AlertProcessor.Integration.MatchingTest do
       }
     ]
 
-  defp alert_from_parsed_data(informed_entity_data) do
+  defp alert_from_parsed_data(
+         informed_entity_data,
+         period_start \\ ~N[2018-01-01 21:00:00],
+         period_end \\ ~N[2018-01-01 23:00:00]
+       ) do
     # Monday, January 1, 2018 12:00:00 AM GMT-05:00 (EST)
     timestamp = 1_514_782_800
 
@@ -1440,9 +1481,11 @@ defmodule AlertProcessor.Integration.MatchingTest do
       ],
       "severity" => 9,
       "last_push_notification_timestamp" => timestamp,
-      # Corresponds to active_period(:default)
       "active_period" => [
-        %{"end" => 1_514_847_600, "start" => 1_514_840_400}
+        %{
+          "start" => period_start |> DateTime.from_naive!("Etc/UTC") |> DateTime.to_unix(),
+          "end" => period_end |> DateTime.from_naive!("Etc/UTC") |> DateTime.to_unix()
+        }
       ]
     }
 
