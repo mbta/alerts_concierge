@@ -107,8 +107,30 @@ defmodule AlertProcessor.Model.Notification do
         where: n.status == "sent",
         preload: [subscriptions: :user],
         distinct: [:alert_id, :user_id],
-        order_by: [desc: n.last_push_notification],
-        select: n
+        order_by: [desc: n.last_push_notification]
+      )
+    )
+  end
+
+  @spec most_recent_if_outdated_for_alert(AlertProcessor.Model.Alert.t()) :: any()
+  def most_recent_if_outdated_for_alert(%Alert{
+        id: id,
+        last_push_notification: last_push_notification
+      }) do
+    most_recent_subquery =
+      from(
+        n in __MODULE__,
+        where: n.alert_id == ^id,
+        where: n.status == "sent",
+        distinct: :user_id,
+        order_by: [desc: n.last_push_notification]
+      )
+
+    Repo.all(
+      from(
+        n in subquery(most_recent_subquery),
+        where: n.last_push_notification < ^last_push_notification,
+        preload: [subscriptions: :user]
       )
     )
   end

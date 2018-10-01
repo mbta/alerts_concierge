@@ -10,39 +10,18 @@ defmodule AlertProcessor.SentAlertFilter do
   that have not already recieved a notification for the alert, or that have already recieved a notification
   but with an older last_push_notification
   """
-  @spec filter([Subscription.t()], Alert.t(), [Notification.t()], DateTime.t()) ::
-          {[Subscription.t()], [Subscription.t()]}
-  def filter(subscriptions, alert, notifications, now) do
-    sent_notifications = Enum.filter(notifications, &(&1.alert_id == alert.id))
+  @spec filter(Alert.t(), [Notification.t()], DateTime.t()) :: [Subscription.t()]
+  def filter(alert, recent_outdated_notifications, now),
+    do: subscriptions_to_resend(recent_outdated_notifications, alert, now)
 
-    subscriptions_to_resend = subscriptions_to_resend(sent_notifications, alert, now)
-
-    subscriptions_to_test = subscriptions_to_test(subscriptions, sent_notifications)
-
-    {subscriptions_to_test, subscriptions_to_resend}
-  end
-
-  defp subscriptions_to_resend(notifications, alert, now) do
-    Enum.reduce(notifications, [], fn notification, subscriptions_to_notify ->
-      case DateTime.compare(notification.last_push_notification, alert.last_push_notification) do
-        :lt ->
-          notification.subscriptions
-          |> notification_window_filter(now)
-          |> put_notification_type_to_send(alert)
-          |> Enum.concat(subscriptions_to_notify)
-
-        _ ->
-          subscriptions_to_notify
-      end
+  defp subscriptions_to_resend(recent_outdated_notifications, alert, now) do
+    recent_outdated_notifications
+    |> Enum.map(fn notification ->
+      notification.subscriptions
+      |> notification_window_filter(now)
+      |> put_notification_type_to_send(alert)
     end)
-  end
-
-  defp subscriptions_to_test(subscriptions, notifications) do
-    notified_user_ids = MapSet.new(notifications, & &1.user_id)
-
-    Enum.reject(subscriptions, fn subscription ->
-      subscription_user_notified?(subscription, notified_user_ids)
-    end)
+    |> List.flatten()
   end
 
   defp notification_window_filter(subscriptions, now) do
@@ -59,10 +38,6 @@ defmodule AlertProcessor.SentAlertFilter do
     Map.update!(subscription, :end_time, fn end_time ->
       Time.add(end_time, :timer.hours(1), :millisecond)
     end)
-  end
-
-  defp subscription_user_notified?(%{user_id: user_id}, notified_user_ids) do
-    MapSet.member?(notified_user_ids, user_id)
   end
 
   defp put_notification_type_to_send(subscriptions, alert) do
