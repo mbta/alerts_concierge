@@ -45,7 +45,7 @@
         
     <style type="text/css">
       @media only screen and (min-width:480px) {
-        .mj-column-per-100 { width:100% !important; }
+        .mj-column-per-100 { width:100% !important; max-width: 100%; }
       }
     </style>
     
@@ -60,15 +60,16 @@
         
         
       <div
-        
+         style=""
       >
         <%= if notification.description do %>
-        <span style="display: none"><%= notification.description %></span>
-        <% end %><!-- Body content -->
+      <span style="display: none">
+        <%= notification.description %></span>
+      <% end %><!-- Body content -->
       
       <!--[if mso | IE]>
       <table
-         align="center" border="0" cellpadding="0" cellspacing="0" style="width:500px;" width="500"
+         align="center" border="0" cellpadding="0" cellspacing="0" class="" style="width:500px;" width="500"
       >
         <tr>
           <td style="line-height:0px;font-size:0px;mso-line-height-rule:exactly;">
@@ -91,7 +92,7 @@
         <tr>
       
             <td
-               style="vertical-align:top;width:500px;"
+               class="" style="vertical-align:top;width:500px;"
             >
           <![endif]-->
             
@@ -104,32 +105,34 @@
       >
         <div style="font-family:'Helvetica Neue', Helvetica, Arial, sans-serif; padding: 10px 0 10px 0">
             <%= if notification.closed_timestamp do %>
-              <p style="font-size: 16px; font-weight: bold; line-height: 20px;">
-                The issue described below has ended:
-              </p>
-              <p style="margin: 0; padding: 0 0 0 15px; border-left: 5px #f7f7f7 solid; font-size: 16px; line-height: 1.5; color: #1c1e23; margin-top: 24px;">
-                <%= notification.header %>
-              </p>
-              <br />
-              <%= if notification.description do %>
-                <p style="margin: 0; padding: 0 0 0 15px; border-left: 5px #f7f7f7 solid; font-size: 16px; line-height: 1.5; color: #1c1e23;">
-                  <%= String.replace(notification.description, "\r\n", "<br/>") %>
-                </p>
-                <% end %>
-              <% else %>
-                <p style="margin: 0; padding: 0; font-size: 16px; font-weight: bold; line-height: 1.5; color: #1c1e23; margin-top: 24px;">
-                   <%= notification.header %>
-                 </p>
-                 <br />
-                 <%= if notification.description do %>
-                   <p style="margin: 0; padding: 0; font-size: 16px; line-height: 1.5; color: #1c1e23;">
-                     <%= String.replace(notification.description, "\r\n", "<br/>") %></p>
-                  <% end %>
-               <% end %>
-               <%= if notification.last_push_notification do %>
-                  <p style="font-size: 13px; margin-top: 0;">Last Updated: <%= ConciergeSite.Helpers.DateHelper.format_datetime(notification.last_push_notification, :local) %>
-                  </p>
-               <% end %>
+            <p style="font-size: 16px; font-weight: bold; line-height: 20px;">
+              The issue described below has ended:
+            </p>
+            <p style="margin: 0; padding: 0 0 0 15px; border-left: 5px #f7f7f7 solid; font-size: 16px; line-height: 1.5; color: #1c1e23; margin-top: 24px;">
+              <%= notification.header %>
+            </p>
+            <br />
+            <%= if notification.description do %>
+            <p style="margin: 0; padding: 0 0 0 15px; border-left: 5px #f7f7f7 solid; font-size: 16px; line-height: 1.5; color: #1c1e23;">
+              <%= String.replace(notification.description, "\r\n", "<br/>") %>
+            </p>
+            <% end %>
+            <% else %>
+            <p style="margin: 0; padding: 0; font-size: 16px; font-weight: bold; line-height: 1.5; color: #1c1e23; margin-top: 24px;">
+              <%= notification.header %>
+            </p>
+            <br />
+            <%= if notification.description do %>
+            <p style="margin: 0; padding: 0; font-size: 16px; line-height: 1.5; color: #1c1e23;">
+              <%= String.replace(notification.description, "\r\n", "<br/>") %>
+            </p>
+            <% end %>
+            <% end %>
+            <%= if notification.last_push_notification do %>
+            <p style="font-size: 13px; margin-top: 0;">Last Updated:
+              <%= ConciergeSite.Helpers.DateHelper.format_datetime(notification.last_push_notification, :local) %>
+            </p>
+            <% end %>
           </div>
       </table>
     
@@ -156,7 +159,7 @@
       </table>
       
       <table
-         align="center" border="0" cellpadding="0" cellspacing="0" style="width:500px;" width="500"
+         align="center" border="0" cellpadding="0" cellspacing="0" class="" style="width:500px;" width="500"
       >
         <tr>
           <td style="line-height:0px;font-size:0px;mso-line-height-rule:exactly;">
@@ -179,7 +182,7 @@
         <tr>
       
             <td
-               style="vertical-align:top;width:500px;"
+               class="" style="vertical-align:top;width:500px;"
             >
           <![endif]-->
             
@@ -199,10 +202,23 @@
       <div
          style="font-family:'Helvetica Neue', Helvetica, Arial, sans-serif;font-size:16px;font-weight:700;line-height:20px;text-align:left;color:#000000;"
       >
-        How are T-Alerts working for you?
-          <a href="<%= feedback_url %>" style="color: #16528A; text-decoration: none;">
-            Tell us here.
-          </a>
+        Was this alert helpful? Let us know.
+          <% rate_yes_url = "#{ConciergeSite.Helpers.MailHelper.rating_base_url(notification.alert_id, notification.user_id)}yes" %>
+          <% rate_no_url = "#{ConciergeSite.Helpers.MailHelper.rating_base_url(notification.alert_id, notification.user_id)}no" %>
+          <table style="margin-top: 10px">
+            <tbody>
+              <tr>
+                <td><a href="<%= rate_yes_url %>" style="color: #1c1e23; text-decoration: none;">👍</a></td>
+                <td>&nbsp;&nbsp;&nbsp;</td>
+                <td><a href="<%= rate_no_url %>" style="color: #1c1e23; text-decoration: none;">👎</a></td>
+              </tr>
+              <tr>
+                <td><a href="<%= rate_yes_url %>" style="color: #1c1e23; text-decoration: none; font-weight: normal; font-size: 14px">Yes</a></td>
+                <td>&nbsp;&nbsp;&nbsp;</td>
+                <td><a href="<%= rate_no_url %>" style="color: #1c1e23; text-decoration: none; font-weight: normal; font-size: 14px">No</a></td>
+              </tr>
+            </tbody>
+          </table>
       </div>
     
               </td>
@@ -237,7 +253,7 @@
       
       <!--[if mso | IE]>
       <table
-         align="center" border="0" cellpadding="0" cellspacing="0" style="width:500px;" width="500"
+         align="center" border="0" cellpadding="0" cellspacing="0" class="" style="width:500px;" width="500"
       >
         <tr>
           <td style="line-height:0px;font-size:0px;mso-line-height-rule:exactly;">
@@ -260,7 +276,7 @@
         <tr>
       
             <td
-               style="vertical-align:top;width:500px;"
+               class="" style="vertical-align:top;width:500px;"
             >
           <![endif]-->
             

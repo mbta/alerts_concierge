@@ -40,6 +40,14 @@ defmodule ConciergeSite.Helpers.MailHelper do
     end
   end
 
+  @spec rating_base_url(String.t(), String.t()) :: iodata
+  def rating_base_url(alert_id, user_id) do
+    Helpers.static_url(
+      ConciergeSite.Endpoint,
+      "/feedback?alert_id=#{alert_id}&user_id=#{user_id}&rating="
+    )
+  end
+
   def reset_password_url(reset_token) do
     Helpers.password_reset_url(ConciergeSite.Endpoint, :edit, reset_token)
   end

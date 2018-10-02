@@ -9,8 +9,9 @@
   <mj-body width="500px">
     <mj-raw>
       <%= if notification.description do %>
-        <span style="display: none"><%= notification.description %></span>
-        <% end %>
+      <span style="display: none">
+        <%= notification.description %></span>
+      <% end %>
     </mj-raw>
     <mj-raw>
       <!-- Body content -->
@@ -20,32 +21,34 @@
         <mj-raw>
           <div style="font-family:'Helvetica Neue', Helvetica, Arial, sans-serif; padding: 10px 0 10px 0">
             <%= if notification.closed_timestamp do %>
-              <p style="font-size: 16px; font-weight: bold; line-height: 20px;">
-                The issue described below has ended:
-              </p>
-              <p style="margin: 0; padding: 0 0 0 15px; border-left: 5px #f7f7f7 solid; font-size: 16px; line-height: 1.5; color: #1c1e23; margin-top: 24px;">
-                <%= notification.header %>
-              </p>
-              <br />
-              <%= if notification.description do %>
-                <p style="margin: 0; padding: 0 0 0 15px; border-left: 5px #f7f7f7 solid; font-size: 16px; line-height: 1.5; color: #1c1e23;">
-                  <%= String.replace(notification.description, "\r\n", "<br/>") %>
-                </p>
-                <% end %>
-              <% else %>
-                <p style="margin: 0; padding: 0; font-size: 16px; font-weight: bold; line-height: 1.5; color: #1c1e23; margin-top: 24px;">
-                   <%= notification.header %>
-                 </p>
-                 <br />
-                 <%= if notification.description do %>
-                   <p style="margin: 0; padding: 0; font-size: 16px; line-height: 1.5; color: #1c1e23;">
-                     <%= String.replace(notification.description, "\r\n", "<br/>") %></p>
-                  <% end %>
-               <% end %>
-               <%= if notification.last_push_notification do %>
-                  <p style="font-size: 13px; margin-top: 0;">Last Updated: <%= ConciergeSite.Helpers.DateHelper.format_datetime(notification.last_push_notification, :local) %>
-                  </p>
-               <% end %>
+            <p style="font-size: 16px; font-weight: bold; line-height: 20px;">
+              The issue described below has ended:
+            </p>
+            <p style="margin: 0; padding: 0 0 0 15px; border-left: 5px #f7f7f7 solid; font-size: 16px; line-height: 1.5; color: #1c1e23; margin-top: 24px;">
+              <%= notification.header %>
+            </p>
+            <br />
+            <%= if notification.description do %>
+            <p style="margin: 0; padding: 0 0 0 15px; border-left: 5px #f7f7f7 solid; font-size: 16px; line-height: 1.5; color: #1c1e23;">
+              <%= String.replace(notification.description, "\r\n", "<br/>") %>
+            </p>
+            <% end %>
+            <% else %>
+            <p style="margin: 0; padding: 0; font-size: 16px; font-weight: bold; line-height: 1.5; color: #1c1e23; margin-top: 24px;">
+              <%= notification.header %>
+            </p>
+            <br />
+            <%= if notification.description do %>
+            <p style="margin: 0; padding: 0; font-size: 16px; line-height: 1.5; color: #1c1e23;">
+              <%= String.replace(notification.description, "\r\n", "<br/>") %>
+            </p>
+            <% end %>
+            <% end %>
+            <%= if notification.last_push_notification do %>
+            <p style="font-size: 13px; margin-top: 0;">Last Updated:
+              <%= ConciergeSite.Helpers.DateHelper.format_datetime(notification.last_push_notification, :local) %>
+            </p>
+            <% end %>
           </div>
         </mj-raw>
       </mj-column>
@@ -55,10 +58,23 @@
     <mj-section padding-top="10" padding-left="0" padding-right="0">
       <mj-column>
         <mj-text font-family="'Helvetica Neue', Helvetica, Arial, sans-serif" font-size="16px" font-weight="700" line-height="20px" padding-left="0" padding-right="0">
-          How are T-Alerts working for you?
-          <a href="<%= feedback_url %>" style="color: #16528A; text-decoration: none;">
-            Tell us here.
-          </a>
+          Was this alert helpful? Let us know.
+          <% rate_yes_url = "#{ConciergeSite.Helpers.MailHelper.rating_base_url(notification.alert_id, notification.user_id)}yes" %>
+          <% rate_no_url = "#{ConciergeSite.Helpers.MailHelper.rating_base_url(notification.alert_id, notification.user_id)}no" %>
+          <table style="margin-top: 10px">
+            <tbody>
+              <tr>
+                <td><a href="<%= rate_yes_url %>" style="color: #1c1e23; text-decoration: none;">👍</a></td>
+                <td>&nbsp;&nbsp;&nbsp;</td>
+                <td><a href="<%= rate_no_url %>" style="color: #1c1e23; text-decoration: none;">👎</a></td>
+              </tr>
+              <tr>
+                <td><a href="<%= rate_yes_url %>" style="color: #1c1e23; text-decoration: none; font-weight: normal; font-size: 14px">Yes</a></td>
+                <td>&nbsp;&nbsp;&nbsp;</td>
+                <td><a href="<%= rate_no_url %>" style="color: #1c1e23; text-decoration: none; font-weight: normal; font-size: 14px">No</a></td>
+              </tr>
+            </tbody>
+          </table>
         </mj-text>
       </mj-column>
     </mj-section>
