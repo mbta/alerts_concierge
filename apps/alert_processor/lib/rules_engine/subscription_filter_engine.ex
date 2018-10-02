@@ -53,8 +53,14 @@ defmodule AlertProcessor.SubscriptionFilterEngine do
   """
   @spec determine_recipients(Alert.t(), DateTime.t()) :: [Subscription.t()]
   def determine_recipients(alert, now \\ Calendar.DateTime.now!("America/New_York")) do
+    start_time = Time.utc_now()
+
     subscriptions_to_test = Subscription.all_active_for_alert(alert)
     recent_outdated_notifications = Notification.most_recent_if_outdated_for_alert(alert)
+
+    Logger.info(fn ->
+      "matching database queries, time=#{Time.diff(Time.utc_now(), start_time, :millisecond)}"
+    end)
 
     subscriptions_to_auto_resend =
       SentAlertFilter.filter(alert, recent_outdated_notifications, now)
