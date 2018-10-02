@@ -67,10 +67,10 @@ defmodule ConciergeSite.Feedback do
   @spec get_alert(String.t()) :: SavedAlert.t() | nil
   def get_alert(alert_id), do: Repo.get_by(SavedAlert, alert_id: alert_id)
 
-  @spec log_alert_rating(nil | SavedAlert.t(), String.t(), String.t()) :: any
-  def log_alert_rating(nil, _, _), do: nil
+  @spec log_alert_rating(nil | SavedAlert.t(), AlertRating.t()) :: any
+  def log_alert_rating(nil, _), do: nil
 
-  def log_alert_rating(alert, user_id, rating) do
+  def log_alert_rating(alert, %AlertRating{rating: rating, user_id: user_id}) do
     Logger.info(
       Enum.join(
         ["feedback-rating"] ++
@@ -81,10 +81,10 @@ defmodule ConciergeSite.Feedback do
     )
   end
 
-  @spec log_alert_rating_reason(nil | SavedAlert.t(), String.t(), String.t(), String.t()) :: any
-  def log_alert_rating_reason(nil, _, _, _), do: nil
+  @spec log_alert_rating_reason(nil | SavedAlert.t(), AlertRatingReason.t()) :: any
+  def log_alert_rating_reason(nil, _), do: nil
 
-  def log_alert_rating_reason(alert, user_id, what, why) do
+  def log_alert_rating_reason(alert, %AlertRatingReason{user_id: user_id, what: what, why: why}) do
     Logger.info(
       Enum.join(
         ["feedback-reason"] ++

@@ -5,10 +5,10 @@ defmodule ConciergeSite.FeedbackController do
   alias Feedback.AlertRatingReason, as: AlertRatingReason
 
   def feedback(conn, params) do
-    with {:ok, %AlertRating{rating: rating, user_id: user_id, alert_id: alert_id}} <-
+    with {:ok, %AlertRating{rating: rating, user_id: user_id, alert_id: alert_id} = alert_rating} <-
            Feedback.parse_alert_rating(params) do
       alert = Feedback.get_alert(alert_id)
-      Feedback.log_alert_rating(alert, user_id, rating)
+      Feedback.log_alert_rating(alert, alert_rating)
 
       template = if rating == "yes", do: "thanks.html", else: "form.html"
       render(conn, template, alert_id: alert_id, user_id: user_id)
@@ -19,10 +19,10 @@ defmodule ConciergeSite.FeedbackController do
   end
 
   def new(conn, params) do
-    with {:ok, %AlertRatingReason{user_id: user_id, alert_id: alert_id, why: why, what: what}} <-
+    with {:ok, %AlertRatingReason{alert_id: alert_id} = alert_rating_reason} <-
            Feedback.parse_alert_rating_reason(params) do
       alert = Feedback.get_alert(alert_id)
-      Feedback.log_alert_rating_reason(alert, user_id, what, why)
+      Feedback.log_alert_rating_reason(alert, alert_rating_reason)
 
       json(conn, %{status: "ok"})
     else
