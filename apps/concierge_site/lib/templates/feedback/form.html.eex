@@ -1,0 +1,26 @@
+<h1 class="heading__title">Alert feedback form</h1>
+
+<form id="feedback-form">
+
+  <input type="hidden" name="user_id" value="<%= @user_id %>" />
+  <input type="hidden" name="alert_id" value="<%= @alert_id %>" />
+  <input type="hidden" name="token" value="<%= get_csrf_token() %>">
+
+  <div class="form-group contrast">
+    <label class="form__label d-block">
+      Why was this alert not useful?
+    </label>
+    <textarea id="feedback-why" class="form-control" name="why" placeholder="Tell us about your experience."></textarea>
+  </div>
+
+  <div class="form-group contrast">
+    <label class="form__label d-block">
+      What information would you like to have seen in this alert?
+    </label>
+    <textarea id="feedback-what" class="form-control" name="what" placeholder="Tell us what could have made your disruption experience better."></textarea>
+  </div>
+
+  <div class="form-group contrast">
+    <input class="btn btn-primary btn-block" type="submit" value="Submit feedback" />
+  </div>
+</form>

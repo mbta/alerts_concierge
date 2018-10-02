@@ -14,3 +14,12 @@ export const makeErrorMessageEl = (id, message) => {
 
   return outerEl;
 };
+
+export const makeAlert = (id, alertType, message) => {
+  const el = document.createElement("div");
+  el.setAttribute("id", id);
+  el.setAttribute("class", `alert ${alertType}`);
+  el.setAttribute("tabindex", "0");
+  el.textContent = message;
+  return el;
+};
