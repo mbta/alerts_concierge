@@ -19,6 +19,7 @@ import tripForm from "./trip-form";
 import commuteEditForm from "./commute-edit-form";
 import selectMultiFix from "./select-multi-fix";
 import menuToggle from "./menu";
+import feedbackForm from "./feedback-form";
 
 // Import css
 import "../css/app.scss";
@@ -40,3 +41,4 @@ commuteEditForm();
 selectMultiFix();
 flashFocus();
 menuToggle();
+feedbackForm();

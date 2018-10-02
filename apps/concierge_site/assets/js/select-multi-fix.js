@@ -1,6 +1,6 @@
 import { getStopInstances } from "./select-stop-choices";
 import { getRouteInstances } from "./select-route-choices";
-import { makeErrorMessageEl } from "./error-message";
+import { makeErrorMessageEl } from "./user-messages";
 import { insertAfterElByQuery, removeElByQuery } from "./dom-utils";
 // there is a bug in choices.js where multi-selects are not
 // setting their values properly. Before submit, this code

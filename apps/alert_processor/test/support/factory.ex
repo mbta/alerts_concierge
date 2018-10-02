@@ -9,7 +9,8 @@ defmodule AlertProcessor.Factory do
     User,
     PasswordReset,
     Trip,
-    NotificationSubscription
+    NotificationSubscription,
+    SavedAlert
   }
 
   alias Calendar.DateTime
@@ -259,5 +260,71 @@ defmodule AlertProcessor.Factory do
 
   def notification_subscription_factory do
     %NotificationSubscription{}
+  end
+
+  def saved_alert_factory do
+    %SavedAlert{
+      alert_id: "119076",
+      data: %{
+        "active_period" => [%{"end" => 1_538_162_074, "start" => 1_538_154_825}],
+        "alert_lifecycle" => "NEW",
+        "cause" => "TECHNICAL_PROBLEM",
+        "cause_detail" => "SIGNAL_PROBLEM",
+        "created_timestamp" => 1_538_154_830,
+        "description_text" => %{
+          "translation" => [%{"language" => "en", "text" => ""}]
+        },
+        "duration_certainty" => "ESTIMATED",
+        "effect" => "OTHER_EFFECT",
+        "effect_detail" => "DELAY",
+        "header_text" => %{
+          "translation" => [
+            %{
+              "language" => "en",
+              "text" =>
+                "TEST Red Line experiencing delays of up to 10 minutes due to signal problem"
+            }
+          ]
+        },
+        "id" => "119076",
+        "informed_entity" => [
+          %{
+            "activities" => ["BOARD", "EXIT", "RIDE"],
+            "route_id" => "Red",
+            "route_type" => 1
+          },
+          %{
+            "activities" => ["BOARD", "EXIT", "RIDE"],
+            "route_id" => "215",
+            "route_type" => 3
+          },
+          %{
+            "activities" => ["BOARD", "EXIT", "RIDE"],
+            "route_id" => "CR-Providence",
+            "route_type" => 2,
+            "stop_id" => "Canton Center"
+          }
+        ],
+        "last_modified_timestamp" => 1_538_154_830,
+        "last_push_notification_timestamp" => 1_538_154_830,
+        "service_effect_text" => %{
+          "translation" => [%{"language" => "en", "text" => "Red Line delay"}]
+        },
+        "severity" => 3,
+        "short_header_text" => %{
+          "translation" => [
+            %{
+              "language" => "en",
+              "text" =>
+                "TEST Red Line experiencing delays of up to 10 minutes due to signal problem"
+            }
+          ]
+        }
+      },
+      id: "500aac16-1cda-4fb9-b64c-1be9ff7336b4",
+      inserted_at: ~N[2018-09-28 17:16:59.036670],
+      notification_type: nil,
+      updated_at: ~N[2018-09-28 17:16:59.036681]
+    }
   end
 end
