@@ -34,7 +34,9 @@ defmodule ConciergeSite.Dissemination.NotificationEmailTest do
       std_offset: 0,
       time_zone: "Etc/UTC"
     },
-    closed_timestamp: nil
+    closed_timestamp: nil,
+    alert_id: "123",
+    user_id: "456"
   }
 
   test "text_email/1 has all necessary content" do
@@ -72,6 +74,8 @@ defmodule ConciergeSite.Dissemination.NotificationEmailTest do
     assert body =~ "Red line inbound from Alewife station closure"
     assert body =~ "href=\"https://www.mbta.com/alerts\""
     assert body =~ "Last Updated: Jan 18 2017 02:00 PM"
+    assert body =~ "feedback?alert_id=123&user_id=456&rating=yes"
+    assert body =~ "feedback?alert_id=123&user_id=456&rating=no"
   end
 
   test "html_email/1 includes content for closed alerts" do

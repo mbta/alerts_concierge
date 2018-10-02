@@ -129,9 +129,7 @@
             <% end %>
             <% end %>
             <%= if notification.last_push_notification do %>
-            <p style="font-size: 13px; margin-top: 0;">Last Updated:
-              <%= ConciergeSite.Helpers.DateHelper.format_datetime(notification.last_push_notification, :local) %>
-            </p>
+            <p style="font-size: 13px; margin-top: 0;">Last Updated: <%= ConciergeSite.Helpers.DateHelper.format_datetime(notification.last_push_notification, :local) %></p>
             <% end %>
           </div>
       </table>
