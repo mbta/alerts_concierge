@@ -39,17 +39,14 @@ defmodule CreateUsers do
     System.halt(1)
   end
 
-  defp create_users(count, index \\ 0) do
-    index
-    |> Stream.iterate(&(&1 + 1))
-    |> Stream.map(&create_user/1)
-    |> Stream.map(&create_subscription/1)
-    |> Enum.take(count)
+  defp create_users(count) do
+    for _ <- 1..count, do: create_user()
   end
 
-  defp create_user(count) do
+  defp create_user() do
     params = %{
-      email: "send-alerts-test-#{count}@example.com",
+      email:
+        "send-alerts-test-#{Integer.to_string(:rand.uniform(4_294_967_296), 32)}@example.com",
       phone_number: "5555555555",
       # p@ssw0rd
       encrypted_password: "$2b$12$BwbCgTrrnXytfn733NZvV.RkLpMyO8Ga/zON5mSZAFz4/50kYYDhK"
@@ -62,29 +59,6 @@ defmodule CreateUsers do
   end
 
   defp normalize_papertrail_result({:ok, %{model: user}}), do: user
-
-  defp create_subscription(%{id: id} = user) do
-    {:ok, subscription_infos} =
-      %{
-        "alert_priority_type" => "medium",
-        "departure_end" => "02:45:00",
-        "departure_start" => "03:00:00",
-        "destination" => "place-dwnxg",
-        "origin" => "place-alfcl",
-        "route_type" => "1",
-        "saturday" => "true",
-        "sunday" => "true",
-        "trip_type" => "one_way",
-        "weekday" => "true"
-      }
-      |> Map.put("user_id", id)
-      |> ConciergeSite.Subscriptions.SubwayParams.prepare_for_mapper()
-      |> AlertProcessor.Subscription.SubwayMapper.map_subscriptions()
-
-    subscription_infos
-    |> AlertProcessor.Subscription.SubwayMapper.build_subscription_transaction(user, id)
-    |> AlertProcessor.Model.Subscription.set_versioned_subscription()
-  end
 
   defp delete do
     Ecto.Adapters.SQL.query!(
