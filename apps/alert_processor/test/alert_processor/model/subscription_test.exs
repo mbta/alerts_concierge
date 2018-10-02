@@ -2,9 +2,9 @@ defmodule AlertProcessor.Model.SubscriptionTest do
   @moduledoc false
   use AlertProcessor.DataCase, async: true
   import AlertProcessor.Factory
-
-  alias AlertProcessor.Model.{Subscription, Alert, InformedEntity}
-  alias AlertProcessor.Subscription.{BusMapper, Mapper}
+  alias AlertProcessor.Model.{Alert, InformedEntity, Route, Subscription, User}
+  alias AlertProcessor.ServiceInfoCache
+  alias Ecto.Multi
 
   @base_attrs %{
     relevant_days: [:weekday],
@@ -327,8 +327,8 @@ defmodule AlertProcessor.Model.SubscriptionTest do
 
     test "creates subscription and informed entities from Ecto.Multi" do
       user = insert(:user)
-      {:ok, [info | _]} = BusMapper.map_subscription(@params)
-      multi = Mapper.build_subscription_transaction([info], user, user.id)
+      {:ok, [info | _]} = map_subscription(@params)
+      multi = build_subscription_transaction([info], user, user.id)
       Subscription.set_versioned_subscription(multi)
 
       assert [sub | _] = Subscription |> Repo.all() |> Repo.preload(:informed_entities)
@@ -337,8 +337,8 @@ defmodule AlertProcessor.Model.SubscriptionTest do
 
     test "associates versions of informed entities with version of subscription" do
       user = insert(:user)
-      {:ok, [info | _]} = BusMapper.map_subscription(@params)
-      multi = Mapper.build_subscription_transaction([info], user, user.id)
+      {:ok, [info | _]} = map_subscription(@params)
+      multi = build_subscription_transaction([info], user, user.id)
       Subscription.set_versioned_subscription(multi)
 
       [sub | _] = Subscription |> Repo.all() |> Repo.preload(:informed_entities)
@@ -356,10 +356,9 @@ defmodule AlertProcessor.Model.SubscriptionTest do
     test "creates round_trip subscription and informed entities from Ecto.Multi" do
       user = insert(:user)
 
-      {:ok, [info1, info2 | _]} =
-        BusMapper.map_subscription(Map.put(@params, "trip_type", "round_trip"))
+      {:ok, [info1, info2 | _]} = map_subscription(Map.put(@params, "trip_type", "round_trip"))
 
-      multi = Mapper.build_subscription_transaction([info1, info2], user, user.id)
+      multi = build_subscription_transaction([info1, info2], user, user.id)
       Subscription.set_versioned_subscription(multi)
 
       assert [sub1, sub2 | _] = Subscription |> Repo.all() |> Repo.preload(:informed_entities)
@@ -370,10 +369,9 @@ defmodule AlertProcessor.Model.SubscriptionTest do
     test "associates versions of informed entities with version of round_trip subscription" do
       user = insert(:user)
 
-      {:ok, [info1, info2 | _]} =
-        BusMapper.map_subscription(Map.put(@params, "trip_type", "round_trip"))
+      {:ok, [info1, info2 | _]} = map_subscription(Map.put(@params, "trip_type", "round_trip"))
 
-      multi = Mapper.build_subscription_transaction([info1, info2], user, user.id)
+      multi = build_subscription_transaction([info1, info2], user, user.id)
       Subscription.set_versioned_subscription(multi)
 
       [sub1, sub2 | _] = Subscription |> Repo.all() |> Repo.preload(:informed_entities)
@@ -652,5 +650,154 @@ defmodule AlertProcessor.Model.SubscriptionTest do
     insert(:subscription, user: user, route: "Blue", paused: true)
 
     assert Subscription.paused_count() == 2
+  end
+
+  defp map_subscription(%{"routes" => routes} = params) do
+    params = Map.delete(params, "routes")
+
+    subscription_infos =
+      Enum.flat_map(routes, fn route_and_direction ->
+        route_id = String.split_at(route_and_direction, -4) |> elem(0)
+        direction = String.split_at(route_and_direction, -1) |> elem(1) |> String.to_integer()
+        {:ok, route} = ServiceInfoCache.get_route(route_id)
+
+        params =
+          params
+          |> Map.put("route", route_id)
+          |> Map.put("direction", direction)
+          |> Map.put("origin", nil)
+          |> Map.put("destination", nil)
+          |> Map.put("return_trip", false)
+
+        params
+        |> create_subscriptions()
+        |> map_entities(params, route)
+      end)
+
+    {:ok, subscription_infos}
+  end
+
+  defp create_subscriptions(%{"origin" => origin, "destination" => destination} = params) do
+    return_params = %{
+      params
+      | "destination" => origin,
+        "origin" => destination,
+        "departure_start" => params["return_start"],
+        "departure_end" => params["return_end"],
+        "direction" => flip_direction(params["direction"]),
+        "return_trip" => true
+    }
+
+    [do_create_subscription(params), do_create_subscription(return_params)]
+  end
+
+  defp do_create_subscription(params) do
+    %Subscription{
+      start_time: params["departure_start"],
+      end_time: params["departure_end"],
+      relevant_days: Enum.map(params["relevant_days"], &String.to_existing_atom/1),
+      origin: params["origin"],
+      destination: params["destination"],
+      route: params["route"],
+      direction_id: params["direction"],
+      return_trip: params["return_trip"],
+      type: :bus
+    }
+  end
+
+  defp flip_direction(0), do: 1
+  defp flip_direction(1), do: 0
+  defp flip_direction(_), do: nil
+
+  defp map_entities(subscriptions, params, route) do
+    subscriptions
+    |> map_route_type(route)
+    |> map_route(params, route)
+  end
+
+  defp map_route_type(subscriptions, %Route{route_type: type}) do
+    route_type_entities = [
+      %InformedEntity{route_type: type, activities: InformedEntity.default_entity_activities()}
+    ]
+
+    Enum.map(subscriptions, fn subscription ->
+      {subscription, route_type_entities}
+    end)
+  end
+
+  defp map_route([{sub1, ie1}, {sub2, ie2}], _params, %Route{route_id: route, route_type: type}) do
+    route_entities_1 = [
+      %InformedEntity{
+        route: route,
+        route_type: type,
+        activities: InformedEntity.default_entity_activities()
+      },
+      %InformedEntity{
+        route: route,
+        route_type: type,
+        direction_id: sub1.direction_id,
+        activities: InformedEntity.default_entity_activities()
+      }
+    ]
+
+    route_entities_2 = [
+      %InformedEntity{
+        route: route,
+        route_type: type,
+        activities: InformedEntity.default_entity_activities()
+      },
+      %InformedEntity{
+        route: route,
+        route_type: type,
+        direction_id: sub2.direction_id,
+        activities: InformedEntity.default_entity_activities()
+      }
+    ]
+
+    [{sub1, ie1 ++ route_entities_1}, {sub2, ie2 ++ route_entities_2}]
+  end
+
+  defp build_subscription_transaction(subscriptions, user, originator) do
+    subscriptions
+    |> Enum.with_index()
+    |> Enum.reduce(Multi.new(), fn {{sub, ies}, index}, acc ->
+      uuid = Ecto.UUID.generate()
+
+      sub_to_insert =
+        sub
+        |> Map.merge(%{
+          id: uuid,
+          user_id: user.id
+        })
+        |> Subscription.create_changeset()
+
+      acc =
+        acc
+        |> Multi.run({:subscription, index}, fn _ ->
+          PaperTrail.insert(
+            sub_to_insert,
+            originator: User.wrap_id(originator),
+            meta: %{owner: user.id}
+          )
+        end)
+
+      ies
+      |> Enum.with_index()
+      |> Enum.reduce(acc, fn {ie, i}, accumulator ->
+        Multi.run(accumulator, {:new_informed_entity, index, i}, fn _ ->
+          ie_to_insert =
+            ie
+            |> Map.merge(%{
+              subscription_id: uuid
+            })
+
+          PaperTrail.insert(
+            ie_to_insert,
+            originator: User.wrap_id(originator),
+            meta: %{owner: user.id}
+          )
+        end)
+      end)
+    end)
   end
 end

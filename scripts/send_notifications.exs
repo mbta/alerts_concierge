@@ -8,7 +8,7 @@ defmodule SendNotifications do
   It sends text messages to the number 5555555555 and uses the AwsMock (at
   least when run in dev)
 
-  Usage: env RATE_LIMIT=count mix run create_users.exs [options]
+  Usage: env RATE_LIMIT=count mix run send_notifications.exs [options]
       -h, --help                       Print this message
       -c, --count                      Number of notifications to send
       -d, --delete                     Delete notifications previously created by script
