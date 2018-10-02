@@ -450,6 +450,17 @@ defmodule AlertProcessor.Model.Subscription do
     |> Repo.preload(:user)
   end
 
+  @spec paused_count() :: number
+  def paused_count do
+    Repo.one(
+      from(
+        s in __MODULE__,
+        where: s.paused == true,
+        select: count(s.id)
+      )
+    )
+  end
+
   defp subscribers_match_query(
          route_ids: _,
          routes: _,
