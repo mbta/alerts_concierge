@@ -25,9 +25,10 @@ defmodule AlertProcessor.SubscriptionFilterEngine do
   def schedule_all_notifications(alerts, alert_filter_duration_type \\ :anytime) do
     start_time = Time.utc_now()
     schedule_notifications(alerts)
+    end_time = Time.utc_now()
 
     Logger.info(fn ->
-      time = Time.diff(Time.utc_now(), start_time, :millisecond)
+      time = Time.diff(end_time, start_time, :millisecond)
       alert_type = if time > 0, do: "alert matching", else: "alert matching (bad time)"
       "#{alert_type} #{alert_filter_duration_type}, time=#{time} alert_count=#{length(alerts)}"
     end)
@@ -54,12 +55,12 @@ defmodule AlertProcessor.SubscriptionFilterEngine do
   @spec determine_recipients(Alert.t(), DateTime.t()) :: [Subscription.t()]
   def determine_recipients(alert, now \\ Calendar.DateTime.now!("America/New_York")) do
     start_time = Time.utc_now()
-
     subscriptions_to_test = Subscription.all_active_for_alert(alert)
     recent_outdated_notifications = Notification.most_recent_if_outdated_for_alert(alert)
+    end_time = Time.utc_now()
 
     Logger.info(fn ->
-      "matching database queries, time=#{Time.diff(Time.utc_now(), start_time, :millisecond)}"
+      "matching database queries, time=#{Time.diff(end_time, start_time, :millisecond)}"
     end)
 
     subscriptions_to_auto_resend =
