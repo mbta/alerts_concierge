@@ -6,48 +6,58 @@
       <mj-all line-height="19px" />
     </mj-attributes>
   </mj-head>
+
   <mj-body width="500px">
     <mj-raw>
       <%= if notification.description do %>
-      <span style="display: none">
-        <%= notification.description %></span>
+        <span style="display: none">
+          <%= notification.description %>
+        </span>
       <% end %>
     </mj-raw>
     <mj-raw>
       <!-- Body content -->
     </mj-raw>
+
     <mj-section background-color="#ffffff" padding-top="0" padding-bottom="0">
       <mj-column>
         <mj-raw>
           <div style="font-family:'Helvetica Neue', Helvetica, Arial, sans-serif; padding: 10px 0 10px 0">
             <%= if notification.closed_timestamp do %>
-            <p style="font-size: 16px; font-weight: bold; line-height: 20px;">
-              The issue described below has ended:
-            </p>
-            <p style="margin: 0; padding: 0 0 0 15px; border-left: 5px #f7f7f7 solid; font-size: 16px; line-height: 1.5; color: #1c1e23; margin-top: 24px;">
-              <%= notification.header %>
-            </p>
-            <br />
-            <%= if notification.description do %>
-            <p style="margin: 0; padding: 0 0 0 15px; border-left: 5px #f7f7f7 solid; font-size: 16px; line-height: 1.5; color: #1c1e23;">
-              <%= String.replace(notification.description, "\r\n", "<br/>") %>
-            </p>
-            <% end %>
+              <p style="font-size: 16px; font-weight: bold; line-height: 20px;">
+                The issue described below has ended:
+              </p>
+              <p style="margin: 0; padding: 0 0 0 15px; border-left: 5px #f7f7f7 solid; font-size: 16px; line-height: 1.5; color: #1c1e23; margin-top: 24px;">
+                <%= notification.header %>
+              </p>
+              <br />
+              <%= if notification.description do %>
+                <p style="margin: 0; padding: 0 0 0 15px; border-left: 5px #f7f7f7 solid; font-size: 16px; line-height: 1.5; color: #1c1e23;">
+                  <%= String.replace(notification.description, "\r\n", "<br/>") %>
+                </p>
+              <% end %>
             <% else %>
-            <p style="margin: 0; padding: 0; font-size: 16px; font-weight: bold; line-height: 1.5; color: #1c1e23; margin-top: 24px;">
-              <%= notification.header %>
-            </p>
-            <br />
-            <%= if notification.description do %>
-            <p style="margin: 0; padding: 0; font-size: 16px; line-height: 1.5; color: #1c1e23;">
-              <%= String.replace(notification.description, "\r\n", "<br/>") %>
-            </p>
+              <p style="margin: 0; padding: 0; font-size: 16px; font-weight: bold; line-height: 1.5; color: #1c1e23; margin-top: 24px;">
+                <%= notification.header %>
+              </p>
+              <br />
+              <%= if notification.description do %>
+                <p style="margin: 0; padding: 0; font-size: 16px; line-height: 1.5; color: #1c1e23;">
+                  <%= String.replace(notification.description, "\r\n", "<br/>") %>
+                </p>
+              <% end %>
             <% end %>
+
+            <%= if notification.url do %>
+              <p style="margin: 0; padding: 0; font-size: 16px; line-height: 1.5; color: #1c1e23;">
+                For more information: <a href="<%= notification.url %>"><%= notification.url %></a>
+              </p>
+              <br />
             <% end %>
+
             <%= if notification.last_push_notification do %>
-            <p style="font-size: 13px; margin-top: 0;">Last Updated:
-              <%= ConciergeSite.Helpers.DateHelper.format_datetime(notification.last_push_notification, :local) %>
-            </p>
+              <p style="font-size: 13px; margin-top: 0;">Last Updated: <%= ConciergeSite.Helpers.DateHelper.format_datetime(notification.last_push_notification, :local) %>
+              </p>
             <% end %>
           </div>
         </mj-raw>
