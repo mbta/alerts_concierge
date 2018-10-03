@@ -1,4 +1,5 @@
 defmodule ConciergeSite.TripControllerTest do
+  @moduledoc false
   use ConciergeSite.ConnCase
   import AlertProcessor.Factory
   alias AlertProcessor.Model.Trip
@@ -348,6 +349,44 @@ defmodule ConciergeSite.TripControllerTest do
 
       assert html_response(conn, 200) =~ "<span class=\"trip__card--route\">Route CT1</span>"
       assert html_response(conn, 200) =~ "<span class=\"trip__card--route\">Route CT2</span>"
+    end
+
+    test "multi-leg, different directions", %{conn: conn, user: user} do
+      trip = %{
+        bike_storage: "false",
+        destinations: ["place-nuniv", "place-pktrm"],
+        elevator: "true",
+        end_time: %{"am_pm" => "AM", "hour" => "9", "minute" => "0"},
+        escalator: "false",
+        legs: ["Green", "Red"],
+        modes: ["subway", "subway"],
+        origins: ["place-pktrm", "place-brdwy"],
+        parking_area: "true",
+        relevant_days: ["monday", "tuesday", "wednesday", "thursday", "friday"],
+        return_end_time: %{"am_pm" => "PM", "hour" => "6", "minute" => "0"},
+        return_start_time: %{"am_pm" => "PM", "hour" => "5", "minute" => "0"},
+        round_trip: "true",
+        start_time: %{"am_pm" => "AM", "hour" => "8", "minute" => "0"}
+      }
+
+      conn =
+        user
+        |> guardian_login(conn)
+        |> post(trip_path(conn, :create), %{trip: trip})
+
+      assert html_response(conn, 302) =~ trip_path(conn, :index)
+
+      conn = get(conn, trip_path(conn, :index))
+
+      html = html_response(conn, 200)
+      assert html =~ "Success! Your subscription has been created."
+
+      assert html =~ "Red Line"
+      assert html =~ "Green Line E"
+      assert html =~ "Round-trip"
+      assert html =~ "Elevators, Parking"
+      assert html =~ "Weekdays"
+      assert html =~ "8:00A -  9:00A,  5:00P -  6:00P"
     end
 
     test "returns error message with no day selected", %{conn: conn, user: user} do

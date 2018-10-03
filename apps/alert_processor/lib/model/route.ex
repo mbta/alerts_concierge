@@ -23,8 +23,13 @@ defmodule AlertProcessor.Model.Route do
         }
   @type route_id :: String.t()
   @type route_type :: 0 | 1 | 2 | 3 | 4
+  @type stop_name :: String.t()
   @type stop_id :: String.t()
-  @type stop :: {String.t(), stop_id, {float(), float()}}
+  @type latitude :: float()
+  @type longitude :: float()
+  @type stop_lat_lon :: {latitude, longitude}
+  @type stop_wheelchair_boarding :: integer
+  @type stop :: {stop_name, stop_id, stop_lat_lon, stop_wheelchair_boarding}
 
   @type t :: %__MODULE__{
           direction_names: [String.t()],

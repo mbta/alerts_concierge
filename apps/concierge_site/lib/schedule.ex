@@ -1,4 +1,7 @@
 defmodule ConciergeSite.Schedule do
+  @moduledoc """
+  The schedule for a route or trip.
+  """
   alias AlertProcessor.{ApiClient, DayType, ExtendedTime, ServiceInfoCache}
   alias AlertProcessor.Model.{Route, Subscription, TripInfo}
   alias ConciergeSite.Schedule
@@ -11,18 +14,18 @@ defmodule ConciergeSite.Schedule do
   @type t :: %{route_mode_id_key: TripInfo.t()}
 
   @doc """
-  Determine the direction (0 for outbound or 1 for inbound) from some combination of a route stop list, string-formatted direction, origin, and destination.
+  Determine the direction (0 for counter to the order of the stop list, or 1 for with the order of the stop list) from some combination of a route stop list, string-formatted direction, origin, and destination.
 
     iex> Schedule.determine_direction_id(nil, "0", nil, nil)
     0
     iex> Schedule.determine_direction_id(nil, "1", nil, nil)
     1
     iex> stop_list = [{"Readville", "Readville", {42.238405, -71.133246}, 1}, {"Fairmount", "Fairmount", {42.253638, -71.11927}, 1}, {"Morton Street", "Morton Street", {42.280994, -71.085475}, 1}, {"Talbot Avenue", "Talbot Avenue", {42.292246, -71.07814}, 1}, {"Four Corners/Geneva", "Four Corners / Geneva", {42.305037, -71.076833}, 1}, {"Uphams Corner", "Uphams Corner", {42.31867, -71.069072}, 1}, {"Newmarket", "Newmarket", {42.326701, -71.066314}, 1}, {"South Station", "place-sstat", {42.352271, -71.055242}, 1}]
-    iex> inner_stop = "Newmarket"
-    iex> outer_stop = "Uphams Corner"
-    iex> Schedule.determine_direction_id(stop_list, nil, inner_stop, outer_stop)
+    iex> earlier_stop = "Uphams Corner"
+    iex> later_stop = "Newmarket"
+    iex> Schedule.determine_direction_id(stop_list, nil, later_stop, earlier_stop)
     0
-    iex> Schedule.determine_direction_id(stop_list, nil, outer_stop, inner_stop)
+    iex> Schedule.determine_direction_id(stop_list, nil, earlier_stop, later_stop)
     1
   """
   @spec determine_direction_id(

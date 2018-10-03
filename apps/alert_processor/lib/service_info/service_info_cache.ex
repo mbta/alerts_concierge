@@ -221,7 +221,17 @@ defmodule AlertProcessor.ServiceInfoCache do
         %{acc | stop_list: acc.stop_list ++ route.stop_list}
       end)
 
-    {:reply, {:ok, %{route | stop_list: Enum.uniq_by(route.stop_list, & &1)}}, state}
+    # We've combined the stop lists for the 4 green line branches, but we want
+    # them in west-to-east order and only one item per stop.
+    stop_list =
+      route.stop_list
+      |> Enum.sort(fn {_a_name, _a_id, {_a_lat, a_lon}, _a_wheelchair_boarding},
+                      {_b_name, _b_id, {_b_lat, b_lon}, _b_wheelchair_boarding} ->
+        a_lon <= b_lon
+      end)
+      |> Enum.uniq_by(& &1)
+
+    {:reply, {:ok, %{route | stop_list: stop_list}}, state}
   end
 
   def handle_call({:get_route, route}, _from, %{routes: route_state} = state) do
@@ -337,12 +347,12 @@ defmodule AlertProcessor.ServiceInfoCache do
   defp fetch_and_cache_service_info do
     route_state =
       @service_types
-      |> fetch_parallel
+      |> fetch_parallel()
       |> Keyword.values()
       |> List.flatten()
 
     @info_types
-    |> fetch_parallel
+    |> fetch_parallel()
     |> Enum.into(%{
       routes: route_state,
       stops_with_icons: stops_with_icons(route_state)
