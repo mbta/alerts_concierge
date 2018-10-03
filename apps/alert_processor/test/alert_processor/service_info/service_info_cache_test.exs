@@ -1,4 +1,5 @@
 defmodule AlertProcessor.ServiceInfoCacheTest do
+  @moduledoc false
   use ExUnit.Case, async: true
   use ExVCR.Mock, adapter: ExVCR.Adapter.Hackney
   alias AlertProcessor.{Model.Route, ServiceInfoCache}
@@ -293,6 +294,23 @@ defmodule AlertProcessor.ServiceInfoCacheTest do
              ServiceInfoCache.get_route(pid, "Orange")
 
     assert {:ok, %Route{route_id: "Green"}} = ServiceInfoCache.get_route(pid, "Green")
+  end
+
+  test "get_route orders stops correctly for all Green branches combined", %{pid: pid} do
+    assert {:ok, %Route{route_id: "Green", stop_list: stop_list}} =
+             ServiceInfoCache.get_route(pid, "Green")
+
+    northeastern_index =
+      Enum.find_index(stop_list, fn {_name, id, _lat_lon, _wheelchair_boarding} ->
+        id == "place-nuniv"
+      end)
+
+    park_index =
+      Enum.find_index(stop_list, fn {_name, id, _lat_lon, _wheelchair_boarding} ->
+        id == "place-pktrm"
+      end)
+
+    assert northeastern_index < park_index
   end
 
   test "get_route/2 finds correct red line shape for given stops", %{pid: pid} do

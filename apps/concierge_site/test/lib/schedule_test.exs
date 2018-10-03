@@ -1,4 +1,5 @@
 defmodule ConciergeSite.ScheduleTest do
+  @moduledoc false
   use ExUnit.Case
   alias ConciergeSite.Schedule
   alias AlertProcessor.ExtendedTime
