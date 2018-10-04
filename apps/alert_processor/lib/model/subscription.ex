@@ -511,18 +511,18 @@ defmodule AlertProcessor.Model.Subscription do
         ]
       end
     )
-    |> entity_sets_to_lists()
+    |> entity_sets_to_lists(Alert.mode_alert?(alert))
   end
 
-  @spec entity_sets_to_lists(Keyword.t()) :: Keyword.t()
+  @spec entity_sets_to_lists(Keyword.t(), boolean) :: Keyword.t()
   defp entity_sets_to_lists(
-         route_ids: route_ids,
-         routes: routes,
-         stops: stops,
-         wildcard: wildcard
+         [route_ids: route_ids, routes: routes, stops: stops, wildcard: wildcard],
+         include_route_ids?
        ) do
+    route_ids = if include_route_ids?, do: MapSet.to_list(route_ids), else: []
+
     [
-      route_ids: MapSet.to_list(route_ids),
+      route_ids: route_ids,
       routes: MapSet.to_list(routes),
       stops: MapSet.to_list(stops),
       wildcard: wildcard

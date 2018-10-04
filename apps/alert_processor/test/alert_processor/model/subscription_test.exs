@@ -544,7 +544,7 @@ defmodule AlertProcessor.Model.SubscriptionTest do
     @route_type_route_and_stop_alert %Alert{
       id: "104",
       informed_entities: [
-        %InformedEntity{route_type: 2, route: "CR-Fairmount", stop: "Newmarket"}
+        %InformedEntity{route_type: 2}
       ]
     }
 
@@ -587,8 +587,8 @@ defmodule AlertProcessor.Model.SubscriptionTest do
 
     test "subscriptions filtered by route_type, only selects route_type 2 subscription" do
       user = insert(:user)
-      insert(:subscription, user: user, route_type: 0)
-      insert(:subscription, user: user, route_type: 2)
+      insert(:subscription, user: user, route_type: 0, route: "Red")
+      insert(:subscription, user: user, route_type: 2, route: "CR-Fairmount")
 
       alert = @route_type_route_and_stop_alert
 

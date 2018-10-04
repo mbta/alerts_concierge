@@ -122,9 +122,16 @@ defmodule AlertProcessor.Model.Alert do
 
   defp timeframe_map(%{start: _}), do: true
 
+  @spec commuter_rail_alert?(__MODULE__.t()) :: boolean()
   def commuter_rail_alert?(%__MODULE__{informed_entities: ies}) when is_list(ies) do
     Enum.any?(ies, &(&1.route_type == 2))
   end
 
   def commuter_rail_alert?(_), do: false
+
+  @spec mode_alert?(__MODULE__.t()) :: boolean()
+  def mode_alert?(%__MODULE__{informed_entities: ies}) when is_list(ies),
+    do: Enum.any?(ies, &(InformedEntity.entity_type(&1) == :mode))
+
+  def mode_alert?(_), do: false
 end
