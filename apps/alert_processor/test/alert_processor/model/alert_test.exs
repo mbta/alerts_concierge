@@ -28,4 +28,37 @@ defmodule AlertProcessor.Model.AlertTest do
       refute Alert.commuter_rail_alert?(%Alert{informed_entities: nil})
     end
   end
+
+  describe "mode_alert?" do
+    test "with mode informed_entities" do
+      ies = [
+        %InformedEntity{
+          facility_type: :elevator,
+          stop: "place-davis"
+        },
+        %InformedEntity{route_type: 1}
+      ]
+
+      assert Alert.mode_alert?(%Alert{informed_entities: ies})
+    end
+
+    test "without mode informed_entities" do
+      ies = [
+        %InformedEntity{
+          facility_type: :elevator,
+          stop: "place-davis"
+        },
+        %InformedEntity{
+          route_type: 1,
+          route: "Red"
+        }
+      ]
+
+      refute Alert.mode_alert?(%Alert{informed_entities: ies})
+    end
+
+    test "invalid data for informed_entities" do
+      refute Alert.mode_alert?(%Alert{informed_entities: nil})
+    end
+  end
 end

@@ -1,4 +1,5 @@
 defmodule AlertProcessor.SubscriptionFilterEngineTest do
+  @moduledoc false
   use AlertProcessor.DataCase
   import AlertProcessor.Factory
   import AlertProcessor.DateHelper

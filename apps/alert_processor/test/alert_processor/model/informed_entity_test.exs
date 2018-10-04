@@ -45,6 +45,8 @@ defmodule AlertProcessor.Model.InformedEntityTest do
                  route_type: 1,
                  direction_id: 1
                })
+
+      refute InformedEntity.entity_type(%InformedEntity{route_type: 1}) == :route
     end
 
     test "it identifies a mode" do
