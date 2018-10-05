@@ -254,21 +254,19 @@ defmodule ConciergeSite.Schedule do
   @spec categorize_by_weekend([Schedule.t()], boolean) :: Schedule.t()
   defp categorize_by_weekend(schedules, weekend?) do
     schedules
-    |> Enum.map(fn {key, trips} -> {key, trips |> Enum.map(&Map.put(&1, :weekend?, weekend?))} end)
-    |> Enum.into(%{})
+    |> Map.new(fn {key, trips} -> {key, trips |> Enum.map(&Map.put(&1, :weekend?, weekend?))} end)
   end
 
   @spec interleave_schedule_trips(Schedule.t(), Schedule.t()) :: Schedule.t()
   defp interleave_schedule_trips(weekday_schedules, weekend_schedules) do
     # weekday_schedules and weekend_schedules should contain the same keys
     weekday_schedules
-    |> Enum.map(fn {key, _} ->
+    |> Map.new(fn {key, _} ->
       {
         key,
         merge_and_sort_trips(weekday_schedules[key], weekend_schedules[key])
       }
     end)
-    |> Enum.into(%{})
   end
 
   @spec merge_and_sort_trips([TripInfo.t()], [TripInfo.t()]) :: [TripInfo.t()]

@@ -404,9 +404,7 @@ defmodule AlertProcessor.AlertParser do
 
   defp translate_api_informed_entities(api_entities) do
     Enum.map(api_entities, fn entity ->
-      entity
-      |> Enum.map(&translate_api_informed_entity_key(&1, entity))
-      |> Enum.into(%{})
+      Map.new(entity, &translate_api_informed_entity_key(&1, entity))
     end)
   end
 

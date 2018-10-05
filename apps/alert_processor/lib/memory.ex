@@ -44,11 +44,7 @@ defmodule AlertProcessor.Memory do
   %{atom: -7, atom_used: -5, binary: -3, code: -1, ets: 1, processes: 3, processes_used: 5, system: 7, total: 9}
   """
   @spec diff(t, t) :: t
-  def diff(b, a) do
-    b
-    |> Enum.map(fn {key, value} -> {key, value - a[key]} end)
-    |> Enum.into(%{})
-  end
+  def diff(b, a), do: Map.new(b, fn {key, value} -> {key, value - a[key]} end)
 
   @doc """
   Convert a memory struct to a loggable string.
