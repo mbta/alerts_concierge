@@ -49,12 +49,10 @@ defmodule ConciergeSite.FacilitiesHelper do
   end
 
   defp includes_facility_type(%Trip{facility_types: facility_types}, type) do
-    cond do
-      is_list(facility_types) ->
-        type in facility_types
-
-      true ->
-        false
+    if is_list(facility_types) do
+      type in facility_types
+    else
+      false
     end
   end
 end
