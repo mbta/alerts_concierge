@@ -1,4 +1,5 @@
 defmodule ConciergeSite.ApiSearchControllerTest do
+  @moduledoc false
   use ConciergeSite.ConnCase
 
   setup do

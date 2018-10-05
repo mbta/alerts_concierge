@@ -1,4 +1,5 @@
 defmodule ConciergeSite.FeedbackControllerTest do
+  @moduledoc false
   use ConciergeSite.ConnCase, async: true
   import AlertProcessor.Factory
 

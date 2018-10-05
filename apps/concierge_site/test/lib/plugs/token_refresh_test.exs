@@ -1,4 +1,5 @@
 defmodule ConciergeSite.Plugs.TokenRefreshTest do
+  @moduledoc false
   use ConciergeSite.ConnCase, async: true
   use Plug.Test
 

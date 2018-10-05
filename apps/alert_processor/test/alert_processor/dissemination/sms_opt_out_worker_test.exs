@@ -1,4 +1,5 @@
 defmodule AlertProcessor.SmsOptOutWorkerTest do
+  @moduledoc false
   use AlertProcessor.DataCase
   import AlertProcessor.Factory
   import ExUnit.CaptureLog

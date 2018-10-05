@@ -1,4 +1,5 @@
 defmodule ConciergeSite.Auth.TokenTest do
+  @moduledoc false
   use ConciergeSite.ConnCase, async: true
   import AlertProcessor.Factory
 

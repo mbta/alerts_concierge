@@ -1,4 +1,5 @@
 defmodule ConciergeSite.Dissemination.DeliverLaterStrategyTest do
+  @moduledoc false
   use ExUnit.Case
   alias ConciergeSite.Dissemination.DeliverLaterStrategy
 

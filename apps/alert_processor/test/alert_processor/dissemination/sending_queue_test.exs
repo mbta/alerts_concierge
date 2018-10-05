@@ -1,4 +1,5 @@
 defmodule AlertProcessor.SendingQueueTest do
+  @moduledoc false
   use ExUnit.Case
   alias AlertProcessor.{SendingQueue, Model.Notification}
 

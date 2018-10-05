@@ -1,4 +1,5 @@
 defmodule AlertProcessor.Dissemination.MailerTest do
+  @moduledoc false
   use ExUnit.Case
   alias AlertProcessor.Dissemination.Mailer
 

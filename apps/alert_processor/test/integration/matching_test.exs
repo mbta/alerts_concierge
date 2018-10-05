@@ -1,4 +1,5 @@
 defmodule AlertProcessor.Integration.MatchingTest do
+  @moduledoc false
   use AlertProcessor.DataCase
   import AlertProcessor.Factory
   alias AlertProcessor.{AlertParser, ServiceInfoCache, SubscriptionFilterEngine}

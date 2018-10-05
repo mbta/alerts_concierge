@@ -1,4 +1,5 @@
 defmodule ConciergeSite.ViewHelpersTest do
+  @moduledoc false
   use ConciergeSite.ConnCase, async: true
   import ConciergeSite.ViewHelpers
 

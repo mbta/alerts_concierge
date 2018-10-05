@@ -1,4 +1,5 @@
 defmodule ConciergeSite.Dissemination.NullAdapterTest do
+  @moduledoc false
   use ExUnit.Case
   alias ConciergeSite.Dissemination.NullAdapter
 

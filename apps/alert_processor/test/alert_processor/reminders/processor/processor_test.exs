@@ -1,4 +1,5 @@
 defmodule AlertProcessor.Reminders.ProcessorTest do
+  @moduledoc false
   use AlertProcessor.DataCase, async: true
   use Bamboo.Test
   import AlertProcessor.Factory

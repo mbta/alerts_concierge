@@ -1,4 +1,5 @@
 defmodule AlertProcessor.Model.UserTest do
+  @moduledoc false
   use AlertProcessor.DataCase, async: true
   import AlertProcessor.Factory
   alias AlertProcessor.Model.User

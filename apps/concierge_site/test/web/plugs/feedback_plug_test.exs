@@ -1,4 +1,5 @@
 defmodule ConciergeSite.FeedbackPlugTest do
+  @moduledoc false
   use ConciergeSite.ConnCase, async: true
   alias ConciergeSite.Plugs.FeedbackPlug
 

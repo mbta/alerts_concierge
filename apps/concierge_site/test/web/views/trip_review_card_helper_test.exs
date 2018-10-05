@@ -1,4 +1,5 @@
 defmodule ConciergeSite.TripReviewCardHelperTest do
+  @moduledoc false
   use ConciergeSite.ConnCase, async: true
   alias ConciergeSite.TripReviewCardHelper
   alias AlertProcessor.Model.{Subscription, Trip}

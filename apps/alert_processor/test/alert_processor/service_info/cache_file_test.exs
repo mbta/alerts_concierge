@@ -1,4 +1,5 @@
 defmodule AlertProcessor.ServiceInfo.CacheFileTest do
+  @moduledoc false
   use ExUnit.Case, async: true
   alias AlertProcessor.ServiceInfo.CacheFile
   doctest CacheFile

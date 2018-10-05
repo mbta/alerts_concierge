@@ -1,4 +1,5 @@
 defmodule ConciergeSite.ApiAccountControllerTest do
+  @moduledoc false
   use ConciergeSite.ConnCase, async: true
 
   setup do

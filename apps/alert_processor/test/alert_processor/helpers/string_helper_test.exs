@@ -1,4 +1,5 @@
 defmodule AlertProcessor.Helpers.StringHelperTest do
+  @moduledoc false
   use ExUnit.Case, async: true
   alias AlertProcessor.Helpers.StringHelper
 

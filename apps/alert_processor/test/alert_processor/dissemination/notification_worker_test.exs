@@ -1,4 +1,5 @@
 defmodule AlertProcessor.NotificationWorkerTest do
+  @moduledoc false
   use AlertProcessor.DataCase
   use Bamboo.Test, shared: true
 

@@ -1,4 +1,5 @@
 defmodule ConciergeSite.Dissemination.EmailTest do
+  @moduledoc false
   use ConciergeSite.ConnCase
   alias ConciergeSite.Dissemination.Email
 

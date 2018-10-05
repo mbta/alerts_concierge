@@ -1,4 +1,5 @@
 defmodule AlertProcessor.Model.RouteTest do
+  @moduledoc false
   use ExUnit.Case, async: true
 
   alias AlertProcessor.Model.Route
