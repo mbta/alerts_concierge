@@ -1,4 +1,7 @@
 defmodule ConciergeSite.TripReviewCardHelper do
+  @moduledoc """
+  Display our Trip Review Card in templates
+  """
   import Phoenix.HTML.Tag, only: [content_tag: 2, content_tag: 3]
   alias AlertProcessor.Model.{Subscription, Trip}
   alias AlertProcessor.ServiceInfoCache
@@ -27,9 +30,9 @@ defmodule ConciergeSite.TripReviewCardHelper do
   end
 
   @spec row_content([Subscription.t()], boolean) :: Phoenix.HTML.safe()
-  defp row_content(subscriptions, _roundtrip? = false), do: one_way_trip(subscriptions)
+  defp row_content(subscriptions, false = _roundtrip?), do: one_way_trip(subscriptions)
 
-  defp row_content(subscriptions, _roundtrip? = true),
+  defp row_content(subscriptions, true = _roundtrip?),
     do: subscriptions |> split_round_trip_subscriptions() |> round_trip()
 
   @spec one_way_trip([Subscription.t()]) :: Phoenix.HTML.safe()

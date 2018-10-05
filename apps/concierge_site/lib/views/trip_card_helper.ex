@@ -1,4 +1,7 @@
 defmodule ConciergeSite.TripCardHelper do
+  @moduledoc """
+  Display our Trip Card in templates
+  """
   import Phoenix.HTML.Tag, only: [content_tag: 3]
   import Phoenix.HTML.Link, only: [link: 2]
   import Phoenix.Controller, only: [get_csrf_token: 0]
@@ -269,13 +272,13 @@ defmodule ConciergeSite.TripCardHelper do
   end
 
   @spec pause_link(Plug.Conn.t(), String.t(), boolean) :: Phoenix.HTML.safe()
-  defp pause_link(conn, trip_id, trip_paused? = false) do
+  defp pause_link(conn, trip_id, false = trip_paused?) do
     conn
     |> ConciergeSite.Router.Helpers.trip_pause_path(:pause, trip_id)
     |> pause_link_for_path(trip_paused?)
   end
 
-  defp pause_link(conn, trip_id, trip_paused? = true) do
+  defp pause_link(conn, trip_id, true = trip_paused?) do
     conn
     |> ConciergeSite.Router.Helpers.trip_resume_path(:resume, trip_id)
     |> pause_link_for_path(trip_paused?)
@@ -289,14 +292,14 @@ defmodule ConciergeSite.TripCardHelper do
   end
 
   @spec pause_link_content(boolean) :: [Phoenix.HTML.safe()]
-  defp pause_link_content(_trip_paused? = false) do
+  defp pause_link_content(false = _trip_paused?) do
     [
       "Pause",
       FontAwesomeHelpers.fa("pause-circle")
     ]
   end
 
-  defp pause_link_content(_trip_paused? = true) do
+  defp pause_link_content(true = _trip_paused?) do
     [
       "Resume",
       FontAwesomeHelpers.fa("play-circle")
