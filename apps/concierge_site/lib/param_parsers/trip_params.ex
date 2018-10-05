@@ -26,11 +26,8 @@ defmodule ConciergeSite.ParamParsers.TripParams do
   end
 
   @spec sanitize_trip_params(map) :: map
-  def sanitize_trip_params(trip_params) when is_map(trip_params) do
-    trip_params
-    |> Enum.map(&sanitize_trip_param/1)
-    |> Enum.into(%{})
-  end
+  def sanitize_trip_params(trip_params) when is_map(trip_params),
+    do: Map.new(trip_params, &sanitize_trip_param/1)
 
   @valid_time_keys ~w(start_time end_time return_start_time return_end_time alert_time)
   defp sanitize_trip_param({time_key, time_value}) when time_key in @valid_time_keys do
