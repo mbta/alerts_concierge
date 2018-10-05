@@ -1,5 +1,6 @@
 defmodule ConciergeSite.ScheduleTest do
   @moduledoc false
+  # credo:disable-for-this-file Credo.Check.Design.DuplicatedCode
   use ExUnit.Case
   alias ConciergeSite.Schedule
   alias AlertProcessor.ExtendedTime
