@@ -1,4 +1,5 @@
 defmodule ConciergeSite.Integration.Sending do
+  @moduledoc false
   use ConciergeSite.ConnCase
   import AlertProcessor.SubscriptionFilterEngine, only: [schedule_all_notifications: 2]
   alias AlertProcessor.Model.{Alert, InformedEntity}

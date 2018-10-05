@@ -1,4 +1,5 @@
 defmodule AlertProcessor.NotificationSmserTest do
+  @moduledoc false
   use ExUnit.Case
 
   alias AlertProcessor.{Model.Notification, NotificationSmser}

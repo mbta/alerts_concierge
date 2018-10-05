@@ -1,4 +1,5 @@
 defmodule ConciergeSite.RejectedEmailControllerTest do
+  @moduledoc false
   use ConciergeSite.ConnCase, async: true
 
   @bounce %{

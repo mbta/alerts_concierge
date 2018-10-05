@@ -1,4 +1,5 @@
 defmodule AlertProcessor.Reminders.Processor.SubscriptionsToRemindTest do
+  @moduledoc false
   use AlertProcessor.DataCase, async: true
   import AlertProcessor.Factory
   alias AlertProcessor.Reminders.Processor.SubscriptionsToRemind

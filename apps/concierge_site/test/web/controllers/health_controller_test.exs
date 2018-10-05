@@ -1,4 +1,5 @@
 defmodule ConciergeSite.HealthControllerTest do
+  @moduledoc false
   use ConciergeSite.ConnCase, async: true
 
   describe "index/2" do

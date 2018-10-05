@@ -1,4 +1,5 @@
 defmodule ConciergeSite.CreateSubscriptionTest do
+  @moduledoc false
   use ConciergeSite.FeatureCase
 
   import AlertProcessor.Factory

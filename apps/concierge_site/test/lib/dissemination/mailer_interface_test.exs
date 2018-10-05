@@ -1,4 +1,5 @@
 defmodule ConciergeSite.Dissemination.MailerInterfaceTest do
+  @moduledoc false
   use ConciergeSite.DataCase
   alias ConciergeSite.Dissemination.MailerInterface
   alias AlertProcessor.Model.{Alert, InformedEntity, Notification}

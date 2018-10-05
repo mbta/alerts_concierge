@@ -1,4 +1,5 @@
 defmodule AlertProcessor.AlertCourtesyEmailTest do
+  @moduledoc false
   use ExUnit.Case, async: true
   alias AlertProcessor.AlertCourtesyEmail
   alias AlertProcessor.Model.{SavedAlert, Alert}

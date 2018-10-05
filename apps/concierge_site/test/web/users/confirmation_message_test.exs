@@ -1,4 +1,5 @@
 defmodule ConciergeSite.ConfirmationMessageTest do
+  @moduledoc false
   use ConciergeSite.DataCase
   use Bamboo.Test
   alias ConciergeSite.Dissemination.Email

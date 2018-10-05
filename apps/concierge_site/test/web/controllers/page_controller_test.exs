@@ -1,4 +1,5 @@
 defmodule ConciergeSite.PageControllerTest do
+  @moduledoc false
   use ConciergeSite.ConnCase, async: true
 
   test "GET /", %{conn: conn} do

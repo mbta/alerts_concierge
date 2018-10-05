@@ -1,4 +1,5 @@
 defmodule AlertProcessor.ApiClientTest do
+  @moduledoc false
   use ExUnit.Case, async: true
   use ExVCR.Mock, adapter: ExVCR.Adapter.Hackney
 

@@ -1,4 +1,5 @@
 defmodule ConciergeSite.FontAwesomeHelpersTest do
+  @moduledoc false
   use ConciergeSite.ConnCase, async: true
   alias ConciergeSite.FontAwesomeHelpers
 

@@ -1,4 +1,5 @@
 defmodule AlertProcessor.DispatcherTest do
+  @moduledoc false
   use ExUnit.Case
   use Bamboo.Test
 

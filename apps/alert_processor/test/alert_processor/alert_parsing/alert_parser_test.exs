@@ -1,4 +1,5 @@
 defmodule AlertProcessor.AlertParserTest do
+  @moduledoc false
   use AlertProcessor.DataCase
   use ExVCR.Mock, adapter: ExVCR.Adapter.Hackney
   use Bamboo.Test, shared: true

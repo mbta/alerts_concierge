@@ -1,4 +1,5 @@
 defmodule AlertProcessor.NotificationWindowFilterTest do
+  @moduledoc false
   use ExUnit.Case, async: true
   alias AlertProcessor.NotificationWindowFilter
   import AlertProcessor.Factory

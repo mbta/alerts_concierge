@@ -1,4 +1,5 @@
 defmodule AlertProcessor.Helpers.DateTimeHelperTest do
+  @moduledoc false
   use ExUnit.Case, async: true
   alias AlertProcessor.Helpers.DateTimeHelper, as: DTH
   alias Calendar.DateTime, as: DT

@@ -1,7 +1,5 @@
 defmodule AlertProcessor.SentAlertFilterTest do
-  @moduledoc """
-  Tests for the AlertProcessor.SentAlertFilter module
-  """
+  @moduledoc false
   use AlertProcessor.DataCase, async: true
   alias AlertProcessor.{SentAlertFilter, Model}
   alias Model.{Alert, Notification, NotificationSubscription}
