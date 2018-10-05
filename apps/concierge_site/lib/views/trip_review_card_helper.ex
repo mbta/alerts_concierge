@@ -136,7 +136,8 @@ defmodule ConciergeSite.TripReviewCardHelper do
     headsign_default = if direction_id == 0, do: ["Outbound"], else: ["Inbound"]
     {:ok, route} = ServiceInfoCache.get_route(route_id)
 
-    Map.get(route.headsigns, direction_id, headsign_default)
+    route.headsigns
+    |> Map.get(direction_id, headsign_default)
     |> Enum.intersperse(" ● ")
   end
 

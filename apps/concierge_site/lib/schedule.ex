@@ -57,12 +57,13 @@ defmodule ConciergeSite.Schedule do
   def get_schedules_for_input(legs, origins, destinations, modes) do
     return_trip = false
 
-    Enum.zip([
+    [
       Enum.reverse(modes),
       Enum.reverse(legs),
       Enum.reverse(origins),
       Enum.reverse(destinations)
-    ])
+    ]
+    |> Enum.zip()
     |> Enum.map(fn input_tuple ->
       {type, route, origin, destination} = input_tuple
 

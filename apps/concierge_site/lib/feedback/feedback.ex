@@ -119,7 +119,8 @@ defmodule ConciergeSite.Feedback do
 
   @spec flatten_informed_entities(SavedAlert.t()) :: [String.t()]
   defp flatten_informed_entities(%{data: %{"informed_entity" => informed_entity}}) do
-    Enum.reduce(informed_entity, [], fn entity, acc ->
+    informed_entity
+    |> Enum.reduce([], fn entity, acc ->
       route_type = if entity["route_type"], do: ["route_type=#{entity["route_type"]}"], else: []
       route_id = if entity["route_id"], do: ["route_id=#{entity["route_id"]}"], else: []
       stop_id = if entity["stop_id"], do: ["stop_id=#{entity["stop_id"]}"], else: []
