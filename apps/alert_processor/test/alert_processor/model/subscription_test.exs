@@ -513,10 +513,10 @@ defmodule AlertProcessor.Model.SubscriptionTest do
       subscription =
         Subscription.add_latlong_to_subscription(%Subscription{}, "place-alfcl", "place-dwnxg")
 
-      assert subscription.destination_lat == 42.355518000000004
-      assert subscription.destination_long == -71.060225
-      assert subscription.origin_lat == 42.395428
-      assert subscription.origin_long == -71.142483
+      assert Float.round(subscription.destination_lat, 6) == 42.355518
+      assert Float.round(subscription.destination_long, 6) == -71.060225
+      assert Float.round(subscription.origin_lat, 6) == 42.395428
+      assert Float.round(subscription.origin_long, 6) == -71.142483
     end
 
     test "without stop values" do
