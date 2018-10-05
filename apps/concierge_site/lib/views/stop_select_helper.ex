@@ -1,4 +1,7 @@
 defmodule ConciergeSite.StopSelectHelper do
+  @moduledoc """
+  Render the stop select component in templates
+  """
   @type stop_row :: [
           id: String.t(),
           name: String.t(),

@@ -1,4 +1,7 @@
 defmodule ConciergeSite.RouteSelectHelper do
+  @moduledoc """
+  Render the route select component in templates
+  """
   @type route_row :: {atom, String.t(), String.t()}
 
   alias AlertProcessor.ServiceInfoCache

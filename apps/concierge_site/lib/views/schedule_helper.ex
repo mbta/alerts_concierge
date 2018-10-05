@@ -1,4 +1,7 @@
 defmodule ConciergeSite.ScheduleHelper do
+  @moduledoc """
+  Render a route's schedule in templates
+  """
   import Phoenix.HTML.Tag, only: [content_tag: 3, content_tag: 2, tag: 2]
   import ConciergeSite.TimeHelper, only: [format_time_string: 2, time_to_string: 1]
 

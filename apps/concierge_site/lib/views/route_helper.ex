@@ -1,4 +1,7 @@
 defmodule ConciergeSite.RouteHelper do
+  @moduledoc """
+  Render routes in templates
+  """
   alias AlertProcessor.ServiceInfoCache
   alias AlertProcessor.Model.{Route, Subscription}
 

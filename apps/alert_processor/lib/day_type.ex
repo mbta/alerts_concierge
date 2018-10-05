@@ -1,4 +1,7 @@
 defmodule AlertProcessor.DayType do
+  @moduledoc """
+  Determine the type (weekday vs weekend) of dates and figure out future instances of a type of day.
+  """
   @type day_type_test_function :: (Date.t() | tuple -> :boolean)
   @type next_day_of_type_function :: (Date.t() | nil -> Date.t())
 

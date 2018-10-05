@@ -1,4 +1,7 @@
 defmodule AlertProcessor.Metrics.UserMetrics do
+  @moduledoc """
+  User-related metrics
+  """
   alias AlertProcessor.Repo
 
   def counts_by_type() do

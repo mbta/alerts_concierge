@@ -1,4 +1,7 @@
 defmodule ConciergeSite.IconViewHelper do
+  @moduledoc """
+  Render icons in templates
+  """
   import Phoenix.HTML, only: [raw: 1]
 
   @spec icon(atom) :: Phoenix.HTML.safe()

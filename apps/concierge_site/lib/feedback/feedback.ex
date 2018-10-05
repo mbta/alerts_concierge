@@ -1,9 +1,15 @@
 defmodule ConciergeSite.Feedback do
+  @moduledoc """
+  Feedback from users about an alert they received
+  """
   alias AlertProcessor.Repo
   alias AlertProcessor.Model.SavedAlert
   require Logger
 
   defmodule AlertRating do
+    @moduledoc """
+    How the user rated the alert
+    """
     defstruct [
       :alert_id,
       :user_id,
@@ -18,6 +24,9 @@ defmodule ConciergeSite.Feedback do
   end
 
   defmodule AlertRatingReason do
+    @moduledoc """
+    Freeform feedback on an alert from a user
+    """
     defstruct [
       :alert_id,
       :user_id,

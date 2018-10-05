@@ -1,4 +1,7 @@
 defmodule AlertProcessor.CachedApiClient do
+  @moduledoc """
+  A cached version of the API Client
+  """
   alias AlertProcessor.ApiClient
   alias AlertProcessor.Model.TripInfo
 

@@ -1,4 +1,7 @@
 defmodule AlertProcessor.Model.NotificationSubscription do
+  @moduledoc """
+  A many-to-many join between subscriptions and notifications
+  """
   use Ecto.Schema
 
   schema "notification_subscriptions" do
