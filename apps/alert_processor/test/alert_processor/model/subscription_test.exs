@@ -657,8 +657,8 @@ defmodule AlertProcessor.Model.SubscriptionTest do
 
     subscription_infos =
       Enum.flat_map(routes, fn route_and_direction ->
-        route_id = String.split_at(route_and_direction, -4) |> elem(0)
-        direction = String.split_at(route_and_direction, -1) |> elem(1) |> String.to_integer()
+        route_id = route_and_direction |> String.split_at(-4) |> elem(0)
+        direction = route_and_direction |> String.split_at(-1) |> elem(1) |> String.to_integer()
         {:ok, route} = ServiceInfoCache.get_route(route_id)
 
         params =

@@ -427,13 +427,14 @@ defmodule ConciergeSite.TripController do
   defp input_to_subscriptions(user, params) do
     {:ok, subway_routes} = ServiceInfoCache.get_subway_full_routes()
 
-    Enum.zip([
+    [
       Enum.reverse(params["modes"]),
       Enum.reverse(params["legs"]),
       Enum.reverse(params["origins"]),
       Enum.reverse(params["destinations"]),
       Stream.iterate(0, &(&1 + 1))
-    ])
+    ]
+    |> Enum.zip()
     |> Enum.flat_map(fn {type, route_in, origin, destination, rank} ->
       {route_id, direction} = determine_route(route_in)
       route_filter = %{route_id: route_id, stop_ids: [origin, destination]}
