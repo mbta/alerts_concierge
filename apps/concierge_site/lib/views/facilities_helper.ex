@@ -1,4 +1,7 @@
 defmodule ConciergeSite.FacilitiesHelper do
+  @moduledoc """
+  Render the facility checkbox component in templates
+  """
   import Phoenix.HTML.Tag, only: [content_tag: 2]
   import Phoenix.HTML.Form, only: [label: 2, checkbox: 3]
   import Phoenix.View, only: [render: 3]

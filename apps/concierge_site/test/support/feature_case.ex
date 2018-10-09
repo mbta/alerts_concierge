@@ -1,4 +1,7 @@
 defmodule ConciergeSite.FeatureCase do
+  @moduledoc """
+  Setup for feature tests
+  """
   use ExUnit.CaseTemplate
 
   using do

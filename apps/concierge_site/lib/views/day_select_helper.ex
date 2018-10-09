@@ -1,4 +1,7 @@
 defmodule ConciergeSite.DaySelectHelper do
+  @moduledoc """
+  Render the day select component in templates
+  """
   import Phoenix.HTML.Tag, only: [content_tag: 3, tag: 2]
 
   @weekdays ["monday", "tuesday", "wednesday", "thursday", "friday"]

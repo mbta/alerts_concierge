@@ -1,4 +1,8 @@
 defmodule AlertProcessor.Helpers.EnvHelper do
+  @moduledoc """
+  Query ENV settings
+  """
+
   @doc """
   Returns true if mix is loaded. Will return false for releases.
 

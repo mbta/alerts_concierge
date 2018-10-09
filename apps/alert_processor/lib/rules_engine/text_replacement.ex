@@ -1,4 +1,7 @@
 defmodule AlertProcessor.TextReplacement do
+  @moduledoc """
+  Replace alert text, substituting the user's origin stop and time in place of the trip's origin and time when possible.
+  """
   alias AlertProcessor.{Model, ServiceInfoCache}
   alias Model.Alert
   alias Calendar.DateTime, as: DT

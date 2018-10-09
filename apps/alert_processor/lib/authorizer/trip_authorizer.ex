@@ -1,4 +1,7 @@
 defmodule AlertProcessor.Authorizer.TripAuthorizer do
+  @moduledoc """
+  Determine authorization for access to a trip
+  """
   alias AlertProcessor.Model.{Trip, User}
 
   @type authorized_response_type :: {:ok, :authorized} | {:error, :unauthorized}

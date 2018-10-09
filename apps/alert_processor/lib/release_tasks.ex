@@ -20,5 +20,8 @@ defmodule AlertProcessor.ReleaseTasks do
 end
 
 defmodule AlertProcessor.ReleaseTasks.Dev do
+  @moduledoc """
+  Tasks that need to be available in a dev release
+  """
   def migrate, do: nil
 end

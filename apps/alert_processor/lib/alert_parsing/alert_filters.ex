@@ -1,4 +1,7 @@
 defmodule AlertProcessor.AlertFilters do
+  @moduledoc """
+  Filter alerts by duration type
+  """
   alias AlertProcessor.Model.Alert
   @type duration_type :: :older | :oldest | :recent | :anytime
   # 60 * 60, 1 hour

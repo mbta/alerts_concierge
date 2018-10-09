@@ -1,4 +1,7 @@
 defmodule ConciergeSite.HelpTextHelper do
+  @moduledoc """
+  Render help text in templates
+  """
   import Phoenix.HTML.Tag, only: [content_tag: 3]
   import Phoenix.HTML, only: [raw: 1]
 

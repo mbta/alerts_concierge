@@ -1,4 +1,7 @@
 defmodule ConciergeSite.Dissemination.DeliverLaterStrategy do
+  @moduledoc """
+  Bamboo strategy for delivering asynchronously
+  """
   @behaviour Bamboo.DeliverLaterStrategy
   require Logger
   alias Bamboo.SMTPAdapter.SMTPError
