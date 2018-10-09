@@ -217,11 +217,7 @@ defmodule AlertProcessor.ServiceInfoCacheTest do
                order: 0,
                route_id: "Boat-F4",
                route_type: 4,
-               short_name: "",
-               stop_list: [
-                 {"Charlestown", "Boat-Charlestown", {42.373334, -71.05416}, 1},
-                 {"Long Wharf (South)", "Boat-Long-South", {42.359448, -71.050498}, 1}
-               ]
+               short_name: ""
              },
              %AlertProcessor.Model.Route{
                direction_names: ["Outbound", "Inbound"],
@@ -230,15 +226,7 @@ defmodule AlertProcessor.ServiceInfoCacheTest do
                order: 1,
                route_id: "Boat-F1",
                route_type: 4,
-               short_name: "",
-               stop_list: [
-                 {"Hingham", "Boat-Hingham", {42.252643, -70.919875}, 1},
-                 {"Rowes Wharf", "Boat-Rowes", {42.355721, -71.049897}, 1},
-                 {"George's Island", "Boat-George", {42.319742, -70.930427}, 1},
-                 {"Hull", "Boat-Hull", {42.303251, -70.920215}, 1},
-                 {"Logan Airport Ferry Terminal", "Boat-Logan", {42.359789, -71.02734}, 1},
-                 {"Long Wharf (North)", "Boat-Long", {42.360795, -71.049976}, 1}
-               ]
+               short_name: ""
              }
            ] = route_info
   end
