@@ -15,6 +15,7 @@ defmodule ConciergeSite.TripCardHelperTest do
         roundtrip: false
       }
 
+      # credo:disable-for-next-line Credo.Check.Design.DuplicatedCode
       trip_with_subscriptions = %{
         trip
         | subscriptions: [
