@@ -14,7 +14,7 @@ defmodule ConciergeSite.ConfirmationMessageTest do
       email = Email.confirmation_email(user)
       refute_received :publish
       assert_delivered_with(to: [{nil, "test@test.com"}])
-      assert email.html_body =~ "Thanks for signing up for T-Alerts Beta!"
+      assert email.html_body =~ "Thanks for signing up for T-Alerts!"
     end
   end
 

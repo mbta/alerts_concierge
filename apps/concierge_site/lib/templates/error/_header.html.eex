@@ -8,7 +8,7 @@
   </header>
   <header class="header__sub--container">
     <div class="container position-relative">
-      <%= render ConciergeSite.LayoutView, "_beta.html", conn: @conn, current_user: nil %>
+      <%= render ConciergeSite.LayoutView, "_talerts_logo.html", conn: @conn, current_user: nil %>
         <div class="header__right">
           <%= link(to: session_path(@conn, :new)) do %>
             Sign in

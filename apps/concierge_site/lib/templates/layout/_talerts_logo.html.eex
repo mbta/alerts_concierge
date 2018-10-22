@@ -7,12 +7,6 @@ destination = if @current_user, do: trip_path(@conn, :index), else: account_path
     <text font-family="HelveticaNeue-Bold, Helvetica Neue" font-size="16" font-weight="bold" fill="#1C1E23" transform="translate(-2 -1)">
       <tspan x="2.528" y="16">T-Alerts </tspan>
     </text>
-    <g transform="translate(66)">
-      <rect fill="#E00013" fill-rule="nonzero" width="40" height="18" rx="3"/>
-      <text font-family="Helvetica" font-size="14" fill="#FFF">
-        <tspan x="5" y="14">Beta</tspan>
-      </text>
-    </g>
   </g>
 </svg>
 <% end %>
