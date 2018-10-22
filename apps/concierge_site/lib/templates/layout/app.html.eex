@@ -35,7 +35,7 @@
     </header>
     <header class="header__sub--container">
       <div class="container position-relative">
-        <%= render "_beta.html", conn: @conn, current_user: @current_user %>
+        <%= render "_talerts_logo.html", conn: @conn, current_user: @current_user %>
           <div class="header__right">
             <%= if @current_user do %>
               <a href="#toggle-menu" data-menu-toggle="up" class="d-md-none">Menu <i class="fa fa-angle-up"></i><i class="fa fa-angle-down"></i></a>
