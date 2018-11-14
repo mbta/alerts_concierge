@@ -138,7 +138,7 @@ defmodule AlertProcessor.Model.SubscriptionTest do
              } == timeframe_map
     end
 
-    test "maps timeframe to next timeframe for late night service" do
+    test "maps timeframe to same timeframe for late night service" do
       subscription = %Subscription{
         start_time: ~T[01:00:00],
         end_time: ~T[04:00:00],
@@ -148,15 +148,15 @@ defmodule AlertProcessor.Model.SubscriptionTest do
       timeframe_map = Subscription.timeframe_map(subscription)
 
       assert %{
+               monday: %{start: 3600, end: 14_400},
                tuesday: %{start: 3600, end: 14_400},
                wednesday: %{start: 3600, end: 14_400},
                thursday: %{start: 3600, end: 14_400},
-               friday: %{start: 3600, end: 14_400},
-               saturday: %{start: 3600, end: 14_400}
+               friday: %{start: 3600, end: 14_400}
              } == timeframe_map
     end
 
-    test "maps timeframe to next timeframe for late night service for saturday" do
+    test "maps timeframe to same timeframe for late night service for saturday" do
       subscription = %Subscription{
         start_time: ~T[01:00:00],
         end_time: ~T[04:00:00],
@@ -166,11 +166,11 @@ defmodule AlertProcessor.Model.SubscriptionTest do
       timeframe_map = Subscription.timeframe_map(subscription)
 
       assert %{
-               sunday: %{start: 3600, end: 14_400}
+               saturday: %{start: 3600, end: 14_400}
              } == timeframe_map
     end
 
-    test "maps timeframe to next timeframe for late night service for sunday" do
+    test "maps timeframe to same timeframe for late night service for sunday" do
       subscription = %Subscription{
         start_time: ~T[01:00:00],
         end_time: ~T[04:00:00],
@@ -180,7 +180,7 @@ defmodule AlertProcessor.Model.SubscriptionTest do
       timeframe_map = Subscription.timeframe_map(subscription)
 
       assert %{
-               monday: %{start: 3600, end: 14_400}
+               sunday: %{start: 3600, end: 14_400}
              } == timeframe_map
     end
 
