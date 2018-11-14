@@ -66,8 +66,6 @@ defmodule AlertProcessor.SubscriptionFilterEngine do
     subscriptions_to_auto_resend =
       SentAlertFilter.filter(alert, recent_outdated_notifications, now)
 
-    #IO.inspect @notification_window_filter
-
     subscriptions_to_test
     |> @notification_window_filter.filter(now)
     |> InformedEntityFilter.filter(alert: alert)
