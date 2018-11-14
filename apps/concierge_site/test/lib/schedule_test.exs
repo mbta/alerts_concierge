@@ -134,10 +134,10 @@ defmodule ConciergeSite.ScheduleTest do
     assert Enum.all?(first_trip_result[{"cr", "CR-Worcester"}], &is_trip_info(&1))
 
     assert List.first(first_trip_result[{"cr", "CR-Worcester"}]) == %TripInfo{
-             arrival_extended_time: %ExtendedTime{relative_day: 1, time: ~T[06:01:00]},
-             arrival_time: ~T[06:01:00],
-             departure_extended_time: %ExtendedTime{relative_day: 1, time: ~T[05:25:00]},
-             departure_time: ~T[05:25:00],
+             arrival_extended_time: %ExtendedTime{relative_day: 1, time: ~T[06:02:00]},
+             arrival_time: ~T[06:02:00],
+             departure_extended_time: %ExtendedTime{relative_day: 1, time: ~T[05:26:00]},
+             departure_time: ~T[05:26:00],
              destination: {"Worcester", "Worcester", {42.261461, -71.794888}, 1},
              direction_id: 0,
              origin: {"Framingham", "Framingham", {42.276719, -71.416792}, 1},
