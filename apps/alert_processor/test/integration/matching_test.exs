@@ -354,6 +354,39 @@ defmodule AlertProcessor.Integration.MatchingTest do
     end
   end
 
+  describe "commuter rail a subscription with early start_time" do
+    setup do
+      insert(
+        :subscription,
+        route_type: 2,
+        direction_id: 1,
+        route: "CR-Worcester",
+        origin: "Worcester",
+        destination: "place-sstat",
+        facility_types: [],
+        start_time: ~T[01:00:00],
+        end_time: ~T[19:00:00],
+        travel_start_time: ~T[04:45:00],
+        travel_end_time: ~T[18:05:00],
+        relevant_days: ~w(monday tuesday wednesday thursday friday)a
+      )
+      :ok
+    end
+
+    test "matches when early start time and end time is after start time" do
+      informed_entities = [
+        %InformedEntity{
+          activities: ["BOARD", "EXIT", "RIDE"],
+          direction_id: 1,
+          route: "CR-Worcester",
+          route_type: 2
+        }
+      ]
+
+      assert_notify(alert(informed_entities))
+    end
+  end
+
   describe "commuter rail subscription" do
     setup do
       insert(

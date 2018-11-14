@@ -335,11 +335,7 @@ defmodule AlertProcessor.Model.Subscription do
   end
 
   defp map_timeframe(relevant_day, false, start_time, end_time, acc) do
-    if after_midnight?(start_time) do
-      Map.put(acc, next_timeframe(relevant_day), map_timeframe_range(start_time, end_time))
-    else
-      Map.put(acc, relevant_day, map_timeframe_range(start_time, end_time))
-    end
+    Map.put(acc, relevant_day, map_timeframe_range(start_time, end_time))
   end
 
   defp map_timeframe_range(start_time, end_time) do
@@ -347,11 +343,6 @@ defmodule AlertProcessor.Model.Subscription do
       start: DateTimeHelper.seconds_of_day(start_time),
       end: DateTimeHelper.seconds_of_day(end_time)
     }
-  end
-
-  defp after_midnight?(timestamp) do
-    local_timestamp = Time.compare(timestamp, ~T[04:00:00])
-    local_timestamp != :gt
   end
 
   defp weekday_to_days(relevant_days) do
