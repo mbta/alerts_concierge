@@ -13,8 +13,7 @@ defmodule AlertProcessor.AlertParser do
     CachedApiClient,
     Parser,
     ServiceInfoCache,
-    SubscriptionFilterEngine,
-    Reminders
+    SubscriptionFilterEngine
   }
 
   alias AlertProcessor.Helpers.{DateTimeHelper, StringHelper}
@@ -49,10 +48,6 @@ defmodule AlertProcessor.AlertParser do
           length(alerts_needing_notifications)
         }"
       end)
-
-      if alert_filter_duration_type == :older do
-        Reminders.async_schedule_reminders(alerts_needing_notifications)
-      end
 
       SubscriptionFilterEngine.schedule_all_notifications(
         alerts_needing_notifications,

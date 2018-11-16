@@ -208,7 +208,7 @@ defmodule AlertProcessor.ApiClient do
   end
 
   defp api_get(path, params \\ []) do
-    get(path, add_api_key([]), params: params)
+    get(path, add_api_key([]), params: params, timeout: 30_000, recv_timeout: 30_000)
   end
 
   defp add_api_key(headers) do
