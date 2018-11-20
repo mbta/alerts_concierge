@@ -112,11 +112,10 @@ defmodule AlertProcessor.Reminders.ProcessorTest do
       monday_april_9_at_7_30am = DateTime.from_naive!(~N[2018-04-09 07:30:00], "Etc/UTC")
       monday_april_9_at_7_45am = DateTime.from_naive!(~N[2018-04-09 07:45:00], "Etc/UTC")
       monday_april_9_at_7_55am = DateTime.from_naive!(~N[2018-04-09 07:55:00], "Etc/UTC")
-      user = insert(:user, %{id: Ecto.UUID.generate()})
+      user = insert(:user)
 
       subscription_details = %{
         user: user,
-        id: Ecto.UUID.generate(),
         start_time: ~T[07:00:00],
         end_time: ~T[08:00:00],
         relevant_days: [:monday]
