@@ -19,35 +19,35 @@ defmodule AlertProcessor.ServiceInfoCacheTest do
                route_id: "Blue",
                long_name: "Blue Line",
                route_type: 1,
-               direction_names: ["Westbound", "Eastbound"],
+               direction_names: ["West", "East"],
                stop_list: [{_, _, _, _} | _]
              },
              %Route{
                route_id: "Green-B",
                long_name: "Green Line B",
                route_type: 0,
-               direction_names: ["Westbound", "Eastbound"],
+               direction_names: ["West", "East"],
                stop_list: [{_, _, _, _} | _]
              },
              %Route{
                route_id: "Green-C",
                long_name: "Green Line C",
                route_type: 0,
-               direction_names: ["Westbound", "Eastbound"],
+               direction_names: ["West", "East"],
                stop_list: [{_, _, _, _} | _]
              },
              %Route{
                route_id: "Green-D",
                long_name: "Green Line D",
                route_type: 0,
-               direction_names: ["Westbound", "Eastbound"],
+               direction_names: ["West", "East"],
                stop_list: [{_, _, _, _} | _]
              },
              %Route{
                route_id: "Green-E",
                long_name: "Green Line E",
                route_type: 0,
-               direction_names: ["Westbound", "Eastbound"],
+               direction_names: ["West", "East"],
                stop_list: [{_, _, _, _} | _]
              },
              %Route{
@@ -61,28 +61,28 @@ defmodule AlertProcessor.ServiceInfoCacheTest do
                route_id: "Orange",
                long_name: "Orange Line",
                route_type: 1,
-               direction_names: ["Southbound", "Northbound"],
+               direction_names: ["South", "North"],
                stop_list: [{_, _, _, _} | _]
              },
              %Route{
                route_id: "Red",
                long_name: "Red Line",
                route_type: 1,
-               direction_names: ["Southbound", "Northbound"],
+               direction_names: ["South", "North"],
                stop_list: [{"Ashmont", "place-asmnl", _, _} | _]
              },
              %Route{
                route_id: "Red",
                long_name: "Red Line",
                route_type: 1,
-               direction_names: ["Southbound", "Northbound"],
+               direction_names: ["South", "North"],
                stop_list: [{"Braintree", "place-brntn", _, _} | _]
              },
              %Route{
                route_id: "Red",
                long_name: "Red Line",
                route_type: 1,
-               direction_names: ["Southbound", "Northbound"],
+               direction_names: ["South", "North"],
                stop_list: [{"JFK/UMass", "place-jfk", _, _} | _]
              }
            ] = Enum.sort_by(route_info, & &1.route_id)
@@ -96,35 +96,35 @@ defmodule AlertProcessor.ServiceInfoCacheTest do
                route_id: "Blue",
                long_name: "Blue Line",
                route_type: 1,
-               direction_names: ["Westbound", "Eastbound"],
+               direction_names: ["West", "East"],
                stop_list: [{_, _, _, _} | _]
              },
              %Route{
                route_id: "Green-B",
                long_name: "Green Line B",
                route_type: 0,
-               direction_names: ["Westbound", "Eastbound"],
+               direction_names: ["West", "East"],
                stop_list: [{_, _, _, _} | _]
              },
              %Route{
                route_id: "Green-C",
                long_name: "Green Line C",
                route_type: 0,
-               direction_names: ["Westbound", "Eastbound"],
+               direction_names: ["West", "East"],
                stop_list: [{_, _, _, _} | _]
              },
              %Route{
                route_id: "Green-D",
                long_name: "Green Line D",
                route_type: 0,
-               direction_names: ["Westbound", "Eastbound"],
+               direction_names: ["West", "East"],
                stop_list: [{_, _, _, _} | _]
              },
              %Route{
                route_id: "Green-E",
                long_name: "Green Line E",
                route_type: 0,
-               direction_names: ["Westbound", "Eastbound"],
+               direction_names: ["West", "East"],
                stop_list: [{_, _, _, _} | _]
              },
              %Route{
@@ -138,14 +138,14 @@ defmodule AlertProcessor.ServiceInfoCacheTest do
                route_id: "Orange",
                long_name: "Orange Line",
                route_type: 1,
-               direction_names: ["Southbound", "Northbound"],
+               direction_names: ["South", "North"],
                stop_list: [{_, _, _, _} | _]
              },
              %Route{
                route_id: "Red",
                long_name: "Red Line",
                route_type: 1,
-               direction_names: ["Southbound", "Northbound"],
+               direction_names: ["South", "North"],
                stop_list: [{"Braintree", "place-brntn", _, _} | _]
              }
            ] = Enum.sort_by(route_info, & &1.route_id)
@@ -239,13 +239,13 @@ defmodule AlertProcessor.ServiceInfoCacheTest do
   end
 
   test "get_direction_name :subway returns the correct direction name", %{pid: pid} do
-    assert {:ok, "Westbound"} == ServiceInfoCache.get_direction_name(pid, "Blue", 0)
-    assert {:ok, "Northbound"} == ServiceInfoCache.get_direction_name(pid, "Red", 1)
-    assert {:ok, "Southbound"} == ServiceInfoCache.get_direction_name(pid, "Orange", 0)
-    assert {:ok, "Eastbound"} == ServiceInfoCache.get_direction_name(pid, "Green-B", 1)
-    assert {:ok, "Westbound"} == ServiceInfoCache.get_direction_name(pid, "Green-C", 0)
-    assert {:ok, "Eastbound"} == ServiceInfoCache.get_direction_name(pid, "Green-D", 1)
-    assert {:ok, "Westbound"} == ServiceInfoCache.get_direction_name(pid, "Green-E", 0)
+    assert {:ok, "West"} == ServiceInfoCache.get_direction_name(pid, "Blue", 0)
+    assert {:ok, "North"} == ServiceInfoCache.get_direction_name(pid, "Red", 1)
+    assert {:ok, "South"} == ServiceInfoCache.get_direction_name(pid, "Orange", 0)
+    assert {:ok, "East"} == ServiceInfoCache.get_direction_name(pid, "Green-B", 1)
+    assert {:ok, "West"} == ServiceInfoCache.get_direction_name(pid, "Green-C", 0)
+    assert {:ok, "East"} == ServiceInfoCache.get_direction_name(pid, "Green-D", 1)
+    assert {:ok, "West"} == ServiceInfoCache.get_direction_name(pid, "Green-E", 0)
     assert :error == ServiceInfoCache.get_direction_name(pid, "garbage", 1)
   end
 
