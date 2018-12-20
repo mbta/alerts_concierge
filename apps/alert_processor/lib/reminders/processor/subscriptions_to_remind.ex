@@ -32,7 +32,7 @@ defmodule AlertProcessor.Reminders.Processor.SubscriptionsToRemind do
     Enum.reduce(notifications, [], fn notification, subscriptions_to_remind ->
       if reminder_due?(notification, alert, now) do
         notification.subscriptions
-        |> Enum.filter(&NotificationWindowFilter.within_notification_window?(&1, now))
+        |> Enum.filter(&NotificationWindowFilter.within_notification_window?(&1, alert, now))
         |> put_notification_type_to_send()
         |> Enum.concat(subscriptions_to_remind)
       else

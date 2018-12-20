@@ -14,27 +14,34 @@ defmodule AlertProcessor.NotificationWindowFilter do
 
   """
 
-  alias AlertProcessor.Model.Subscription
+  alias AlertProcessor.Model.{Alert, Subscription}
 
   @doc """
   Accepts a list of subscriptions and returns a filtered list of subscriptions
   that could be notified on a given day and time per their notification window.
 
   """
-  @spec filter([Subscription.t()], DateTime.t()) :: [Subscription.t()]
-  def filter(subscriptions, now) do
+  @spec filter([Subscription.t()], Alert.t(), DateTime.t()) :: [Subscription.t()]
+  def filter(subscriptions, alert, now) do
     Enum.filter(subscriptions, fn subscription ->
-      within_notification_window?(subscription, now)
+      within_notification_window?(subscription, alert, now)
     end)
   end
 
   @doc """
   Returns true if the given datetime is within the subscription's notification
-  window. Returns false if it's not.
+  window.
+
+  Returns true if the alert is high priority, regardless of the subscription's
+  notification window.
+
+  Returns false if it's not a high priority alert, nor within the window.
 
   """
-  @spec within_notification_window?(Subscription.t(), DateTime.t()) :: boolean
-  def within_notification_window?(subscription, now) do
+  @spec within_notification_window?(Subscription.t(), Alert.t(), DateTime.t()) :: boolean
+  def within_notification_window?(_subscription, %Alert{severity: :high_priority}, _now), do: true
+
+  def within_notification_window?(subscription, _alert, now) do
     start_time = subscription.start_time
     end_time = subscription.end_time
     multiday? = span_multiple_days?(start_time, end_time)

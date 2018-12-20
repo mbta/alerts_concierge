@@ -50,8 +50,8 @@ defmodule AlertProcessor.AlertParser do
         }"
       end)
 
-      if alert_filter_duration_type == :older do	
-        Reminders.async_schedule_reminders(alerts_needing_notifications)	
+      if alert_filter_duration_type == :older do
+        Reminders.async_schedule_reminders(alerts_needing_notifications)
       end
 
       SubscriptionFilterEngine.schedule_all_notifications(
@@ -332,7 +332,8 @@ defmodule AlertProcessor.AlertParser do
     end
   end
 
-  def parse_severity(sev) when sev >= 9, do: :extreme
+  def parse_severity(sev) when sev == 10, do: :high_priority
+  def parse_severity(sev) when sev == 9, do: :extreme
   def parse_severity(sev) when sev >= 7, do: :severe
   def parse_severity(sev) when sev >= 5, do: :moderate
   def parse_severity(sev) when is_integer(sev), do: :minor
