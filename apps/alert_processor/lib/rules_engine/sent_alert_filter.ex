@@ -18,19 +18,19 @@ defmodule AlertProcessor.SentAlertFilter do
     recent_outdated_notifications
     |> Enum.map(fn notification ->
       notification.subscriptions
-      |> notification_window_filter(now)
+      |> notification_window_filter(alert, now)
       |> put_notification_type_to_send(alert)
     end)
     |> List.flatten()
   end
 
-  defp notification_window_filter(subscriptions, now) do
+  defp notification_window_filter(subscriptions, alert, now) do
     Enum.filter(subscriptions, fn subscription ->
       # We extend the subscription's end time because we only want to send
       # notifications for updates that occur between the subscription's start
       # time and it's end time plus one hour.
       modified_subscription = extend_subscription_end_time(subscription)
-      NotificationWindowFilter.within_notification_window?(modified_subscription, now)
+      NotificationWindowFilter.within_notification_window?(modified_subscription, alert, now)
     end)
   end
 
