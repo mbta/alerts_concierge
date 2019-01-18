@@ -59,7 +59,8 @@ defmodule ConciergeSite.ScheduleTest do
                  {"River Works", "River Works / GE Employees Only", {42.449927, -70.969848}, 2},
                  {"Chelsea", "Chelsea", {42.395689, -71.034281}, 2},
                  {"North Station", "place-north", {42.365577, -71.06129}, 1}
-               ]
+               ],
+               direction_destinations: ["Newburyport or Rockport", "North Station"]
              },
              selected: false,
              trip_number: "101",
@@ -168,7 +169,8 @@ defmodule ConciergeSite.ScheduleTest do
                  {"Yawkey", "Yawkey", {42.347581, -71.099974}, 1},
                  {"Back Bay", "place-bbsta", {42.34735, -71.075727}, 1},
                  {"South Station", "place-sstat", {42.352271, -71.055242}, 1}
-               ]
+               ],
+               direction_destinations: ["Worcester", "South Station"]
              },
              selected: false,
              trip_number: "501",
@@ -217,7 +219,8 @@ defmodule ConciergeSite.ScheduleTest do
                  {"Yawkey", "Yawkey", {42.347581, -71.099974}, 1},
                  {"Back Bay", "place-bbsta", {42.34735, -71.075727}, 1},
                  {"South Station", "place-sstat", {42.352271, -71.055242}, 1}
-               ]
+               ],
+               direction_destinations: ["Worcester", "South Station"]
              },
              selected: false,
              trip_number: "500",

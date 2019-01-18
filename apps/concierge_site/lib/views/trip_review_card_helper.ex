@@ -112,7 +112,7 @@ defmodule ConciergeSite.TripReviewCardHelper do
          direction_id: direction_id
        }) do
     case {origin, destination, route, direction_id} do
-      {nil, nil, route_id, direction_id} -> headsign(route_id, direction_id)
+      {nil, nil, route_id, direction_id} -> direction_destination(route_id, direction_id)
       {origin_id, destination_id, _, _} -> origin_destination(origin_id, destination_id)
     end
   end
@@ -124,21 +124,21 @@ defmodule ConciergeSite.TripReviewCardHelper do
     end
   end
 
-  @spec headsign(String.t(), non_neg_integer) :: Phoenix.HTML.safe()
-  defp headsign(route_id, direction_id) do
+  @spec direction_destination(String.t(), non_neg_integer) :: Phoenix.HTML.safe()
+  defp direction_destination(route_id, direction_id) do
     content_tag :div, class: "trip-review--headsign" do
-      direction_headsign(route_id, direction_id)
+      do_direction_destination(route_id, direction_id)
     end
   end
 
-  @spec direction_headsign(String.t(), non_neg_integer) :: [String.t()]
-  defp direction_headsign(route_id, direction_id) do
-    headsign_default = if direction_id == 0, do: ["Outbound"], else: ["Inbound"]
-    {:ok, route} = ServiceInfoCache.get_route(route_id)
+  @spec do_direction_destination(String.t(), non_neg_integer) :: [String.t()]
+  defp do_direction_destination(route_id, direction_id) do
+    {:ok, %{direction_destinations: direction_destinations}} =
+      ServiceInfoCache.get_route(route_id)
 
-    route.headsigns
-    |> Map.get(direction_id, headsign_default)
-    |> Enum.intersperse(" ● ")
+    if direction_id == 0,
+      do: List.first(direction_destinations),
+      else: List.last(direction_destinations)
   end
 
   @spec includes_return_trip_subscriptions([Subscription.t()]) :: boolean

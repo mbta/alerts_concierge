@@ -38,12 +38,12 @@ end
             <label data-id="inbound" role="radio" aria-checked="true" class="btn btn-outline-primary btn__radio--toggle btn__radio--toggle-item active" tabindex="0">
               <div class="btn__radio__description-above font-italic">Inbound</div>
               <%= radio_button form, :direction, "1", tabindex: "-1", required: true, checked: true %>
-              <div><%= Enum.intersperse(Map.get(@headsigns, 1, ["Inbound"]), " ● ") %></div>
+              <div><%= List.last(@direction_names) %></div>
             </label>
             <label data-id="outbound" role="radio" aria-checked="false" class="btn btn-outline-primary btn__radio--toggle btn__radio--toggle-item" tabindex="0">
               <div class="btn__radio__description-above font-italic">Outbound</div>
               <%= radio_button form, :direction, "0", tabindex: "-1", required: true, checked: false %>
-              <div><%= Enum.intersperse(Map.get(@headsigns, 0, ["Outbound"]), " ● ") %></div>
+              <div><%= List.first(@direction_names) %></div>
             </label>
           </div>
           </div>

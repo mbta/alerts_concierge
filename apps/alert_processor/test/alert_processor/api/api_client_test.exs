@@ -11,6 +11,26 @@ defmodule AlertProcessor.ApiClientTest do
     end
   end
 
+  test "routes/2" do
+    {:ok, routes} = ApiClient.routes([2])
+
+    assert List.first(routes) == %{
+             "attributes" => %{
+               "direction_destinations" => ["Fairmount", "South Station"],
+               "direction_names" => ["Outbound", "Inbound"],
+               "long_name" => "Fairmount Line",
+               "short_name" => "",
+               "type" => 2
+             },
+             "id" => "CR-Fairmount",
+             "links" => %{"self" => "/routes/CR-Fairmount"},
+             "relationships" => %{
+               "line" => %{"data" => %{"id" => "line-Fairmount", "type" => "line"}}
+             },
+             "type" => "route"
+           }
+  end
+
   test "route_stops/1 returns inbound stops of a route" do
     expected_route_ids = [
       "Forge Park / 495",
