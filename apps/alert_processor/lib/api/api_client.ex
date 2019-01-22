@@ -42,7 +42,10 @@ defmodule AlertProcessor.ApiClient do
   enpoint to fetch route info including name, id and route_type
   """
   @spec routes([integer], [String.t()]) :: {:ok, [map]} | {:error, String.t()}
-  def routes(types \\ [], fields \\ ["long_name", "type", "direction_names", "short_name"]) do
+  def routes(
+        types \\ [],
+        fields \\ ["long_name", "type", "direction_names", "short_name", "direction_destinations"]
+      ) do
     # credo:disable-for-next-line Credo.Check.Readability.SpaceAfterCommas
     "/routes"
     |> api_get("filter[type]": Enum.join(types, ","), "fields[route]": Enum.join(fields, ","))

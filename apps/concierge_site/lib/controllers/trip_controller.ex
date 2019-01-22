@@ -172,7 +172,7 @@ defmodule ConciergeSite.TripController do
           legs: legs,
           origins: origins,
           destinations: destinations,
-          headsigns: get_headsigns(leg),
+          direction_names: get_direction_names(leg),
           round_trip: round_trip,
           route_name: route_name,
           mode: mode,
@@ -239,7 +239,7 @@ defmodule ConciergeSite.TripController do
           legs: [],
           origins: [],
           destinations: [],
-          headsigns: get_headsigns(leg),
+          direction_names: get_direction_names(leg),
           round_trip: round_trip,
           route_name: route_name,
           saved_mode: mode,
@@ -657,10 +657,10 @@ defmodule ConciergeSite.TripController do
     end)
   end
 
-  defp get_headsigns(route_id) do
-    with {:ok, %{headsigns: headsigns}} <-
+  defp get_direction_names(route_id) do
+    with {:ok, %{direction_destinations: direction_destinations}} <-
            ServiceInfoCache.get_route(String.replace_suffix(route_id, " - 1", "")) do
-      headsigns
+      direction_destinations
     end
   end
 

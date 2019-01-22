@@ -7,6 +7,7 @@ defmodule AlertProcessor.Model.Route do
 
   defstruct [
     :direction_names,
+    :direction_destinations,
     :headsigns,
     :long_name,
     :order,
@@ -33,6 +34,7 @@ defmodule AlertProcessor.Model.Route do
 
   @type t :: %__MODULE__{
           direction_names: [String.t()],
+          direction_destinations: [String.t()],
           headsigns: headsigns,
           long_name: String.t(),
           route_id: route_id,

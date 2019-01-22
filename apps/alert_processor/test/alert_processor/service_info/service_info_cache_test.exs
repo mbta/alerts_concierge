@@ -160,7 +160,8 @@ defmodule AlertProcessor.ServiceInfoCacheTest do
                  {"World Trade Center", "place-wtcst", {42.34863, -71.04246}, 1},
                  {"Courthouse", "place-crtst", {42.35245, -71.04685}, 1},
                  {"South Station", "place-sstat", {42.352271, -71.055242}, 1}
-               ]
+               ],
+               direction_destinations: ["Logan Airport", "South Station"]
              }
     end
 
@@ -195,7 +196,8 @@ defmodule AlertProcessor.ServiceInfoCacheTest do
                {"Uphams Corner", "Uphams Corner", {42.31867, -71.069072}, 1},
                {"Newmarket", "Newmarket", {42.326701, -71.066314}, 1},
                {"South Station", "place-sstat", {42.352271, -71.055242}, 1}
-             ]
+             ],
+             direction_destinations: ["Fairmount", "South Station"]
            }
   end
 
