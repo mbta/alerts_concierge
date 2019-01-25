@@ -24,7 +24,7 @@ defmodule ConciergeSite.Dissemination.MailerInterface do
       |> Mailer.deliver_later()
 
     Logger.info(fn ->
-      "Notification Email result: #{inspect(response)}, alert_id: #{notification.alert_id}, user_id: #{
+      "Notification Email result: alert_id: #{notification.alert_id}, user_id: #{
         notification.user.id
       }, notification_id: #{notification.id}"
     end)
