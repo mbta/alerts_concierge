@@ -17,16 +17,16 @@ defmodule AlertProcessor.ApiClientTest do
 
       assert List.first(routes) == %{
                "attributes" => %{
-                 "direction_destinations" => ["Ashmont/Braintree", "Alewife"],
-                 "direction_names" => ["South", "North"],
-                 "long_name" => "Red Line",
+                 "direction_destinations" => ["Fairmount", "South Station"],
+                 "direction_names" => ["Outbound", "Inbound"],
+                 "long_name" => "Fairmount Line",
                  "short_name" => "",
-                 "type" => 1
+                 "type" => 2
                },
-               "id" => "Red",
-               "links" => %{"self" => "/routes/Red"},
+               "id" => "CR-Fairmount",
+               "links" => %{"self" => "/routes/CR-Fairmount"},
                "relationships" => %{
-                 "line" => %{"data" => %{"id" => "line-Red", "type" => "line"}}
+                 "line" => %{"data" => %{"id" => "line-Fairmount", "type" => "line"}}
                },
                "type" => "route"
              }
