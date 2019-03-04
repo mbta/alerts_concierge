@@ -190,6 +190,7 @@ defmodule AlertProcessor.ServiceInfoCacheTest do
              stop_list: [
                {"Readville", "Readville", {42.238405, -71.133246}, 1},
                {"Fairmount", "Fairmount", {42.253638, -71.11927}, 1},
+               {"Blue Hill Avenue", "Blue Hill Avenue", {42.271412, -71.096419}, 1},
                {"Morton Street", "Morton Street", {42.280994, -71.085475}, 1},
                {"Talbot Avenue", "Talbot Avenue", {42.292246, -71.07814}, 1},
                {"Four Corners/Geneva", "Four Corners / Geneva", {42.305037, -71.076833}, 1},
