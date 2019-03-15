@@ -1,4 +1,4 @@
-defmodule ConciergeSite.FeedbackControllerTest do
+defmodule ConciergeSite.DigestFeedbackControllerTest do
   @moduledoc false
   use ConciergeSite.ConnCase, async: true
 
