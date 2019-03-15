@@ -27,7 +27,7 @@ const handlefeedbackFormSubmit = feedbackFormEl => e => {
     {
       method: "post",
       body: JSON.stringify(data),
-      uri: "/api/feedback",
+      uri: feedbackFormEl.getAttribute("data-uri"),
       headers: {
         "Content-Type": "application/json",
         "x-csrf-token": data.token

@@ -83,6 +83,8 @@ defmodule ConciergeSite.Router do
     get("/deleted", PageController, :account_deleted)
     get("/feedback", FeedbackController, :feedback)
     post("/api/feedback", FeedbackController, :new)
+    get("/digest/feedback", DigestFeedbackController, :feedback)
+    post("/api/digest/feedback", DigestFeedbackController, :new)
     resources("/login", SessionController, only: [:new, :create, :delete], singleton: true)
     resources("/account", AccountController, only: [:new, :create])
     resources("/password_resets", PasswordResetController, only: [:new, :create, :edit, :update])

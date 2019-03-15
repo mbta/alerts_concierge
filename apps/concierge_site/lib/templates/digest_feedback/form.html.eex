@@ -1,0 +1,24 @@
+<h1 class="heading__title">Feedback form</h1>
+
+<form id="feedback-form" data-uri="/api/digest/feedback">
+
+  <input type="hidden" name="token" value="<%= get_csrf_token() %>">
+
+  <div class="form-group contrast">
+    <label class="form__label d-block">
+      Why don’t you find this email helpful?
+    </label>
+    <textarea id="feedback-why" class="form-control" name="why"></textarea>
+  </div>
+
+  <div class="form-group contrast">
+    <label class="form__label d-block">
+      What information would you like to have seen in this email?
+    </label>
+    <textarea id="feedback-what" class="form-control" name="what"></textarea>
+  </div>
+
+  <div class="form-group contrast">
+    <input class="btn btn-primary btn-block" type="submit" value="Submit feedback" />
+  </div>
+</form>
