@@ -119,7 +119,7 @@ defmodule ConciergeSite.Feedback do
   end
 
   @spec clean_string_for_splunk(String.t()) :: String.t()
-  defp clean_string_for_splunk(string) do
+  def clean_string_for_splunk(string) do
     string
     |> String.replace("\"", "'")
     |> String.replace("\r\n", " ")
