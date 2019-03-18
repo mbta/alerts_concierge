@@ -1,6 +1,6 @@
 <h1 class="heading__title">Feedback form</h1>
 
-<form id="feedback-form" data-uri="/api/digest/feedback">
+<form id="feedback-form" data-uri="<%= digest_feedback_path(@conn, :new) %>">
 
   <input type="hidden" name="token" value="<%= get_csrf_token() %>">
 

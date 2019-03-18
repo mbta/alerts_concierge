@@ -1,6 +1,6 @@
 <h1 class="heading__title">Alert feedback form</h1>
 
-<form id="feedback-form" data-uri="/api/feedback">
+<form id="feedback-form" data-uri="<%= feedback_path(@conn, :new) %>">
 
   <input type="hidden" name="user_id" value="<%= @user_id %>" />
   <input type="hidden" name="alert_id" value="<%= @alert_id %>" />
