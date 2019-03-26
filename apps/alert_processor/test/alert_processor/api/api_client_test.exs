@@ -26,7 +26,8 @@ defmodule AlertProcessor.ApiClientTest do
                "id" => "Red",
                "links" => %{"self" => "/routes/Red"},
                "relationships" => %{
-                 "line" => %{"data" => %{"id" => "line-Red", "type" => "line"}}
+                 "line" => %{"data" => %{"id" => "line-Red", "type" => "line"}},
+                 "route_patterns" => %{}
                },
                "type" => "route"
              }
@@ -46,7 +47,8 @@ defmodule AlertProcessor.ApiClientTest do
                "id" => "CR-Fairmount",
                "links" => %{"self" => "/routes/CR-Fairmount"},
                "relationships" => %{
-                 "line" => %{"data" => %{"id" => "line-Fairmount", "type" => "line"}}
+                 "line" => %{"data" => %{"id" => "line-Fairmount", "type" => "line"}},
+                 "route_patterns" => %{}
                },
                "type" => "route"
              }
