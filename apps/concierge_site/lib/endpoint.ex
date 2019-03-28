@@ -16,7 +16,7 @@ defmodule ConciergeSite.Endpoint do
     at: "/",
     from: :concierge_site,
     gzip: true,
-    only: ~w(css fonts images js robots.txt),
+    only: ~w(css fonts images js robots.txt analytics.txt),
     only_matching: ~w(favicon)
   )
 
