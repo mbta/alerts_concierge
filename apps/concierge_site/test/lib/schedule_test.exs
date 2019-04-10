@@ -166,7 +166,7 @@ defmodule ConciergeSite.ScheduleTest do
                  {"West Newton", "West Newton", {42.347878, -71.230528}, 2},
                  {"Newtonville", "Newtonville", {42.351603, -71.207338}, 2},
                  {"Boston Landing", "Boston Landing", {42.357293, -71.139883}, 1},
-                 {"Yawkey", "Yawkey", {42.347581, -71.099974}, 1},
+                 {"Lansdowne", "Yawkey", {42.347581, -71.099974}, 1},
                  {"Back Bay", "place-bbsta", {42.34735, -71.075727}, 1},
                  {"South Station", "place-sstat", {42.352271, -71.055242}, 1}
                ],
@@ -216,7 +216,7 @@ defmodule ConciergeSite.ScheduleTest do
                  {"West Newton", "West Newton", {42.347878, -71.230528}, 2},
                  {"Newtonville", "Newtonville", {42.351603, -71.207338}, 2},
                  {"Boston Landing", "Boston Landing", {42.357293, -71.139883}, 1},
-                 {"Yawkey", "Yawkey", {42.347581, -71.099974}, 1},
+                 {"Lansdowne", "Yawkey", {42.347581, -71.099974}, 1},
                  {"Back Bay", "place-bbsta", {42.34735, -71.075727}, 1},
                  {"South Station", "place-sstat", {42.352271, -71.055242}, 1}
                ],
