@@ -31,7 +31,7 @@ defmodule ConciergeSite.RejectedEmailController do
           :ok
 
         user ->
-          Logger.info(fn -> "Rejected Email: #{inspect(user)} #{inspect(user_data)}" end)
+          Logger.info(fn -> "Rejected Email: #{user.id}" end)
       end
     end)
   end
