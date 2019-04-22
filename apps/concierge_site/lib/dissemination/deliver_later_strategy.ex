@@ -20,11 +20,17 @@ defmodule ConciergeSite.Dissemination.DeliverLaterStrategy do
         # Consciously dropping the email on the floor if we get an SMTP error.
         # Once we learn more about why we are getting these occasionally we might want to take better action.
         e in SMTPError ->
-          Logger.error(fn -> "SMTP error sending to #{email_address(email.to)}: #{e.message}" end)
+          Logger.error(fn ->
+            "SMTP error sending for notification_id #{email.private[:notification_id]}: #{
+              e.message
+            }"
+          end)
 
         e ->
           Logger.error(fn ->
-            "Unknown error sending to #{email_address(email.to)}: #{inspect(e)}"
+            "Unknown error sending to notification_id #{email.private[:notification_id]}: #{
+              inspect(e)
+            }"
           end)
       end
     end)

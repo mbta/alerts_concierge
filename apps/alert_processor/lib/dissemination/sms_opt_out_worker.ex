@@ -94,7 +94,6 @@ defmodule AlertProcessor.SmsOptOutWorker do
         :error
 
       new_opted_out_numbers ->
-        Logger.info("New opted out numbers: #{inspect(new_opted_out_numbers)}")
         {:ok, new_opted_out_numbers}
     end
   end
