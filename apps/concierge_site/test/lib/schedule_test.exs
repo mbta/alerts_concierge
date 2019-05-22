@@ -67,7 +67,7 @@ defmodule ConciergeSite.ScheduleTest do
              weekend?: false
            }
 
-    assert Enum.find_index(result[{"cr", "CR-Newburyport"}], & &1.weekend?) == 2
+    assert Enum.find_index(result[{"cr", "CR-Newburyport"}], & &1.weekend?) == 3
   end
 
   test "get_schedules_for_trip/2" do
