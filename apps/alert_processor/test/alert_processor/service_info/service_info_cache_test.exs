@@ -340,7 +340,7 @@ defmodule AlertProcessor.ServiceInfoCacheTest do
   end
 
   test "get_trip_name", %{pid: pid} do
-    assert {:ok, "822"} = ServiceInfoCache.get_trip_name(pid, "CR-Weekday-Fall-18-822")
+    assert {:ok, "822"} = ServiceInfoCache.get_trip_name(pid, "CR-Weekday-Spring-19-822")
   end
 
   test "get_facility_map", %{pid: pid} do
