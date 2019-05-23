@@ -1202,7 +1202,7 @@ defmodule AlertProcessor.Integration.MatchingTest do
             # it but this trip leaves from Fairmount at 4:40PM. Since 4:40PM is
             # after the subscription's start time of 4:30PM, we should trigger a
             # notification.
-            "trip_id" => "CR-Weekday-Fall2-18-774",
+            "trip_id" => "CR-Weekday-Spring-19-774",
             "direction_id" => 0
           }
         }
@@ -1311,7 +1311,7 @@ defmodule AlertProcessor.Integration.MatchingTest do
             # it but this trip leaves from Fairmount at 4:40PM. Since 4:40PM is
             # after the subscription's start time of 4:30PM, we should trigger a
             # notification.
-            "trip_id" => "CR-Weekday-Fall2-18-773",
+            "trip_id" => "CR-Weekday-Spring-19-773",
             "direction_id" => 0
           }
         }
