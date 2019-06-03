@@ -26,8 +26,8 @@ defmodule ConciergeSite.TripControllerTest do
       insert(:subscription, %{
         trip_id: trip.id,
         type: :cr,
-        origin: "Readville",
-        destination: "Newmarket",
+        origin: "place-DB-0095",
+        destination: "place-DB-2265",
         route: "CR-Fairmount"
       })
 
@@ -103,8 +103,8 @@ defmodule ConciergeSite.TripControllerTest do
       insert(:subscription, %{
         trip_id: trip.id,
         type: :cr,
-        origin: "Readville",
-        destination: "Newmarket",
+        origin: "place-DB-0095",
+        destination: "place-DB-2265",
         route: "CR-Fairmount"
       })
 
@@ -601,9 +601,9 @@ defmodule ConciergeSite.TripControllerTest do
 
     test "cr", %{conn: conn, user: user} do
       trip = %{
-        destinations: ["Newmarket"],
+        destinations: ["place-DB-2265"],
         legs: ["CR-Fairmount"],
-        origins: ["Readville"],
+        origins: ["place-DB-0095"],
         round_trip: "true",
         modes: ["cr"],
         schedule_return: %{"CR-Fairmount" => ["17:45:00"]},
@@ -618,8 +618,8 @@ defmodule ConciergeSite.TripControllerTest do
 
       assert html_response(conn, 200) =~ "true"
       assert html_response(conn, 200) =~ "CR-Fairmount"
-      assert html_response(conn, 200) =~ "Newmarket"
-      assert html_response(conn, 200) =~ "Readville"
+      assert html_response(conn, 200) =~ "place-DB-2265"
+      assert html_response(conn, 200) =~ "place-DB-0095"
     end
 
     test "bus", %{conn: conn, user: user} do
@@ -648,8 +648,8 @@ defmodule ConciergeSite.TripControllerTest do
       insert(:subscription, %{
         trip_id: trip.id,
         type: :cr,
-        origin: "Readville",
-        destination: "Newmarket",
+        origin: "place-DB-0095",
+        destination: "place-DB-2265",
         route: "CR-Fairmount",
         user_id: user.id
       })
@@ -679,8 +679,8 @@ defmodule ConciergeSite.TripControllerTest do
     insert(:subscription, %{
       trip_id: trip.id,
       type: :cr,
-      origin: "Readville",
-      destination: "Newmarket",
+      origin: "place-DB-0095",
+      destination: "place-DB-2265",
       route: "CR-Fairmount",
       user_id: user.id,
       paused: false
@@ -700,8 +700,8 @@ defmodule ConciergeSite.TripControllerTest do
     insert(:subscription, %{
       trip_id: trip.id,
       type: :cr,
-      origin: "Readville",
-      destination: "Newmarket",
+      origin: "place-DB-0095",
+      destination: "place-DB-2265",
       route: "CR-Fairmount",
       user_id: user.id,
       paused: true

@@ -63,8 +63,8 @@ defmodule ConciergeSite.CreateSubscriptionTest do
     insert(:subscription, %{
       trip_id: trip.id,
       type: :cr,
-      origin: "Readville",
-      destination: "Newmarket",
+      origin: "place-DB-0095",
+      destination: "place-DB-2265",
       route: "CR-Fairmount"
     })
 

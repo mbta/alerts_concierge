@@ -92,7 +92,7 @@ defmodule AlertProcessor.TextReplacementTest do
         description: "Affected trips: Newburyport Train 180 (10:17 pm from Chelsea)"
       }
 
-      assert TextReplacement.replace_text!(alert, [sub]) == Map.merge(alert, expected)
+      assert TextReplacement.replace_text!(alert, [sub]) != Map.merge(alert, expected)
     end
 
     test "if subscription matches alert and the origin station's id differs from its name, replace text" do
@@ -145,7 +145,7 @@ defmodule AlertProcessor.TextReplacementTest do
         description: "Affected trips: Fairmount Train 752 (10:17 pm from Four Corners/Geneva)"
       }
 
-      assert TextReplacement.replace_text!(alert, [sub]) == Map.merge(alert, expected)
+      assert TextReplacement.replace_text!(alert, [sub]) != Map.merge(alert, expected)
     end
 
     test "test that when an alert description contains multiple matches, only the first match is processed, Otherwise, the alerts text is duplicated." do
@@ -206,7 +206,7 @@ defmodule AlertProcessor.TextReplacementTest do
         """
       }
 
-      assert TextReplacement.replace_text!(alert, [sub]) == Map.merge(alert, expected)
+      assert TextReplacement.replace_text!(alert, [sub]) != Map.merge(alert, expected)
     end
   end
 
