@@ -75,7 +75,9 @@ defmodule ConciergeSite.Mixfile do
       {:diskusage_logger, "~> 0.2.0", only: :prod},
       {:hackney, "~> 1.15.1", override: true},
       {:httpoison, "~> 1.1.1", override: true},
-      {:poison, "~> 2.0", override: true}
+      {:poison, "~> 2.0", override: true},
+      {:hammer, "~> 6.0"},
+      {:hammer_plug, "~> 2.0"}
     ]
   end
 
