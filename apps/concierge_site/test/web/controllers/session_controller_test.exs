@@ -3,6 +3,7 @@ defmodule ConciergeSite.SessionControllerTest do
   use ConciergeSite.ConnCase, async: true
   import AlertProcessor.Factory
   alias AlertProcessor.{Model.User, Model.Trip, Repo}
+  alias Hammer
 
   @password "password1"
   @encrypted_password Comeonin.Bcrypt.hashpwsalt(@password)
@@ -57,6 +58,23 @@ defmodule ConciergeSite.SessionControllerTest do
     params = %{"user" => %{"email" => user.email, "password" => "11111111111"}}
     conn = post(conn, session_path(conn, :create), params)
     assert html_response(conn, 200) =~ "information was incorrect"
+  end
+
+  test "POST /login rate-limited", %{conn: conn} do
+    params = %{"user" => %{"email" => "test2@email.com", "password" => "11111111111"}}
+
+    login_attempts =
+      for _ <- 1..11 do
+        post(conn, session_path(conn, :create), params)
+      end
+
+    # reset rate-limit
+    Hammer.delete_buckets("session:create:127.0.0.1")
+    first_attempt = List.first(login_attempts)
+    last_attempt = List.last(login_attempts)
+
+    assert first_attempt.status == 200
+    assert last_attempt.status == 429
   end
 
   test "DELETE /login", %{conn: conn} do
