@@ -27,6 +27,25 @@ defmodule AlertProcessor.InformedEntityFilter do
 
   @doc false
   @spec subscription_match?(Subscription.t(), InformedEntity.t()) :: boolean
+  def subscription_match?(
+        %Subscription{
+          destination: nil,
+          direction_id: nil,
+          origin: nil,
+          route: nil,
+          route_type: route_type,
+          travel_end_time: nil,
+          travel_start_time: nil,
+          type: nil
+        },
+        %InformedEntity{route_type: route_type}
+      )
+      when route_type != nil do
+    # Internal users can subscribe to receive all alerts for a route_type.
+    # This functionality is not available through the UI for regular users.
+    true
+  end
+
   def subscription_match?(subscription, informed_entity) do
     with true <- trip_match?(subscription, informed_entity),
          true <- route_type_match?(subscription, informed_entity),

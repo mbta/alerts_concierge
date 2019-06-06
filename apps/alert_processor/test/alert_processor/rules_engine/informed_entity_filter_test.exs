@@ -1376,5 +1376,21 @@ defmodule AlertProcessor.InformedEntityFilterTest do
       informed_entity = build(:informed_entity, informed_entity_details)
       assert InformedEntityFilter.subscription_match?(subscription, informed_entity)
     end
+
+    test "returns true for all-route-type subscription match" do
+      subscription = build(:subscription, route_type: 2)
+
+      informed_entity =
+        build(
+          :informed_entity,
+          route_type: 2,
+          direction_id: nil,
+          route: "CR-Fitchburg",
+          stop: "place-portr",
+          activities: ["BOARD"]
+        )
+
+      assert InformedEntityFilter.subscription_match?(subscription, informed_entity)
+    end
   end
 end
