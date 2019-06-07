@@ -58,7 +58,8 @@ defmodule AlertProcessor.Model.Subscription do
           facility_types: [facility_type] | [],
           paused: boolean | nil,
           parent_id: String.t() | nil,
-          child_subscriptions: [t()] | nil
+          child_subscriptions: [t()] | nil,
+          admin?: boolean
         }
 
   @relevant_day_of_week_types %{
@@ -104,6 +105,7 @@ defmodule AlertProcessor.Model.Subscription do
     field(:paused, :boolean)
     field(:parent_id, :binary_id)
     field(:child_subscriptions, {:array, Subscription}, virtual: true, default: [])
+    field(:admin?, :boolean)
 
     timestamps()
   end
