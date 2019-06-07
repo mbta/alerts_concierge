@@ -29,14 +29,8 @@ defmodule AlertProcessor.InformedEntityFilter do
   @spec subscription_match?(Subscription.t(), InformedEntity.t()) :: boolean
   def subscription_match?(
         %Subscription{
-          destination: nil,
-          direction_id: nil,
-          origin: nil,
-          route: nil,
-          route_type: route_type,
-          travel_end_time: nil,
-          travel_start_time: nil,
-          type: nil
+          admin?: true,
+          route_type: route_type
         },
         %InformedEntity{route_type: route_type}
       )

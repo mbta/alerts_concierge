@@ -924,7 +924,8 @@ defmodule AlertProcessor.Integration.MatchingTest do
       subscription =
         insert(
           :subscription,
-          route_type: 2
+          route_type: 2,
+          admin?: true
         )
 
       informed_entity = %InformedEntity{
@@ -936,11 +937,6 @@ defmodule AlertProcessor.Integration.MatchingTest do
 
       alert = alert([informed_entity])
       now = Calendar.DateTime.now!("America/New_York")
-
-      assert AlertProcessor.InformedEntityFilter.subscription_match_any?(
-               subscription,
-               [informed_entity]
-             )
 
       notified =
         alert

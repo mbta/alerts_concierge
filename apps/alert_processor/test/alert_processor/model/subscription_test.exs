@@ -565,6 +565,23 @@ defmodule AlertProcessor.Model.SubscriptionTest do
       assert [%Subscription{paused: false}] = Subscription.all_active_for_alert(alert)
     end
 
+    test "selects admin users" do
+      user = insert(:user)
+      # Active subscription
+      regular = insert(:subscription, user: user, route_type: 0, route: "Red")
+      # Paused subscription
+      admin = insert(:subscription, user: user, admin?: true)
+
+      alert = @route_type_and_red_line_alert
+
+      selected_ids =
+        alert
+        |> Subscription.all_active_for_alert()
+        |> Enum.map(& &1.id)
+
+      assert selected_ids == [regular.id, admin.id]
+    end
+
     test "preloads the user" do
       user = insert(:user)
       insert(:subscription, user: user)

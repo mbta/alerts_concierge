@@ -1377,8 +1377,8 @@ defmodule AlertProcessor.InformedEntityFilterTest do
       assert InformedEntityFilter.subscription_match?(subscription, informed_entity)
     end
 
-    test "returns true for all-route-type subscription match" do
-      subscription = build(:subscription, route_type: 2)
+    test "returns true for admin subscription match" do
+      subscription = build(:subscription, route_type: 2, admin?: true)
 
       informed_entity =
         build(

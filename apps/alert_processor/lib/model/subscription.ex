@@ -472,7 +472,7 @@ defmodule AlertProcessor.Model.Subscription do
     from(
       s in __MODULE__,
       where:
-        s.route_type in ^route_ids or s.route in ^routes or s.origin in ^stops or
+        s.admin? == true or s.route_type in ^route_ids or s.route in ^routes or s.origin in ^stops or
           s.destination in ^stops
     )
   end

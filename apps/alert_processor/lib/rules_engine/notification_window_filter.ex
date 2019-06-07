@@ -39,6 +39,8 @@ defmodule AlertProcessor.NotificationWindowFilter do
 
   """
   @spec within_notification_window?(Subscription.t(), Alert.t(), DateTime.t()) :: boolean
+  def within_notification_window?(%Subscription{admin?: true}), do: true
+
   def within_notification_window?(_subscription, %Alert{severity: :high_priority}, _now), do: true
 
   def within_notification_window?(subscription, _alert, now) do
