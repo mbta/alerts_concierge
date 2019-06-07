@@ -1,9 +1,11 @@
 defmodule ConciergeSite.AccountController do
   use ConciergeSite.Web, :controller
   use Guardian.Phoenix.Controller
+  alias AlertProcessor.Helpers.ConfigHelper
   alias AlertProcessor.Model.User
   alias ConciergeSite.ConfirmationMessage
   alias ConciergeSite.SignInHelper
+  alias ConciergeSite.Mailchimp
 
   def new(conn, _params, _user, _claims) do
     account_changeset = User.create_account_changeset(%User{}, %{"sms_toggle" => false})
@@ -34,6 +36,8 @@ defmodule ConciergeSite.AccountController do
   def update(conn, %{"user" => params}, user, {:ok, claims}) do
     case User.update_account(user, params, Map.get(claims, "imp", user.id)) do
       {:ok, updated_user} ->
+        Mailchimp.send_member_status_update(updated_user)
+
         if user.phone_number == nil and updated_user.phone_number != nil do
           ConfirmationMessage.send_sms_confirmation(
             updated_user.phone_number,
@@ -94,6 +98,7 @@ defmodule ConciergeSite.AccountController do
   def options_create(conn, %{"user" => params}, user, {:ok, claims}) do
     case User.update_account(user, params, Map.get(claims, "imp", user.id)) do
       {:ok, updated_user} ->
+        Mailchimp.add_member(user)
         ConfirmationMessage.send_sms_confirmation(updated_user.phone_number, params["sms_toggle"])
 
         conn
@@ -129,5 +134,29 @@ defmodule ConciergeSite.AccountController do
     |> Enum.map(&to_string/1)
     |> Enum.map(&String.pad_leading(&1, 2, "0"))
     |> Enum.join("/")
+  end
+
+  def mailchimp_unsubscribe(
+        conn,
+        %{"type" => "unsubscribe", "data[email]" => email, "secret" => secret},
+        _user,
+        _claims
+      ) do
+    api_key = ConfigHelper.get_string(:mailchimp_api_url, :concierge_site)
+    expected_secret = :crypto.hash(:md5, api_key) |> Base.encode16()
+
+    {affected, message} =
+      if secret == expected_secret do
+        {Mailchimp.unsubscribe_by_email(email), "updated"}
+      else
+        {0, "skipped"}
+      end
+
+    conn
+    |> json(%{status: "ok", message: message, affected: affected})
+  end
+
+  def mailchimp_unsubscribe(conn, _params, _user, _claims) do
+    json(conn, %{status: "ok", message: "invalid request"})
   end
 end

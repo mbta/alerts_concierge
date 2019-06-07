@@ -136,6 +136,12 @@ defmodule ConciergeSite.Router do
     delete("/account/:user_id", ApiAccountController, :delete)
   end
 
+  scope "/mailchimp", ConciergeSite do
+    # mailchimp needs get and post, even though post is actually used to send data
+    get("/update", AccountController, :mailchimp_unsubscribe)
+    post("/update", AccountController, :mailchimp_unsubscribe)
+  end
+
   if Mix.env() == :dev do
     forward("/sent_emails", Bamboo.EmailPreviewPlug)
   end

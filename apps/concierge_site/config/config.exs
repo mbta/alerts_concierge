@@ -78,6 +78,11 @@ config :concierge_site, ConciergeSite.ViewHelpers,
 config :hammer,
   backend: {Hammer.Backend.ETS, [expiry_ms: 60_000 * 60 * 4, cleanup_interval_ms: 60_000 * 10]}
 
+# Mailchimp
+config :concierge_site, mailchimp_api_url: {:system, "MAILCHIMP_API_URL", nil}
+config :concierge_site, mailchimp_api_key: {:system, "MAILCHIMP_API_KEY", nil}
+config :concierge_site, mailchimp_list_id: {:system, "MAILCHIMP_LIST_ID", nil}
+
 # Import environment specific config. This must remain at the bottom
 # of this file so it overrides the configuration defined above.
 import_config "#{Mix.env()}.exs"

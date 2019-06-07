@@ -2,6 +2,7 @@ defmodule ConciergeSite.AccountControllerTest do
   @moduledoc false
   use ConciergeSite.ConnCase, async: true
   import AlertProcessor.Factory
+  alias AlertProcessor.Helpers.ConfigHelper
   alias AlertProcessor.{Model.User, Repo}
 
   test "new/4", %{conn: conn} do
@@ -248,6 +249,59 @@ defmodule ConciergeSite.AccountControllerTest do
         |> delete(account_path(conn, :delete))
 
       assert html_response(conn, 302) =~ "/deleted"
+    end
+  end
+
+  describe "mailchimp unsubscribe webhook" do
+    @secret :crypto.hash(:md5, ConfigHelper.get_string(:mailchimp_api_url, :concierge_site))
+            |> Base.encode16()
+
+    test "GET /mailchimp/update", %{conn: conn} do
+      conn = get(conn, account_path(conn, :mailchimp_unsubscribe))
+      expected = %{"message" => "invalid request", "status" => "ok"}
+
+      assert json_response(conn, 200) == expected
+    end
+
+    test "POST /mailchimp/update without required params", %{conn: conn} do
+      conn = post(conn, account_path(conn, :mailchimp_unsubscribe), %{})
+      expected = %{"message" => "invalid request", "status" => "ok"}
+
+      assert json_response(conn, 200) == expected
+    end
+
+    test "POST /mailchimp/update with wrong secret", %{conn: conn} do
+      post_body = %{"type" => "unsubscribe", "data[email]" => "test@test.com", "secret" => "x"}
+      conn = post(conn, account_path(conn, :mailchimp_unsubscribe), post_body)
+      expected = %{"status" => "ok", "message" => "skipped", "affected" => 0}
+
+      assert json_response(conn, 200) == expected
+    end
+
+    test "POST /mailchimp/update with correct secret, unknown user", %{conn: conn} do
+      post_body = %{
+        "type" => "unsubscribe",
+        "data[email]" => "test@test.com",
+        "secret" => @secret
+      }
+
+      conn = post(conn, account_path(conn, :mailchimp_unsubscribe), post_body)
+      expected = %{"status" => "ok", "message" => "updated", "affected" => 0}
+
+      assert json_response(conn, 200) == expected
+    end
+
+    test "POST /mailchimp/update with correct secret, correct user", %{conn: conn} do
+      email = "unsubscribe@email.com"
+      insert(:user, email: email, digest_opt_in: true)
+
+      post_body = %{"type" => "unsubscribe", "data[email]" => email, "secret" => @secret}
+      conn = post(conn, account_path(conn, :mailchimp_unsubscribe), post_body)
+      user = User.for_email(email)
+      expected = %{"status" => "ok", "message" => "updated", "affected" => 1}
+
+      assert json_response(conn, 200) == expected
+      assert user.digest_opt_in == false
     end
   end
 end
