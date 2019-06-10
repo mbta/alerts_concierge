@@ -29,7 +29,7 @@ defmodule AlertProcessor.InformedEntityFilter do
   @spec subscription_match?(Subscription.t(), InformedEntity.t()) :: boolean
   def subscription_match?(
         %Subscription{
-          admin?: true,
+          is_admin: true,
           route_type: route_type
         },
         %InformedEntity{route_type: route_type}

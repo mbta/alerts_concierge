@@ -570,7 +570,7 @@ defmodule AlertProcessor.Model.SubscriptionTest do
       # Active subscription
       regular = insert(:subscription, user: user, route_type: 0, route: "Red")
       # Paused subscription
-      admin = insert(:subscription, user: user, admin?: true)
+      admin = insert(:subscription, user: user, is_admin: true)
 
       alert = @route_type_and_red_line_alert
 

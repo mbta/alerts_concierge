@@ -925,7 +925,7 @@ defmodule AlertProcessor.Integration.MatchingTest do
         insert(
           :subscription,
           route_type: 2,
-          admin?: true
+          is_admin: true
         )
 
       informed_entity = %InformedEntity{

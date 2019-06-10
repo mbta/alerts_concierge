@@ -59,7 +59,7 @@ defmodule AlertProcessor.Model.Subscription do
           paused: boolean | nil,
           parent_id: String.t() | nil,
           child_subscriptions: [t()] | nil,
-          admin?: boolean
+          is_admin: boolean
         }
 
   @relevant_day_of_week_types %{
@@ -105,7 +105,7 @@ defmodule AlertProcessor.Model.Subscription do
     field(:paused, :boolean)
     field(:parent_id, :binary_id)
     field(:child_subscriptions, {:array, Subscription}, virtual: true, default: [])
-    field(:admin?, :boolean)
+    field(:is_admin, :boolean)
 
     timestamps()
   end
@@ -472,8 +472,8 @@ defmodule AlertProcessor.Model.Subscription do
     from(
       s in __MODULE__,
       where:
-        s.admin? == true or s.route_type in ^route_ids or s.route in ^routes or s.origin in ^stops or
-          s.destination in ^stops
+        s.is_admin == true or s.route_type in ^route_ids or s.route in ^routes or
+          s.origin in ^stops or s.destination in ^stops
     )
   end
 
