@@ -203,11 +203,11 @@ defmodule AlertProcessor.ActivePeriodFilterTest do
 
   describe "active period without end date" do
     test "it matches weekday subscription", %{alert7: alert7} do
-      weekday_subscription = :subscription |> build() |> weekday_subscription |> insert
-      saturday_subscription = :subscription |> build() |> saturday_subscription |> insert
-      sunday_subscription = :subscription |> build() |> sunday_subscription |> insert
+      weekday_subscription = :subscription |> build() |> weekday_subscription() |> insert()
+      saturday_subscription = :subscription |> build() |> saturday_subscription() |> insert()
+      sunday_subscription = :subscription |> build() |> sunday_subscription() |> insert()
 
-      assert [weekday_subscription, saturday_subscription, sunday_subscription] ==
+      assert [sunday_subscription, saturday_subscription, weekday_subscription] ==
                ActivePeriodFilter.filter(
                  [weekday_subscription, saturday_subscription, sunday_subscription],
                  alert: alert7

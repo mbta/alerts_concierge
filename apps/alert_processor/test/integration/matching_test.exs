@@ -919,6 +919,34 @@ defmodule AlertProcessor.Integration.MatchingTest do
     end
   end
 
+  describe "admin subscription" do
+    test "subscribe to all alerts for a mode" do
+      subscription =
+        insert(
+          :subscription,
+          route_type: 2,
+          is_admin: true
+        )
+
+      informed_entity = %InformedEntity{
+        activities: ["BOARD"],
+        direction_id: 1,
+        route: "CR-Fitchburg",
+        route_type: 2
+      }
+
+      alert = alert([informed_entity])
+      now = Calendar.DateTime.now!("America/New_York")
+
+      notified =
+        alert
+        |> SubscriptionFilterEngine.determine_recipients(now)
+        |> Enum.map(& &1.id)
+
+      assert notified == [subscription.id]
+    end
+  end
+
   describe "sent notification" do
     setup do
       user = insert(:user)

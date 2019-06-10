@@ -21,10 +21,16 @@ defmodule AlertProcessor.ActivePeriodFilter do
   defp do_filter(subscriptions, alert) do
     active_period_timeframe_maps = Alert.timeframe_maps(alert)
 
-    for sub <- subscriptions,
-        sub_map = Subscription.timeframe_map(sub),
-        Enum.any?(active_period_timeframe_maps, &TimeFrameComparison.match?(&1, sub_map)) do
-      sub
-    end
+    {admins, non_admins} = Enum.split_with(subscriptions, & &1.is_admin)
+
+    Enum.reduce(non_admins, admins, fn sub, acc ->
+      sub_map = Subscription.timeframe_map(sub)
+
+      if Enum.any?(active_period_timeframe_maps, &TimeFrameComparison.match?(&1, sub_map)) do
+        [sub | acc]
+      else
+        acc
+      end
+    end)
   end
 end
