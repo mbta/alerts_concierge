@@ -9,10 +9,8 @@ defmodule ConciergeSite.Mailchimp do
   alias AlertProcessor.Repo
   alias HTTPoison
 
-  @spec add_member(User.t(), Keyword.t()) :: :ok | :error
-  def add_member(user, opts \\ [client: HTTPoison])
-
-  def add_member(%{id: id, email: email, digest_opt_in: true}, opts) do
+  @spec add_member(User.t()) :: :ok | :error
+  def add_member(%{id: id, email: email, digest_opt_in: true}) do
     data =
       Poison.encode!(%{
         "email_address" => email,
@@ -21,7 +19,9 @@ defmodule ConciergeSite.Mailchimp do
 
     endpoint = "#{api_url()}/3.0/lists/#{list_id()}/members"
 
-    case opts[:client].post(endpoint, data, headers()) do
+    client = client()
+
+    case client.post(endpoint, data, headers()) do
       {:ok, %{status_code: 200}} ->
         :ok
 
@@ -32,7 +32,7 @@ defmodule ConciergeSite.Mailchimp do
     end
   end
 
-  def add_member(_, _), do: :ok
+  def add_member(_), do: :ok
 
   @spec send_member_status_update(User.t(), Keyword.t()) :: :ok | :error
   def send_member_status_update(
@@ -48,7 +48,9 @@ defmodule ConciergeSite.Mailchimp do
 
     endpoint = "#{api_url()}/3.0/lists/#{list_id()}/members/#{member_id}"
 
-    case opts[:client].patch(endpoint, data, headers()) do
+    client = client()
+
+    case client.patch(endpoint, data, headers()) do
       {:ok, %{status_code: 200}} ->
         :ok
 
@@ -93,4 +95,7 @@ defmodule ConciergeSite.Mailchimp do
 
   @spec list_id() :: String.t()
   defp list_id(), do: ConfigHelper.get_string(:mailchimp_list_id, :concierge_site)
+
+  @spec client() :: module()
+  defp client(), do: Application.get_env(:concierge_site, :mailchimp_api_client)
 end

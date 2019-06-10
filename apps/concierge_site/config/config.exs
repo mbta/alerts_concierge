@@ -81,7 +81,8 @@ config :hammer,
 # Mailchimp
 config :concierge_site, mailchimp_api_url: {:system, "MAILCHIMP_API_URL", nil}
 config :concierge_site, mailchimp_api_key: {:system, "MAILCHIMP_API_KEY", nil}
-config :concierge_site, mailchimp_list_id: {:system, "MAILCHIMP_LIST_ID", nil}
+config :concierge_site, mailchimp_list_id: {:system, "MAILCHIMP_LIST_ID", "abc123"}
+config :concierge_site, mailchimp_api_client: ConciergeSite.Mailchimp.FakeClient
 
 # Import environment specific config. This must remain at the bottom
 # of this file so it overrides the configuration defined above.
