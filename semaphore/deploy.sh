@@ -48,10 +48,10 @@ aws ecs register-task-definition \
 
 newrevision=$(aws ecs describe-task-definition --region us-east-1 --task-definition $appenv | jq '.taskDefinition.revision')
 
-expected_count=$(aws ecs list-tasks --region us-east-1 --cluster $APP --service $appenv| jq '.taskArns | length')
+expected_count=$(aws ecs list-tasks --region us-east-1 --cluster $APP --service $appenv-a| jq '.taskArns | length')
 
 if  [[ $expected_count = "0" ]]; then
-    aws ecs update-service --region us-east-1 --cluster $APP --service $appenv --task-definition $appenv:$newrevision
+    aws ecs update-service --region us-east-1 --cluster $APP --service $appenv-a --task-definition $appenv:$newrevision
     echo Environment $APP:$appenv is not running!
     echo
     echo We updated the definition: you can manually set the desired instances to 1.
@@ -60,7 +60,7 @@ fi
 
 function task_count_eq {
     local tasks
-    task_count=$(aws ecs list-tasks --region us-east-1 --cluster $APP --service $appenv | jq '.taskArns | length')
+    task_count=$(aws ecs list-tasks --region us-east-1 --cluster $APP --service $appenv-a | jq '.taskArns | length')
     [[ $task_count = "$1" ]]
 }
 
@@ -76,7 +76,7 @@ function exit_if_too_many_checks {
 # allowing us to update it and start the new one. Check every 5 seconds to see if it's dead
 # yet (AWS issues `docker stop` and it could take a moment to spin down). If it's still running
 # after several checks, something is wrong and the script should die.
-aws ecs update-service --region us-east-1 --cluster $APP --service $appenv --desired-count 0
+aws ecs update-service --region us-east-1 --cluster $APP --service $appenv-a --desired-count 0
 checks=0
 while task_count_eq $expected_count; do
     echo Shutting down old task...
@@ -86,8 +86,8 @@ done
 # Update the ECS service to use the new revision of the task definition. Then update the desired
 # count back to 1, so the container instance starts up the task. Check periodically to see if the
 # task is running yet, and signal deploy failure if it doesn't start up in a reasonable time.
-aws ecs update-service --region us-east-1 --cluster $APP --service $appenv --task-definition $appenv:$newrevision
-aws ecs update-service --region us-east-1 --cluster $APP --service $appenv --desired-count 1
+aws ecs update-service --region us-east-1 --cluster $APP --service $appenv-a --task-definition $appenv:$newrevision
+aws ecs update-service --region us-east-1 --cluster $APP --service $appenv-a --desired-count 1
 
 checks=0
 until task_count_eq $expected_count; do
