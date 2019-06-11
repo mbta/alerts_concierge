@@ -143,7 +143,10 @@ defmodule ConciergeSite.AccountController do
         _claims
       ) do
     api_key = ConfigHelper.get_string(:mailchimp_api_url, :concierge_site)
+    IO.inspect(api_key, label: "api key")
     expected_secret = :crypto.hash(:md5, api_key) |> Base.encode16()
+    IO.inspect(expected_secret, label: "expected secret")
+    IO.inspect(secret, label: "secret")
 
     {affected, message} =
       if secret == expected_secret do
