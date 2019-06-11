@@ -34,11 +34,8 @@ defmodule ConciergeSite.Mailchimp do
 
   def add_member(_), do: :ok
 
-  @spec send_member_status_update(User.t(), Keyword.t()) :: :ok | :error
-  def send_member_status_update(
-        %{id: id, email: email, digest_opt_in: digest_opt_in},
-        opts \\ [client: HTTPoison]
-      ) do
+  @spec send_member_status_update(User.t()) :: :ok | :error
+  def send_member_status_update(%{id: id, email: email, digest_opt_in: digest_opt_in}) do
     member_id = :crypto.hash(:md5, email) |> Base.encode16()
 
     data =
@@ -65,6 +62,7 @@ defmodule ConciergeSite.Mailchimp do
   def unsubscribe_by_email(email) do
     email
     |> User.for_email()
+    |> IO.inspect()
     |> do_unsubscribe_by_email()
   end
 

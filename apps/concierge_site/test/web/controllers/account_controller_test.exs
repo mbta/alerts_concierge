@@ -271,7 +271,12 @@ defmodule ConciergeSite.AccountControllerTest do
     end
 
     test "POST /mailchimp/update with wrong secret", %{conn: conn} do
-      post_body = %{"type" => "unsubscribe", "data[email]" => "test@test.com", "secret" => "x"}
+      post_body = %{
+        "type" => "unsubscribe",
+        "data" => %{"email" => "test@test.com"},
+        "secret" => "x"
+      }
+
       conn = post(conn, account_path(conn, :mailchimp_unsubscribe), post_body)
       expected = %{"status" => "ok", "message" => "skipped", "affected" => 0}
 
@@ -281,7 +286,7 @@ defmodule ConciergeSite.AccountControllerTest do
     test "POST /mailchimp/update with correct secret, unknown user", %{conn: conn} do
       post_body = %{
         "type" => "unsubscribe",
-        "data[email]" => "test@test.com",
+        "data" => %{"email" => "test@test.com"},
         "secret" => @secret
       }
 
@@ -295,7 +300,7 @@ defmodule ConciergeSite.AccountControllerTest do
       email = "unsubscribe@email.com"
       insert(:user, email: email, digest_opt_in: true)
 
-      post_body = %{"type" => "unsubscribe", "data[email]" => email, "secret" => @secret}
+      post_body = %{"type" => "unsubscribe", "data" => %{"email" => email}, "secret" => @secret}
       conn = post(conn, account_path(conn, :mailchimp_unsubscribe), post_body)
       user = User.for_email(email)
       expected = %{"status" => "ok", "message" => "updated", "affected" => 1}

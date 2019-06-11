@@ -138,7 +138,7 @@ defmodule ConciergeSite.AccountController do
 
   def mailchimp_unsubscribe(
         conn,
-        %{"type" => "unsubscribe", "data[email]" => email, "secret" => secret},
+        %{"type" => "unsubscribe", "data" => %{"email" => email}, "secret" => secret},
         _user,
         _claims
       ) do
