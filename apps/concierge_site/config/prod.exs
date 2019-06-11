@@ -55,6 +55,9 @@ config :concierge_site, load_css?: true
 config :concierge_site, ConciergeSite.ViewHelpers,
   google_tag_manager_id: "${GOOGLE_TAG_MANAGER_ID}"
 
+# Mailchimp
+config :concierge_site, mailchimp_api_client: HTTPoison
+
 # ## SSL Support
 #
 # To get SSL working, you will need to add the `https` key
