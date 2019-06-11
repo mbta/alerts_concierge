@@ -62,7 +62,6 @@ defmodule ConciergeSite.Mailchimp do
   def unsubscribe_by_email(email) do
     email
     |> User.for_email()
-    |> IO.inspect()
     |> do_unsubscribe_by_email()
   end
 
