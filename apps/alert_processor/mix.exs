@@ -85,7 +85,8 @@ defmodule AlertProcessor.Mixfile do
       {:postgrex, ">= 0.0.0"},
       {:scrivener_ecto, "~> 1.0"},
       {:sweet_xml, "~> 0.6"},
-      {:eflame, "~> 1.0", only: [:dev]}
+      {:eflame, "~> 1.0", only: [:dev]},
+      {:tzdata, "~> 1.0.0", override: true}
     ]
   end
 
