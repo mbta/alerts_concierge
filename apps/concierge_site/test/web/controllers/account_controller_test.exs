@@ -252,19 +252,19 @@ defmodule ConciergeSite.AccountControllerTest do
     end
   end
 
-  describe "mailchimp unsubscribe webhook" do
+  describe "mailchimp unsubscribe webhook for unsubscribe" do
     @secret :crypto.hash(:md5, ConfigHelper.get_string(:mailchimp_api_url, :concierge_site))
             |> Base.encode16()
 
     test "GET /mailchimp/update", %{conn: conn} do
-      conn = get(conn, account_path(conn, :mailchimp_unsubscribe))
+      conn = get(conn, account_path(conn, :mailchimp_update))
       expected = %{"message" => "invalid request", "status" => "ok"}
 
       assert json_response(conn, 200) == expected
     end
 
     test "POST /mailchimp/update without required params", %{conn: conn} do
-      conn = post(conn, account_path(conn, :mailchimp_unsubscribe), %{})
+      conn = post(conn, account_path(conn, :mailchimp_update), %{})
       expected = %{"message" => "invalid request", "status" => "ok"}
 
       assert json_response(conn, 200) == expected
@@ -277,7 +277,7 @@ defmodule ConciergeSite.AccountControllerTest do
         "secret" => "x"
       }
 
-      conn = post(conn, account_path(conn, :mailchimp_unsubscribe), post_body)
+      conn = post(conn, account_path(conn, :mailchimp_update), post_body)
       expected = %{"status" => "ok", "message" => "skipped", "affected" => 0}
 
       assert json_response(conn, 200) == expected
@@ -290,7 +290,7 @@ defmodule ConciergeSite.AccountControllerTest do
         "secret" => @secret
       }
 
-      conn = post(conn, account_path(conn, :mailchimp_unsubscribe), post_body)
+      conn = post(conn, account_path(conn, :mailchimp_update), post_body)
       expected = %{"status" => "ok", "message" => "updated", "affected" => 0}
 
       assert json_response(conn, 200) == expected
@@ -301,12 +301,62 @@ defmodule ConciergeSite.AccountControllerTest do
       insert(:user, email: email, digest_opt_in: true)
 
       post_body = %{"type" => "unsubscribe", "data" => %{"email" => email}, "secret" => @secret}
-      conn = post(conn, account_path(conn, :mailchimp_unsubscribe), post_body)
+      conn = post(conn, account_path(conn, :mailchimp_update), post_body)
       user = User.for_email(email)
       expected = %{"status" => "ok", "message" => "updated", "affected" => 1}
 
       assert json_response(conn, 200) == expected
       assert user.digest_opt_in == false
+    end
+  end
+
+  describe "mailchimp unsubscribe webhook for email change" do
+    @secret :crypto.hash(:md5, ConfigHelper.get_string(:mailchimp_api_url, :concierge_site))
+            |> Base.encode16()
+
+    test "POST /mailchimp/update with wrong secret", %{conn: conn} do
+      post_body = %{
+        "type" => "upemail",
+        "data" => %{"old_email" => "test@test.com", "new_email" => "test1@test.com"},
+        "secret" => "x"
+      }
+
+      conn = post(conn, account_path(conn, :mailchimp_update), post_body)
+      expected = %{"status" => "ok", "message" => "skipped", "affected" => 0}
+
+      assert json_response(conn, 200) == expected
+    end
+
+    test "POST /mailchimp/update with correct secret, unknown user", %{conn: conn} do
+      post_body = %{
+        "type" => "upemail",
+        "data" => %{"old_email" => "unknown@test.com", "new_email" => "unknown@test.com"},
+        "secret" => @secret
+      }
+
+      conn = post(conn, account_path(conn, :mailchimp_update), post_body)
+      expected = %{"status" => "ok", "message" => "updated", "affected" => 0}
+
+      assert json_response(conn, 200) == expected
+    end
+
+    test "POST /mailchimp/update with correct secret, correct user", %{conn: conn} do
+      email = "change@email.com"
+      new_email = "change1@email.com"
+      insert(:user, email: email)
+
+      post_body = %{
+        "type" => "upemail",
+        "data" => %{"old_email" => email, "new_email" => new_email},
+        "secret" => @secret
+      }
+
+      conn = post(conn, account_path(conn, :mailchimp_update), post_body)
+      user = User.for_email(new_email)
+      expected = %{"status" => "ok", "message" => "updated", "affected" => 1}
+
+      assert json_response(conn, 200) == expected
+      assert user.email == new_email
     end
   end
 end

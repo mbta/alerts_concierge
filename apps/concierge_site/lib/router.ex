@@ -138,8 +138,8 @@ defmodule ConciergeSite.Router do
 
   scope "/mailchimp", ConciergeSite do
     # mailchimp needs get and post, even though post is actually used to send data
-    get("/update", AccountController, :mailchimp_unsubscribe)
-    post("/update", AccountController, :mailchimp_unsubscribe)
+    get("/update", AccountController, :mailchimp_update)
+    post("/update", AccountController, :mailchimp_update)
   end
 
   if Mix.env() == :dev do
