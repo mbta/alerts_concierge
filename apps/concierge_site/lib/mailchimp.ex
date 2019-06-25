@@ -65,6 +65,7 @@ defmodule ConciergeSite.Mailchimp do
     |> do_unsubscribe_by_email()
   end
 
+  @spec do_unsubscribe_by_email(User.t() | nil) :: 0 | 1
   defp do_unsubscribe_by_email(%User{} = user) do
     user
     |> Ecto.Changeset.change(%{digest_opt_in: false})
@@ -73,7 +74,23 @@ defmodule ConciergeSite.Mailchimp do
     1
   end
 
-  defp do_unsubscribe_by_email(nil), do: 0
+  defp do_unsubscribe_by_email(_), do: 0
+
+  @spec change_email(String.t(), String.t()) :: 0 | 1
+  def change_email(old_email, new_email) do
+    do_change_email({User.for_email(old_email), User.for_email(new_email)}, new_email)
+  end
+
+  @spec do_change_email({User.t() | nil, User.t() | nil}, String.t()) :: 0 | 1
+  defp do_change_email({%User{} = user, nil}, new_email) do
+    user
+    |> Ecto.Changeset.change(%{email: new_email})
+    |> Repo.update()
+
+    1
+  end
+
+  defp do_change_email(_, _), do: 0
 
   @spec member_status(boolean) :: String.t()
   defp member_status(true), do: "subscribed"
