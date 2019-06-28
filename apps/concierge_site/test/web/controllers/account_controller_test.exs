@@ -11,7 +11,7 @@ defmodule ConciergeSite.AccountControllerTest do
   end
 
   test "POST /account", %{conn: conn} do
-    params = %{"user" => %{"password" => "Password1!", "email" => "test@test.com"}}
+    params = %{"user" => %{"password" => "Password1!", "email" => "test@test.com "}}
     conn = post(conn, account_path(conn, :create), params)
     assert html_response(conn, 302) =~ "/account/options"
   end
@@ -125,7 +125,7 @@ defmodule ConciergeSite.AccountControllerTest do
       user_params = %{
         communication_mode: "sms",
         phone_number: "5555555555",
-        email: "test@test.com"
+        email: "test@test.com "
       }
 
       conn =

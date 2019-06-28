@@ -116,8 +116,9 @@ defmodule AlertProcessor.Model.User do
   def create_account_changeset(struct, params \\ %{}) do
     struct
     |> changeset(params, @required_fields)
-    |> validate_email()
+    |> update_change(:email, &String.trim/1)
     |> update_change(:email, &lowercase_email/1)
+    |> validate_email()
     |> validate_password()
     |> clear_phone_if_mode_is_email(params)
     |> update_change(:phone_number, &clean_phone_number/1)
@@ -136,8 +137,9 @@ defmodule AlertProcessor.Model.User do
     |> changeset(params, [:phone_number, :email])
     |> update_change(:phone_number, &clean_phone_number/1)
     |> validate_phone_number()
-    |> validate_email()
+    |> update_change(:email, &String.trim/1)
     |> update_change(:email, &lowercase_email/1)
+    |> validate_email()
   end
 
   def update_account_changeset(struct, %{"communication_mode" => "sms"} = params) do
@@ -151,6 +153,7 @@ defmodule AlertProcessor.Model.User do
     struct
     |> changeset(params, [:email])
     |> validate_email()
+    |> update_change(:email, &String.trim/1)
     |> update_change(:email, &lowercase_email/1)
     |> update_change(:phone_number, &clear_value/1)
   end
