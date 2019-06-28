@@ -24,9 +24,9 @@ defmodule ConciergeSite.ScheduleTest do
     assert Enum.all?(result[{"cr", "CR-Newburyport"}], &Map.has_key?(&1, :weekend?))
 
     assert List.first(result[{"cr", "CR-Newburyport"}]) == %TripInfo{
-             arrival_time: ~T[07:56:00],
+             arrival_time: ~T[07:39:00],
              departure_time: ~T[06:39:00],
-             arrival_extended_time: %ExtendedTime{relative_day: 1, time: ~T[07:56:00]},
+             arrival_extended_time: %ExtendedTime{relative_day: 1, time: ~T[07:39:00]},
              departure_extended_time: %ExtendedTime{relative_day: 1, time: ~T[06:39:00]},
              destination: {"Gloucester", "place-GB-0316", {42.616799, -70.668345}, 1},
              direction_id: 0,
