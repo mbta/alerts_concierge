@@ -206,7 +206,7 @@ defmodule ConciergeSite.Schedule do
     |> Enum.group_by(fn %{"relationships" => %{"trip" => %{"data" => %{"id" => id}}}} -> id end)
     |> Enum.filter(fn {_id, schedules} -> Enum.count(schedules) > 1 end)
     |> Enum.map(fn {_id, schedules} ->
-      [departure_schedule, arrival_schedule] =
+      [departure_schedule, arrival_schedule | _] =
         Enum.sort_by(schedules, fn %{"attributes" => %{"departure_time" => departure_timestamp}} ->
           departure_timestamp
         end)
