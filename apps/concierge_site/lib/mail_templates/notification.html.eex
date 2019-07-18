@@ -305,7 +305,7 @@
          style="font-family:'Helvetica Neue', Helvetica, Arial, sans-serif;font-size:12px;line-height:19px;text-align:left;color:#000000;"
       >
         <p>
-            <a href="<%= feedback_url %>" style="color: #16528A; text-decoration: none;">Give feedback</a> ●
+            <a href="<%= feedback_url %>" style="color: #16528A; text-decoration: none;">Tell us how we’re doing</a> ●
             <a href="<%= manage_subscriptions_url %>" style="color: #16528A; text-decoration: none;">Edit Subscription</a> ●
             <a href="https://www.mbta.com/alerts" style="color: #16528A; text-decoration: none;">See all alerts</a>
             <br />
