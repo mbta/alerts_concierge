@@ -49,7 +49,7 @@
         <div class="form-group form__section form-check my-5">
           <%= checkbox form, :digest_opt_in, class: "form-check-input" %>
           <%= label form, :digest_opt_in, "Yes, send me a weekly email about planned service disruptions across the MBTA.", class: "form__label--radio" %>
-          Even if you receive text alerts, this will be sent to the email address you signed up with.  This feature will be coming soon.
+          Even if you receive text alerts, this will be sent to the email address you signed up with.
         </div>
 
         <div class="form__action-buttons--container">
