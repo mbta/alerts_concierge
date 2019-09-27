@@ -18,7 +18,7 @@ defmodule AlertProcessor.ServiceInfoCache do
     :commuter_rail_trip_ids,
     :facility_map
   ]
-  @silver_line_route_ids ~w(741 742 743 749 751)
+  @silver_line_route_ids ~w(741 742 743)
 
   # This exists to keep services that make calls to ServerInfoCache from crashing
   # while the service is loading.

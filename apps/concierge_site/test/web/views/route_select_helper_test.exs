@@ -15,7 +15,7 @@ defmodule ConciergeSite.RouteSelectHelperTest do
     assert html =~ "Red Line"
     assert html =~ "CR-Franklin"
     assert html =~ "Hingham/Hull Ferry"
-    assert html =~ "Route 5 - City Point - Outbound"
+    assert html =~ "Route Silver Line SL1 - South Station - Inbound"
     assert html =~ "data-type=\"route\""
     assert html =~ "data-icon=\"cr\""
   end

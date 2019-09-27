@@ -134,48 +134,55 @@ defmodule ConciergeSite.ScheduleTest do
     assert is_list(first_trip_result[{"cr", "CR-Worcester"}])
     assert Enum.all?(first_trip_result[{"cr", "CR-Worcester"}], &is_trip_info(&1))
 
-    assert List.first(first_trip_result[{"cr", "CR-Worcester"}]) == %TripInfo{
-             arrival_extended_time: %ExtendedTime{relative_day: 1, time: ~T[06:02:00]},
-             arrival_time: ~T[06:02:00],
-             departure_extended_time: %ExtendedTime{relative_day: 1, time: ~T[05:26:00]},
-             departure_time: ~T[05:26:00],
-             destination: {"Worcester", "place-WML-0442", {42.261461, -71.794888}, 1},
-             direction_id: 0,
-             origin: {"Framingham", "place-WML-0214", {42.276719, -71.416792}, 1},
-             route: %Route{
-               direction_names: ["Outbound", "Inbound"],
-               headsigns: nil,
-               long_name: "Framingham/Worcester Line",
-               order: 2,
-               route_id: "CR-Worcester",
-               route_type: 2,
-               short_name: "",
-               stop_list: [
-                 {"Worcester", "place-WML-0442", {42.261461, -71.794888}, 1},
-                 {"Grafton", "place-WML-0364", {42.2466, -71.685325}, 1},
-                 {"Westborough", "place-WML-0340", {42.269644, -71.647076}, 1},
-                 {"Southborough", "place-WML-0274", {42.267024, -71.524371}, 1},
-                 {"Ashland", "place-WML-0252", {42.26149, -71.482161}, 1},
-                 {"Framingham", "place-WML-0214", {42.276719, -71.416792}, 1},
-                 {"West Natick", "place-WML-0199", {42.283064, -71.391797}, 1},
-                 {"Natick Center", "place-WML-0177", {42.285719, -71.347133}, 2},
-                 {"Wellesley Square", "place-WML-0147", {42.297526, -71.294173}, 2},
-                 {"Wellesley Hills", "place-WML-0135", {42.31037, -71.277044}, 2},
-                 {"Wellesley Farms", "place-WML-0125", {42.323608, -71.272288}, 2},
-                 {"Auburndale", "place-WML-0102", {42.345725, -71.250826}, 2},
-                 {"West Newton", "place-WML-0091", {42.347878, -71.230528}, 2},
-                 {"Newtonville", "place-WML-0081", {42.351603, -71.207338}, 2},
-                 {"Boston Landing", "place-WML-0035", {42.357293, -71.139883}, 1},
-                 {"Lansdowne", "place-WML-0025", {42.347581, -71.099974}, 1},
-                 {"Back Bay", "place-bbsta", {42.34735, -71.075727}, 1},
-                 {"South Station", "place-sstat", {42.352271, -71.055242}, 1}
-               ],
-               direction_destinations: ["Worcester", "South Station"]
-             },
-             selected: false,
-             trip_number: "501",
-             weekend?: false
-           }
+    assert List.first(first_trip_result[{"cr", "CR-Worcester"}]) ==
+             %AlertProcessor.Model.TripInfo{
+               arrival_extended_time: %AlertProcessor.ExtendedTime{
+                 relative_day: 1,
+                 time: ~T[06:02:00]
+               },
+               arrival_time: ~T[06:02:00],
+               departure_extended_time: %AlertProcessor.ExtendedTime{
+                 relative_day: 1,
+                 time: ~T[05:26:00]
+               },
+               departure_time: ~T[05:26:00],
+               destination: {"Worcester", "place-WML-0442", {42.261461, -71.794888}, 1},
+               direction_id: 0,
+               selected: false,
+               trip_number: "501",
+               weekend?: false,
+               origin: {"Framingham", "place-WML-0214", {42.276108, -71.420055}, 1},
+               route: %AlertProcessor.Model.Route{
+                 direction_destinations: ["Worcester", "South Station"],
+                 direction_names: ["Outbound", "Inbound"],
+                 headsigns: nil,
+                 long_name: "Framingham/Worcester Line",
+                 order: 2,
+                 route_id: "CR-Worcester",
+                 route_type: 2,
+                 short_name: "",
+                 stop_list: [
+                   {"Worcester", "place-WML-0442", {42.261461, -71.794888}, 1},
+                   {"Grafton", "place-WML-0364", {42.2466, -71.685325}, 1},
+                   {"Westborough", "place-WML-0340", {42.269644, -71.647076}, 1},
+                   {"Southborough", "place-WML-0274", {42.267024, -71.524371}, 1},
+                   {"Ashland", "place-WML-0252", {42.26149, -71.482161}, 1},
+                   {"Framingham", "place-WML-0214", {42.276108, -71.420055}, 1},
+                   {"West Natick", "place-WML-0199", {42.283064, -71.391797}, 1},
+                   {"Natick Center", "place-WML-0177", {42.285719, -71.347133}, 2},
+                   {"Wellesley Square", "place-WML-0147", {42.297526, -71.294173}, 2},
+                   {"Wellesley Hills", "place-WML-0135", {42.31037, -71.277044}, 2},
+                   {"Wellesley Farms", "place-WML-0125", {42.323608, -71.272288}, 2},
+                   {"Auburndale", "place-WML-0102", {42.345725, -71.250826}, 2},
+                   {"West Newton", "place-WML-0091", {42.347878, -71.230528}, 2},
+                   {"Newtonville", "place-WML-0081", {42.351702, -71.205408}, 2},
+                   {"Boston Landing", "place-WML-0035", {42.357293, -71.139883}, 1},
+                   {"Lansdowne", "place-WML-0025", {42.347581, -71.099974}, 1},
+                   {"Back Bay", "place-bbsta", {42.34735, -71.075727}, 1},
+                   {"South Station", "place-sstat", {42.352271, -71.055242}, 1}
+                 ]
+               }
+             }
 
     assert Enum.find_index(first_trip_result[{"cr", "CR-Worcester"}], & &1.weekend?) == 3
 
@@ -184,48 +191,55 @@ defmodule ConciergeSite.ScheduleTest do
     assert is_list(return_trip_result[{"cr", "CR-Worcester"}])
     assert Enum.all?(return_trip_result[{"cr", "CR-Worcester"}], &is_trip_info(&1))
 
-    assert List.first(return_trip_result[{"cr", "CR-Worcester"}]) == %TripInfo{
-             arrival_extended_time: %ExtendedTime{relative_day: 1, time: ~T[05:26:00]},
-             arrival_time: ~T[05:26:00],
-             departure_extended_time: %ExtendedTime{relative_day: 1, time: ~T[04:45:00]},
-             departure_time: ~T[04:45:00],
-             destination: {"Framingham", "place-WML-0214", {42.276719, -71.416792}, 1},
-             direction_id: 1,
-             origin: {"Worcester", "place-WML-0442", {42.261461, -71.794888}, 1},
-             route: %Route{
-               direction_names: ["Outbound", "Inbound"],
-               headsigns: nil,
-               long_name: "Framingham/Worcester Line",
-               order: 2,
-               route_id: "CR-Worcester",
-               route_type: 2,
-               short_name: "",
-               stop_list: [
-                 {"Worcester", "place-WML-0442", {42.261461, -71.794888}, 1},
-                 {"Grafton", "place-WML-0364", {42.2466, -71.685325}, 1},
-                 {"Westborough", "place-WML-0340", {42.269644, -71.647076}, 1},
-                 {"Southborough", "place-WML-0274", {42.267024, -71.524371}, 1},
-                 {"Ashland", "place-WML-0252", {42.26149, -71.482161}, 1},
-                 {"Framingham", "place-WML-0214", {42.276719, -71.416792}, 1},
-                 {"West Natick", "place-WML-0199", {42.283064, -71.391797}, 1},
-                 {"Natick Center", "place-WML-0177", {42.285719, -71.347133}, 2},
-                 {"Wellesley Square", "place-WML-0147", {42.297526, -71.294173}, 2},
-                 {"Wellesley Hills", "place-WML-0135", {42.31037, -71.277044}, 2},
-                 {"Wellesley Farms", "place-WML-0125", {42.323608, -71.272288}, 2},
-                 {"Auburndale", "place-WML-0102", {42.345725, -71.250826}, 2},
-                 {"West Newton", "place-WML-0091", {42.347878, -71.230528}, 2},
-                 {"Newtonville", "place-WML-0081", {42.351603, -71.207338}, 2},
-                 {"Boston Landing", "place-WML-0035", {42.357293, -71.139883}, 1},
-                 {"Lansdowne", "place-WML-0025", {42.347581, -71.099974}, 1},
-                 {"Back Bay", "place-bbsta", {42.34735, -71.075727}, 1},
-                 {"South Station", "place-sstat", {42.352271, -71.055242}, 1}
-               ],
-               direction_destinations: ["Worcester", "South Station"]
-             },
-             selected: false,
-             trip_number: "500",
-             weekend?: false
-           }
+    assert List.first(return_trip_result[{"cr", "CR-Worcester"}]) ==
+             %AlertProcessor.Model.TripInfo{
+               arrival_extended_time: %AlertProcessor.ExtendedTime{
+                 relative_day: 1,
+                 time: ~T[05:26:00]
+               },
+               arrival_time: ~T[05:26:00],
+               departure_extended_time: %AlertProcessor.ExtendedTime{
+                 relative_day: 1,
+                 time: ~T[04:45:00]
+               },
+               departure_time: ~T[04:45:00],
+               direction_id: 1,
+               origin: {"Worcester", "place-WML-0442", {42.261461, -71.794888}, 1},
+               selected: false,
+               trip_number: "500",
+               weekend?: false,
+               destination: {"Framingham", "place-WML-0214", {42.276108, -71.420055}, 1},
+               route: %AlertProcessor.Model.Route{
+                 direction_destinations: ["Worcester", "South Station"],
+                 direction_names: ["Outbound", "Inbound"],
+                 headsigns: nil,
+                 long_name: "Framingham/Worcester Line",
+                 order: 2,
+                 route_id: "CR-Worcester",
+                 route_type: 2,
+                 short_name: "",
+                 stop_list: [
+                   {"Worcester", "place-WML-0442", {42.261461, -71.794888}, 1},
+                   {"Grafton", "place-WML-0364", {42.2466, -71.685325}, 1},
+                   {"Westborough", "place-WML-0340", {42.269644, -71.647076}, 1},
+                   {"Southborough", "place-WML-0274", {42.267024, -71.524371}, 1},
+                   {"Ashland", "place-WML-0252", {42.26149, -71.482161}, 1},
+                   {"Framingham", "place-WML-0214", {42.276108, -71.420055}, 1},
+                   {"West Natick", "place-WML-0199", {42.283064, -71.391797}, 1},
+                   {"Natick Center", "place-WML-0177", {42.285719, -71.347133}, 2},
+                   {"Wellesley Square", "place-WML-0147", {42.297526, -71.294173}, 2},
+                   {"Wellesley Hills", "place-WML-0135", {42.31037, -71.277044}, 2},
+                   {"Wellesley Farms", "place-WML-0125", {42.323608, -71.272288}, 2},
+                   {"Auburndale", "place-WML-0102", {42.345725, -71.250826}, 2},
+                   {"West Newton", "place-WML-0091", {42.347878, -71.230528}, 2},
+                   {"Newtonville", "place-WML-0081", {42.351702, -71.205408}, 2},
+                   {"Boston Landing", "place-WML-0035", {42.357293, -71.139883}, 1},
+                   {"Lansdowne", "place-WML-0025", {42.347581, -71.099974}, 1},
+                   {"Back Bay", "place-bbsta", {42.34735, -71.075727}, 1},
+                   {"South Station", "place-sstat", {42.352271, -71.055242}, 1}
+                 ]
+               }
+             }
 
     assert Enum.find_index(return_trip_result[{"cr", "CR-Worcester"}], & &1.weekend?) == 5
   end

@@ -141,7 +141,7 @@ defmodule ConciergeSite.StopSelectHelper do
 
   @spec get_routes(atom) :: [String.t()]
   defp get_routes(:subway), do: ["Red", "Orange", "Green", "Blue", "Mattapan"]
-  defp get_routes(:bus_silver_line), do: ~w(741 742 743 749 751)
+  defp get_routes(:bus_silver_line), do: ~w(741 742 743)
 
   defp get_routes(:cr) do
     with {:ok, routes} <- ServiceInfoCache.get_commuter_rail_info() do
