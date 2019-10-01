@@ -167,7 +167,7 @@ defmodule AlertProcessor.ServiceInfoCacheTest do
 
     test "includes populated stop_list for Silver Line routes", %{pid: pid} do
       {:ok, routes} = ServiceInfoCache.get_bus_info(pid)
-      silver_line_route_ids = ~w(741 742 743 749 751)
+      silver_line_route_ids = ~w(741 742 743)
 
       for silver_line_route_id <- silver_line_route_ids do
         route = Enum.find(routes, &(&1.route_id == silver_line_route_id))
@@ -180,6 +180,7 @@ defmodule AlertProcessor.ServiceInfoCacheTest do
     {:ok, [route | _]} = ServiceInfoCache.get_commuter_rail_info(pid)
 
     assert route == %AlertProcessor.Model.Route{
+             direction_destinations: ["Fairmount", "South Station"],
              direction_names: ["Outbound", "Inbound"],
              headsigns: nil,
              long_name: "Fairmount Line",
@@ -190,15 +191,14 @@ defmodule AlertProcessor.ServiceInfoCacheTest do
              stop_list: [
                {"Readville", "place-DB-0095", {42.238405, -71.133246}, 1},
                {"Fairmount", "place-DB-2205", {42.253638, -71.11927}, 1},
-               {"Blue Hill Avenue", "place-DB-2222", {42.271412, -71.096419}, 1},
+               {"Blue Hill Avenue", "place-DB-2222", {42.271466, -71.095782}, 1},
                {"Morton Street", "place-DB-2230", {42.280994, -71.085475}, 1},
                {"Talbot Avenue", "place-DB-2240", {42.292246, -71.07814}, 1},
                {"Four Corners/Geneva", "place-DB-2249", {42.305037, -71.076833}, 1},
-               {"Uphams Corner", "place-DB-2258", {42.31867, -71.069072}, 1},
-               {"Newmarket", "place-DB-2265", {42.326701, -71.066314}, 1},
+               {"Uphams Corner", "place-DB-2258", {42.319125, -71.068627}, 1},
+               {"Newmarket", "place-DB-2265", {42.327415, -71.065674}, 1},
                {"South Station", "place-sstat", {42.352271, -71.055242}, 1}
-             ],
-             direction_destinations: ["Fairmount", "South Station"]
+             ]
            }
   end
 
@@ -402,7 +402,7 @@ defmodule AlertProcessor.ServiceInfoCacheTest do
     assert stops_with_icons["1154"] == [modes: MapSet.new([:bus]), accessible: false]
 
     assert stops_with_icons["place-north"] == [
-             modes: MapSet.new([:bus, :cr, :"green-c", :"green-e", :orange]),
+             modes: MapSet.new([:cr, :"green-c", :"green-e", :orange]),
              accessible: true
            ]
 
