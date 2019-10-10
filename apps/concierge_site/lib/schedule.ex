@@ -176,7 +176,9 @@ defmodule ConciergeSite.Schedule do
              date
            ) do
         {:ok, schedules, trips} ->
-          map_common_trips(schedules, map_trip_names(trips), trip, date)
+          schedules
+          |> remove_shuttle_schedules(route.route_id)
+          |> map_common_trips(map_trip_names(trips), trip, date)
 
         {:ok, _} ->
           []
@@ -185,6 +187,11 @@ defmodule ConciergeSite.Schedule do
           []
       end
     end
+  end
+
+  @spec remove_shuttle_schedules([map], String.t()) :: [map]
+  def remove_shuttle_schedules(schedules, route_id) do
+    Enum.filter(schedules, &(&1["relationships"]["route"]["data"]["id"] == route_id))
   end
 
   @spec map_trip_names([map]) :: map
@@ -198,9 +205,7 @@ defmodule ConciergeSite.Schedule do
 
   defp map_trip_name(_), do: {nil, nil}
 
-  @spec map_common_trips([map], map, map, Date.t()) :: [TripInfo.t()] | :error
-  defp map_common_trips([], _, _, _), do: :error
-
+  @spec map_common_trips([map], map, map, Date.t()) :: [TripInfo.t()]
   defp map_common_trips(schedules, trip_names_map, trip, date) do
     schedules
     |> Enum.group_by(fn %{"relationships" => %{"trip" => %{"data" => %{"id" => id}}}} -> id end)
