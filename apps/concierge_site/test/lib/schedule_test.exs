@@ -8,6 +8,27 @@ defmodule ConciergeSite.ScheduleTest do
 
   doctest Schedule
 
+  test "remove_shuttle_schedules/2" do
+    shuttle_schedule = %{
+      "relationships" => %{
+        "route" => %{
+          "data" => %{"id" => "shuttle-route", "type" => "route"}
+        }
+      }
+    }
+
+    line_schedule = %{
+      "relationships" => %{
+        "route" => %{
+          "data" => %{"id" => "line-route", "type" => "route"}
+        }
+      }
+    }
+
+    assert [line_schedule] ==
+             Schedule.remove_shuttle_schedules([shuttle_schedule, line_schedule], "line-route")
+  end
+
   test "get_schedules_for_input/4" do
     legs = ["CR-Newburyport"]
     origins = ["place-north"]
