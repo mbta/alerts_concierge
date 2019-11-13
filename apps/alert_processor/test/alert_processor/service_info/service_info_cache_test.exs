@@ -189,6 +189,8 @@ defmodule AlertProcessor.ServiceInfoCacheTest do
              route_type: 2,
              short_name: "",
              stop_list: [
+               {"Foxboro", "place-FS-0049", {42.0951, -71.26151}, 1},
+               {"Dedham Corp Center", "place-FB-0118", {42.227079, -71.174254}, 1},
                {"Readville", "place-DB-0095", {42.238405, -71.133246}, 1},
                {"Fairmount", "place-DB-2205", {42.253638, -71.11927}, 1},
                {"Blue Hill Avenue", "place-DB-2222", {42.271466, -71.095782}, 1},
@@ -340,7 +342,7 @@ defmodule AlertProcessor.ServiceInfoCacheTest do
   end
 
   test "get_trip_name", %{pid: pid} do
-    assert {:ok, "822"} = ServiceInfoCache.get_trip_name(pid, "CR-Weekday-Spring-19-822")
+    assert {:ok, "822"} = ServiceInfoCache.get_trip_name(pid, "CR-Weekday-Fall-19-822")
   end
 
   test "get_facility_map", %{pid: pid} do

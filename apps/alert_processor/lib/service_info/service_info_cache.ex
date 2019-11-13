@@ -140,9 +140,11 @@ defmodule AlertProcessor.ServiceInfoCache do
 
   def handle_call(:get_subway_info, _from, %{routes: route_state} = state) do
     subway_state =
-      Enum.filter(route_state, fn %{route_type: route_type} ->
+      route_state
+      |> Enum.filter(fn %{route_type: route_type} ->
         route_type == 0 || route_type == 1
       end)
+      |> Enum.reject(&(length(&1.stop_list) === 0))
 
     {:reply, {:ok, subway_state}, state}
   end
