@@ -85,7 +85,7 @@ defmodule ConciergeSite.StopSelectHelper do
   defp add_redline_shapes(stop, _, _, _), do: stop ++ [shapes: MapSet.new()]
 
   defp get_redline_shapes("Red", subway_lines) do
-    [shape_1, shape_2] =
+    [shape_1, shape_2 | _] =
       subway_lines
       |> Enum.filter(fn %{stop_list: [{_, first_stop_id, _, _} | _], route_id: route_id} ->
         route_id == "Red" && (first_stop_id == "place-asmnl" || first_stop_id == "place-brntn")
