@@ -643,7 +643,11 @@ defmodule AlertProcessor.ServiceInfoCache do
   defp fetch_route_branches("Red") do
     {:ok, route_shapes} = ApiClient.route_shapes("Red")
 
-    Enum.map(route_shapes, fn %{"relationships" => %{"stops" => %{"data" => stops}}} ->
+    route_shapes
+    |> Enum.reject(fn %{"attributes" => %{"priority" => priority}} ->
+      priority == -1
+    end)
+    |> Enum.map(fn %{"relationships" => %{"stops" => %{"data" => stops}}} ->
       Enum.map(stops, & &1["id"])
     end)
   end
