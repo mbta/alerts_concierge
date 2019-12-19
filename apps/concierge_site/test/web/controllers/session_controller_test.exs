@@ -64,7 +64,7 @@ defmodule ConciergeSite.SessionControllerTest do
     params = %{"user" => %{"email" => "test2@email.com", "password" => "11111111111"}}
 
     login_attempts =
-      for _ <- 1..11 do
+      for _ <- 1..21 do
         post(conn, session_path(conn, :create), params)
       end
 
