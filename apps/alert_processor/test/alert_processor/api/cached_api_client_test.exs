@@ -1,6 +1,6 @@
 defmodule AlertProcessor.CachedApiClientTest do
   @moduledoc false
-  use ExUnit.Case, async: true
+  use ExUnit.Case
   use ExVCR.Mock, adapter: ExVCR.Adapter.Hackney
 
   alias AlertProcessor.CachedApiClient
