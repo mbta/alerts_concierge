@@ -69,7 +69,7 @@ defmodule ConciergeSite.Mixfile do
       {:phoenix_live_reload, "~> 1.0", only: :dev},
       {:gettext, "~> 0.11"},
       {:cowboy, "~> 1.0"},
-      {:wallaby, "~> 0.19.2", only: :test},
+      {:wallaby, "~> 0.23.0", only: :test},
       {:logster, "~> 0.4.0"},
       {:ehmon, git: "https://github.com/heroku/ehmon.git", tag: "v4", only: :prod},
       {:diskusage_logger, "~> 0.2.0", only: :prod},
