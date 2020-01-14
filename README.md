@@ -12,49 +12,49 @@ functionality remain low and that MBTA can manage and improve the system.
 
 ### Requirements
 
-* PostgreSQL ~10.0
-* Elixir 1.6.x (you can use [asdf](https://github.com/asdf-vm/asdf) with
-  [asdf-elixir](https://github.com/asdf-vm/asdf-elixir) to manage Elixir
-  versions)
-* Node.js 8.7.0 (you can use [asdf](https://github.com/asdf-vm/asdf) with
-  [asdf-nodejs](https://github.com/asdf-vm/asdf-nodejs) or
-  [nvm](https://github.com/creationix/nvm) to manage Node.js versions)
-* Yarn ~1.3.2
 * MBTA API key (get one [here](https://dev.api.mbtace.com))
-* Chromedriver (`brew cask install chromedriver`)
+  * **Note:** This key must have its version set to `2019-04-05`
+* PostgreSQL 10 (using Homebrew: `brew install postgresql@10`)
+* Chromedriver (using Homebrew: `brew cask install chromedriver`)
+* Erlang, Elixir, and Node.js versions specified in `.tool_versions`
+  * Use [`asdf`](https://github.com/asdf-vm/asdf) to install automatically
+    * Note [these extra install steps][nodejs-reqs] for NodeJS plugin
+    * Use [this workaround][erlang-fix] to compile Erlang on Mac OS Catalina
+* Yarn (`npm install -g yarn`; may require `asdf reshim` after)
+* [direnv](https://github.com/direnv/direnv) _(optional, but convenient)_
+
+[nodejs-reqs]: https://github.com/asdf-vm/asdf-nodejs#requirements
+[erlang-fix]: https://github.com/kerl/kerl/issues/320#issuecomment-556565250
 
 ### Instructions
 
-* `git clone git@github.com:mbta/alerts_concierge.git`
-* `cd alerts_concierge`
 * `mix deps.get`
 * `sh -c "cd apps/concierge_site/assets ; yarn install"`
-* `cat .env.example | sed -e "s/__username__/$(logname)/g" > .env`
-* ``env `cat .env` mix ecto.setup``
-* ``env `cat .env` MIX_ENV=test mix ecto.setup``
-* `echo 'API_KEY=<YOUR_MBTA_API_KEY>' >> .env`
+* `cat .envrc.example | sed -e "s/__username__/$(logname)/g" > .envrc`
+* In `.envrc`: Fill in `API_KEY=` with the API key you obtained above
+* `direnv allow`
+* `mix ecto.setup`
+* `MIX_ENV=test mix ecto.setup`
 
 #### Notes
 
-The steps above assume that you have PostgreSQL set up with a user named
-`logname`, which should be the default if you used Homebrew to install it.
-You may need to adjust the username in `.env` depending on your PostgreSQL
-configuration.
+The above assumes you have a PostgreSQL user with the same name as your OS user
+(`logname`), which should be the default with a Homebrew install. Otherwise, you
+may need to adjust the username in `.envrc`.
+
+If not using `direnv`, you can instead `source .envrc` as it is a valid shell
+script. However A) this will not persist beyond the current shell session, and
+B) it will persist _through_ the session, even if you change directories.
 
 ### Running tests
 
-#### Running all tests and code coverage
-
-* ``env  `cat .env` MIX_ENV=test mix test.all``
-
-#### Running only Elixir tests
-
-* ``env  `cat .env` MIX_ENV=test mix test``
+* `mix test`
+* `mix test.all` — run tests with code coverage report
 
 ### Running the application
 
-* ``env  `cat .env` mix phx.server``
-* Visit [localhost:4005](http://localhost:4005/)
+* `mix phx.server`
+* Visit <http://localhost:4005/>
 
 ### More information
 
