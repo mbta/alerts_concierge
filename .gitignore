@@ -12,6 +12,7 @@ npm-debug.log
 /test/fixture/vcr_cassettes/*
 .iex.exs
 .env
+.envrc
 .DS_Store
 excoveralls.json
 releases
