@@ -151,7 +151,7 @@ defmodule AlertProcessor.ServiceInfoCacheTest do
       assert route == %AlertProcessor.Model.Route{
                direction_names: ["Outbound", "Inbound"],
                headsigns: %{0 => ["Logan Airport", "Silver Line Way"], 1 => ["South Station"]},
-               long_name: "Logan Airport - South Station",
+               long_name: "Logan Airport Terminals - South Station",
                order: 0,
                route_id: "741",
                route_type: 3,
@@ -161,7 +161,7 @@ defmodule AlertProcessor.ServiceInfoCacheTest do
                  {"Courthouse", "place-crtst", {42.35245, -71.04685}, 1},
                  {"South Station", "place-sstat", {42.352271, -71.055242}, 1}
                ],
-               direction_destinations: ["Logan Airport", "South Station"]
+               direction_destinations: ["Logan Airport Terminals", "South Station"]
              }
     end
 
