@@ -1204,6 +1204,13 @@ defmodule AlertProcessor.Integration.MatchingTest do
     end
   end
 
+  # NOTE: The following tests use a specific trip ID that must have schedules present in the API
+  # at the time the tests are run. The trip must depart from Fairmount station outbound and the
+  # time it departs must be specified here. The current test trip has schedules as of 2020-03-25.
+
+  @test_trip_id "CR-Weekday-StormB-19-1769C0"
+  @test_trip_departs_fairmount_at ~T[16:13:00]
+
   describe "informed_entity's trip matching" do
     test "with origin scheduled time after subscription's start time" do
       insert(
@@ -1212,10 +1219,10 @@ defmodule AlertProcessor.Integration.MatchingTest do
         direction_id: 0,
         route: "CR-Fairmount",
         origin: "place-DB-2205",
-        destination: "place-DB-2265",
+        destination: "place-DB-0095",
         facility_types: [],
-        start_time: ~T[16:30:00],
-        end_time: ~T[19:00:00],
+        start_time: Time.add(@test_trip_departs_fairmount_at, -20 * 60),
+        end_time: Time.add(@test_trip_departs_fairmount_at, 60 * 60),
         relevant_days: ~w(monday)a
       )
 
@@ -1226,11 +1233,7 @@ defmodule AlertProcessor.Integration.MatchingTest do
           "activities" => ["BOARD", "EXIT", "RIDE"],
           "trip" => %{
             "route_id" => "CR-Fairmount",
-            # You'll have to take a look at the ExVCR cassette to make sense of
-            # it but this trip leaves from Fairmount at 4:40PM. Since 4:40PM is
-            # after the subscription's start time of 4:30PM, we should trigger a
-            # notification.
-            "trip_id" => "CR-Weekday-Fall-19-750",
+            "trip_id" => @test_trip_id,
             "direction_id" => 0
           }
         }
@@ -1246,10 +1249,10 @@ defmodule AlertProcessor.Integration.MatchingTest do
         direction_id: 0,
         route: "CR-Fairmount",
         origin: "place-DB-2205",
-        destination: "place-DB-2265",
+        destination: "place-DB-0095",
         facility_types: [],
-        start_time: ~T[17:00:00],
-        end_time: ~T[19:00:00],
+        start_time: Time.add(@test_trip_departs_fairmount_at, 20 * 60),
+        end_time: Time.add(@test_trip_departs_fairmount_at, 60 * 60),
         relevant_days: ~w(monday)a
       )
 
@@ -1260,11 +1263,7 @@ defmodule AlertProcessor.Integration.MatchingTest do
           "activities" => ["BOARD", "EXIT", "RIDE"],
           "trip" => %{
             "route_id" => "CR-Fairmount",
-            # You'll have to take a look at the ExVCR cassette to make sense of
-            # it but this trip leaves from Fairmount at 4:40PM. Since 4:40PM is
-            # after the subscription's start time of 4:30PM, we should trigger a
-            # notification.
-            "trip_id" => "CR-Weekday-Spring-18-773",
+            "trip_id" => @test_trip_id,
             "direction_id" => 0
           }
         }
@@ -1274,13 +1273,14 @@ defmodule AlertProcessor.Integration.MatchingTest do
     end
 
     test "with a subscription origin outside of this trip's schedule" do
+      # Dedham Corp Center to Foxboro, not served by the test trip
       insert(
         :subscription,
         route_type: 2,
         direction_id: 0,
-        route: "CR-Worcester",
-        origin: "Worcester",
-        destination: "place-sstat",
+        route: "CR-Fairmount",
+        origin: "place-FB-0118",
+        destination: "place-FS-0049",
         facility_types: [],
         start_time: ~T[06:00:00],
         end_time: ~T[09:00:00],
@@ -1290,12 +1290,11 @@ defmodule AlertProcessor.Integration.MatchingTest do
       informed_entity_data = [
         %{
           "route_type" => 2,
-          "route_id" => "CR-Worcester",
+          "route_id" => "CR-Fairmount",
           "activities" => ["BOARD", "EXIT", "RIDE"],
           "trip" => %{
-            "route_id" => "CR-Worcester",
-            # Train 586 runs from Framingham to South Station, thus does not server Worcester
-            "trip_id" => "CR-Weekday-Spring-18-586",
+            "route_id" => "CR-Fairmount",
+            "trip_id" => @test_trip_id,
             "direction_id" => 0
           }
         }
@@ -1319,12 +1318,12 @@ defmodule AlertProcessor.Integration.MatchingTest do
         direction_id: 0,
         route: "CR-Fairmount",
         origin: "place-DB-2205",
-        destination: "place-DB-2265",
+        destination: "place-DB-0095",
         facility_types: [],
-        start_time: ~T[15:00:00],
-        end_time: ~T[19:00:00],
-        travel_start_time: ~T[16:30:00],
-        travel_end_time: ~T[17:45:00],
+        start_time: Time.add(@test_trip_departs_fairmount_at, -60 * 60),
+        end_time: Time.add(@test_trip_departs_fairmount_at, 120 * 60),
+        travel_start_time: Time.add(@test_trip_departs_fairmount_at, -20 * 60),
+        travel_end_time: Time.add(@test_trip_departs_fairmount_at, 60 * 60),
         relevant_days: ~w(monday)a
       )
 
@@ -1335,11 +1334,7 @@ defmodule AlertProcessor.Integration.MatchingTest do
           "activities" => ["BOARD", "EXIT", "RIDE"],
           "trip" => %{
             "route_id" => "CR-Fairmount",
-            # You'll have to take a look at the ExVCR cassette to make sense of
-            # it but this trip leaves from Fairmount at 4:40PM. Since 4:40PM is
-            # after the subscription's start time of 4:30PM, we should trigger a
-            # notification.
-            "trip_id" => "CR-Weekday-Fall-19-750",
+            "trip_id" => @test_trip_id,
             "direction_id" => 0
           }
         }
@@ -1355,12 +1350,12 @@ defmodule AlertProcessor.Integration.MatchingTest do
         direction_id: 0,
         route: "CR-Fairmount",
         origin: "place-DB-2205",
-        destination: "place-DB-2265",
+        destination: "place-DB-0095",
         facility_types: [],
-        start_time: ~T[15:00:00],
-        end_time: ~T[19:00:00],
-        travel_start_time: ~T[16:41:00],
-        travel_end_time: ~T[16:45:00],
+        start_time: Time.add(@test_trip_departs_fairmount_at, -60 * 60),
+        end_time: Time.add(@test_trip_departs_fairmount_at, 120 * 60),
+        travel_start_time: Time.add(@test_trip_departs_fairmount_at, 20 * 60),
+        travel_end_time: Time.add(@test_trip_departs_fairmount_at, 60 * 60),
         relevant_days: ~w(monday)a
       )
 
@@ -1371,11 +1366,7 @@ defmodule AlertProcessor.Integration.MatchingTest do
           "activities" => ["BOARD", "EXIT", "RIDE"],
           "trip" => %{
             "route_id" => "CR-Fairmount",
-            # You'll have to take a look at the ExVCR cassette to make sense of
-            # it but this trip leaves from Fairmount at 4:40PM. Since 4:40PM is
-            # after the subscription's start time of 4:30PM, we should trigger a
-            # notification.
-            "trip_id" => "CR-Weekday-Spring-18-773",
+            "trip_id" => @test_trip_id,
             "direction_id" => 0
           }
         }
@@ -1391,12 +1382,12 @@ defmodule AlertProcessor.Integration.MatchingTest do
         direction_id: 0,
         route: "CR-Fairmount",
         origin: "place-DB-2205",
-        destination: "place-DB-2265",
+        destination: "place-DB-0095",
         facility_types: [],
-        start_time: ~T[15:00:00],
-        end_time: ~T[19:00:00],
-        travel_start_time: ~T[16:30:00],
-        travel_end_time: ~T[16:35:00],
+        start_time: Time.add(@test_trip_departs_fairmount_at, -60 * 60),
+        end_time: Time.add(@test_trip_departs_fairmount_at, 120 * 60),
+        travel_start_time: Time.add(@test_trip_departs_fairmount_at, -40 * 60),
+        travel_end_time: Time.add(@test_trip_departs_fairmount_at, -20 * 60),
         relevant_days: ~w(monday)a
       )
 
@@ -1407,11 +1398,7 @@ defmodule AlertProcessor.Integration.MatchingTest do
           "activities" => ["BOARD", "EXIT", "RIDE"],
           "trip" => %{
             "route_id" => "CR-Fairmount",
-            # You'll have to take a look at the ExVCR cassette to make sense of
-            # it but this trip leaves from Fairmount at 4:40PM. Since 4:40PM is
-            # after the subscription's start time of 4:30PM, we should trigger a
-            # notification.
-            "trip_id" => "CR-Weekday-Spring-18-773",
+            "trip_id" => @test_trip_id,
             "direction_id" => 0
           }
         }
