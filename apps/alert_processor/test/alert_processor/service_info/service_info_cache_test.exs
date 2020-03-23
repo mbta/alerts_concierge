@@ -334,6 +334,11 @@ defmodule AlertProcessor.ServiceInfoCacheTest do
     assert {:ok, nil} = ServiceInfoCache.get_parent_stop_id(pid, "garbage")
   end
 
+  # Skipped: This function exists only to support ferry routes, and the test fails when the
+  # specified Charlestown ferry trip is not running on the current day. All ferry service is
+  # canceled as of 2020-03-16 due to COVID-19 service changes, but even during regular service,
+  # this fails when the current day is not a weekday.
+  @tag :skip
   test "get_generalized_trip_id", %{pid: pid} do
     assert {:ok, "Boat-F4-Boat-Charlestown-11:45:00-weekday-1"} ==
              ServiceInfoCache.get_generalized_trip_id(pid, "Boat-F4-1145-Charlestown-Weekday")
