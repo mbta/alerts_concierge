@@ -86,7 +86,8 @@ defmodule AlertProcessor.Mixfile do
       {:scrivener_ecto, "~> 1.0"},
       {:sweet_xml, "~> 0.6"},
       {:eflame, "~> 1.0", only: [:dev]},
-      {:tzdata, "~> 1.0.0", override: true}
+      {:tzdata, "~> 1.0.0", override: true},
+      {:uuid, "~> 1.1.8"}
     ]
   end
 
