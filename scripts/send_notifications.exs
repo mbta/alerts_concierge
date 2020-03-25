@@ -1,23 +1,20 @@
 defmodule SendNotifications do
   @moduledoc """
-  Script to queue up and then dequeue a bunch of notifications
+  Script to enqueue a number of fake notifications for testing purposes.
 
-  Each notification belongs to a user with email address:
-    send-alerts-test-notifications@example.com
+  All notifications are via SMS to the number 555-555-5555, and are considered to be "for" the
+  user with email address `send-alerts-test-notifications@example.com`. This user will be created
+  if it doesn't already exist.
 
-  It sends text messages to the number 5555555555 and uses the AwsMock (at
-  least when run in dev)
+  The script does not exit until all notifications have been removed from the queue.
 
-  Usage: env RATE_LIMIT=count mix run send_notifications.exs [options]
+  Usage: mix run send_notifications.exs [options]
       -h, --help                       Print this message
       -c, --count                      Number of notifications to send
-      -d, --delete                     Delete notifications previously created by script
   """
 
   alias AlertProcessor.Model.{User, Notification}
-  alias AlertProcessor.Repo
-
-  import Ecto.Query
+  alias AlertProcessor.{Repo, SendingQueue}
 
   @user_email "send-alerts-test-notifications@example.com"
 
@@ -26,38 +23,13 @@ defmodule SendNotifications do
   end
 
   def run({:create, count}) do
-    create_send_and_wait(count)
-  end
-
-  def run({:create_delete, count}) do
-    run({:create, count})
-    run(:delete)
-  end
-
-  def run(:delete) do
-    delete()
+    schedule_notifications(count)
+    await_notifications_sent()
   end
 
   def run(:exit) do
     run(:help)
     System.halt(1)
-  end
-
-  defp create_send_and_wait(count) do
-    original_count = number_of_sent_notifications()
-
-    schedule_notifications(count)
-
-    check_sent_notifications(original_count, count)
-  end
-
-  defp delete do
-    Ecto.Adapters.SQL.query!(
-      AlertProcessor.Repo,
-      "DELETE FROM notifications WHERE user_id IN (SELECT id FROM users WHERE email LIKE 'send-alerts-test%')",
-      [],
-      timeout: :infinity
-    )
   end
 
   defp schedule_notifications(count, index \\ 0) do
@@ -67,21 +39,17 @@ defmodule SendNotifications do
     index
     |> Stream.iterate(&(&1 + 1))
     |> Stream.map(&notification(&1, datetime, user))
-    |> Stream.map(&AlertProcessor.SendingQueue.enqueue/1)
+    |> Stream.map(&SendingQueue.enqueue/1)
     |> Enum.take(count)
   end
 
-  defp check_sent_notifications(original_count, count) do
-    current_count = number_of_sent_notifications()
+  defp await_notifications_sent do
+    {:ok, length} = SendingQueue.queue_length()
 
-    if current_count - original_count < count do
+    if length > 0 do
       :timer.sleep(100)
-      check_sent_notifications(original_count, count)
+      await_notifications_sent()
     end
-  end
-
-  defp number_of_sent_notifications do
-    Repo.one(from(n in Notification, select: count("*")))
   end
 
   defp notification(count, datetime, user) do
@@ -98,7 +66,7 @@ defmodule SendNotifications do
   end
 
   defp find_or_create_user do
-    case AlertProcessor.Repo.get_by(User, email: @user_email) do
+    case Repo.get_by(User, email: @user_email) do
       %User{} = user ->
         user
 
@@ -114,15 +82,13 @@ end
 opts =
   OptionParser.parse(
     System.argv(),
-    switches: [help: :boolean, count: :integer, delete: :boolean],
-    aliases: [h: :help, c: :count, d: :delete]
+    switches: [help: :boolean, count: :integer],
+    aliases: [h: :help, c: :count]
   )
 
 case opts do
   {[help: true], _, _} -> :help
-  {[count: n, delete: true], _, _} -> {:create_delete, n}
   {[count: n], _, _} -> {:create, n}
-  {[delete: true], _, _} -> :delete
   _ -> :exit
 end
 |> SendNotifications.run()
