@@ -245,7 +245,8 @@ defmodule AlertProcessor.Model.NotificationTest do
       alert = %Alert{id: "1", last_push_notification: DateTime.utc_now()}
       user = insert(:user)
 
-      # The outdated notification would be returned by this function if there weren't a newer notification for this alert and user with the same last_push_notification as the alert
+      # The outdated notification would be returned by this function if there weren't a newer
+      # notification for this alert and user with the same last_push_notification as the alert
       outdated_notification =
         struct(Notification, %{
           notification_details("1", 1, user)
