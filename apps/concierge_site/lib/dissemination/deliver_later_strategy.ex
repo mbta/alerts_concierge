@@ -35,10 +35,4 @@ defmodule ConciergeSite.Dissemination.DeliverLaterStrategy do
       end
     end)
   end
-
-  defp email_address(email) when is_list(email), do: email |> List.first() |> email_address()
-
-  defp email_address({_, email}), do: email
-
-  defp email_address(email), do: email
 end
