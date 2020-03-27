@@ -17,9 +17,6 @@ defmodule AlertProcessor.Supervisor do
     Reminders
   }
 
-  @worker_pool_size Application.get_env(:alert_processor, :pool_size)
-  @worker_pool_overflow Application.get_env(:alert_processor, :overflow)
-
   def start_link do
     Supervisor.start_link(__MODULE__, [])
   end
@@ -30,8 +27,7 @@ defmodule AlertProcessor.Supervisor do
     message_worker_config = [
       name: {:local, :message_worker},
       worker_module: NotificationWorker,
-      size: @worker_pool_size,
-      max_overflow: @worker_pool_overflow
+      size: Application.get_env(:alert_processor, :notification_workers)
     ]
 
     children = [

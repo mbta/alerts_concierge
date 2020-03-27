@@ -47,12 +47,8 @@ config :alert_processor,
     {:system, "DATABASE_URL_DEV",
      "postgresql://postgres:postgres@localhost:5432/alert_concierge_dev"}
 
-# Config for Rate Limiter. Scale: time period in ms. Limit: # of requests per time period. Send Rate: ms delay between send
-config :alert_processor,
-  pool_size: 2,
-  overflow: 1,
-  rate_limit_scale: {:system, "RATE_LIMIT_SCALE", "3600000"},
-  rate_limit: {:system, "RATE_LIMIT", "30"}
+# Number of workers for sending notifications
+config :alert_processor, notification_workers: 2
 
 # Config for db migration function
 config :alert_processor, :migration_task, AlertProcessor.ReleaseTasks.Dev
