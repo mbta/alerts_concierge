@@ -161,7 +161,7 @@ defmodule AlertProcessor.Reminders.ProcessorTest do
 
       notification
       |> Notification.create_changeset(%{last_push_notification: monday_april_9_at_7_55am})
-      |> Repo.update()     
+      |> Repo.update()
 
       Processor.process_alerts([alert], monday_april_9_at_7_55am)
 

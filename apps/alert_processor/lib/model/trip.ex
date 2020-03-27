@@ -60,7 +60,17 @@ defmodule AlertProcessor.Model.Trip do
   @required_fields ~w(user_id relevant_days start_time end_time
     facility_types roundtrip)a
   @valid_relevant_days ~w(monday tuesday wednesday thursday friday saturday sunday)a
-  @valid_facility_types ~w(bike_storage electric_car_chargers elevator escalator parking_area pick_drop portable_boarding_lift tty_phone elevated_subplatform)a
+  @valid_facility_types ~w(
+    bike_storage
+    electric_car_chargers
+    elevated_subplatform
+    elevator
+    escalator
+    parking_area
+    pick_drop
+    portable_boarding_lift
+    tty_phone
+  )a
   @update_permitted_fields ~w(
     relevant_days
     start_time
