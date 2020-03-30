@@ -10,6 +10,12 @@ defmodule ExAws.Mock do
   """
   @spec request(ExAws.Operation.t(), []) :: {:ok, term} | {:error, term}
   def request(operation, []) do
+    # Take a realistic amount of time to "respond" to the request. This is short enough to not
+    # have any measurable impact on test runtime, but means load tests performing thousands of
+    # requests will have similar results as they would in production. The value is based on the
+    # average response time of a real SNS `publish` request during a system-wide alert.
+    :timer.sleep(40)
+
     send(self(), operation.action)
 
     case operation.action do
