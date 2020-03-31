@@ -22,7 +22,7 @@ defmodule ConciergeSite.Dissemination.MailerInterfaceTest do
         alert: alert
       }
 
-      {:reply, sent_email, nil} =
+      {:reply, {:ok, {:delivered_email, sent_email}}, nil} =
         MailerInterface.handle_call({:send_notification_email, notification}, nil, nil)
 
       assert sent_email.to == [{nil, email}]
