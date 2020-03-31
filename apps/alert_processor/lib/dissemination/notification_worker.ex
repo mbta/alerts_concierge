@@ -30,7 +30,7 @@ defmodule AlertProcessor.NotificationWorker do
   def handle_info(:notification, state) do
     case SendingQueue.pop() do
       {:ok, %Notification{} = notification} ->
-        send_notification(notification)
+        Dispatcher.send_notification(notification)
         Process.send(self(), :notification, [])
 
       :error ->
@@ -42,15 +42,5 @@ defmodule AlertProcessor.NotificationWorker do
 
   def handle_info(_, state) do
     {:noreply, state}
-  end
-
-  defp send_notification(notification) do
-    with {:ok, _} <- Dispatcher.send_notification(notification) do
-    else
-      {:error, _} ->
-        Logger.warn(
-          "Sending failed for user: #{notification.user.id}, alert: #{notification.alert_id}"
-        )
-    end
   end
 end

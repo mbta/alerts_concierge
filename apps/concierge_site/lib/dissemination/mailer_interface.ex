@@ -1,10 +1,9 @@
 defmodule ConciergeSite.Dissemination.MailerInterface do
   @moduledoc """
-  interface for receiving email requests from alert processor app
-  and dispatches to correct mailer
+  Interface for the AlertProcessor app to send emails through the ConciergeSite mailer without an
+  explicit dependency on this app (which would create a cyclic dependency error).
   """
   use GenServer
-  require Logger
   alias ConciergeSite.Dissemination.{NotificationEmail, Mailer}
 
   @lookup_tuple {:via, Registry, {:mailer_process_registry, :mailer}}
@@ -18,18 +17,15 @@ defmodule ConciergeSite.Dissemination.MailerInterface do
   end
 
   def handle_call({:send_notification_email, notification}, _from, _state) do
-    response =
+    {_email, response} =
       notification
       |> NotificationEmail.notification_email()
-      |> Mailer.deliver_later()
+      |> Mailer.deliver_now(response: true)
 
-    Logger.info(fn ->
-      "Notification Email result: alert_id: #{notification.alert_id}, user_id: #{
-        notification.user.id
-      }, notification_id: #{notification.id}"
-    end)
-
-    {:reply, response, nil}
+    {:reply, {:ok, response}, nil}
+  rescue
+    error in Bamboo.ApiError ->
+      {:reply, {:error, error}, nil}
   end
 
   def handle_info(_msg, state) do
