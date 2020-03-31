@@ -59,8 +59,7 @@ defmodule AlertProcessor.Mixfile do
   # Type `mix help deps` for examples and options.
   defp deps do
     [
-      {:bamboo, "~> 0.8", only: [:test]},
-      {:bamboo_smtp, "~> 1.3.0", only: [:test]},
+      {:bamboo, "~> 1.4.0", only: [:test]},
       {:calendar, "~> 0.17.4"},
       {:comeonin, "~> 3.0"},
       {:con_cache, "~> 0.12.1"},
@@ -69,10 +68,8 @@ defmodule AlertProcessor.Mixfile do
       {:ecto, "~> 2.1.0"},
       {:exactor, "~> 2.2.0"},
       {:excoveralls, "~> 0.5", only: [:dev, :test]},
-      {:ex_aws, "~> 2.1.0", override: true},
-      {:ex_aws_sns,
-       git: "https://github.com/ex-aws/ex_aws_sns",
-       ref: "7a681400876774cf8ea9825a07b7d361715e4362"},
+      {:ex_aws, "~> 2.1.0"},
+      {:ex_aws_sns, "~> 2.0.1"},
       {:ex_machina, "~> 2.0", only: :test},
       {:exvcr, "~> 0.10.1", runtime: false},
       {:fast_local_datetime, "~> 0.3.0"},

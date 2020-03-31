@@ -37,17 +37,7 @@ config :logger, :console,
 
 config :ehmon, :report_mf, {:ehmon, :info_report}
 
-config :concierge_site, ConciergeSite.Dissemination.Mailer,
-  adapter: Bamboo.SMTPAdapter,
-  server: "email-smtp.us-east-1.amazonaws.com",
-  port: 587,
-  # can be `:always` or `:never`
-  tls: :always,
-  # can be `true`
-  ssl: false,
-  retries: 3,
-  username: "${SMTP_USERNAME}",
-  password: "${SMTP_PASSWORD}"
+config :concierge_site, ConciergeSite.Dissemination.Mailer, adapter: Bamboo.SesAdapter
 
 # Load css as a static file
 config :concierge_site, load_css?: true
