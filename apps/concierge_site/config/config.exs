@@ -20,9 +20,7 @@ config :concierge_site, ConciergeSite.Endpoint,
 config :concierge_site, :redirect_http?, false
 
 # Bamboo config for emails
-config :concierge_site, ConciergeSite.Dissemination.Mailer,
-  adapter: Bamboo.LocalAdapter,
-  deliver_later_strategy: ConciergeSite.Dissemination.DeliverLaterStrategy
+config :concierge_site, ConciergeSite.Dissemination.Mailer, adapter: Bamboo.LocalAdapter
 
 config :concierge_site, send_from_email: {:system, "SENDER_EMAIL_ADDRESS", "alert@mbta.com"}
 config :concierge_site, send_from_name: {:system, "SENDER_EMAIL_NAME", "T-Alert"}
