@@ -5,7 +5,6 @@ defmodule AlertProcessor.Dispatcher do
 
   @mailer Application.get_env(:alert_processor, :mailer)
   alias AlertProcessor.{Aws.AwsClient, Model.Notification, NotificationSmser}
-  alias AlertProcessor.Helpers.DateTimeHelper
   require Logger
 
   @doc """
@@ -23,8 +22,8 @@ defmodule AlertProcessor.Dispatcher do
 
   def send_notification(%Notification{email: email, phone_number: nil} = notification)
       when not is_nil(email) do
-    log_times(notification)
     email = @mailer.send_notification_email(notification)
+    log(notification)
     {:ok, email}
   end
 
@@ -39,8 +38,6 @@ defmodule AlertProcessor.Dispatcher do
         } = notification
       )
       when not is_nil(phone_number) do
-    log_times(notification)
-
     result =
       notification
       |> NotificationSmser.notification_sms()
@@ -52,6 +49,8 @@ defmodule AlertProcessor.Dispatcher do
       } closed_timestamp=#{closed_timestamp} result=#{inspect(result)}"
     end)
 
+    log(notification)
+
     result
   end
 
@@ -59,33 +58,39 @@ defmodule AlertProcessor.Dispatcher do
     {:error, "invalid or missing params"}
   end
 
-  defp log_times(notification, now \\ DateTime.utc_now())
-  defp log_times(%{tracking_optimal_time: nil}, _), do: nil
-  defp log_times(%{tracking_matched_time: nil}, _), do: nil
-
-  defp log_times(
-         %{
-           tracking_optimal_time: tracking_optimal_time,
-           tracking_matched_time: tracking_matched_time,
-           alert: %{last_push_notification: last_push_notification}
-         },
-         now
-       ) do
-    tracking_sent_time = DateTimeHelper.datetime_to_local(now)
-
-    seconds_until_match = DateTime.diff(tracking_matched_time, tracking_optimal_time)
-    seconds_in_sending_queue = DateTime.diff(tracking_sent_time, tracking_matched_time)
-    seconds_processing = seconds_until_match + seconds_in_sending_queue
-    alert_age_in_seconds = DateTime.diff(now, last_push_notification)
-
+  defp log(%{
+         id: notification_id,
+         type: notification_type,
+         user_id: user_id,
+         alert: %{
+           id: alert_id,
+           last_push_notification: alert_updated_at,
+           severity: alert_severity,
+           tracking_duration_type: alert_duration_type,
+           tracking_fetched_at: alert_fetched_at
+         }
+       })
+       when not is_nil(alert_fetched_at) and not is_nil(alert_updated_at) do
     Logger.info(fn ->
-      "notification time, alert_age_in_seconds=#{alert_age_in_seconds} seconds_until_match=#{
-        seconds_until_match
-      } seconds_in_sending_queue=#{seconds_in_sending_queue} seconds_processing=#{
-        seconds_processing
-      } time_optimal=#{tracking_optimal_time} time_matched=#{tracking_matched_time} time_sent=#{
-        tracking_sent_time
-      }"
+      now = DateTime.utc_now()
+
+      %{
+        id: notification_id,
+        type: notification_type,
+        user_id: user_id,
+        alert_id: alert_id,
+        alert_severity: alert_severity,
+        alert_duration_type: alert_duration_type,
+        seconds_processing: DateTime.diff(now, alert_fetched_at, :millisecond) / 1000,
+        seconds_since_alert_update: DateTime.diff(now, alert_updated_at)
+      }
+      |> Enum.map(fn {key, value} -> "#{key}=#{value}" end)
+      |> Enum.join(" ")
+      |> String.replace_prefix("", "notification sent: ")
     end)
+  end
+
+  defp log(notification) do
+    Logger.info("notification sent: logging function did not match #{inspect(notification)}")
   end
 end

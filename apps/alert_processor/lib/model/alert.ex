@@ -3,6 +3,7 @@ defmodule AlertProcessor.Model.Alert do
   Representation of alert received from MBTA /alerts endpoint
   """
   alias AlertProcessor.{
+    AlertFilters,
     Model.InformedEntity,
     Model.Subscription,
     Helpers.DateTimeHelper,
@@ -25,7 +26,9 @@ defmodule AlertProcessor.Model.Alert do
     :duration_certainty,
     :created_at,
     :closed_timestamp,
-    :reminder_times
+    :reminder_times,
+    :tracking_duration_type,
+    :tracking_fetched_at
   ]
 
   @type informed_entity :: [
@@ -55,7 +58,9 @@ defmodule AlertProcessor.Model.Alert do
           duration_certainty: {:estimated, pos_integer} | :known,
           created_at: DateTime.t(),
           closed_timestamp: DateTime.t() | nil,
-          reminder_times: [DateTime.t()] | nil
+          reminder_times: [DateTime.t()] | nil,
+          tracking_duration_type: AlertFilters.duration_type() | nil,
+          tracking_fetched_at: DateTime.t() | nil
         }
 
   @doc """

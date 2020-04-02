@@ -29,6 +29,8 @@ defmodule AlertProcessor.AlertParser do
   """
   @spec process_alerts(AlertFilters.duration_type()) :: [{:ok, [Notification.t()]}]
   def process_alerts(alert_filter_duration_type \\ :anytime) do
+    started_at = DateTime.utc_now()
+
     with {:ok, alerts, feed_timestamp} <- AlertsClient.get_alerts(),
          {:ok, api_alerts, _} <- ApiClient.get_alerts(),
          {:ok, facility_map} <- ServiceInfoCache.get_facility_map() do
@@ -42,7 +44,9 @@ defmodule AlertProcessor.AlertParser do
       parsed_alerts = parse_alerts({updated_alerts, facility_map, feed_timestamp})
 
       alerts_needing_notifications =
-        AlertFilters.filter_by_duration_type(parsed_alerts, alert_filter_duration_type)
+        parsed_alerts
+        |> AlertFilters.filter_by_duration_type(alert_filter_duration_type)
+        |> add_tracking_fields(started_at, alert_filter_duration_type)
 
       Logger.info(fn ->
         "alert filter, duration_type=#{alert_filter_duration_type} alert_count=#{
@@ -102,6 +106,13 @@ defmodule AlertProcessor.AlertParser do
 
     alerts
     |> Enum.filter(filter_fun)
+  end
+
+  defp add_tracking_fields(alerts, fetched_at, duration_type) do
+    Enum.map(
+      alerts,
+      &struct!(&1, tracking_fetched_at: fetched_at, tracking_duration_type: duration_type)
+    )
   end
 
   def parse_alert(
