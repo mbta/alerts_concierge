@@ -6,11 +6,10 @@ defmodule AlertProcessor.NotificationBuilder do
   require Logger
   alias AlertProcessor.TextReplacement
   alias AlertProcessor.Model.Notification
-  alias AlertProcessor.Helpers.DateTimeHelper
 
-  def build_notification({user, subscriptions}, alert, now \\ DateTime.utc_now()) do
+  def build_notification({user, subscriptions}, alert) do
     alert_text_replaced = replace_text(alert, subscriptions)
-    do_build_notification({user, subscriptions}, alert_text_replaced, now)
+    do_build_notification({user, subscriptions}, alert_text_replaced)
   end
 
   defp replace_text(alert, subscriptions) do
@@ -27,7 +26,7 @@ defmodule AlertProcessor.NotificationBuilder do
     end
   end
 
-  defp do_build_notification({user, subscriptions}, alert, now) do
+  defp do_build_notification({user, subscriptions}, alert) do
     %Notification{
       alert_id: alert.id,
       user: user,
@@ -47,33 +46,7 @@ defmodule AlertProcessor.NotificationBuilder do
           &%AlertProcessor.Model.NotificationSubscription{subscription_id: &1.id}
         ),
       closed_timestamp: alert.closed_timestamp,
-      type: List.first(subscriptions).notification_type_to_send || :initial,
-      tracking_optimal_time: determine_optimal_time(alert, subscriptions, now),
-      tracking_matched_time: DateTimeHelper.datetime_to_local(now)
+      type: List.first(subscriptions).notification_type_to_send || :initial
     }
-  end
-
-  defp determine_optimal_time(
-         %{last_push_notification: last_push_notification},
-         subscriptions,
-         now
-       ) do
-    local_alert_start_time = local_date_time_no_later_than_now(last_push_notification, now)
-
-    Enum.reduce(subscriptions, local_alert_start_time, fn %{start_time: start_time},
-                                                          last_start_time ->
-      notification_window_start_date_time = DateTimeHelper.time_to_local_datetime(start_time, now)
-
-      if DateTime.compare(notification_window_start_date_time, last_start_time) == :gt,
-        do: notification_window_start_date_time,
-        else: last_start_time
-    end)
-  end
-
-  defp local_date_time_no_later_than_now(date_time, now) do
-    with local_now <- DateTimeHelper.datetime_to_local(now),
-         local_date_time <- DateTimeHelper.datetime_to_local(date_time) do
-      if local_date_time <= local_now, do: local_date_time, else: local_now
-    end
   end
 end
