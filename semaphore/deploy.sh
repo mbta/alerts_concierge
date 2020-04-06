@@ -12,6 +12,9 @@ appenv=$APP-$awsenv
 githash=$(git rev-parse --short HEAD)
 gitmsg=$(git log -1 --pretty=%s)
 
+# debugging: output AWS CLI version
+aws --version
+
 # ensure the image exists on AWS. This command will fail if it does not.
 aws ecr describe-images --region us-east-1 --repository-name $APP --image-ids "imageTag=git-$githash"
 
@@ -33,6 +36,12 @@ task_containers=$(echo $current_task | \
     map(select(.name != "LAST_COMMIT_MESSAGE")) |
     . + [{name: "LAST_COMMIT_MESSAGE", value: "\($gm)"}]
   ))')
+
+# safeguard against a known issue where the retrieved container definition is
+# missing the `secrets` key, causing the new version of the app to be missing
+# all its secrets and unable to start. this command will exit non-zero if the
+# `secrets` key is not present, aborting the script.
+! echo $task_containers | jq '.[0] | .secrets' | grep '^null$'
 
 aws ecs register-task-definition \
   --family $appenv \
