@@ -17,8 +17,6 @@ config :concierge_site, ConciergeSite.Endpoint,
   render_errors: [view: ConciergeSite.ErrorView, accepts: ~w(html json)],
   pubsub: [name: ConciergeSite.PubSub, adapter: Phoenix.PubSub.PG2]
 
-config :concierge_site, temp_state_key: {:system, "TEMP_STATE_KEY", "top_secret_temp_state_key"}
-
 config :concierge_site, :redirect_http?, false
 
 # Bamboo config for emails

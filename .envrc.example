@@ -16,5 +16,4 @@ export SENDER_EMAIL_ADDRESS=alert@mbta.com
 export SERVICE_INFO_UPDATE_INTERVAL=86400000
 export SMTP_PASSWORD=
 export SMTP_USERNAME=
-export TEMP_STATE_KEY=top_secret_key_mix_phx_gen_secret
 export UNSUBSCRIBED_LIST_FETCH_INTERVAL=300000
