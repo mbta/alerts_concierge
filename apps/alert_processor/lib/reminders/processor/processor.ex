@@ -16,6 +16,8 @@ defmodule AlertProcessor.Reminders.Processor do
     NotificationBuilder
   }
 
+  require Logger
+
   @doc """
   Schedules reminders due for a given list of alerts.
 
@@ -55,13 +57,12 @@ defmodule AlertProcessor.Reminders.Processor do
   end
 
   defp schedule_notifications(notifications) do
-    # save notification in the database before adding to sending queue
-    # do this now incase we re-match the same notificaiton before finishing
-    # sending from a previous iteration
+    # see AlertProcessor.Scheduler.enqueue_notifications/1
     for notification <- notifications do
-      {:ok, _} = Notification.save(notification, :sent)
+      case Notification.save(notification, :sent) do
+        {:ok, notification} -> SendingQueue.enqueue(notification)
+        {:error, changeset} -> Logger.warn("notification insert failed: #{inspect(changeset)}")
+      end
     end
-
-    SendingQueue.list_enqueue(notifications)
   end
 end
