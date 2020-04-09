@@ -56,8 +56,7 @@ defmodule AlertProcessor.SendingQueue do
 
   @doc false
   def handle_call({:list_push, new_notifications}, _from, notifications) do
-    newstate = new_notifications ++ notifications
-    {:reply, :ok, Enum.uniq(newstate)}
+    {:reply, :ok, new_notifications ++ notifications}
   end
 
   @doc false
@@ -77,8 +76,7 @@ defmodule AlertProcessor.SendingQueue do
 
   @doc false
   def handle_call({:push, notification}, _from, notifications) do
-    newstate = [notification | notifications]
-    {:reply, :ok, Enum.uniq(newstate)}
+    {:reply, :ok, [notification | notifications]}
   end
 
   @doc false
