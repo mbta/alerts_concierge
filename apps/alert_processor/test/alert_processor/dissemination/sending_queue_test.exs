@@ -26,19 +26,6 @@ defmodule AlertProcessor.SendingQueueTest do
     assert SendingQueue.pop(test) == :error
   end
 
-  test "Duplicate notifications are not enqueued", %{test: test} do
-    notification1 = %Notification{alert_id: "1", user_id: "1"}
-    notification2 = %Notification{alert_id: "1", user_id: "1"}
-    SendingQueue.start_link(name: test)
-    SendingQueue.enqueue(test, notification1)
-    SendingQueue.enqueue(test, notification2)
-
-    {:ok, notification} = SendingQueue.pop(test)
-    assert notification == notification1
-    assert notification == notification2
-    assert :error = SendingQueue.pop(test)
-  end
-
   test "Multiple alerts can be added to the queue", %{test: test} do
     notification1 = %Notification{alert_id: "1"}
     notification2 = %Notification{alert_id: "2"}
