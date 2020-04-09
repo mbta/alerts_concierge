@@ -39,6 +39,8 @@ defmodule AlertProcessor.SchedulerTest do
     end
 
     test "ignores notifications that can't be saved", %{time: time} do
+      import ExUnit.CaptureLog
+
       # User is intentionally *not* saved to the database.
       # This replicates the race condition of an account being deleted while alerts are being matched.
       user = build(:user)
@@ -52,9 +54,13 @@ defmodule AlertProcessor.SchedulerTest do
         last_push_notification: DateTime.utc_now()
       }
 
-      {:ok, [_notification]} = Scheduler.schedule_notifications([{user, [sub]}], alert)
-      {:ok, queued_notification} = SendingQueue.pop()
-      assert queued_notification == nil
+      capture_log(fn ->
+        # logs a warning about being unable to save the notification
+        {:ok, [_notification]} = Scheduler.schedule_notifications([{user, [sub]}], alert)
+      end)
+
+      # nothing should have been added to the queue
+      :error = SendingQueue.pop()
     end
   end
 end
