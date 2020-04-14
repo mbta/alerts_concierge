@@ -15,32 +15,53 @@ defmodule AlertProcessor.NotificationWorker do
 
   @doc false
   def start_link(opts \\ [name: __MODULE__]) do
-    GenServer.start_link(__MODULE__, [], opts)
+    GenServer.start_link(__MODULE__, UUID.uuid4(), opts)
   end
 
   @doc false
-  def init(state) do
+  def init(id) do
+    log(id, "event=startup")
     Process.send_after(self(), :notification, 10)
-    {:ok, state}
+    {:ok, id}
   end
 
   @doc """
   Checks sending queue for alert and sends it out to user
   """
-  def handle_info(:notification, state) do
+  def handle_info(:notification, id) do
+    pop_start = now()
+
     case SendingQueue.pop() do
       {:ok, %Notification{} = notification} ->
+        log(id, "event=pop result=ok notification=#{notification.id} time=#{now() - pop_start}")
+
+        send_start = now()
         Dispatcher.send_notification(notification)
+        log(id, "event=send notification=#{notification.id} time=#{now() - send_start}")
+
         Process.send(self(), :notification, [])
 
       :error ->
+        log(id, "event=pop result=error time=#{now() - pop_start}")
         Process.send_after(self(), :notification, 100)
     end
 
-    {:noreply, state}
+    {:noreply, id}
+  rescue
+    exception ->
+      log(id, "event=crash")
+      reraise exception, System.stacktrace()
   end
 
-  def handle_info(_, state) do
-    {:noreply, state}
+  def handle_info(_, id) do
+    {:noreply, id}
+  end
+
+  defp log(id, message) do
+    Logger.info("worker_log id=#{id} #{message}")
+  end
+
+  defp now() do
+    System.monotonic_time(:microsecond)
   end
 end
