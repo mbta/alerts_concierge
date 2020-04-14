@@ -28,11 +28,20 @@ defmodule AlertProcessor.Scheduler do
     # here, and not within the sending workers, otherwise the next run of the AlertWorker would
     # mistakenly think some users had not yet been notified, and notify them again.
 
+    log("event=start")
+
     notifications =
       Enum.map(notifications, fn notification ->
+        save_start = now()
+
         case Notification.save(notification, :sent) do
           {:ok, notification} ->
+            log("event=save notification=#{notification.id} time=#{now() - save_start}")
+
+            enqueue_start = now()
             SendingQueue.enqueue(notification)
+            log("event=enqueue notification=#{notification.id} time=#{now() - enqueue_start}")
+
             notification
 
           {:error, changeset} ->
@@ -41,6 +50,16 @@ defmodule AlertProcessor.Scheduler do
         end
       end)
 
+    log("event=finish")
+
     notifications
+  end
+
+  defp log(message) do
+    Logger.info("scheduler_log #{message}")
+  end
+
+  defp now() do
+    System.monotonic_time(:microsecond)
   end
 end
