@@ -1,11 +1,6 @@
 use Mix.Config
 
 config :alert_processor, database_url: {:system, "DATABASE_URL_PROD"}
-# Do not print debug messages in production
-config :logger,
-  level: :info,
-  truncate: :infinity,
-  backends: [:console]
 
 # Configure your database
 config :alert_processor, AlertProcessor.Repo, pool_size: 50

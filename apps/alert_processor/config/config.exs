@@ -11,6 +11,8 @@ config :alert_processor,
   notification_window_filter: AlertProcessor.NotificationWindowFilter,
   env: Mix.env()
 
+config :ex_aws, json_codec: Poison, debug_requests: true
+
 config :paper_trail, repo: AlertProcessor.Repo, item_type: Ecto.UUID, originator_type: Ecto.UUID
 
 # Configures Elixir's Logger
