@@ -33,11 +33,11 @@ defmodule AlertProcessor.NotificationWorker do
 
     case SendingQueue.pop() do
       {:ok, %Notification{} = notification} ->
-        log(id, "event=pop result=ok notification=#{notification.id} time=#{now() - pop_start}")
+        log(id, notification, "event=pop result=ok time=#{now() - pop_start}")
 
         send_start = now()
         Dispatcher.send_notification(notification)
-        log(id, "event=send notification=#{notification.id} time=#{now() - send_start}")
+        log(id, notification, "event=send time=#{now() - send_start}")
 
         Process.send(self(), :notification, [])
 
@@ -55,6 +55,11 @@ defmodule AlertProcessor.NotificationWorker do
 
   def handle_info(_, id) do
     {:noreply, id}
+  end
+
+  defp log(id, notification, message) do
+    mode = if(is_nil(notification.phone_number), do: "email", else: "sms")
+    Logger.info("worker_log id=#{id} mode=#{mode} notification=#{notification.id} #{message}")
   end
 
   defp log(id, message) do
