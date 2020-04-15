@@ -24,14 +24,13 @@ config :concierge_site, ConciergeSite.Endpoint,
 
 config :concierge_site, :redirect_http?, true
 
-# Do not print debug messages in production
 config :logger,
-  level: :info,
+  level: :debug,
   truncate: :infinity,
   backends: [:console]
 
 config :logger, :console,
-  level: :info,
+  level: :debug,
   format: "$dateT$time [$level]$levelpad node=$node $metadata$message\n",
   metadata: [:request_id, :ip]
 
