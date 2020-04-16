@@ -33,7 +33,7 @@ defmodule AlertProcessor.NotificationWorker do
 
     case SendingQueue.pop() do
       {:ok, %Notification{} = notification} ->
-        log(id, notification, "event=pop result=ok time=#{now() - pop_start}")
+        log(id, notification, "event=pop time=#{now() - pop_start}")
 
         send_start = now()
         Dispatcher.send_notification(notification)
@@ -42,7 +42,6 @@ defmodule AlertProcessor.NotificationWorker do
         Process.send(self(), :notification, [])
 
       :error ->
-        log(id, "event=pop result=error time=#{now() - pop_start}")
         Process.send_after(self(), :notification, 100)
     end
 
