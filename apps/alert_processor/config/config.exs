@@ -50,7 +50,7 @@ config :alert_processor,
      "postgresql://postgres:postgres@localhost:5432/alert_concierge_dev"}
 
 # Number of workers for sending notifications
-config :alert_processor, notification_workers: 20
+config :alert_processor, notification_workers: 40
 
 # Config for db migration function
 config :alert_processor, :migration_task, AlertProcessor.ReleaseTasks.Dev
