@@ -86,7 +86,7 @@ defmodule SendNotifications do
     attributes = %{
       email: @user_email,
       password: "Password1",
-      phone_number: @user_phone,
+      phone_number: if(mode == :sms, do: @user_phone, else: nil),
       communication_mode: mode
     }
 
