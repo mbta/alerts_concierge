@@ -20,6 +20,8 @@ config :alert_processor, :ex_aws, ExAws.Mock
 config :alert_processor, :alert_parser, AlertProcessor.AlertParserMock
 
 config :alert_processor, :mailer, AlertProcessor.MailerMock
+config :alert_processor, :mailer_email, AlertProcessor.EmailMock
+config :alert_processor, :mailer_error, AlertProcessor.MailerErrorMock
 
 config :alert_processor, api_url: "https://dev.api.mbtace.com/"
 

@@ -28,7 +28,6 @@ defmodule AlertProcessor.Mixfile do
       mod: {AlertProcessor, []},
       extra_applications: [
         :elixir_make,
-        :plug,
         :jsx,
         :public_key,
         :crypto,
@@ -59,7 +58,6 @@ defmodule AlertProcessor.Mixfile do
   # Type `mix help deps` for examples and options.
   defp deps do
     [
-      {:bamboo, "~> 1.4.0", only: [:test]},
       {:calendar, "~> 0.17.4"},
       {:comeonin, "~> 3.0"},
       {:con_cache, "~> 0.12.1"},

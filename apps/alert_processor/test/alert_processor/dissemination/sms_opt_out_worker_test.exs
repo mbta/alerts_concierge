@@ -9,7 +9,7 @@ defmodule AlertProcessor.SmsOptOutWorkerTest do
   test "worker fetches list of opted out phone numbers from aws sns and removes the phone numbers from the accounts" do
     user = insert(:user, phone_number: "9999999999")
     {:noreply, _} = SmsOptOutWorker.handle_info(:work, [])
-    assert_received :list_phone_numbers_opted_out
+    assert_received {:list_phone_numbers_opted_out, _}
     reloaded_user = Repo.one(from(u in User, where: u.id == ^user.id))
     assert reloaded_user.phone_number == nil
     assert reloaded_user.sms_opted_out_at != nil
@@ -19,7 +19,7 @@ defmodule AlertProcessor.SmsOptOutWorkerTest do
   test "worker fetches list of opted out phone numbers from aws sns and doesnt update for numbers not in list" do
     user = insert(:user, phone_number: "5555551234")
     {:noreply, _} = SmsOptOutWorker.handle_info(:work, [])
-    assert_received :list_phone_numbers_opted_out
+    assert_received {:list_phone_numbers_opted_out, _}
     reloaded_user = Repo.one(from(u in User, where: u.id == ^user.id))
     assert reloaded_user.phone_number == "5555551234"
   end
@@ -27,7 +27,7 @@ defmodule AlertProcessor.SmsOptOutWorkerTest do
   test "worker fetches list of opted out phone numbers from aws sns and removes numbers for users with existing state" do
     user = insert(:user, phone_number: "9999999999")
     {:noreply, new_state} = SmsOptOutWorker.handle_info(:work, ["2222222222", "3333333333"])
-    assert_received :list_phone_numbers_opted_out
+    assert_received {:list_phone_numbers_opted_out, _}
     reloaded_user = Repo.one(from(u in User, where: u.id == ^user.id))
     assert reloaded_user.phone_number == nil
     assert new_state == ["9999999999", "5555555555"]

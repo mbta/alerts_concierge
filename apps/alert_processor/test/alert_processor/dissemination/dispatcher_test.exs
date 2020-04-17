@@ -1,7 +1,6 @@
 defmodule AlertProcessor.DispatcherTest do
   @moduledoc false
   use ExUnit.Case
-  use Bamboo.Test
 
   alias AlertProcessor.{Dispatcher, Model}
   alias Model.{Alert, InformedEntity, Notification}
@@ -24,7 +23,7 @@ defmodule AlertProcessor.DispatcherTest do
     }
 
     {:ok, _} = Dispatcher.send_notification(notification)
-    assert_received :publish
+    assert_received {:publish, %{"PhoneNumber" => "+1" <> @phone_number}}
   end
 
   test "can send email" do
@@ -36,7 +35,7 @@ defmodule AlertProcessor.DispatcherTest do
     }
 
     {:ok, _} = Dispatcher.send_notification(notification)
-    assert_received {:sent_notification_email, ^notification}
+    assert_received {:sent_email, %{to: @email, notification: ^notification}}
   end
 
   test "sends SMS and not email when both are possible" do
@@ -48,7 +47,7 @@ defmodule AlertProcessor.DispatcherTest do
     }
 
     {:ok, _} = Dispatcher.send_notification(notification)
-    refute_received {:sent_notification_email, ^notification}
-    assert_received :publish
+    refute_received {:sent_email, _}
+    assert_received {:publish, _}
   end
 end

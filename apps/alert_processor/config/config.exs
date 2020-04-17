@@ -25,7 +25,11 @@ config :alert_processor, AlertProcessor.Repo,
   adapter: Ecto.Adapters.Postgres,
   pool_size: 10
 
-config :alert_processor, :mailer, AlertProcessor.Dissemination.Mailer
+# Enable cyclic dependency on ConciergeSite mailer that can be bypassed in the test environment.
+# These modules are not defined when AlertProcessor is run on its own.
+config :alert_processor, :mailer, ConciergeSite.Dissemination.Mailer
+config :alert_processor, :mailer_email, ConciergeSite.Dissemination.NotificationEmail
+config :alert_processor, :mailer_error, Bamboo.ApiError
 
 # Config for alert parser
 config :alert_processor, :alert_parser, AlertProcessor.AlertParser
