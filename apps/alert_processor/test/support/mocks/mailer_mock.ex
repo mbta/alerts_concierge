@@ -1,10 +1,13 @@
 defmodule AlertProcessor.MailerMock do
-  @moduledoc """
-  mock mailer implementation to avoid calling to
-  concierge site application during tests
-  """
-  def send_notification_email(notification) do
-    send(self(), {:sent_notification_email, notification})
-    {:ok, %{}}
+  @moduledoc "Mock mailer to enable AlertProcessor tests to be run without ConciergeSite"
+
+  def deliver_now(email, _options \\ [])
+
+  def deliver_now(%{to: "raise_error" <> _}, _) do
+    raise Application.fetch_env!(:alert_processor, :mailer_error), message: "error requested"
+  end
+
+  def deliver_now(email, _) do
+    send(self(), {:sent_email, email})
   end
 end

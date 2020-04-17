@@ -2,7 +2,6 @@ defmodule AlertProcessor.AlertParserTest do
   @moduledoc false
   use AlertProcessor.DataCase
   use ExVCR.Mock, adapter: ExVCR.Adapter.Hackney
-  use Bamboo.Test, shared: true
   import AlertProcessor.Factory
   alias AlertProcessor.{AlertParser, Model, Repo, AlertsClient, SendingQueue, ServiceInfoCache}
   alias Model.{InformedEntity, SavedAlert}

@@ -26,13 +26,13 @@ defmodule ConciergeSite.Dissemination.NotificationEmail do
 
   @doc "notification_email/1 takes a notification and builds an email to be sent to user."
   @spec notification_email(Notification.t()) :: Elixir.Bamboo.Email.t()
-  def notification_email(%Notification{user: user} = notification) do
+  def notification_email(%Notification{email: email} = notification) do
     manage_subscriptions_url = MailHelper.manage_subscriptions_url()
     feedback_url = MailHelper.feedback_url()
     notification_email_subject = email_subject(notification)
 
     base_email()
-    |> to(user.email)
+    |> to(email)
     |> subject(notification_email_subject)
     |> html_body(html_email(notification, manage_subscriptions_url, feedback_url))
     |> text_body(text_email(notification, manage_subscriptions_url, feedback_url))

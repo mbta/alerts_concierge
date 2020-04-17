@@ -2,7 +2,8 @@ defmodule ConciergeSite.ConfirmationMessage do
   @moduledoc """
   Handles user confirmation messaging
   """
-  alias AlertProcessor.{Aws.AwsClient, Model.Notification, NotificationSmser}
+  alias AlertProcessor.Model.Notification
+  alias AlertProcessor.Dissemination.NotificationSender
   alias ConciergeSite.Dissemination.{Email, Mailer}
 
   def send_email_confirmation(user) do
@@ -19,8 +20,7 @@ defmodule ConciergeSite.ConfirmationMessage do
         "You have been subscribed to T-Alerts. To stop receiving texts, reply STOP (cannot resubscribe for 30 days) or visit alerts.mbta.com. Data rates may apply.",
       phone_number: phone_number
     }
-    |> NotificationSmser.notification_sms()
-    |> AwsClient.request()
+    |> NotificationSender.sms()
   end
 
   def send_sms_confirmation(_, _), do: {:ok, nil}

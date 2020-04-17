@@ -2,8 +2,8 @@ defmodule AlertProcessor.AlertCourtesyEmail do
   @moduledoc """
   Sends new or updated alerts to a configurable email address.
   """
-  @mailer Application.get_env(:alert_processor, :mailer)
   alias AlertProcessor.NotificationBuilder
+  alias AlertProcessor.Dissemination.NotificationSender
   alias AlertProcessor.Model.{User, Subscription, SavedAlert, Alert, Notification}
   alias AlertProcessor.Helpers.ConfigHelper
 
@@ -38,7 +38,7 @@ defmodule AlertProcessor.AlertCourtesyEmail do
 
     if email_address != "" do
       for notification <- notifications do
-        @mailer.send_notification_email(notification)
+        NotificationSender.email(notification)
       end
     end
 

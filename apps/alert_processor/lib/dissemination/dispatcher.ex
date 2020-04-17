@@ -3,28 +3,23 @@ defmodule AlertProcessor.Dispatcher do
   Module to handle the dissemination of notifications to proper mediums based on user subscriptions.
   """
 
-  @mailer Application.get_env(:alert_processor, :mailer)
-  alias AlertProcessor.{Aws.AwsClient, Model.Notification, NotificationSmser}
+  alias AlertProcessor.Model.Notification
+  alias AlertProcessor.Dissemination.NotificationSender
   require Logger
 
   @doc "Sends the given Notification, via SMS if it has a phone number, else via email."
   @spec send_notification(Notification.t()) :: {:ok, term} | {:error, term}
   def send_notification(%Notification{email: email, phone_number: nil} = notification)
       when not is_nil(email) do
-    result = @mailer.send_notification_email(notification)
+    result = NotificationSender.email(notification)
     log(notification, result, :email)
     result
   end
 
   def send_notification(%Notification{phone_number: phone_number} = notification)
       when not is_nil(phone_number) do
-    result =
-      notification
-      |> NotificationSmser.notification_sms()
-      |> AwsClient.request()
-
+    result = NotificationSender.sms(notification)
     log(notification, result, :sms)
-
     result
   end
 

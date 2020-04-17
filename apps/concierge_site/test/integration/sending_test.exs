@@ -1,10 +1,11 @@
 defmodule ConciergeSite.Integration.Sending do
   @moduledoc false
   use ConciergeSite.ConnCase
+  use Bamboo.Test
   import AlertProcessor.SubscriptionFilterEngine, only: [schedule_all_notifications: 2]
   alias AlertProcessor.Model.{Alert, InformedEntity}
-  alias ConciergeSite.Dissemination.MailerInterface
-  alias AlertProcessor.{SendingQueue, NotificationSmser}
+  alias AlertProcessor.Dissemination.NotificationSender
+  alias AlertProcessor.SendingQueue
 
   describe "subway subscription" do
     @alert %Alert{
@@ -44,24 +45,23 @@ defmodule ConciergeSite.Integration.Sending do
     }
 
     test "email" do
-      user = insert(:user)
-      insert(:subscription, Map.put(@subscription, :user_id, user.id))
+      %{email: email, id: user_id} = insert(:user)
+      insert(:subscription, Map.put(@subscription, :user_id, user_id))
       schedule_all_notifications([@alert], :anytime)
       {:ok, notification} = SendingQueue.pop()
+      NotificationSender.email(notification)
 
-      {:reply, {:ok, {:delivered_email, sent_email}}, nil} =
-        MailerInterface.handle_call({:send_notification_email, notification}, nil, nil)
-
-      assert sent_email.to == [{nil, user.email}]
+      assert_receive {:sent_email, %{to: ^email, notification: ^notification}}
     end
 
-    test "sms" do
+    test "SMS" do
       user = insert(:user, %{phone_number: "5556667777"})
       insert(:subscription, Map.put(@subscription, :user_id, user.id))
       schedule_all_notifications([@alert], :anytime)
       {:ok, notification} = SendingQueue.pop()
-      sms_operation = NotificationSmser.notification_sms(notification)
-      assert sms_operation.params["PhoneNumber"] == "+1#{user.phone_number}"
+      NotificationSender.sms(notification)
+
+      assert_receive {:publish, %{"PhoneNumber" => "+15556667777"}}
     end
   end
 end

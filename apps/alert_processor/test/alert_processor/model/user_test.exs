@@ -65,13 +65,13 @@ defmodule AlertProcessor.Model.UserTest do
     test "opts in phone number when phone number changed" do
       user = insert(:user)
       assert {:ok, _} = User.update_account(user, %{"phone_number" => "5550000000"}, user.id)
-      assert_received :opt_in_phone_number
+      assert_received {:opt_in_phone_number, %{"phoneNumber" => "5550000000"}}
     end
 
     test "does not opt in phone number when phone number not changed" do
       user = insert(:user)
       assert {:ok, _} = User.update_account(user, %{}, user.id)
-      refute_received :opt_in_phone_number
+      refute_received {:opt_in_phone_number, _}
     end
 
     test "does not update account" do
