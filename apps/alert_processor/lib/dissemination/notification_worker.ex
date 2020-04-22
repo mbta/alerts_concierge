@@ -7,7 +7,7 @@ defmodule AlertProcessor.NotificationWorker do
 
   alias AlertProcessor.{
     SendingQueue,
-    Dispatcher,
+    Dissemination.NotificationSender,
     Model.Notification
   }
 
@@ -36,7 +36,7 @@ defmodule AlertProcessor.NotificationWorker do
         log(id, notification, "event=pop time=#{now() - pop_start}")
 
         send_start = now()
-        Dispatcher.send_notification(notification)
+        NotificationSender.send(notification)
         log(id, notification, "event=send time=#{now() - send_start}")
 
         Process.send(self(), :notification, [])

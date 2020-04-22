@@ -45,11 +45,11 @@ defmodule ConciergeSite.Integration.Sending do
     }
 
     test "email" do
-      %{email: email, id: user_id} = insert(:user)
+      %{email: email, id: user_id} = insert(:user, %{phone_number: nil})
       insert(:subscription, Map.put(@subscription, :user_id, user_id))
       schedule_all_notifications([@alert], :anytime)
       {:ok, notification} = SendingQueue.pop()
-      NotificationSender.email(notification)
+      NotificationSender.send(notification)
 
       assert_receive {:sent_email, %{to: ^email, notification: ^notification}}
     end
@@ -59,7 +59,7 @@ defmodule ConciergeSite.Integration.Sending do
       insert(:subscription, Map.put(@subscription, :user_id, user.id))
       schedule_all_notifications([@alert], :anytime)
       {:ok, notification} = SendingQueue.pop()
-      NotificationSender.sms(notification)
+      NotificationSender.send(notification)
 
       assert_receive {:publish, %{"PhoneNumber" => "+15556667777"}}
     end
