@@ -2,26 +2,27 @@ defmodule AlertProcessor.Dissemination.NotificationSenderTest do
   @moduledoc false
   use ExUnit.Case
 
-  alias AlertProcessor.Model.Notification
   alias AlertProcessor.Dissemination.NotificationSender
+  alias AlertProcessor.Model.Notification
 
-  describe "email/1" do
+  describe "email sending" do
     test "sends an email using the configured email builder and mailer" do
       notification = %Notification{email: "test@example.com", header: "This is a test"}
 
-      {:ok, _} = NotificationSender.email(notification)
+      {:ok, _} = NotificationSender.send(notification)
 
       assert_receive {:sent_email, %{to: "test@example.com", notification: ^notification}}
+      refute_receive {:publish, _}
     end
 
     test "catches the configured email exception and converts it to an error return" do
       notification = %Notification{email: "raise_error@example.com", header: "This is a test"}
 
-      assert {:error, %{message: "error requested"}} = NotificationSender.email(notification)
+      assert {:error, %{message: "error requested"}} = NotificationSender.send(notification)
     end
   end
 
-  describe "sms/1" do
+  describe "SMS sending" do
     test "sends an SMS with the alert header" do
       notification = %Notification{
         header: "This is a test",
@@ -29,9 +30,23 @@ defmodule AlertProcessor.Dissemination.NotificationSenderTest do
         type: :initial
       }
 
-      {:ok, _} = NotificationSender.sms(notification)
+      {:ok, _} = NotificationSender.send(notification)
 
       assert_receive {:publish, %{"Message" => "This is a test", "PhoneNumber" => "+15555551234"}}
+    end
+
+    test "sends SMS and not email when both are possible" do
+      notification = %Notification{
+        email: "test@example.com",
+        header: "This is a test",
+        phone_number: "5555551234",
+        type: :initial
+      }
+
+      {:ok, _} = NotificationSender.send(notification)
+
+      assert_received {:publish, _}
+      refute_received {:sent_email, _}
     end
 
     test "formats an all-clear notification" do
@@ -41,7 +56,7 @@ defmodule AlertProcessor.Dissemination.NotificationSenderTest do
         type: :all_clear
       }
 
-      {:ok, _} = NotificationSender.sms(notification)
+      {:ok, _} = NotificationSender.send(notification)
 
       assert_receive {:publish, %{"Message" => "All clear (re: This is a test)"}}
     end
@@ -53,7 +68,7 @@ defmodule AlertProcessor.Dissemination.NotificationSenderTest do
         type: :reminder
       }
 
-      {:ok, _} = NotificationSender.sms(notification)
+      {:ok, _} = NotificationSender.send(notification)
 
       assert_receive {:publish, %{"Message" => "Reminder: This is a test"}}
     end
@@ -65,7 +80,7 @@ defmodule AlertProcessor.Dissemination.NotificationSenderTest do
         type: :update
       }
 
-      {:ok, _} = NotificationSender.sms(notification)
+      {:ok, _} = NotificationSender.send(notification)
 
       assert_receive {:publish, %{"Message" => "Update: This is a test"}}
     end

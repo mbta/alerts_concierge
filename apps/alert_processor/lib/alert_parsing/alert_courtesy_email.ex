@@ -38,7 +38,7 @@ defmodule AlertProcessor.AlertCourtesyEmail do
 
     if email_address != "" do
       for notification <- notifications do
-        NotificationSender.email(notification)
+        NotificationSender.send(notification)
       end
     end
 
