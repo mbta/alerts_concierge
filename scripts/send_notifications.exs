@@ -15,8 +15,9 @@ defmodule SendNotifications do
   Notifications are sent to either "#{@user_phone}" or "#{@user_email}".
   """
 
+  alias AlertProcessor.Dissemination.MassNotifier
   alias AlertProcessor.Model.{Alert, Subscription, User}
-  alias AlertProcessor.{Repo, Scheduler, SendingQueue}
+  alias AlertProcessor.{NotificationBuilder, Repo, SendingQueue}
 
   def run(:help) do
     IO.write(@moduledoc)
@@ -61,7 +62,6 @@ defmodule SendNotifications do
 
   defp schedule_notifications(user, count) do
     subscription = get_or_create_subscription(user)
-    user_subscriptions = List.duplicate({user, [subscription]}, count)
 
     alert = %Alert{
       id: "notification-test-alert",
@@ -70,7 +70,12 @@ defmodule SendNotifications do
       last_push_notification: DateTime.utc_now()
     }
 
-    Scheduler.schedule_notifications(user_subscriptions, alert)
+    notifications =
+      Enum.map(1..count, fn _ ->
+        NotificationBuilder.build_notification({user, [subscription]}, alert)
+      end)
+
+    MassNotifier.save_and_enqueue(notifications)
   end
 
   defp await_notifications_sent do
