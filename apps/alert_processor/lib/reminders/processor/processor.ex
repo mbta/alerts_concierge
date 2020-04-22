@@ -4,19 +4,10 @@ defmodule AlertProcessor.Reminders.Processor do
 
   """
 
+  alias AlertProcessor.Dissemination.MassNotifier
+  alias AlertProcessor.Model.{Alert, Notification}
+  alias AlertProcessor.NotificationBuilder
   alias AlertProcessor.Reminders.Processor.SubscriptionsToRemind
-
-  alias AlertProcessor.Model.{
-    Alert,
-    Notification
-  }
-
-  alias AlertProcessor.{
-    SendingQueue,
-    NotificationBuilder
-  }
-
-  require Logger
 
   @doc """
   Schedules reminders due for a given list of alerts.
@@ -39,7 +30,7 @@ defmodule AlertProcessor.Reminders.Processor do
       {alert, relevant_notifications, now}
       |> SubscriptionsToRemind.perform()
       |> build_notifications(alert)
-      |> schedule_notifications()
+      |> MassNotifier.save_and_enqueue()
     end
 
     :ok
@@ -54,15 +45,5 @@ defmodule AlertProcessor.Reminders.Processor do
     |> Enum.group_by(& &1.user)
     |> Map.to_list()
     |> Enum.map(&NotificationBuilder.build_notification(&1, alert))
-  end
-
-  defp schedule_notifications(notifications) do
-    # see AlertProcessor.Scheduler.enqueue_notifications/1
-    for notification <- notifications do
-      case Notification.save(notification, :sent) do
-        {:ok, notification} -> SendingQueue.enqueue(notification)
-        {:error, changeset} -> Logger.warn("notification insert failed: #{inspect(changeset)}")
-      end
-    end
   end
 end

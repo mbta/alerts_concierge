@@ -211,9 +211,10 @@ defmodule AlertProcessor.SubscriptionFilterEngineTest do
       |> insert
 
       subscriptions = SubscriptionFilterEngine.determine_recipients(alert)
-      result = SubscriptionFilterEngine.schedule_distinct_notifications(alert, subscriptions)
 
-      assert {:ok, notifications} = result
+      notifications =
+        SubscriptionFilterEngine.schedule_distinct_notifications(alert, subscriptions)
+
       assert length(subscriptions) == 2
       assert length(notifications) == 1
     end

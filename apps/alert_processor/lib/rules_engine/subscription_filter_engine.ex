@@ -7,10 +7,11 @@ defmodule AlertProcessor.SubscriptionFilterEngine do
     ActivePeriodFilter,
     InformedEntityFilter,
     Model,
-    Scheduler,
+    NotificationBuilder,
     SentAlertFilter
   }
 
+  alias AlertProcessor.Dissemination.MassNotifier
   alias Model.{Alert, Notification, Subscription}
   require Logger
 
@@ -73,14 +74,14 @@ defmodule AlertProcessor.SubscriptionFilterEngine do
     |> Kernel.++(subscriptions_to_auto_resend)
   end
 
-  @spec schedule_distinct_notifications(Alert.t(), [Subscription.t()]) ::
-          {:ok, [Notification.t()]} | :error
+  @spec schedule_distinct_notifications(Alert.t(), [Subscription.t()]) :: [Notification.t()]
   def schedule_distinct_notifications(alert, subscriptions) do
     subscriptions
     |> Enum.group_by(& &1.user)
     |> Map.to_list()
     |> reject_users_with_no_communication_mode()
-    |> Scheduler.schedule_notifications(alert)
+    |> Enum.map(&NotificationBuilder.build_notification(&1, alert))
+    |> MassNotifier.save_and_enqueue()
   end
 
   defp reject_users_with_no_communication_mode(subscriptions_by_user) do
