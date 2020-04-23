@@ -64,7 +64,7 @@ defmodule AlertProcessor.Dissemination.MassNotifier do
 
   defp enqueue_batch(notifications) do
     enqueue_start = now()
-    :ok = SendingQueue.list_enqueue(notifications)
+    for n <- notifications, do: SendingQueue.push(n)
     log("event=enqueue time=#{now() - enqueue_start}")
     notifications
   end

@@ -9,6 +9,7 @@ defmodule AlertProcessor.AlertParserTest do
 
   setup_all do
     {:ok, _} = Application.ensure_all_started(:alert_processor)
+    SendingQueue.reset()
     HTTPoison.start()
     :ok
   end

@@ -1,90 +1,58 @@
 defmodule AlertProcessor.SendingQueue do
-  @moduledoc """
-  Queue for holding notifications ready to be sent
-  """
+  @moduledoc "Queue process for distributing notifications to sending workers."
+
   use GenServer
   alias AlertProcessor.Model.Notification
 
   def start_link(opts \\ [name: __MODULE__]) do
-    GenServer.start_link(__MODULE__, [], opts)
+    GenServer.start_link(__MODULE__, :queue.new(), opts)
   end
 
-  def init(state) do
-    {:ok, state}
+  def init(state), do: {:ok, state}
+
+  @doc "Get the number of notifications in the queue."
+  @spec length() :: non_neg_integer
+  def length(name \\ __MODULE__) do
+    GenServer.call(name, :length)
   end
 
-  @doc """
-  Add list of notifications to queue
-  """
-  @spec list_enqueue([Notification.t()]) :: :ok
-  def list_enqueue(name \\ __MODULE__, notifications) do
-    GenServer.call(name, {:list_push, notifications})
-  end
-
-  @doc """
-  Adds notification to qeue
-  """
-  @spec enqueue(Notification.t()) :: :ok
-  def enqueue(name \\ __MODULE__, %Notification{} = notification) do
-    GenServer.call(name, {:push, notification})
-  end
-
-  @doc """
-  Returns notification from queue
-  """
+  @doc "Remove and return a notification from the queue."
   @spec pop() :: {:ok, Notification.t()} | :error
   def pop(name \\ __MODULE__) do
     GenServer.call(name, :pop)
   end
 
-  @doc """
-  Resets state to an empty list.
+  @doc "Add a notification to the queue."
+  @spec push(Notification.t()) :: :ok
+  def push(name \\ __MODULE__, %Notification{} = notification) do
+    GenServer.call(name, {:push, notification})
+  end
 
-  For use in tests only.
-  """
+  @doc "Drop all notifications from the queue."
   @spec reset() :: :ok
   def reset(name \\ __MODULE__) do
     GenServer.call(name, :reset)
   end
 
-  @doc """
-  Returns the number of items in the queue
-  """
-  def queue_length(name \\ __MODULE__) do
-    GenServer.call(name, :queue_length)
+  def handle_call(:length, _from, queue) do
+    {:reply, :queue.len(queue), queue}
   end
 
-  @doc false
-  def handle_call({:list_push, new_notifications}, _from, notifications) do
-    {:reply, :ok, new_notifications ++ notifications}
+  def handle_call(:pop, _from, queue) do
+    case :queue.out(queue) do
+      {:empty, _} -> {:reply, :error, queue}
+      {{:value, notification}, new_queue} -> {:reply, {:ok, notification}, new_queue}
+    end
   end
 
-  @doc false
-  def handle_call(:pop, _from, []) do
-    {:reply, :error, []}
+  def handle_call({:push, notification}, _from, queue) do
+    {:reply, :ok, :queue.in(notification, queue)}
   end
 
-  def handle_call(:pop, _from, notifications) do
-    [notification | newstate] = notifications
-    {:reply, {:ok, notification}, newstate}
-  end
-
-  @doc false
-  def handle_call(:queue_length, _from, notifications) do
-    {:reply, {:ok, length(notifications)}, notifications}
-  end
-
-  @doc false
-  def handle_call({:push, notification}, _from, notifications) do
-    {:reply, :ok, [notification | notifications]}
-  end
-
-  @doc false
   def handle_call(:reset, _from, _notifications) do
-    {:reply, :ok, []}
+    {:reply, :ok, :queue.new()}
   end
 
-  @doc false
   def handle_call(request, from, state) do
     super(request, from, state)
   end

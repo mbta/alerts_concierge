@@ -27,7 +27,7 @@ defmodule AlertProcessor.NotificationWorkerTest do
     {:ok, pid} = start_supervised(NotificationWorker)
     :erlang.trace(pid, true, [:receive])
 
-    SendingQueue.enqueue(@notification)
+    SendingQueue.push(@notification)
 
     assert_receive {:trace, ^pid, :receive, {:sent_email, _}}
   end
