@@ -7,7 +7,6 @@ defmodule AlertProcessor.SubscriptionFilterEngineTest do
   alias AlertProcessor.{
     Model.Alert,
     Model.InformedEntity,
-    Model.Notification,
     Model.Subscription,
     SendingQueue,
     SubscriptionFilterEngine
@@ -32,6 +31,10 @@ defmodule AlertProcessor.SubscriptionFilterEngineTest do
     }
 
     {:ok, alert: alert}
+  end
+
+  setup do
+    :ok = SendingQueue.reset()
   end
 
   describe "determine_recipients/1" do
@@ -235,12 +238,9 @@ defmodule AlertProcessor.SubscriptionFilterEngineTest do
       |> weekday_subscription
       |> insert
 
-      {:ok, beginning_queue_length} = SendingQueue.queue_length()
-      assert SubscriptionFilterEngine.schedule_all_notifications([alert])
-      {:ok, ending_queue_length} = SendingQueue.queue_length()
+      :ok = SubscriptionFilterEngine.schedule_all_notifications([alert])
 
-      assert ending_queue_length - beginning_queue_length == 1
-      assert {:ok, %Notification{}} = SendingQueue.pop()
+      assert SendingQueue.length() == 1
     end
   end
 
@@ -270,11 +270,8 @@ defmodule AlertProcessor.SubscriptionFilterEngineTest do
     |> weekday_subscription
     |> insert
 
-    {:ok, beginning_queue_length} = SendingQueue.queue_length()
-    assert SubscriptionFilterEngine.schedule_all_notifications([alert])
-    {:ok, ending_queue_length} = SendingQueue.queue_length()
+    :ok = SubscriptionFilterEngine.schedule_all_notifications([alert])
 
-    assert ending_queue_length - beginning_queue_length == 1
-    assert {:ok, %Notification{}} = SendingQueue.pop()
+    assert SendingQueue.length() == 1
   end
 end

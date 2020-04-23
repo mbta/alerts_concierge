@@ -79,9 +79,7 @@ defmodule SendNotifications do
   end
 
   defp await_notifications_sent do
-    {:ok, length} = SendingQueue.queue_length()
-
-    if length > 0 do
+    if SendingQueue.length() > 0 do
       :timer.sleep(100)
       await_notifications_sent()
     end
