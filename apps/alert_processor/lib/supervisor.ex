@@ -31,7 +31,6 @@ defmodule AlertProcessor.Supervisor do
     ]
 
     children = [
-      supervisor(Registry, [:unique, :mailer_process_registry]),
       supervisor(AlertProcessor.Repo, []),
       supervisor(ConCache, [
         [
