@@ -56,35 +56,6 @@ defmodule ConciergeSite.Dissemination.Email do
     |> text_body(confirmation_text_email(manage_subscriptions_url, feedback_url))
   end
 
-  EEx.function_from_file(
-    :def,
-    :targeted_notification_html_email,
-    Path.join(@template_dir, "targeted_notification.html.eex"),
-    [:subject, :body, :manage_subscriptions_url, :feedback_url]
-  )
-
-  EEx.function_from_file(
-    :def,
-    :targeted_notification_text_email,
-    Path.join(~w(#{System.cwd!()} lib mail_templates targeted_notification.txt.eex)),
-    [:subject, :body, :manage_subscriptions_url, :feedback_url]
-  )
-
-  def targeted_notification_email(user, subject, body) do
-    manage_subscriptions_url = MailHelper.manage_subscriptions_url()
-    feedback_url = MailHelper.feedback_url()
-
-    base_email()
-    |> to(user.email)
-    |> subject(subject)
-    |> html_body(
-      targeted_notification_html_email(subject, body, manage_subscriptions_url, feedback_url)
-    )
-    |> text_body(
-      targeted_notification_text_email(subject, body, manage_subscriptions_url, feedback_url)
-    )
-  end
-
   defp base_email do
     new_email(from: @from)
   end
