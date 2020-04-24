@@ -110,23 +110,6 @@ defmodule AlertProcessor.Model.NotificationTest do
     assert saved_notification.status == :sent
   end
 
-  test "sent_to_user/1 returns sent notifications to user", %{
-    user: user,
-    valid_attrs: valid_attrs
-  } do
-    notification = struct(Notification, Map.put(valid_attrs, :user, user))
-    {:ok, saved_notification_1} = Notification.save(notification, :sent)
-    {:ok, _} = Notification.save(notification, :failed)
-    other_user = insert(:user)
-
-    other_notification =
-      struct(Notification, Map.merge(valid_attrs, %{user_id: other_user.id, user: other_user}))
-
-    {:ok, _} = Notification.save(other_notification, :sent)
-    [%Notification{id: returned_notification_id}] = Notification.sent_to_user(user)
-    assert returned_notification_id == saved_notification_1.id
-  end
-
   describe "most_recent_for_alerts/1" do
     test "returns most recent notification by inserted_at" do
       user = insert(:user)
