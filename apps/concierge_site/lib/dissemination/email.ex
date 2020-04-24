@@ -5,8 +5,6 @@ defmodule ConciergeSite.Dissemination.Email do
   alias ConciergeSite.Helpers.MailHelper
   require EEx
 
-  @from {ConfigHelper.get_string(:send_from_name, :concierge_site),
-         ConfigHelper.get_string(:send_from_email, :concierge_site)}
   @template_dir Application.get_env(:concierge_site, :mail_template_dir)
 
   EEx.function_from_file(
@@ -56,7 +54,12 @@ defmodule ConciergeSite.Dissemination.Email do
     |> text_body(confirmation_text_email(manage_subscriptions_url, feedback_url))
   end
 
-  defp base_email do
-    new_email(from: @from)
+  @spec base_email() :: Bamboo.Email.t()
+  def base_email do
+    new_email(
+      from:
+        {ConfigHelper.get_string(:send_from_name, :concierge_site),
+         ConfigHelper.get_string(:send_from_email, :concierge_site)}
+    )
   end
 end

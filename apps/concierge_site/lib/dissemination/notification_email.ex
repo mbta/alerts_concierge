@@ -3,12 +3,10 @@ defmodule ConciergeSite.Dissemination.NotificationEmail do
   import Bamboo.Email
   import AlertProcessor.Helpers.StringHelper, only: [capitalize_first: 1]
   alias AlertProcessor.Model.Notification
-  alias AlertProcessor.Helpers.ConfigHelper
+  alias ConciergeSite.Dissemination.Email
   alias ConciergeSite.Helpers.MailHelper
   require EEx
 
-  @from {ConfigHelper.get_string(:send_from_name, :concierge_site),
-         ConfigHelper.get_string(:send_from_email, :concierge_site)}
   @template_dir Application.get_env(:concierge_site, :mail_template_dir)
 
   EEx.function_from_file(:def, :html_email, Path.join(@template_dir, "notification.html.eex"), [
@@ -31,16 +29,11 @@ defmodule ConciergeSite.Dissemination.NotificationEmail do
     feedback_url = MailHelper.feedback_url()
     notification_email_subject = email_subject(notification)
 
-    base_email()
+    Email.base_email()
     |> to(email)
     |> subject(notification_email_subject)
     |> html_body(html_email(notification, manage_subscriptions_url, feedback_url))
     |> text_body(text_email(notification, manage_subscriptions_url, feedback_url))
-  end
-
-  @spec base_email() :: Elixir.Bamboo.Email.t()
-  defp base_email do
-    new_email(from: @from)
   end
 
   def email_subject(notification) do
