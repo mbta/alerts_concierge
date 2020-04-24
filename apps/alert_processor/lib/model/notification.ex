@@ -83,16 +83,6 @@ defmodule AlertProcessor.Model.Notification do
     end
   end
 
-  def sent_to_user(user) do
-    Repo.all(
-      from(
-        n in __MODULE__,
-        where: n.user_id == ^user.id and n.status == "sent",
-        order_by: [asc: n.inserted_at]
-      )
-    )
-  end
-
   def most_recent_for_alerts(alerts) do
     alert_ids = Enum.map(alerts, & &1.id)
 
