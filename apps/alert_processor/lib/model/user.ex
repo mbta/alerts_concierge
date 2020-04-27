@@ -162,7 +162,12 @@ defmodule AlertProcessor.Model.User do
 
   defp validate_email(changeset) do
     changeset
-    |> validate_format(:email, ~r/@/, message: "Please enter a valid email address.")
+    |> validate_format(
+      :email,
+      # The same validation used by the `mail` library
+      ~r/[A-Z0-9a-z._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,64}/,
+      message: "Please enter a valid email address."
+    )
     |> unique_constraint(:email, message: "Sorry, that email has already been taken.")
   end
 

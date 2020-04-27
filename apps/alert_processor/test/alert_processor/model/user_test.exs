@@ -106,79 +106,63 @@ defmodule AlertProcessor.Model.UserTest do
   end
 
   describe "create_account_changeset" do
-    test "will create a valid changeset with valid params" do
-      changeset = User.create_account_changeset(%User{}, @valid_account_attrs)
-      assert changeset.valid?
+    defp create_changeset(%{} = attributes) do
+      User.create_account_changeset(%User{}, Map.merge(@valid_account_attrs, attributes))
     end
 
-    test "will create a valid changeset with password containing special characters and at least 6 characters" do
-      changeset =
-        User.create_account_changeset(
-          %User{},
-          Map.merge(@valid_account_attrs, %{"password" => "P@ssword"})
-        )
-
-      assert changeset.valid?
+    test "is valid with valid params" do
+      assert create_changeset(%{}).valid?
     end
 
-    test "will create an invalid changeset with invalid password that is too short" do
-      changeset =
-        User.create_account_changeset(
-          %User{},
-          Map.merge(@valid_account_attrs, %{"password" => "Pass1"})
-        )
-
-      refute changeset.valid?
+    test "is valid with password containing special characters and at least 6 characters" do
+      assert create_changeset(%{"password" => "P@ssword"}).valid?
     end
 
-    test "will create an invalid changeset with invalid password that does not contain a digit or special character" do
-      changeset =
-        User.create_account_changeset(
-          %User{},
-          Map.merge(@valid_account_attrs, %{"password" => "Password"})
-        )
-
-      refute changeset.valid?
+    test "is invalid with password that is too short" do
+      refute create_changeset(%{"password" => "P@ss1"}).valid?
     end
 
-    test "will create an invalid changeset with an email that does not contain an @" do
-      changeset =
-        User.create_account_changeset(
-          %User{},
-          Map.merge(@valid_account_attrs, %{"email" => "emailatexample.com"})
-        )
+    test "is invalid with password that does not contain a digit or special character" do
+      refute create_changeset(%{"password" => "Password"}).valid?
+    end
 
-      refute changeset.valid?
+    test "is invalid with an email that does not contain an @" do
+      refute create_changeset(%{"email" => "emailatexample.com"}).valid?
+    end
+
+    test "is invalid with an email that is missing the TLD" do
+      refute create_changeset(%{"email" => "email@example"}).valid?
+    end
+
+    test "is invalid with an email that has a stray space in it" do
+      refute create_changeset(%{"email" => "email @example.com"}).valid?
+    end
+
+    test "trims leading and trailing spaces from email" do
+      leading = create_changeset(%{"email" => " email@example.com"})
+      trailing = create_changeset(%{"email" => "email@example.com "})
+
+      assert leading.valid?
+      assert leading.changes.email == "email@example.com"
+      assert trailing.valid?
+      assert trailing.changes.email == "email@example.com"
     end
 
     test "if communication_mode is sms, will validate phone number" do
       changeset =
-        User.create_account_changeset(
-          %User{},
-          Map.merge(@valid_account_attrs, %{
-            "phone_number" => "2342342344",
-            "communication_mode" => "sms"
-          })
-        )
+        create_changeset(%{
+          "phone_number" => "2342342344",
+          "communication_mode" => "sms"
+        })
 
-      %{changes: %{phone_number: phone_number}} = changeset
-      assert phone_number == "2342342344"
+      assert changeset.changes.phone_number == "2342342344"
       assert changeset.valid?
     end
 
     test "if communication_mode is email, phone_number (if present) will be ignored" do
-      params =
-        @valid_account_attrs
-        |> Map.put("phone_number", "2342342344")
+      changeset = create_changeset(%{"phone_number" => "2342342344"})
 
-      changeset =
-        User.create_account_changeset(
-          %User{},
-          params
-        )
-
-      %{changes: changes} = changeset
-      assert changes.phone_number == nil
+      assert changeset.changes.phone_number == nil
       assert changeset.valid?
     end
   end
