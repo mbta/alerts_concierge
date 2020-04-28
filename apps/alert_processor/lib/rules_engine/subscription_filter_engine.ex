@@ -74,7 +74,7 @@ defmodule AlertProcessor.SubscriptionFilterEngine do
     |> Kernel.++(subscriptions_to_auto_resend)
   end
 
-  @spec schedule_distinct_notifications(Alert.t(), [Subscription.t()]) :: [Notification.t()]
+  @spec schedule_distinct_notifications(Alert.t(), [Subscription.t()]) :: :ok
   def schedule_distinct_notifications(alert, subscriptions) do
     subscriptions
     |> Enum.group_by(& &1.user)
