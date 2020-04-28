@@ -2,7 +2,7 @@ defmodule AlertProcessor.Dissemination.MassNotifierTest do
   use AlertProcessor.DataCase, async: true
   import AlertProcessor.Factory
   alias AlertProcessor.Dissemination.MassNotifier
-  alias AlertProcessor.{Model.Alert, NotificationBuilder, SendingQueue}
+  alias AlertProcessor.{Model.Alert, Model.User, NotificationBuilder, SendingQueue}
 
   @now Calendar.DateTime.now!("Etc/UTC")
   @two_days_from_now Calendar.DateTime.add!(@now, 172_800)
@@ -16,33 +16,40 @@ defmodule AlertProcessor.Dissemination.MassNotifierTest do
   }
 
   describe "save_and_enqueue/1" do
-    test "saves and enqueues notifications" do
+    defp insert_user_and_build_notification do
       user = insert(:user)
       subscription = insert(:subscription, user: user)
       notification = NotificationBuilder.build_notification({user, [subscription]}, @alert)
 
-      [saved_notification] = MassNotifier.save_and_enqueue([notification])
+      {user, notification}
+    end
+
+    test "saves and enqueues notifications" do
+      {_, notification} = insert_user_and_build_notification()
+
+      :ok = MassNotifier.save_and_enqueue([notification])
 
       {:ok, queued_notification} = SendingQueue.pop()
-      assert saved_notification == queued_notification
+      assert Map.drop(notification, [:id]) == Map.drop(queued_notification, [:id])
     end
 
     test "ignores notifications that can't be saved" do
       import ExUnit.CaptureLog
 
-      # User is intentionally *not* saved to the database. Replicates the scenario of an account
-      # being deleted while alerts are being processed.
-      user = build(:user)
-      subscription = insert(:subscription, user: user)
-      notification = NotificationBuilder.build_notification({user, [subscription]}, @alert)
+      # replicate the scenario of a user deleting their account during notification processing
+      {_, ok_notification} = insert_user_and_build_notification()
+      {user_to_delete, bad_notification} = insert_user_and_build_notification()
+      User.delete(user_to_delete)
 
       capture_log(fn ->
-        # logs a warning about being unable to save the notification
-        [] = MassNotifier.save_and_enqueue([notification])
+        # logs a warning about being unable to save the bad notification
+        :ok = MassNotifier.save_and_enqueue([ok_notification, bad_notification])
       end)
 
-      # nothing should have been added to the queue
-      :error = SendingQueue.pop()
+      {:ok, queued_notification} = SendingQueue.pop()
+      assert Map.drop(ok_notification, [:id]) == Map.drop(queued_notification, [:id])
+      # the notification for the non-deleted user should have been the only one enqueued
+      assert :error = SendingQueue.pop()
     end
   end
 end
