@@ -29,7 +29,7 @@ config :alert_processor, database_url: {:system, "DATABASE_URL_TEST"}
 
 config :alert_processor, :notification_window_filter, AlertProcessor.NotificationWindowFilterMock
 
-config :alert_processor, notification_workers: 0
+config :alert_processor, notification_workers: 0, notification_worker_idle_wait: 50
 
 config :exvcr,
   vcr_cassette_library_dir: "test/fixture/vcr_cassettes",

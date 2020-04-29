@@ -11,7 +11,7 @@ defmodule AlertProcessor.NotificationWorker do
     Model.Notification
   }
 
-  @type notifications :: [Notification.t()]
+  @idle_wait Application.get_env(:alert_processor, :notification_worker_idle_wait, 1000)
 
   @doc false
   def start_link(opts \\ [name: __MODULE__]) do
@@ -21,14 +21,15 @@ defmodule AlertProcessor.NotificationWorker do
   @doc false
   def init(id) do
     log(id, "event=startup")
-    Process.send_after(self(), :notification, 10)
+    send(self(), :work)
     {:ok, id}
   end
 
   @doc """
-  Checks sending queue for alert and sends it out to user
+  Checks the sending queue for a notification. If there is one, sends it and checks for another
+  immediately, otherwise checks again after a short delay.
   """
-  def handle_info(:notification, id) do
+  def handle_info(:work, id) do
     pop_start = now()
 
     case SendingQueue.pop() do
@@ -39,10 +40,10 @@ defmodule AlertProcessor.NotificationWorker do
         NotificationSender.send(notification)
         log(id, notification, "event=send time=#{now() - send_start}")
 
-        Process.send(self(), :notification, [])
+        send(self(), :work)
 
       :error ->
-        Process.send_after(self(), :notification, 100)
+        Process.send_after(self(), :work, @idle_wait)
     end
 
     {:noreply, id}
