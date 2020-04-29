@@ -35,7 +35,7 @@ defmodule AlertProcessor.Dissemination.MassNotifier do
     log("event=commit time=#{now() - commit_start}")
 
     enqueue_start = now()
-    Enum.each(saved_notifications, &SendingQueue.push/1)
+    SendingQueue.push_list(saved_notifications)
     log("event=enqueue time=#{now() - enqueue_start}")
   end
 

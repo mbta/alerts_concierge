@@ -28,6 +28,12 @@ defmodule AlertProcessor.SendingQueue do
     GenServer.call(name, {:push, notification})
   end
 
+  @doc "Add a list of notifications to the queue in list order."
+  @spec push_list([Notification.t()]) :: :ok
+  def push_list(name \\ __MODULE__, notifications) when is_list(notifications) do
+    GenServer.call(name, {:push_list, notifications})
+  end
+
   @doc "Drop all notifications from the queue."
   @spec reset() :: :ok
   def reset(name \\ __MODULE__) do
@@ -47,6 +53,10 @@ defmodule AlertProcessor.SendingQueue do
 
   def handle_call({:push, notification}, _from, queue) do
     {:reply, :ok, :queue.in(notification, queue)}
+  end
+
+  def handle_call({:push_list, notifications}, _from, queue) do
+    {:reply, :ok, Enum.reduce(notifications, queue, &:queue.in(&1, &2))}
   end
 
   def handle_call(:reset, _from, _notifications) do
