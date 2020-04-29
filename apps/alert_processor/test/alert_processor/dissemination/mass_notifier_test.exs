@@ -16,12 +16,17 @@ defmodule AlertProcessor.Dissemination.MassNotifierTest do
   }
 
   describe "save_and_enqueue/1" do
-    defp insert_user_and_build_notification do
-      user = insert(:user)
+    defp insert_user_and_build_notification(user_attrs \\ %{}) do
+      user = insert(:user, user_attrs)
       subscription = insert(:subscription, user: user)
       notification = NotificationBuilder.build_notification({user, [subscription]}, @alert)
 
       {user, notification}
+    end
+
+    defp assert_same_notification(notification1, notification2) do
+      # Ignore ID which may have changed due to database persistence
+      assert Map.drop(notification1, [:id]) == Map.drop(notification2, [:id])
     end
 
     test "saves and enqueues notifications" do
@@ -30,7 +35,7 @@ defmodule AlertProcessor.Dissemination.MassNotifierTest do
       :ok = MassNotifier.save_and_enqueue([notification])
 
       {:ok, queued_notification} = SendingQueue.pop()
-      assert Map.drop(notification, [:id]) == Map.drop(queued_notification, [:id])
+      assert_same_notification(notification, queued_notification)
     end
 
     test "ignores notifications that can't be saved" do
@@ -47,9 +52,27 @@ defmodule AlertProcessor.Dissemination.MassNotifierTest do
       end)
 
       {:ok, queued_notification} = SendingQueue.pop()
-      assert Map.drop(ok_notification, [:id]) == Map.drop(queued_notification, [:id])
+      assert_same_notification(ok_notification, queued_notification)
       # the notification for the non-deleted user should have been the only one enqueued
       assert :error = SendingQueue.pop()
+    end
+
+    test "enqueues notifications with a phone number ahead of others" do
+      {_, first_phone} = insert_user_and_build_notification(%{phone_number: "5555551234"})
+      {_, first_email} = insert_user_and_build_notification(%{phone_number: nil})
+      {_, second_phone} = insert_user_and_build_notification(%{phone_number: "5555556789"})
+      {_, second_email} = insert_user_and_build_notification(%{phone_number: nil})
+
+      :ok = MassNotifier.save_and_enqueue([first_phone, first_email, second_phone, second_email])
+      {:ok, first} = SendingQueue.pop()
+      {:ok, second} = SendingQueue.pop()
+      {:ok, third} = SendingQueue.pop()
+      {:ok, fourth} = SendingQueue.pop()
+
+      assert_same_notification(first, first_phone)
+      assert_same_notification(second, second_phone)
+      assert_same_notification(third, first_email)
+      assert_same_notification(fourth, second_email)
     end
   end
 end

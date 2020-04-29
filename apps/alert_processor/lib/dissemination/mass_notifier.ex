@@ -23,11 +23,17 @@ defmodule AlertProcessor.Dissemination.MassNotifier do
   @spec save_and_enqueue([Notification.t()]) :: :ok
   def save_and_enqueue(notifications) do
     notifications
+    |> Enum.sort(&mode_sort/2)
     |> Stream.chunk_every(@batch_size)
     |> Enum.each(&save_and_enqueue_batch/1)
 
     :ok
   end
+
+  # Notifications with a phone number (i.e. SMS messages) should be queued ahead of those without.
+  # The logic is inverted here because that causes the existing order to be otherwise preserved.
+  defp mode_sort(%{phone_number: nil}, %{phone_number: phone}) when not is_nil(phone), do: false
+  defp mode_sort(_, _), do: true
 
   defp save_and_enqueue_batch(notifications) do
     commit_start = now()
