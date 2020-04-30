@@ -63,7 +63,7 @@ defmodule AlertProcessor.Mixfile do
       {:con_cache, "~> 0.12.1"},
       {:cowboy, "~> 1.0"},
       {:dialyxir, "~> 0.5.0", only: [:dev]},
-      {:ecto, "~> 2.1.0"},
+      {:ecto, "~> 2.2.0"},
       {:exactor, "~> 2.2.0"},
       {:excoveralls, "~> 0.5", only: [:dev, :test]},
       {:ex_aws, "~> 2.1.0"},
