@@ -63,7 +63,8 @@ defmodule AlertProcessor.AlertParser do
         alert_filter_duration_type
       )
 
-      AlertCourtesyEmail.send_courtesy_emails(saved_alerts, parsed_alerts)
+      courtesy_alerts = add_tracking_fields(parsed_alerts, started_at, :courtesy)
+      AlertCourtesyEmail.send_courtesy_emails(saved_alerts, courtesy_alerts)
 
       {alerts, api_alerts, updated_alerts}
     end
