@@ -86,19 +86,6 @@ defmodule AlertProcessor.Model.User do
     end
   end
 
-  @doc """
-  Deletes all the version from papertrail, then the subscriptions and trips followed by the user record
-  """
-  def delete(user) do
-    Ecto.Adapters.SQL.query!(Repo, "DELETE FROM versions WHERE originator_id = $1", [
-      UUID.string_to_binary!(user.id)
-    ])
-
-    Repo.delete_all(from(s in Subscription, where: s.user_id == ^user.id))
-    Repo.delete_all(from(t in Trip, where: t.user_id == ^user.id))
-    Repo.delete(user)
-  end
-
   def update_password(user, params, originator) do
     user
     |> update_password_changeset(params)

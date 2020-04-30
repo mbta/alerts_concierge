@@ -2,7 +2,7 @@ defmodule AlertProcessor.Dissemination.MassNotifierTest do
   use AlertProcessor.DataCase, async: true
   import AlertProcessor.Factory
   alias AlertProcessor.Dissemination.MassNotifier
-  alias AlertProcessor.{Model.Alert, Model.User, NotificationBuilder, SendingQueue}
+  alias AlertProcessor.{Model.Alert, Model.User, NotificationBuilder, Repo, SendingQueue}
 
   @now Calendar.DateTime.now!("Etc/UTC")
   @two_days_from_now Calendar.DateTime.add!(@now, 172_800)
@@ -44,7 +44,7 @@ defmodule AlertProcessor.Dissemination.MassNotifierTest do
       # replicate the scenario of a user deleting their account during notification processing
       {_, ok_notification} = insert_user_and_build_notification()
       {user_to_delete, bad_notification} = insert_user_and_build_notification()
-      User.delete(user_to_delete)
+      {:ok, _} = Repo.delete(user_to_delete)
 
       capture_log(fn ->
         # logs a warning about being unable to save the bad notification

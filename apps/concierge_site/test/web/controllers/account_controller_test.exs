@@ -3,7 +3,8 @@ defmodule ConciergeSite.AccountControllerTest do
   use ConciergeSite.ConnCase, async: true
   import AlertProcessor.Factory
   alias AlertProcessor.Helpers.ConfigHelper
-  alias AlertProcessor.{Model.User, Repo}
+  alias AlertProcessor.Model.{Notification, Subscription, Trip, User}
+  alias AlertProcessor.Repo
 
   test "new/4", %{conn: conn} do
     conn = get(conn, account_path(conn, :new))
@@ -229,7 +230,9 @@ defmodule ConciergeSite.AccountControllerTest do
 
   describe "account delete" do
     test "DELETE /account/delete", %{conn: conn} do
-      user = insert(:user)
+      user = insert(:user, email: "email1@example.com")
+      # generate a PaperTrail version for the user so we can ensure that's deleted too
+      User.update_account(user, %{email: "email2@example.com"}, user)
       trip = insert(:trip, %{user: user})
 
       insert(:subscription, %{
@@ -249,6 +252,12 @@ defmodule ConciergeSite.AccountControllerTest do
         |> delete(account_path(conn, :delete))
 
       assert html_response(conn, 302) =~ "/deleted"
+      # ensure all associated data was deleted
+      refute Repo.one(User)
+      refute Repo.one(Trip)
+      refute Repo.one(Subscription)
+      refute Repo.one(Notification)
+      refute Repo.one(PaperTrail.Version)
     end
   end
 
