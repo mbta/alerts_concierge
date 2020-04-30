@@ -6,7 +6,7 @@ defmodule ConciergeSite.ApiAccountController do
   def delete(conn, %{"user_id" => user_id}) do
     User
     |> Repo.get!(user_id)
-    |> User.delete()
+    |> Repo.delete()
 
     json(conn, %{result: "success"})
   end

@@ -88,14 +88,6 @@ defmodule AlertProcessor.Model.UserTest do
     end
   end
 
-  describe "delete/1" do
-    test "delete one user" do
-      user = insert(:user)
-      User.delete(user)
-      assert nil == User.for_email(user.email)
-    end
-  end
-
   describe "update_password" do
     test "updates password" do
       user = insert(:user)

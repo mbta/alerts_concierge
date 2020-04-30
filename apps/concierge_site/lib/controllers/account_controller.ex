@@ -3,6 +3,7 @@ defmodule ConciergeSite.AccountController do
   use Guardian.Phoenix.Controller
   alias AlertProcessor.Helpers.ConfigHelper
   alias AlertProcessor.Model.User
+  alias AlertProcessor.Repo
   alias ConciergeSite.ConfirmationMessage
   alias ConciergeSite.SignInHelper
   alias ConciergeSite.Mailchimp
@@ -87,7 +88,7 @@ defmodule ConciergeSite.AccountController do
   def delete(conn, _params, user, _claims) do
     {:ok, user} = User.update_account(user, %{digest_opt_in: false}, user)
     Mailchimp.send_member_status_update(user)
-    User.delete(user)
+    {:ok, _} = Repo.delete(user)
     redirect(conn, to: page_path(conn, :account_deleted))
   end
 
