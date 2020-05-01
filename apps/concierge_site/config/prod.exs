@@ -25,12 +25,12 @@ config :concierge_site, ConciergeSite.Endpoint,
 config :concierge_site, :redirect_http?, true
 
 config :logger,
-  level: :debug,
+  level: :info,
   truncate: :infinity,
   backends: [:console]
 
 config :logger, :console,
-  level: :debug,
+  level: :info,
   format: "$dateT$time [$level]$levelpad node=$node $metadata$message\n",
   metadata: [:request_id, :ip]
 
