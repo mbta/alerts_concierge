@@ -2,7 +2,7 @@ defmodule AlertProcessor.Dissemination.MassNotifierTest do
   use AlertProcessor.DataCase, async: true
   import AlertProcessor.Factory
   alias AlertProcessor.Dissemination.MassNotifier
-  alias AlertProcessor.{Model.Alert, Model.User, NotificationBuilder, Repo, SendingQueue}
+  alias AlertProcessor.{Model.Alert, NotificationBuilder, Repo, SendingQueue}
 
   @now Calendar.DateTime.now!("Etc/UTC")
   @two_days_from_now Calendar.DateTime.add!(@now, 172_800)
