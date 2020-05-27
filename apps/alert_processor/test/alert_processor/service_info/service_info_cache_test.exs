@@ -347,8 +347,21 @@ defmodule AlertProcessor.ServiceInfoCacheTest do
   end
 
   test "get_trip_name", %{pid: pid} do
+    original_state = :sys.get_state(pid)
+
+    commuter_rail_trip_ids = %{
+      "CR-Weekday-Spring-20-157" => "157",
+      "CR-Weekday-Spring-20-168" => "168"
+    }
+
+    :sys.replace_state(pid, fn state ->
+      Map.put(state, :commuter_rail_trip_ids, commuter_rail_trip_ids)
+    end)
+
     assert {:ok, "157"} = ServiceInfoCache.get_trip_name(pid, "CR-Weekday-Spring-20-157")
     assert {:ok, "168"} = ServiceInfoCache.get_trip_name(pid, "CR-Weekday-Spring-20-168")
+
+    :sys.replace_state(pid, fn _ -> original_state end)
   end
 
   test "get_facility_map", %{pid: pid} do
