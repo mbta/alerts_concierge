@@ -27,7 +27,7 @@ defmodule AlertProcessor.Dissemination.NotificationSender do
       {:error, error}
 
     error in ArgumentError ->
-      Logger.warn("invalid email for #{notification.user_id}")
+      Logger.error("invalid email for #{notification.user_id}")
       {:error, error}
   end
 
