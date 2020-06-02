@@ -246,7 +246,6 @@ defmodule ConciergeSite.TripControllerTest do
 
       assert html_response(conn, 200) =~ "Green Line"
       refute html_response(conn, 200) =~ "Green Line D"
-      refute html_response(conn, 200) =~ "Green Line D"
       refute html_response(conn, 200) =~ "Green Line E"
     end
 
@@ -254,13 +253,13 @@ defmodule ConciergeSite.TripControllerTest do
       trip = %{
         bike_storage: "false",
         relevant_days: ["monday", "tuesday", "wednesday", "thursday", "friday"],
-        destinations: ["place-north"],
+        destinations: ["place-coecl"],
         elevator: "true",
         end_time: %{"am_pm" => "AM", "hour" => "9", "minute" => "00"},
         escalator: "false",
         legs: ["Green"],
         modes: ["subway"],
-        origins: ["place-lech"],
+        origins: ["place-symcl"],
         parking_area: "true",
         return_end_time: %{"am_pm" => "PM", "hour" => "6", "minute" => "00"},
         return_start_time: %{"am_pm" => "PM", "hour" => "5", "minute" => "00"},
