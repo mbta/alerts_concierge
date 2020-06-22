@@ -415,6 +415,6 @@ defmodule AlertProcessor.ServiceInfoCacheTest do
            ]
 
     assert stops_with_icons["place-FR-0098"] == [modes: MapSet.new([:cr]), accessible: true]
-    assert stops_with_icons["Boat-Logan"] == [modes: MapSet.new([:ferry]), accessible: true]
+    assert stops_with_icons["Boat-Hingham"] == [modes: MapSet.new([:ferry]), accessible: true]
   end
 end
