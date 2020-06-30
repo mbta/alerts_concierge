@@ -12,29 +12,29 @@ functionality remain low and that MBTA can manage and improve the system.
 
 ### Requirements
 
-* MBTA API key (get one [here](https://dev.api.mbtace.com))
-  * **Note:** This key must have its version set to `2019-04-05`
-* PostgreSQL 10 (using Homebrew: `brew install postgresql@10`)
-* Chromedriver (using Homebrew: `brew cask install chromedriver`)
-* Erlang, Elixir, and Node.js versions specified in `.tool_versions`
-  * Use [`asdf`](https://github.com/asdf-vm/asdf) to install automatically
-    * Note [these extra install steps][nodejs-reqs] for NodeJS plugin
-    * Use [this workaround][erlang-fix] to compile Erlang on Mac OS Catalina
-* Yarn (`npm install -g yarn`; may require `asdf reshim` after)
-* [direnv](https://github.com/direnv/direnv) _(optional, but convenient)_
+- MBTA API key (get one [here](https://dev.api.mbtace.com))
+  - **Note:** This key must have its version set to `2019-04-05`
+- PostgreSQL 10 (using Homebrew: `brew install postgresql@10`)
+- Chromedriver (using Homebrew: `brew cask install chromedriver`)
+- Erlang, Elixir, and Node.js versions specified in `.tool_versions`
+  - Use [`asdf`](https://github.com/asdf-vm/asdf) to install automatically
+    - Note [these extra install steps][nodejs-reqs] for NodeJS plugin
+    - Use [this workaround][erlang-fix] to compile Erlang on Mac OS Catalina
+- Yarn (`npm install -g yarn`; may require `asdf reshim` after)
+- [direnv](https://github.com/direnv/direnv) _(optional, but convenient)_
 
 [nodejs-reqs]: https://github.com/asdf-vm/asdf-nodejs#requirements
 [erlang-fix]: https://github.com/kerl/kerl/issues/320#issuecomment-556565250
 
 ### Instructions
 
-* `mix deps.get`
-* `sh -c "cd apps/concierge_site/assets ; yarn install"`
-* `cat .envrc.example | sed -e "s/__username__/$(logname)/g" > .envrc`
-* In `.envrc`: Fill in `API_KEY=` with the API key you obtained above
-* `direnv allow`
-* `mix ecto.setup`
-* `MIX_ENV=test mix ecto.setup`
+- `mix deps.get`
+- `sh -c "cd apps/concierge_site/assets ; yarn install"`
+- `cat .envrc.example | sed -e "s/__username__/$(logname)/g" > .envrc`
+- In `.envrc`: Fill in `API_KEY=` with the API key you obtained above
+- `direnv allow`
+- `mix ecto.setup`
+- `MIX_ENV=test mix ecto.setup`
 
 #### Notes
 
@@ -48,18 +48,22 @@ B) it will persist _through_ the session, even if you change directories.
 
 ### Running tests
 
-* `mix test`
-* `mix test.all` — run tests with code coverage report
+- `mix test`
+- `mix test.all` — run tests with code coverage report
 
 ### Running the application
 
-* `mix phx.server`
-* Visit <http://localhost:4005/>
+- `mix phx.server`
+- Visit <http://localhost:4005/>
 
 ### More information
 
 For more information about setup and use of the application, see the
 [Wiki](https://github.com/mbta/alerts_concierge/wiki).
+
+## Querying historical data
+
+We occasionally get one-off questions about how T-Alerts behaved in the past, for example, whether a certain notification was sent out and when. In order to answer such questions we generally need to query the production database. The production database is not directly accessible, but we can be accessed by connecting through the [Bastion Host Gateway](https://github.com/mbta/wiki/blob/master/devops/bastion-host.md). Obviously the production database should only be interacted with _very carefully_.
 
 ## AWS
 
