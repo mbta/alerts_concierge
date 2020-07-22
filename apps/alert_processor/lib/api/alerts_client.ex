@@ -24,6 +24,7 @@ defmodule AlertProcessor.AlertsClient do
         {:ok, [], nil}
 
       {:error, message} ->
+        Logger.warn(fn -> "Error getting alerts: #{message}" end)
         {:error, message}
     end
   end

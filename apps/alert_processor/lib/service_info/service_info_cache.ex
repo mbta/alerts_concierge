@@ -273,6 +273,10 @@ defmodule AlertProcessor.ServiceInfoCache do
   end
 
   def handle_call(:get_facility_map, _from, %{facility_map: facility_map} = state) do
+    Logger.info(fn ->
+      "Retrieving facility map"
+    end)
+
     {:reply, {:ok, facility_map}, state}
   end
 

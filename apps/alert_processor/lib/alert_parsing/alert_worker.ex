@@ -3,6 +3,8 @@ defmodule AlertProcessor.AlertWorker do
   Worker process used to periodically trigger the AlertParser
   to begin processing alerts.
   """
+  require Logger
+
   use GenServer
   alias AlertProcessor.Helpers.ConfigHelper
 
@@ -27,6 +29,8 @@ defmodule AlertProcessor.AlertWorker do
   Every fifth run it will pass :older to process_alerts, otherwise it passes :recent.
   """
   def handle_info({:work, count, last_process_oldest_alerts_time}, _) do
+    Logger.info("Alerts ready to be processed")
+
     # process older or recent alerts
     alert_duration_type = if count == @older_duration_frequency, do: :older, else: :recent
     count = if count == @older_duration_frequency, do: 0, else: count
@@ -37,6 +41,8 @@ defmodule AlertProcessor.AlertWorker do
 
     # schedule next run
     schedule_work(count + 1, last_process_oldest_alerts_time)
+
+    Logger.info("Alert processing completed and next run scheduled")
     {:noreply, nil}
   end
 
@@ -46,6 +52,10 @@ defmodule AlertProcessor.AlertWorker do
 
   defp process_oldest_alerts(last_process_oldest_alerts_time) do
     if DateTime.diff(DateTime.utc_now(), last_process_oldest_alerts_time, :second) > 3_600 do
+      Logger.info(fn ->
+        "Starting the oldest alert processing phase"
+      end)
+
       @alert_parser.process_alerts(:oldest)
       DateTime.utc_now()
     else
