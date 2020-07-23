@@ -27,7 +27,7 @@ defmodule AlertProcessor.AlertParser do
   process_alerts/1 entry point for fetching json data from api and, transforming, storing and passing to
   subscription engine to process before sending.
   """
-  @spec process_alerts(AlertFilters.duration_type()) :: {map, [map], map}
+  @spec process_alerts(AlertFilters.duration_type()) :: [{:ok, [Notification.t()]}]
   def process_alerts(alert_filter_duration_type \\ :anytime) do
     started_at = DateTime.utc_now()
 
