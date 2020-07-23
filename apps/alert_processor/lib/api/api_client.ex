@@ -2,6 +2,8 @@ defmodule AlertProcessor.ApiClient do
   @moduledoc """
   HTTPoison wrapper for MBTA API
   """
+  require Logger
+
   use HTTPoison.Base
 
   alias AlertProcessor.Model.{Route, TripInfo}
@@ -13,17 +15,39 @@ defmodule AlertProcessor.ApiClient do
   """
   @spec get_alerts() :: {:ok, [map], [map]} | {:error, String.t()}
   def get_alerts do
+    Logger.info(fn ->
+      "Fetching alerts from the MBTA Alerts API"
+    end)
+
     case api_get("/alerts", include: "facilities") do
       {:ok, %{body: %{"errors" => errors}}} ->
-        {:error, errors |> Enum.map_join(", ", & &1["code"])}
+        formatted_errors = errors |> Enum.map_join(", ", & &1["code"])
+
+        Logger.error(fn ->
+          "Error retrieving alerts: #{formatted_errors}"
+        end)
+
+        {:error, formatted_errors}
 
       {:ok, %{body: %{"included" => facilities, "data" => alerts}}} ->
+        Logger.info(fn ->
+          "Alerts successfully retrieved from the MBTA Alerts API"
+        end)
+
         {:ok, alerts, facilities}
 
       {:ok, %{body: %{"data" => alerts}}} ->
+        Logger.info(fn ->
+          "Alerts successfully retrieved from the MBTA Alerts API"
+        end)
+
         {:ok, alerts, []}
 
       {:error, message} ->
+        Logger.error(fn ->
+          "Error fetching alerts: #{message}"
+        end)
+
         {:error, message}
     end
   end
@@ -176,9 +200,17 @@ defmodule AlertProcessor.ApiClient do
 
     case response do
       {:ok, %{body: %{"data" => schedules, "included" => included}}} ->
+        Logger.info(fn ->
+          "Schedules successfully retrieved"
+        end)
+
         {:ok, schedules, included}
 
       {:error, message} ->
+        Logger.error(fn ->
+          "Error in request to '/schedules': #{message}"
+        end)
+
         {:error, message}
     end
   end
@@ -186,15 +218,33 @@ defmodule AlertProcessor.ApiClient do
   defp parse_response(response) do
     case response do
       {:ok, %{body: %{"errors" => errors}}} ->
-        {:error, errors |> Enum.map_join(", ", & &1["code"])}
+        formatted_errors = errors |> Enum.map_join(", ", & &1["code"])
+
+        Logger.error(fn ->
+          "Error retrieving alerts: #{formatted_errors}"
+        end)
+
+        {:error, formatted_errors}
 
       {:ok, %{body: %{"data" => data, "included" => includes}}} ->
+        Logger.info(fn ->
+          "Response successfully parsed"
+        end)
+
         {:ok, data, includes}
 
       {:ok, %{body: %{"data" => data}}} ->
+        Logger.info(fn ->
+          "Response successfully parsed"
+        end)
+
         {:ok, data}
 
       {:error, message} ->
+        Logger.error(fn ->
+          "Error parsing the response: #{message}"
+        end)
+
         {:error, message}
     end
   end

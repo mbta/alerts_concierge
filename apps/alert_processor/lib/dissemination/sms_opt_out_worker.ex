@@ -52,7 +52,9 @@ defmodule AlertProcessor.SmsOptOutWorker do
       update_users_opted_out(user_ids)
       opted_out_phone_numbers
     else
-      _ -> state
+      _ ->
+        Logger.warn("SmsOptOutWorker: no numbers processed")
+        state
     end
   end
 

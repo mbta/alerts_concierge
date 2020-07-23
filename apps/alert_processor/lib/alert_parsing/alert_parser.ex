@@ -34,6 +34,10 @@ defmodule AlertProcessor.AlertParser do
     with {:ok, alerts, feed_timestamp} <- AlertsClient.get_alerts(),
          {:ok, api_alerts, _} <- ApiClient.get_alerts(),
          {:ok, facility_map} <- ServiceInfoCache.get_facility_map() do
+      Logger.info(fn ->
+        "Starting alerts processing"
+      end)
+
       updated_alerts = swap_informed_entities(alerts, api_alerts)
 
       saved_alerts =
@@ -66,7 +70,25 @@ defmodule AlertProcessor.AlertParser do
       courtesy_alerts = add_tracking_fields(parsed_alerts, started_at, :courtesy)
       AlertCourtesyEmail.send_courtesy_emails(saved_alerts, courtesy_alerts)
 
+      Logger.info(fn ->
+        "Processing of alerts completed"
+      end)
+
       {alerts, api_alerts, updated_alerts}
+    else
+      {:error, message} ->
+        Logger.error(fn ->
+          "Error processing alerts: #{message}"
+        end)
+
+        {:error, message}
+
+      error ->
+        Logger.error(fn ->
+          "Error processing alerts"
+        end)
+
+        error
     end
   end
 
@@ -158,8 +180,16 @@ defmodule AlertProcessor.AlertParser do
   end
 
   defp parse_datetime(datetime) do
-    {:ok, dt} = DateTime.from_unix(datetime)
-    dt
+    result_from_parsing = DateTime.from_unix(datetime)
+
+    case result_from_parsing do
+      {:ok, dt} ->
+        dt
+
+      {:error, reason} ->
+        Logger.warn("Failed to parse date #{datetime}: invalid value: #{reason}")
+        {:error, "Error parsing date"}
+    end
   end
 
   defp parse_datetime_or_nil(nil), do: nil
@@ -275,7 +305,9 @@ defmodule AlertProcessor.AlertParser do
          routes <- get_routes_for_stop(stop, subway_infos ++ cr_infos ++ bus_infos) do
       Enum.map(routes, &Map.put(entity, :route, &1))
     else
-      _ -> [entity]
+      _ ->
+        Logger.warn("Failed to retrieve data from entity")
+        [entity]
     end
   end
 
@@ -301,7 +333,7 @@ defmodule AlertProcessor.AlertParser do
     end
   end
 
-  defp get_trip_name(%{"trip_id" => trip_id}, _informed_enttiy) do
+  defp get_trip_name(%{"trip_id" => trip_id}, _informed_entity) do
     case ServiceInfoCache.get_trip_name(trip_id) do
       {:ok, trip_name} -> trip_name
       _ -> nil
@@ -314,7 +346,9 @@ defmodule AlertProcessor.AlertParser do
          {:ok, schedule} <- CachedApiClient.schedule_for_trip(trip_id) do
       Enum.map(schedule, &parse_schedule_event/1)
     else
-      _ -> nil
+      _ ->
+        Logger.warn("Failed to retrieve schedule for trip")
+        nil
     end
   end
 
