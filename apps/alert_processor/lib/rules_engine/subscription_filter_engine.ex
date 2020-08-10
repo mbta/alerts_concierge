@@ -76,6 +76,10 @@ defmodule AlertProcessor.SubscriptionFilterEngine do
 
   @spec schedule_distinct_notifications(Alert.t(), [Subscription.t()]) :: :ok
   def schedule_distinct_notifications(alert, subscriptions) do
+    Logger.info(fn ->
+      "Scheduling distinct notifications, num_subscriptions=#{length(subscriptions)}"
+    end)
+
     subscriptions
     |> Enum.group_by(& &1.user)
     |> Map.to_list()
