@@ -22,6 +22,12 @@ defmodule AlertProcessor.Dissemination.MassNotifier do
   """
   @spec save_and_enqueue([Notification.t()]) :: :ok
   def save_and_enqueue(notifications) do
+    Logger.info(fn ->
+      "MassNotifier save_and_enqueue, num_notifications=#{length(notifications)}, batch_size=#{
+        @batch_size
+      }"
+    end)
+
     notifications
     |> Enum.sort(&mode_sort/2)
     |> Stream.chunk_every(@batch_size)
@@ -37,6 +43,8 @@ defmodule AlertProcessor.Dissemination.MassNotifier do
 
   defp save_and_enqueue_batch(notifications) do
     commit_start = now()
+    log("event=commit_start")
+
     saved_notifications = save_batch(notifications)
     log("event=commit time=#{now() - commit_start}")
 
