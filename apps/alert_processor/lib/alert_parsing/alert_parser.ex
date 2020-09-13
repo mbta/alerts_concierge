@@ -100,6 +100,7 @@ defmodule AlertProcessor.AlertParser do
       for alert_json <- remove_ignored(alerts) do
         parse_alert(alert_json, facilities_map, feed_timestamp)
       end
+      |> Enum.reject(&(&1 == nil))
 
     Logger.info(fn ->
       "alert parsing, time=#{Time.diff(Time.utc_now(), start_time, :millisecond)} alert_count=#{
