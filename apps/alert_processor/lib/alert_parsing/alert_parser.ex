@@ -93,14 +93,15 @@ defmodule AlertProcessor.AlertParser do
   end
 
   @doc false
+  @spec parse_alerts({[map], map, integer}) :: [Alert.t()]
   def parse_alerts({alerts, facilities_map, feed_timestamp}) do
     start_time = Time.utc_now()
 
     parsed_alerts =
-      for alert_json <- remove_ignored(alerts) do
-        parse_alert(alert_json, facilities_map, feed_timestamp)
+      for alert_json <- remove_ignored(alerts),
+          parsed_alert <- parse_alert(alert_json, facilities_map, feed_timestamp) do
+        parsed_alert
       end
-      |> Enum.reject(&(&1 == nil))
 
     Logger.info(fn ->
       "alert parsing, time=#{Time.diff(Time.utc_now(), start_time, :millisecond)} alert_count=#{
@@ -139,6 +140,7 @@ defmodule AlertProcessor.AlertParser do
     )
   end
 
+  @spec parse_alert(map, map, integer) :: [Alert.t()]
   def parse_alert(
         %{
           "id" => id,
@@ -173,11 +175,12 @@ defmodule AlertProcessor.AlertParser do
     |> Map.put(:recurrence, parse_translation(alert_data["recurrence_text"]))
     |> Map.put(:closed_timestamp, parse_datetime_or_nil(alert_data["closed_timestamp"]))
     |> Map.put(:reminder_times, parse_reminder_times(alert_data["reminder_times"]))
+    |> List.wrap()
   end
 
   def parse_alert(alert, _, _) do
     Logger.warn("Failed to parse alert: #{Poison.encode!(alert)}")
-    nil
+    []
   end
 
   defp parse_datetime(datetime) do
