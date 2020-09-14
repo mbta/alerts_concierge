@@ -1544,6 +1544,8 @@ defmodule AlertProcessor.Integration.MatchingTest do
       ]
     }
 
-    AlertParser.parse_alert(alert_data, facilities_map, timestamp)
+    alert_data
+    |> AlertParser.parse_alert(facilities_map, timestamp)
+    |> List.first()
   end
 end

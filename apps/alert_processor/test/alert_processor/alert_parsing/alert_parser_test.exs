@@ -148,6 +148,82 @@ defmodule AlertProcessor.AlertParserTest do
     end
   end
 
+  test "parse_alerts/1 does not return nil entries for unparsable alert map" do
+    use_cassette "facilities_alerts", custom: true, clear_mock: true, match_requests_on: [:query] do
+      {:ok, facility_map} = ServiceInfoCache.get_facility_map()
+
+      alert = %{
+        "url" => %{
+          "translation" => [
+            %{"text" => "", "language" => "en"}
+          ]
+        },
+        "timeframe_text" => %{
+          "translation" => [
+            %{"text" => "", "language" => "en"}
+          ]
+        },
+        "short_header_text" => %{
+          "translation" => [
+            %{
+              "text" => "",
+              "language" => "en"
+            }
+          ]
+        },
+        "severity_level" => "INFO",
+        "severity" => 1,
+        "reminder_times" => [
+          1_598_007_600
+        ],
+        "last_push_notification_timestamp" => 1_597_338_499,
+        "last_modified_timestamp" => 1_599_991_533,
+        "informed_entity" => [
+          %{
+            "stop_id" => "70027",
+            "route_type" => 1,
+            "route_id" => "Orange",
+            "direction_id" => 1,
+            "activities" => ["BOARD", "EXIT", "RIDE"]
+          }
+        ],
+        "id" => "369319",
+        "header_text" => %{
+          "translation" => [
+            %{
+              "text" => "",
+              "language" => "en"
+            }
+          ]
+        },
+        "effect_detail" => "SERVICE_CHANGE",
+        "effect" => "UNKNOWN_EFFECT",
+        "duration_certainty" => "KNOWN",
+        "description_text" => %{
+          "translation" => [
+            %{
+              "text" => "",
+              "language" => "en"
+            }
+          ]
+        },
+        "created_timestamp" => 1_597_338_499,
+        "cause_detail" => "MAINTENANCE",
+        "cause" => "MAINTENANCE",
+        "alert_lifecycle" => "UPCOMING",
+        "active_period" => [
+          %{"start" => 1_600_044_300, "end" => 1_600_065_000}
+        ]
+      }
+
+      alerts =
+        {[alert], facility_map, 1_506_433_715}
+        |> AlertParser.parse_alerts()
+
+      assert length(alerts) == 0
+    end
+  end
+
   test "correctly parses bus stop alert to match bus route subscription" do
     user = insert(:user)
 
@@ -187,7 +263,7 @@ defmodule AlertProcessor.AlertParserTest do
   test "correctly calculates active period" do
     use_cassette "known_alert", custom: true, clear_mock: true, match_requests_on: [:query] do
       {:ok, [alert], feed_timestamp} = AlertProcessor.AlertsClient.get_alerts()
-      result = AlertParser.parse_alert(alert, %{}, feed_timestamp)
+      [result] = AlertParser.parse_alert(alert, %{}, feed_timestamp)
 
       assert %AlertProcessor.Model.Alert{
                active_period: [%{start: start_datetime, end: end_datetime}],
@@ -211,7 +287,7 @@ defmodule AlertProcessor.AlertParserTest do
   test "correctly parses estimated timeframe alert" do
     use_cassette "estimated_alert", custom: true, clear_mock: true, match_requests_on: [:query] do
       {:ok, [alert], feed_timestamp} = AlertProcessor.AlertsClient.get_alerts()
-      result = AlertParser.parse_alert(alert, %{}, feed_timestamp)
+      [result] = AlertParser.parse_alert(alert, %{}, feed_timestamp)
 
       assert %AlertProcessor.Model.Alert{
                active_period: [%{start: start_datetime, end: end_datetime}],
@@ -241,7 +317,7 @@ defmodule AlertProcessor.AlertParserTest do
       clear_mock: true,
       match_requests_on: [:query] do
       {:ok, [alert], feed_timestamp} = AlertProcessor.AlertsClient.get_alerts()
-      result = AlertParser.parse_alert(alert, %{}, feed_timestamp)
+      [result] = AlertParser.parse_alert(alert, %{}, feed_timestamp)
 
       assert %AlertProcessor.Model.Alert{
                active_period: [%{start: _start_datetime, end: end_datetime}],
@@ -269,7 +345,7 @@ defmodule AlertProcessor.AlertParserTest do
       clear_mock: true,
       match_requests_on: [:query] do
       {:ok, [alert], feed_timestamp} = AlertProcessor.AlertsClient.get_alerts()
-      result = AlertParser.parse_alert(alert, %{}, feed_timestamp)
+      [result] = AlertParser.parse_alert(alert, %{}, feed_timestamp)
       assert result.url == "http://www.example.com/alert-info"
     end
   end
@@ -277,7 +353,7 @@ defmodule AlertProcessor.AlertParserTest do
   test "correctly pulls the closed timestamp when present" do
     use_cassette "closed_alert", custom: true, clear_mock: true, match_requests_on: [:query] do
       {:ok, [alert], feed_timestamp} = AlertProcessor.AlertsClient.get_alerts()
-      result = AlertParser.parse_alert(alert, %{}, feed_timestamp)
+      [result] = AlertParser.parse_alert(alert, %{}, feed_timestamp)
 
       assert %AlertProcessor.Model.Alert{
                active_period: [%{start: _start_datetime, end: _end_datetime}],
@@ -395,7 +471,7 @@ defmodule AlertProcessor.AlertParserTest do
         "last_push_notification_timestamp" => some_timestamp
       }
 
-      parsed_alert = AlertParser.parse_alert(alert, %{}, nil)
+      [parsed_alert] = AlertParser.parse_alert(alert, %{}, nil)
       refute parsed_alert.active_period
     end
 
@@ -418,7 +494,7 @@ defmodule AlertProcessor.AlertParserTest do
         "last_push_notification_timestamp" => some_timestamp
       }
 
-      parsed_alert = AlertParser.parse_alert(alert, %{}, nil)
+      [parsed_alert] = AlertParser.parse_alert(alert, %{}, nil)
       [informed_entity] = parsed_alert.informed_entities
       assert informed_entity.direction_id == 0
     end
@@ -464,7 +540,7 @@ defmodule AlertProcessor.AlertParserTest do
         "reminder_times" => reminder_times
       }
 
-      parsed_alert = AlertParser.parse_alert(alert, %{}, nil)
+      [parsed_alert] = AlertParser.parse_alert(alert, %{}, nil)
       expected_reminder_times = Enum.map(reminder_times, &DateTime.from_unix!(&1))
       assert parsed_alert.reminder_times == expected_reminder_times
     end
@@ -484,7 +560,7 @@ defmodule AlertProcessor.AlertParserTest do
         "last_push_notification_timestamp" => some_timestamp
       }
 
-      parsed_alert = AlertParser.parse_alert(alert, %{}, nil)
+      [parsed_alert] = AlertParser.parse_alert(alert, %{}, nil)
       assert parsed_alert.reminder_times == []
     end
   end
