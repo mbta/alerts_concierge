@@ -30,7 +30,7 @@ defmodule AlertProcessor.SubscriptionFilterEngine do
 
     Logger.info(fn ->
       time = Time.diff(end_time, start_time, :millisecond)
-      alert_type = if time > 0, do: "alert matching", else: "alert matching (bad time)"
+      alert_type = if time >= 0, do: "alert matching", else: "alert matching (bad time)"
       "#{alert_type} #{alert_filter_duration_type}, time=#{time} alert_count=#{length(alerts)}"
     end)
 
