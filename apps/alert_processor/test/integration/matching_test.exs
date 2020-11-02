@@ -1207,14 +1207,14 @@ defmodule AlertProcessor.Integration.MatchingTest do
   # NOTE: The following tests use a set of specific trip IDs. At the time the tests are run, the
   # trip for the current day of the week must have schedules present in the API. All trips must
   # depart from Fairmount station outbound and the time must be specified here. These test trips
-  # are active as of 2020-03-25.
+  # are active as of 2020-11-02.
 
   @test_trip_id (case Date.utc_today() |> Date.day_of_week() do
-                   day when day in 1..5 -> "CR-Weekday-Summer-20-7751"
-                   6 -> "CR-Saturday-FranklinPTC-20-1769C0"
-                   7 -> "CR-Sunday-FranklinPTC-20-2769C0"
+                   day when day in 1..5 -> "CR-Weekday-Fall-20-911"
+                   6 -> "CR-Saturday-Fall-20-1905"
+                   7 -> "CR-Sunday-Fall-20-2905"
                  end)
-  @test_trip_departs_fairmount_at ~T[16:35:00]
+  @test_trip_departs_fairmount_at ~T[09:10:00]
 
   describe "informed_entity's trip matching" do
     test "with origin scheduled time after subscription's start time" do
@@ -1305,13 +1305,7 @@ defmodule AlertProcessor.Integration.MatchingTest do
         }
       ]
 
-      refute_notify(
-        alert_from_parsed_data(
-          informed_entity_data,
-          ~N[2018-01-01 06:00:00],
-          ~N[2018-01-01 09:00:00]
-        )
-      )
+      refute_notify(alert_from_parsed_data(informed_entity_data))
     end
   end
 
@@ -1516,7 +1510,7 @@ defmodule AlertProcessor.Integration.MatchingTest do
 
   defp alert_from_parsed_data(
          informed_entity_data,
-         period_start \\ ~N[2018-01-01 21:00:00],
+         period_start \\ ~N[2018-01-01 05:00:00],
          period_end \\ ~N[2018-01-01 23:00:00]
        ) do
     # Monday, January 1, 2018 12:00:00 AM GMT-05:00 (EST)
