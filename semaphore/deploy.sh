@@ -18,8 +18,7 @@ aws --version
 # ensure the image exists on AWS. This command will fail if it does not.
 aws ecr describe-images --region us-east-1 --repository-name $APP --image-ids "imageTag=git-$githash"
 
-# get JSON describing task definition currently running on AWS
-# use it as basis for new revision, but replace image with the one built above
+# get newest task definition to use as the basis for a new revision
 current_task=$(aws ecs describe-task-definition --region us-east-1 --task-definition $appenv)
 task_role=$(echo $current_task | jq -r '.taskDefinition.taskRoleArn')
 task_execution_role=$(echo $current_task | jq -r '.taskDefinition.executionRoleArn')
@@ -39,9 +38,11 @@ task_containers=$(echo $current_task | \
 
 # safeguard against a known issue where the retrieved container definition is
 # missing the `secrets` key, causing the new version of the app to be missing
-# all its secrets and unable to start. this command will exit non-zero if the
-# `secrets` key is not present, aborting the script.
-! echo $task_containers | jq '.[0] | .secrets' | grep '^null$'
+# all its secrets and unable to start
+if echo $task_containers | jq '.[0] | .secrets' | grep '^null$'; then
+  echo "Aborting: new task definition is missing secrets. Try deploying again."
+  exit 1
+fi
 
 aws ecs register-task-definition \
   --family $appenv \
@@ -59,7 +60,7 @@ newrevision=$(aws ecs describe-task-definition --region us-east-1 --task-definit
 
 expected_count=$(aws ecs list-tasks --region us-east-1 --cluster $APP --service $appenv-a| jq '.taskArns | length')
 
-if  [[ $expected_count = "0" ]]; then
+if [[ $expected_count = "0" ]]; then
     aws ecs update-service --region us-east-1 --cluster $APP --service $appenv-a --task-definition $appenv:$newrevision
     echo Environment $APP:$appenv is not running!
     echo
