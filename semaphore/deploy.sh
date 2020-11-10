@@ -68,7 +68,7 @@ if  [[ $expected_count = "0" ]]; then
 fi
 
 function task_count_eq {
-    local tasks
+    local task_count
     task_count=$(aws ecs list-tasks --region us-east-1 --cluster $APP --service $appenv-a | jq '.taskArns | length')
     [[ $task_count = "$1" ]]
 }
