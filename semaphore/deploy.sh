@@ -74,10 +74,8 @@ function task_count_eq {
 }
 
 function exit_if_too_many_checks {
-  if [[ $checks -ge 48 ]]; then
-    exit 1
-  fi
-  sleep 10
+  if [[ $checks -ge 50 ]]; then exit 1; fi
+  sleep 5
   checks=$((checks+1))
 }
 
