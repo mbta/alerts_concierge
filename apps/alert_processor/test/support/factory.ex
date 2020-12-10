@@ -138,7 +138,7 @@ defmodule AlertProcessor.Factory do
   end
 
   def commuter_rail_subscription(%Subscription{} = subscription) do
-    %{subscription | type: :commuter_rail, origin: "place-north", destination: "Anderson/ Woburn"}
+    %{subscription | type: :commuter_rail, origin: "place-north", destination: "place-NHRML-0127"}
   end
 
   def commuter_rail_subscription_entities() do
@@ -155,7 +155,7 @@ defmodule AlertProcessor.Factory do
       %InformedEntity{
         route_type: 2,
         route: "CR-Lowell",
-        stop: "Anderson/ Woburn",
+        stop: "place-NHRML-0127",
         activities: ["BOARD"]
       },
       %InformedEntity{
@@ -302,7 +302,7 @@ defmodule AlertProcessor.Factory do
             "activities" => ["BOARD", "EXIT", "RIDE"],
             "route_id" => "CR-Providence",
             "route_type" => 2,
-            "stop_id" => "Canton Center"
+            "stop_id" => "place-SB-0156"
           }
         ],
         "last_modified_timestamp" => 1_538_154_830,

@@ -48,10 +48,10 @@ defmodule AlertProcessor.TextReplacementTest do
         informed_entities: [
           %AlertProcessor.Model.InformedEntity{
             activities: ["BOARD"],
-            stop: "Chelsea"
+            stop: "place-ER-0046"
           }
         ],
-        origin: "Chelsea"
+        origin: "place-ER-0046"
       }
 
       alert = %Alert{
@@ -67,17 +67,17 @@ defmodule AlertProcessor.TextReplacementTest do
             schedule: [
               %{
                 departure_time: "2017-10-30T21:25:00-04:00",
-                stop_id: "Newburyport",
+                stop_id: "place-ER-0362",
                 trip_id: "CR-Weekday-Aug14th-17-NR-180"
               },
               %{
                 departure_time: "2017-10-30T22:17:00-04:00",
-                stop_id: "Chelsea",
+                stop_id: "place-ER-0046",
                 trip_id: "CR-Weekday-Aug14th-17-NR-180"
               },
               %{
                 departure_time: "2017-10-30T22:28:00-04:00",
-                stop_id: "North Station",
+                stop_id: "place-BNT-0000",
                 trip_id: "CR-Weekday-Aug14th-17-NR-180"
               }
             ],
@@ -101,10 +101,10 @@ defmodule AlertProcessor.TextReplacementTest do
         informed_entities: [
           %AlertProcessor.Model.InformedEntity{
             activities: ["BOARD"],
-            stop: "Four Corners / Geneva"
+            stop: "place-DB-2249"
           }
         ],
-        origin: "Four Corners / Geneva"
+        origin: "place-DB-2249"
       }
 
       alert = %Alert{
@@ -120,17 +120,17 @@ defmodule AlertProcessor.TextReplacementTest do
             schedule: [
               %{
                 departure_time: "2017-10-30T21:25:00-04:00",
-                stop_id: "Fairmount",
+                stop_id: "place-DB-2205",
                 trip_id: "CR-Weekday-Aug14th-17-NR-180"
               },
               %{
                 departure_time: "2017-10-30T22:17:00-04:00",
-                stop_id: "Four Corners / Geneva",
+                stop_id: "place-DB-2249",
                 trip_id: "CR-Weekday-Aug14th-17-NR-180"
               },
               %{
                 departure_time: "2017-10-30T22:28:00-04:00",
-                stop_id: "South Station",
+                stop_id: "place-NEC-2287",
                 trip_id: "CR-Weekday-Aug14th-17-NR-180"
               }
             ],
@@ -154,10 +154,10 @@ defmodule AlertProcessor.TextReplacementTest do
         informed_entities: [
           %AlertProcessor.Model.InformedEntity{
             activities: ["BOARD"],
-            stop: "Four Corners / Geneva"
+            stop: "place-DB-2249"
           }
         ],
-        origin: "Four Corners / Geneva"
+        origin: "place-DB-2249"
       }
 
       alert = %Alert{
@@ -177,17 +177,17 @@ defmodule AlertProcessor.TextReplacementTest do
             schedule: [
               %{
                 departure_time: "2017-10-30T21:25:00-04:00",
-                stop_id: "Fairmount",
+                stop_id: "place-DB-2205",
                 trip_id: "CR-Weekday-Aug14th-17-NR-180"
               },
               %{
                 departure_time: "2017-10-30T22:17:00-04:00",
-                stop_id: "Four Corners / Geneva",
+                stop_id: "place-DB-2249",
                 trip_id: "CR-Weekday-Aug14th-17-NR-180"
               },
               %{
                 departure_time: "2017-10-30T22:28:00-04:00",
-                stop_id: "South Station",
+                stop_id: "place-NEC-2287",
                 trip_id: "CR-Weekday-Aug14th-17-NR-180"
               }
             ],

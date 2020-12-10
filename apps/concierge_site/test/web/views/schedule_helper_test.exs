@@ -8,7 +8,7 @@ defmodule ConciergeSite.ScheduleHelperTest do
       {"cr", "CR-Worcester"} => [
         %AlertProcessor.Model.TripInfo{
           departure_time: ~T[23:58:00],
-          origin: {"Auburndale", "Auburndale", {42.345725, -71.250826}, 2},
+          origin: {"Auburndale", "place-WML-0102", {42.345725, -71.250826}, 2},
           trip_number: "537",
           route: %{
             route_id: "CR-Worcester"
@@ -43,7 +43,7 @@ defmodule ConciergeSite.ScheduleHelperTest do
       {"cr", "CR-Worcester"} => [
         %AlertProcessor.Model.TripInfo{
           departure_time: ~T[23:58:00],
-          origin: {"Auburndale", "Auburndale", {42.345725, -71.250826}, 2},
+          origin: {"Auburndale", "place-WML-0102", {42.345725, -71.250826}, 2},
           trip_number: "537",
           route: %{
             route_id: "CR-Worcester"
