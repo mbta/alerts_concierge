@@ -72,7 +72,7 @@ defmodule ConciergeSite.TripCardHelperTest do
             add_subscription_for_trip(trip, %{
               type: :cr,
               route: "CR-Haverhill",
-              origin: "Melrose Highlands",
+              origin: "place-WR-0075",
               destination: "place-north",
               direction_id: 1,
               rank: 7

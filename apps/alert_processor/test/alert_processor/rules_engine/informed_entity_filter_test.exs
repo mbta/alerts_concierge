@@ -10,8 +10,8 @@ defmodule AlertProcessor.InformedEntityFilterTest do
         route_type: nil,
         direction_id: nil,
         route: nil,
-        origin: "Fairmount",
-        destination: "Newmarket",
+        origin: "place-DB-2205",
+        destination: "place-DB-2265",
         facility_types: [],
         start_time: ~T[08:00:00],
         end_time: ~T[09:00:00]
@@ -20,12 +20,12 @@ defmodule AlertProcessor.InformedEntityFilterTest do
       subscription = build(:subscription, subscription_details)
 
       scheduled_origin_event = %{
-        stop_id: "Fairmount",
+        stop_id: "place-DB-2205",
         departure_time: "2018-04-02T08:00:00-04:00"
       }
 
       scheduled_destination_event = %{
-        stop_id: "Newmarket",
+        stop_id: "place-DB-2265",
         departure_time: nil
       }
 
@@ -50,8 +50,8 @@ defmodule AlertProcessor.InformedEntityFilterTest do
         route_type: nil,
         direction_id: nil,
         route: nil,
-        origin: "Fairmount",
-        destination: "Newmarket",
+        origin: "place-DB-2205",
+        destination: "place-DB-2265",
         facility_types: [],
         start_time: ~T[08:00:00],
         end_time: ~T[09:00:00]
@@ -60,12 +60,12 @@ defmodule AlertProcessor.InformedEntityFilterTest do
       subscription = build(:subscription, subscription_details)
 
       scheduled_origin_event = %{
-        stop_id: "Fairmount",
+        stop_id: "place-DB-2205",
         departure_time: "2018-04-02T07:45:00-04:00"
       }
 
       scheduled_destination_event = %{
-        stop_id: "Newmarket",
+        stop_id: "place-DB-2265",
         departure_time: nil
       }
 
@@ -90,8 +90,8 @@ defmodule AlertProcessor.InformedEntityFilterTest do
         route_type: nil,
         direction_id: nil,
         route: nil,
-        origin: "Fairmount",
-        destination: "Newmarket",
+        origin: "place-DB-2205",
+        destination: "place-DB-2265",
         facility_types: [],
         start_time: ~T[08:00:00],
         end_time: ~T[08:05:00]
@@ -100,12 +100,12 @@ defmodule AlertProcessor.InformedEntityFilterTest do
       subscription = build(:subscription, subscription_details)
 
       scheduled_origin_event = %{
-        stop_id: "Fairmount",
+        stop_id: "place-DB-2205",
         departure_time: "2018-04-02T08:10:00-04:00"
       }
 
       scheduled_destination_event = %{
-        stop_id: "Newmarket",
+        stop_id: "place-DB-2265",
         departure_time: nil
       }
 
@@ -130,8 +130,8 @@ defmodule AlertProcessor.InformedEntityFilterTest do
         route_type: nil,
         direction_id: nil,
         route: nil,
-        origin: "Fairmount",
-        destination: "Newmarket",
+        origin: "place-DB-2205",
+        destination: "place-DB-2265",
         facility_types: [],
         start_time: ~T[07:00:00],
         end_time: ~T[09:00:00],
@@ -142,12 +142,12 @@ defmodule AlertProcessor.InformedEntityFilterTest do
       subscription = build(:subscription, subscription_details)
 
       scheduled_origin_event = %{
-        stop_id: "Fairmount",
+        stop_id: "place-DB-2205",
         departure_time: "2018-04-02T08:00:00-04:00"
       }
 
       scheduled_destination_event = %{
-        stop_id: "Newmarket",
+        stop_id: "place-DB-2265",
         departure_time: nil
       }
 
@@ -172,8 +172,8 @@ defmodule AlertProcessor.InformedEntityFilterTest do
         route_type: nil,
         direction_id: nil,
         route: nil,
-        origin: "Fairmount",
-        destination: "Newmarket",
+        origin: "place-DB-2205",
+        destination: "place-DB-2265",
         facility_types: [],
         start_time: ~T[08:00:00],
         end_time: ~T[09:00:00],
@@ -184,12 +184,12 @@ defmodule AlertProcessor.InformedEntityFilterTest do
       subscription = build(:subscription, subscription_details)
 
       scheduled_origin_event = %{
-        stop_id: "Fairmount",
+        stop_id: "place-DB-2205",
         departure_time: "2018-04-02T08:00:00-04:00"
       }
 
       scheduled_destination_event = %{
-        stop_id: "Newmarket",
+        stop_id: "place-DB-2265",
         departure_time: nil
       }
 
@@ -214,8 +214,8 @@ defmodule AlertProcessor.InformedEntityFilterTest do
         route_type: nil,
         direction_id: nil,
         route: nil,
-        origin: "Fairmount",
-        destination: "Newmarket",
+        origin: "place-DB-2205",
+        destination: "place-DB-2265",
         facility_types: [],
         start_time: ~T[08:00:00],
         end_time: ~T[09:00:00],
@@ -226,12 +226,12 @@ defmodule AlertProcessor.InformedEntityFilterTest do
       subscription = build(:subscription, subscription_details)
 
       scheduled_origin_event = %{
-        stop_id: "Fairmount",
+        stop_id: "place-DB-2205",
         departure_time: "2018-04-02T08:10:00-04:00"
       }
 
       scheduled_destination_event = %{
-        stop_id: "Newmarket",
+        stop_id: "place-DB-2265",
         departure_time: nil
       }
 
@@ -256,8 +256,8 @@ defmodule AlertProcessor.InformedEntityFilterTest do
         route_type: nil,
         direction_id: nil,
         route: nil,
-        origin: "Fairmount",
-        destination: "Newmarket",
+        origin: "place-DB-2205",
+        destination: "place-DB-2265",
         facility_types: [],
         start_time: ~T[08:00:00]
       ]
@@ -283,8 +283,8 @@ defmodule AlertProcessor.InformedEntityFilterTest do
         route_type: nil,
         direction_id: nil,
         route: nil,
-        origin: "Fairmount",
-        destination: "Newmarket",
+        origin: "place-DB-2205",
+        destination: "place-DB-2265",
         facility_types: [],
         start_time: ~T[08:00:00]
       ]
