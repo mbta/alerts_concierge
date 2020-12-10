@@ -241,6 +241,11 @@ defmodule AlertProcessor.Model.UserTest do
       assert user == User.for_email(user.email)
     end
 
+    test "disregards the case of the email" do
+      user = insert(:user, email: "testemail@example.com")
+      assert user == User.for_email("TestEmail@example.com")
+    end
+
     test "returns nil if no matching user" do
       assert nil == User.for_email("test@nonexistent.com")
     end
