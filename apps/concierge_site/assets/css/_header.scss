@@ -4,7 +4,7 @@
   background-color: $dark-blue;
 }
 
-.header__logo {
+.header__mbta-logo {
   display: block;
   margin: 9px 0;
 }
@@ -19,21 +19,15 @@
   }
 }
 
-.header__logo--small {
-  display: block;
-  float: left;
-  height: 3rem;
-  margin-top: 0.375rem;
-  width: 3rem;
-}
-
 .header__right {
   position: absolute;
   top: 0;
   right: 15px;
 }
 
-.header__beta {
+.header__app-logo {
+  color: $gray-dark;
+  font: bold 16px "Helvetica Neue";
   transform: translateY(2px);
 }
 

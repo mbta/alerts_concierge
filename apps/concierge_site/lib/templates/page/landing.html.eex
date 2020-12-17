@@ -15,7 +15,7 @@
         <%= link "Sign in", to: session_path(@conn, :new), class: "btn btn-outline-primary btn-block" %>
 
         <p class="landing-page__faq">
-            Have questions? <%= link "See our FAQ", to: "https://www.mbta.com/about-t-alerts-beta" %>
+          Have questions? <%= link "See our FAQs", to: "https://www.mbta.com/about-t-alerts" %>
         </p>
       </div>
     </div>
