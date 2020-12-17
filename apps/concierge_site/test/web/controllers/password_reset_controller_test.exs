@@ -43,8 +43,9 @@ defmodule ConciergeSite.PasswordResetControllerTest do
 
   describe "update/2" do
     test "with valid reset token and password", %{conn: conn} do
-      user = insert(:user)
-      reset_token = Phoenix.Token.sign(ConciergeSite.Endpoint, "password_reset", user.email)
+      # case shouldn't matter, as it doesn't matter when looking up the user to send the email
+      insert(:user, email: "abcd@example.com")
+      token = Phoenix.Token.sign(ConciergeSite.Endpoint, "password_reset", "AbCd@example.com")
       valid_password = "password1!"
 
       params = %{
@@ -54,7 +55,7 @@ defmodule ConciergeSite.PasswordResetControllerTest do
         }
       }
 
-      conn = patch(conn, password_reset_path(conn, :update, reset_token), params)
+      conn = patch(conn, password_reset_path(conn, :update, token), params)
       assert get_flash(conn)["info"] == "Your password has been updated."
     end
 

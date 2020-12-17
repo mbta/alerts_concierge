@@ -11,7 +11,7 @@ defmodule ConciergeSite.PasswordResetController do
   end
 
   def create(conn, %{"password_reset" => %{"email" => email}}) do
-    case email |> String.downcase() |> User.for_email() do
+    case User.for_email(email) do
       nil ->
         conn
         |> put_flash(:error, "Could not find that email address.")

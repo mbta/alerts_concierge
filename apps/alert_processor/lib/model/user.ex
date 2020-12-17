@@ -301,7 +301,7 @@ defmodule AlertProcessor.Model.User do
 
   @spec for_email(String.t()) :: t | nil
   def for_email(email) do
-    Repo.get_by(__MODULE__, email: email)
+    Repo.get_by(__MODULE__, email: String.downcase(email))
   end
 
   @spec find_by_email_search(String.t()) :: [t]
