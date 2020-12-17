@@ -18,7 +18,7 @@
     <mj-section background-color="#ffffff" padding="0">
       <mj-column>
         <mj-text font-family="Helvetica, Arial" font-size="16px">
-          <p>Thanks for signing up for T-Alerts Beta!<br /><br /> If you have immediate feedback about the sign up process, or related to any alerts as you start to receive them, we’d love to hear it. <a style="color: #165c96" href="<%= feedback_url %>">Provide feedback now!</a><br
+          <p>Thanks for signing up for T-Alerts!<br /><br /> If you have immediate feedback about the sign up process, or related to any alerts as you start to receive them, we’d love to hear it. <a style="color: #165c96" href="<%= feedback_url %>">Provide feedback now!</a><br
             /><br />
             <strong>Get the most from your T-Alerts account by signing in!  You can:</strong>
           </p>

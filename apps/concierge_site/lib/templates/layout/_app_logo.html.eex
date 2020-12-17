@@ -1,0 +1,4 @@
+<% destination = if @current_user, do: trip_path(@conn, :index), else: account_path(@conn, :new) %>
+<%= link to: destination, class: "header__app-logo" do %>
+  T-Alerts
+<% end %>

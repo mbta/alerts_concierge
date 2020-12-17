@@ -1,8 +1,8 @@
 <footer class="footer__container">
   <div class="container">
     <p class="footer__links">
-      <%= link "Submit feedback", to: "https://www.mbta.com/beta-alerts-feedback" %> ●
-      <%= link "FAQ", to: "https://www.mbta.com/about-t-alerts-beta" %>
+      <%= link "Support", to: "https://www.mbta.com/customer-support" %> ●
+      <%= link "FAQs", to: "https://www.mbta.com/about-t-alerts" %>
     </p>
     <p class="footer__copyright">
       &copy; Massachusetts Bay Transportation Authority, all rights reserved. We will only use your information to provide you with the T-Alert services you have requested. See our <%= link "privacy policy", to: "https://www.mbta.com/policies/privacy-policy#4.6" %>.
