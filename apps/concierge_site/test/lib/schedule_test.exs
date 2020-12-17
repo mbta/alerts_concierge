@@ -45,10 +45,10 @@ defmodule ConciergeSite.ScheduleTest do
     assert Enum.all?(result[{"cr", "CR-Newburyport"}], &Map.has_key?(&1, :weekend?))
 
     assert List.first(result[{"cr", "CR-Newburyport"}]) == %TripInfo{
-             arrival_time: ~T[05:53:00],
-             departure_time: ~T[05:04:00],
-             arrival_extended_time: %ExtendedTime{relative_day: 1, time: ~T[05:53:00]},
-             departure_extended_time: %ExtendedTime{relative_day: 1, time: ~T[05:04:00]},
+             arrival_time: ~T[09:20:00],
+             departure_time: ~T[08:30:00],
+             arrival_extended_time: %ExtendedTime{relative_day: 1, time: ~T[09:20:00]},
+             departure_extended_time: %ExtendedTime{relative_day: 1, time: ~T[08:30:00]},
              destination: {"Manchester", "place-GB-0254", {42.573687, -70.77009}, 1},
              direction_id: 0,
              origin: {"North Station", "place-north", {42.365577, -71.06129}, 1},
@@ -84,11 +84,11 @@ defmodule ConciergeSite.ScheduleTest do
                direction_destinations: ["Newburyport or Rockport", "North Station"]
              },
              selected: false,
-             trip_number: "101",
+             trip_number: "1101",
              weekend?: false
            }
 
-    assert Enum.find_index(result[{"cr", "CR-Newburyport"}], & &1.weekend?) == 3
+    assert Enum.find_index(result[{"cr", "CR-Newburyport"}], & &1.weekend?) == 1
   end
 
   test "get_schedules_for_trip/2" do
@@ -159,18 +159,18 @@ defmodule ConciergeSite.ScheduleTest do
              %AlertProcessor.Model.TripInfo{
                arrival_extended_time: %AlertProcessor.ExtendedTime{
                  relative_day: 1,
-                 time: ~T[05:49:00]
+                 time: ~T[08:10:00]
                },
-               arrival_time: ~T[05:49:00],
+               arrival_time: ~T[08:10:00],
                departure_extended_time: %AlertProcessor.ExtendedTime{
                  relative_day: 1,
-                 time: ~T[05:11:00]
+                 time: ~T[07:31:00]
                },
-               departure_time: ~T[05:11:00],
+               departure_time: ~T[07:31:00],
                destination: {"Worcester", "place-WML-0442", {42.261461, -71.794888}, 1},
                direction_id: 0,
                selected: false,
-               trip_number: "501",
+               trip_number: "1501",
                weekend?: false,
                origin: {"Framingham", "place-WML-0214", {42.276108, -71.420055}, 1},
                route: %AlertProcessor.Model.Route{
@@ -205,7 +205,7 @@ defmodule ConciergeSite.ScheduleTest do
                }
              }
 
-    assert Enum.find_index(first_trip_result[{"cr", "CR-Worcester"}], & &1.weekend?) == 3
+    assert Enum.find_index(first_trip_result[{"cr", "CR-Worcester"}], & &1.weekend?) == 1
 
     assert is_map(return_trip_result)
     assert Map.keys(return_trip_result) == [{"cr", "CR-Worcester"}]
@@ -216,18 +216,18 @@ defmodule ConciergeSite.ScheduleTest do
              %AlertProcessor.Model.TripInfo{
                arrival_extended_time: %AlertProcessor.ExtendedTime{
                  relative_day: 1,
-                 time: ~T[04:40:00]
+                 time: ~T[06:10:00]
                },
-               arrival_time: ~T[04:40:00],
+               arrival_time: ~T[06:10:00],
                departure_extended_time: %AlertProcessor.ExtendedTime{
                  relative_day: 1,
-                 time: ~T[04:00:00]
+                 time: ~T[05:30:00]
                },
-               departure_time: ~T[04:00:00],
+               departure_time: ~T[05:30:00],
                direction_id: 1,
                origin: {"Worcester", "place-WML-0442", {42.261461, -71.794888}, 1},
                selected: false,
-               trip_number: "500",
+               trip_number: "7500",
                weekend?: false,
                destination: {"Framingham", "place-WML-0214", {42.276108, -71.420055}, 1},
                route: %AlertProcessor.Model.Route{
@@ -262,7 +262,7 @@ defmodule ConciergeSite.ScheduleTest do
                }
              }
 
-    assert Enum.find_index(return_trip_result[{"cr", "CR-Worcester"}], & &1.weekend?) == 6
+    assert Enum.find_index(return_trip_result[{"cr", "CR-Worcester"}], & &1.weekend?) == 2
   end
 
   defp is_trip_info(%TripInfo{}), do: true
