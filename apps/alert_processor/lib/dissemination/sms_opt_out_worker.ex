@@ -100,7 +100,7 @@ defmodule AlertProcessor.SmsOptOutWorker do
     end
   end
 
-  @spec get_opted_out_user_ids([phone_number]) :: [User.id()] | :error
+  @spec get_opted_out_user_ids([phone_number]) :: {:ok, [User.id()]} | :error
   defp get_opted_out_user_ids(new_opted_out_numbers) do
     case User.ids_by_phone_numbers(new_opted_out_numbers) do
       [] -> :error

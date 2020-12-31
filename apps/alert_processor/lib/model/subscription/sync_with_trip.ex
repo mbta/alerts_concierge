@@ -14,7 +14,7 @@ defmodule AlertProcessor.Model.Subscription.SyncWithTrip do
   * `end_time`
   """
   @spec perform(Subscription.t(), Trip.t()) ::
-          {:ok, Subscription.t()} :: {:error, Ecto.Changeset.t()}
+          {:ok, Subscription.t()} | {:error, Ecto.Changeset.t()}
   def perform(%Subscription{} = subscription, %Trip{} = trip) do
     params = %{
       relevant_days: trip.relevant_days,

@@ -19,7 +19,7 @@ defmodule ConciergeSite.Dissemination.NotificationEmail do
   EEx.function_from_file(
     :def,
     :text_email,
-    Path.join(~w(#{System.cwd!()} lib mail_templates notification.txt.eex)),
+    Path.join(~w(#{File.cwd!()} lib mail_templates notification.txt.eex)),
     [:notification, :manage_subscriptions_url, :support_url, :all_alerts_url]
   )
 

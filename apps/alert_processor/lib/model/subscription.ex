@@ -149,7 +149,7 @@ defmodule AlertProcessor.Model.Subscription do
   Syncs a subscription's attributes per a given trip.
   """
   @spec sync_with_trip(__MODULE__.t(), Trip.t()) ::
-          {:ok, Subscription.t()} :: {:error, Ecto.Changeset.t()}
+          {:ok, Subscription.t()} | {:error, Ecto.Changeset.t()}
   def sync_with_trip(%Subscription{} = subscription, %Trip{} = trip) do
     Subscription.SyncWithTrip.perform(subscription, trip)
   end

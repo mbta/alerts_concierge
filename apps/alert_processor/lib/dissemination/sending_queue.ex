@@ -62,8 +62,4 @@ defmodule AlertProcessor.SendingQueue do
   def handle_call(:reset, _from, _notifications) do
     {:reply, :ok, :queue.new()}
   end
-
-  def handle_call(request, from, state) do
-    super(request, from, state)
-  end
 end

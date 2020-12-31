@@ -17,7 +17,7 @@ defmodule ConciergeSite.Dissemination.Email do
   EEx.function_from_file(
     :def,
     :password_reset_text_email,
-    Path.join(~w(#{System.cwd!()} lib mail_templates password_reset.txt.eex)),
+    Path.join(~w(#{File.cwd!()} lib mail_templates password_reset.txt.eex)),
     [:reset_token]
   )
 
@@ -39,7 +39,7 @@ defmodule ConciergeSite.Dissemination.Email do
   EEx.function_from_file(
     :def,
     :confirmation_text_email,
-    Path.join(~w(#{System.cwd!()} lib mail_templates confirmation.txt.eex)),
+    Path.join(~w(#{File.cwd!()} lib mail_templates confirmation.txt.eex)),
     [:manage_subscriptions_url, :support_url]
   )
 
