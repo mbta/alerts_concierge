@@ -39,7 +39,7 @@ defmodule AlertsConcierge.Mixfile do
       "ecto.setup": ["ecto.create", "ecto.load"],
       "ecto.reset": ["ecto.drop", "ecto.setup"],
       "ecto.rollback": ["ecto.rollback", "ecto.dump"],
-      "test.all": ["ecto.create --quiet", "ecto.migrate", "coveralls.json", "test"]
+      test: ["ecto.create --quiet", "ecto.load --quiet", "test"]
     ]
   end
 end

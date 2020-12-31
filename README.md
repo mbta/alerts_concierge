@@ -49,7 +49,6 @@ B) it will persist _through_ the session, even if you change directories.
 ### Running tests
 
 - `mix test`
-- `mix test.all` — run tests with code coverage report
 
 ### Running the application
 
