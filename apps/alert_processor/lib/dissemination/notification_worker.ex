@@ -50,7 +50,7 @@ defmodule AlertProcessor.NotificationWorker do
   rescue
     exception ->
       log(id, "event=crash")
-      reraise exception, System.stacktrace()
+      reraise exception, __STACKTRACE__
   end
 
   def handle_info(_, id) do

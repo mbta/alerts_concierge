@@ -27,7 +27,7 @@ defmodule AlertProcessor.ServiceInfo.CacheFileTest do
     test "returns error for non-map" do
       filepath =
         Path.join([
-          System.cwd(),
+          File.cwd!(),
           "priv/service_info_cache",
           "load_service_info_1_test_non_map.terms"
         ])

@@ -6,7 +6,7 @@ defmodule ConciergeSite.Auth.Token do
 
   @type time_unit :: :millis | :seconds | :minutes | :hours | :days | :years
   @type token :: String.t()
-  @type permissions :: keyword(atom)
+  @type permissions :: list(atom) | -1
   @type ttl :: {integer, time_unit}
 
   @doc """

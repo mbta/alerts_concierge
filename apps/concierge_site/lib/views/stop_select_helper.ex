@@ -15,10 +15,10 @@ defmodule ConciergeSite.StopSelectHelper do
 
   @spec render(String.t(), atom, atom, [String.t()], keyword) :: Phoenix.HTML.safe()
   def render(route_id, input_name, field, selected \\ [], attrs \\ []) do
-    default = if attrs[:no_default] == true, do: [], else: default_option()
+    default = if attrs[:no_default] == true, do: [], else: [default_option()]
 
     content_tag :select, attributes(input_name, field, route_id, attrs) do
-      for stop <- get_stops_by_route(route_id), into: [default], do: render_option(stop, selected)
+      default ++ Enum.map(get_stops_by_route(route_id), &render_option(&1, selected))
     end
   end
 
