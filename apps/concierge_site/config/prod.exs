@@ -24,10 +24,7 @@ config :concierge_site, ConciergeSite.Endpoint,
 
 config :concierge_site, :redirect_http?, true
 
-config :logger,
-  level: :info,
-  truncate: :infinity,
-  backends: [:console]
+config :logger, level: :info, truncate: :infinity
 
 config :logger, :console,
   level: :info,

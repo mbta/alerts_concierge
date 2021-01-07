@@ -4,14 +4,14 @@ use Mix.Config
 
 # By default, the umbrella project as well as each child
 # application will require this configuration file, ensuring
-# they all use the same configuration. While one could
-# configure all applications here, we prefer to delegate
-# back to each application for organization purposes.
+# they all use the same configuration.
 import_config "../apps/*/config/config.exs"
 
-# Sample configuration (overrides the imported configuration above):
-#
-#     config :logger, :console,
-#       level: :info,
-#       format: "$date $time [$level] $metadata$message\n",
-#       metadata: [:user_id]
+config :sentry,
+  dsn: {:system, "SENTRY_DSN"},
+  environment_name: {:system, "SENTRY_ENV"},
+  included_environments: ~w(prod dev dev-green),
+  in_app_module_whitelist: [AlertProcessor, ConciergeSite],
+  json_library: Poison
+
+config :logger, backends: [:console, Sentry.LoggerBackend]

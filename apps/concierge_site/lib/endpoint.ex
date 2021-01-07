@@ -1,5 +1,6 @@
 defmodule ConciergeSite.Endpoint do
   use Phoenix.Endpoint, otp_app: :concierge_site
+  use Sentry.Phoenix.Endpoint
 
   if Application.get_env(:concierge_site, :sql_sandbox) do
     plug(Phoenix.Ecto.SQL.Sandbox)

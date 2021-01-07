@@ -13,5 +13,7 @@ export HOST_URL=ec2-something.compute-1.amazonaws.com
 export SECRET_KEY_BASE=
 export SENDER_EMAIL_ADDRESS=alerts@mbta.com
 export SENDER_EMAIL_NAME=T-Alerts
+export SENTRY_DSN=
+export SENTRY_ENV=local
 export SERVICE_INFO_UPDATE_INTERVAL=86400000
 export UNSUBSCRIBED_LIST_FETCH_INTERVAL=300000
