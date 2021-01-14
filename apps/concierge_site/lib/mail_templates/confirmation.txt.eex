@@ -1,8 +1,8 @@
 Thanks for signing up for T-Alerts!
 
-If you have immediate feedback about the sign up process, or related to any alerts as you start to receive them, we’d love to hear it. 
+If you have immediate feedback about the sign up process, or related to any alerts as you start to receive them, we’d love to hear it.
 
-Provide feedback now! <%= feedback_url %>
+Provide feedback: <%= support_url %>
 
 If you have an old T-Alerts account, signing up for a account doesn’t affect that account.  You can delete your old account now to prevent receiving duplicate notifications: https://public.govdelivery.com/accounts/MABTA/subscriber/new
 

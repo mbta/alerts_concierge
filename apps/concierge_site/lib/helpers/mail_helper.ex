@@ -4,20 +4,22 @@ defmodule ConciergeSite.Helpers.MailHelper do
   digest emails
   """
 
-  @template_dir Application.get_env(:concierge_site, :mail_template_dir)
-
+  import ConciergeSite.ViewHelpers, only: [external_url: 1]
   alias ConciergeSite.Router.Helpers
-  alias AlertProcessor.Helpers.ConfigHelper
   require EEx
+
+  @all_alerts_url external_url(:alerts)
+  @support_url external_url(:support)
+  @template_dir Application.fetch_env!(:concierge_site, :mail_template_dir)
 
   EEx.function_from_file(:def, :html_footer, Path.join(@template_dir, "_footer.html.eex"), [
     :manage_subscriptions_url,
-    :feedback_url
+    :support_url
   ])
 
   EEx.function_from_file(:def, :text_footer, Path.join(@template_dir, "_footer.txt.eex"), [
     :manage_subscriptions_url,
-    :feedback_url
+    :support_url
   ])
 
   EEx.function_from_file(:def, :html_header, Path.join(@template_dir, "_header.html.eex"), [])
@@ -30,15 +32,9 @@ defmodule ConciergeSite.Helpers.MailHelper do
     Helpers.static_url(ConciergeSite.Endpoint, "/images/icons/t-logo@2x.png")
   end
 
+  def all_alerts_url, do: @all_alerts_url
+  def support_url, do: @support_url
   def manage_subscriptions_url(), do: Helpers.trip_url(ConciergeSite.Endpoint, :index)
-
-  def feedback_url do
-    case ConfigHelper.get_string(:feedback_url, :concierge_site) do
-      "" -> nil
-      nil -> nil
-      url -> url
-    end
-  end
 
   @spec rating_base_url(String.t(), String.t()) :: iodata
   def rating_base_url(alert_id, user_id) do

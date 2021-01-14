@@ -5,7 +5,7 @@ defmodule ConciergeSite.Dissemination.Email do
   alias ConciergeSite.Helpers.MailHelper
   require EEx
 
-  @template_dir Application.get_env(:concierge_site, :mail_template_dir)
+  @template_dir Application.fetch_env!(:concierge_site, :mail_template_dir)
 
   EEx.function_from_file(
     :def,
@@ -33,25 +33,25 @@ defmodule ConciergeSite.Dissemination.Email do
     :def,
     :confirmation_html_email,
     Path.join(@template_dir, "confirmation.html.eex"),
-    [:manage_subscriptions_url, :feedback_url]
+    [:manage_subscriptions_url, :support_url]
   )
 
   EEx.function_from_file(
     :def,
     :confirmation_text_email,
     Path.join(~w(#{System.cwd!()} lib mail_templates confirmation.txt.eex)),
-    [:manage_subscriptions_url, :feedback_url]
+    [:manage_subscriptions_url, :support_url]
   )
 
   def confirmation_email(user) do
     manage_subscriptions_url = MailHelper.manage_subscriptions_url()
-    feedback_url = MailHelper.feedback_url()
+    support_url = MailHelper.support_url()
 
     base_email()
     |> to(user.email)
     |> subject("Welcome to T-Alerts")
-    |> html_body(confirmation_html_email(manage_subscriptions_url, feedback_url))
-    |> text_body(confirmation_text_email(manage_subscriptions_url, feedback_url))
+    |> html_body(confirmation_html_email(manage_subscriptions_url, support_url))
+    |> text_body(confirmation_text_email(manage_subscriptions_url, support_url))
   end
 
   @spec base_email() :: Bamboo.Email.t()

@@ -8,7 +8,6 @@ export AWS_SECRET_KEY=
 export DATABASE_URL_DEV=postgresql://__username__:password@localhost:5432/alert_concierge_dev
 export DATABASE_URL_PROD=
 export DATABASE_URL_TEST=postgresql://__username__:password@localhost:5432/alert_concierge_test
-export FEEDBACK_URL=http://mbtafeedback.com/
 export GUARDIAN_AUTH_KEY=abc123
 export HOST_URL=ec2-something.compute-1.amazonaws.com
 export SECRET_KEY_BASE=

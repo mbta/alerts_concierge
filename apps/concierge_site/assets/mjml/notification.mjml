@@ -98,9 +98,9 @@
       <mj-column>
         <mj-text font-size="12px" font-family="'Helvetica Neue', Helvetica, Arial, sans-serif" padding-left="0" padding-right="0">
           <p>
-            <a href="<%= feedback_url %>" style="color: #16528A; text-decoration: none;">Tell us how we’re doing</a> ●
+            <a href="<%= support_url %>" style="color: #16528A; text-decoration: none;">Tell us how we’re doing</a> ●
             <a href="<%= manage_subscriptions_url %>" style="color: #16528A; text-decoration: none;">Edit Subscription</a> ●
-            <a href="https://www.mbta.com/alerts" style="color: #16528A; text-decoration: none;">See all alerts</a>
+            <a href="<%= all_alerts_url %>" style="color: #16528A; text-decoration: none;">See all alerts</a>
             <br />
             © Massachusetts Bay Transportation Authority, all rights reserved.
           </p>
