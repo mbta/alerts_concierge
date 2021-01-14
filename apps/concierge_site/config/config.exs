@@ -24,7 +24,12 @@ config :concierge_site, ConciergeSite.Dissemination.Mailer, adapter: Bamboo.Loca
 
 config :concierge_site, send_from_email: {:system, "SENDER_EMAIL_ADDRESS", "alerts@mbta.com"}
 config :concierge_site, send_from_name: {:system, "SENDER_EMAIL_NAME", "T-Alerts"}
-config :concierge_site, feedback_url: {:system, "FEEDBACK_URL", nil}
+
+config :concierge_site, :external_urls,
+  alerts: "https://www.mbta.com/alerts",
+  faqs: "https://www.mbta.com/about-t-alerts",
+  privacy: "https://www.mbta.com/policies/privacy-policy#4.6",
+  support: "https://www.mbta.com/customer-support"
 
 # Configures Elixir's Logger
 config :logger, :console,

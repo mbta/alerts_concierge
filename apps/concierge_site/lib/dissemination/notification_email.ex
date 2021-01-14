@@ -7,33 +7,34 @@ defmodule ConciergeSite.Dissemination.NotificationEmail do
   alias ConciergeSite.Helpers.MailHelper
   require EEx
 
-  @template_dir Application.get_env(:concierge_site, :mail_template_dir)
+  @template_dir Application.fetch_env!(:concierge_site, :mail_template_dir)
 
-  EEx.function_from_file(:def, :html_email, Path.join(@template_dir, "notification.html.eex"), [
-    :notification,
-    :manage_subscriptions_url,
-    :feedback_url
-  ])
+  EEx.function_from_file(
+    :def,
+    :html_email,
+    Path.join(@template_dir, "notification.html.eex"),
+    [:notification, :manage_subscriptions_url, :support_url, :all_alerts_url]
+  )
 
   EEx.function_from_file(
     :def,
     :text_email,
     Path.join(~w(#{System.cwd!()} lib mail_templates notification.txt.eex)),
-    [:notification, :manage_subscriptions_url, :feedback_url]
+    [:notification, :manage_subscriptions_url, :support_url, :all_alerts_url]
   )
 
   @doc "notification_email/1 takes a notification and builds an email to be sent to user."
   @spec notification_email(Notification.t()) :: Elixir.Bamboo.Email.t()
   def notification_email(%Notification{email: email} = notification) do
     manage_subscriptions_url = MailHelper.manage_subscriptions_url()
-    feedback_url = MailHelper.feedback_url()
+    {support_url, all_alerts_url} = {MailHelper.support_url(), MailHelper.all_alerts_url()}
     notification_email_subject = email_subject(notification)
 
     Email.base_email()
     |> to(email)
     |> subject(notification_email_subject)
-    |> html_body(html_email(notification, manage_subscriptions_url, feedback_url))
-    |> text_body(text_email(notification, manage_subscriptions_url, feedback_url))
+    |> html_body(html_email(notification, manage_subscriptions_url, support_url, all_alerts_url))
+    |> text_body(text_email(notification, manage_subscriptions_url, support_url, all_alerts_url))
   end
 
   def email_subject(notification) do
