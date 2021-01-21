@@ -66,7 +66,6 @@ defmodule ConciergeSite.ScheduleTest do
                  {"West Gloucester", "place-GB-0296", {42.611933, -70.705417}, 1},
                  {"Manchester", "place-GB-0254", {42.573687, -70.77009}, 1},
                  {"Beverly Farms", "place-GB-0229", {42.561651, -70.811405}, 1},
-                 {"Prides Crossing", "place-GB-0222", {42.559446, -70.825541}, 2},
                  {"Montserrat", "place-GB-0198", {42.562171, -70.869254}, 1},
                  {"Newburyport", "place-ER-0362", {42.797837, -70.87797}, 1},
                  {"Rowley", "place-ER-0312", {42.726845, -70.859034}, 1},
@@ -88,7 +87,8 @@ defmodule ConciergeSite.ScheduleTest do
              weekend?: false
            }
 
-    assert Enum.find_index(result[{"cr", "CR-Newburyport"}], & &1.weekend?) == 1
+    # For the moment, there is no weekend service on the Newburyport line
+    refute Enum.find_index(result[{"cr", "CR-Newburyport"}], & &1.weekend?)
   end
 
   test "get_schedules_for_trip/2" do
