@@ -1210,11 +1210,11 @@ defmodule AlertProcessor.Integration.MatchingTest do
   # are active as of 2020-12-17.
 
   @test_trip_id (case Date.utc_today() |> Date.day_of_week() do
-                   day when day in 1..5 -> "CR-Weekday-Storm-20-1911"
-                   6 -> "CR-Saturday-Fall-20-1911"
-                   7 -> "CR-Sunday-Fall-20-2911"
+                   day when day in 1..5 -> "CR-Weekday-Winter-21-1907"
+                   6 -> "CR-Saturday-Winter-21-2905"
+                   7 -> "CR-Sunday-Winter-21-2905"
                  end)
-  @test_trip_departs_fairmount_at ~T[12:13:00]
+  @test_trip_departs_fairmount_at ~T[10:13:00]
 
   describe "informed_entity's trip matching" do
     test "with origin scheduled time after subscription's start time" do
