@@ -114,9 +114,9 @@ defmodule ConciergeSite.TripReviewCardHelperTest do
             }),
             add_subscription_for_trip(trip, %{
               type: :ferry,
-              route: "Boat-F4",
+              route: "Boat-F1",
               origin: "Boat-Long",
-              destination: "Boat-Charlestown",
+              destination: "Boat-Hingham",
               direction_id: 0,
               rank: 8
             })

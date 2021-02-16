@@ -79,11 +79,19 @@ defmodule ConciergeSite.TripCardHelperTest do
             }),
             add_subscription_for_trip(trip, %{
               type: :ferry,
-              route: "Boat-F4",
+              route: "Boat-F1",
               origin: "Boat-Long",
-              destination: "Boat-Charlestown",
+              destination: "Boat-Hingham",
               direction_id: 0,
               rank: 8
+            }),
+            add_subscription_for_trip(trip, %{
+              type: :cr,
+              route: "CR-Lowell",
+              origin: "place-north",
+              destination: "stop-with-no-service-anymore",
+              direction_id: 0,
+              rank: 9
             })
           ]
       }
@@ -97,7 +105,8 @@ defmodule ConciergeSite.TripCardHelperTest do
       assert html =~ "57A"
       assert html =~ "Silver Line SL1"
       assert html =~ "Haverhill Line"
-      assert html =~ "Charlestown Ferry"
+      assert html =~ "Hingham/Hull Ferry"
+      assert html =~ "Unknown Stop"
       assert html =~ "One-way"
       refute html =~ "Round-trip"
       assert html =~ "Mon"

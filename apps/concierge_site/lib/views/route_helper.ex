@@ -41,15 +41,19 @@ defmodule ConciergeSite.RouteHelper do
   end
 
   @doc """
-  Get the name of a stop.
+  Get the name of a stop, with a fallback name if the stop isn't in the service info cache.
 
     iex> ConciergeSite.RouteHelper.stop_name("place-davis")
     "Davis"
+    iex> ConciergeSite.RouteHelper.stop_name("does-not-exist")
+    "Unknown Stop"
   """
   @spec stop_name(String.t()) :: String.t()
   def stop_name(stop_id) do
-    {:ok, {name, _, _, _}} = ServiceInfoCache.get_stop(stop_id)
-    name
+    case ServiceInfoCache.get_stop(stop_id) do
+      {:ok, {name, _, _, _}} -> name
+      {:ok, nil} -> "Unknown Stop"
+    end
   end
 
   @spec collapse_duplicate_green_legs([Subscription.t()]) :: [Subscription.t()]
