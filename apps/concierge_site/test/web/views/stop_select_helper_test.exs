@@ -39,9 +39,9 @@ defmodule ConciergeSite.StopSelectHelperTest do
   end
 
   test "render/3 Ferry" do
-    html = Phoenix.HTML.safe_to_string(StopSelectHelper.render("Boat-F4", :foo, :bar))
+    html = Phoenix.HTML.safe_to_string(StopSelectHelper.render("Boat-F1", :foo, :bar))
 
-    assert html =~ "<option data-ferry=\"true\" value=\"Boat-Charlestown\">Charlestown</option>"
+    assert html =~ "<option data-ferry=\"true\" value=\"Boat-Hingham\">Hingham</option>"
   end
 
   test "render/3 Green-B" do
