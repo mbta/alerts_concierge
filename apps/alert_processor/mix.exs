@@ -72,7 +72,7 @@ defmodule AlertProcessor.Mixfile do
       {:exvcr, "~> 0.10.1", runtime: false},
       {:fast_local_datetime, "~> 0.3.0"},
       {:gettext, "~> 0.11"},
-      {:hackney, "~> 1.15.1", override: true},
+      {:hackney, "~> 1.17.0"},
       {:httpoison, "~> 1.1.1", override: true},
       {:paper_trail, "~> 0.7.5"},
       {:poison, "~> 2.0"},

@@ -73,7 +73,6 @@ defmodule ConciergeSite.Mixfile do
       {:logster, "~> 0.4.0"},
       {:ehmon, git: "https://github.com/heroku/ehmon.git", tag: "v4", only: :prod},
       {:diskusage_logger, "~> 0.2.0", only: :prod},
-      {:hackney, "~> 1.15.1", override: true},
       {:httpoison, "~> 1.1.1", override: true},
       {:poison, "~> 2.0", override: true},
       {:tzdata, "~> 1.0.0", override: true},
