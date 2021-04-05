@@ -75,9 +75,11 @@ defmodule AlertProcessor.ServiceInfoCache do
     GenServer.call(name, {:get_headsign, origin, destination, direction_id}, @timeout)
   end
 
+  @spec get_route(
+          GenServer.server(),
+          String.t() | %{route_id: String.t(), stop_ids: [String.t()]}
+        ) :: {:ok, Route.t()} | {:error, any}
   def get_route(name \\ __MODULE__, route)
-
-  def get_route(_name, nil), do: {:ok, nil}
 
   def get_route(name, route) when is_binary(route) do
     GenServer.call(name, {:get_route, route}, @timeout)
@@ -236,9 +238,11 @@ defmodule AlertProcessor.ServiceInfoCache do
     {:reply, {:ok, %{route | stop_list: stop_list}}, state}
   end
 
-  def handle_call({:get_route, route}, _from, %{routes: route_state} = state) do
-    route = Enum.find(route_state, fn %{route_id: route_id} -> route_id == route end)
-    {:reply, {:ok, route}, state}
+  def handle_call({:get_route, route_id}, _from, %{routes: routes} = state) do
+    case Enum.find(routes, fn %{route_id: id} -> id == route_id end) do
+      nil -> {:reply, {:error, :not_found}, state}
+      route -> {:reply, {:ok, route}, state}
+    end
   end
 
   def handle_call(:get_routes, _from, %{routes: routes} = state) do

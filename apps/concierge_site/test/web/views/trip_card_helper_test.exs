@@ -67,7 +67,7 @@ defmodule ConciergeSite.TripCardHelperTest do
               direction_id: 0,
               rank: 5
             }),
-            add_subscription_for_trip(trip, %{type: :bus, route: "57A", direction_id: 0, rank: 6}),
+            add_subscription_for_trip(trip, %{type: :bus, route: "57", direction_id: 0, rank: 6}),
             add_subscription_for_trip(trip, %{type: :bus, route: "741", direction_id: 0, rank: 6}),
             add_subscription_for_trip(trip, %{
               type: :cr,
@@ -87,7 +87,7 @@ defmodule ConciergeSite.TripCardHelperTest do
             }),
             add_subscription_for_trip(trip, %{
               type: :cr,
-              route: "CR-Lowell",
+              route: "route-that-was-eliminated",
               origin: "place-north",
               destination: "stop-with-no-service-anymore",
               direction_id: 0,
@@ -102,10 +102,11 @@ defmodule ConciergeSite.TripCardHelperTest do
       assert html =~ "Green Line"
       assert html =~ "Blue Line"
       assert html =~ "Mattapan Trolley"
-      assert html =~ "57A"
+      assert html =~ "Route 57"
       assert html =~ "Silver Line SL1"
       assert html =~ "Haverhill Line"
       assert html =~ "Hingham/Hull Ferry"
+      assert html =~ "Unknown Route"
       assert html =~ "Unknown Stop"
       assert html =~ "One-way"
       refute html =~ "Round-trip"

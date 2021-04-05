@@ -6,7 +6,7 @@ defmodule ConciergeSite.RouteHelper do
   alias AlertProcessor.Model.{Route, Subscription}
 
   @doc """
-  Get the name of a given route or routes.
+  Get the name of a route, with a fallback name if the route isn't in the service info cache.
 
     iex> ConciergeSite.RouteHelper.route_name("Green")
     "Green Line"
@@ -20,6 +20,8 @@ defmodule ConciergeSite.RouteHelper do
     "Route 39"
     iex> ConciergeSite.RouteHelper.route_name("741")
     "Silver Line SL1"
+    iex> ConciergeSite.RouteHelper.route_name("no-such-route")
+    "Unknown Route"
   """
   @spec route_name(String.t()) :: String.t()
   def route_name(routes) when is_list(routes), do: "Green Line"
@@ -30,13 +32,11 @@ defmodule ConciergeSite.RouteHelper do
   def route_name("Green-E"), do: "Green Line E"
 
   def route_name(route_id) do
-    {:ok, route} = ServiceInfoCache.get_route(route_id)
-
-    # We never want long names for buses
-    if route.route_type == 3 || route.long_name == "" do
-      Route.bus_short_name(route)
-    else
-      route.long_name
+    case ServiceInfoCache.get_route(route_id) do
+      # We never want long names for buses
+      {:ok, %{route_type: 3} = route} -> Route.bus_short_name(route)
+      {:ok, route} -> Route.name(route)
+      {:error, _} -> "Unknown Route"
     end
   end
 
