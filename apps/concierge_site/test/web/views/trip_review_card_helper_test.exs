@@ -102,7 +102,7 @@ defmodule ConciergeSite.TripReviewCardHelperTest do
               direction_id: 0,
               rank: 5
             }),
-            add_subscription_for_trip(trip, %{type: :bus, route: "57A", direction_id: 0, rank: 6}),
+            add_subscription_for_trip(trip, %{type: :bus, route: "57", direction_id: 0, rank: 6}),
             add_subscription_for_trip(trip, %{type: :bus, route: "741", direction_id: 0, rank: 6}),
             add_subscription_for_trip(trip, %{
               type: :cr,

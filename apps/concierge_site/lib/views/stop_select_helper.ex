@@ -120,8 +120,10 @@ defmodule ConciergeSite.StopSelectHelper do
     |> Enum.uniq_by(& &1)
   end
 
-  defp get_stop_list(route_id, _),
-    do: with({:ok, %{stop_list: stops}} = ServiceInfoCache.get_route(route_id), do: stops)
+  defp get_stop_list(route_id, _) do
+    {:ok, %{stop_list: stops}} = ServiceInfoCache.get_route(route_id)
+    stops
+  end
 
   @spec attributes(atom, atom, String.t(), keyword) :: keyword(String.t())
   defp attributes(input_name, field, route_id, attrs) do
