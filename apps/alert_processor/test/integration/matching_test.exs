@@ -1207,14 +1207,17 @@ defmodule AlertProcessor.Integration.MatchingTest do
   # NOTE: The following tests use a set of specific trip IDs. At the time the tests are run, the
   # trip for the current day of the week must have schedules present in the API. All trips must
   # depart from Fairmount station outbound and the time must be specified here. These test trips
-  # are active as of 2020-12-17.
+  # are active as of 2021-04-05.
 
   @test_trip_id (case Date.utc_today() |> Date.day_of_week() do
-                   day when day in 1..5 -> "CR-Weekday-Winter-21-1907"
-                   6 -> "CR-Saturday-Winter-21-2905"
-                   7 -> "CR-Sunday-Winter-21-2905"
+                   day when day in 1..5 -> "CR-Weekday-Spring-21-909"
+                   6 -> "CR-Saturday-Spring-21-2907"
+                   7 -> "CR-Sunday-Spring-21-2907"
                  end)
-  @test_trip_departs_fairmount_at ~T[10:13:00]
+  @test_trip_departs_fairmount_at (case Date.utc_today() |> Date.day_of_week() do
+                                     day when day in 1..5 -> ~T[08:25:00]
+                                     day when day in 6..7 -> ~T[11:43:00]
+                                   end)
 
   describe "informed_entity's trip matching" do
     test "with origin scheduled time after subscription's start time" do
