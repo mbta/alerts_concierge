@@ -45,10 +45,10 @@ defmodule ConciergeSite.ScheduleTest do
     assert Enum.all?(result[{"cr", "CR-Newburyport"}], &Map.has_key?(&1, :weekend?))
 
     assert List.first(result[{"cr", "CR-Newburyport"}]) == %TripInfo{
-             arrival_time: ~T[09:20:00],
-             departure_time: ~T[08:30:00],
-             arrival_extended_time: %ExtendedTime{relative_day: 1, time: ~T[09:20:00]},
-             departure_extended_time: %ExtendedTime{relative_day: 1, time: ~T[08:30:00]},
+             arrival_time: ~T[07:26:00],
+             departure_time: ~T[06:35:00],
+             arrival_extended_time: %ExtendedTime{relative_day: 1, time: ~T[07:26:00]},
+             departure_extended_time: %ExtendedTime{relative_day: 1, time: ~T[06:35:00]},
              destination: {"Manchester", "place-GB-0254", {42.573687, -70.77009}, 1},
              direction_id: 0,
              origin: {"North Station", "place-north", {42.365577, -71.06129}, 1},
@@ -83,7 +83,7 @@ defmodule ConciergeSite.ScheduleTest do
                direction_destinations: ["Newburyport or Rockport", "North Station"]
              },
              selected: false,
-             trip_number: "1101",
+             trip_number: "101",
              weekend?: false
            }
 
@@ -159,18 +159,18 @@ defmodule ConciergeSite.ScheduleTest do
              %AlertProcessor.Model.TripInfo{
                arrival_extended_time: %AlertProcessor.ExtendedTime{
                  relative_day: 1,
-                 time: ~T[08:10:00]
+                 time: ~T[06:20:00]
                },
-               arrival_time: ~T[08:10:00],
+               arrival_time: ~T[06:20:00],
                departure_extended_time: %AlertProcessor.ExtendedTime{
                  relative_day: 1,
-                 time: ~T[07:31:00]
+                 time: ~T[05:40:00]
                },
-               departure_time: ~T[07:31:00],
+               departure_time: ~T[05:40:00],
                destination: {"Worcester", "place-WML-0442", {42.261461, -71.794888}, 1},
                direction_id: 0,
                selected: false,
-               trip_number: "1501",
+               trip_number: "501",
                weekend?: false,
                origin: {"Framingham", "place-WML-0214", {42.276108, -71.420055}, 1},
                route: %AlertProcessor.Model.Route{
@@ -194,9 +194,11 @@ defmodule ConciergeSite.ScheduleTest do
                    {"Wellesley Square", "place-WML-0147", {42.297526, -71.294173}, 2},
                    {"Wellesley Hills", "place-WML-0135", {42.31037, -71.277044}, 2},
                    {"Wellesley Farms", "place-WML-0125", {42.323608, -71.272288}, 2},
+                   {"Riverside", "place-river", {42.337352, -71.252685}, 1},
                    {"Auburndale", "place-WML-0102", {42.345725, -71.250826}, 2},
                    {"West Newton", "place-WML-0091", {42.347878, -71.230528}, 2},
                    {"Newtonville", "place-WML-0081", {42.351702, -71.205408}, 2},
+                   {"Newton Highlands", "place-newtn", {42.322381, -71.205509}, 1},
                    {"Boston Landing", "place-WML-0035", {42.357293, -71.139883}, 1},
                    {"Lansdowne", "place-WML-0025", {42.347581, -71.099974}, 1},
                    {"Back Bay", "place-bbsta", {42.34735, -71.075727}, 1},
@@ -205,7 +207,7 @@ defmodule ConciergeSite.ScheduleTest do
                }
              }
 
-    assert Enum.find_index(first_trip_result[{"cr", "CR-Worcester"}], & &1.weekend?) == 1
+    assert Enum.find_index(first_trip_result[{"cr", "CR-Worcester"}], & &1.weekend?) == 3
 
     assert is_map(return_trip_result)
     assert Map.keys(return_trip_result) == [{"cr", "CR-Worcester"}]
@@ -216,18 +218,18 @@ defmodule ConciergeSite.ScheduleTest do
              %AlertProcessor.Model.TripInfo{
                arrival_extended_time: %AlertProcessor.ExtendedTime{
                  relative_day: 1,
-                 time: ~T[06:10:00]
+                 time: ~T[04:55:00]
                },
-               arrival_time: ~T[06:10:00],
+               arrival_time: ~T[04:55:00],
                departure_extended_time: %AlertProcessor.ExtendedTime{
                  relative_day: 1,
-                 time: ~T[05:30:00]
+                 time: ~T[04:15:00]
                },
-               departure_time: ~T[05:30:00],
+               departure_time: ~T[04:15:00],
                direction_id: 1,
                origin: {"Worcester", "place-WML-0442", {42.261461, -71.794888}, 1},
                selected: false,
-               trip_number: "7500",
+               trip_number: "500",
                weekend?: false,
                destination: {"Framingham", "place-WML-0214", {42.276108, -71.420055}, 1},
                route: %AlertProcessor.Model.Route{
@@ -251,9 +253,11 @@ defmodule ConciergeSite.ScheduleTest do
                    {"Wellesley Square", "place-WML-0147", {42.297526, -71.294173}, 2},
                    {"Wellesley Hills", "place-WML-0135", {42.31037, -71.277044}, 2},
                    {"Wellesley Farms", "place-WML-0125", {42.323608, -71.272288}, 2},
+                   {"Riverside", "place-river", {42.337352, -71.252685}, 1},
                    {"Auburndale", "place-WML-0102", {42.345725, -71.250826}, 2},
                    {"West Newton", "place-WML-0091", {42.347878, -71.230528}, 2},
                    {"Newtonville", "place-WML-0081", {42.351702, -71.205408}, 2},
+                   {"Newton Highlands", "place-newtn", {42.322381, -71.205509}, 1},
                    {"Boston Landing", "place-WML-0035", {42.357293, -71.139883}, 1},
                    {"Lansdowne", "place-WML-0025", {42.347581, -71.099974}, 1},
                    {"Back Bay", "place-bbsta", {42.34735, -71.075727}, 1},
@@ -262,7 +266,7 @@ defmodule ConciergeSite.ScheduleTest do
                }
              }
 
-    assert Enum.find_index(return_trip_result[{"cr", "CR-Worcester"}], & &1.weekend?) == 2
+    assert Enum.find_index(return_trip_result[{"cr", "CR-Worcester"}], & &1.weekend?) == 4
   end
 
   defp is_trip_info(%TripInfo{}), do: true
