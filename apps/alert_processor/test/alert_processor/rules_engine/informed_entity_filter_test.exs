@@ -1349,6 +1349,30 @@ defmodule AlertProcessor.InformedEntityFilterTest do
       refute InformedEntityFilter.subscription_match?(subscription, informed_entity)
     end
 
+    test "returns false with a 'stop subscription' (activities: ['RIDE'] with different stop)" do
+      subscription_details = [
+        route_type: nil,
+        direction_id: nil,
+        route: nil,
+        origin: "some stop",
+        destination: "some stop",
+        facility_types: [:elevator]
+      ]
+
+      subscription = build(:subscription, subscription_details)
+
+      informed_entity_details = [
+        route_type: 1,
+        direction_id: nil,
+        route: nil,
+        stop: "some other stop",
+        activities: ["RIDE"]
+      ]
+
+      informed_entity = build(:informed_entity, informed_entity_details)
+      refute InformedEntityFilter.subscription_match?(subscription, informed_entity)
+    end
+
     test "returns true for accessibility subscription route-stop match" do
       # With an "accessibility" type subscription with no origin or destination
       # we want to infer the stops from the route. In the scenario below the

@@ -175,7 +175,7 @@ defmodule AlertProcessor.InformedEntityFilter do
     MapSet.subset?(origin_and_destination, scheduled_stops)
   end
 
-  defp in_between_stop_match?(%{type: "accessibility"}, _), do: false
+  defp in_between_stop_match?(%{type: :accessibility}, _), do: false
 
   defp in_between_stop_match?(subscription, %{activities: activities, stop: stop}) do
     stop in stops_in_between(subscription, activities)

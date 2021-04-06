@@ -321,6 +321,10 @@ defmodule AlertProcessor.ServiceInfoCacheTest do
     assert {:error, :not_found} = ServiceInfoCache.get_route(pid, "no-such-route-id")
   end
 
+  test "get_route/2 returns an error with an invalid argument", %{pid: pid} do
+    assert {:error, :invalid_argument} = ServiceInfoCache.get_route(pid, nil)
+  end
+
   test "get_routes/1 returns all the routes", %{pid: pid} do
     {:ok, routes} = ServiceInfoCache.get_routes(pid)
     assert Enum.all?(routes, fn route -> route.__struct__ == Route end)
