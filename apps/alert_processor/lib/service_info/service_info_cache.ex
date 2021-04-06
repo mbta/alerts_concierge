@@ -78,7 +78,7 @@ defmodule AlertProcessor.ServiceInfoCache do
   @spec get_route(
           GenServer.server(),
           String.t() | %{route_id: String.t(), stop_ids: [String.t()]}
-        ) :: {:ok, Route.t()} | {:error, any}
+        ) :: {:ok, Route.t()} | {:error, atom}
   def get_route(name \\ __MODULE__, route)
 
   def get_route(name, route) when is_binary(route) do
@@ -101,6 +101,8 @@ defmodule AlertProcessor.ServiceInfoCache do
   end
 
   def get_route(name, %{route_id: route}), do: get_route(name, route)
+
+  def get_route(_, _), do: {:error, :invalid_argument}
 
   def get_routes(name \\ __MODULE__) do
     GenServer.call(name, :get_routes, @timeout)
