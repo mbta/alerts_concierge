@@ -1,5 +1,4 @@
 export ALERT_API_URL=http://s3.amazonaws.com/mbta-realtime-test/alerts_enhanced.json
-export ALERT_FETCH_INTERVAL=10000
 export API_KEY=
 export API_URL=https://dev.api.mbtace.com/
 export APP_COOKIE=

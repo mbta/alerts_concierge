@@ -33,14 +33,14 @@ defmodule AlertProcessor.AlertParserTest do
 
     use_cassette "old_alerts", custom: true, clear_mock: true, match_requests_on: [:query] do
       beginning_alerts = length(Repo.all(SavedAlert))
-      assert AlertParser.process_alerts()
+      {:ok, _} = AlertParser.process_alerts()
       ending_alerts = length(Repo.all(SavedAlert))
       assert ending_alerts - beginning_alerts == 2
     end
 
     use_cassette "new_alerts", custom: true, clear_mock: true, match_requests_on: [:query] do
       beginning_alerts = length(Repo.all(SavedAlert))
-      assert AlertParser.process_alerts()
+      {:ok, _} = AlertParser.process_alerts()
       ending_alerts = length(Repo.all(SavedAlert))
       assert ending_alerts - beginning_alerts == 0
     end
@@ -98,7 +98,7 @@ defmodule AlertProcessor.AlertParserTest do
       custom: true,
       clear_mock: true,
       match_requests_on: [:query] do
-      assert AlertParser.process_alerts()
+      {:ok, _} = AlertParser.process_alerts()
       {:ok, notification} = SendingQueue.pop()
       assert notification.header == "Board Needham Line on opposite track due to unruly passenger"
       assert notification.service_effect == "Needham Line track change"
@@ -122,7 +122,7 @@ defmodule AlertProcessor.AlertParserTest do
     |> PaperTrail.insert()
 
     use_cassette "facilities_alerts", custom: true, clear_mock: true, match_requests_on: [:query] do
-      assert AlertParser.process_alerts()
+      {:ok, _} = AlertParser.process_alerts()
 
       {:ok, notification} = SendingQueue.pop()
 
@@ -241,7 +241,7 @@ defmodule AlertProcessor.AlertParserTest do
     |> insert()
 
     use_cassette "bus_stop_alert", custom: true, clear_mock: true, match_requests_on: [:query] do
-      assert AlertParser.process_alerts()
+      {:ok, _} = AlertParser.process_alerts()
       {:ok, notification} = SendingQueue.pop()
       assert notification.header == "Malcolm X Blvd @ King St (inbound) stop moving"
       assert notification.alert_id == "115718"
@@ -254,7 +254,7 @@ defmodule AlertProcessor.AlertParserTest do
       clear_mock: true,
       match_requests_on: [:query] do
       beginning_alerts = length(Repo.all(SavedAlert))
-      assert AlertParser.process_alerts()
+      {:ok, _} = AlertParser.process_alerts()
       ending_alerts = length(Repo.all(SavedAlert))
       assert ending_alerts - beginning_alerts == 1
     end
@@ -568,7 +568,7 @@ defmodule AlertProcessor.AlertParserTest do
   test "swapped informed entities" do
     # the swap alerts cassette has been doctored so the IDs match in the API and IBI feeds
     use_cassette "swap_alerts", custom: true, clear_mock: true, match_requests_on: [:query] do
-      {alerts, api_alerts, updated_alerts} = AlertParser.process_alerts()
+      {:ok, {alerts, api_alerts, updated_alerts}} = AlertParser.process_alerts()
       informed_entities_before = List.first(alerts)["informed_entity"]
       informed_entities_after = List.first(updated_alerts)["informed_entity"]
       first_swapped_entity = List.first(informed_entities_after)

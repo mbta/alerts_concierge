@@ -1,5 +1,5 @@
 #!/bin/bash
-set -e -x -u
+set -e -u
 
 # bash script should be called with aws environment (dev / dev-green / prod)
 # other required configuration:
@@ -12,14 +12,15 @@ appenv=$APP-$awsenv
 githash=$(git rev-parse --short HEAD)
 gitmsg=$(git log -1 --pretty=%s)
 
-# debugging: output AWS CLI version
-aws --version
+export AWS_DEFAULT_REGION="us-east-1"
 
-# ensure the image exists on AWS. This command will fail if it does not.
-aws ecr describe-images --region us-east-1 --repository-name $APP --image-ids "imageTag=git-$githash"
+echo "AWS CLI version: $(aws --version)"
 
-# get newest task definition to use as the basis for a new revision
-current_task=$(aws ecs describe-task-definition --region us-east-1 --task-definition $appenv)
+echo "Ensuring image exists on ECR..."
+aws ecr describe-images --repository-name $APP --image-ids "imageTag=git-$githash" && echo "Success."
+
+echo "Creating new task definition..."
+current_task=$(aws ecs describe-task-definition --task-definition $appenv)
 task_role=$(echo $current_task | jq -r '.taskDefinition.taskRoleArn')
 task_execution_role=$(echo $current_task | jq -r '.taskDefinition.executionRoleArn')
 task_volumes=$(echo $current_task | jq '.taskDefinition.volumes')
@@ -44,9 +45,9 @@ if echo $task_containers | jq '.[0] | .secrets' | grep '^null$'; then
   exit 1
 fi
 
+echo "Registering new task definition..."
 aws ecs register-task-definition \
   --family $appenv \
-  --region us-east-1 \
   --task-role-arn $task_role \
   --execution-role-arn $task_execution_role \
   --volumes "$task_volumes" \
@@ -56,49 +57,82 @@ aws ecs register-task-definition \
   --memory $task_memory \
   --container-definitions "$task_containers"
 
-newrevision=$(aws ecs describe-task-definition --region us-east-1 --task-definition $appenv | jq '.taskDefinition.revision')
+function check_deployment_complete() {
+  # extract task counts and test whether they match the desired state
 
-expected_count=$(aws ecs list-tasks --region us-east-1 --cluster $APP --service $appenv-a| jq '.taskArns | length')
+  local deployment_details
+  local desired_count
+  local pending_count
+  local running_count
+  deployment_details="${1}"
 
-if [[ $expected_count = "0" ]]; then
-    aws ecs update-service --region us-east-1 --cluster $APP --service $appenv-a --task-definition $appenv:$newrevision
-    echo Environment $APP:$appenv is not running!
-    echo
-    echo We updated the definition: you can manually set the desired instances to 1.
-    exit 1
-fi
-
-function task_count_eq {
-    local task_count
-    task_count=$(aws ecs list-tasks --region us-east-1 --cluster $APP --service $appenv-a | jq '.taskArns | length')
-    [[ $task_count = "$1" ]]
+  # get and print current task counts
+  desired_count="$(echo "${deployment_details}" | jq -r '.desiredCount')"
+  pending_count="$(echo "${deployment_details}" | jq -r '.pendingCount')"
+  running_count="$(echo "${deployment_details}" | jq -r '.runningCount')"
+  echo "Desired count: ${desired_count}"
+  echo "Pending count: ${pending_count}"
+  echo "Running count: ${running_count}"
+  # if the number of running tasks equals the number of desired tasks, then we're all set
+  [ "${pending_count}" -eq "0" ] && [ "${running_count}" -eq "${desired_count}" ]
 }
 
-function exit_if_too_many_checks {
-  if [[ $checks -ge 50 ]]; then exit 1; fi
-  sleep 5
-  checks=$((checks+1))
-}
+echo "Updating service with new revision..."
+new_revision=$(aws ecs describe-task-definition --task-definition $appenv | jq '.taskDefinition.revision')
+aws ecs update-service --cluster $APP --service $appenv-a --task-definition $appenv:$new_revision
 
-# by setting the desired count to 0, ECS will kill the task that the ECS service is running
-# allowing us to update it and start the new one. Check every 5 seconds to see if it's dead
-# yet (AWS issues `docker stop` and it could take a moment to spin down). If it's still running
-# after several checks, something is wrong and the script should die.
-aws ecs update-service --region us-east-1 --cluster $APP --service $appenv-a --desired-count 0
-checks=0
-while task_count_eq $expected_count; do
-    echo Shutting down old task...
-    exit_if_too_many_checks
+# monitor the cluster for status
+while true; do
+  # get the service details
+  service_status="$(aws ecs describe-services --cluster="${APP}" --services="${appenv}-a")"
+  # exctract the details for the new deployment (status PRIMARY)
+  new_deployment="$(echo "${service_status}" | jq -r '.services[0].deployments[] | select(.status == "PRIMARY")')"
+
+  # check whether the new deployment is complete
+  if check_deployment_complete "${new_deployment}"; then
+    echo "Deployment complete."
+    break
+  else
+    # extract deployment id
+    new_deployment_id="$(echo "${new_deployment}" | jq -r '.id')"
+    # find any tasks that may have stopped unexpectedly
+    stopped_tasks="$(aws ecs list-tasks --cluster "${APP}" --started-by "${new_deployment_id}" --desired-status "STOPPED" | jq -r '.taskArns')"
+    stopped_task_count="$(echo "${stopped_tasks}" | jq -r 'length')"
+    if [ "${stopped_task_count}" -gt "0" ]; then
+      # if there are stopped tasks, print the reason they stopped and then exit
+      stopped_task_list="$(echo "${stopped_tasks}" | jq -r 'join(",")')"
+      stopped_reasons="$(aws ecs describe-tasks --cluster "${APP}" --tasks "${stopped_task_list}" | jq -r '.tasks[].stoppedReason')"
+      echo "The deployment failed because one or more containers stopped running. The reasons given were:"
+      echo "${stopped_reasons}"
+      exit 1
+    fi
+    # wait, then loop
+    echo "Waiting for new tasks to start..."
+    sleep 5
+  fi
 done
 
-# Update the ECS service to use the new revision of the task definition. Then update the desired
-# count back to 1, so the container instance starts up the task. Check periodically to see if the
-# task is running yet, and signal deploy failure if it doesn't start up in a reasonable time.
-aws ecs update-service --region us-east-1 --cluster $APP --service $appenv-a --task-definition $appenv:$newrevision
-aws ecs update-service --region us-east-1 --cluster $APP --service $appenv-a --desired-count 1
+# confirm that the old deployment is torn down
+while true; do
+  # get the service details
+  service_status="$(aws ecs describe-services --cluster="${APP}" --services="${appenv}-a")"
+  # extract the details for any old deployments (status ACTIVE)
+  deployment="$(echo "${service_status}" | jq -r --compact-output '.services[0].deployments[] | select(.status == "ACTIVE")')"
+  total_tasks=0
 
-checks=0
-until task_count_eq $expected_count; do
-    echo Starting up new task...
-    exit_if_too_many_checks
+  # extract deployment id
+  old_deployment_id="$(echo "${deployment}" | jq -r '.id')"
+  # count tasks associated with the old deployment that are still running
+  running_task_count="$(aws ecs list-tasks --cluster "${APP}" --started-by "${old_deployment_id}" --desired-status "RUNNING" | jq -r '.taskArns | length')"
+  total_tasks=$((total_tasks+running_task_count))
+
+  echo "Old tasks still running: ${total_tasks}"
+  # if no running tasks, break
+  if [ "$total_tasks" -eq "0" ]; then
+    echo "Done."
+    break
+  else
+    echo "Waiting for old tasks to be stopped..."
+    sleep 5
+  fi
 done

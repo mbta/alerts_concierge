@@ -30,6 +30,11 @@ defmodule AlertProcessor.Supervisor do
       size: Application.get_env(:alert_processor, :notification_workers)
     ]
 
+    alert_worker_config =
+      if Application.get_env(:alert_processor, :process_alerts?, true),
+        do: [],
+        else: [[check_interval: nil]]
+
     children = [
       supervisor(AlertProcessor.Repo, []),
       supervisor(ConCache, [
@@ -41,9 +46,9 @@ defmodule AlertProcessor.Supervisor do
       ]),
       worker(ServiceInfoCache, []),
       worker(Metrics, []),
-      worker(Reminders, []),
-      worker(AlertWorker, []),
       worker(SendingQueue, []),
+      worker(Reminders, []),
+      worker(AlertWorker, alert_worker_config),
       worker(SmsOptOutWorker, []),
       :poolboy.child_spec(:message_worker, message_worker_config, [])
     ]
