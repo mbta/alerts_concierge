@@ -11,7 +11,6 @@ defmodule AlertProcessor.AlertParser do
     AlertsClient,
     ApiClient,
     CachedApiClient,
-    Parser,
     ServiceInfoCache,
     SubscriptionFilterEngine,
     Reminders
@@ -19,15 +18,14 @@ defmodule AlertProcessor.AlertParser do
 
   alias AlertProcessor.Helpers.{DateTimeHelper, StringHelper}
 
-  alias AlertProcessor.Model.{Alert, InformedEntity, Notification, SavedAlert}
-
-  @behaviour Parser
+  alias AlertProcessor.Model.{Alert, InformedEntity, SavedAlert}
 
   @doc """
   process_alerts/1 entry point for fetching json data from api and, transforming, storing and passing to
   subscription engine to process before sending.
   """
-  @spec process_alerts(AlertFilters.duration_type()) :: [{:ok, [Notification.t()]}]
+  @spec process_alerts(AlertProcessor.AlertFilters.duration_type()) ::
+          {:ok, {[map], [map], [map]}} | {:error, any}
   def process_alerts(alert_filter_duration_type \\ :anytime) do
     started_at = DateTime.utc_now()
 
@@ -74,7 +72,7 @@ defmodule AlertProcessor.AlertParser do
         "Processing of alerts completed"
       end)
 
-      {alerts, api_alerts, updated_alerts}
+      {:ok, {alerts, api_alerts, updated_alerts}}
     else
       {:error, message} ->
         Logger.error(fn ->

@@ -1,73 +1,122 @@
 defmodule AlertProcessor.AlertWorker do
   @moduledoc """
-  Worker process used to periodically trigger the AlertParser
-  to begin processing alerts.
+  Main worker that periodically calls `AlertParser` to fetch and process the appropriate group of
+  alerts, based on when each group was last processed.
   """
-  require Logger
 
   use GenServer
-  alias AlertProcessor.Helpers.ConfigHelper
+  alias AlertProcessor.{Lock, Model.Metadata}
+  require Logger
 
-  @alert_parser Application.get_env(:alert_processor, :alert_parser)
-  @older_duration_frequency 5
+  # Milliseconds to wait between checking whether any duration types need to be processed
+  @check_interval 3_000
+
+  # Defines the alert duration types and minimum seconds that should elapse between processing
+  @frequencies %{recent: 10, older: 60, oldest: 600}
+
+  defmodule State do
+    @type t :: %{
+            check_interval: non_neg_integer | nil,
+            frequencies: %{atom => non_neg_integer},
+            now_fn: (() -> DateTime.t()),
+            process_fn: (AlertProcessor.AlertFilters.duration_type() -> any)
+          }
+
+    @keys [:check_interval, :frequencies, :now_fn, :process_fn]
+    @enforce_keys @keys
+    defstruct @keys
+  end
 
   @doc false
-  def start_link(opts \\ [name: __MODULE__]) do
-    GenServer.start_link(__MODULE__, nil, opts)
+  def start_link(opts \\ []) do
+    state = %State{
+      check_interval: Keyword.get(opts, :check_interval, @check_interval),
+      frequencies: Keyword.get(opts, :frequencies, @frequencies),
+      now_fn: Keyword.get(opts, :now_fn, &DateTime.utc_now/0),
+      process_fn: Keyword.get(opts, :process_fn, &AlertProcessor.AlertParser.process_alerts/1)
+    }
+
+    GenServer.start_link(__MODULE__, state, opts)
   end
 
-  @doc """
-  Initialize GenServer and schedule recurring alert parsing.
-  """
-  def init(_) do
-    schedule_work(1, DateTime.utc_now())
-    {:ok, nil}
+  @impl GenServer
+  def init(state) do
+    schedule_check(state)
+    {:ok, state}
   end
 
-  @doc """
-  Process alerts and then reschedule next time to process.
-  Every fifth run it will pass :older to process_alerts, otherwise it passes :recent.
-  """
-  def handle_info({:work, count, last_process_oldest_alerts_time}, _) do
-    Logger.info("Alerts ready to be processed")
+  @impl GenServer
+  def handle_info(:check, state) do
+    log("event=check_start")
 
-    # process older or recent alerts
-    alert_duration_type = if count == @older_duration_frequency, do: :older, else: :recent
-    count = if count == @older_duration_frequency, do: 0, else: count
-    @alert_parser.process_alerts(alert_duration_type)
+    Lock.acquire(fn
+      :ok ->
+        process_alerts(state)
 
-    # process older alerts once per hour
-    last_process_oldest_alerts_time = process_oldest_alerts(last_process_oldest_alerts_time)
+      :error ->
+        log("event=skip reason=lock_in_use")
+    end)
 
-    # schedule next run
-    schedule_work(count + 1, last_process_oldest_alerts_time)
-
-    Logger.info("Alert processing completed and next run scheduled")
-    {:noreply, nil}
-  end
-
-  def handle_info(_msg, state) do
+    schedule_check(state)
+    log("event=check_end")
     {:noreply, state}
   end
 
-  defp process_oldest_alerts(last_process_oldest_alerts_time) do
-    if DateTime.diff(DateTime.utc_now(), last_process_oldest_alerts_time, :second) > 3_600 do
-      Logger.info(fn ->
-        "Starting the oldest alert processing phase"
-      end)
+  @impl GenServer
+  def handle_info(_message, state) do
+    {:noreply, state}
+  end
 
-      @alert_parser.process_alerts(:oldest)
-      DateTime.utc_now()
+  defp process_alerts(%{frequencies: frequencies, process_fn: process_fn, now_fn: now_fn}) do
+    now = now_fn.()
+    last_times = get_last_processed_times()
+
+    [{most_stale_type, staleness} | _] =
+      frequencies
+      |> Stream.map(fn {duration_type, frequency} ->
+        case Map.get(last_times, duration_type) do
+          nil -> {duration_type, :infinite}
+          last_time -> {duration_type, DateTime.diff(now, last_time) - frequency}
+        end
+      end)
+      |> Enum.sort_by(&elem(&1, 1), &>/2)
+
+    if staleness >= 0 do
+      log("event=process duration_type=#{most_stale_type} seconds_outdated=#{staleness}")
+      process_fn.(most_stale_type)
+      update_last_processed_time(most_stale_type, now_fn.())
     else
-      last_process_oldest_alerts_time
+      log("event=skip reason=no_stale_types")
     end
   end
 
-  defp schedule_work(count, last_process_oldest_alerts_time) do
-    Process.send_after(self(), {:work, count, last_process_oldest_alerts_time}, filter_interval())
+  defp get_last_processed_times do
+    Metadata.get(__MODULE__)
+    |> Map.get("last_processed_times", %{})
+    |> Stream.map(fn {key, value} ->
+      {:ok, datetime, 0} = DateTime.from_iso8601(value)
+      {String.to_existing_atom(key), datetime}
+    end)
+    |> Enum.into(%{})
   end
 
-  defp filter_interval do
-    ConfigHelper.get_int(:alert_fetch_interval)
+  defp update_last_processed_time(duration_type, datetime) do
+    key = Atom.to_string(duration_type)
+    value = DateTime.to_iso8601(datetime)
+
+    new_meta =
+      Metadata.get(__MODULE__)
+      |> Map.put_new("last_processed_times", %{})
+      |> put_in(["last_processed_times", key], value)
+
+    Metadata.put(__MODULE__, new_meta)
   end
+
+  defp schedule_check(%State{check_interval: nil}), do: :ok
+
+  defp schedule_check(%State{check_interval: check_interval}) do
+    Process.send_after(self(), :check, check_interval)
+  end
+
+  defp log(message), do: Logger.info("AlertWorker #{message}")
 end

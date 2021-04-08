@@ -11,8 +11,8 @@ config :alert_processor, AlertProcessor.Repo,
 # Config for ExAws lib
 config :alert_processor, :ex_aws, ExAws.Mock
 
-# Config for alert parser
-config :alert_processor, :alert_parser, AlertProcessor.AlertParserMock
+# Don't run periodic background alert processing
+config :alert_processor, :process_alerts?, false
 
 config :alert_processor, :mailer, AlertProcessor.MailerMock
 config :alert_processor, :mailer_email, AlertProcessor.EmailMock

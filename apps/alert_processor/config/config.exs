@@ -29,10 +29,6 @@ config :alert_processor, :mailer, ConciergeSite.Dissemination.Mailer
 config :alert_processor, :mailer_email, ConciergeSite.Dissemination.NotificationEmail
 config :alert_processor, :mailer_error, Bamboo.ApiError
 
-# Config for alert parser
-config :alert_processor, :alert_parser, AlertProcessor.AlertParser
-config :alert_processor, alert_fetch_interval: {:system, "ALERT_FETCH_INTERVAL", "60000"}
-
 config :alert_processor,
   opted_out_list_fetch_interval: {:system, "OPTED_OUT_LIST_FETCH_INTERVAL", "3600000"}
 
