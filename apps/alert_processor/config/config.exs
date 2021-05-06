@@ -21,9 +21,7 @@ config :logger, :console,
   metadata: [:request_id]
 
 # Configure your database
-config :alert_processor, AlertProcessor.Repo,
-  adapter: Ecto.Adapters.Postgres,
-  pool_size: 10
+config :alert_processor, AlertProcessor.Repo, adapter: Ecto.Adapters.Postgres
 
 # Enable cyclic dependency on ConciergeSite mailer that can be bypassed in the test environment.
 # These modules are not defined when AlertProcessor is run on its own.
