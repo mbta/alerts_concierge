@@ -12,7 +12,6 @@ defmodule ConciergeSite.Mixfile do
       elixir: "~> 1.6",
       elixirc_paths: elixirc_paths(Mix.env()),
       compilers: [:phoenix, :gettext, :yecc, :leex, :erlang, :elixir, :xref, :app],
-      preferred_cli_env: [coveralls: :test, "coveralls.json": :test],
       build_embedded: Mix.env() == :prod,
       start_permanent: Mix.env() == :prod,
       dialyzer: [plt_add_deps: :transitive],
