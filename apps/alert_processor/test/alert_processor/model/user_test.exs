@@ -211,6 +211,36 @@ defmodule AlertProcessor.Model.UserTest do
     end
   end
 
+  describe "set_email_rejection/2" do
+    test "sets a user's email rejection status and disables notifications" do
+      user = insert(:user, communication_mode: "email", email_rejection_status: nil)
+
+      {:ok, user} = User.set_email_rejection(user, "bounce")
+
+      assert %{communication_mode: "none", email_rejection_status: "bounce"} = user
+      assert %{event: "update", origin: "email-rejection"} = PaperTrail.get_version(user)
+    end
+
+    test "only allows valid rejection statuses to be set" do
+      user = insert(:user)
+
+      {:error, changeset} = User.set_email_rejection(user, "invalid")
+
+      assert %{email_rejection_status: ["is invalid"]} = errors_on(changeset)
+    end
+  end
+
+  describe "unset_email_rejection" do
+    test "unsets a user's email rejection status and enables notifications" do
+      user = insert(:user, communication_mode: "none", email_rejection_status: "bounce")
+
+      {:ok, user} = User.unset_email_rejection(user)
+
+      assert %{communication_mode: "email", email_rejection_status: nil} = user
+      assert %{event: "update", origin: "email-unrejection"} = PaperTrail.get_version(user)
+    end
+  end
+
   describe "opt_users_out_of_sms" do
     test "removes the phone numbers from the users, records the time they opted out, sets communication_mode" do
       user0 = insert(:user)

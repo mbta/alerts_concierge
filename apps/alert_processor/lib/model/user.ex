@@ -3,7 +3,6 @@ defmodule AlertProcessor.Model.User do
   User struct and functions
   """
   @type id :: String.t()
-  @type communication_mode :: :email | :sms | :none
   @type t :: %__MODULE__{
           id: id,
           email: String.t(),
@@ -11,7 +10,8 @@ defmodule AlertProcessor.Model.User do
           role: String.t(),
           digest_opt_in: boolean,
           sms_opted_out_at: DateTime.t(),
-          communication_mode: communication_mode
+          communication_mode: String.t(),
+          email_rejection_status: String.t()
         }
 
   use Ecto.Schema
@@ -30,6 +30,7 @@ defmodule AlertProcessor.Model.User do
     field(:role, :string)
     field(:encrypted_password, :string)
     field(:digest_opt_in, :boolean, default: true)
+    field(:email_rejection_status, :string)
     field(:sms_opted_out_at, :utc_datetime)
     field(:communication_mode, :string, null: false, default: "email")
     field(:password, :string, virtual: true)
@@ -38,8 +39,20 @@ defmodule AlertProcessor.Model.User do
     timestamps()
   end
 
-  @permitted_fields ~w(email phone_number role password digest_opt_in sms_opted_out_at communication_mode)a
+  @permitted_fields ~w(
+    email
+    phone_number
+    role
+    password
+    digest_opt_in
+    email_rejection_status
+    sms_opted_out_at
+    communication_mode
+  )a
   @required_fields ~w(email password)a
+
+  @communication_modes ~w(none email sms)
+  @email_rejection_statuses [nil, "bounce", "complaint"]
 
   @doc """
   Builds a changeset based on the `struct` and `params`.
@@ -48,6 +61,8 @@ defmodule AlertProcessor.Model.User do
     struct
     |> cast(params, @permitted_fields)
     |> validate_required(required_fields, message: "This field is required.")
+    |> validate_inclusion(:communication_mode, @communication_modes)
+    |> validate_inclusion(:email_rejection_status, @email_rejection_statuses)
   end
 
   def create_account(params) do
@@ -269,6 +284,21 @@ defmodule AlertProcessor.Model.User do
   """
   def ids_by_phone_numbers(phone_numbers) do
     Repo.all(from(u in __MODULE__, where: u.phone_number in ^phone_numbers, select: u.id))
+  end
+
+  @doc "Records an email rejection status for a user and disables notifications for them."
+  def set_email_rejection(user, status) when not is_nil(status),
+    do: update_email_rejection(user, "none", status, "email-rejection")
+
+  @doc "Unsets a user's email rejection status and re-enables email notifications for them."
+  def unset_email_rejection(user),
+    do: update_email_rejection(user, "email", nil, "email-unrejection")
+
+  defp update_email_rejection(user, mode, status, origin) do
+    user
+    |> update_account_changeset(%{communication_mode: mode, email_rejection_status: status})
+    |> PaperTrail.update(origin: origin)
+    |> normalize_papertrail_result()
   end
 
   @doc """

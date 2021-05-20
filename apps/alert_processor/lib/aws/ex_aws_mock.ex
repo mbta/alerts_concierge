@@ -1,13 +1,12 @@
 defmodule ExAws.Mock do
-  @moduledoc """
-  Module to act as mock for AWS api.
-  Mock modeled after ex_aws implementation.
-  https://github.com/CargoSense/ex_aws/blob/master/lib/ex_aws/sns/parsers.ex#L62
-  """
+  @moduledoc "Mock module to stand in for `ExAws` in tests."
 
-  @doc """
-  request/1 takes the operation to be sent via the aws api and returns a tuple.
-  """
+  defmodule SNS do
+    @spec verify_message(%{String.t() => String.t()}) :: :ok | {:error, String.t()}
+    def verify_message(%{"Signature" => "error"}), do: {:error, "invalid signature"}
+    def verify_message(_), do: :ok
+  end
+
   @spec request(ExAws.Operation.t(), Keyword.t()) :: {:ok, term} | {:error, term}
   def request(operation, _) do
     # Take a realistic amount of time to "respond" to the request. This is short enough to not

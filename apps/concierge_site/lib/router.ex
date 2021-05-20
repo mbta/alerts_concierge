@@ -71,9 +71,9 @@ defmodule ConciergeSite.Router do
   end
 
   scope "/", ConciergeSite do
-    pipe_through([:redirect_prod_http, :browser])
+    pipe_through([:redirect_prod_http])
 
-    post("/rejected_email", RejectedEmailController, :handle_rejected_email)
+    post("/rejected_email", RejectedEmailController, :handle_message)
   end
 
   scope "/", ConciergeSite do
