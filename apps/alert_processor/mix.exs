@@ -57,6 +57,7 @@ defmodule AlertProcessor.Mixfile do
   # Type `mix help deps` for examples and options.
   defp deps do
     [
+      {:bypass, "~> 0.9.0", only: :test},
       {:calendar, "~> 0.17.4"},
       {:comeonin, "~> 3.0"},
       {:con_cache, "~> 0.12.1"},

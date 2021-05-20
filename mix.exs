@@ -10,7 +10,8 @@ defmodule AlertsConcierge.Mixfile do
       deps: deps(),
       test_coverage: [tool: ExCoveralls],
       preferred_cli_env: [vcr: :test, coveralls: :test],
-      dialyzer: [ignore_warnings: ".dialyzer_ignore.exs"]
+      # required to ignore incorrect typespec for ExAws.SNS.verify_message
+      dialyzer: [ignore_warnings: ".dialyzer_ignore.exs", plt_ignore_apps: [:ex_aws_sns]]
     ]
   end
 
