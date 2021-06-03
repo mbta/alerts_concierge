@@ -335,8 +335,8 @@ defmodule AlertProcessor.ServiceInfoCacheTest do
     assert {:ok, "place-fenwy"} = ServiceInfoCache.get_parent_stop_id(pid, "70186")
     assert {:ok, "place-ogmnl"} = ServiceInfoCache.get_parent_stop_id(pid, "70036")
     assert {:ok, "place-davis"} = ServiceInfoCache.get_parent_stop_id(pid, "70063")
-    assert {:ok, "place-north"} = ServiceInfoCache.get_parent_stop_id(pid, "North Station")
-    assert {:ok, "place-portr"} = ServiceInfoCache.get_parent_stop_id(pid, "Porter Square")
+    assert {:ok, "place-north"} = ServiceInfoCache.get_parent_stop_id(pid, "BNT-0000")
+    assert {:ok, "place-portr"} = ServiceInfoCache.get_parent_stop_id(pid, "FR-0034")
     assert {:ok, nil} = ServiceInfoCache.get_parent_stop_id(pid, "garbage")
   end
 
