@@ -517,7 +517,7 @@ defmodule AlertProcessor.AlertParserTest do
 
         assert %{
                  departure_time: "2017-10-26T08:52:00-04:00",
-                 stop_id: "place-ER-0362",
+                 stop_id: "Newburyport",
                  trip_id: "CR-Saturday-Fall-17-1150"
                } = schedule
       end
