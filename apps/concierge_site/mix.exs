@@ -14,7 +14,6 @@ defmodule ConciergeSite.Mixfile do
       compilers: [:phoenix, :gettext, :yecc, :leex, :erlang, :elixir, :xref, :app],
       build_embedded: Mix.env() == :prod,
       start_permanent: Mix.env() == :prod,
-      dialyzer: [plt_add_deps: :transitive],
       test_coverage: [tool: ExCoveralls],
       deps: deps()
     ]
@@ -56,7 +55,6 @@ defmodule ConciergeSite.Mixfile do
       {:bamboo, "~> 1.4.0"},
       {:bamboo_ses, "~> 0.1.0"},
       {:comeonin, "~> 3.0"},
-      {:dialyxir, "~> 0.5.0", only: [:dev]},
       {:excoveralls, "~> 0.5", only: [:dev, :test]},
       {:guardian, "~> 0.14"},
       {:guardian_db, "~> 0.8.0"},

@@ -9,7 +9,8 @@ defmodule AlertsConcierge.Mixfile do
       aliases: aliases(),
       deps: deps(),
       test_coverage: [tool: ExCoveralls],
-      preferred_cli_env: [vcr: :test, coveralls: :test]
+      preferred_cli_env: [vcr: :test, coveralls: :test],
+      dialyzer: [ignore_warnings: ".dialyzer_ignore.exs"]
     ]
   end
 
@@ -28,6 +29,7 @@ defmodule AlertsConcierge.Mixfile do
   defp deps do
     [
       {:credo, "~> 0.10.0", only: [:dev, :test], runtime: false},
+      {:dialyxir, "~> 1.1.0", only: [:dev], runtime: false},
       {:distillery, "~> 1.5", runtime: false},
       {:excoveralls, "~> 0.5", only: [:dev, :test]}
     ]

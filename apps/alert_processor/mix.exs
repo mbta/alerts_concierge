@@ -14,7 +14,6 @@ defmodule AlertProcessor.Mixfile do
       compilers: [:gettext] ++ Mix.compilers(),
       build_embedded: Mix.env() == :prod,
       start_permanent: Mix.env() == :prod,
-      dialyzer: [plt_add_deps: :transitive],
       test_coverage: [tool: ExCoveralls],
       deps: deps()
     ]
@@ -62,7 +61,6 @@ defmodule AlertProcessor.Mixfile do
       {:comeonin, "~> 3.0"},
       {:con_cache, "~> 0.12.1"},
       {:cowboy, "~> 1.0"},
-      {:dialyxir, "~> 0.5.0", only: [:dev]},
       {:ecto, "~> 2.2.0"},
       {:exactor, "~> 2.2.0"},
       {:excoveralls, "~> 0.5", only: [:dev, :test]},
