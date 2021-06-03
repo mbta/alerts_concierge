@@ -8,4 +8,4 @@ find $SEMAPHORE_CACHE_DIR -name "dialyxir_*_deps-dev.plt*" -print0 \
 mix dialyzer --plt
 cp _build/dev/*_deps-dev.plt* $SEMAPHORE_CACHE_DIR
 
-mix dialyzer --halt-exit-status
+mix dialyzer
