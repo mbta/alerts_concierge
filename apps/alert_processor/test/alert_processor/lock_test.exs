@@ -36,8 +36,10 @@ defmodule AlertProcessor.LockTest do
 
     test "releases the lock if the calling process dies" do
       pid = acquire_and_sleep(&spawn/1)
+      Process.monitor(pid)
 
       Process.exit(pid, :test_reason)
+      assert_receive {:DOWN, _, _, ^pid, :test_reason}
 
       assert Lock.acquire(fn :ok -> true end)
     end
