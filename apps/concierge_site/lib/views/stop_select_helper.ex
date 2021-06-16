@@ -61,21 +61,20 @@ defmodule ConciergeSite.StopSelectHelper do
   end
 
   defp get_stops_by_route(route_id) do
-    with {:ok, stops_with_icons} = ServiceInfoCache.get_stops_with_icons(),
-         {:ok, subway_lines} = ServiceInfoCache.get_subway_info() do
-      red_line_shapes = get_redline_shapes(route_id, subway_lines)
+    {:ok, stops_with_icons} = ServiceInfoCache.get_stops_with_icons()
+    {:ok, subway_lines} = ServiceInfoCache.get_subway_info()
+    red_line_shapes = get_redline_shapes(route_id, subway_lines)
 
-      route_stops =
-        route_id
-        |> get_stop_list(subway_lines)
-        |> Enum.sort_by(fn {name, _, _, _} -> name end)
+    route_stops =
+      route_id
+      |> get_stop_list(subway_lines)
+      |> Enum.sort_by(fn {name, _, _, _} -> name end)
 
-      for {name, id, _, _} <- route_stops do
-        stops_with_icons[id]
-        |> Keyword.put(:name, name)
-        |> Keyword.put(:id, id)
-        |> add_redline_shapes(route_id, id, red_line_shapes)
-      end
+    for {name, id, _, _} <- route_stops do
+      stops_with_icons[id]
+      |> Keyword.put(:name, name)
+      |> Keyword.put(:id, id)
+      |> add_redline_shapes(route_id, id, red_line_shapes)
     end
   end
 
@@ -104,12 +103,12 @@ defmodule ConciergeSite.StopSelectHelper do
 
   @spec get_stop_list(String.t(), list) :: [tuple]
   defp get_stop_list("Green", _) do
-    with {:ok, %{stop_list: b_stops}} = ServiceInfoCache.get_route("Green-B"),
-         {:ok, %{stop_list: c_stops}} = ServiceInfoCache.get_route("Green-C"),
-         {:ok, %{stop_list: d_stops}} = ServiceInfoCache.get_route("Green-D"),
-         {:ok, %{stop_list: e_stops}} = ServiceInfoCache.get_route("Green-E") do
-      Enum.uniq_by(b_stops ++ c_stops ++ d_stops ++ e_stops, & &1)
-    end
+    {:ok, %{stop_list: b_stops}} = ServiceInfoCache.get_route("Green-B")
+    {:ok, %{stop_list: c_stops}} = ServiceInfoCache.get_route("Green-C")
+    {:ok, %{stop_list: d_stops}} = ServiceInfoCache.get_route("Green-D")
+    {:ok, %{stop_list: e_stops}} = ServiceInfoCache.get_route("Green-E")
+
+    Enum.uniq_by(b_stops ++ c_stops ++ d_stops ++ e_stops, & &1)
   end
 
   defp get_stop_list("Red", subway_lines) do

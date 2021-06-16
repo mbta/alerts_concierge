@@ -340,8 +340,6 @@ defmodule AlertProcessor.ServiceInfoCacheTest do
     assert {:ok, nil} = ServiceInfoCache.get_parent_stop_id(pid, "garbage")
   end
 
-  # TODO: address these tests having a dependency on live data that changes frequently
-
   @tag skip: "fails when the current day is not a weekday"
   test "get_generalized_trip_id", %{pid: pid} do
     assert {:ok, "Boat-F4-Boat-Charlestown-11:45:00-weekday-1"} ==

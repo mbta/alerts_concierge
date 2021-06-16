@@ -186,6 +186,7 @@ defmodule ConciergeSite.TripCardHelperTest do
     end
   end
 
+  # credo:disable-for-next-line Credo.Check.Design.DuplicatedCode
   defp add_subscription_for_trip(trip, params) do
     %Subscription{
       user_id: trip.user_id,

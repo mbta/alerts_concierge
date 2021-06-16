@@ -58,17 +58,19 @@ defmodule AlertProcessor.InformedEntityFilter do
   defp trip_match?(_subscription, %{schedule: nil}), do: false
 
   defp trip_match?(subscription, %{schedule: schedule} = _informed_entity) do
-    with {:ok, trip_departure} <- trip_departure(subscription, schedule) do
-      Time.compare(trip_departure, subscription.travel_start_time || subscription.start_time) in [
-        :gt,
-        :eq
-      ] and
-        Time.compare(trip_departure, subscription.travel_end_time || subscription.end_time) in [
-          :lt,
+    case trip_departure(subscription, schedule) do
+      {:ok, trip_departure} ->
+        Time.compare(trip_departure, subscription.travel_start_time || subscription.start_time) in [
+          :gt,
           :eq
-        ]
-    else
-      _ -> true
+        ] and
+          Time.compare(trip_departure, subscription.travel_end_time || subscription.end_time) in [
+            :lt,
+            :eq
+          ]
+
+      _ ->
+        true
     end
   end
 
@@ -196,12 +198,14 @@ defmodule AlertProcessor.InformedEntityFilter do
   defp stops_in_between_from_stop_list([], _, _), do: []
 
   defp stops_in_between_from_stop_list(stop_list, origin, destination) do
-    with {:ok, slice_range} <- slice_range(stop_list, origin, destination) do
-      stop_list
-      |> Enum.slice(slice_range)
-      |> Enum.map(fn {_, route_stop_id, _, _} -> route_stop_id end)
-    else
-      _ -> []
+    case slice_range(stop_list, origin, destination) do
+      {:ok, slice_range} ->
+        stop_list
+        |> Enum.slice(slice_range)
+        |> Enum.map(fn {_, route_stop_id, _, _} -> route_stop_id end)
+
+      _ ->
+        []
     end
   end
 

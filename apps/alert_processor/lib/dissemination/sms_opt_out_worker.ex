@@ -60,17 +60,15 @@ defmodule AlertProcessor.SmsOptOutWorker do
 
   @spec fetch_opted_out_list(String.t() | nil, [phone_number]) :: [phone_number]
   def fetch_opted_out_list(next_token, opted_out_list \\ []) do
-    with {:ok, %{body: %{phone_numbers: phone_numbers} = body}} <-
-           next_token
-           |> list_phone_numbers_opted_out_query()
-           |> AwsClient.request() do
-      normalized_phone_numbers = Enum.map(phone_numbers, &String.replace_leading(&1, "+1", ""))
+    case next_token |> list_phone_numbers_opted_out_query() |> AwsClient.request() do
+      {:ok, %{body: %{phone_numbers: phone_numbers} = body}} ->
+        normalized_phone_numbers = Enum.map(phone_numbers, &String.replace_leading(&1, "+1", ""))
 
-      case body[:next_token] do
-        "" -> opted_out_list ++ normalized_phone_numbers
-        nt -> fetch_opted_out_list(nt, opted_out_list ++ normalized_phone_numbers)
-      end
-    else
+        case body[:next_token] do
+          "" -> opted_out_list ++ normalized_phone_numbers
+          nt -> fetch_opted_out_list(nt, opted_out_list ++ normalized_phone_numbers)
+        end
+
       {:error, error} ->
         Logger.warn(
           "Unable to request SMS opted out list from AWS due to error: #{inspect(error)}"

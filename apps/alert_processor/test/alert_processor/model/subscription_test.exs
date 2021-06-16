@@ -801,7 +801,6 @@ defmodule AlertProcessor.Model.SubscriptionTest do
       ies
       |> Enum.with_index()
       |> Enum.reduce(acc, fn {ie, i}, accumulator ->
-        # credo:disable-for-next-line Credo.Check.Refactor.Nesting
         Multi.run(accumulator, {:new_informed_entity, index, i}, fn _ ->
           ie_to_insert =
             ie
