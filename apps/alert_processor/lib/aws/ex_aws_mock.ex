@@ -2,6 +2,7 @@ defmodule ExAws.Mock do
   @moduledoc "Mock module to stand in for `ExAws` in tests."
 
   defmodule SNS do
+    @moduledoc false
     @spec verify_message(%{String.t() => String.t()}) :: :ok | {:error, String.t()}
     def verify_message(%{"Signature" => "error"}), do: {:error, "invalid signature"}
     def verify_message(_), do: :ok

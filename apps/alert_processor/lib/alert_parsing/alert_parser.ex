@@ -231,9 +231,8 @@ defmodule AlertProcessor.AlertParser do
   defp parse_active_period(active_period) do
     active_period
     |> Map.new(fn {k, v} ->
-      with {:ok, datetime} <- DateTimeHelper.parse_unix_timestamp(v) do
-        {String.to_existing_atom(k), datetime}
-      else
+      case DateTimeHelper.parse_unix_timestamp(v) do
+        {:ok, datetime} -> {String.to_existing_atom(k), datetime}
         _ -> {String.to_existing_atom(k), nil}
       end
     end)

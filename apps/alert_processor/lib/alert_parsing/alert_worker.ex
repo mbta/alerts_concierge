@@ -15,6 +15,7 @@ defmodule AlertProcessor.AlertWorker do
   @frequencies %{recent: 10, older: 60, oldest: 600}
 
   defmodule State do
+    @moduledoc false
     @type t :: %{
             check_interval: non_neg_integer | nil,
             frequencies: %{atom => non_neg_integer},

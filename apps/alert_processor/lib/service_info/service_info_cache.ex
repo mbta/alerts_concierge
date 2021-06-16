@@ -148,7 +148,7 @@ defmodule AlertProcessor.ServiceInfoCache do
       |> Enum.filter(fn %{route_type: route_type} ->
         route_type == 0 || route_type == 1
       end)
-      |> Enum.reject(&(length(&1.stop_list) === 0))
+      |> Enum.reject(&Enum.empty?(&1.stop_list))
 
     {:reply, {:ok, subway_state}, state}
   end

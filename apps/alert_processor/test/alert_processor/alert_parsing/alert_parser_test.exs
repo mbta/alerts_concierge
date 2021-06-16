@@ -220,7 +220,7 @@ defmodule AlertProcessor.AlertParserTest do
         {[alert], facility_map, 1_506_433_715}
         |> AlertParser.parse_alerts()
 
-      assert length(alerts) == 0
+      assert Enum.empty?(alerts)
     end
   end
 

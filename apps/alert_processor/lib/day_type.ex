@@ -109,7 +109,8 @@ defmodule AlertProcessor.DayType do
 
   @spec next_day(Date.t()) :: Date.t()
   defp next_day(date) do
-    with {:ok, next_date} = Calendar.Date.add(date, 1), do: next_date
+    {:ok, next_date} = Calendar.Date.add(date, 1)
+    next_date
   end
 
   @spec next_day_of_type(Date.t(), day_type_test_function) :: Date.t()
