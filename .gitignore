@@ -14,7 +14,6 @@ npm-debug.log
 .env
 .envrc
 .DS_Store
-excoveralls.json
 releases
 .vscode
 .elixir_ls

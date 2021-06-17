@@ -10,7 +10,6 @@ devops/
 test/fixture/vcr_cassettes/*
 .iex.exs
 .DS_Store
-excoveralls.json
 
 .dockerignore
 .git

@@ -14,8 +14,9 @@ defmodule AlertProcessor.Mixfile do
       compilers: [:gettext] ++ Mix.compilers(),
       build_embedded: Mix.env() == :prod,
       start_permanent: Mix.env() == :prod,
-      test_coverage: [tool: ExCoveralls],
-      deps: deps()
+      deps: deps(),
+      # https://github.com/dariodf/lcov_ex/issues/2
+      test_coverage: [tool: LcovEx]
     ]
   end
 
@@ -64,7 +65,6 @@ defmodule AlertProcessor.Mixfile do
       {:cowboy, "~> 1.0"},
       {:ecto, "~> 2.2.0"},
       {:exactor, "~> 2.2.0"},
-      {:excoveralls, "~> 0.5", only: [:dev, :test]},
       {:ex_aws, "~> 2.1.0"},
       {:ex_aws_sns, "~> 2.0.1"},
       {:ex_machina, "~> 2.0", only: :test},
