@@ -14,8 +14,9 @@ defmodule ConciergeSite.Mixfile do
       compilers: [:phoenix, :gettext, :yecc, :leex, :erlang, :elixir, :xref, :app],
       build_embedded: Mix.env() == :prod,
       start_permanent: Mix.env() == :prod,
-      test_coverage: [tool: ExCoveralls],
-      deps: deps()
+      deps: deps(),
+      # https://github.com/dariodf/lcov_ex/issues/2
+      test_coverage: [tool: LcovEx]
     ]
   end
 
@@ -56,7 +57,6 @@ defmodule ConciergeSite.Mixfile do
       {:bamboo_ses, "~> 0.1.0"},
       {:comeonin, "~> 3.0"},
       {:ex_aws_sns, "~> 2.0.1"},
-      {:excoveralls, "~> 0.5", only: [:dev, :test]},
       {:guardian, "~> 0.14"},
       {:guardian_db, "~> 0.8.0"},
       {:phoenix, "~> 1.3.4", override: true},

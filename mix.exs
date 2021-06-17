@@ -8,7 +8,7 @@ defmodule AlertsConcierge.Mixfile do
       start_permanent: Mix.env() == :prod,
       aliases: aliases(),
       deps: deps(),
-      test_coverage: [tool: ExCoveralls],
+      test_coverage: [tool: LcovEx],
       preferred_cli_env: [vcr: :test, coveralls: :test],
       # required to ignore incorrect typespec for ExAws.SNS.verify_message
       dialyzer: [ignore_warnings: ".dialyzer_ignore.exs", plt_ignore_apps: [:ex_aws_sns]]
@@ -32,7 +32,7 @@ defmodule AlertsConcierge.Mixfile do
       {:credo, "~> 1.5.0", only: [:dev, :test], runtime: false},
       {:dialyxir, "~> 1.1.0", only: [:dev], runtime: false},
       {:distillery, "~> 1.5", runtime: false},
-      {:excoveralls, "~> 0.5", only: [:dev, :test]}
+      {:lcov_ex, "~> 0.2", only: [:dev, :test], runtime: false}
     ]
   end
 
