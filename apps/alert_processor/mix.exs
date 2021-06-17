@@ -67,7 +67,7 @@ defmodule AlertProcessor.Mixfile do
       {:exactor, "~> 2.2.0"},
       {:ex_aws, "~> 2.1.0"},
       {:ex_aws_sns, "~> 2.0.1"},
-      {:ex_machina, "~> 2.0", only: :test},
+      {:ex_machina, "~> 2.2.0", only: :test},
       {:exvcr, "~> 0.10.1", runtime: false},
       {:fast_local_datetime, "~> 0.3.0"},
       {:gettext, "~> 0.11"},

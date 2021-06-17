@@ -9,9 +9,13 @@ defmodule AlertsConcierge.Mixfile do
       aliases: aliases(),
       deps: deps(),
       test_coverage: [tool: LcovEx],
-      preferred_cli_env: [vcr: :test, coveralls: :test],
-      # required to ignore incorrect typespec for ExAws.SNS.verify_message
-      dialyzer: [ignore_warnings: ".dialyzer_ignore.exs", plt_ignore_apps: [:ex_aws_sns]]
+      preferred_cli_env: [vcr: :test],
+      dialyzer: [
+        ignore_warnings: ".dialyzer_ignore.exs",
+        plt_add_apps: [:ex_unit],
+        # required to ignore incorrect typespec for ExAws.SNS.verify_message
+        plt_ignore_apps: [:ex_aws_sns]
+      ]
     ]
   end
 
@@ -30,7 +34,7 @@ defmodule AlertsConcierge.Mixfile do
   defp deps do
     [
       {:credo, "~> 1.5.0", only: [:dev, :test], runtime: false},
-      {:dialyxir, "~> 1.1.0", only: [:dev], runtime: false},
+      {:dialyxir, "~> 1.1.0", only: [:dev, :test], runtime: false},
       {:distillery, "~> 1.5", runtime: false},
       {:lcov_ex, "~> 0.2", only: [:dev, :test], runtime: false}
     ]
