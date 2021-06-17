@@ -22,7 +22,7 @@ subscribe to notifications for service disruptions.
 ### Instructions
 
 - `mix deps.get`
-- `sh -c "cd apps/concierge_site/assets ; yarn install"`
+- `yarn install --cwd apps/concierge_site/assets`
 - `cat .envrc.example | sed -e "s/__username__/$(logname)/g" > .envrc`
 - In `.envrc`: Fill in `API_KEY=` with the API key you obtained above
 - `direnv allow`
