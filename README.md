@@ -1,7 +1,5 @@
 # Alerts Concierge
 
-[![Build status](https://semaphoreci.com/api/v1/projects/de013d4d-9f29-4afd-83d4-85f13e0699e6/1892610/badge.svg)](https://semaphoreci.com/mbta/alerts_concierge)
-
 a.k.a. **[T-Alerts](https://alerts.mbta.com/)**. Enables MBTA riders to
 subscribe to notifications for service disruptions.
 
