@@ -1210,7 +1210,7 @@ defmodule AlertProcessor.Integration.MatchingTest do
   # are active as of 2021-04-05.
 
   @test_trip_id (case Date.utc_today() |> Date.day_of_week() do
-                   day when day in 1..5 -> "CR-483969-909"
+                   day when day in 1..5 -> "CR-483257-909"
                    6 -> "CR-478237-2907"
                    7 -> "CR-478184-2907"
                  end)
