@@ -45,10 +45,10 @@ defmodule ConciergeSite.ScheduleTest do
     assert Enum.all?(result[{"cr", "CR-Newburyport"}], &Map.has_key?(&1, :weekend?))
 
     assert List.first(result[{"cr", "CR-Newburyport"}]) == %TripInfo{
-             arrival_time: ~T[07:26:00],
-             departure_time: ~T[06:35:00],
-             arrival_extended_time: %ExtendedTime{relative_day: 1, time: ~T[07:26:00]},
-             departure_extended_time: %ExtendedTime{relative_day: 1, time: ~T[06:35:00]},
+             arrival_time: ~T[07:20:00],
+             departure_time: ~T[06:30:00],
+             arrival_extended_time: %ExtendedTime{relative_day: 1, time: ~T[07:20:00]},
+             departure_extended_time: %ExtendedTime{relative_day: 1, time: ~T[06:30:00]},
              destination: {"Manchester", "place-GB-0254", {42.573687, -70.77009}, 1},
              direction_id: 0,
              origin: {"North Station", "place-north", {42.365577, -71.06129}, 1},
@@ -83,12 +83,9 @@ defmodule ConciergeSite.ScheduleTest do
                direction_destinations: ["Newburyport or Rockport", "North Station"]
              },
              selected: false,
-             trip_number: "101",
-             weekend?: false
+             trip_number: "1101",
+             weekend?: true
            }
-
-    # For the moment, there is no weekend service on the Newburyport line
-    refute Enum.find_index(result[{"cr", "CR-Newburyport"}], & &1.weekend?)
   end
 
   test "get_schedules_for_trip/2" do
@@ -207,8 +204,6 @@ defmodule ConciergeSite.ScheduleTest do
                }
              }
 
-    assert Enum.find_index(first_trip_result[{"cr", "CR-Worcester"}], & &1.weekend?) == 3
-
     assert is_map(return_trip_result)
     assert Map.keys(return_trip_result) == [{"cr", "CR-Worcester"}]
     assert is_list(return_trip_result[{"cr", "CR-Worcester"}])
@@ -265,8 +260,6 @@ defmodule ConciergeSite.ScheduleTest do
                  ]
                }
              }
-
-    assert Enum.find_index(return_trip_result[{"cr", "CR-Worcester"}], & &1.weekend?) == 4
   end
 
   defp is_trip_info(%TripInfo{}), do: true
