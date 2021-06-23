@@ -5,21 +5,33 @@ The app lives on AWS in three environments, `alerts-concierge-prod`,
 Elixir release in a Docker container. The Docker images are hosted on AWS ECR,
 and the containers are run on Fargate.
 
-Deploying to the environments is done via [Semaphore]:
+Deploying to the environments is done via GitHub Actions:
 
-* `prod` is deployed manually, by choosing a desired build (normally the latest
-  build of `master`), clicking "Deploy manually", choosing "Production", and
-  pressing the "Deploy" button. Before deploying to production, note which build
-  is currently deployed in case you need to roll back (i.e. re-deploy that build
-  using these same steps).
+* Commits on the main branch are auto-deployed to `dev` if they pass CI.
 
-* Any new commits on `master` are automatically deployed to `dev`.
+* Manual deploys to all environments are done via the [deploy workflow][deploy]:
+  Click "Run workflow", select a branch, and enter the environment to deploy to.
+  Only the main branch can be deployed to `prod` and `dev`; use `dev-green` to
+  test unmerged branches.
 
-* `dev-green` is used to test unmerged branches. It can be deployed to in a
-  similar way as to Production, but choose "Dev Green" instead. Ask in the Slack
-  channel if anyone is using that environment before doing so.
+[deploy]: https://github.com/mbta/alerts_concierge/actions/workflows/deploy.yml
 
-[Semaphore]: https://semaphoreci.com/mbta/alerts_concierge
+## Rolling back a deploy
+
+Note currently you can only select a _branch_ in the deploy workflow, not a tag
+or an arbitrary commit — this is a limitation of GitHub Actions. If you need to
+roll back a deploy, you will have to temporarily create and push a branch that
+is at the commit you want to roll back to, i.e.:
+
+1. `git checkout <SHA>`
+2. `git checkout -b temp-deploy`
+3. `git push -u`
+4. Select `temp-deploy` in the workflow
+
+You can find the required SHA using the [deploy log][log] for the environment
+you are rolling back.
+
+[log]: https://github.com/mbta/alerts_concierge/deployments/activity_log
 
 ## Environment variables
 
