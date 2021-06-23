@@ -1,0 +1,21 @@
+name: Deploy
+
+on:
+  push:
+    branches: master
+  workflow_dispatch:
+    inputs:
+      env:
+        default: "dev"
+        description: "Environment"
+        required: true
+
+jobs:
+  deploy:
+    name: Deploy
+    runs-on: ubuntu-latest
+    environment: ${{ github.event.inputs.env || 'dev' }}
+    concurrency: ${{ github.event.inputs.env || 'dev' }}
+
+    steps:
+      - run: echo "Workflow not implemented yet!"
