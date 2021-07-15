@@ -14,7 +14,7 @@ defmodule ConciergeSite.AccountController do
 
   def edit(conn, _params, user, _claims) do
     conn
-    |> message_if_opted_out(user)
+    |> put_flash(:warning, communication_mode_flash(user))
     |> render("edit.html", changeset: User.changeset(user), user_id: user.id)
   end
 
@@ -118,17 +118,66 @@ defmodule ConciergeSite.AccountController do
     end)
   end
 
-  defp message_if_opted_out(conn, %User{} = user) do
-    if User.inside_opt_out_freeze_window?(user) do
-      put_flash(
-        conn,
-        :error,
-        "You opted out of text messages on #{formatted_date(user.sms_opted_out_at)}. You cannot resubscribe for 30 days. If you’d like to continue receiving alerts, you can select to receive notifications by email."
-      )
-    else
-      conn
-    end
+  defp communication_mode_flash(%User{sms_opted_out_at: sms_opted_out_at} = user)
+       when not is_nil(sms_opted_out_at) do
+    communication_mode_flash_for_sms_opt_out(user, User.inside_opt_out_freeze_window?(user))
   end
+
+  defp communication_mode_flash(%User{
+         email: email,
+         communication_mode: "none",
+         email_rejection_status: "bounce"
+       }) do
+    "Alerts are disabled for your account: We encountered an error trying to deliver email alerts
+    to \"#{email}\". To resume alerts, ensure your address is entered correctly and is able to
+    receive email, then select email delivery below. Or select text message delivery instead."
+  end
+
+  defp communication_mode_flash(%User{
+         communication_mode: "none",
+         email_rejection_status: "complaint"
+       }) do
+    "Alerts are disabled for your account: We received a spam report or other complaint from your
+    email provider. To resume alerts, ensure your address is entered correctly and select email
+    delivery below. Or select text message delivery instead."
+  end
+
+  defp communication_mode_flash(%User{communication_mode: "none"}) do
+    "Alerts are disabled for your account. To resume alerts, select email or text message delivery
+    below."
+  end
+
+  defp communication_mode_flash(_user), do: nil
+
+  defp communication_mode_flash_for_sms_opt_out(
+         %User{communication_mode: "email", sms_opted_out_at: sms_opted_out_at},
+         true
+       ) do
+    "Text message delivery is disabled: You opted out of text message alerts on
+    #{formatted_date(sms_opted_out_at)}. Due to carrier anti-spam rules, we can’t send you any
+    further text messages until 30 days after this date."
+  end
+
+  defp communication_mode_flash_for_sms_opt_out(
+         %User{communication_mode: "none", sms_opted_out_at: sms_opted_out_at},
+         true
+       ) do
+    "Alerts are disabled for your account: You opted out of text message alerts on
+    #{formatted_date(sms_opted_out_at)}. Due to carrier anti-spam rules, we can’t send you any
+    further text messages until 30 days after this date. If you’d like to receive alerts during
+    this time, select email delivery below."
+  end
+
+  defp communication_mode_flash_for_sms_opt_out(
+         %User{communication_mode: "none", sms_opted_out_at: sms_opted_out_at},
+         false
+       ) do
+    "Alerts are disabled for your account: You opted out of text message alerts on
+    #{formatted_date(sms_opted_out_at)}. To resume alerts, select email or text message delivery
+    below."
+  end
+
+  defp communication_mode_flash_for_sms_opt_out(_, _), do: nil
 
   defp formatted_date(date) do
     [date.month, date.day, date.year]

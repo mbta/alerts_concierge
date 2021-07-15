@@ -17,9 +17,20 @@ defmodule ConciergeSite.TripController do
   @valid_facility_types ~w(bike_storage elevator escalator parking_area)
 
   def index(conn, _params, user, _claims) do
-    trips = Trip.get_trips_by_user(user.id)
-    render(conn, "index.html", trips: trips, user_id: user.id)
+    conn
+    |> communication_mode_flash(user)
+    |> render("index.html", trips: Trip.get_trips_by_user(user.id), user_id: user.id)
   end
+
+  defp communication_mode_flash(conn, %User{communication_mode: "none"}) do
+    put_flash(
+      conn,
+      :warning,
+      "Alerts are disabled for your account. To resume alerts, check your account Settings."
+    )
+  end
+
+  defp communication_mode_flash(conn, _user), do: conn
 
   def new(conn, _params, user, _claims) do
     trip_count = Trip.get_trip_count_by_user(user.id)

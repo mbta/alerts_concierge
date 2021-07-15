@@ -176,6 +176,104 @@ defmodule ConciergeSite.AccountControllerTest do
     end
   end
 
+  describe "edit page flash" do
+    defp account_edit_html(conn, user) do
+      user
+      |> guardian_login(conn)
+      |> get(account_path(conn, :edit))
+      |> html_response(200)
+      |> String.replace(~r/\s+/, " ")
+    end
+
+    @alerts_disabled_text "Alerts are disabled for your account"
+    @email_bounced_text "We encountered an error trying to deliver email"
+    @email_complaint_text "We received a spam report or other complaint"
+    @sms_disabled_text "Text message delivery is disabled"
+    @sms_frozen_text "we can’t send you any further text messages"
+    @sms_opted_out_text "opted out of text message alerts"
+
+    test "explains alerts being disabled when inside the SMS freeze window", %{conn: conn} do
+      user = insert(:user, communication_mode: "none", sms_opted_out_at: DateTime.utc_now())
+
+      html = account_edit_html(conn, user)
+
+      assert html =~ @alerts_disabled_text
+      assert html =~ @sms_opted_out_text
+      assert html =~ @sms_frozen_text
+    end
+
+    test "explains alerts being disabled when outside the SMS freeze window", %{conn: conn} do
+      user =
+        insert(:user,
+          communication_mode: "none",
+          sms_opted_out_at: DateTime.add(DateTime.utc_now(), 60 * 60 * 24 * -31)
+        )
+
+      html = account_edit_html(conn, user)
+
+      assert html =~ @alerts_disabled_text
+      assert html =~ @sms_opted_out_text
+      refute html =~ @sms_frozen_text
+    end
+
+    test "explains SMS alerts being frozen when email delivery is enabled", %{conn: conn} do
+      user = insert(:user, communication_mode: "email", sms_opted_out_at: DateTime.utc_now())
+
+      html = account_edit_html(conn, user)
+
+      refute html =~ @alerts_disabled_text
+      assert html =~ @sms_disabled_text
+      assert html =~ @sms_opted_out_text
+      assert html =~ @sms_frozen_text
+    end
+
+    test "does not warn when email is enabled and outside the freeze window", %{conn: conn} do
+      user =
+        insert(:user,
+          communication_mode: "email",
+          sms_opted_out_at: DateTime.add(DateTime.utc_now(), 60 * 60 * 24 * -31)
+        )
+
+      html = account_edit_html(conn, user)
+
+      refute html =~ @alerts_disabled_text
+      refute html =~ @sms_disabled_text
+    end
+
+    test "explains alerts being disabled due to an email bounce or complaint", %{conn: conn} do
+      bounced_user = insert(:user, communication_mode: "none", email_rejection_status: "bounce")
+
+      complained_user =
+        insert(:user, communication_mode: "none", email_rejection_status: "complaint")
+
+      bounced_html = account_edit_html(conn, bounced_user)
+      complained_html = account_edit_html(conn, complained_user)
+
+      assert bounced_html =~ @alerts_disabled_text
+      assert bounced_html =~ @email_bounced_text
+      assert complained_html =~ @alerts_disabled_text
+      assert complained_html =~ @email_complaint_text
+    end
+
+    test "explains alerts being disabled for an unknown reason", %{conn: conn} do
+      user = insert(:user, communication_mode: "none")
+
+      html = account_edit_html(conn, user)
+
+      assert html =~ @alerts_disabled_text
+    end
+
+    test "does not explain anything if there is nothing to explain", %{conn: conn} do
+      user = insert(:user, communication_mode: "email")
+
+      html = account_edit_html(conn, user)
+
+      refute html =~ @alerts_disabled_text
+      refute html =~ @sms_disabled_text
+      refute html =~ @sms_opted_out_text
+    end
+  end
+
   describe "update password" do
     test "GET /password/edit", %{conn: conn} do
       user = insert(:user)
