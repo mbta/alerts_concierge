@@ -10,13 +10,23 @@ defmodule ConciergeSite.TripControllerTest do
     {:ok, user: user}
   end
 
-  test "GET /trips", %{conn: conn, user: user} do
-    conn =
-      user
-      |> guardian_login(conn)
-      |> get(trip_path(conn, :index))
+  describe "GET /trips" do
+    test "explains alerts are disabled", %{conn: conn} do
+      user = insert(:user, communication_mode: "none")
 
-    assert html_response(conn, 200) =~ "My subscriptions"
+      conn = user |> guardian_login(conn) |> get(trip_path(conn, :index))
+
+      assert html_response(conn, 200) =~ "Alerts are disabled for your account"
+    end
+
+    test "has no message if alerts are not disabled", %{conn: conn, user: user} do
+      conn = user |> guardian_login(conn) |> get(trip_path(conn, :index))
+
+      response = html_response(conn, 200)
+
+      assert response =~ "My subscriptions"
+      refute response =~ "Alerts are disabled for your account"
+    end
   end
 
   describe "GET /trips/:id/edit" do
