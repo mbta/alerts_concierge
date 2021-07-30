@@ -241,27 +241,24 @@ defmodule AlertProcessor.Model.UserTest do
     end
   end
 
-  describe "opt_users_out_of_sms" do
-    test "removes the phone numbers from the users, records the time they opted out, sets communication_mode" do
-      user0 = insert(:user)
-      user1 = insert(:user)
+  describe "set_sms_opted_out" do
+    test "sets users as opted out of SMS by phone number" do
+      %{id: id1} = insert(:user, communication_mode: "sms", phone_number: "5555551234")
+      %{id: id2} = insert(:user, communication_mode: "sms", phone_number: "5555556789")
 
-      {:ok,
-       %{
-         {:user, 0} => %{model: user_0},
-         {:user, 1} => %{model: user_1}
-       }} = User.opt_users_out_of_sms([user0.id, user1.id])
+      {:ok, %{^id1 => user1, ^id2 => user2}} =
+        User.set_sms_opted_out(["5555551234", "5555556789"])
 
-      assert user_0.phone_number == nil
-      assert user_0.sms_opted_out_at != nil
-      assert user_0.communication_mode == "none"
-      assert user_1.phone_number == nil
-      assert user_1.sms_opted_out_at != nil
-      assert user_1.communication_mode == "none"
+      assert user1.phone_number == nil
+      assert user1.sms_opted_out_at != nil
+      assert user1.communication_mode == "none"
+      assert user2.phone_number == nil
+      assert user2.sms_opted_out_at != nil
+      assert user2.communication_mode == "none"
     end
 
-    test "doesnt do anything if no users are passed" do
-      assert {:ok, %{}} = User.opt_users_out_of_sms([])
+    test "doesn't do anything if no phone numbers are passed" do
+      assert {:ok, %{}} = User.set_sms_opted_out([])
     end
   end
 

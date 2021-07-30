@@ -2,13 +2,16 @@ defmodule AlertProcessor.Lock do
   @moduledoc "Provides a database-backed exclusive lock."
   alias AlertProcessor.Repo
 
-  # Arbitrary integer; should be unique among all locks used with this database
-  @key 0
+  # Mapping of known modules to keys.
+  @keys %{
+    AlertProcessor.AlertWorker => 0,
+    AlertProcessor.SmsOptOutWorker => 1
+  }
 
   @doc """
-  Tries to acquire an exclusive advisory lock using the `AlertProcessor.Repo` database. The given
-  function will be called with `:ok` if the lock was acquired, or `:error` if the lock is already
-  in use (i.e. a function that was called with `:ok` is currently executing elsewhere).
+  Tries to acquire an exclusive advisory lock using the `AlertProcessor.Repo` database. The lock
+  can be identified by a "known" atom, which is mapped to a key, or by specifying a key directly.
+  The passed function is called with `:ok` if the lock was acquired, or `:error` if it was not.
 
   Returns whatever the passed function returns.
 
@@ -17,8 +20,13 @@ defmodule AlertProcessor.Lock do
   session-level lock to do this, so instead we spawn a process that acquires a transaction-level
   lock and holds the transaction open until the passed function is done executing.
   """
-  @spec acquire((:ok | :error -> any)) :: any
-  def acquire(func) do
+  @spec acquire(atom | non_neg_integer, (:ok | :error -> any)) :: any
+
+  def acquire(key, func) when is_atom(key) do
+    @keys |> Map.fetch!(key) |> acquire(func)
+  end
+
+  def acquire(key, func) when is_integer(key) and key >= 0 do
     parent = self()
 
     locker =
@@ -27,7 +35,7 @@ defmodule AlertProcessor.Lock do
 
         Repo.transaction(
           fn ->
-            case Repo.query!("SELECT pg_try_advisory_xact_lock($1)", [@key]) do
+            case Repo.query!("SELECT pg_try_advisory_xact_lock($1)", [key]) do
               %{rows: [[true]]} ->
                 send(parent, :acquired)
 

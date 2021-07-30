@@ -50,7 +50,7 @@ defmodule AlertProcessor.AlertWorker do
   def handle_info(:check, state) do
     log("event=check_start")
 
-    Lock.acquire(fn
+    Lock.acquire(__MODULE__, fn
       :ok ->
         process_alerts(state)
 

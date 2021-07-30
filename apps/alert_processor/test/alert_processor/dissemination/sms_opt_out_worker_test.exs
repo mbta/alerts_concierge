@@ -6,9 +6,21 @@ defmodule AlertProcessor.SmsOptOutWorkerTest do
   alias AlertProcessor.Model.User
   alias AlertProcessor.SmsOptOutWorker
 
-  test "worker fetches list of opted out phone numbers from aws sns and removes the phone numbers from the accounts" do
+  setup do
+    # Required due to Lock using a spawned process
+    Ecto.Adapters.SQL.Sandbox.mode(AlertProcessor.Repo, :auto)
+
+    on_exit(fn ->
+      Repo.delete_all(PaperTrail.Version)
+      Repo.delete_all(User)
+    end)
+  end
+
+  test "fetches list of opted-out phone numbers and opts out the corresponding users" do
     user = insert(:user, phone_number: "9999999999")
-    {:noreply, _} = SmsOptOutWorker.handle_info(:work, [])
+
+    SmsOptOutWorker.process_opt_outs()
+
     assert_received {:list_phone_numbers_opted_out, _}
     reloaded_user = Repo.one(from(u in User, where: u.id == ^user.id))
     assert reloaded_user.phone_number == nil
@@ -16,29 +28,37 @@ defmodule AlertProcessor.SmsOptOutWorkerTest do
     assert reloaded_user.communication_mode == "none"
   end
 
-  test "worker fetches list of opted out phone numbers from aws sns and doesnt update for numbers not in list" do
+  test "doesn't update users with phone numbers not in the list" do
     user = insert(:user, phone_number: "5555551234")
-    {:noreply, _} = SmsOptOutWorker.handle_info(:work, [])
+
+    SmsOptOutWorker.process_opt_outs()
+
     assert_received {:list_phone_numbers_opted_out, _}
     reloaded_user = Repo.one(from(u in User, where: u.id == ^user.id))
     assert reloaded_user.phone_number == "5555551234"
   end
 
-  test "worker fetches list of opted out phone numbers from aws sns and removes numbers for users with existing state" do
-    user = insert(:user, phone_number: "9999999999")
-    {:noreply, new_state} = SmsOptOutWorker.handle_info(:work, ["2222222222", "3333333333"])
-    assert_received {:list_phone_numbers_opted_out, _}
-    reloaded_user = Repo.one(from(u in User, where: u.id == ^user.id))
-    assert reloaded_user.phone_number == nil
-    assert new_state == ["9999999999", "5555555555"]
+  test "handles errors when fetching the opt-out list" do
+    # in `ExAws.Mock`, using "error" as a `nextToken` results in an error
+    result = SmsOptOutWorker.fetch_opted_out_list("error", ["5555551234"])
+    assert {:error, {1, {:http_error, 400, _}}} = result
   end
 
-  test "worker recovers gracefully from AWS error messages" do
-    fetch_error = fn ->
-      assert ["123"] == SmsOptOutWorker.fetch_opted_out_list("error", ["123"])
-    end
+  test "skips processing if another instance is already processing" do
+    test_pid = self()
 
-    assert capture_log(fetch_error) =~
-             "Unable to request SMS opted out list from AWS due to error"
+    spawn_link(fn ->
+      AlertProcessor.Lock.acquire(SmsOptOutWorker, fn :ok ->
+        send(test_pid, :acquired)
+        Process.sleep(:infinity)
+      end)
+    end)
+
+    # Wait for above process to get the lock, otherwise the real worker might get it first
+    assert_receive :acquired
+
+    logs = capture_log(&SmsOptOutWorker.process_opt_outs/0)
+
+    assert logs =~ "SmsOptOutWorker event=skipped"
   end
 end

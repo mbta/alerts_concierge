@@ -1,113 +1,86 @@
 defmodule AlertProcessor.SmsOptOutWorker do
   @moduledoc """
-  Module for periodically fetching opted out phone number list
-  from aws sns service which represents the list of people who have
-  replied 'STOP', 'UNSUBSCRIBE', etc to the sms number which is
-  sending alerts.
+  Periodically fetches the list of opted-out phone numbers (those that sent a "STOP" message to
+  the number that sends alerts), and disables alerts for the corresponding user accounts.
   """
   use GenServer
   require Logger
   alias AlertProcessor.Aws.AwsClient
-  alias AlertProcessor.Model.User
   alias AlertProcessor.Helpers.ConfigHelper
+  alias AlertProcessor.Lock
+  alias AlertProcessor.Model.User
 
+  @type next_token :: String.t() | nil
   @type phone_number :: String.t()
 
-  @doc false
+  @doc "Start the server. The first check is done immediately."
   def start_link(opts \\ [name: __MODULE__]) do
     GenServer.start_link(__MODULE__, nil, opts)
   end
 
-  @doc """
-  Initialize GenServer and schedule recurring opted out list fetching
-  """
+  @impl GenServer
   def init(_) do
-    schedule_work()
-    {:ok, []}
+    send(self(), :work)
+    {:ok, nil}
   end
 
-  @doc """
-  fetch opted out list, process and reschedule next occurrence
-  """
+  @impl GenServer
   def handle_info(:work, state) do
-    opted_out_phone_numbers = do_work(state)
-    schedule_work()
-    {:noreply, opted_out_phone_numbers}
-  end
-
-  defp schedule_work do
+    process_opt_outs()
     Process.send_after(self(), :work, fetch_interval())
+    {:noreply, state}
   end
 
-  defp fetch_interval do
-    ConfigHelper.get_int(:opted_out_list_fetch_interval)
+  @impl GenServer
+  def handle_info(_, state), do: {:noreply, state}
+
+  def process_opt_outs do
+    Lock.acquire(__MODULE__, fn
+      :ok ->
+        do_process_opt_outs()
+
+      :error ->
+        Logger.warn("SmsOptOutWorker event=skipped")
+    end)
   end
 
-  @spec do_work([phone_number]) :: [phone_number]
-  defp do_work(state) do
-    with opted_out_phone_numbers <- fetch_opted_out_list(nil),
-         {:ok, new_opted_out_numbers} <-
-           get_new_opted_out_numbers(state, opted_out_phone_numbers),
-         {:ok, user_ids} <- get_opted_out_user_ids(new_opted_out_numbers) do
-      update_users_opted_out(user_ids)
-      opted_out_phone_numbers
+  defp do_process_opt_outs do
+    with {:ok, opted_out_numbers} <- fetch_opted_out_list(nil),
+         {:ok, multi_result} <- User.set_sms_opted_out(opted_out_numbers) do
+      Logger.info([
+        "SmsOptOutWorker event=processed ",
+        "numbers=#{length(opted_out_numbers)} updated=#{map_size(multi_result)}"
+      ])
     else
-      _ ->
-        Logger.warn("SmsOptOutWorker: no numbers processed")
-        state
+      {:error, error} ->
+        Logger.warn("SmsOptOutWorker event=fetch_error #{inspect(error)}")
+
+      {:error, _, user, _} ->
+        Logger.warn("SmsOptOutWorker event=update_error #{inspect(user)}")
     end
   end
 
-  @spec fetch_opted_out_list(String.t() | nil, [phone_number]) :: [phone_number]
+  @spec fetch_opted_out_list(next_token, [phone_number]) :: {:ok, [phone_number]} | {:error, any}
   def fetch_opted_out_list(next_token, opted_out_list \\ []) do
-    case next_token |> list_phone_numbers_opted_out_query() |> AwsClient.request() do
-      {:ok, %{body: %{phone_numbers: phone_numbers} = body}} ->
+    case next_token |> list_numbers_opted_out_query() |> AwsClient.request() do
+      {:ok, %{body: %{next_token: next_token, phone_numbers: phone_numbers}}} ->
         normalized_phone_numbers = Enum.map(phone_numbers, &String.replace_leading(&1, "+1", ""))
 
-        case body[:next_token] do
-          "" -> opted_out_list ++ normalized_phone_numbers
-          nt -> fetch_opted_out_list(nt, opted_out_list ++ normalized_phone_numbers)
+        case next_token do
+          "" -> {:ok, opted_out_list ++ normalized_phone_numbers}
+          token -> fetch_opted_out_list(token, opted_out_list ++ normalized_phone_numbers)
         end
 
       {:error, error} ->
-        Logger.warn(
-          "Unable to request SMS opted out list from AWS due to error: #{inspect(error)}"
-        )
-
-        opted_out_list
+        {:error, {length(opted_out_list), error}}
     end
   end
 
-  @spec list_phone_numbers_opted_out_query(String.t() | nil) :: ExAws.Operation.Query.t()
-  defp list_phone_numbers_opted_out_query(next_token) do
-    case next_token do
-      nil -> ExAws.SNS.list_phone_numbers_opted_out()
-      _ -> ExAws.SNS.list_phone_numbers_opted_out(next_token)
-    end
-  end
+  @spec list_numbers_opted_out_query(next_token) :: ExAws.Operation.Query.t()
+  defp list_numbers_opted_out_query(nil), do: ExAws.SNS.list_phone_numbers_opted_out()
+  defp list_numbers_opted_out_query(token), do: ExAws.SNS.list_phone_numbers_opted_out(token)
 
-  @spec get_new_opted_out_numbers([phone_number], [phone_number]) ::
-          {:ok, [phone_number]} | :error
-  defp get_new_opted_out_numbers(current_state, opted_out_phone_numbers) do
-    case opted_out_phone_numbers -- current_state do
-      [] ->
-        :error
-
-      new_opted_out_numbers ->
-        {:ok, new_opted_out_numbers}
-    end
-  end
-
-  @spec get_opted_out_user_ids([phone_number]) :: {:ok, [User.id()]} | :error
-  defp get_opted_out_user_ids(new_opted_out_numbers) do
-    case User.ids_by_phone_numbers(new_opted_out_numbers) do
-      [] -> :error
-      user_ids -> {:ok, user_ids}
-    end
-  end
-
-  @spec update_users_opted_out([User.id()]) :: [User.id()]
-  defp update_users_opted_out(user_ids) do
-    User.opt_users_out_of_sms(user_ids)
+  defp fetch_interval do
+    ConfigHelper.get_int(:opted_out_list_fetch_interval)
   end
 end
