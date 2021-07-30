@@ -279,13 +279,6 @@ defmodule AlertProcessor.Model.User do
     end
   end
 
-  @doc """
-  Returns user ids based on a list of phone numbers
-  """
-  def ids_by_phone_numbers(phone_numbers) do
-    Repo.all(from(u in __MODULE__, where: u.phone_number in ^phone_numbers, select: u.id))
-  end
-
   @doc "Records an email rejection status for a user and disables notifications for them."
   def set_email_rejection(user, status) when not is_nil(status),
     do: update_email_rejection(user, "none", status, "email-rejection")
@@ -302,28 +295,28 @@ defmodule AlertProcessor.Model.User do
   end
 
   @doc """
-  Takes a list of user ids and for each user:
-  • Remove their phone number
-  • Set an sms_opted_out_at time
-  • Set communication_mode to none
+  Given a list of phone numbers, sets the corresponding users as opted out of SMS notifications.
+  This deletes the users' phone numbers, so subsequent calls with the same list of phone numbers
+  will not result in additional updates.
   """
-  def opt_users_out_of_sms(user_ids) do
-    user_ids
-    |> Enum.with_index()
-    |> Enum.reduce(Multi.new(), fn {user_id, index}, acc ->
-      Multi.run(acc, {:user, index}, fn _ ->
-        __MODULE__
-        |> Repo.get(user_id)
+  @spec set_sms_opted_out([String.t()]) ::
+          {:ok, %{Multi.name() => t()}} | {:error, Multi.name(), t(), %{Multi.name() => t()}}
+  def set_sms_opted_out(phone_numbers) do
+    from(u in __MODULE__, where: u.phone_number in ^phone_numbers)
+    |> Repo.all()
+    |> Enum.reduce(Multi.new(), fn %{id: user_id} = user, multi ->
+      Multi.run(multi, user_id, fn _ ->
+        user
         |> update_account_changeset(%{
           phone_number: nil,
           communication_mode: "none",
-          sms_opted_out_at: Calendar.DateTime.now_utc()
+          sms_opted_out_at: DateTime.utc_now()
         })
         |> PaperTrail.update(origin: "sms-opt-out")
+        |> normalize_papertrail_result()
       end)
     end)
     |> Repo.transaction()
-    |> normalize_papertrail_result()
   end
 
   defp normalize_papertrail_result({:ok, %{model: user}}), do: {:ok, user}

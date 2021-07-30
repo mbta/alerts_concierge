@@ -103,7 +103,7 @@ defmodule AlertProcessor.AlertWorkerTest do
 
       # Acquire the lock and sit on it forever (or until the test exits)
       spawn_link(fn ->
-        Lock.acquire(fn :ok ->
+        Lock.acquire(AlertWorker, fn :ok ->
           send(test_pid, :acquired)
           Process.sleep(:infinity)
         end)
