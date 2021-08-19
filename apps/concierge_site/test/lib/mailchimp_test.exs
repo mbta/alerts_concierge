@@ -21,4 +21,18 @@ defmodule ConciergeSite.MailchimpTest do
       assert logs =~ "Mailchimp event=update_failed user_id=fakeid"
     end
   end
+
+  describe "delete_member/1" do
+    test "success" do
+      assert :ok == Mailchimp.delete_member(%User{email: "success@example.com"})
+    end
+
+    test "error" do
+      user = %User{id: "fakeid", email: "error@example.com"}
+
+      logs = capture_log(fn -> assert :error == Mailchimp.delete_member(user) end)
+
+      assert logs =~ "Mailchimp event=delete_failed user_id=fakeid"
+    end
+  end
 end
