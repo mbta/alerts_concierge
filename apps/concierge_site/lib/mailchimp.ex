@@ -1,96 +1,71 @@
 defmodule ConciergeSite.Mailchimp do
   @moduledoc """
-  functions for sending unsubscribes and subscribes
+  Handles updating digest subscribership in Mailchimp and receiving updates from the service.
   """
 
   require Logger
   alias AlertProcessor.Helpers.ConfigHelper
   alias AlertProcessor.Model.User
   alias AlertProcessor.Repo
-  alias HTTPoison
+  alias Ecto.Changeset
 
-  @spec add_member(User.t()) :: :ok | :error
-  def add_member(%{id: id, email: email, digest_opt_in: true}) do
-    data =
-      Poison.encode!(%{
-        "email_address" => email,
-        "status" => member_status(true)
-      })
-
-    endpoint = "#{api_url()}/3.0/lists/#{list_id()}/members"
-
-    client = client()
-
-    case client.post(endpoint, data, headers()) do
-      {:ok, %{status_code: 200}} ->
-        :ok
-
-      {_, response} ->
-        Logger.metadata(user_id: id)
-        Logger.error("Mailchimp failed to add member: #{inspect(response)}")
-        :error
-    end
-  end
-
-  def add_member(_), do: :ok
-
-  @spec send_member_status_update(User.t()) :: :ok | :error
-  def send_member_status_update(%{id: id, email: email, digest_opt_in: digest_opt_in}) do
+  @doc "Update a user's subscriber status in Mailchimp to reflect their `digest_opt_in` value."
+  @spec update_member(User.t()) :: :ok | :error
+  def update_member(%{id: id, email: email, digest_opt_in: digest_opt_in}) do
     member_id = :crypto.hash(:md5, email) |> Base.encode16()
 
     data =
       Poison.encode!(%{
-        "status" => member_status(digest_opt_in)
+        "email_address" => email,
+        "status" => member_status(digest_opt_in),
+        "status_if_new" => member_status(digest_opt_in)
       })
 
     endpoint = "#{api_url()}/3.0/lists/#{list_id()}/members/#{member_id}"
 
-    client = client()
-
-    case client.patch(endpoint, data, headers()) do
+    case client().put(endpoint, data, headers()) do
       {:ok, %{status_code: 200}} ->
         :ok
 
       {_, response} ->
-        Logger.metadata(user_id: id)
-        Logger.error("Mailchimp failed to update status: #{inspect(response)}")
+        Logger.error("Mailchimp event=update_failed user_id=#{id} #{inspect(response)}")
         :error
     end
   end
 
-  @spec unsubscribe_by_email(String.t()) :: 0 | 1
-  def unsubscribe_by_email(email) do
-    email
-    |> User.for_email()
-    |> do_unsubscribe_by_email()
+  @doc "Handle a notification from Mailchimp that a user unsubscribed from the list."
+  @spec handle_unsubscribed(String.t(), String.t()) :: {0 | 1, String.t()}
+  def handle_unsubscribed(secret, email) do
+    if secret == webhook_secret() do
+      email |> User.for_email() |> do_handle_unsubscribed()
+    else
+      {0, "skipped"}
+    end
   end
 
-  @spec do_unsubscribe_by_email(User.t() | nil) :: 0 | 1
-  defp do_unsubscribe_by_email(%User{} = user) do
-    user
-    |> Ecto.Changeset.change(%{digest_opt_in: false})
-    |> Repo.update()
-
-    1
+  defp do_handle_unsubscribed(%User{} = user) do
+    user |> Changeset.change(%{digest_opt_in: false}) |> Repo.update()
+    {1, "updated"}
   end
 
-  defp do_unsubscribe_by_email(_), do: 0
+  defp do_handle_unsubscribed(_), do: {0, "updated"}
 
-  @spec change_email(String.t(), String.t()) :: 0 | 1
-  def change_email(old_email, new_email) do
-    do_change_email({User.for_email(old_email), User.for_email(new_email)}, new_email)
+  @doc "Handle a notification from Mailchimp that a user changed their email for the list."
+  @spec handle_email_changed(String.t(), String.t(), String.t()) :: {0 | 1, String.t()}
+  def handle_email_changed(secret, old_email, new_email) do
+    if secret == webhook_secret() do
+      do_handle_email_changed({User.for_email(old_email), User.for_email(new_email)}, new_email)
+    else
+      {0, "skipped"}
+    end
   end
 
-  @spec do_change_email({User.t() | nil, User.t() | nil}, String.t()) :: 0 | 1
-  defp do_change_email({%User{} = user, nil}, new_email) do
-    user
-    |> Ecto.Changeset.change(%{email: new_email})
-    |> Repo.update()
-
-    1
+  defp do_handle_email_changed({%User{} = user, nil}, new_email) do
+    user |> Changeset.change(%{email: new_email}) |> Repo.update()
+    {1, "updated"}
   end
 
-  defp do_change_email(_, _), do: 0
+  defp do_handle_email_changed(_, _), do: {0, "updated"}
 
   @spec member_status(boolean) :: String.t()
   defp member_status(true), do: "subscribed"
@@ -112,4 +87,7 @@ defmodule ConciergeSite.Mailchimp do
 
   @spec client() :: module()
   defp client(), do: Application.get_env(:concierge_site, :mailchimp_api_client)
+
+  @spec webhook_secret() :: String.t()
+  defp webhook_secret(), do: :crypto.hash(:md5, api_key()) |> Base.encode16()
 end

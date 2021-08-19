@@ -1,7 +1,6 @@
 defmodule ConciergeSite.AccountController do
   use ConciergeSite.Web, :controller
   use Guardian.Phoenix.Controller
-  alias AlertProcessor.Helpers.ConfigHelper
   alias AlertProcessor.Model.User
   alias AlertProcessor.Repo
   alias ConciergeSite.ConfirmationMessage
@@ -37,7 +36,7 @@ defmodule ConciergeSite.AccountController do
   def update(conn, %{"user" => params}, user, {:ok, claims}) do
     case User.update_account(user, params, Map.get(claims, "imp", user.id)) do
       {:ok, updated_user} ->
-        Mailchimp.send_member_status_update(updated_user)
+        Mailchimp.update_member(updated_user)
 
         if user.phone_number == nil and updated_user.phone_number != nil do
           ConfirmationMessage.send_sms_confirmation(
@@ -87,7 +86,7 @@ defmodule ConciergeSite.AccountController do
 
   def delete(conn, _params, user, _claims) do
     {:ok, user} = User.update_account(user, %{digest_opt_in: false}, user)
-    Mailchimp.send_member_status_update(user)
+    Mailchimp.update_member(user)
     {:ok, _} = Repo.delete(user)
     redirect(conn, to: page_path(conn, :account_deleted))
   end
@@ -101,7 +100,7 @@ defmodule ConciergeSite.AccountController do
   def options_create(conn, %{"user" => params}, user, {:ok, claims}) do
     case User.update_account(user, params, Map.get(claims, "imp", user.id)) do
       {:ok, updated_user} ->
-        Mailchimp.add_member(user)
+        Mailchimp.update_member(user)
         ConfirmationMessage.send_sms_confirmation(updated_user.phone_number, params["sms_toggle"])
 
         conn
@@ -145,18 +144,8 @@ defmodule ConciergeSite.AccountController do
         _user,
         _claims
       ) do
-    api_key = ConfigHelper.get_string(:mailchimp_api_url, :concierge_site)
-    expected_secret = :crypto.hash(:md5, api_key) |> Base.encode16()
-
-    {affected, message} =
-      if secret == expected_secret do
-        {Mailchimp.unsubscribe_by_email(email), "updated"}
-      else
-        {0, "skipped"}
-      end
-
-    conn
-    |> json(%{status: "ok", message: message, affected: affected})
+    {affected, message} = Mailchimp.handle_unsubscribed(secret, email)
+    json(conn, %{status: "ok", message: message, affected: affected})
   end
 
   def mailchimp_update(
@@ -169,18 +158,8 @@ defmodule ConciergeSite.AccountController do
         _user,
         _claims
       ) do
-    api_key = ConfigHelper.get_string(:mailchimp_api_url, :concierge_site)
-    expected_secret = :crypto.hash(:md5, api_key) |> Base.encode16()
-
-    {affected, message} =
-      if secret == expected_secret do
-        {Mailchimp.change_email(old_email, new_email), "updated"}
-      else
-        {0, "skipped"}
-      end
-
-    conn
-    |> json(%{status: "ok", message: message, affected: affected})
+    {affected, message} = Mailchimp.handle_email_changed(secret, old_email, new_email)
+    json(conn, %{status: "ok", message: message, affected: affected})
   end
 
   def mailchimp_update(conn, _params, _user, _claims) do
