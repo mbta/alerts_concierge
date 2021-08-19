@@ -4,33 +4,21 @@ defmodule ConciergeSite.MailchimpTest do
 
   alias AlertProcessor.Model.User
   alias ConciergeSite.Mailchimp
+  import ExUnit.CaptureLog
 
-  describe "add_member/3" do
-    test "success subscribe" do
-      user = %User{email: "success@test.com", id: "abc123", digest_opt_in: true}
-      assert :ok == Mailchimp.add_member(user)
-    end
-
-    test "success ignore" do
-      user = %User{email: "ignore@test.com", id: "abc123", digest_opt_in: false}
-      assert :ok == Mailchimp.add_member(user)
-    end
-
-    test "error" do
-      user = %User{email: "error@test.com", id: "abc123", digest_opt_in: true}
-      assert :error == Mailchimp.add_member(user)
-    end
-  end
-
-  describe "send_member_status_update/2" do
+  describe "update_member/1" do
     test "success" do
-      user = %User{email: "success@test.com", id: "abc123", digest_opt_in: true}
-      assert :ok == Mailchimp.send_member_status_update(user)
+      user = %User{email: "success@example.com", digest_opt_in: true}
+
+      assert :ok == Mailchimp.update_member(user)
     end
 
     test "error" do
-      user = %User{email: "error@test.com", id: "abc123", digest_opt_in: true}
-      assert :error == Mailchimp.send_member_status_update(user)
+      user = %User{id: "fakeid", email: "error@example.com", digest_opt_in: true}
+
+      logs = capture_log(fn -> assert :error == Mailchimp.update_member(user) end)
+
+      assert logs =~ "Mailchimp event=update_failed user_id=fakeid"
     end
   end
 end
