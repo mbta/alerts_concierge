@@ -9,10 +9,13 @@ defmodule ConciergeSite.Mailchimp do
   alias AlertProcessor.Repo
   alias Ecto.Changeset
 
-  @doc "Update a user's subscriber status in Mailchimp to reflect their `digest_opt_in` value."
+  @doc """
+  Update (or create if one doesn't exist) a user's list membership in Mailchimp to reflect their
+  digest preference.
+  """
   @spec update_member(User.t()) :: :ok | :error
   def update_member(%{id: id, email: email, digest_opt_in: digest_opt_in}) do
-    member_id = :crypto.hash(:md5, email) |> Base.encode16()
+    url = "#{base_url()}/members/#{hash(email)}"
 
     data =
       Poison.encode!(%{
@@ -21,14 +24,27 @@ defmodule ConciergeSite.Mailchimp do
         "status_if_new" => member_status(digest_opt_in)
       })
 
-    endpoint = "#{api_url()}/3.0/lists/#{list_id()}/members/#{member_id}"
-
-    case client().put(endpoint, data, headers()) do
+    case client().put(url, data, headers()) do
       {:ok, %{status_code: 200}} ->
         :ok
 
       {_, response} ->
         Logger.error("Mailchimp event=update_failed user_id=#{id} #{inspect(response)}")
+        :error
+    end
+  end
+
+  @doc "Permanently delete a user's personal information from Mailchimp."
+  @spec delete_member(User.t()) :: :ok | :error
+  def delete_member(%{id: id, email: email}) do
+    url = "#{base_url()}/members/#{hash(email)}/actions/delete-permanent"
+
+    case client().post(url, "", headers()) do
+      {:ok, %{status_code: 204}} ->
+        :ok
+
+      {_, response} ->
+        Logger.error("Mailchimp event=delete_failed user_id=#{id} #{inspect(response)}")
         :error
     end
   end
@@ -76,18 +92,22 @@ defmodule ConciergeSite.Mailchimp do
     [Authorization: "apikey #{api_key()}", "Content-Type": "application/json"]
   end
 
-  @spec api_url() :: String.t()
-  defp api_url(), do: ConfigHelper.get_string(:mailchimp_api_url, :concierge_site)
+  @spec base_url() :: String.t()
+  defp base_url() do
+    api_url = ConfigHelper.get_string(:mailchimp_api_url, :concierge_site)
+    list_id = ConfigHelper.get_string(:mailchimp_list_id, :concierge_site)
+    "#{api_url}/3.0/lists/#{list_id}"
+  end
 
   @spec api_key() :: String.t()
   defp api_key(), do: ConfigHelper.get_string(:mailchimp_api_key, :concierge_site)
 
-  @spec list_id() :: String.t()
-  defp list_id(), do: ConfigHelper.get_string(:mailchimp_list_id, :concierge_site)
-
   @spec client() :: module()
   defp client(), do: Application.get_env(:concierge_site, :mailchimp_api_client)
 
+  @spec hash(String.t()) :: String.t()
+  defp hash(value), do: :crypto.hash(:md5, value) |> Base.encode16()
+
   @spec webhook_secret() :: String.t()
-  defp webhook_secret(), do: :crypto.hash(:md5, api_key()) |> Base.encode16()
+  defp webhook_secret(), do: api_key() |> hash()
 end

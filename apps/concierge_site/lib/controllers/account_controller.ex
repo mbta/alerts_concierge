@@ -85,9 +85,8 @@ defmodule ConciergeSite.AccountController do
   end
 
   def delete(conn, _params, user, _claims) do
-    {:ok, user} = User.update_account(user, %{digest_opt_in: false}, user)
-    Mailchimp.update_member(user)
-    {:ok, _} = Repo.delete(user)
+    Mailchimp.delete_member(user)
+    Repo.delete!(user)
     redirect(conn, to: page_path(conn, :account_deleted))
   end
 
