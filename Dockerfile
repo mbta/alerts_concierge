@@ -29,11 +29,10 @@ RUN mix local.hex --force && \
 	mix do deps.get --only prod, compile --force
 
 WORKDIR /root/apps/concierge_site/assets/
-RUN curl -sL https://deb.nodesource.com/setup_8.x | bash - && \
-	apt-get install -y nodejs npm && \
-	npm install -g yarn
-RUN yarn install
-RUN yarn run deploy
+RUN curl -sL https://deb.nodesource.com/setup_8.x | bash -
+RUN apt-get install -y nodejs npm
+RUN npm install
+RUN npm run deploy
 
 WORKDIR /root/apps/concierge_site/
 RUN mix phx.digest

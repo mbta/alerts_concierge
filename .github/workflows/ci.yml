@@ -69,12 +69,10 @@ jobs:
         id: js-deps-cache
         with:
           path: apps/concierge_site/assets/node_modules
-          key: ${{ runner.os }}-node-${{ hashFiles('**/yarn.lock') }}
+          key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
       - name: JS dependencies
         if: steps.js-deps-cache.outputs.cache-hit != 'true'
-        run: |
-          npm install -g yarn
-          yarn install --cwd apps/concierge_site/assets
+        run: npm install --prefix apps/concierge_site/assets
 
 
   format:
@@ -149,7 +147,7 @@ jobs:
       - uses: actions/cache@v2
         with:
           path: apps/concierge_site/assets/node_modules
-          key: ${{ runner.os }}-node-${{ hashFiles('**/yarn.lock') }}
+          key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
 
       - run: mix test --cover
 

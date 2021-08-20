@@ -1,5 +1,3 @@
-<% alias AlertProcessor.Helpers.EnvHelper %>
-
 <!DOCTYPE html>
 <html lang="en">
   <head>
@@ -13,9 +11,7 @@
     <link rel="icon" href="<%= static_path(@conn, "/images/mbta-logo-t-favicon.png") %>" sizes="32x32" type="image/png">
     <link rel="icon" href="<%= static_path(@conn, "/favicon.ico") %>" sizes="16x16" type="image/vnd.microsoft.icon">
     <title>T-Alerts</title>
-    <%= if Application.get_env(:concierge_site, :load_css?) do %>
-      <link rel="stylesheet" href="<%= static_path(@conn, "/css/app.css") %>">
-    <% end %>
+    <link rel="stylesheet" href="<%= static_path(@conn, "/css/app.css") %>">
 
     <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
     new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
@@ -76,11 +72,9 @@
         </p>
       </div>
     </footer>
-    <%= if EnvHelper.is_env?(:dev) do %>
-      <script src='http://localhost:8090/app.js'></script>
-    <% else %>
-      <script src="<%= static_path(@conn, "/js/app.js") %>"></script>
-    <% end %>
+
+    <script src="<%= static_path(@conn, "/js/app.js") %>"></script>
+
     <!-- Informizely code for site “mbta.com” -->
     <script id="_informizely_script_tag" type="text/javascript">
     var IzWidget = IzWidget || {};

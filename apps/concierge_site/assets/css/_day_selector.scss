@@ -10,12 +10,7 @@
   label.btn {
     border-color: $brand-primary;
     border-radius: 0;
-    font-size: $font-size-xs;
     z-index: inherit !important;
-
-    @include media-breakpoint-up(sm) {
-      font-size: $font-size-base;
-    }
 
     &:focus {
       z-index: 2;
@@ -36,7 +31,6 @@
       flex: 1;
       width: 0;
       display: inline-block;
-      font-size: $font-size-xs;
       text-align: center;
     }
   }

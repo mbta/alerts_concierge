@@ -102,10 +102,14 @@ defmodule ConciergeSite.ScheduleHelper do
         content_tag :div do
           [
             ConciergeSite.IconViewHelper.icon(:commuter_rail),
-            weekend_indicator(trip),
-            "Train #{trip.trip_number} from #{elem(trip.origin, 0)}, #{
-              trip.departure_time |> time_to_string() |> format_time_string("%I:%M%P")
-            }"
+            content_tag :span do
+              [
+                weekend_indicator(trip),
+                "Train #{trip.trip_number} from #{elem(trip.origin, 0)}, #{
+                  trip.departure_time |> time_to_string() |> format_time_string("%I:%M%P")
+                }"
+              ]
+            end
           ]
         end,
         content_tag :i, class: "fa fa-check" do

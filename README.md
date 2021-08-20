@@ -14,7 +14,6 @@ subscribe to notifications for service disruptions.
 - Erlang, Elixir, and Node.js versions specified in `.tool_versions`
   - Use [`asdf`](https://github.com/asdf-vm/asdf) to install automatically
     - Note [these extra install steps][nodejs-reqs] for NodeJS plugin
-- Yarn (`npm install -g yarn`; may require `asdf reshim` after)
 - [direnv](https://github.com/direnv/direnv) _(optional, but convenient)_
 
 [nodejs-reqs]: https://github.com/asdf-vm/asdf-nodejs#requirements
@@ -22,7 +21,7 @@ subscribe to notifications for service disruptions.
 ### Instructions
 
 - `mix deps.get`
-- `yarn install --cwd apps/concierge_site/assets`
+- `npm install --prefix apps/concierge_site/assets`
 - `cat .envrc.example | sed -e "s/__username__/$(logname)/g" > .envrc`
 - In `.envrc`: Fill in `API_KEY=` with the API key you obtained above
 - `direnv allow`

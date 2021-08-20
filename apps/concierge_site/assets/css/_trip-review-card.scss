@@ -38,11 +38,11 @@
 .trip-review--route-icon {
   display: inline-block;
   margin-right: 4px;
-  transform: translate(0px, 4px);
 }
 
 .trip-review--route {
   font-weight: bold;
   overflow-x: hidden;
   text-overflow: ellipsis;
+  vertical-align: middle;
 }
