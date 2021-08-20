@@ -17,8 +17,7 @@ defmodule ConciergeSite.Endpoint do
     at: "/",
     from: :concierge_site,
     gzip: true,
-    only: ~w(css fonts images js robots.txt analytics.txt),
-    only_matching: ~w(favicon)
+    only: ~w(css fonts images js favicon.ico robots.txt analytics.txt)
   )
 
   # Code reloading can be explicitly enabled under the

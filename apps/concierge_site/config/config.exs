@@ -67,10 +67,6 @@ config :guardian_db, GuardianDb,
 
 config :concierge_site, mail_template_dir: Path.join(~w(#{__DIR__} /../ lib/mail_templates))
 
-# Default to not loading css as a file, our webpack dev server handles loading
-# for us in development. Overridden in prod.
-config :concierge_site, load_css?: false
-
 # Google Tag Manager
 config :concierge_site, ConciergeSite.ViewHelpers,
   google_tag_manager_id: System.get_env("GOOGLE_TAG_MANAGER_ID")

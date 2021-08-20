@@ -1,9 +1,15 @@
+// Import CSS
+import "../css/app.scss";
+
 // Import dependencies
 import "phoenix_html";
 import "bootstrap";
 
+// Provide jQuery globally
+import $ from 'jquery';
+window.jQuery = $;
+
 // Import local files
-// import socket from "./socket"
 import touchSupport from "./touch-support";
 import radioToggle from "./radio-toggle";
 import selectRouteChoices from "./select-route-choices";
@@ -20,9 +26,6 @@ import commuteEditForm from "./commute-edit-form";
 import selectMultiFix from "./select-multi-fix";
 import menuToggle from "./menu";
 import feedbackForm from "./feedback-form";
-
-// Import css
-import "../css/app.scss";
 
 const pubsub = new pubsubFactory();
 
