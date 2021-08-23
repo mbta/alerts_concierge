@@ -57,13 +57,6 @@
         </div>
       </header>
     <% end %>
-    <%= if assigns[:header_note] do %>
-    <header class="header__sub--container_note">
-      <div class="container">
-        <%= raw assigns[:header_note] %>
-      </div>
-    </header>
-    <% end %>
     <div class="container page__content">
       <div class="row justify-content-md-center">
         <% cols = if (assigns[:wide_layout]), do: "col-md-12", else: "col-md-8" %>
