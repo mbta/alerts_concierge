@@ -10,7 +10,6 @@ import $ from 'jquery';
 window.jQuery = $;
 
 // Import local files
-import touchSupport from "./touch-support";
 import radioToggle from "./radio-toggle";
 import selectRouteChoices from "./select-route-choices";
 import selectStopChoices from "./select-stop-choices";
@@ -30,7 +29,6 @@ import feedbackForm from "./feedback-form";
 const pubsub = new pubsubFactory();
 
 // Run all JS
-touchSupport();
 selectRouteChoices();
 radioToggle(pubsub);
 selectStopChoices();
