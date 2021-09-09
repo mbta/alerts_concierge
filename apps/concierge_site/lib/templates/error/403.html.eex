@@ -11,7 +11,7 @@
     <link rel="stylesheet" href="/css/app.css">
   </head>
 
-  <body class="no-js">
+  <body>
     <div class="container page-content">
       <div class="error-page">
         <h1><strong>403</strong></h1>

@@ -10,7 +10,7 @@
     <title>T-Alerts</title>  
     <link rel="stylesheet" href="<%= static_path(@conn, "/css/app.css") %>">
   </head>
-  <body class="no-js">
+  <body>
     <%= render "_header.html", conn: @conn %>
     <div class="container page__content">
       <div class="row justify-content-md-center">
