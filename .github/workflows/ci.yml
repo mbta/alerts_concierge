@@ -44,9 +44,6 @@ jobs:
           path: ~/.asdf
           key: ${{ runner.os }}-asdf-${{ hashFiles('.tool-versions') }}
       - uses: asdf-vm/actions/install@v1
-        with:
-          before_install: |
-            ~/.asdf/plugins/nodejs/bin/import-previous-release-team-keyring
         if: steps.asdf-cache.outputs.cache-hit != 'true'
       - uses: mbta/actions/reshim-asdf@v1
 

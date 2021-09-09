@@ -29,8 +29,8 @@ RUN mix local.hex --force && \
 	mix do deps.get --only prod, compile --force
 
 WORKDIR /root/apps/concierge_site/assets/
-RUN curl -sL https://deb.nodesource.com/setup_8.x | bash -
-RUN apt-get install -y nodejs npm
+RUN curl -sL https://deb.nodesource.com/setup_14.x | bash -
+RUN apt-get install -y nodejs
 RUN npm install
 RUN npm run deploy
 
