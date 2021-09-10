@@ -42,7 +42,7 @@ jobs:
         id: asdf-cache
         with:
           path: ~/.asdf
-          key: ${{ runner.os }}-asdf-${{ hashFiles('.tool-versions') }}
+          key: ${{ secrets.CACHE_UUID }}-asdf-${{ hashFiles('.tool-versions') }}
       - uses: asdf-vm/actions/install@v1
         if: steps.asdf-cache.outputs.cache-hit != 'true'
       - uses: mbta/actions/reshim-asdf@v1
@@ -53,7 +53,7 @@ jobs:
           path: |
             _build
             deps
-          key: ${{ runner.os }}-mix-${{ hashFiles('**/mix.lock') }}
+          key: ${{ secrets.CACHE_UUID }}-mix-${{ hashFiles('**/mix.lock') }}
       - name: Elixir dependencies
         if: steps.ex-deps-cache.outputs.cache-hit != 'true'
         run: |
@@ -66,7 +66,7 @@ jobs:
         id: js-deps-cache
         with:
           path: apps/concierge_site/assets/node_modules
-          key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
+          key: ${{ secrets.CACHE_UUID }}-node-${{ hashFiles('**/package-lock.json') }}
       - name: JS dependencies
         if: steps.js-deps-cache.outputs.cache-hit != 'true'
         run: npm install --prefix apps/concierge_site/assets
@@ -82,7 +82,7 @@ jobs:
       - uses: actions/cache@v2
         with:
           path: ~/.asdf
-          key: ${{ runner.os }}-asdf-${{ hashFiles('.tool-versions') }}
+          key: ${{ secrets.CACHE_UUID }}-asdf-${{ hashFiles('.tool-versions') }}
       - uses: mbta/actions/reshim-asdf@v1
       - run: mix format --check-formatted
 
@@ -97,14 +97,14 @@ jobs:
       - uses: actions/cache@v2
         with:
           path: ~/.asdf
-          key: ${{ runner.os }}-asdf-${{ hashFiles('.tool-versions') }}
+          key: ${{ secrets.CACHE_UUID }}-asdf-${{ hashFiles('.tool-versions') }}
       - uses: mbta/actions/reshim-asdf@v1
       - uses: actions/cache@v2
         with:
           path: |
             _build
             deps
-          key: ${{ runner.os }}-mix-${{ hashFiles('**/mix.lock') }}
+          key: ${{ secrets.CACHE_UUID }}-mix-${{ hashFiles('**/mix.lock') }}
       - run: mix credo
 
 
@@ -133,18 +133,18 @@ jobs:
       - uses: actions/cache@v2
         with:
           path: ~/.asdf
-          key: ${{ runner.os }}-asdf-${{ hashFiles('.tool-versions') }}
+          key: ${{ secrets.CACHE_UUID }}-asdf-${{ hashFiles('.tool-versions') }}
       - uses: mbta/actions/reshim-asdf@v1
       - uses: actions/cache@v2
         with:
           path: |
             _build
             deps
-          key: ${{ runner.os }}-mix-${{ hashFiles('**/mix.lock') }}
+          key: ${{ secrets.CACHE_UUID }}-mix-${{ hashFiles('**/mix.lock') }}
       - uses: actions/cache@v2
         with:
           path: apps/concierge_site/assets/node_modules
-          key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
+          key: ${{ secrets.CACHE_UUID }}-node-${{ hashFiles('**/package-lock.json') }}
 
       - run: mix test --cover
 
@@ -175,12 +175,12 @@ jobs:
       - uses: actions/cache@v2
         with:
           path: ~/.asdf
-          key: ${{ runner.os }}-asdf-${{ hashFiles('.tool-versions') }}
+          key: ${{ secrets.CACHE_UUID }}-asdf-${{ hashFiles('.tool-versions') }}
       - uses: mbta/actions/reshim-asdf@v1
       - uses: actions/cache@v2
         with:
           path: |
             _build
             deps
-          key: ${{ runner.os }}-mix-${{ hashFiles('**/mix.lock') }}
+          key: ${{ secrets.CACHE_UUID }}-mix-${{ hashFiles('**/mix.lock') }}
       - uses: mbta/actions/dialyzer@v1
