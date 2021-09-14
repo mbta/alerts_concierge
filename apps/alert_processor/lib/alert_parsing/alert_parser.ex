@@ -6,7 +6,6 @@ defmodule AlertProcessor.AlertParser do
   require Logger
 
   alias AlertProcessor.{
-    AlertCourtesyEmail,
     AlertFilters,
     AlertsClient,
     ApiClient,
@@ -64,9 +63,6 @@ defmodule AlertProcessor.AlertParser do
         alerts_needing_notifications,
         alert_filter_duration_type
       )
-
-      courtesy_alerts = add_tracking_fields(parsed_alerts, started_at, :courtesy)
-      AlertCourtesyEmail.send_courtesy_emails(saved_alerts, courtesy_alerts)
 
       Logger.info(fn ->
         "Processing of alerts completed"

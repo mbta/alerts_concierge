@@ -53,9 +53,6 @@ config :alert_processor, notification_workers: 40
 # Config for db migration function
 config :alert_processor, :migration_task, AlertProcessor.ReleaseTasks.Dev
 
-# Config for courtesy email address
-config :alert_processor, courtesy_email_address: {:system, "COURTESY_EMAIL_ADDRESS", ""}
-
 # Import environment specific config. This must remain at the bottom
 # of this file so it overrides the configuration defined above.
 import_config "#{Mix.env()}.exs"
