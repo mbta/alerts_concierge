@@ -194,13 +194,13 @@ defmodule AlertProcessor.Model.User do
     changeset
     |> validate_length(
       :password,
-      min: 6,
-      message: "Password must be at least six characters long."
+      min: 8,
+      message: "Password must be at least 8 characters long."
     )
     |> validate_format(
       :password,
-      ~r/[^a-zA-Z\s:]{1}/,
-      message: "Password must contain at least 6 characters, with one number or symbol."
+      ~r/_|\d|\W/u,
+      message: "Password must contain at least one number or symbol."
     )
   end
 
