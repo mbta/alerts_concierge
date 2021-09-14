@@ -11,17 +11,6 @@ on:
       - Dockerfile
       - "*.md"
       - LICENSE
-  pull_request:
-    branches: master
-    paths-ignore:
-      - docs/**
-      - load_tests/**
-      - rel/**
-      - report_queries/**
-      - scripts/**
-      - Dockerfile
-      - "*.md"
-      - LICENSE
 
 concurrency:
   group: ci-${{ github.ref }}
@@ -75,7 +64,6 @@ jobs:
   format:
     name: Format
     runs-on: ubuntu-latest
-    if: ${{ github.event_name == 'push' }}
     needs: setup
     steps:
       - uses: actions/checkout@v2
@@ -90,7 +78,6 @@ jobs:
   credo:
     name: Credo
     runs-on: ubuntu-latest
-    if: ${{ github.event_name == 'push' }}
     needs: setup
     steps:
       - uses: actions/checkout@v2
@@ -148,15 +135,7 @@ jobs:
 
       - run: mix test --cover
 
-      - name: Save PR information
-        if: github.event.pull_request
-        run: |
-          mkdir -p cover
-          echo "${{ github.event.pull_request.number }}" > cover/PR_NUMBER
-          echo "${{ github.event.pull_request.head.sha }}" > cover/PR_SHA
-
       - name: Upload coverage artifact
-        if: github.event.pull_request
         uses: actions/upload-artifact@v2
         with:
           name: elixir-lcov
@@ -168,7 +147,6 @@ jobs:
   dialyzer:
     name: Dialyzer
     runs-on: ubuntu-latest
-    if: ${{ github.event_name == 'push' }}
     needs: setup
     steps:
       - uses: actions/checkout@v2
