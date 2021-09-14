@@ -21,8 +21,7 @@ defmodule ConciergeSite.AccountControllerTest do
     params = %{"user" => %{"password" => "password", "email" => "test@test.com"}}
     conn = post(conn, account_path(conn, :create), params)
 
-    assert html_response(conn, 200) =~
-             "Password must contain at least 6 characters, with one number or symbol."
+    assert html_response(conn, 200) =~ "Password must contain at least one number or symbol."
   end
 
   test "POST /account bad email", %{conn: conn} do

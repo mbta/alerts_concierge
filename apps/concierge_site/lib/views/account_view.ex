@@ -1,6 +1,5 @@
 defmodule ConciergeSite.AccountView do
   use ConciergeSite.Web, :view
-  import ConciergeSite.PasswordHelper, only: [password_regex_string: 0]
   alias AlertProcessor.Model.User
   alias Ecto.Changeset
 
