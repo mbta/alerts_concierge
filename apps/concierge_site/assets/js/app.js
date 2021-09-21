@@ -5,10 +5,6 @@ import "../css/app.scss";
 import "phoenix_html";
 import "bootstrap";
 
-// Provide jQuery globally
-import $ from 'jquery';
-window.jQuery = $;
-
 // Import local files
 import radioToggle from "./radio-toggle";
 import selectRouteChoices from "./select-route-choices";

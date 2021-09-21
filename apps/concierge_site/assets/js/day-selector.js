@@ -1,6 +1,6 @@
-export default function(pubsub, $) {
-  $ = $ || window.jQuery;
+import $ from "jquery";
 
+export default function(pubsub) {
   $("div[data-selector='date']").each(function (i, div) {
     new DaySelector($(div), pubsub);
   });
