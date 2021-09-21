@@ -2,6 +2,7 @@
 import "../css/app.scss";
 
 // Import dependencies
+import "phoenix";
 import "phoenix_html";
 import "bootstrap";
 
