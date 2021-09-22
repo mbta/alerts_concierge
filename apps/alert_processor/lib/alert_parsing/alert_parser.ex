@@ -36,12 +36,7 @@ defmodule AlertProcessor.AlertParser do
       end)
 
       updated_alerts = swap_informed_entities(alerts, api_alerts)
-
-      saved_alerts =
-        updated_alerts
-        |> SavedAlert.save!()
-        |> Enum.filter(&(&1 != nil))
-
+      SavedAlert.save!(updated_alerts)
       parsed_alerts = parse_alerts({updated_alerts, facility_map, feed_timestamp})
 
       alerts_needing_notifications =

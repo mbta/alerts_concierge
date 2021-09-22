@@ -1,5 +1,12 @@
 {
   "presets": [
-    ["env", {"useBuiltIns": "usage", "targets": {"browsers": ["ie 11"]}}]
+    [
+      "@babel/preset-env",
+      {
+        "corejs": "3",
+        "useBuiltIns": "usage",
+        "targets": {"browsers": ["ie 11"]}
+      }
+    ]
   ]
 }

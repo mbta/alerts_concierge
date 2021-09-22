@@ -19,7 +19,7 @@
 @import "stop_selector";
 @import "admin";
 @import "error-pages";
-@import "./../node_modules/choices.js/src/styles/choices.scss";
+@import "~choices.js/src/styles/choices";
 
 body {
   -moz-osx-font-smoothing: grayscale;

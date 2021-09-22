@@ -1,9 +1,8 @@
+import $ from "jquery";
 import { toggleVisibleSelector } from "./select-route-choices";
 import { toggleBusDirection } from "./bus-direction-toggle";
 
-export default function(pubsub, $) {
-  $ = $ || window.jQuery;
-
+export default function(pubsub) {
   $("label[role='radio']").on("keypress", triggerClick());
   $("label[role='radio']").on("click", toggleRadio(pubsub, $));
   $("label[role='checkbox']").on("keypress", triggerClick());

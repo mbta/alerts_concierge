@@ -1,17 +1,13 @@
 const path = require('path');
-const glob = require('glob');
 const { ProvidePlugin } = require('webpack');
 const CopyWebpackPlugin = require('copy-webpack-plugin');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
-const OptimizeCSSAssetsPlugin = require('optimize-css-assets-webpack-plugin');
+const CssMinimizerPlugin = require('css-minimizer-webpack-plugin');
 const TerserPlugin = require('terser-webpack-plugin');
 
 module.exports = (env, options) => ({
   optimization: {
-    minimizer: [
-      new TerserPlugin({ cache: true, parallel: true, sourceMap: false }),
-      new OptimizeCSSAssetsPlugin({})
-    ]
+    minimizer: [new TerserPlugin(), new CssMinimizerPlugin()]
   },
   entry: {
     app: './js/app.js',
@@ -29,12 +25,19 @@ module.exports = (env, options) => ({
       { test: /\.tsx?$/, loader: 'awesome-typescript-loader' },
       {
         test: /\.s?css$/,
-        use: [MiniCssExtractPlugin.loader, 'css-loader', 'sass-loader']
+        use: [
+          MiniCssExtractPlugin.loader,
+          { loader: 'css-loader', options: { url: false } },
+          {
+            loader: 'sass-loader',
+            options: { sassOptions: { quietDeps: true } }
+          }
+        ]
       }
     ]
   },
   plugins: [
     new MiniCssExtractPlugin({ filename: '../css/app.css' }),
-    new CopyWebpackPlugin([{ from: 'static/', to: '../' }])
+    new CopyWebpackPlugin({ patterns: [{ from: 'static/', to: '../' }] })
   ]
 });

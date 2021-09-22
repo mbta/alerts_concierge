@@ -1,6 +1,6 @@
-export default $ => {
-  $ = $ || window.jQuery;
+import $ from "jquery";
 
+export default () => {
   // add contextual trip data to delete modal
   $("#deleteModal").on("show.bs.modal", function(e) {
     // when the modal opens, read the trip-id if it is available

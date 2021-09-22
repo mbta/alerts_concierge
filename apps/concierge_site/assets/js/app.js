@@ -2,12 +2,9 @@
 import "../css/app.scss";
 
 // Import dependencies
+import "phoenix";
 import "phoenix_html";
 import "bootstrap";
-
-// Provide jQuery globally
-import $ from 'jquery';
-window.jQuery = $;
 
 // Import local files
 import radioToggle from "./radio-toggle";
