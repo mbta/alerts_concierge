@@ -1,5 +1,3 @@
-import 'whatwg-fetch';
-
 interface UserResponse {
   id: string;
   email: string;
