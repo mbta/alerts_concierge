@@ -1,4 +1,3 @@
-import elemDataset from "elem-dataset";
 import { checkItem, unCheckItem } from "./handle-trip-change";
 
 const makeDate = timeString => new Date(`1/1/2000 ${timeString}`);
@@ -40,9 +39,8 @@ function processTrip(
   travelStartTime,
   travelEndTime
 ) {
-  const dataset = elemDataset(tripEl);
-  const tripTime = dataset.time;
-  const dayType = dataset.weekend === "true" ? "weekend" : "weekday";
+  const tripTime = tripEl.dataset.time;
+  const dayType = tripEl.dataset.weekend === "true" ? "weekend" : "weekday";
   const matched =
     isTimeMatched(tripTime, startTime, endTime) &&
     isDayMatched(dayType, weekday, weekend);
@@ -119,15 +117,13 @@ const timeForTrip = (tripType) => {
 export function processSchedule(scheduleEl, showDefaultTravelTimes) {
   const weekdaySelected = checkdDays(weekdays);
   const weekendSelected = checkdDays(weekends);
-  const scheduleDataset = elemDataset(scheduleEl);
-  const startTime = timeForTrip(scheduleDataset.start);
-  const endTime = timeForTrip(scheduleDataset.end);
+  const startTime = timeForTrip(scheduleEl.dataset.start);
+  const endTime = timeForTrip(scheduleEl.dataset.end);
   const legs = [
     ...scheduleEl.querySelectorAll("div[data-type='schedule-leg']")
   ];
   legs.forEach(legEl => {
-    const legDataset =
-      showDefaultTravelTimes === true ? elemDataset(legEl) : {};
+    const legDataset = showDefaultTravelTimes === true ? legEl.dataset : {};
     const trips = [...legEl.getElementsByClassName("schedules__trips--item")];
     trips.forEach((tripEl, index) =>
       tripEl.setAttribute("data-position", index)
