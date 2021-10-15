@@ -29,7 +29,7 @@ defmodule ConciergeSite.Endpoint do
   end
 
   plug(Plug.RequestId)
-  plug(Logster.Plugs.Logger, formatter: ConciergeSite.Logster.SafeStringFormatter)
+  plug(Logster.Plugs.Logger)
 
   plug(
     Plug.Parsers,
