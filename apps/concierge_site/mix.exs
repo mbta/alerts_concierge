@@ -68,7 +68,7 @@ defmodule ConciergeSite.Mixfile do
       {:gettext, "~> 0.11"},
       {:cowboy, "~> 1.0"},
       {:wallaby, "~> 0.23.0", only: :test},
-      {:logster, "~> 0.4.0"},
+      {:logster, "~> 1.0.2"},
       {:ehmon, github: "mbta/ehmon", only: :prod},
       {:diskusage_logger, "~> 0.2.0", only: :prod},
       {:httpoison, "~> 1.1.1", override: true},

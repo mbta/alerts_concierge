@@ -6,6 +6,8 @@ defmodule ConciergeSite.HealthController do
 
   use ConciergeSite.Web, :controller
 
+  plug(Logster.Plugs.ChangeLogLevel, to: :debug)
+
   def index(conn, _params) do
     send_resp(conn, 200, "")
   end
