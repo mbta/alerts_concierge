@@ -258,9 +258,9 @@ defmodule AlertProcessor.ServiceInfoCacheTest do
              ServiceInfoCache.get_headsign(pid, "place-davis", "place-pktrm", 0)
 
     assert {:ok, "Alewife"} == ServiceInfoCache.get_headsign(pid, "place-pktrm", "place-davis", 1)
-    assert {:ok, "C"} == ServiceInfoCache.get_headsign(pid, "place-north", "place-clmnl", 0)
-    assert {:ok, "C"} == ServiceInfoCache.get_headsign(pid, "place-clmnl", "place-north", 1)
-    assert {:ok, "C or E"} == ServiceInfoCache.get_headsign(pid, "place-gover", "place-haecl", 0)
+    assert {:ok, "C"} == ServiceInfoCache.get_headsign(pid, "place-gover", "place-clmnl", 0)
+    assert {:ok, "C"} == ServiceInfoCache.get_headsign(pid, "place-clmnl", "place-gover", 1)
+    assert {:ok, "D or E"} == ServiceInfoCache.get_headsign(pid, "place-gover", "place-haecl", 0)
     assert :error == ServiceInfoCache.get_headsign(pid, "garbage", "more garbage", 1)
   end
 
@@ -412,7 +412,7 @@ defmodule AlertProcessor.ServiceInfoCacheTest do
     assert stops_with_icons["1154"] == [modes: MapSet.new([:bus]), accessible: false]
 
     assert stops_with_icons["place-north"] == [
-             modes: MapSet.new([:cr, :"green-c", :"green-e", :orange]),
+             modes: MapSet.new([:cr, :"green-d", :"green-e", :orange]),
              accessible: true
            ]
 
