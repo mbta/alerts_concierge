@@ -2,8 +2,8 @@
 -- PostgreSQL database dump
 --
 
--- Dumped from database version 10.17
--- Dumped by pg_dump version 13.3
+-- Dumped from database version 13.4
+-- Dumped by pg_dump version 14.0
 
 SET statement_timeout = 0;
 SET lock_timeout = 0;
@@ -31,6 +31,8 @@ COMMENT ON EXTENSION "uuid-ossp" IS 'generate universally unique identifiers (UU
 
 
 SET default_tablespace = '';
+
+SET default_table_access_method = heap;
 
 --
 -- Name: alerts; Type: TABLE; Schema: public; Owner: -

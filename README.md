@@ -9,7 +9,7 @@ subscribe to notifications for service disruptions.
 
 - MBTA API key (get one [here](https://dev.api.mbtace.com))
   - **Note:** This key must have its version set to `2019-04-05`
-- PostgreSQL 10 (using Homebrew: `brew install postgresql@10`)
+- PostgreSQL 13 (using Homebrew: `brew install postgresql@13`)
 - Chromedriver (using Homebrew: `brew cask install chromedriver`)
 - Erlang, Elixir, and Node.js versions specified in `.tool_versions`
   - Use [`asdf`](https://github.com/asdf-vm/asdf) to install automatically
