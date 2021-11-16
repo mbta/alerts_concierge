@@ -48,10 +48,10 @@ defmodule AlertProcessor.TextReplacementTest do
         informed_entities: [
           %AlertProcessor.Model.InformedEntity{
             activities: ["BOARD"],
-            stop: "place-ER-0046"
+            stop: "place-chels"
           }
         ],
-        origin: "place-ER-0046"
+        origin: "place-chels"
       }
 
       alert = %Alert{
@@ -72,7 +72,7 @@ defmodule AlertProcessor.TextReplacementTest do
               },
               %{
                 departure_time: "2017-10-30T22:17:00-04:00",
-                stop_id: "place-ER-0046",
+                stop_id: "place-chels",
                 trip_id: "CR-Weekday-Aug14th-17-NR-180"
               },
               %{
