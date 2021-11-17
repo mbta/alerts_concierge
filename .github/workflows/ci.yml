@@ -36,6 +36,12 @@ jobs:
         if: steps.asdf-cache.outputs.cache-hit != 'true'
       - uses: mbta/actions/reshim-asdf@v1
 
+      - name: Elixir tools
+        if: steps.asdf-cache.outputs.cache-hit != 'true'
+        run: |
+          mix local.rebar --force
+          mix local.hex --force
+
       - uses: actions/cache@v2
         id: ex-deps-cache
         with:
@@ -46,8 +52,6 @@ jobs:
       - name: Elixir dependencies
         if: steps.ex-deps-cache.outputs.cache-hit != 'true'
         run: |
-          mix local.rebar --force
-          mix local.hex --force
           mix deps.get
           mix deps.compile
 
