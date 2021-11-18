@@ -3,15 +3,22 @@ defmodule ConciergeSite.Plugs.TokenRefreshTest do
   use ConciergeSite.ConnCase, async: true
   use Plug.Test
 
-  alias ConciergeSite.{Auth.Token, Plugs.TokenLogin, Plugs.TokenRefresh}
+  alias ConciergeSite.{Plugs.TokenLogin, Plugs.TokenRefresh}
+
+  defp issue_token(user, ttl_minutes \\ 60) do
+    Guardian.encode_and_sign(user, :access,
+      perms: %{default: Guardian.Permissions.max()},
+      ttl: {ttl_minutes, :minutes}
+    )
+  end
 
   test "it refreshes the token if it expires within fifteen minutes", %{conn: conn} do
     user = insert(:user)
-    {:ok, token, _} = Token.issue(user, {14, :minutes})
-    conn = init_test_session(%{conn | params: %{"token" => token}}, %{})
+    {:ok, token, _} = issue_token(user, 14)
 
     conn =
-      conn
+      %{conn | params: %{"token" => token}}
+      |> init_test_session(%{})
       |> TokenLogin.call(%{})
 
     refreshed_conn = TokenRefresh.call(conn, %{})
@@ -25,15 +32,14 @@ defmodule ConciergeSite.Plugs.TokenRefreshTest do
 
   test "it does nothing if the token expires more than fifteen minutes from now", %{conn: conn} do
     user = insert(:user)
-    {:ok, token, _} = Token.issue(user, {16, :minutes})
-    conn = init_test_session(%{conn | params: %{"token" => token}}, %{})
+    {:ok, token, _} = issue_token(user, 16)
 
     conn =
-      conn
+      %{conn | params: %{"token" => token}}
+      |> init_test_session(%{})
       |> TokenLogin.call(%{})
 
     refreshed_conn = TokenRefresh.call(conn, %{})
-
     assert refreshed_conn == conn
 
     assert get_session(refreshed_conn, "guardian_default") ==
@@ -44,7 +50,7 @@ defmodule ConciergeSite.Plugs.TokenRefreshTest do
 
   test "it does nothing if there is no session", %{conn: conn} do
     user = insert(:user)
-    {:ok, token, _} = Token.issue(user)
+    {:ok, token, _} = issue_token(user)
     conn = init_test_session(%{conn | params: %{"token" => token}}, %{})
     new_conn = TokenRefresh.call(conn, %{})
     assert new_conn == conn

@@ -3,11 +3,11 @@ defmodule ConciergeSite.Plugs.TokenLoginTest do
   use ConciergeSite.ConnCase, async: true
   use Plug.Test
 
-  alias ConciergeSite.{Auth.Token, Plugs.TokenLogin}
+  alias ConciergeSite.Plugs.TokenLogin
 
   test "it sets token in session if valid token", %{conn: conn} do
     user = insert(:user)
-    {:ok, token, _} = Token.issue(user, [:manage_subscriptions])
+    {:ok, token, _} = Guardian.encode_and_sign(user, :access, %{perms: %{default: []}})
     conn = init_test_session(%{conn | params: %{"token" => token}}, %{})
     new_conn = TokenLogin.call(conn, %{})
     refute new_conn == conn
