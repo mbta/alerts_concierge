@@ -1,7 +1,5 @@
 defmodule ConciergeSite.SignInHelper do
-  @moduledoc """
-  Common functions for user sign in with Guardian
-  """
+  @moduledoc "Common functions for user sign-in with Guardian."
 
   import ConciergeSite.Router.Helpers
   import Phoenix.Controller, only: [redirect: 2]
@@ -9,38 +7,24 @@ defmodule ConciergeSite.SignInHelper do
 
   @endpoint ConciergeSite.Endpoint
 
-  @doc """
-  Signs in a user with Guardian and redirects based on the user's role and the
-  route specified in options. Valid redirect options are :my_account, :default,
-  and :admin_default. When logging in via /admin/login/new
-  users are redirected to the list of subscribers,
-  and when logging in via /login/new users are redirected to my subscriptions.
-  When resetting password, admin users are redirected to admin my-account page
-  and normal users are redirected to the base my-account page.
-  """
+  @doc "Signs in a user with Guardian and redirects to the appropriate route."
   @spec sign_in(Plug.Conn.t(), User.t()) :: Plug.Conn.t()
   def sign_in(conn, user) do
     conn
-    |> sign_in_user(user)
+    |> Guardian.Plug.sign_in(user, :access, %{perms: permissions_for(user)})
     |> redirect(to: redirect_path(user))
   end
 
   @spec permissions_for(User.t()) :: map
   def permissions_for(%User{role: "admin"}) do
     %{
-      perms: %{
-        default: Guardian.Permissions.max(),
-        admin: Guardian.Permissions.max()
-      }
+      default: Guardian.Permissions.max(),
+      admin: Guardian.Permissions.max()
     }
   end
 
-  def permissions_for(_regular_user) do
-    %{perms: %{default: Guardian.Permissions.max()}}
-  end
-
-  defp sign_in_user(conn, user) do
-    Guardian.Plug.sign_in(conn, user, :access, permissions_for(user))
+  def permissions_for(_user) do
+    %{default: Guardian.Permissions.max()}
   end
 
   defp redirect_path(user) do
