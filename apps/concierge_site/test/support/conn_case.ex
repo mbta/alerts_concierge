@@ -27,19 +27,13 @@ defmodule ConciergeSite.ConnCase do
       # Import ExMachina Factories
       import AlertProcessor.Factory
 
-      def guardian_login(
-            user,
-            conn,
-            type \\ :access,
-            claims \\ nil
-          ) do
-        claims =
-          if is_nil(claims), do: ConciergeSite.SignInHelper.permissions_for(user), else: claims
-
+      def guardian_login(user, conn) do
         conn
         |> bypass_through(ConciergeSite.Router, [:browser])
         |> get("/")
-        |> Guardian.Plug.sign_in(user, :access, claims)
+        |> Guardian.Plug.sign_in(user, :access, %{
+          perms: ConciergeSite.SignInHelper.permissions_for(user)
+        })
         |> send_resp(200, "Flush the session")
         |> recycle()
       end
