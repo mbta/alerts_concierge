@@ -50,14 +50,8 @@ config :guardian, Guardian,
   serializer: ConciergeSite.GuardianSerializer,
   hooks: GuardianDb,
   permissions: %{
-    default: [
-      :reset_password,
-      :unsubscribe,
-      :manage_subscriptions
-    ],
-    admin: [
-      :api
-    ]
+    default: [],
+    admin: [:api]
   }
 
 config :guardian_db, GuardianDb,

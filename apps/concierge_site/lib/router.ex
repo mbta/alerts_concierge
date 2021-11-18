@@ -51,14 +51,6 @@ defmodule ConciergeSite.Router do
     )
   end
 
-  pipeline :subscription_auth do
-    plug(
-      Guardian.Plug.EnsurePermissions,
-      handler: ConciergeSite.Auth.ErrorHandler,
-      default: [:manage_subscriptions]
-    )
-  end
-
   pipeline :layout do
     plug(:put_layout, {ConciergeSite.LayoutView, :app})
   end
@@ -92,13 +84,7 @@ defmodule ConciergeSite.Router do
   end
 
   scope "/", ConciergeSite do
-    pipe_through([
-      :redirect_prod_http,
-      :browser,
-      :browser_auth,
-      :subscription_auth,
-      :layout
-    ])
+    pipe_through([:redirect_prod_http, :browser, :browser_auth, :layout])
 
     get("/account/options", AccountController, :options_new)
     post("/account/options", AccountController, :options_create)
