@@ -1,22 +1,6 @@
 <%= if AlertProcessor.Model.User.admin?(@current_user) do %>
-  <div>
-    <%= link to: admin_path(@conn, :index) do %>
-      Administration
-    <% end %>
-  </div>
+  <div><%= link("Administration", to: admin_path(@conn, :index)) %></div>
 <% end %>
-<div>
-  <%= link to: trip_path(@conn, :index) do %>
-    Subscriptions
-  <% end %>
-</div>
-<div>
-  <%= link to: account_path(@conn, :edit) do %>
-    Settings
-  <% end %>
-</div>
-<div >
-  <%= link to: session_path(@conn, :delete), method: :delete do %>
-    Logout
-  <% end %>
-</div>
+<div><%= link("Subscriptions", to: trip_path(@conn, :index)) %></div>
+<div><%= link("Settings", to: account_path(@conn, :edit)) %></div>
+<div><%= link("Logout", to: session_path(@conn, :delete), method: :delete) %></div>
