@@ -327,16 +327,6 @@ defmodule AlertProcessor.Model.User do
     Repo.get_by(__MODULE__, email: String.downcase(email))
   end
 
-  @spec find_by_email_search(String.t()) :: [t]
-  def find_by_email_search(query) do
-    Repo.all(from(u in __MODULE__, where: like(u.email, ^"%#{query}%")))
-  end
-
-  @spec find_by_phone_number_search(String.t()) :: [t]
-  def find_by_phone_number_search(query) do
-    Repo.all(from(u in __MODULE__, where: like(u.phone_number, ^"%#{query}%")))
-  end
-
   @spec wrap_id(__MODULE__.t() | String.t()) :: __MODULE__.t()
   def wrap_id(%__MODULE__{} = user), do: user
   def wrap_id(user_id), do: %__MODULE__{id: user_id}

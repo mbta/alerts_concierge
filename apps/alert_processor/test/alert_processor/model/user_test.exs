@@ -290,36 +290,6 @@ defmodule AlertProcessor.Model.UserTest do
     end
   end
 
-  describe "find_by_email_search/1" do
-    test "returns a user if present" do
-      matching_user = insert(:user, email: "jane.doe@example.com")
-      _non_matching_user = insert(:user, email: "jane.smith@example.com")
-
-      assert [matching_user] == User.find_by_email_search("doe")
-    end
-
-    test "returns empty list if no matching user" do
-      _non_matching_user = insert(:user, email: "jane.smith@example.com")
-
-      assert [] == User.find_by_email_search("doe")
-    end
-  end
-
-  describe "find_by_phone_number_search/1" do
-    test "returns a user if present" do
-      matching_user = insert(:user, phone_number: "5551235555")
-      _non_matching_user = insert(:user, phone_number: "555321555")
-
-      assert [matching_user] == User.find_by_phone_number_search("123")
-    end
-
-    test "returns empty list if no matching user" do
-      _non_matching_user = insert(:user, phone_number: "555321555")
-
-      assert [] == User.find_by_phone_number_search("123")
-    end
-  end
-
   describe "wrap_id/1" do
     test "wraps id in user struct" do
       assert %User{id: "123-456-7890"} == User.wrap_id("123-456-7890")
