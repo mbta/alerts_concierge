@@ -1,0 +1,10 @@
+<h1 class="heading__title">Database queries</h1>
+
+<div class="list-group">
+  <%= for %{id: id, label: label} <- @queries do %>
+    <%= link to: admin_queries_path(@conn, :show, id),
+          class: "list-group-item list-group-item-action" do %>
+      <i class="fa fa-file-text-o"></i> <%= label %>
+    <% end %>
+  <% end %>
+</div>

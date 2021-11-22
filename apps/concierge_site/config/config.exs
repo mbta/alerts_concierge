@@ -51,7 +51,7 @@ config :guardian, Guardian,
   hooks: GuardianDb,
   permissions: %{
     default: [],
-    admin: [:api]
+    admin: [:all]
   }
 
 config :guardian_db, GuardianDb,

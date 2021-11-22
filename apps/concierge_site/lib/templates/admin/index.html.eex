@@ -1,7 +1,0 @@
-<div class="row">
-  <div id="admin-app" class="col-12" data-token="<%= get_csrf_token() %>">
-    <%# React app gets rendered here %>
-  </div>
-
-  <script src="<%= static_path(@conn, "/js/admin.js") %>"></script>
-</div>

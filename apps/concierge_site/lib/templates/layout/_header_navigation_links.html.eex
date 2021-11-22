@@ -1,5 +1,5 @@
 <%= if AlertProcessor.Model.User.admin?(@current_user) do %>
-  <div><%= link("Administration", to: admin_path(@conn, :index)) %></div>
+  <div><%= link("Administration", to: admin_home_path(@conn, :index)) %></div>
 <% end %>
 <div><%= link("Subscriptions", to: trip_path(@conn, :index)) %></div>
 <div><%= link("Settings", to: account_path(@conn, :edit)) %></div>

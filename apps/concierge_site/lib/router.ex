@@ -9,22 +9,6 @@ defmodule ConciergeSite.Router do
     end
   end
 
-  pipeline :api do
-    plug(:accepts, ["json"])
-    plug(:fetch_session)
-    # We don't actually need flash, but for now it is required in web.ex for views
-    plug(:fetch_flash)
-    plug(:protect_from_forgery)
-    plug(:put_secure_browser_headers)
-    plug(ConciergeSite.Plugs.TokenLogin)
-    plug(Guardian.Plug.VerifySession)
-    plug(Guardian.Plug.LoadResource)
-    plug(Guardian.Plug.EnsureAuthenticated, handler: ConciergeSite.SessionController)
-    plug(ConciergeSite.Plugs.TokenRefresh)
-    plug(ConciergeSite.Plugs.SaveCurrentUser)
-    plug(:admin_auth)
-  end
-
   pipeline :browser do
     plug(:accepts, ["html"])
     plug(:fetch_session)
@@ -47,7 +31,7 @@ defmodule ConciergeSite.Router do
     plug(
       Guardian.Plug.EnsurePermissions,
       handler: ConciergeSite.Auth.ErrorHandler,
-      admin: [:api]
+      admin: [:all]
     )
   end
 
@@ -111,16 +95,12 @@ defmodule ConciergeSite.Router do
     )
   end
 
-  scope "/admin", ConciergeSite do
+  scope "/admin", ConciergeSite.Admin, as: :admin do
     pipe_through([:redirect_prod_http, :browser, :browser_auth, :admin_auth, :layout])
-    get("/", AdminController, :index)
-  end
 
-  scope "/api", ConciergeSite do
-    pipe_through([:redirect_prod_http, :api])
-
-    get("/search/:query", ApiSearchController, :index)
-    delete("/account/:user_id", ApiAccountController, :delete)
+    get("/", HomeController, :index)
+    resources("/admins", AdminsController, only: [:index, :create, :delete])
+    resources("/queries", QueriesController, only: [:index, :show])
   end
 
   scope "/mailchimp", ConciergeSite do

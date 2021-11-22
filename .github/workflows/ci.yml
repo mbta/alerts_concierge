@@ -6,7 +6,6 @@ on:
       - docs/**
       - load_tests/**
       - rel/**
-      - report_queries/**
       - scripts/**
       - Dockerfile
       - "*.md"
