@@ -10,19 +10,17 @@ module.exports = (env, options) => ({
     minimizer: [new TerserPlugin(), new CssMinimizerPlugin()]
   },
   entry: {
-    app: './js/app.js',
-    admin: './js/admin/index.tsx'
+    app: './js/app.js'
   },
   output: {
     path: path.resolve(__dirname, '../priv/static/js')
   },
   resolve: {
-    extensions: ['.css', '.scss', '.js', '.json', '.ts', '.tsx']
+    extensions: ['.css', '.scss', '.js', '.json']
   },
   module: {
     rules: [
       { test: /\.js$/, exclude: /node_modules/, loader: 'babel-loader' },
-      { test: /\.tsx?$/, loader: 'awesome-typescript-loader' },
       {
         test: /\.s?css$/,
         use: [

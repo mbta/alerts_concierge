@@ -13,7 +13,6 @@ defmodule AlertProcessor.Supervisor do
     NotificationWorker,
     ServiceInfoCache,
     SmsOptOutWorker,
-    Metrics,
     Reminders
   }
 
@@ -45,7 +44,6 @@ defmodule AlertProcessor.Supervisor do
         [name: CachedApiClient.cache_name()]
       ]),
       worker(ServiceInfoCache, []),
-      worker(Metrics, []),
       worker(SendingQueue, []),
       worker(Reminders, []),
       worker(AlertWorker, alert_worker_config),

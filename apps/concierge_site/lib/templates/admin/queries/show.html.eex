@@ -1,0 +1,52 @@
+<h1 class="heading__title">
+  <%= link to: admin_queries_path(@conn, :index),
+        class: "text-decoration-none", title: "Back to queries" do %>
+    <i class="fa fa-arrow-left"></i>
+  <% end %>
+
+  <%= @query.label %>
+</h1>
+
+<div class="form-group">
+  <%= content_tag(:textarea, @query.query,
+        class: "form-control text-monospace", disabled: true, rows: 10) %>
+</div>
+
+<div class="form-inline">
+  <%= link to: admin_queries_path(@conn, :show, @query.id, action: "run"),
+        class: "btn btn-primary mr-2" do %>
+    <i class="fa fa-play"></i> Run
+  <% end %>
+
+  <%= link to: admin_queries_path(@conn, :show, @query.id, action: "export"),
+        class: "btn btn-primary", download: "report.csv" do %>
+    <i class="fa fa-download"></i> Export</button>
+  <% end %>
+</div>
+
+<%= with %{columns: columns, num_rows: num_rows, rows: rows} <- @result do %>
+  <div class="alert alert-info mt-4">
+    <b><%= num_rows %></b> rows returned
+  </div>
+
+  <% id_indices = id_indices(columns) %>
+  <div class="table-responsive text-monospace small">
+    <table class="table">
+      <thead>
+        <%= for column <- columns do %>
+          <th><%= column %></th>
+        <% end %>
+      </thead>
+
+      <tbody>
+        <%= for row <- rows do %>
+          <tr>
+            <%= for {cell, index} <- Stream.with_index(row) do %>
+              <td><%= format_value(cell, index in id_indices) %></td>
+            <% end %>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+  </div>
+<% end %>
