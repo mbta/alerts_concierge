@@ -95,9 +95,11 @@ defmodule ConciergeSite.Router do
     )
   end
 
-  scope "/admin", ConciergeSite do
+  scope "/admin", ConciergeSite.Admin, as: :admin do
     pipe_through([:redirect_prod_http, :browser, :browser_auth, :admin_auth, :layout])
-    get("/", AdminController, :index)
+
+    get("/", HomeController, :index)
+    resources("/admins", AdminsController, only: [:index, :create, :delete])
   end
 
   scope "/mailchimp", ConciergeSite do

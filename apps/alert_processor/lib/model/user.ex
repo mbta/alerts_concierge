@@ -331,18 +331,21 @@ defmodule AlertProcessor.Model.User do
   def wrap_id(%__MODULE__{} = user), do: user
   def wrap_id(user_id), do: %__MODULE__{id: user_id}
 
+  @spec admins() :: [t]
+  def admins, do: Repo.all(from(u in __MODULE__, where: u.role == "admin", order_by: u.email))
+
   @spec admin?(t()) :: boolean
   def admin?(%__MODULE__{role: "admin"}), do: true
   def admin?(_user), do: false
 
-  @spec make_admin(t()) :: tuple
-  def make_admin(user) do
-    update_account(user, %{"role" => "admin"}, user.id)
+  @spec make_admin(t, t | id) :: {:ok, t} | {:error, any}
+  def make_admin(user, originator) do
+    update_account(user, %{"role" => "admin"}, originator)
   end
 
-  @spec make_not_admin(t()) :: tuple
-  def make_not_admin(user) do
-    update_account(user, %{"role" => "user"}, user.id)
+  @spec make_not_admin(t, t | id) :: {:ok, t} | {:error, any}
+  def make_not_admin(user, originator) do
+    update_account(user, %{"role" => "user"}, originator)
   end
 
   def inside_opt_out_freeze_window?(%__MODULE__{sms_opted_out_at: nil}), do: false

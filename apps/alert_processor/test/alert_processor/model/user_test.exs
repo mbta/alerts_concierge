@@ -299,30 +299,4 @@ defmodule AlertProcessor.Model.UserTest do
       assert %User{id: "098-765-4321"} == User.wrap_id(%User{id: "098-765-4321"})
     end
   end
-
-  test "make_admin/1" do
-    user = insert(:user)
-    # Check that user starts as a non-admin
-    assert user.role == "user"
-
-    User.make_admin(user)
-
-    # Refresh from database
-    user = User.for_email(user.email)
-
-    assert user.role == "admin"
-  end
-
-  test "make_not_admin/1" do
-    user = insert(:user, role: "admin")
-    # Check that user starts as an admin
-    assert user.role == "admin"
-
-    User.make_not_admin(user)
-
-    # Refresh from database
-    user = User.for_email(user.email)
-
-    assert user.role == "user"
-  end
 end

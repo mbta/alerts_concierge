@@ -1,6 +1,6 @@
 <%= if AlertProcessor.Model.User.admin?(@current_user) do %>
   <div>
-    <%= link to: admin_path(@conn, :index) do %>
+    <%= link to: admin_home_path(@conn, :index) do %>
       Administration
     <% end %>
   </div>
