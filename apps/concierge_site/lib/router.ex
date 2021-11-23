@@ -100,6 +100,7 @@ defmodule ConciergeSite.Router do
 
     get("/", HomeController, :index)
     resources("/admins", AdminsController, only: [:index, :create, :delete])
+    resources("/queries", QueriesController, except: [:show])
   end
 
   scope "/mailchimp", ConciergeSite do

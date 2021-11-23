@@ -1,0 +1,20 @@
+<h1 class="heading__title">Database queries</h1>
+
+<%= flash_error(@conn) %>
+<%= flash_warning(@conn) %>
+<%= flash_info(@conn) %>
+
+<p>
+  <%= link to: admin_queries_path(@conn, :new), class: "btn btn-primary" do %>
+    <i class="fa fa-pencil"></i> New query
+  <% end %>
+</p>
+
+<div class="list-group">
+  <%= for %{id: id, label: label} <- @queries do %>
+    <%= link to: admin_queries_path(@conn, :edit, id),
+          class: "list-group-item list-group-item-action" do %>
+      <i class="fa fa-file-text-o"></i> <%= label %>
+    <% end %>
+  <% end %>
+</div>

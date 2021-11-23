@@ -1,0 +1,1 @@
+<%= render("_form.html", conn: @conn, changeset: @changeset, result: @result, title: "New query") %>
