@@ -11,7 +11,7 @@ defmodule ConciergeSite.FlashHelpers do
   """
   def flash_error(conn) do
     if error = get_flash(conn, :error) do
-      content_tag :div, class: "error-block-container", tabindex: "0" do
+      content_tag :div, class: "alert alert-danger", tabindex: "0" do
         content_tag(:span, error, class: "error-block")
       end
     end
