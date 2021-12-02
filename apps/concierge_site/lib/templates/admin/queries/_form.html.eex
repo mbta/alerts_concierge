@@ -26,9 +26,9 @@
   <div class="alert alert-secondary d-flex">
     <div><i class="fa fa-warning"></i></div>
     <div class="flex-grow-1 ml-2">
-      Any SQL statement may be entered here. It will be run within a transaction that is then
-      rolled back, so there is a low risk of accidentally modifying data, but exercise caution as
-      it is possible to degrade the performance of the database with inefficient queries.
+      Statements are run with restricted permissions that prevent modifying data or accessing
+      columns that may contain PII. Exercise caution, however, as it is possible to degrade the
+      performance of the database with inefficient queries.
     </div>
   </div>
 
@@ -62,10 +62,9 @@
 <% end %>
 
 <%= case @result do %>
-  <% %Postgrex.Result{command: command, columns: columns, rows: rows, num_rows: num_rows} -> %>
+  <% %Postgrex.Result{columns: columns, rows: rows, num_rows: num_rows} -> %>
     <div class="alert alert-info mt-4">
-      <b><%= num_rows %></b> rows
-      <%= if(command == :select, do: "returned", else: "would be affected") %>
+      <b><%= num_rows %></b> rows returned
     </div>
 
     <%= if is_list(columns) and is_list(rows) do %>
