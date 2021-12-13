@@ -8,6 +8,13 @@ defmodule AlertProcessor.Model.Query do
   @enforce_keys [:label, :query]
   defstruct [:id] ++ @enforce_keys
 
+  @subscription_counts """
+    COUNT(*) AS total,
+    COUNT(CASE WHEN paused IS NOT TRUE THEN 1 END) AS active,
+    COUNT(DISTINCT user_id) AS users,
+    COUNT(DISTINCT CASE WHEN paused IS NOT TRUE THEN user_id END) AS active_users
+  """
+
   @doc "Lists available queries."
   @spec all() :: [t]
   def all do
@@ -16,10 +23,7 @@ defmodule AlertProcessor.Model.Query do
         label: "Subscription counts by type",
         query: """
         SELECT type,
-          COUNT(*) AS total,
-          COUNT(CASE WHEN paused IS NOT TRUE THEN 1 END) AS active,
-          COUNT(DISTINCT user_id) AS users,
-          COUNT(DISTINCT CASE WHEN paused IS NOT TRUE THEN user_id END) AS active_users
+          #{String.trim(@subscription_counts)}
         FROM subscriptions
         WHERE return_trip IS NOT TRUE
         GROUP BY type
@@ -30,15 +34,33 @@ defmodule AlertProcessor.Model.Query do
         label: "Subscription counts by route",
         query: """
         SELECT route,
-          COUNT(*) AS total,
-          COUNT(CASE WHEN paused IS NOT TRUE THEN 1 END) AS active,
-          COUNT(DISTINCT user_id) AS users,
-          COUNT(DISTINCT CASE WHEN paused IS NOT TRUE THEN user_id END) AS active_users
+          #{String.trim(@subscription_counts)}
         FROM subscriptions
         WHERE route IS NOT NULL
           AND return_trip IS NOT TRUE
         GROUP BY route
         ORDER BY route
+        """
+      },
+      %__MODULE__{
+        label: "Subscription counts by stop",
+        query: """
+        SELECT stop, route,
+          #{String.trim(@subscription_counts)}
+        FROM (
+          SELECT user_id, paused, route, origin AS stop
+            FROM subscriptions
+            WHERE origin IS NOT NULL
+              AND return_trip IS NOT TRUE
+          UNION ALL
+          SELECT user_id, paused, route, destination AS stop
+            FROM subscriptions
+            WHERE origin != destination
+              AND destination IS NOT NULL
+              AND return_trip IS NOT TRUE
+        ) s
+        GROUP BY stop, route
+        ORDER BY stop, route
         """
       },
       %__MODULE__{
