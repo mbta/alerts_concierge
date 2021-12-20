@@ -56,7 +56,7 @@ defmodule ConciergeSite.Mixfile do
       {:bamboo, "~> 1.4.0"},
       {:bamboo_ses, "~> 0.1.0"},
       {:comeonin, "~> 3.0"},
-      {:ex_aws_sns, "~> 2.0.1"},
+      {:ex_aws_sns, "~> 2.2.0"},
       {:guardian, "~> 0.14"},
       {:guardian_db, "~> 0.8.0"},
       {:phoenix, "~> 1.3.4", override: true},
