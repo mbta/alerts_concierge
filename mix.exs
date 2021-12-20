@@ -12,9 +12,7 @@ defmodule AlertsConcierge.Mixfile do
       preferred_cli_env: [vcr: :test],
       dialyzer: [
         ignore_warnings: ".dialyzer_ignore.exs",
-        plt_add_apps: [:ex_unit],
-        # required to ignore incorrect typespec for ExAws.SNS.verify_message
-        plt_ignore_apps: [:ex_aws_sns]
+        plt_add_apps: [:ex_unit]
       ]
     ]
   end
