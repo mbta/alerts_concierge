@@ -83,7 +83,7 @@ defmodule ConciergeSite.ScheduleTest do
                direction_destinations: ["Newburyport or Rockport", "North Station"]
              },
              selected: false,
-             trip_number: "2101",
+             trip_number: "1101",
              weekend?: true
            }
   end
