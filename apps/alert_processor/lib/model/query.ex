@@ -68,11 +68,11 @@ defmodule AlertProcessor.Model.Query do
         query: """
         SELECT communication_mode,
           COUNT(DISTINCT users.id) AS users,
-          COUNT(DISTINCT CASE WHEN subscriptions.id IS NOT NULL THEN users.id END) AS active_users
+          COUNT(DISTINCT CASE WHEN subscriptions.id IS NOT NULL THEN users.id END) AS subscribed_users,
+          COUNT(DISTINCT CASE WHEN subscriptions.id IS NOT NULL AND subscriptions.paused IS NOT TRUE THEN users.id END) AS active_users
         FROM users
         LEFT JOIN subscriptions
           ON users.id = subscriptions.user_id
-            AND subscriptions.paused IS NOT TRUE
         GROUP BY communication_mode
         """
       }
