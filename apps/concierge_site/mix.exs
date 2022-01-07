@@ -11,7 +11,7 @@ defmodule ConciergeSite.Mixfile do
       lockfile: "../../mix.lock",
       elixir: "~> 1.6",
       elixirc_paths: elixirc_paths(Mix.env()),
-      compilers: [:phoenix, :gettext, :yecc, :leex, :erlang, :elixir, :xref, :app],
+      compilers: [:gettext, :phoenix] ++ Mix.compilers(),
       build_embedded: Mix.env() == :prod,
       start_permanent: Mix.env() == :prod,
       deps: deps(),
@@ -21,26 +21,11 @@ defmodule ConciergeSite.Mixfile do
   end
 
   # Configuration for the OTP application.
-  #
   # Type `mix help compile.app` for more information.
   def application do
-    apps = [
-      :elixir_make,
-      :public_key,
-      :crypto,
-      :bamboo,
-      :logger,
-      :runtime_tools
-    ]
-
-    apps =
-      if Mix.env() == :prod do
-        [:sasl, :ehmon, :diskusage_logger | apps]
-      else
-        apps
-      end
-
-    [mod: {ConciergeSite, []}, extra_applications: apps]
+    extra = [:logger, :runtime_tools]
+    extra = if(Mix.env() == :prod, do: extra ++ [:diskusage_logger, :ehmon], else: extra)
+    [mod: {ConciergeSite, []}, extra_applications: extra]
   end
 
   # Specifies which paths to compile per environment.
