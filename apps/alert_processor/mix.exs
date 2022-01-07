@@ -60,7 +60,7 @@ defmodule AlertProcessor.Mixfile do
     [
       {:bcrypt_elixir, "~> 1.0"},
       {:bypass, "~> 0.9.0", only: :test},
-      {:calendar, "~> 0.17.4"},
+      {:calendar, "~> 1.0.0"},
       {:comeonin, "~> 3.0"},
       {:con_cache, "~> 0.12.1"},
       {:cowboy, "~> 1.0"},
@@ -70,10 +70,10 @@ defmodule AlertProcessor.Mixfile do
       {:ex_aws_sns, "~> 2.2.0"},
       {:ex_machina, "~> 2.2.0", only: :test},
       {:exvcr, "~> 0.10.1", runtime: false},
-      {:fast_local_datetime, "~> 0.3.0"},
+      {:fast_local_datetime, "~> 1.0.0"},
       {:gettext, "~> 0.11"},
       {:hackney, "~> 1.17.0"},
-      {:httpoison, "~> 1.1.1", override: true},
+      {:httpoison, "~> 1.1.1"},
       {:paper_trail, "~> 0.7.5"},
       {:poison, "~> 2.0"},
       {:poolboy, ">= 0.0.0"},
@@ -82,7 +82,7 @@ defmodule AlertProcessor.Mixfile do
       {:sentry, "~> 7.0"},
       {:sweet_xml, "~> 0.6"},
       {:eflame, "~> 1.0", only: [:dev]},
-      {:tzdata, "~> 1.0.0", override: true},
+      {:tzdata, "~> 1.1.0"},
       {:uuid, "~> 1.1.8"}
     ]
   end
