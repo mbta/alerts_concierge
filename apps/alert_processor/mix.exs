@@ -21,32 +21,9 @@ defmodule AlertProcessor.Mixfile do
   end
 
   # Configuration for the OTP application.
-  #
   # Type `mix help compile.app` for more information.
   def application do
-    [
-      mod: {AlertProcessor, []},
-      extra_applications: [
-        :elixir_make,
-        :jsx,
-        :public_key,
-        :crypto,
-        :calendar,
-        :comeonin,
-        # Must come before ex_aws
-        :sweet_xml,
-        :exactor,
-        :ex_aws,
-        :hackney,
-        :httpoison,
-        :logger,
-        :poison,
-        :poolboy,
-        :postgrex,
-        :runtime_tools,
-        :scrivener_ecto
-      ]
-    ]
+    [mod: {AlertProcessor, []}, extra_applications: [:logger, :runtime_tools]]
   end
 
   # Specifies which paths to compile per environment.
