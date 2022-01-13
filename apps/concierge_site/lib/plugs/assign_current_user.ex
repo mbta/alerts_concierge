@@ -1,7 +1,5 @@
-defmodule ConciergeSite.Plugs.SaveCurrentUser do
-  @moduledoc """
-  Plug to check whether an user has signed in.
-  """
+defmodule ConciergeSite.Plugs.AssignCurrentUser do
+  @moduledoc "Puts the signed-in user from Guardian into the conn assigns, for convenience."
 
   import Plug.Conn
   @behaviour Plug

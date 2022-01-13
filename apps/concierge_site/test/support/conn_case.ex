@@ -31,9 +31,7 @@ defmodule ConciergeSite.ConnCase do
         conn
         |> bypass_through(ConciergeSite.Router, [:browser])
         |> get("/")
-        |> Guardian.Plug.sign_in(user, :access, %{
-          perms: ConciergeSite.SignInHelper.permissions_for(user)
-        })
+        |> ConciergeSite.Guardian.Plug.sign_in(user)
         |> send_resp(200, "Flush the session")
         |> recycle()
       end

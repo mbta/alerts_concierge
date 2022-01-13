@@ -39,25 +39,9 @@ config :logger, :console,
 # Include referrer in Logster request log
 config :logster, :allowed_headers, ["referer"]
 
-config :guardian, Guardian,
-  allowed_algos: ["HS512"],
-  verify_module: Guardian.JWT,
-  issuer: "AlertsConcierge",
-  ttl: {60, :minutes},
-  allowed_drift: 2000,
-  verify_issuer: true,
-  secret_key: "${GUARDIAN_AUTH_KEY}",
-  serializer: ConciergeSite.GuardianSerializer,
-  hooks: GuardianDb,
-  permissions: %{
-    default: [],
-    admin: [:all]
-  }
+config :concierge_site, ConciergeSite.Guardian, secret_key: "${GUARDIAN_AUTH_KEY}"
 
-config :guardian_db, GuardianDb,
-  repo: AlertProcessor.Repo,
-  schema_name: "guardian_tokens",
-  sweep_interval: 120
+config :guardian, Guardian.DB, repo: AlertProcessor.Repo
 
 config :concierge_site, mail_template_dir: Path.join(~w(#{__DIR__} /../ lib/mail_templates))
 

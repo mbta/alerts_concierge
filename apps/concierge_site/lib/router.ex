@@ -15,24 +15,17 @@ defmodule ConciergeSite.Router do
     plug(:fetch_flash)
     plug(:protect_from_forgery)
     plug(:put_secure_browser_headers)
-    plug(ConciergeSite.Plugs.SaveCurrentUser)
+    plug(ConciergeSite.Plugs.AssignCurrentUser)
   end
 
   pipeline :browser_auth do
-    plug(ConciergeSite.Plugs.TokenLogin)
-    plug(Guardian.Plug.VerifySession)
-    plug(Guardian.Plug.LoadResource)
-    plug(Guardian.Plug.EnsureAuthenticated, handler: ConciergeSite.SessionController)
+    plug(ConciergeSite.Guardian.AuthPipeline)
     plug(ConciergeSite.Plugs.TokenRefresh)
-    plug(ConciergeSite.Plugs.SaveCurrentUser)
+    plug(ConciergeSite.Plugs.AssignCurrentUser)
   end
 
   pipeline :admin_auth do
-    plug(
-      Guardian.Plug.EnsurePermissions,
-      handler: ConciergeSite.Auth.ErrorHandler,
-      admin: [:all]
-    )
+    plug(Guardian.Permissions.Bitwise, ensure: %{admin: [:all]})
   end
 
   pipeline :layout do

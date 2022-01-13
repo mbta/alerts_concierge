@@ -15,7 +15,7 @@ defmodule ConciergeSite.Admin.HomeControllerTest do
 
       conn = conn |> get(admin_home_path(conn, :index))
 
-      assert redirected_to(conn) =~ session_path(conn, :new)
+      assert redirected_to(conn) =~ "/"
     end
   end
 end

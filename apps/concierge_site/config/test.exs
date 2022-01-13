@@ -9,8 +9,7 @@ config :concierge_site, ConciergeSite.Endpoint,
 # Print only warnings and errors during test
 config :logger, level: :warn
 
-config :guardian, Guardian, secret_key: "top_secret_key"
-
+config :concierge_site, ConciergeSite.Guardian, secret_key: "top_secret_key"
 config :concierge_site, ConciergeSite.Dissemination.Mailer, adapter: Bamboo.TestAdapter
 
 config :concierge_site, :sql_sandbox, true

@@ -1,7 +1,8 @@
 defmodule ConciergeSite.TripController do
   use ConciergeSite.Web, :controller
-  use Guardian.Phoenix.Controller
+
   import Phoenix.HTML.Link
+
   alias AlertProcessor.Authorizer.TripAuthorizer
   alias AlertProcessor.Repo
   alias AlertProcessor.Model.{Trip, Subscription, User}
@@ -16,7 +17,7 @@ defmodule ConciergeSite.TripController do
 
   @valid_facility_types ~w(bike_storage elevator escalator parking_area)
 
-  def index(conn, _params, user, _claims) do
+  def index(%{assigns: %{current_user: user}} = conn, _params) do
     conn
     |> communication_mode_flash(user)
     |> render("index.html", trips: Trip.get_trips_by_user(user.id), user_id: user.id)
@@ -32,16 +33,16 @@ defmodule ConciergeSite.TripController do
 
   defp communication_mode_flash(conn, _user), do: conn
 
-  def new(conn, _params, user, _claims) do
+  def new(%{assigns: %{current_user: user}} = conn, _params) do
     trip_count = Trip.get_trip_count_by_user(user.id)
     render(conn, "new.html", trip_count: trip_count, alternate_routes: %{})
   end
 
-  def create(conn, %{"trip" => trip_params}, user, {:ok, claims}) do
+  def create(%{assigns: %{current_user: user}} = conn, %{"trip" => trip_params}) do
     params = parse_input(trip_params)
     subscriptions = input_to_subscriptions(user, params)
     trip = input_to_trip(user, params)
-    multi = build_trip_transaction(trip, subscriptions, user, Map.get(claims, "imp", user.id))
+    multi = build_trip_transaction(trip, subscriptions, user)
 
     with :ok <- validate_relevant_days(trip_params),
          :ok <- Subscription.set_versioned_subscription(multi) do
@@ -66,7 +67,7 @@ defmodule ConciergeSite.TripController do
     if relevant_days?, do: :ok, else: {:error, :relevant_days}
   end
 
-  def edit(conn, %{"id" => id}, user, _claims) do
+  def edit(%{assigns: %{current_user: user}} = conn, %{"id" => id}) do
     with {:trip, %Trip{} = trip} <- {:trip, Trip.find_by_id(id)},
          {:ok, :authorized} <- TripAuthorizer.authorize(trip, user),
          {:changeset, changeset} <- {:changeset, Trip.update_changeset(trip)} do
@@ -103,7 +104,7 @@ defmodule ConciergeSite.TripController do
     end)
   end
 
-  def update(conn, %{"id" => id, "trip" => trip_params}, user, _claims) do
+  def update(%{assigns: %{current_user: user}} = conn, %{"id" => id, "trip" => trip_params}) do
     with {:trip, %Trip{} = trip} <- {:trip, Trip.find_by_id(id)},
          {:ok, :authorized} <- TripAuthorizer.authorize(trip, user),
          {:collated_facility_types, collated_trip_params} <-
@@ -149,9 +150,7 @@ defmodule ConciergeSite.TripController do
             "destination" => destination,
             "alternate_routes" => alternate_routes
           }
-        },
-        _,
-        _
+        }
       )
       when not is_nil(origin) and origin == destination do
     conn
@@ -159,7 +158,7 @@ defmodule ConciergeSite.TripController do
     |> render("new.html", alternate_routes: parse_alternate_routes(alternate_routes))
   end
 
-  def leg(conn, %{"trip" => trip}, user, _claims) do
+  def leg(%{assigns: %{current_user: user}} = conn, %{"trip" => trip}) do
     case trip do
       %{
         "route" => route,
@@ -267,7 +266,7 @@ defmodule ConciergeSite.TripController do
   end
 
   def times(
-        conn,
+        %{assigns: %{current_user: user}} = conn,
         %{
           "trip" => %{
             "legs" => legs,
@@ -277,9 +276,7 @@ defmodule ConciergeSite.TripController do
             "round_trip" => round_trip,
             "alternate_routes" => alternate_routes
           }
-        },
-        user,
-        _claims
+        }
       ) do
     schedules = Schedule.get_schedules_for_input(legs, origins, destinations, modes)
     return_schedules = Schedule.get_schedules_for_input(legs, destinations, origins, modes)
@@ -310,7 +307,7 @@ defmodule ConciergeSite.TripController do
     )
   end
 
-  def delete(conn, %{"id" => id}, user, _claims) do
+  def delete(%{assigns: %{current_user: user}} = conn, %{"id" => id}) do
     with %Trip{} = trip <- Trip.find_by_id(id),
          true <- user.id == trip.user_id,
          {:ok, %Trip{}} <- Trip.delete(trip) do
@@ -323,7 +320,7 @@ defmodule ConciergeSite.TripController do
     end
   end
 
-  def pause(conn, %{"trip_id" => id}, user, __claims) do
+  def pause(%{assigns: %{current_user: user}} = conn, %{"trip_id" => id}) do
     with %Trip{} = trip <- Trip.find_by_id(id),
          {:ok, :authorized} <- TripAuthorizer.authorize(trip, user),
          :ok <- Trip.pause(trip, user.id) do
@@ -336,7 +333,7 @@ defmodule ConciergeSite.TripController do
     end
   end
 
-  def resume(conn, %{"trip_id" => id}, user, __claims) do
+  def resume(%{assigns: %{current_user: user}} = conn, %{"trip_id" => id}) do
     with %Trip{} = trip <- Trip.find_by_id(id),
          {:ok, :authorized} <- TripAuthorizer.authorize(trip, user),
          :ok <- Trip.resume(trip, user.id) do
@@ -383,13 +380,13 @@ defmodule ConciergeSite.TripController do
     {legs, origins, destinations, modes}
   end
 
-  defp build_trip_transaction(trip, subscriptions, user, originator) do
+  defp build_trip_transaction(trip, subscriptions, user) do
     trip_id = Ecto.UUID.generate()
     trip = Map.put(trip, :id, trip_id)
 
     multi =
       Multi.run(Multi.new(), {:trip, 0}, fn _ ->
-        PaperTrail.insert(trip, originator: User.wrap_id(originator), meta: %{owner: user.id})
+        PaperTrail.insert(trip, originator: user, meta: %{owner: user.id})
       end)
 
     subscriptions
@@ -406,11 +403,7 @@ defmodule ConciergeSite.TripController do
 
       acc
       |> Multi.run({:subscription, index}, fn _ ->
-        PaperTrail.insert(
-          sub_to_insert,
-          originator: User.wrap_id(originator),
-          meta: %{owner: user.id}
-        )
+        PaperTrail.insert(sub_to_insert, originator: user, meta: %{owner: user.id})
       end)
     end)
   end
