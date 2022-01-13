@@ -1,7 +1,7 @@
 defmodule ConciergeSite.SessionController do
   use ConciergeSite.Web, :controller
   alias AlertProcessor.Model.User
-  alias ConciergeSite.SignInHelper
+  alias ConciergeSite.{Guardian, SignInHelper}
   plug(:scrub_params, "user" when action in [:create])
 
   # restrict login attempts to 10 per minute
@@ -32,16 +32,6 @@ defmodule ConciergeSite.SessionController do
     conn
     |> put_flash(:info, "You have been logged out!")
     |> Guardian.Plug.sign_out()
-    |> redirect(to: session_path(conn, :new))
-  end
-
-  @doc """
-  Require a user to log in if not authenticated.
-  Callback for Guardian.Plug.EnsureAuthenticated.
-  """
-  def unauthenticated(conn, _params) do
-    conn
-    |> put_flash(:info, "Please log in")
     |> redirect(to: session_path(conn, :new))
   end
 

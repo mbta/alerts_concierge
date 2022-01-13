@@ -6,7 +6,7 @@ defmodule AlertProcessor.Model.User do
   @type t :: %__MODULE__{
           id: id,
           email: String.t(),
-          phone_number: String.t(),
+          phone_number: String.t() | nil,
           role: String.t(),
           digest_opt_in: boolean,
           sms_opted_out_at: DateTime.t(),

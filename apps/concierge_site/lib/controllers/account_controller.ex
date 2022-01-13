@@ -1,28 +1,28 @@
 defmodule ConciergeSite.AccountController do
   use ConciergeSite.Web, :controller
-  use Guardian.Phoenix.Controller
+
   alias AlertProcessor.Model.User
   alias AlertProcessor.Repo
   alias ConciergeSite.ConfirmationMessage
   alias ConciergeSite.SignInHelper
   alias ConciergeSite.Mailchimp
 
-  def new(conn, _params, _user, _claims) do
+  def new(conn, _params) do
     account_changeset = User.create_account_changeset(%User{}, %{"sms_toggle" => false})
     render(conn, "new.html", account_changeset: account_changeset)
   end
 
-  def edit(conn, _params, user, _claims) do
+  def edit(%{assigns: %{current_user: user}} = conn, _params) do
     conn
     |> put_flash(:warning, communication_mode_flash(user))
     |> render("edit.html", changeset: User.changeset(user), user_id: user.id)
   end
 
-  def edit_password(conn, _params, _user, _claims) do
+  def edit_password(conn, _params) do
     render(conn, "edit_password.html")
   end
 
-  def create(conn, %{"user" => params}, _user, _claims) do
+  def create(conn, %{"user" => params}) do
     case User.create_account(params) do
       {:ok, user} ->
         ConfirmationMessage.send_email_confirmation(user)
@@ -33,8 +33,8 @@ defmodule ConciergeSite.AccountController do
     end
   end
 
-  def update(conn, %{"user" => params}, user, {:ok, claims}) do
-    case User.update_account(user, params, Map.get(claims, "imp", user.id)) do
+  def update(%{assigns: %{current_user: user}} = conn, %{"user" => params}) do
+    case User.update_account(user, params, user) do
       {:ok, updated_user} ->
         Mailchimp.update_member(updated_user)
 
@@ -60,13 +60,9 @@ defmodule ConciergeSite.AccountController do
     end
   end
 
-  def update_password(conn, %{"user" => params}, user, {:ok, claims}) do
+  def update_password(%{assigns: %{current_user: user}} = conn, %{"user" => params}) do
     if User.check_password(user, params["current_password"]) do
-      case User.update_password(
-             user,
-             %{"password" => params["password"]},
-             Map.get(claims, "imp", user.id)
-           ) do
+      case User.update_password(user, %{"password" => params["password"]}, user) do
         {:ok, _} ->
           conn
           |> put_flash(:info, "Your password has been updated.")
@@ -84,20 +80,20 @@ defmodule ConciergeSite.AccountController do
     end
   end
 
-  def delete(conn, _params, user, _claims) do
+  def delete(%{assigns: %{current_user: user}} = conn, _params) do
     Mailchimp.delete_member(user)
     Repo.delete!(user)
     redirect(conn, to: page_path(conn, :account_deleted))
   end
 
-  def options_new(conn, params, user, _claims) do
+  def options_new(%{assigns: %{current_user: user}} = conn, params) do
     changeset = User.update_account_changeset(user, params)
 
     render(conn, "options_new.html", changeset: changeset, user: user, sms_toggle: false)
   end
 
-  def options_create(conn, %{"user" => params}, user, {:ok, claims}) do
-    case User.update_account(user, params, Map.get(claims, "imp", user.id)) do
+  def options_create(%{assigns: %{current_user: user}} = conn, %{"user" => params}) do
+    case User.update_account(user, params, user) do
       {:ok, updated_user} ->
         Mailchimp.update_member(user)
         ConfirmationMessage.send_sms_confirmation(updated_user.phone_number, params["sms_toggle"])
@@ -186,12 +182,11 @@ defmodule ConciergeSite.AccountController do
     |> Enum.join("/")
   end
 
-  def mailchimp_update(
-        conn,
-        %{"type" => "unsubscribe", "data" => %{"email" => email}, "secret" => secret},
-        _user,
-        _claims
-      ) do
+  def mailchimp_update(conn, %{
+        "type" => "unsubscribe",
+        "data" => %{"email" => email},
+        "secret" => secret
+      }) do
     {affected, message} = Mailchimp.handle_unsubscribed(secret, email)
     json(conn, %{status: "ok", message: message, affected: affected})
   end
@@ -202,15 +197,13 @@ defmodule ConciergeSite.AccountController do
           "type" => "upemail",
           "data" => %{"new_email" => new_email, "old_email" => old_email},
           "secret" => secret
-        },
-        _user,
-        _claims
+        }
       ) do
     {affected, message} = Mailchimp.handle_email_changed(secret, old_email, new_email)
     json(conn, %{status: "ok", message: message, affected: affected})
   end
 
-  def mailchimp_update(conn, _params, _user, _claims) do
+  def mailchimp_update(conn, _params) do
     json(conn, %{status: "ok", message: "invalid request"})
   end
 end

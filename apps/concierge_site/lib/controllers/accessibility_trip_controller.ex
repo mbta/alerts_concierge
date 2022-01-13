@@ -1,30 +1,31 @@
 defmodule ConciergeSite.AccessibilityTripController do
   use ConciergeSite.Web, :controller
-  use Guardian.Phoenix.Controller
+
+  import Ecto.Changeset
   import Phoenix.HTML.Link
+
   alias AlertProcessor.Authorizer.TripAuthorizer
-  alias AlertProcessor.Model.{Trip, Subscription, User}
+  alias AlertProcessor.Model.{Trip, Subscription}
   alias ConciergeSite.ParamParsers.TripParams
   alias Ecto.Multi
-  import Ecto.Changeset
 
   action_fallback(ConciergeSite.FallbackController)
 
   @valid_facility_types ~w(elevator escalator)
 
-  def new(conn, _params, _user, _claims) do
+  def new(conn, _params) do
     render(conn, "new.html", changeset: make_changeset())
   end
 
-  def create(conn, %{"trip" => trip}, user, {:ok, claims}) do
+  def create(%{assigns: %{current_user: user}} = conn, %{"trip" => trip}) do
     trip
     |> default_values()
     |> make_changeset()
     |> validate_input()
-    |> save_trip(conn, user, claims)
+    |> save_trip(conn, user)
   end
 
-  def edit(conn, %{"id" => id}, user, _claims) do
+  def edit(%{assigns: %{current_user: user}} = conn, %{"id" => id}) do
     with {:trip, %Trip{} = trip} <- {:trip, Trip.find_by_id(id)},
          {:ok, :authorized} <- TripAuthorizer.authorize(trip, user),
          {:changeset, changeset} <- {:changeset, Trip.update_changeset(trip)} do
@@ -40,7 +41,7 @@ defmodule ConciergeSite.AccessibilityTripController do
     end
   end
 
-  def update(conn, %{"id" => id, "trip" => trip_params}, user, _claims) do
+  def update(%{assigns: %{current_user: user}} = conn, %{"id" => id, "trip" => trip_params}) do
     with {:trip, %Trip{} = trip} <- {:trip, Trip.find_by_id(id)},
          {:ok, :authorized} <- TripAuthorizer.authorize(trip, user),
          {:collated_facility_types, collated_trip_params} <-
@@ -73,12 +74,12 @@ defmodule ConciergeSite.AccessibilityTripController do
     end
   end
 
-  def update(conn, %{"id" => id}, user, claims) do
+  def update(conn, %{"id" => id}) do
     # This function clause is here incase someone submits an update request
     # with no relevant days selected. In this scenario we want users to be
     # shown a message saying that they should at least select one relevant day.
     # This function's purpose is to trigger that error message.
-    update(conn, %{"id" => id, "trip" => %{"relevant_days" => []}}, user, claims)
+    update(conn, %{"id" => id, "trip" => %{"relevant_days" => []}})
   end
 
   defp default_values(trip_params) do
@@ -93,19 +94,19 @@ defmodule ConciergeSite.AccessibilityTripController do
     Map.merge(default_params, trip_params)
   end
 
-  defp save_trip(%{valid?: false} = changeset, conn, _user, _claims) do
+  defp save_trip(%{valid?: false} = changeset, conn, _user) do
     conn
     |> put_flash(:error, "Please correct the error and re-submit.")
     |> render("new.html", %{changeset: changeset})
   end
 
-  defp save_trip(changeset, conn, user, claims) do
+  defp save_trip(changeset, conn, user) do
     trip = make_trip(changeset, user)
 
     subscriptions =
       make_stop_subscriptions(changeset, trip) ++ make_route_subscriptions(changeset, trip)
 
-    multi = build_trip_transaction(trip, subscriptions, user, Map.get(claims, "imp", user.id))
+    multi = build_trip_transaction(trip, subscriptions, user)
 
     case Subscription.set_versioned_subscription(multi) do
       :ok ->
@@ -120,10 +121,10 @@ defmodule ConciergeSite.AccessibilityTripController do
     end
   end
 
-  defp build_trip_transaction(trip, subscriptions, user, originator) do
+  defp build_trip_transaction(trip, subscriptions, user) do
     multi =
       Multi.run(Multi.new(), {:trip, 0}, fn _ ->
-        PaperTrail.insert(trip, originator: User.wrap_id(originator), meta: %{owner: user.id})
+        PaperTrail.insert(trip, originator: user, meta: %{owner: user.id})
       end)
 
     subscriptions
@@ -136,11 +137,7 @@ defmodule ConciergeSite.AccessibilityTripController do
 
       acc
       |> Multi.run({:subscription, index}, fn _ ->
-        PaperTrail.insert(
-          sub_to_insert,
-          originator: User.wrap_id(originator),
-          meta: %{owner: user.id}
-        )
+        PaperTrail.insert(sub_to_insert, originator: user, meta: %{owner: user.id})
       end)
     end)
   end

@@ -1,15 +1,14 @@
 defmodule ConciergeSite.Admin.AdminsController do
   use ConciergeSite.Web, :controller
-  use Guardian.Phoenix.Controller
 
   alias AlertProcessor.Repo
   alias AlertProcessor.Model.User
 
-  def index(conn, _params, _current_user, _claims) do
+  def index(conn, _params) do
     render(conn, "index.html", admins: User.admins())
   end
 
-  def create(conn, %{"email" => email}, current_user, _claims) do
+  def create(%{assigns: %{current_user: current_user}} = conn, %{"email" => email}) do
     with user when not is_nil(user) <- User.for_email(email),
          false <- User.admin?(user),
          {:ok, _} <- User.make_admin(user, current_user) do
@@ -26,7 +25,7 @@ defmodule ConciergeSite.Admin.AdminsController do
     end
   end
 
-  def delete(conn, %{"id" => id}, current_user, _claims) do
+  def delete(%{assigns: %{current_user: current_user}} = conn, %{"id" => id}) do
     case User |> Repo.get!(id) |> User.make_not_admin(current_user) do
       {:ok, %{email: email}} ->
         redirect_to_index(conn, :info, "Removed admin access from: #{email}")
