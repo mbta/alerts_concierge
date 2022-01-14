@@ -68,7 +68,7 @@ defmodule ConciergeSite.Schedule do
       {type, route, origin, destination} = input_tuple
 
       subscription = %Subscription{
-        type: String.to_atom(type),
+        type: String.to_existing_atom(type),
         route: route,
         origin: origin,
         destination: destination,

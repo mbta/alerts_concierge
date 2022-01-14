@@ -202,31 +202,14 @@ defmodule ConciergeSite.IconViewHelper do
     """)
   end
 
-  @spec icon_for_route(atom | String.t(), atom | String.t()) :: Phoenix.HTML.safe()
-  def icon_for_route(mode, route) when is_bitstring(mode) do
-    mode
-    |> atomize()
-    |> icon_for_route(route)
-  end
-
-  def icon_for_route(mode, route) when is_bitstring(route) do
-    icon_for_route(mode, atomize(route))
-  end
-
-  def icon_for_route(_, "Mattapan"), do: icon(:mattapan)
-
+  @spec icon_for_route(atom, String.t()) :: Phoenix.HTML.safe()
   def icon_for_route(:subway, routes) when is_list(routes),
-    do: Enum.map(routes, fn route -> icon_for_route(:subway, route) end)
+    do: Enum.map(routes, &icon_for_route(:subway, &1))
 
-  def icon_for_route(:subway, route), do: icon(route)
-  def icon_for_route(:cr, _), do: icon(:commuter_rail)
-  def icon_for_route(:bus, _), do: icon(:bus)
-  def icon_for_route(:ferry, _), do: icon(:ferry)
+  def icon_for_route(:subway, route) when is_binary(route),
+    do: route |> String.downcase() |> String.to_existing_atom() |> icon()
 
-  @spec atomize(String.t()) :: atom
-  defp atomize(str) do
-    str
-    |> String.downcase()
-    |> String.to_atom()
-  end
+  def icon_for_route(:cr, _route), do: icon(:commuter_rail)
+  def icon_for_route(:bus, _route), do: icon(:bus)
+  def icon_for_route(:ferry, _route), do: icon(:ferry)
 end
