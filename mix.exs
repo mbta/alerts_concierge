@@ -34,7 +34,8 @@ defmodule AlertsConcierge.Mixfile do
       {:credo, "~> 1.5.0", only: [:dev, :test], runtime: false},
       {:dialyxir, "~> 1.1.0", only: [:dev, :test], runtime: false},
       {:distillery, "~> 1.5", runtime: false},
-      {:lcov_ex, "~> 0.2", only: [:dev, :test], runtime: false}
+      {:lcov_ex, "~> 0.2", only: [:dev, :test], runtime: false},
+      {:sobelow, "~> 0.11.0", only: [:dev], runtime: false}
     ]
   end
 
@@ -44,6 +45,7 @@ defmodule AlertsConcierge.Mixfile do
       "ecto.setup": ["ecto.create", "ecto.load"],
       "ecto.reset": ["ecto.drop", "ecto.setup"],
       "ecto.rollback": ["ecto.rollback", "ecto.dump"],
+      sobelow: ["sobelow --root apps/concierge_site --exit --ignore Config.CSP,Config.HTTPS"],
       test: ["ecto.create --quiet", "ecto.load --quiet", "test"]
     ]
   end
