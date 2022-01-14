@@ -97,8 +97,6 @@ defmodule ConciergeSite.Router do
   end
 
   scope "/mailchimp", ConciergeSite do
-    # mailchimp needs get and post, even though post is actually used to send data
-    get("/update", AccountController, :mailchimp_update)
     post("/update", AccountController, :mailchimp_update)
   end
 

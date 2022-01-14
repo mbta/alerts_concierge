@@ -362,13 +362,6 @@ defmodule ConciergeSite.AccountControllerTest do
     @secret :crypto.hash(:md5, ConfigHelper.get_string(:mailchimp_api_url, :concierge_site))
             |> Base.encode16()
 
-    test "GET /mailchimp/update", %{conn: conn} do
-      conn = get(conn, account_path(conn, :mailchimp_update))
-      expected = %{"message" => "invalid request", "status" => "ok"}
-
-      assert json_response(conn, 200) == expected
-    end
-
     test "POST /mailchimp/update without required params", %{conn: conn} do
       conn = post(conn, account_path(conn, :mailchimp_update), %{})
       expected = %{"message" => "invalid request", "status" => "ok"}
