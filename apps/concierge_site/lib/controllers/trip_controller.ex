@@ -452,7 +452,7 @@ defmodule ConciergeSite.TripController do
         end_time: params["end_time"],
         origin: origin,
         destination: destination,
-        type: type,
+        type: String.to_existing_atom(type),
         route: route_id,
         route_type: route.route_type,
         direction_id:
