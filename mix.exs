@@ -35,7 +35,7 @@ defmodule AlertsConcierge.Mixfile do
       {:dialyxir, "~> 1.1.0", only: [:dev, :test], runtime: false},
       {:distillery, "~> 1.5", runtime: false},
       {:lcov_ex, "~> 0.2", only: [:dev, :test], runtime: false},
-      {:sobelow, "~> 0.11.0", only: [:dev], runtime: false}
+      {:sobelow, "~> 0.11.0", only: [:dev, :test], runtime: false}
     ]
   end
 
