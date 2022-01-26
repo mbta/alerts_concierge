@@ -61,19 +61,16 @@ defmodule ConciergeSite.SessionControllerTest do
   end
 
   test "POST /login rate-limited", %{conn: conn} do
+    on_exit(fn -> Hammer.delete_buckets("127.0.0.1") end)
     params = %{"user" => %{"email" => "test2@email.com", "password" => "11111111111"}}
 
-    login_attempts =
-      for _ <- 1..21 do
-        post(conn, session_path(conn, :create), params)
+    [first_attempt, _, _, _, next_to_last_attempt, last_attempt] =
+      for _ <- 1..6 do
+        conn |> assign(:rate_limit?, true) |> post(session_path(conn, :create), params)
       end
 
-    # reset rate-limit
-    Hammer.delete_buckets("session:create:127.0.0.1")
-    first_attempt = List.first(login_attempts)
-    last_attempt = List.last(login_attempts)
-
     assert first_attempt.status == 200
+    assert next_to_last_attempt.status == 200
     assert last_attempt.status == 429
   end
 

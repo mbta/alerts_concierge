@@ -60,7 +60,6 @@ defmodule ConciergeSite.Mixfile do
       {:poison, "~> 2.0"},
       {:tzdata, "~> 1.1.0"},
       {:hammer, "~> 6.0"},
-      {:hammer_plug, "~> 2.0"},
       {:sentry, "~> 7.0"}
     ]
   end

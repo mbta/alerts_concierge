@@ -4,13 +4,6 @@ defmodule ConciergeSite.SessionController do
   alias ConciergeSite.{Guardian, SignInHelper}
   plug(:scrub_params, "user" when action in [:create])
 
-  # restrict login attempts to 10 per minute
-  plug(
-    Hammer.Plug,
-    [rate_limit: {"session:create", 60_000, 10}]
-    when action == :create
-  )
-
   def new(conn, _params) do
     changeset = User.login_changeset(%User{})
     render(conn, "new.html", login_changeset: changeset)
