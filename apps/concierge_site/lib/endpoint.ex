@@ -28,6 +28,7 @@ defmodule ConciergeSite.Endpoint do
     plug(Phoenix.CodeReloader)
   end
 
+  plug(RemoteIp, headers: ["x-forwarded-for"])
   plug(Plug.RequestId)
   plug(Logster.Plugs.Logger)
 
