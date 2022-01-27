@@ -55,7 +55,6 @@ defmodule AlertProcessor.Mixfile do
       {:poison, "~> 2.0"},
       {:poolboy, ">= 0.0.0"},
       {:postgrex, ">= 0.0.0"},
-      {:scrivener_ecto, "~> 1.0"},
       {:sentry, "~> 7.0"},
       {:sweet_xml, "~> 0.6"},
       {:eflame, "~> 1.0", only: [:dev]},
