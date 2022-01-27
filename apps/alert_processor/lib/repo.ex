@@ -1,8 +1,9 @@
 defmodule AlertProcessor.Repo do
   use Ecto.Repo, otp_app: :alert_processor
-  use Scrivener
-  @dialyzer {:nowarn_function, rollback: 1}
+
   alias AlertProcessor.Helpers.ConfigHelper
+
+  @dialyzer {:nowarn_function, rollback: 1}
 
   @doc """
   Dynamically loads the repository url from the
