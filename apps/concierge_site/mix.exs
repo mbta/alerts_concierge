@@ -61,7 +61,8 @@ defmodule ConciergeSite.Mixfile do
       {:tzdata, "~> 1.1.0"},
       {:hammer, "~> 6.0"},
       {:sentry, "~> 7.0"},
-      {:remote_ip, "~> 0.2"}
+      {:remote_ip, "~> 0.2"},
+      {:recaptcha, "~> 3.0"}
     ]
   end
 

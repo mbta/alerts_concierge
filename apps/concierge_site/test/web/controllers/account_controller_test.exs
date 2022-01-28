@@ -12,29 +12,55 @@ defmodule ConciergeSite.AccountControllerTest do
   end
 
   test "POST /account", %{conn: conn} do
-    params = %{"user" => %{"password" => "Password1!", "email" => "test@test.com "}}
+    params = %{
+      "user" => %{"password" => "Password1!", "email" => "test@test.com "},
+      "g-recaptcha-response" => "valid_response"
+    }
+
     conn = post(conn, account_path(conn, :create), params)
     assert html_response(conn, 302) =~ "/account/options"
   end
 
   test "POST /account bad password", %{conn: conn} do
-    params = %{"user" => %{"password" => "password", "email" => "test@test.com"}}
+    params = %{
+      "user" => %{"password" => "password", "email" => "test@test.com"},
+      "g-recaptcha-response" => "valid_response"
+    }
+
     conn = post(conn, account_path(conn, :create), params)
 
     assert html_response(conn, 200) =~ "Password must contain at least one number or symbol."
   end
 
   test "POST /account bad email", %{conn: conn} do
-    params = %{"user" => %{"password" => "password1!", "email" => "test"}}
+    params = %{
+      "user" => %{"password" => "password1!", "email" => "test"},
+      "g-recaptcha-response" => "valid_response"
+    }
+
     conn = post(conn, account_path(conn, :create), params)
     assert html_response(conn, 200) =~ "enter a valid email"
   end
 
   test "POST /account empty values", %{conn: conn} do
-    params = %{"user" => %{"password" => "", "email" => ""}}
+    params = %{
+      "user" => %{"password" => "", "email" => ""},
+      "g-recaptcha-response" => "valid_response"
+    }
+
     conn = post(conn, account_path(conn, :create), params)
     assert html_response(conn, 200) =~ "Password is required"
     assert html_response(conn, 200) =~ "Email is required"
+  end
+
+  test "POST /account bad recaptcha", %{conn: conn} do
+    params = %{
+      "user" => %{"password" => "Password1!", "email" => "test@test.com "},
+      "g-recaptcha-response" => "invalid_response"
+    }
+
+    conn = post(conn, account_path(conn, :create), params)
+    assert html_response(conn, 200) =~ "reCAPTCHA validation error"
   end
 
   test "GET /account/options", %{conn: conn} do

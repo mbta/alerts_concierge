@@ -7,6 +7,8 @@ defmodule ConciergeSite.AccountController do
   alias ConciergeSite.SignInHelper
   alias ConciergeSite.Mailchimp
 
+  require Logger
+
   def new(conn, _params) do
     account_changeset = User.create_account_changeset(%User{}, %{"sms_toggle" => false})
     render(conn, "new.html", account_changeset: account_changeset)
@@ -22,13 +24,20 @@ defmodule ConciergeSite.AccountController do
     render(conn, "edit_password.html")
   end
 
-  def create(conn, %{"user" => params}) do
-    case User.create_account(params) do
-      {:ok, user} ->
-        ConfirmationMessage.send_email_confirmation(user)
-        SignInHelper.sign_in(conn, user)
+  def create(conn, %{"user" => params, "g-recaptcha-response" => recaptcha_response}) do
+    with {:ok, _resp} <- Recaptcha.verify(recaptcha_response),
+         {:ok, user} <- User.create_account(params) do
+      ConfirmationMessage.send_email_confirmation(user)
+      SignInHelper.sign_in(conn, user)
+    else
+      {:error, errors} when is_list(errors) ->
+        Logger.warn("AccountController event=recaptcha_error errors=#{Enum.join(errors, ",")}")
 
-      {:error, changeset} ->
+        conn
+        |> put_flash(:error, "reCAPTCHA validation error. Please try again.")
+        |> render("new.html", account_changeset: User.create_account_changeset(%User{}, params))
+
+      {:error, %Ecto.Changeset{} = changeset} ->
         render(conn, "new.html", account_changeset: changeset, errors: errors(changeset))
     end
   end
