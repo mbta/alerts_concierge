@@ -37,7 +37,7 @@ defmodule ConciergeSite.Plugs.RateLimit do
   defp ip_string(address) do
     case :inet.ntoa(address) do
       {:error, _} -> "invalid"
-      result -> result
+      result -> to_string(result)
     end
   end
 end
