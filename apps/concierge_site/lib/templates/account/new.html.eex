@@ -27,8 +27,18 @@
           <%= error_tag f, :password, "Password" %>
         </div>
 
+        <script>
+          function enableSignUpButton() {
+            document.getElementById("sign-up-button").removeAttribute("disabled")
+          }
+        </script>
+        <%= raw Recaptcha.Template.display(onload: "enableSignUpButton") %>
+
         <div class="form__action-buttons--container">
-          <%= submit "Create my account", class: "btn btn-primary btn-login btn-block" %>
+          <%= submit "Create my account",
+                id: "sign-up-button",
+                class: "btn btn-primary btn-login btn-block",
+                disabled: true %>
         </div>
 
       <% end %>

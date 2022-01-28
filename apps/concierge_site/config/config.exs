@@ -53,6 +53,10 @@ config :concierge_site, ConciergeSite.ViewHelpers,
 config :hammer,
   backend: {Hammer.Backend.ETS, [expiry_ms: 60_000 * 60 * 4, cleanup_interval_ms: 60_000 * 10]}
 
+config :recaptcha,
+  public_key: {:system, "RECAPTCHA_PUBLIC_KEY"},
+  secret: {:system, "RECAPTCHA_PRIVATE_KEY"}
+
 # Mailchimp
 config :concierge_site, mailchimp_api_url: {:system, "MAILCHIMP_API_URL", ""}
 config :concierge_site, mailchimp_api_key: {:system, "MAILCHIMP_API_KEY", ""}

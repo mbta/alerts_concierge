@@ -45,7 +45,9 @@ defmodule AlertsConcierge.Mixfile do
       "ecto.setup": ["ecto.create", "ecto.load"],
       "ecto.reset": ["ecto.drop", "ecto.setup"],
       "ecto.rollback": ["ecto.rollback", "ecto.dump"],
-      sobelow: ["sobelow --root apps/concierge_site --exit --ignore Config.CSP,Config.HTTPS"],
+      sobelow: [
+        "sobelow --root apps/concierge_site --exit --skip --ignore Config.CSP,Config.HTTPS"
+      ],
       test: ["ecto.create --quiet", "ecto.load --quiet", "test"]
     ]
   end
