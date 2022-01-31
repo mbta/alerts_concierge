@@ -25,7 +25,7 @@ defmodule ConciergeSite.Admin.QueriesControllerTest do
       resp = conn |> get(admin_queries_path(conn, :show, id)) |> html_response(200)
 
       assert resp =~ label
-      assert resp =~ sql
+      assert resp =~ sql |> String.split("\n") |> hd()
       refute resp =~ "rows returned"
     end
 

@@ -8,12 +8,16 @@ defmodule AlertProcessor.Model.Query do
   @enforce_keys [:label, :query]
   defstruct [:id] ++ @enforce_keys
 
+  @notifications_enabled "u.communication_mode != 'none'"
+
   @subscription_counts """
-    COUNT(*) AS total,
-    COUNT(CASE WHEN paused IS NOT TRUE THEN 1 END) AS active,
-    COUNT(DISTINCT user_id) AS users,
-    COUNT(DISTINCT CASE WHEN paused IS NOT TRUE THEN user_id END) AS active_users
+    COUNT(s.*) AS total,
+    COUNT(CASE WHEN s.paused IS NOT TRUE THEN 1 END) AS active,
+    COUNT(DISTINCT u.id) AS users,
+    COUNT(DISTINCT CASE WHEN s.paused IS NOT TRUE THEN u.id END) AS active_users
   """
+
+  @users_with_subscriptions "users u JOIN subscriptions s ON u.id = s.user_id"
 
   @doc "Lists available queries."
   @spec all() :: [t]
@@ -22,31 +26,33 @@ defmodule AlertProcessor.Model.Query do
       %__MODULE__{
         label: "Subscription counts by type",
         query: """
-        SELECT type,
-          #{String.trim(@subscription_counts)}
-        FROM subscriptions
-        WHERE return_trip IS NOT TRUE
-        GROUP BY type
-        ORDER BY type
+        SELECT s.type,
+          #{@subscription_counts}
+        FROM #{@users_with_subscriptions}
+        WHERE #{@notifications_enabled}
+          AND s.return_trip IS NOT TRUE
+        GROUP BY s.type
+        ORDER BY s.type
         """
       },
       %__MODULE__{
         label: "Subscription counts by route",
         query: """
-        SELECT route,
-          #{String.trim(@subscription_counts)}
-        FROM subscriptions
-        WHERE route IS NOT NULL
-          AND return_trip IS NOT TRUE
-        GROUP BY route
-        ORDER BY route
+        SELECT s.route,
+          #{@subscription_counts}
+        FROM #{@users_with_subscriptions}
+        WHERE #{@notifications_enabled}
+          AND s.route IS NOT NULL
+          AND s.return_trip IS NOT TRUE
+        GROUP BY s.route
+        ORDER BY s.route
         """
       },
       %__MODULE__{
         label: "Subscription counts by stop",
         query: """
-        SELECT stop, route,
-          #{String.trim(@subscription_counts)}
+        SELECT s.stop, s.route,
+          #{@subscription_counts}
         FROM (
           SELECT user_id, paused, route, origin AS stop
             FROM subscriptions
@@ -59,21 +65,22 @@ defmodule AlertProcessor.Model.Query do
               AND destination IS NOT NULL
               AND return_trip IS NOT TRUE
         ) s
-        GROUP BY stop, route
-        ORDER BY stop, route
+          JOIN users u ON s.user_id = u.id
+        WHERE #{@notifications_enabled}
+        GROUP BY s.stop, s.route
+        ORDER BY s.stop, s.route
         """
       },
       %__MODULE__{
         label: "User counts by communication mode",
         query: """
-        SELECT communication_mode,
-          COUNT(DISTINCT users.id) AS users,
-          COUNT(DISTINCT CASE WHEN subscriptions.id IS NOT NULL THEN users.id END) AS subscribed_users,
-          COUNT(DISTINCT CASE WHEN subscriptions.id IS NOT NULL AND subscriptions.paused IS NOT TRUE THEN users.id END) AS active_users
-        FROM users
-        LEFT JOIN subscriptions
-          ON users.id = subscriptions.user_id
-        GROUP BY communication_mode
+        SELECT u.communication_mode,
+          COUNT(DISTINCT u.id) AS users,
+          COUNT(DISTINCT CASE WHEN s.id IS NOT NULL THEN u.id END) AS subscribed_users,
+          COUNT(DISTINCT CASE WHEN s.id IS NOT NULL AND s.paused IS NOT TRUE THEN u.id END) AS active_users
+        FROM users u
+        LEFT JOIN subscriptions s ON u.id = s.user_id
+        GROUP BY u.communication_mode
         """
       }
     ]
