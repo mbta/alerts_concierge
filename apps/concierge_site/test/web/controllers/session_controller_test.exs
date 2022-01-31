@@ -1,6 +1,6 @@
 defmodule ConciergeSite.SessionControllerTest do
   @moduledoc false
-  use ConciergeSite.ConnCase, async: true
+  use ConciergeSite.ConnCase
   import AlertProcessor.Factory
   alias AlertProcessor.{Model.User, Model.Trip, Repo}
   alias Hammer
@@ -61,7 +61,7 @@ defmodule ConciergeSite.SessionControllerTest do
   end
 
   test "POST /login rate-limited", %{conn: conn} do
-    on_exit(fn -> Hammer.delete_buckets("127.0.0.1") end)
+    on_exit(fn -> true = :ets.delete_all_objects(:hammer_ets_buckets) end)
     params = %{"user" => %{"email" => "test2@email.com", "password" => "11111111111"}}
 
     [first_attempt, _, _, _, next_to_last_attempt, last_attempt] =
