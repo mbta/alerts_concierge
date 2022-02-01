@@ -10,8 +10,7 @@ defmodule ConciergeSite.AccountController do
   require Logger
 
   def new(conn, _params) do
-    account_changeset = User.create_account_changeset(%User{}, %{"sms_toggle" => false})
-    render(conn, "new.html", account_changeset: account_changeset)
+    render(conn, "new.html", account_changeset: new_user_changeset())
   end
 
   def edit(%{assigns: %{current_user: user}} = conn, _params) do
@@ -35,11 +34,18 @@ defmodule ConciergeSite.AccountController do
 
         conn
         |> put_flash(:error, "reCAPTCHA validation error. Please try again.")
-        |> render("new.html", account_changeset: User.create_account_changeset(%User{}, params))
+        |> render("new.html", account_changeset: new_user_changeset(params))
 
       {:error, %Ecto.Changeset{} = changeset} ->
         render(conn, "new.html", account_changeset: changeset, errors: errors(changeset))
     end
+  end
+
+  def create(conn, _params) do
+    conn
+    |> put_flash(:error, "Required params error. \
+      Please ensure your web browser is up-to-date and you have JavaScript enabled.")
+    |> render("new.html", account_changeset: new_user_changeset())
   end
 
   def update(%{assigns: %{current_user: user}} = conn, %{"user" => params}) do
@@ -122,6 +128,9 @@ defmodule ConciergeSite.AccountController do
       field
     end)
   end
+
+  defp new_user_changeset(params \\ %{"sms_toggle" => false}),
+    do: User.create_account_changeset(%User{}, params)
 
   defp communication_mode_flash(%User{sms_opted_out_at: sms_opted_out_at} = user)
        when not is_nil(sms_opted_out_at) do
