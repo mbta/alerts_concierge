@@ -579,7 +579,7 @@ defmodule AlertProcessor.Model.SubscriptionTest do
         |> Subscription.all_active_for_alert()
         |> Enum.map(& &1.id)
 
-      assert selected_ids == [regular.id, admin.id]
+      assert Enum.sort(selected_ids) == Enum.sort([regular.id, admin.id])
     end
 
     test "preloads the user" do
