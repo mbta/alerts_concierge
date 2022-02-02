@@ -7,8 +7,7 @@ defmodule AlertProcessor.Reminders.ProcessorTest do
   alias AlertProcessor.SendingQueue
 
   setup do
-    :ok = SendingQueue.reset()
-    :ok
+    SendingQueue.reset()
   end
 
   describe "process_alerts/2" do
@@ -45,7 +44,7 @@ defmodule AlertProcessor.Reminders.ProcessorTest do
         status: :sent,
         last_push_notification: monday_april_2_at_8am,
         subscriptions: [subscription],
-        inserted_at: DateTime.to_naive(monday_april_2_at_8am)
+        inserted_at: monday_april_2_at_8am
       }
 
       notification = insert(:notification, notification_details)
@@ -94,7 +93,7 @@ defmodule AlertProcessor.Reminders.ProcessorTest do
         status: :sent,
         last_push_notification: monday_april_2_at_8am,
         subscriptions: [subscription],
-        inserted_at: DateTime.to_naive(monday_april_2_at_8am)
+        inserted_at: monday_april_2_at_8am
       }
 
       notification = insert(:notification, notification_details)
@@ -141,7 +140,7 @@ defmodule AlertProcessor.Reminders.ProcessorTest do
         status: :sent,
         last_push_notification: monday_april_2_at_8am,
         subscriptions: [subscription],
-        inserted_at: DateTime.to_naive(monday_april_2_at_8am)
+        inserted_at: monday_april_2_at_8am
       }
 
       notification = insert(:notification, notification_details)

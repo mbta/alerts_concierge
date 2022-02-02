@@ -1,5 +1,7 @@
 defmodule AlertProcessor.Repo do
-  use Ecto.Repo, otp_app: :alert_processor
+  use Ecto.Repo,
+    otp_app: :alert_processor,
+    adapter: Ecto.Adapters.Postgres
 
   alias AlertProcessor.Helpers.ConfigHelper
 

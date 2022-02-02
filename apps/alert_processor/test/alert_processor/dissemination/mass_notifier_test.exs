@@ -4,15 +4,15 @@ defmodule AlertProcessor.Dissemination.MassNotifierTest do
   alias AlertProcessor.Dissemination.MassNotifier
   alias AlertProcessor.{Model.Alert, NotificationBuilder, Repo, SendingQueue}
 
-  @now Calendar.DateTime.now!("Etc/UTC")
-  @two_days_from_now Calendar.DateTime.add!(@now, 172_800)
-  @three_days_from_now Calendar.DateTime.add!(@now, 172_800)
+  @now DateTime.utc_now()
+  @two_days_from_now DateTime.add(@now, 172_800)
+  @three_days_from_now DateTime.add(@two_days_from_now, 172_800)
   @alert %Alert{
     id: "1",
     header: "test",
     active_period: [%{start: @two_days_from_now, end: @three_days_from_now}],
     service_effect: "test",
-    last_push_notification: DateTime.utc_now()
+    last_push_notification: DateTime.utc_now() |> DateTime.truncate(:second)
   }
 
   describe "save_and_enqueue/1" do

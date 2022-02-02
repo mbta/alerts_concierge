@@ -1,4 +1,5 @@
 [
+  import_deps: [:phoenix],
   inputs: [
     "mix.exs",
     "apps/*/mix.exs",

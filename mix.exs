@@ -35,7 +35,8 @@ defmodule AlertsConcierge.Mixfile do
       {:dialyxir, "~> 1.1.0", only: [:dev, :test], runtime: false},
       {:distillery, "~> 1.5", runtime: false},
       {:lcov_ex, "~> 0.2", only: [:dev, :test], runtime: false},
-      {:sobelow, "~> 0.11.0", only: [:dev, :test], runtime: false}
+      {:sobelow, "~> 0.11.0", only: [:dev, :test], runtime: false},
+      {:tzdata, "~> 1.1.0"}
     ]
   end
 
@@ -48,7 +49,7 @@ defmodule AlertsConcierge.Mixfile do
       sobelow: [
         "sobelow --root apps/concierge_site --exit --skip --ignore Config.CSP,Config.HTTPS"
       ],
-      test: ["ecto.create --quiet", "ecto.load --quiet", "test"]
+      test: ["ecto.create --quiet", "ecto.load --quiet --skip-if-loaded", "test"]
     ]
   end
 end

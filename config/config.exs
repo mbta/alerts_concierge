@@ -7,6 +7,8 @@ use Mix.Config
 # they all use the same configuration.
 import_config "../apps/*/config/config.exs"
 
+config :elixir, :time_zone_database, Tzdata.TimeZoneDatabase
+
 config :sentry,
   dsn: {:system, "SENTRY_DSN"},
   environment_name: {:system, "SENTRY_ENV"},

@@ -20,10 +20,7 @@ config :alert_processor, :mailer_error, AlertProcessor.MailerErrorMock
 
 config :alert_processor, api_url: "https://dev.api.mbtace.com/"
 
-config :alert_processor,
-  database_url:
-    {:system, "DATABASE_URL_TEST",
-     "postgresql://postgres:postgres@localhost:5432/alert_concierge_test"}
+config :alert_processor, database_url: {:system, "DATABASE_URL_TEST"}
 
 config :alert_processor, :notification_window_filter, AlertProcessor.NotificationWindowFilterMock
 

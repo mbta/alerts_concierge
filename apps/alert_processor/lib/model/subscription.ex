@@ -9,7 +9,6 @@ defmodule AlertProcessor.Model.Subscription do
     Alert,
     InformedEntity,
     NotificationSubscription,
-    Subscription,
     Trip,
     TripInfo,
     User
@@ -22,7 +21,7 @@ defmodule AlertProcessor.Model.Subscription do
   @type id :: String.t()
   @type subscription_type ::
           :bus | :subway | :commuter_rail | :ferry | :accessibility | :parking | :bike_storage
-  @type subscription_info :: {__MODULE__.t(), [InformedEntity.t()]}
+  @type subscription_info :: {t(), [InformedEntity.t()]}
   @type relevant_day ::
           :weekday | :saturday | :sunday | :monday | :tuesday | :wednesday | :thursday | :friday
   @type direction :: 0 | 1
@@ -104,10 +103,10 @@ defmodule AlertProcessor.Model.Subscription do
     field(:notification_type_to_send, AlertProcessor.AtomType, virtual: true)
     field(:paused, :boolean)
     field(:parent_id, :binary_id)
-    field(:child_subscriptions, {:array, Subscription}, virtual: true, default: [])
+    field(:child_subscriptions, {:array, :any}, virtual: true, default: [])
     field(:is_admin, :boolean)
 
-    timestamps()
+    timestamps(type: :utc_datetime)
   end
 
   @permitted_fields ~w(user_id trip_id relevant_days start_time
@@ -119,7 +118,7 @@ defmodule AlertProcessor.Model.Subscription do
   @doc """
   Changeset for persisting a Subscription
   """
-  @spec create_changeset(__MODULE__.t(), map) :: Ecto.Changeset.t()
+  @spec create_changeset(t(), map) :: Ecto.Changeset.t()
   def create_changeset(struct, params \\ %{}) do
     struct
     |> cast(params, @permitted_fields)
@@ -148,10 +147,9 @@ defmodule AlertProcessor.Model.Subscription do
   @doc """
   Syncs a subscription's attributes per a given trip.
   """
-  @spec sync_with_trip(__MODULE__.t(), Trip.t()) ::
-          {:ok, Subscription.t()} | {:error, Ecto.Changeset.t()}
-  def sync_with_trip(%Subscription{} = subscription, %Trip{} = trip) do
-    Subscription.SyncWithTrip.perform(subscription, trip)
+  @spec sync_with_trip(t(), Trip.t()) :: {:ok, t()} | {:error, Ecto.Changeset.t()}
+  def sync_with_trip(%__MODULE__{} = subscription, %Trip{} = trip) do
+    __MODULE__.SyncWithTrip.perform(subscription, trip)
   end
 
   def delete_subscription(struct, originator) do
@@ -244,7 +242,7 @@ defmodule AlertProcessor.Model.Subscription do
   @doc """
   Fetches subscriptions with users eager loaded for a list of ids
   """
-  @spec fetch_with_user([__MODULE__.id()]) :: [__MODULE__.t()]
+  @spec fetch_with_user([id()]) :: [t()]
   def fetch_with_user(subscription_ids) do
     query = from(s in __MODULE__, where: s.id in ^subscription_ids)
 
@@ -296,7 +294,7 @@ defmodule AlertProcessor.Model.Subscription do
   @doc """
   return relevant days pluralized and joined with comma.
   """
-  @spec relevant_days_string(__MODULE__.t()) :: iodata
+  @spec relevant_days_string(t()) :: iodata
   def relevant_days_string(subscription) do
     capitalized_days =
       Enum.map(subscription.relevant_days, &String.capitalize(Atom.to_string(&1)))
@@ -309,7 +307,7 @@ defmodule AlertProcessor.Model.Subscription do
   types which contain a start and end integer which represent the second of the day for
   the timestamp. This allows for comparing ranges of seconds for overlap.
   """
-  @spec timeframe_map(__MODULE__.t()) :: TimeFrameComparison.timeframe_map()
+  @spec timeframe_map(t()) :: TimeFrameComparison.timeframe_map()
   def timeframe_map(subscription) do
     relevant_days = weekday_to_days(subscription.relevant_days)
 
@@ -381,7 +379,7 @@ defmodule AlertProcessor.Model.Subscription do
     ]
   end
 
-  @spec subscription_trip_ids(__MODULE__.t()) :: [TripInfo.id()]
+  @spec subscription_trip_ids(t()) :: [TripInfo.id()]
   def subscription_trip_ids(subscription) do
     subscription.informed_entities
     |> Enum.filter(fn informed_entity ->
@@ -393,7 +391,7 @@ defmodule AlertProcessor.Model.Subscription do
   defp normalize_papertrail_result({:ok, %{model: subscription}}), do: {:ok, subscription}
   defp normalize_papertrail_result(result), do: result
 
-  @spec route_count(__MODULE__.t()) :: integer
+  @spec route_count(t()) :: integer
   def route_count(subscription) do
     Enum.count(
       subscription.informed_entities,
@@ -432,7 +430,7 @@ defmodule AlertProcessor.Model.Subscription do
     end
   end
 
-  @spec all_active_for_alert(Alert.t()) :: [__MODULE__.t()]
+  @spec all_active_for_alert(Alert.t()) :: [t()]
   def all_active_for_alert(alert) do
     alert
     |> get_alert_entity_lists()

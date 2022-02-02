@@ -12,7 +12,7 @@ defmodule AlertProcessor.Model.NotificationTest do
     service_effect: "There is a delay",
     description: "The delay is for 1 hour at south station",
     url: "http://www.example.com/alert-info",
-    send_after: DateTime.utc_now(),
+    send_after: DateTime.truncate(DateTime.utc_now(), :second),
     alert_id: "12345678",
     status: :sent
   }
@@ -111,7 +111,7 @@ defmodule AlertProcessor.Model.NotificationTest do
   end
 
   describe "most_recent_for_alerts/1" do
-    test "returns most recent notification by inserted_at" do
+    test "returns most recent notification by last_push_notification" do
       user = insert(:user)
 
       for notification_number <- 1..5 do
@@ -121,7 +121,7 @@ defmodule AlertProcessor.Model.NotificationTest do
 
       [latest_notification] = Notification.most_recent_for_alerts([%{id: "1"}])
 
-      assert latest_notification.header == "notification 5"
+      assert latest_notification.header == "notification 1"
     end
 
     test "returns a single notification per alert" do
@@ -165,7 +165,7 @@ defmodule AlertProcessor.Model.NotificationTest do
 
       for alert_id <- 1..2 do
         notification =
-          struct(Notification, notification_details(Integer.to_string(alert_id), "1", user))
+          struct(Notification, notification_details(Integer.to_string(alert_id), 1, user))
 
         Notification.save(notification, :sent)
       end
@@ -179,7 +179,7 @@ defmodule AlertProcessor.Model.NotificationTest do
       user = insert(:user)
 
       for status <- [:failed, :sent] do
-        notification = struct(Notification, notification_details("1", "1", user))
+        notification = struct(Notification, notification_details("1", 1, user))
         Notification.save(notification, status)
       end
 
@@ -195,7 +195,7 @@ defmodule AlertProcessor.Model.NotificationTest do
       notification =
         struct(
           Notification,
-          notification_details("1", "1", user, [
+          notification_details("1", 1, user, [
             %NotificationSubscription{subscription: subscription}
           ])
         )
@@ -210,7 +210,11 @@ defmodule AlertProcessor.Model.NotificationTest do
   end
 
   describe "most_recent_if_outdated_for_alert/1" do
-    test "returns most recent notification by inserted_at" do
+    defp build_alert(id) do
+      %Alert{id: id, last_push_notification: DateTime.utc_now() |> DateTime.truncate(:second)}
+    end
+
+    test "returns most recent notification by last_push_notification" do
       user = insert(:user)
 
       for notification_number <- 1..5 do
@@ -218,14 +222,13 @@ defmodule AlertProcessor.Model.NotificationTest do
         Notification.save(notification, :sent)
       end
 
-      alert = %Alert{id: "1", last_push_notification: DateTime.utc_now()}
-      [latest_notification] = Notification.most_recent_if_outdated_for_alert(alert)
+      [latest_notification] = build_alert("1") |> Notification.most_recent_if_outdated_for_alert()
 
-      assert latest_notification.header == "notification 5"
+      assert latest_notification.header == "notification 1"
     end
 
     test "ignores most recent notifications that were last pushed more recently than the alert" do
-      alert = %Alert{id: "1", last_push_notification: DateTime.utc_now()}
+      alert = build_alert("1")
       user = insert(:user)
 
       # The outdated notification would be returned by this function if there weren't a newer
@@ -258,8 +261,7 @@ defmodule AlertProcessor.Model.NotificationTest do
         Notification.save(notification, :sent)
       end
 
-      alert = %Alert{id: "1", last_push_notification: DateTime.utc_now()}
-      latest_notifications = Notification.most_recent_if_outdated_for_alert(alert)
+      latest_notifications = build_alert("1") |> Notification.most_recent_if_outdated_for_alert()
 
       assert length(latest_notifications) == 2
       assert Enum.any?(latest_notifications, &(&1.user_id == user1.id))
@@ -271,27 +273,25 @@ defmodule AlertProcessor.Model.NotificationTest do
 
       for alert_id <- 1..2 do
         notification =
-          struct(Notification, notification_details(Integer.to_string(alert_id), "1", user))
+          struct(Notification, notification_details(Integer.to_string(alert_id), 1, user))
 
         Notification.save(notification, :sent)
       end
 
-      alert = %Alert{id: "1", last_push_notification: DateTime.utc_now()}
-      [%{alert_id: alert_id}] = Notification.most_recent_if_outdated_for_alert(alert)
+      [%{alert_id: id}] = build_alert("1") |> Notification.most_recent_if_outdated_for_alert()
 
-      assert alert_id == "1"
+      assert id == "1"
     end
 
     test "ignores alerts with non-sent status" do
       user = insert(:user)
 
       for status <- [:failed, :sent] do
-        notification = struct(Notification, notification_details("1", "1", user))
+        notification = struct(Notification, notification_details("1", 1, user))
         Notification.save(notification, status)
       end
 
-      alert = %Alert{id: "1", last_push_notification: DateTime.utc_now()}
-      [%{status: status}] = Notification.most_recent_if_outdated_for_alert(alert)
+      [%{status: status}] = build_alert("1") |> Notification.most_recent_if_outdated_for_alert()
 
       assert status == :sent
     end
@@ -303,15 +303,14 @@ defmodule AlertProcessor.Model.NotificationTest do
       notification =
         struct(
           Notification,
-          notification_details("1", "1", user, [
+          notification_details("1", 1, user, [
             %NotificationSubscription{subscription: subscription}
           ])
         )
 
       Notification.save(notification, :sent)
 
-      alert = %Alert{id: "1", last_push_notification: DateTime.utc_now()}
-      [latest_notification] = Notification.most_recent_if_outdated_for_alert(alert)
+      [latest_notification] = build_alert("1") |> Notification.most_recent_if_outdated_for_alert()
 
       assert [subscription] = latest_notification.subscriptions
       assert subscription.user == user
@@ -330,7 +329,8 @@ defmodule AlertProcessor.Model.NotificationTest do
       service_effect: "some service effect",
       user: user,
       email: user.email,
-      last_push_notification: DateTime.utc_now(),
+      last_push_notification:
+        DateTime.utc_now() |> DateTime.truncate(:second) |> DateTime.add(-notification_number),
       notification_subscriptions: notification_subscriptions
     }
   end

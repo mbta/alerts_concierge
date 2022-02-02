@@ -17,7 +17,7 @@ defmodule AlertProcessor.Model.Metadata do
 
   schema "metadata" do
     field(:data, :map, default: %{}, null: false)
-    timestamps()
+    timestamps(type: :utc_datetime)
   end
 
   @spec get(key) :: value

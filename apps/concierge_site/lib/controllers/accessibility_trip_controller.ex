@@ -123,7 +123,7 @@ defmodule ConciergeSite.AccessibilityTripController do
 
   defp build_trip_transaction(trip, subscriptions, user) do
     multi =
-      Multi.run(Multi.new(), {:trip, 0}, fn _ ->
+      Multi.run(Multi.new(), {:trip, 0}, fn _repo, _changes ->
         PaperTrail.insert(trip, originator: user, meta: %{owner: user.id})
       end)
 
@@ -136,7 +136,7 @@ defmodule ConciergeSite.AccessibilityTripController do
         |> Subscription.create_changeset()
 
       acc
-      |> Multi.run({:subscription, index}, fn _ ->
+      |> Multi.run({:subscription, index}, fn _repo, _changes ->
         PaperTrail.insert(sub_to_insert, originator: user, meta: %{owner: user.id})
       end)
     end)

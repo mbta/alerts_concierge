@@ -17,6 +17,7 @@ defmodule AlertProcessor.Helpers.ConfigHelper do
   defp do_get(name, app) do
     case Application.get_env(app, name) do
       {:system, env_var, default} -> System.get_env(env_var) || default
+      {:system, env_var} -> System.get_env(env_var) || raise "missing env var: #{env_var}"
       value -> value
     end
   end

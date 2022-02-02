@@ -8,6 +8,6 @@ defmodule AlertProcessor.Model.NotificationSubscription do
     belongs_to(:notification, AlertProcessor.Model.Notification, type: :binary_id)
     belongs_to(:subscription, AlertProcessor.Model.Subscription, type: :binary_id)
 
-    timestamps()
+    timestamps(type: :utc_datetime)
   end
 end

@@ -6,7 +6,7 @@ defmodule ConciergeSite.Endpoint do
     plug(Phoenix.Ecto.SQL.Sandbox)
   end
 
-  socket("/socket", ConciergeSite.UserSocket)
+  socket("/socket", ConciergeSite.UserSocket, websocket: true)
 
   # Serve at "/" the static files from "priv/static" directory.
   #
