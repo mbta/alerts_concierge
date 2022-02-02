@@ -36,7 +36,7 @@ defmodule AlertProcessor.Model.User do
     field(:password, :string, virtual: true)
     field(:sms_toggle, :boolean, virtual: true)
 
-    timestamps()
+    timestamps(type: :utc_datetime)
   end
 
   @permitted_fields ~w(
@@ -305,7 +305,7 @@ defmodule AlertProcessor.Model.User do
     from(u in __MODULE__, where: u.phone_number in ^phone_numbers)
     |> Repo.all()
     |> Enum.reduce(Multi.new(), fn %{id: user_id} = user, multi ->
-      Multi.run(multi, user_id, fn _ ->
+      Multi.run(multi, user_id, fn _repo, _changes ->
         user
         |> update_account_changeset(%{
           phone_number: nil,

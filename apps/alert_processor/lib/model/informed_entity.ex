@@ -51,7 +51,7 @@ defmodule AlertProcessor.Model.InformedEntity do
     field(:trip, :string)
     field(:schedule, :map, virtual: true)
 
-    timestamps()
+    timestamps(type: :utc_datetime)
   end
 
   @doc """

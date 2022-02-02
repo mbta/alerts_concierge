@@ -19,7 +19,7 @@ defmodule AlertProcessor.Model.SavedAlert do
     field(:data, :map)
     field(:notification_type, AlertProcessor.AtomType, virtual: true)
 
-    timestamps()
+    timestamps(type: :utc_datetime)
   end
 
   @create_fields ~w(alert_id data last_modified)a

@@ -52,7 +52,7 @@ defmodule AlertProcessor.Model.Trip do
     field(:roundtrip, :boolean, null: false)
     field(:trip_type, AlertProcessor.AtomType, null: false, default: :commute)
 
-    timestamps()
+    timestamps(type: :utc_datetime)
   end
 
   @permitted_fields ~w(user_id relevant_days start_time end_time

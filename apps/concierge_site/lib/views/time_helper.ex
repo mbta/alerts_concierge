@@ -59,6 +59,7 @@ defmodule ConciergeSite.TimeHelper do
           required: true,
           options: zero_padded_numbers().(1..12),
           value: format_time(time, "%I", true),
+          id: "trip_#{field}_hour",
           data: [type: "time"]
         ),
         content_tag(:span, ":"),
@@ -67,6 +68,7 @@ defmodule ConciergeSite.TimeHelper do
           :minute,
           required: true,
           value: format_time(time, "%M", true),
+          id: "trip_#{field}_minute",
           data: [type: "time"]
         ),
         " ",

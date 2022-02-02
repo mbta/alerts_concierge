@@ -790,7 +790,7 @@ defmodule AlertProcessor.Model.SubscriptionTest do
 
       acc =
         acc
-        |> Multi.run({:subscription, index}, fn _ ->
+        |> Multi.run({:subscription, index}, fn _repo, _changes ->
           PaperTrail.insert(
             sub_to_insert,
             originator: User.wrap_id(originator),
@@ -801,7 +801,7 @@ defmodule AlertProcessor.Model.SubscriptionTest do
       ies
       |> Enum.with_index()
       |> Enum.reduce(acc, fn {ie, i}, accumulator ->
-        Multi.run(accumulator, {:new_informed_entity, index, i}, fn _ ->
+        Multi.run(accumulator, {:new_informed_entity, index, i}, fn _repo, _changes ->
           ie_to_insert =
             ie
             |> Map.merge(%{

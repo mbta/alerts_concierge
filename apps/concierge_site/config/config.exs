@@ -36,6 +36,8 @@ config :logger, :console,
   format: "$date $time $metadata[$level] $message\n",
   metadata: [:request_id]
 
+config :phoenix, :json_library, Poison
+
 # Include referrer in Logster request log
 config :logster, :allowed_headers, ["referer"]
 

@@ -21,7 +21,7 @@ config :logger, :console,
   metadata: [:request_id]
 
 # Configure your database
-config :alert_processor, AlertProcessor.Repo, adapter: Ecto.Adapters.Postgres
+config :alert_processor, AlertProcessor.Repo, migration_timestamps: [type: :utc_datetime]
 
 # Enable cyclic dependency on ConciergeSite mailer that can be bypassed in the test environment.
 # These modules are not defined when AlertProcessor is run on its own.
@@ -41,11 +41,6 @@ config :alert_processor,
 
 config :alert_processor, api_url: {:system, "API_URL", "https://dev.api.mbtace.com/"}
 config :alert_processor, api_key: {:system, "API_KEY", nil}
-
-config :alert_processor,
-  database_url:
-    {:system, "DATABASE_URL_DEV",
-     "postgresql://postgres:postgres@localhost:5432/alert_concierge_dev"}
 
 # Number of workers for sending notifications
 config :alert_processor, notification_workers: 40

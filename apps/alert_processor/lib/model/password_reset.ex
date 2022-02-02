@@ -23,7 +23,7 @@ defmodule AlertProcessor.Model.PasswordReset do
     field(:redeemed_at, :utc_datetime)
     field(:email, :string, virtual: true)
 
-    timestamps()
+    timestamps(type: :utc_datetime)
   end
 
   @permitted_fields ~w(user_id expired_at redeemed_at email)a

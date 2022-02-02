@@ -156,10 +156,10 @@ defmodule AlertProcessor.Model.TripTest do
 
       {:ok, %Trip{} = _} = Trip.update(trip, params)
       updated_trip = Trip.find_by_id(trip.id)
-      assert updated_trip.start_time == ~T[13:00:00.000000]
-      assert updated_trip.end_time == ~T[13:30:00.000000]
-      assert updated_trip.return_start_time == ~T[15:00:00.000000]
-      assert updated_trip.return_end_time == ~T[15:30:00.000000]
+      assert updated_trip.start_time == ~T[13:00:00]
+      assert updated_trip.end_time == ~T[13:30:00]
+      assert updated_trip.return_start_time == ~T[15:00:00]
+      assert updated_trip.return_end_time == ~T[15:30:00]
       assert updated_trip.relevant_days == [:tuesday]
       assert updated_trip.facility_types == [:escalator]
     end
@@ -175,8 +175,8 @@ defmodule AlertProcessor.Model.TripTest do
       # When a trip is updated we want to make sure it's subscriptions are
       # updated accordingly.
       relevant_days = [:monday]
-      start_time = ~T[12:00:00.000000]
-      end_time = ~T[12:30:00.000000]
+      start_time = ~T[12:00:00]
+      end_time = ~T[12:30:00]
 
       trip_details = %{
         relevant_days: relevant_days,
@@ -209,8 +209,8 @@ defmodule AlertProcessor.Model.TripTest do
 
       params = %{
         relevant_days: [:tuesday],
-        start_time: ~T[13:00:00.000000],
-        end_time: ~T[13:30:00.000000]
+        start_time: ~T[13:00:00],
+        end_time: ~T[13:30:00]
       }
 
       {:ok, %Trip{} = _} = Trip.update(trip, params)
@@ -231,10 +231,10 @@ defmodule AlertProcessor.Model.TripTest do
       # value of true should have a start_time and end_time equal to the trip's
       # return_start_time and return_end_time.
       relevant_days = [:monday]
-      start_time = ~T[12:00:00.000000]
-      end_time = ~T[12:30:00.000000]
-      return_start_time = ~T[14:00:00.000000]
-      return_end_time = ~T[14:30:00.000000]
+      start_time = ~T[12:00:00]
+      end_time = ~T[12:30:00]
+      return_start_time = ~T[14:00:00]
+      return_end_time = ~T[14:30:00]
 
       trip_details = %{
         relevant_days: relevant_days,
@@ -271,10 +271,10 @@ defmodule AlertProcessor.Model.TripTest do
 
       params = %{
         relevant_days: [:tuesday],
-        start_time: ~T[13:00:00.000000],
-        end_time: ~T[13:30:00.000000],
-        return_start_time: ~T[15:00:00.000000],
-        return_end_time: ~T[15:30:00.000000]
+        start_time: ~T[13:00:00],
+        end_time: ~T[13:30:00],
+        return_start_time: ~T[15:00:00],
+        return_end_time: ~T[15:30:00]
       }
 
       {:ok, %Trip{} = _} = Trip.update(trip, params)
@@ -312,8 +312,8 @@ defmodule AlertProcessor.Model.TripTest do
   test "pause/2 pauses all of the subscriptions for a trip" do
     user = insert(:user)
     relevant_days = [:monday]
-    start_time = ~T[12:00:00.000000]
-    end_time = ~T[12:30:00.000000]
+    start_time = ~T[12:00:00]
+    end_time = ~T[12:30:00]
 
     trip_details = %{
       relevant_days: relevant_days,
@@ -362,8 +362,8 @@ defmodule AlertProcessor.Model.TripTest do
   test "resume/2 un-pauses all of the subscriptions for a trip" do
     user = insert(:user)
     relevant_days = [:monday]
-    start_time = ~T[12:00:00.000000]
-    end_time = ~T[12:30:00.000000]
+    start_time = ~T[12:00:00]
+    end_time = ~T[12:30:00]
 
     trip_details = %{
       relevant_days: relevant_days,

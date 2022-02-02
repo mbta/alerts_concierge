@@ -23,11 +23,8 @@ defmodule ConciergeSite.Admin.QueriesView do
 
   defp format_value(value, false) when is_binary(value), do: value
 
-  defp format_value({{_, _, _}, {_, _, _, _}} = value, _) do
-    case Ecto.DateTime.load(value) do
-      {:ok, datetime} -> datetime
-      {:error, error} -> inspect(error)
-    end
+  defp format_value(%NaiveDateTime{} = value, _) do
+    value |> NaiveDateTime.truncate(:second) |> to_string()
   end
 
   defp format_value(nil, _), do: "null"

@@ -13,10 +13,8 @@ defmodule AlertProcessor.ReleaseTasks do
 
   def migrate do
     Enum.each(@start_apps, &Application.ensure_all_started/1)
-    Migrator.run(Repo, migrations_path(:alert_processor), :up, all: true)
+    Migrator.run(Repo, :up, all: true)
   end
-
-  defp migrations_path(app), do: Application.app_dir(app, "priv/repo/migrations")
 end
 
 defmodule AlertProcessor.ReleaseTasks.Dev do

@@ -5,7 +5,6 @@ defmodule AlertProcessor.AlertParserTest do
   import AlertProcessor.Factory
   alias AlertProcessor.{AlertParser, Model, Repo, AlertsClient, SendingQueue, ServiceInfoCache}
   alias Model.{InformedEntity, SavedAlert}
-  alias Calendar.DateTime, as: DT
 
   setup_all do
     {:ok, _} = Application.ensure_all_started(:alert_processor)
@@ -278,9 +277,9 @@ defmodule AlertProcessor.AlertParserTest do
                closed_timestamp: nil
              } = result
 
-      assert start_datetime == DT.from_erl!({{2017, 10, 10}, {13, 44, 54}}, "America/New_York")
-      assert end_datetime == DT.from_erl!({{2017, 10, 10}, {18, 50, 34}}, "America/New_York")
-      assert created_at_datetime == DT.from_erl!({{2017, 10, 10}, {17, 44, 59}}, "Etc/UTC")
+      assert start_datetime == DateTime.from_naive!(~N[2017-10-10 13:44:54], "America/New_York")
+      assert end_datetime == DateTime.from_naive!(~N[2017-10-10 18:50:34], "America/New_York")
+      assert created_at_datetime == DateTime.from_naive!(~N[2017-10-10 17:44:59], "Etc/UTC")
     end
   end
 
@@ -302,8 +301,8 @@ defmodule AlertProcessor.AlertParserTest do
                closed_timestamp: nil
              } = result
 
-      assert start_datetime == DT.from_erl!({{2017, 10, 10}, {13, 44, 54}}, "America/New_York")
-      assert end_datetime == DT.from_erl!({{2017, 10, 12}, {1, 44, 59}}, "America/New_York")
+      assert start_datetime == DateTime.from_naive!(~N[2017-10-10 13:44:54], "America/New_York")
+      assert end_datetime == DateTime.from_naive!(~N[2017-10-12 01:44:59], "America/New_York")
       assert 1_507_661_434 == feed_timestamp
 
       assert 36 * 60 * 60 ==
@@ -368,7 +367,7 @@ defmodule AlertProcessor.AlertParserTest do
                closed_timestamp: closed_timestamp
              } = result
 
-      assert closed_timestamp == DT.from_erl!({{2017, 10, 10}, {17, 50, 59}}, "Etc/UTC")
+      assert closed_timestamp == DateTime.from_naive!(~N[2017-10-10 17:50:59], "Etc/UTC")
     end
   end
 

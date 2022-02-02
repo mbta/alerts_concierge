@@ -36,12 +36,11 @@ defmodule AlertProcessor.Mixfile do
   defp deps do
     [
       {:bcrypt_elixir, "~> 1.0"},
-      {:bypass, "~> 0.9.0", only: :test},
+      {:bypass, "~> 1.0.0", only: :test},
       {:calendar, "~> 1.0.0"},
       {:comeonin, "~> 3.0"},
       {:con_cache, "~> 0.12.1"},
-      {:cowboy, "~> 1.0"},
-      {:ecto, "~> 2.2.0"},
+      {:ecto_sql, "~> 3.0"},
       {:exactor, "~> 2.2.0"},
       {:ex_aws, "~> 2.1.0"},
       {:ex_aws_sns, "~> 2.2.0"},
@@ -51,14 +50,13 @@ defmodule AlertProcessor.Mixfile do
       {:gettext, "~> 0.11"},
       {:hackney, "~> 1.17.0"},
       {:httpoison, "~> 1.1.1"},
-      {:paper_trail, "~> 0.7.5"},
+      {:paper_trail, "0.8.3"},
       {:poison, "~> 2.0"},
       {:poolboy, ">= 0.0.0"},
-      {:postgrex, ">= 0.0.0"},
+      {:postgrex, "~> 0.15.0"},
       {:sentry, "~> 7.0"},
       {:sweet_xml, "~> 0.6"},
       {:eflame, "~> 1.0", only: [:dev]},
-      {:tzdata, "~> 1.1.0"},
       {:uuid, "~> 1.1.8"}
     ]
   end

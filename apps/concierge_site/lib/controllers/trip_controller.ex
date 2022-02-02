@@ -385,7 +385,7 @@ defmodule ConciergeSite.TripController do
     trip = Map.put(trip, :id, trip_id)
 
     multi =
-      Multi.run(Multi.new(), {:trip, 0}, fn _ ->
+      Multi.run(Multi.new(), {:trip, 0}, fn _repo, _changes ->
         PaperTrail.insert(trip, originator: user, meta: %{owner: user.id})
       end)
 
@@ -402,7 +402,7 @@ defmodule ConciergeSite.TripController do
         |> Subscription.create_changeset()
 
       acc
-      |> Multi.run({:subscription, index}, fn _ ->
+      |> Multi.run({:subscription, index}, fn _repo, _changes ->
         PaperTrail.insert(sub_to_insert, originator: user, meta: %{owner: user.id})
       end)
     end)

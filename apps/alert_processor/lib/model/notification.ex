@@ -48,14 +48,14 @@ defmodule AlertProcessor.Model.Notification do
     field(:closed_timestamp, :utc_datetime)
     field(:type, AlertProcessor.AtomType)
 
-    timestamps()
+    timestamps(type: :utc_datetime)
   end
 
-  @spec save(__MODULE__.t(), atom) :: {:ok, __MODULE__.t()} | {:error, Ecto.Changeset.t()}
+  @spec save(t(), atom) :: {:ok, t()} | {:error, Ecto.Changeset.t()}
   def save(notification, status) do
     Repo.insert(
       %{notification | status: status, user_id: notification.user.id}
-      |> __MODULE__.create_changeset()
+      |> create_changeset()
       |> cast_assoc(:notification_subscriptions)
     )
   end

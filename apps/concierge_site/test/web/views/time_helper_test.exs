@@ -5,7 +5,7 @@ defmodule ConciergeSite.TimeHelperTest do
 
   describe "format_time/1" do
     test "converts time into readable format" do
-      actual = TimeHelper.format_time(~T[01:00:00.000000])
+      actual = TimeHelper.format_time(~T[01:00:00])
       expected = " 1:00 AM"
       assert actual == expected
     end
