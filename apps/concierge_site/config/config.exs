@@ -41,8 +41,6 @@ config :phoenix, :json_library, Poison
 # Include referrer in Logster request log
 config :logster, :allowed_headers, ["referer"]
 
-config :concierge_site, ConciergeSite.Guardian, secret_key: "${GUARDIAN_AUTH_KEY}"
-
 config :guardian, Guardian.DB, repo: AlertProcessor.Repo
 
 config :concierge_site, mail_template_dir: Path.join(~w(#{__DIR__} /../ lib/mail_templates))

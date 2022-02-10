@@ -101,7 +101,7 @@ defmodule AlertProcessor.SavedAlertTest do
     end
 
     test "updates alerts with last_modified changed" do
-      [saved_alert, _] = SavedAlert.save!(@alerts)
+      [_a1, _a2] = SavedAlert.save!(@alerts)
 
       updated = [
         %{"id" => "1", "last_modified_timestamp" => 2_000_000_000, "data" => %{"test" => 2}}
