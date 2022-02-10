@@ -5,8 +5,8 @@ defmodule AlertProcessor.SentAlertFilterTest do
   alias Model.{Alert, Notification, NotificationSubscription}
   import AlertProcessor.Factory
 
-  @monday_at_7am DateTime.from_naive!(~N[2018-04-02 07:00:00], "Etc/UTC")
-  @monday_at_8am DateTime.from_naive!(~N[2018-04-02 08:00:00], "Etc/UTC")
+  @monday_at_7am ~U[2018-04-02 07:00:00Z]
+  @monday_at_8am ~U[2018-04-02 08:00:00Z]
   @alert %Alert{id: "123", last_push_notification: @monday_at_7am}
 
   describe "filter/2" do
@@ -89,7 +89,7 @@ defmodule AlertProcessor.SentAlertFilterTest do
     end
 
     test "does not return subscription to auto resend if not in notification window" do
-      monday_at_10am = DateTime.from_naive!(~N[2018-04-02 10:00:00], "Etc/UTC")
+      monday_at_10am = ~U[2018-04-02 10:00:00Z]
       user = insert(:user)
 
       sub1 =
@@ -147,7 +147,7 @@ defmodule AlertProcessor.SentAlertFilterTest do
         service_effect: "test",
         description: "test",
         status: :sent,
-        last_push_notification: Calendar.DateTime.subtract!(@monday_at_7am, 1800),
+        last_push_notification: DateTime.add(@monday_at_7am, -1800),
         notification_subscriptions: [%NotificationSubscription{subscription: sub1}]
       }
 

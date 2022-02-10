@@ -1,52 +1,24 @@
 defmodule AlertProcessor.NotificationBuilderTest do
   @moduledoc false
   use AlertProcessor.DataCase, async: true
-  import AlertProcessor.Factory
+  import AlertProcessor.{DateHelper, Factory}
   alias AlertProcessor.{Model, NotificationBuilder}
   alias AlertProcessor.Model.{Notification, InformedEntity}
   alias Model.Alert
-  alias Calendar.DateTime, as: DT
 
-  setup_all do
-    now = DT.from_date_and_time_and_zone!({2018, 1, 11}, {14, 10, 55}, "Etc/UTC")
-    two_days_ago = DT.subtract!(now, 172_800)
-    one_day_ago = DT.subtract!(now, 86_400)
-    one_hour_ago = DT.subtract!(now, 3600)
-    thirty_minutes_from_now = DT.add!(now, 1800)
-    one_hour_from_now = DT.add!(now, 3600)
-    one_day_from_now = DT.add!(now, 86_400)
-    two_days_from_now = DT.add!(now, 172_800)
-    three_days_from_now = DT.add!(now, 172_800)
-
-    utc_time = %{
-      now: now,
-      thirty_minutes_from_now: thirty_minutes_from_now,
-      two_days_ago: two_days_ago,
-      one_day_ago: one_day_ago,
-      one_hour_ago: one_hour_ago,
-      one_hour_from_now: one_hour_from_now,
-      one_day_from_now: one_day_from_now,
-      two_days_from_now: two_days_from_now,
-      three_days_from_now: three_days_from_now
-    }
-
-    est_time =
-      for {key, val} <- utc_time, into: %{} do
-        {key, DT.shift_zone!(val, "America/New_York")}
-      end
-
-    {:ok, est_time: est_time, now: now}
-  end
-
-  test "build notification struct", %{est_time: est_time} do
+  test "build notification struct" do
+    now = naive_to_local(~N[2018-01-11 14:10:55Z])
+    one_hour_ago = DateTime.add(now, -3600)
+    two_days_from_now = DateTime.add(now, 172_800)
+    three_days_from_now = DateTime.add(now, 259_200)
     user = insert(:user)
     sub = insert(:subscription, user: user)
 
     alert = %Alert{
       id: "1",
       header: nil,
-      active_period: [%{start: est_time.two_days_from_now, end: est_time.three_days_from_now}],
-      last_push_notification: est_time.one_hour_ago
+      active_period: [%{start: two_days_from_now, end: three_days_from_now}],
+      last_push_notification: one_hour_ago
     }
 
     notification = NotificationBuilder.build_notification({user, [sub]}, alert)
@@ -76,15 +48,14 @@ defmodule AlertProcessor.NotificationBuilderTest do
     assert expected_notification == notification
   end
 
-  test "logs warning if it errors replacing text", %{now: now} do
+  test "logs warning if it errors replacing text" do
     user = build(:user)
     subscription = build(:subscription, user: user)
 
     alert = %Alert{
       header: "Newburyport Train 180 (25:25 pm from Newburyport)",
       id: "115346",
-      informed_entities: [%InformedEntity{route_type: 2}],
-      last_push_notification: now
+      informed_entities: [%InformedEntity{route_type: 2}]
     }
 
     function = fn ->

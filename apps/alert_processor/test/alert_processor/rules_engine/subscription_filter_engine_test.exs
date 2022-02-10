@@ -13,9 +13,8 @@ defmodule AlertProcessor.SubscriptionFilterEngineTest do
   }
 
   setup_all do
-    {:ok, _} = Application.ensure_all_started(:alert_processor)
-    {:ok, start_time} = DateTime.from_naive(~N[2017-04-26 09:00:00], "Etc/UTC")
-    {:ok, start_time2} = DateTime.from_naive(~N[2017-08-01 09:00:00], "Etc/UTC")
+    start_time = ~U[2017-04-26 09:00:00Z]
+    start_time2 = ~U[2017-08-01 09:00:00Z]
 
     alert = %Alert{
       active_period: [%{start: start_time, end: nil}, %{start: start_time2, end: nil}],

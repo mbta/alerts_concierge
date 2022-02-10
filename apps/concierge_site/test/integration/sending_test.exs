@@ -11,11 +11,11 @@ defmodule ConciergeSite.Integration.Sending do
     @alert %Alert{
       active_period: [
         %{
-          end: DateTime.from_naive!(~N[2018-01-02 08:30:00], "Etc/UTC"),
-          start: DateTime.from_naive!(~N[2018-01-02 08:00:00], "Etc/UTC")
+          end: ~U[2018-01-02 08:30:00Z],
+          start: ~U[2018-01-02 08:00:00Z]
         }
       ],
-      created_at: DateTime.from_naive!(~N[2018-01-01 05:00:00], "Etc/UTC"),
+      created_at: ~U[2018-01-01 05:00:00Z],
       effect_name: "Service Change",
       header: "Header Text",
       id: "1",
@@ -28,7 +28,7 @@ defmodule ConciergeSite.Integration.Sending do
           stop: "place-harsq"
         }
       ],
-      last_push_notification: DateTime.from_naive!(~N[2018-01-01 05:00:00], "Etc/UTC"),
+      last_push_notification: ~U[2018-01-01 05:00:00Z],
       service_effect: "Service Effect"
     }
 

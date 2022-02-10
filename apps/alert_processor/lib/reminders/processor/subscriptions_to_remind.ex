@@ -42,11 +42,9 @@ defmodule AlertProcessor.Reminders.Processor.SubscriptionsToRemind do
   end
 
   defp reminder_due?(notification, alert, now) do
-    inserted_at = notification.inserted_at
-
     Enum.any?(alert.reminder_times, fn reminder_time ->
-      reminder_time_earlier_than_now?(reminder_time, now) &&
-        reminder_time_later_than_inserted_at?(reminder_time, inserted_at)
+      reminder_time_earlier_than_now?(reminder_time, now) and
+        reminder_time_later_than_inserted_at?(reminder_time, notification.inserted_at)
     end)
   end
 
@@ -55,7 +53,6 @@ defmodule AlertProcessor.Reminders.Processor.SubscriptionsToRemind do
   end
 
   defp reminder_time_later_than_inserted_at?(reminder_time, inserted_at) do
-    inserted_at = DateTime.from_naive!(inserted_at, "Etc/UTC")
     DateTime.compare(reminder_time, inserted_at) == :gt
   end
 

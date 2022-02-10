@@ -7,9 +7,9 @@ defmodule AlertProcessor.Reminders.Processor.SubscriptionsToRemindTest do
 
   describe "perform/1" do
     test "if reminder due" do
-      monday_april_2_at_8am = DateTime.from_naive!(~N[2018-04-02 08:00:00], "Etc/UTC")
-      monday_april_9_at_7_30am = DateTime.from_naive!(~N[2018-04-09 07:30:00], "Etc/UTC")
-      monday_april_9_at_7_45am = DateTime.from_naive!(~N[2018-04-09 07:45:00], "Etc/UTC")
+      monday_april_2_at_8am = ~U[2018-04-02 08:00:00Z]
+      monday_april_9_at_7_30am = ~U[2018-04-09 07:30:00Z]
+      monday_april_9_at_7_45am = ~U[2018-04-09 07:45:00Z]
       user = build(:user)
 
       subscription_details = %{
@@ -37,7 +37,7 @@ defmodule AlertProcessor.Reminders.Processor.SubscriptionsToRemindTest do
         status: :sent,
         last_push_notification: monday_april_2_at_8am,
         subscriptions: [subscription],
-        inserted_at: DateTime.to_naive(monday_april_2_at_8am)
+        inserted_at: monday_april_2_at_8am
       }
 
       assert [subscription_to_remind] =
@@ -47,11 +47,11 @@ defmodule AlertProcessor.Reminders.Processor.SubscriptionsToRemindTest do
     end
 
     test "if a second reminder is due" do
-      monday_april_2_at_8am = DateTime.from_naive!(~N[2018-04-02 08:00:00], "Etc/UTC")
-      tuesday_april_10_at_1pm = DateTime.from_naive!(~N[2018-04-10 13:00:00], "Etc/UTC")
-      monday_april_16_at_7_01am = DateTime.from_naive!(~N[2018-04-16 07:01:00], "Etc/UTC")
-      tuesday_april_17_at_1pm = DateTime.from_naive!(~N[2018-04-17 13:00:00], "Etc/UTC")
-      monday_april_23_at_7_01am = DateTime.from_naive!(~N[2018-04-23 07:01:00], "Etc/UTC")
+      monday_april_2_at_8am = ~U[2018-04-02 08:00:00Z]
+      tuesday_april_10_at_1pm = ~U[2018-04-10 13:00:00Z]
+      monday_april_16_at_7_01am = ~U[2018-04-16 07:01:00Z]
+      tuesday_april_17_at_1pm = ~U[2018-04-17 13:00:00Z]
+      monday_april_23_at_7_01am = ~U[2018-04-23 07:01:00Z]
       user = build(:user)
 
       subscription_details = %{
@@ -79,7 +79,7 @@ defmodule AlertProcessor.Reminders.Processor.SubscriptionsToRemindTest do
         status: :sent,
         last_push_notification: monday_april_2_at_8am,
         subscriptions: [subscription],
-        inserted_at: DateTime.to_naive(monday_april_16_at_7_01am)
+        inserted_at: monday_april_16_at_7_01am
       }
 
       assert [subscription_to_remind] =
@@ -89,9 +89,9 @@ defmodule AlertProcessor.Reminders.Processor.SubscriptionsToRemindTest do
     end
 
     test "if reminder not due yet" do
-      monday_april_2_at_8am = DateTime.from_naive!(~N[2018-04-02 08:00:00], "Etc/UTC")
-      monday_april_9_at_7_30am = DateTime.from_naive!(~N[2018-04-09 07:30:00], "Etc/UTC")
-      monday_april_16_at_7_30am = DateTime.from_naive!(~N[2018-04-16 07:30:00], "Etc/UTC")
+      monday_april_2_at_8am = ~U[2018-04-02 08:00:00Z]
+      monday_april_9_at_7_30am = ~U[2018-04-09 07:30:00Z]
+      monday_april_16_at_7_30am = ~U[2018-04-16 07:30:00Z]
       user = build(:user)
 
       subscription_details = %{
@@ -119,17 +119,17 @@ defmodule AlertProcessor.Reminders.Processor.SubscriptionsToRemindTest do
         status: :sent,
         last_push_notification: monday_april_2_at_8am,
         subscriptions: [subscription],
-        inserted_at: DateTime.to_naive(monday_april_2_at_8am)
+        inserted_at: monday_april_2_at_8am
       }
 
       assert [] = SubscriptionsToRemind.perform({alert, [notification], monday_april_9_at_7_30am})
     end
 
     test "if reminder not due yet and multiple reminder times" do
-      monday_april_2_at_8am = DateTime.from_naive!(~N[2018-04-02 08:00:00], "Etc/UTC")
-      monday_april_9_at_7_30am = DateTime.from_naive!(~N[2018-04-09 07:30:00], "Etc/UTC")
-      monday_april_16_at_7_30am = DateTime.from_naive!(~N[2018-04-16 07:30:00], "Etc/UTC")
-      monday_april_23_at_7_30am = DateTime.from_naive!(~N[2018-04-23 07:30:00], "Etc/UTC")
+      monday_april_2_at_8am = ~U[2018-04-02 08:00:00Z]
+      monday_april_9_at_7_30am = ~U[2018-04-09 07:30:00Z]
+      monday_april_16_at_7_30am = ~U[2018-04-16 07:30:00Z]
+      monday_april_23_at_7_30am = ~U[2018-04-23 07:30:00Z]
       user = build(:user)
 
       subscription_details = %{
@@ -157,7 +157,7 @@ defmodule AlertProcessor.Reminders.Processor.SubscriptionsToRemindTest do
         status: :sent,
         last_push_notification: monday_april_2_at_8am,
         subscriptions: [subscription],
-        inserted_at: DateTime.to_naive(monday_april_9_at_7_30am)
+        inserted_at: monday_april_9_at_7_30am
       }
 
       assert [] =
@@ -165,10 +165,10 @@ defmodule AlertProcessor.Reminders.Processor.SubscriptionsToRemindTest do
     end
 
     test "with two reminders that were already sent" do
-      monday_april_2_at_8am = DateTime.from_naive!(~N[2018-04-02 08:00:00], "Etc/UTC")
-      monday_april_9_at_7_30am = DateTime.from_naive!(~N[2018-04-09 07:30:00], "Etc/UTC")
-      monday_april_16_at_7_30am = DateTime.from_naive!(~N[2018-04-16 07:30:00], "Etc/UTC")
-      monday_april_23_at_7_30am = DateTime.from_naive!(~N[2018-04-23 07:30:00], "Etc/UTC")
+      monday_april_2_at_8am = ~U[2018-04-02 08:00:00Z]
+      monday_april_9_at_7_30am = ~U[2018-04-09 07:30:00Z]
+      monday_april_16_at_7_30am = ~U[2018-04-16 07:30:00Z]
+      monday_april_23_at_7_30am = ~U[2018-04-23 07:30:00Z]
       user = build(:user)
 
       subscription_details = %{
@@ -196,7 +196,7 @@ defmodule AlertProcessor.Reminders.Processor.SubscriptionsToRemindTest do
         status: :sent,
         last_push_notification: monday_april_2_at_8am,
         subscriptions: [subscription],
-        inserted_at: DateTime.to_naive(monday_april_16_at_7_30am)
+        inserted_at: monday_april_16_at_7_30am
       }
 
       # Note that the second argument is expected to include the latest known
@@ -206,11 +206,11 @@ defmodule AlertProcessor.Reminders.Processor.SubscriptionsToRemindTest do
     end
 
     test "reminders are sent within notification window only" do
-      monday_april_2_at_8am = DateTime.from_naive!(~N[2018-04-02 08:00:00], "Etc/UTC")
-      friday_april_6_at_1pm = DateTime.from_naive!(~N[2018-04-06 13:00:00], "Etc/UTC")
-      friday_april_6_at_2pm = DateTime.from_naive!(~N[2018-04-06 14:00:00], "Etc/UTC")
-      monday_april_9_at_6am = DateTime.from_naive!(~N[2018-04-09 06:00:00], "Etc/UTC")
-      monday_april_9_at_7_30am = DateTime.from_naive!(~N[2018-04-09 07:30:00], "Etc/UTC")
+      monday_april_2_at_8am = ~U[2018-04-02 08:00:00Z]
+      friday_april_6_at_1pm = ~U[2018-04-06 13:00:00Z]
+      friday_april_6_at_2pm = ~U[2018-04-06 14:00:00Z]
+      monday_april_9_at_6am = ~U[2018-04-09 06:00:00Z]
+      monday_april_9_at_7_30am = ~U[2018-04-09 07:30:00Z]
       user = build(:user)
 
       subscription_details = %{
@@ -238,7 +238,7 @@ defmodule AlertProcessor.Reminders.Processor.SubscriptionsToRemindTest do
         status: :sent,
         last_push_notification: monday_april_2_at_8am,
         subscriptions: [subscription],
-        inserted_at: DateTime.to_naive(monday_april_2_at_8am)
+        inserted_at: monday_april_2_at_8am
       }
 
       assert [] = SubscriptionsToRemind.perform({alert, [notification], friday_april_6_at_2pm})
@@ -251,9 +251,9 @@ defmodule AlertProcessor.Reminders.Processor.SubscriptionsToRemindTest do
     end
 
     test "adds `:notification_type_to_send` of `:reminder` to returned subscriptions" do
-      monday_april_2_at_8am = DateTime.from_naive!(~N[2018-04-02 08:00:00], "Etc/UTC")
-      monday_april_9_at_7_30am = DateTime.from_naive!(~N[2018-04-09 07:30:00], "Etc/UTC")
-      monday_april_9_at_7_45am = DateTime.from_naive!(~N[2018-04-09 07:45:00], "Etc/UTC")
+      monday_april_2_at_8am = ~U[2018-04-02 08:00:00Z]
+      monday_april_9_at_7_30am = ~U[2018-04-09 07:30:00Z]
+      monday_april_9_at_7_45am = ~U[2018-04-09 07:45:00Z]
       user = build(:user)
 
       subscription_details = %{
@@ -281,7 +281,7 @@ defmodule AlertProcessor.Reminders.Processor.SubscriptionsToRemindTest do
         status: :sent,
         last_push_notification: monday_april_2_at_8am,
         subscriptions: [subscription],
-        inserted_at: DateTime.to_naive(monday_april_2_at_8am)
+        inserted_at: monday_april_2_at_8am
       }
 
       assert [subscription_to_remind] =

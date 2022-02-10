@@ -173,9 +173,7 @@ defmodule AlertProcessor.AlertParser do
   end
 
   defp parse_datetime(datetime) do
-    result_from_parsing = DateTime.from_unix(datetime)
-
-    case result_from_parsing do
+    case DateTime.from_unix(datetime) do
       {:ok, dt} ->
         dt
 

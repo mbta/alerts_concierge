@@ -35,9 +35,6 @@ defmodule AlertProcessor.AlertWorkerTest do
   end
 
   describe "check" do
-    defp utc(naive_datetime), do: DateTime.from_naive!(naive_datetime, "Etc/UTC")
-    defp iso8601(naive_datetime), do: naive_datetime |> utc() |> DateTime.to_iso8601()
-
     defp handle_check(now, frequencies) do
       test_pid = self()
 
@@ -52,13 +49,13 @@ defmodule AlertProcessor.AlertWorkerTest do
     test "processes the most stale duration type and updates the metadata" do
       Metadata.put(AlertWorker, %{
         last_processed_times: %{
-          recent: iso8601(~N[2021-01-01 11:59:52]),
-          older: iso8601(~N[2021-01-01 11:59:39]),
-          oldest: iso8601(~N[2021-01-01 11:59:32])
+          recent: DateTime.to_iso8601(~U[2021-01-01 11:59:52Z]),
+          older: DateTime.to_iso8601(~U[2021-01-01 11:59:39Z]),
+          oldest: DateTime.to_iso8601(~U[2021-01-01 11:59:32Z])
         }
       })
 
-      handle_check(utc(~N[2021-01-01 12:00:00]), %{recent: 10, older: 20, oldest: 30})
+      handle_check(~U[2021-01-01 12:00:00Z], %{recent: 10, older: 20, oldest: 30})
 
       expected_meta = %{
         "recent" => "2021-01-01T11:59:52Z",
@@ -73,12 +70,12 @@ defmodule AlertProcessor.AlertWorkerTest do
     test "treats a duration type as infinitely stale if it has no last-processed time" do
       Metadata.put(AlertWorker, %{
         last_processed_times: %{
-          recent: iso8601(~N[2021-01-01 11:59:49]),
-          older: iso8601(~N[2021-01-01 11:59:37])
+          recent: DateTime.to_iso8601(~U[2021-01-01 11:59:49Z]),
+          older: DateTime.to_iso8601(~U[2021-01-01 11:59:37Z])
         }
       })
 
-      handle_check(utc(~N[2021-01-01 12:00:00]), %{recent: 10, older: 20, oldest: 30})
+      handle_check(~U[2021-01-01 12:00:00Z], %{recent: 10, older: 20, oldest: 30})
 
       assert_receive :oldest
       assert AlertWorker |> Metadata.get() |> get_in(["last_processed_times", "oldest"])
@@ -87,12 +84,12 @@ defmodule AlertProcessor.AlertWorkerTest do
     test "does not process any duration types if none are stale" do
       Metadata.put(AlertWorker, %{
         last_processed_times: %{
-          recent: iso8601(~N[2021-01-01 11:59:51]),
-          older: iso8601(~N[2021-01-01 11:59:41])
+          recent: DateTime.to_iso8601(~U[2021-01-01 11:59:51Z]),
+          older: DateTime.to_iso8601(~U[2021-01-01 11:59:41Z])
         }
       })
 
-      handle_check(utc(~N[2021-01-01 12:00:00]), %{recent: 10, older: 20})
+      handle_check(~U[2021-01-01 12:00:00Z], %{recent: 10, older: 20})
 
       refute_receive :recent
       refute_receive :older
@@ -112,7 +109,7 @@ defmodule AlertProcessor.AlertWorkerTest do
       # Wait for above process to get the lock, otherwise the AlertWorker might get it first
       assert_receive :acquired
 
-      handle_check(utc(~N[2021-01-01 12:00:00]), %{recent: 10})
+      handle_check(~U[2021-01-01 12:00:00Z], %{recent: 10})
 
       refute_receive :recent
     end

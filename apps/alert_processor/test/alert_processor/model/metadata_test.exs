@@ -27,7 +27,7 @@ defmodule AlertProcessor.Model.MetadataTest do
     end
 
     test "updates an existing record with the given data" do
-      timestamp = DateTime.from_naive!(~N[2021-01-01 00:00:00], "Etc/UTC")
+      timestamp = ~U[2021-01-01 00:00:00Z]
 
       Repo.insert!(%Metadata{
         id: :test_key,
