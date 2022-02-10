@@ -8,6 +8,7 @@ defmodule AlertsConcierge.Mixfile do
       start_permanent: Mix.env() == :prod,
       aliases: aliases(),
       deps: deps(),
+      releases: releases(),
       test_coverage: [tool: LcovEx],
       preferred_cli_env: [vcr: :test],
       dialyzer: [
@@ -33,7 +34,6 @@ defmodule AlertsConcierge.Mixfile do
     [
       {:credo, "~> 1.5.0", only: [:dev, :test], runtime: false},
       {:dialyxir, "~> 1.1.0", only: [:dev, :test], runtime: false},
-      {:distillery, "~> 1.5", runtime: false},
       {:lcov_ex, "~> 0.2", only: [:dev, :test], runtime: false},
       {:sobelow, "~> 0.11.0", only: [:dev, :test], runtime: false},
       {:tzdata, "~> 1.1.0"}
@@ -50,6 +50,16 @@ defmodule AlertsConcierge.Mixfile do
         "sobelow --root apps/concierge_site --exit --skip --ignore Config.CSP,Config.HTTPS"
       ],
       test: ["ecto.create --quiet", "ecto.load --quiet --skip-if-loaded", "test"]
+    ]
+  end
+
+  defp releases do
+    [
+      alerts_concierge: [
+        applications: [alert_processor: :permanent, concierge_site: :permanent],
+        include_executables_for: [:unix],
+        version: "0.1.0"
+      ]
     ]
   end
 end

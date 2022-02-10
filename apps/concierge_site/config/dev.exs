@@ -47,3 +47,5 @@ config :logger, level: :info, colors: [enabled: true]
 # Set a higher stacktrace during development. Avoid configuring such
 # in production as building large stacktraces may be expensive.
 config :phoenix, :stacktrace_depth, 20
+
+config :concierge_site, ConciergeSite.Guardian, secret_key: "top_secret_key"

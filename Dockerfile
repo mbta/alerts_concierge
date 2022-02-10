@@ -1,5 +1,5 @@
 # --- Set up Elixir build ---
-FROM hexpm/elixir:1.8.2-erlang-22.3.4.14-debian-bullseye-20210902-slim as elixir-builder
+FROM hexpm/elixir:1.10.4-erlang-22.3.4.14-debian-bullseye-20210902-slim as elixir-builder
 
 ENV LANG=C.UTF-8 MIX_ENV=prod
 
@@ -39,7 +39,7 @@ COPY --from=asset-builder /root/apps/concierge_site/priv/static .
 WORKDIR /root
 RUN mix compile
 RUN mix phx.digest
-RUN mix release --verbose
+RUN mix release
 
 
 # --- Set up runtime container ---
@@ -56,4 +56,4 @@ COPY --from=app-builder /root/_build/prod/rel/alerts_concierge .
 
 EXPOSE 4000
 ENTRYPOINT ["/usr/bin/dumb-init", "--"]
-CMD ["bin/alerts_concierge", "foreground"]
+CMD ["bin/alerts_concierge", "start"]

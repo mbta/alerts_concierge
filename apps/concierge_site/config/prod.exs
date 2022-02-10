@@ -16,10 +16,8 @@ use Mix.Config
 config :concierge_site, ConciergeSite.Endpoint,
   cache_static_manifest: "priv/static/cache_manifest.json",
   http: [port: 4000],
-  url: [host: "${HOST_URL}", port: 80],
-  secret_key_base: "${SECRET_KEY_BASE}",
-  server: true,
   root: ".",
+  server: true,
   version: Application.spec(:concierge_site, :vsn)
 
 config :concierge_site, :redirect_http?, true
@@ -34,9 +32,6 @@ config :logger, :console,
 config :ehmon, :report_mf, {:ehmon, :info_report}
 
 config :concierge_site, ConciergeSite.Dissemination.Mailer, adapter: Bamboo.SesAdapter
-
-config :concierge_site, ConciergeSite.ViewHelpers,
-  google_tag_manager_id: "${GOOGLE_TAG_MANAGER_ID}"
 
 # Mailchimp
 config :concierge_site, mailchimp_api_client: HTTPoison
