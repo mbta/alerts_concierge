@@ -279,7 +279,7 @@ defmodule AlertProcessor.AlertParserTest do
 
       assert start_datetime == DateTime.from_naive!(~N[2017-10-10 13:44:54], "America/New_York")
       assert end_datetime == DateTime.from_naive!(~N[2017-10-10 18:50:34], "America/New_York")
-      assert created_at_datetime == DateTime.from_naive!(~N[2017-10-10 17:44:59], "Etc/UTC")
+      assert created_at_datetime == ~U[2017-10-10 17:44:59Z]
     end
   end
 
@@ -367,7 +367,7 @@ defmodule AlertProcessor.AlertParserTest do
                closed_timestamp: closed_timestamp
              } = result
 
-      assert closed_timestamp == DateTime.from_naive!(~N[2017-10-10 17:50:59], "Etc/UTC")
+      assert closed_timestamp == ~U[2017-10-10 17:50:59Z]
     end
   end
 

@@ -12,9 +12,9 @@ defmodule AlertProcessor.Reminders.ProcessorTest do
 
   describe "process_alerts/2" do
     test "if reminder due" do
-      monday_april_2_at_8am = DateTime.from_naive!(~N[2018-04-02 08:00:00], "Etc/UTC")
-      monday_april_9_at_7_30am = DateTime.from_naive!(~N[2018-04-09 07:30:00], "Etc/UTC")
-      monday_april_9_at_7_45am = DateTime.from_naive!(~N[2018-04-09 07:45:00], "Etc/UTC")
+      monday_april_2_at_8am = ~U[2018-04-02 08:00:00Z]
+      monday_april_9_at_7_30am = ~U[2018-04-09 07:30:00Z]
+      monday_april_9_at_7_45am = ~U[2018-04-09 07:45:00Z]
       user = insert(:user)
 
       subscription_details = %{
@@ -63,9 +63,9 @@ defmodule AlertProcessor.Reminders.ProcessorTest do
     end
 
     test "if reminder not due yet" do
-      monday_april_2_at_8am = DateTime.from_naive!(~N[2018-04-02 08:00:00], "Etc/UTC")
-      monday_april_9_at_7_30am = DateTime.from_naive!(~N[2018-04-09 07:30:00], "Etc/UTC")
-      monday_april_16_at_7_30am = DateTime.from_naive!(~N[2018-04-16 07:30:00], "Etc/UTC")
+      monday_april_2_at_8am = ~U[2018-04-02 08:00:00Z]
+      monday_april_9_at_7_30am = ~U[2018-04-09 07:30:00Z]
+      monday_april_16_at_7_30am = ~U[2018-04-16 07:30:00Z]
       user = insert(:user)
 
       subscription_details = %{
@@ -106,10 +106,10 @@ defmodule AlertProcessor.Reminders.ProcessorTest do
     end
 
     test "reminder is only sent once for a timeframe, even if push_notification is updated" do
-      monday_april_2_at_8am = DateTime.from_naive!(~N[2018-04-02 08:00:00], "Etc/UTC")
-      monday_april_9_at_7_30am = DateTime.from_naive!(~N[2018-04-09 07:30:00], "Etc/UTC")
-      monday_april_9_at_7_45am = DateTime.from_naive!(~N[2018-04-09 07:45:00], "Etc/UTC")
-      monday_april_9_at_7_55am = DateTime.from_naive!(~N[2018-04-09 07:55:00], "Etc/UTC")
+      monday_april_2_at_8am = ~U[2018-04-02 08:00:00Z]
+      monday_april_9_at_7_30am = ~U[2018-04-09 07:30:00Z]
+      monday_april_9_at_7_45am = ~U[2018-04-09 07:45:00Z]
+      monday_april_9_at_7_55am = ~U[2018-04-09 07:55:00Z]
       user = insert(:user)
 
       subscription_details = %{

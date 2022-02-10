@@ -11,7 +11,7 @@ defmodule ConciergeSite.Helpers.DateHelper do
 
   def format_datetime(datetime, :local) do
     datetime
-    |> Calendar.DateTime.shift_zone!(@time_zone)
+    |> DateTime.shift_zone!(@time_zone)
     |> format_datetime()
   end
 end

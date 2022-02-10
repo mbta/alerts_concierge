@@ -236,7 +236,7 @@ defmodule AlertProcessor.Model.NotificationTest do
       outdated_notification =
         struct(Notification, %{
           notification_details("1", 1, user)
-          | last_push_notification: alert.last_push_notification |> Calendar.DateTime.subtract!(1)
+          | last_push_notification: DateTime.add(alert.last_push_notification, -1)
         })
 
       Notification.save(outdated_notification, :sent)

@@ -13,8 +13,6 @@ defmodule AlertProcessor.Factory do
     SavedAlert
   }
 
-  alias Calendar.DateTime
-
   def informed_entity_factory do
     %InformedEntity{}
   end
@@ -242,7 +240,7 @@ defmodule AlertProcessor.Factory do
 
   def password_reset_factory do
     %PasswordReset{
-      expired_at: DateTime.add!(DateTime.now_utc(), 3600),
+      expired_at: DateTime.add(DateTime.utc_now(), 3600),
       redeemed_at: nil,
       user: build(:user)
     }

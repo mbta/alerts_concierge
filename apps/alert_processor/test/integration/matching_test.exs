@@ -936,7 +936,7 @@ defmodule AlertProcessor.Integration.MatchingTest do
       }
 
       alert = alert([informed_entity])
-      now = Calendar.DateTime.now!("America/New_York")
+      now = DateTime.now!("America/New_York")
 
       notified =
         alert
@@ -982,7 +982,7 @@ defmodule AlertProcessor.Integration.MatchingTest do
 
       assert_notify(
         alert(informed_entities),
-        DateTime.from_naive!(~N[2018-01-01 08:10:00], "Etc/UTC")
+        ~U[2018-01-01 08:10:00Z]
       )
     end
 
@@ -1004,8 +1004,8 @@ defmodule AlertProcessor.Integration.MatchingTest do
           alert_id: alert.id,
           user_id: user.id,
           status: :sent,
-          last_push_notification: DateTime.from_naive!(~N[2018-01-01 08:01:00], "Etc/UTC"),
-          inserted_at: DateTime.from_naive!(~N[2018-01-01 08:01:00], "Etc/UTC")
+          last_push_notification: ~U[2018-01-01 08:01:00Z],
+          inserted_at: ~U[2018-01-01 08:01:00Z]
         })
 
       insert(:notification_subscription, %{
@@ -1013,7 +1013,7 @@ defmodule AlertProcessor.Integration.MatchingTest do
         notification: notification
       })
 
-      refute_notify(alert, DateTime.from_naive!(~N[2018-01-01 08:10:00], "Etc/UTC"))
+      refute_notify(alert, ~U[2018-01-01 08:10:00Z])
     end
 
     test "matches: notification already sent but last push time changed", %{
@@ -1037,9 +1037,9 @@ defmodule AlertProcessor.Integration.MatchingTest do
           alert_id: alert.id,
           user_id: user.id,
           status: :sent,
-          last_push_notification: DateTime.from_naive!(~N[2018-01-01 07:59:00], "Etc/UTC"),
+          last_push_notification: ~U[2018-01-01 07:59:00Z],
           subscriptions: [subscription],
-          inserted_at: DateTime.from_naive!(~N[2018-01-01 07:59:00], "Etc/UTC")
+          inserted_at: ~U[2018-01-01 07:59:00Z]
         })
 
       insert(:notification_subscription, %{
@@ -1047,7 +1047,7 @@ defmodule AlertProcessor.Integration.MatchingTest do
         notification: notification
       })
 
-      assert_notify(alert, DateTime.from_naive!(~N[2018-01-01 08:10:00], "Etc/UTC"))
+      assert_notify(alert, ~U[2018-01-01 08:10:00Z])
     end
 
     test "matches: notification already sent but it has a closed_timestamp - type is set to :all_clear",
@@ -1072,10 +1072,10 @@ defmodule AlertProcessor.Integration.MatchingTest do
           alert_id: alert.id,
           user_id: user.id,
           status: :sent,
-          last_push_notification: DateTime.from_naive!(~N[2018-01-01 07:59:00], "Etc/UTC"),
+          last_push_notification: ~U[2018-01-01 07:59:00Z],
           subscriptions: [subscription],
-          inserted_at: DateTime.from_naive!(~N[2018-01-01 07:59:00], "Etc/UTC"),
-          closed_timestamp: DateTime.from_naive!(~N[2018-01-01 07:59:00], "Etc/UTC")
+          inserted_at: ~U[2018-01-01 07:59:00Z],
+          closed_timestamp: ~U[2018-01-01 07:59:00Z]
         })
 
       insert(:notification_subscription, %{
@@ -1083,7 +1083,7 @@ defmodule AlertProcessor.Integration.MatchingTest do
         notification: notification
       })
 
-      assert_notify(alert, DateTime.from_naive!(~N[2018-01-01 08:10:00], "Etc/UTC"))
+      assert_notify(alert, ~U[2018-01-01 08:10:00Z])
     end
   end
 
@@ -1410,10 +1410,10 @@ defmodule AlertProcessor.Integration.MatchingTest do
     end
   end
 
-  defp assert_notify(alert, now \\ Calendar.DateTime.now!("America/New_York")),
+  defp assert_notify(alert, now \\ DateTime.now!("America/New_York")),
     do: assert(notify?(alert, now))
 
-  defp refute_notify(alert, now \\ Calendar.DateTime.now!("America/New_York")),
+  defp refute_notify(alert, now \\ DateTime.now!("America/New_York")),
     do: refute(notify?(alert, now))
 
   defp notify?(alert, now), do: SubscriptionFilterEngine.determine_recipients(alert, now) != []
@@ -1426,7 +1426,7 @@ defmodule AlertProcessor.Integration.MatchingTest do
       header: "Header Text",
       id: "1",
       informed_entities: informed_entities,
-      last_push_notification: DateTime.from_naive!(~N[2018-01-01 08:00:00], "Etc/UTC"),
+      last_push_notification: ~U[2018-01-01 08:00:00Z],
       service_effect: "Service Effect",
       severity: :moderate
     }
@@ -1435,9 +1435,9 @@ defmodule AlertProcessor.Integration.MatchingTest do
     do: [
       %{
         # Monday, 8:00 AM
-        start: DateTime.from_naive!(~N[2018-01-01 08:00:00], "Etc/UTC"),
+        start: ~U[2018-01-01 08:00:00Z],
         # Monday, 8:30 AM
-        end: DateTime.from_naive!(~N[2018-01-01 08:30:00], "Etc/UTC")
+        end: ~U[2018-01-01 08:30:00Z]
       }
     ]
 
@@ -1445,9 +1445,9 @@ defmodule AlertProcessor.Integration.MatchingTest do
     do: [
       %{
         # Monday, 9:00 AM
-        start: DateTime.from_naive!(~N[2018-01-01 09:00:00], "Etc/UTC"),
+        start: ~U[2018-01-01 09:00:00Z],
         # Monday, 9:30 AM
-        end: DateTime.from_naive!(~N[2018-01-01 09:30:00], "Etc/UTC")
+        end: ~U[2018-01-01 09:30:00Z]
       }
     ]
 
@@ -1455,9 +1455,9 @@ defmodule AlertProcessor.Integration.MatchingTest do
     do: [
       %{
         # Sunday, 8:00 AM
-        start: DateTime.from_naive!(~N[2018-01-07 08:00:00], "Etc/UTC"),
+        start: ~U[2018-01-07 08:00:00Z],
         # Sunday, 8:30 AM
-        end: DateTime.from_naive!(~N[2018-01-07 08:30:00], "Etc/UTC")
+        end: ~U[2018-01-07 08:30:00Z]
       }
     ]
 
@@ -1465,9 +1465,9 @@ defmodule AlertProcessor.Integration.MatchingTest do
     do: [
       %{
         # Sunday, 8:00 AM
-        start: DateTime.from_naive!(~N[2018-01-07 08:00:00], "Etc/UTC"),
+        start: ~U[2018-01-07 08:00:00Z],
         # Monday, 8:00 PM (36 hours after start)
-        end: DateTime.from_naive!(~N[2018-01-08 20:00:00], "Etc/UTC")
+        end: ~U[2018-01-08 20:00:00Z]
       }
     ]
 
@@ -1475,9 +1475,9 @@ defmodule AlertProcessor.Integration.MatchingTest do
     do: [
       %{
         # Monday, 11:00 PM
-        start: DateTime.from_naive!(~N[2018-01-01 23:00:00], "Etc/UTC"),
+        start: ~U[2018-01-01 23:00:00Z],
         # Monday, 11:59:59 PM
-        end: DateTime.from_naive!(~N[2018-01-01 23:59:59], "Etc/UTC")
+        end: ~U[2018-01-01 23:59:59Z]
       }
     ]
 
@@ -1485,9 +1485,9 @@ defmodule AlertProcessor.Integration.MatchingTest do
     do: [
       %{
         # Tuesday, 12:00 AM
-        start: DateTime.from_naive!(~N[2018-01-02 00:00:00], "Etc/UTC"),
+        start: ~U[2018-01-02 00:00:00Z],
         # Tuesday, 1:00 AM
-        end: DateTime.from_naive!(~N[2018-01-02 01:00:00], "Etc/UTC")
+        end: ~U[2018-01-02 01:00:00Z]
       }
     ]
 
@@ -1495,9 +1495,9 @@ defmodule AlertProcessor.Integration.MatchingTest do
     do: [
       %{
         # Tuesday, 2:00 AM
-        start: DateTime.from_naive!(~N[2018-01-02 02:00:00], "Etc/UTC"),
+        start: ~U[2018-01-02 02:00:00Z],
         # Tuesday, 3:00 AM
-        end: DateTime.from_naive!(~N[2018-01-02 03:00:00], "Etc/UTC")
+        end: ~U[2018-01-02 03:00:00Z]
       }
     ]
 
@@ -1505,9 +1505,9 @@ defmodule AlertProcessor.Integration.MatchingTest do
     do: [
       %{
         # Monday, 4:00 PM
-        start: DateTime.from_naive!(~N[2018-01-01 16:00:00], "Etc/UTC"),
+        start: ~U[2018-01-01 16:00:00Z],
         # Monday, 6:00 PM
-        end: DateTime.from_naive!(~N[2018-01-01 18:00:00], "Etc/UTC")
+        end: ~U[2018-01-01 18:00:00Z]
       }
     ]
 

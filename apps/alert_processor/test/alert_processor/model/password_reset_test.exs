@@ -3,7 +3,6 @@ defmodule AlertProcessor.Model.PasswordResetTest do
   use AlertProcessor.DataCase, async: true
   import AlertProcessor.Factory
   alias AlertProcessor.Model.PasswordReset
-  alias Calendar.DateTime
 
   test "create_changeset/2 with valid parameters" do
     valid_attrs = params_with_assocs(:password_reset)
@@ -23,7 +22,7 @@ defmodule AlertProcessor.Model.PasswordResetTest do
   end
 
   test "redeem_changeset/2 with an expired PasswordReset" do
-    expired_at = DateTime.subtract!(DateTime.now_utc(), 3600)
+    expired_at = DateTime.add(DateTime.utc_now(), -3600)
     password_reset = insert(:password_reset, expired_at: expired_at)
     changeset = PasswordReset.redeem_changeset(password_reset)
 
@@ -31,7 +30,7 @@ defmodule AlertProcessor.Model.PasswordResetTest do
   end
 
   test "redeem_changeset/2 with a redeemed PasswordReset" do
-    redeemed_at = DateTime.subtract!(DateTime.now_utc(), 3600)
+    redeemed_at = DateTime.add(DateTime.utc_now(), -3600)
     password_reset = insert(:password_reset, redeemed_at: redeemed_at)
     changeset = PasswordReset.redeem_changeset(password_reset)
 

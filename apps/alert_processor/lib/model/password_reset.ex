@@ -13,7 +13,6 @@ defmodule AlertProcessor.Model.PasswordReset do
 
   use Ecto.Schema
   import Ecto.Changeset
-  alias Calendar.DateTime
 
   @primary_key {:id, :binary_id, autogenerate: true}
 
@@ -47,11 +46,11 @@ defmodule AlertProcessor.Model.PasswordReset do
     |> validate_required(@required_fields)
     |> validate_not_already_expired()
     |> validate_not_already_redeemed()
-    |> put_change(:redeemed_at, DateTime.now_utc())
+    |> put_change(:redeemed_at, DateTime.utc_now())
   end
 
   defp validate_not_already_expired(changeset) do
-    if DateTime.before?(changeset.data.expired_at, DateTime.now_utc()) do
+    if DateTime.compare(changeset.data.expired_at, DateTime.utc_now()) == :lt do
       add_error(changeset, :expired_at, "Password Reset has expired.")
     else
       changeset

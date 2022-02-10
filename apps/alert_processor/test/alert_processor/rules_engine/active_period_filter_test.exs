@@ -5,17 +5,12 @@ defmodule AlertProcessor.ActivePeriodFilterTest do
   alias Model.{Alert}
   import AlertProcessor.Factory
 
-  defp datetime_from_native(dt) do
-    {:ok, datetime} = DateTime.from_naive(dt, "Etc/UTC")
-    datetime
-  end
-
   setup_all do
     alert1 = %Alert{
       active_period: [
         %{
-          start: datetime_from_native(~N[2017-04-26 09:00:00]),
-          end: datetime_from_native(~N[2017-04-26 19:00:00])
+          start: ~U[2017-04-26 09:00:00Z],
+          end: ~U[2017-04-26 19:00:00Z]
         }
       ]
     }
@@ -23,8 +18,8 @@ defmodule AlertProcessor.ActivePeriodFilterTest do
     alert2 = %Alert{
       active_period: [
         %{
-          start: datetime_from_native(~N[2017-04-26 11:00:00]),
-          end: datetime_from_native(~N[2017-04-26 13:00:00])
+          start: ~U[2017-04-26 11:00:00Z],
+          end: ~U[2017-04-26 13:00:00Z]
         }
       ]
     }
@@ -32,8 +27,8 @@ defmodule AlertProcessor.ActivePeriodFilterTest do
     alert3 = %Alert{
       active_period: [
         %{
-          start: datetime_from_native(~N[2017-04-26 07:00:00]),
-          end: datetime_from_native(~N[2017-04-26 09:00:00])
+          start: ~U[2017-04-26 07:00:00Z],
+          end: ~U[2017-04-26 09:00:00Z]
         }
       ]
     }
@@ -41,12 +36,12 @@ defmodule AlertProcessor.ActivePeriodFilterTest do
     alert4 = %Alert{
       active_period: [
         %{
-          start: datetime_from_native(~N[2017-04-26 09:00:00]),
-          end: datetime_from_native(~N[2017-04-26 19:00:00])
+          start: ~U[2017-04-26 09:00:00Z],
+          end: ~U[2017-04-26 19:00:00Z]
         },
         %{
-          start: datetime_from_native(~N[2017-04-29 07:00:00]),
-          end: datetime_from_native(~N[2017-04-29 09:00:00])
+          start: ~U[2017-04-29 07:00:00Z],
+          end: ~U[2017-04-29 09:00:00Z]
         }
       ]
     }
@@ -54,8 +49,8 @@ defmodule AlertProcessor.ActivePeriodFilterTest do
     alert5 = %Alert{
       active_period: [
         %{
-          start: datetime_from_native(~N[2017-04-26 13:00:00]),
-          end: datetime_from_native(~N[2017-04-27 02:00:00])
+          start: ~U[2017-04-26 13:00:00Z],
+          end: ~U[2017-04-27 02:00:00Z]
         }
       ]
     }
@@ -63,27 +58,27 @@ defmodule AlertProcessor.ActivePeriodFilterTest do
     alert6 = %Alert{
       active_period: [
         %{
-          start: datetime_from_native(~N[2017-04-28 19:00:00]),
-          end: datetime_from_native(~N[2017-05-01 04:00:00])
+          start: ~U[2017-04-28 19:00:00Z],
+          end: ~U[2017-05-01 04:00:00Z]
         }
       ]
     }
 
     alert7 = %Alert{
       active_period: [
-        %{start: datetime_from_native(~N[2017-04-26 09:00:00]), end: nil}
+        %{start: ~U[2017-04-26 09:00:00Z], end: nil}
       ]
     }
 
     alert8 = %Alert{
       active_period: [
         %{
-          start: datetime_from_native(~N[2017-04-26 09:00:00]),
-          end: datetime_from_native(~N[2017-04-26 19:00:00])
+          start: ~U[2017-04-26 09:00:00Z],
+          end: ~U[2017-04-26 19:00:00Z]
         },
         %{
-          start: datetime_from_native(~N[2017-04-27 09:00:00]),
-          end: datetime_from_native(~N[2017-04-27 19:00:00])
+          start: ~U[2017-04-27 09:00:00Z],
+          end: ~U[2017-04-27 19:00:00Z]
         }
       ]
     }
@@ -165,11 +160,10 @@ defmodule AlertProcessor.ActivePeriodFilterTest do
     test "matches for for individual weekday (e.g. Monday)" do
       alert = %Alert{
         active_period: [
-          # <- Monday
           %{
-            start: datetime_from_native(~N[2018-03-26 09:00:00]),
-            # <- Monday
-            end: datetime_from_native(~N[2018-03-26 19:00:00])
+            # Monday
+            start: ~U[2018-03-26 09:00:00Z],
+            end: ~U[2018-03-26 19:00:00Z]
           }
         ]
       }
@@ -184,11 +178,10 @@ defmodule AlertProcessor.ActivePeriodFilterTest do
     test "does not match for for individual weekday (e.g. Tuesday)" do
       alert = %Alert{
         active_period: [
-          # <- Monday
           %{
-            start: datetime_from_native(~N[2018-03-26 09:00:00]),
-            # <- Monday
-            end: datetime_from_native(~N[2018-03-26 19:00:00])
+            # Monday
+            start: ~U[2018-03-26 09:00:00Z],
+            end: ~U[2018-03-26 19:00:00Z]
           }
         ]
       }

@@ -53,7 +53,7 @@ defmodule AlertProcessor.SubscriptionFilterEngine do
   determine_recipients/1 receives an alert and applies relevant filters to exclude users who should not be notified
   """
   @spec determine_recipients(Alert.t(), DateTime.t()) :: [Subscription.t()]
-  def determine_recipients(alert, now \\ Calendar.DateTime.now!("America/New_York")) do
+  def determine_recipients(alert, now \\ DateTime.now!("America/New_York")) do
     start_time = Time.utc_now()
     subscriptions_to_test = Subscription.all_active_for_alert(alert)
     recent_outdated_notifications = Notification.most_recent_if_outdated_for_alert(alert)

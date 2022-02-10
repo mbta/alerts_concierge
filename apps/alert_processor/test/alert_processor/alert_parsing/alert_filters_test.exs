@@ -4,22 +4,11 @@ defmodule AlertProcessor.AlertFiltersTest do
   alias AlertProcessor.Model.Alert
   alias AlertProcessor.AlertFilters
 
-  @now DateTime.from_naive!(~N[2018-01-01 10:00:00.000], "Etc/UTC")
+  @now ~U[2018-01-01 10:00:00Z]
 
-  @recent_alert %Alert{
-    last_push_notification: DateTime.from_naive!(~N[2018-01-01 09:30:00.000], "Etc/UTC"),
-    header: "recent"
-  }
-
-  @older_alert %Alert{
-    last_push_notification: DateTime.from_naive!(~N[2018-01-01 08:30:00.000], "Etc/UTC"),
-    header: "old"
-  }
-
-  @oldest_alert %Alert{
-    last_push_notification: DateTime.from_naive!(~N[2000-01-01 00:00:00.000], "Etc/UTC"),
-    header: "old"
-  }
+  @recent_alert %Alert{last_push_notification: ~U[2018-01-01 09:30:00Z], header: "recent"}
+  @older_alert %Alert{last_push_notification: ~U[2018-01-01 08:30:00Z], header: "old"}
+  @oldest_alert %Alert{last_push_notification: ~U[2000-01-01 00:00:00Z], header: "old"}
 
   @alerts [@older_alert, @recent_alert, @oldest_alert]
 

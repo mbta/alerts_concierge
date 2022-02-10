@@ -26,7 +26,7 @@ defmodule AlertProcessor.NotificationWindowFilterTest do
       ]
 
       subscription = build(:subscription, subscription_details)
-      monday_at_7am = DateTime.from_naive!(~N[2018-04-02 08:00:00], "Etc/UTC")
+      monday_at_7am = ~U[2018-04-02 08:00:00Z]
 
       result = NotificationWindowFilter.filter([subscription], alert, monday_at_7am)
       assert result == [subscription]
@@ -43,7 +43,7 @@ defmodule AlertProcessor.NotificationWindowFilterTest do
       ]
 
       subscription = build(:subscription, subscription_details)
-      monday_at_7am = DateTime.from_naive!(~N[2018-04-02 07:00:00], "Etc/UTC")
+      monday_at_7am = ~U[2018-04-02 07:00:00Z]
 
       result = NotificationWindowFilter.filter([subscription], alert, monday_at_7am)
       assert result == [subscription]
@@ -60,7 +60,7 @@ defmodule AlertProcessor.NotificationWindowFilterTest do
       ]
 
       subscription = build(:subscription, subscription_details)
-      monday_at_10am = DateTime.from_naive!(~N[2018-04-02 10:00:00], "Etc/UTC")
+      monday_at_10am = ~U[2018-04-02 10:00:00Z]
 
       result = NotificationWindowFilter.filter([subscription], alert, monday_at_10am)
       assert result == []
@@ -77,7 +77,7 @@ defmodule AlertProcessor.NotificationWindowFilterTest do
       ]
 
       subscription = build(:subscription, subscription_details)
-      sunday_at_7am = DateTime.from_naive!(~N[2018-04-01 07:00:00], "Etc/UTC")
+      sunday_at_7am = ~U[2018-04-01 07:00:00Z]
 
       result = NotificationWindowFilter.filter([subscription], alert, sunday_at_7am)
       assert result == []
@@ -95,7 +95,7 @@ defmodule AlertProcessor.NotificationWindowFilterTest do
       ]
 
       subscription = build(:subscription, subscription_details)
-      thursday_at_7am = DateTime.from_naive!(~N[2018-04-05 07:00:00], "Etc/UTC")
+      thursday_at_7am = ~U[2018-04-05 07:00:00Z]
 
       result = NotificationWindowFilter.filter([subscription], alert, thursday_at_7am)
       assert result == []
@@ -112,7 +112,7 @@ defmodule AlertProcessor.NotificationWindowFilterTest do
       ]
 
       subscription = build(:subscription, subscription_details)
-      monday_at_6am = DateTime.from_naive!(~N[2018-04-02 06:00:00], "Etc/UTC")
+      monday_at_6am = ~U[2018-04-02 06:00:00Z]
 
       result = NotificationWindowFilter.filter([subscription], alert, monday_at_6am)
       assert result == []
@@ -129,7 +129,7 @@ defmodule AlertProcessor.NotificationWindowFilterTest do
       ]
 
       subscription = build(:subscription, subscription_details)
-      monday_at_10am = DateTime.from_naive!(~N[2018-04-02 10:00:00], "Etc/UTC")
+      monday_at_10am = ~U[2018-04-02 10:00:00Z]
 
       result = NotificationWindowFilter.filter([subscription], alert, monday_at_10am)
       assert result == []
@@ -148,7 +148,7 @@ defmodule AlertProcessor.NotificationWindowFilterTest do
       ]
 
       subscription = build(:subscription, subscription_details)
-      monday_at_6am = DateTime.from_naive!(~N[2018-04-02 06:00:00], "Etc/UTC")
+      monday_at_6am = ~U[2018-04-02 06:00:00Z]
 
       result = NotificationWindowFilter.filter([subscription], high_priority_alert, monday_at_6am)
       assert result == [subscription]

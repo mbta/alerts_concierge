@@ -4,7 +4,6 @@ defmodule AlertProcessor.TextReplacement do
   """
   alias AlertProcessor.{Model, ServiceInfoCache}
   alias Model.Alert
-  alias Calendar.DateTime, as: DT
   alias Calendar.Strftime
 
   def replace_text(alert, subscriptions) do
@@ -187,7 +186,7 @@ defmodule AlertProcessor.TextReplacement do
   end
 
   defp extract_time(datetime) do
-    {:ok, dt} = DT.Parse.rfc3339(datetime, "America/New_York")
+    {:ok, dt} = Calendar.DateTime.Parse.rfc3339(datetime, "America/New_York")
     DateTime.to_time(dt)
   end
 end
