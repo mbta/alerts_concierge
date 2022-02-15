@@ -8,7 +8,7 @@
       "method": "get",
       "options": [],
       "request_body": "",
-      "url": "https://dev.api.mbtace.com/alerts?include=facilities"
+      "url": "https://api-dev.mbtace.com/alerts?include=facilities"
     },
     "response": {
       "binary": false,
@@ -65,7 +65,7 @@
       "method": "get",
       "options": [],
       "request_body": "",
-      "url": "https://dev.api.mbtace.com/facilities"
+      "url": "https://api-dev.mbtace.com/facilities"
     },
     "response": {
       "body":

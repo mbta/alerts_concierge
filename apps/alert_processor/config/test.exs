@@ -18,7 +18,7 @@ config :alert_processor, :mailer, AlertProcessor.MailerMock
 config :alert_processor, :mailer_email, AlertProcessor.EmailMock
 config :alert_processor, :mailer_error, AlertProcessor.MailerErrorMock
 
-config :alert_processor, api_url: "https://dev.api.mbtace.com/"
+config :alert_processor, api_url: "https://api-dev.mbtace.com/"
 
 config :alert_processor, database_url: {:system, "DATABASE_URL_TEST"}
 

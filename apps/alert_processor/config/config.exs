@@ -39,7 +39,7 @@ config :alert_processor,
   alert_api_url:
     {:system, "ALERT_API_URL", "http://s3.amazonaws.com/mbta-realtime-test/alerts_enhanced.json"}
 
-config :alert_processor, api_url: {:system, "API_URL", "https://dev.api.mbtace.com/"}
+config :alert_processor, api_url: {:system, "API_URL", "https://api-dev.mbtace.com/"}
 config :alert_processor, api_key: {:system, "API_KEY", nil}
 
 # Number of workers for sending notifications

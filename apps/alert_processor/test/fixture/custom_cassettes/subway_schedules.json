@@ -6,7 +6,7 @@
       "method": "get",
       "options": [],
       "request_body": "",
-      "url": "https://dev.api.mbtace.com/schedules?filter%5Broute%5D=Red%2CBlue%2COrange%2CGreen-B%2CGreen-C%2CGreen-D%2CGreen-E%2CMattapan&filter%5Bstop%5D=place-brntn%2Cplace-asmnl&fields%5Bstop%5D=parent_station&fields%5Bschedule%5D=&include=stop"
+      "url": "https://api-dev.mbtace.com/schedules?filter%5Broute%5D=Red%2CBlue%2COrange%2CGreen-B%2CGreen-C%2CGreen-D%2CGreen-E%2CMattapan&filter%5Bstop%5D=place-brntn%2Cplace-asmnl&fields%5Bstop%5D=parent_station&fields%5Bschedule%5D=&include=stop"
     },
     "response": {
       "body":"{\"jsonapi\":{\"version\":\"1.0\"},\"included\":[{\"type\":\"stop\",\"relationships\":{\"parent_station\":{\"data\":{\"type\":\"stop\",\"id\":\"place-asmnl\"}}},\"links\":{\"self\":\"/stops/70103\"},\"id\":\"70103\",\"attributes\":{}},{\"type\":\"stop\",\"relationships\":{\"parent_station\":{\"data\":{\"type\":\"stop\",\"id\":\"place-brntn\"}}},\"links\":{\"self\":\"/stops/70105\"},\"id\":\"70105\",\"attributes\":{}}],\"data\":[{\"type\":\"schedule\",\"relationships\":{\"trip\":{\"data\":{\"type\":\"trip\",\"id\":\"33225736\"}},\"stop\":{\"data\":{\"type\":\"stop\",\"id\":\"70103\"}},\"route\":{\"data\":{\"type\":\"route\",\"id\":\"Red\"}}},\"id\":\"schedule-33225736-70103-210\",\"attributes\":{}},{\"type\":\"schedule\",\"relationships\":{\"trip\":{\"data\":{\"type\":\"trip\",\"id\":\"33225731\"}},\"stop\":{\"data\":{\"type\":\"stop\",\"id\":\"70105\"}},\"route\":{\"data\":{\"type\":\"route\",\"id\":\"Red\"}}},\"id\":\"schedule-33225720-70103-210\",\"attributes\":{}}]}",
@@ -30,7 +30,7 @@
       "method": "get",
       "options": [],
       "request_body": "",
-      "url": "https://dev.api.mbtace.com/schedules?filter%5Broute%5D=Red%2CBlue%2COrange%2CGreen-B%2CGreen-C%2CGreen-D%2CGreen-E%2CMattapan&filter%5Bstop%5D=place-brntn%2Cplace-qamnl&fields%5Bstop%5D=parent_station&fields%5Bschedule%5D=&include=stop"
+      "url": "https://api-dev.mbtace.com/schedules?filter%5Broute%5D=Red%2CBlue%2COrange%2CGreen-B%2CGreen-C%2CGreen-D%2CGreen-E%2CMattapan&filter%5Bstop%5D=place-brntn%2Cplace-qamnl&fields%5Bstop%5D=parent_station&fields%5Bschedule%5D=&include=stop"
     },
     "response": {
       "body":"{\"jsonapi\":{\"version\":\"1.0\"},\"included\":[{\"type\":\"stop\",\"relationships\":{\"parent_station\":{\"data\":{\"type\":\"stop\",\"id\":\"place-qamnl\"}}},\"links\":{\"self\":\"/stops/70103\"},\"id\":\"70103\",\"attributes\":{}},{\"type\":\"stop\",\"relationships\":{\"parent_station\":{\"data\":{\"type\":\"stop\",\"id\":\"place-brntn\"}}},\"links\":{\"self\":\"/stops/70105\"},\"id\":\"70105\",\"attributes\":{}}],\"data\":[{\"type\":\"schedule\",\"relationships\":{\"trip\":{\"data\":{\"type\":\"trip\",\"id\":\"33225736\"}},\"stop\":{\"data\":{\"type\":\"stop\",\"id\":\"70103\"}},\"route\":{\"data\":{\"type\":\"route\",\"id\":\"Red\"}}},\"id\":\"schedule-33225736-70103-210\",\"attributes\":{}},{\"type\":\"schedule\",\"relationships\":{\"trip\":{\"data\":{\"type\":\"trip\",\"id\":\"33225736\"}},\"stop\":{\"data\":{\"type\":\"stop\",\"id\":\"70105\"}},\"route\":{\"data\":{\"type\":\"route\",\"id\":\"Red\"}}},\"id\":\"schedule-33225720-70103-210\",\"attributes\":{}}]}",
