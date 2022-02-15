@@ -6,7 +6,7 @@
       "method": "get",
       "options": [],
       "request_body": "",
-      "url": "https://dev.api.mbtace.com/schedules?filter%5Bstop%5D=Boat-Hingham%2CBoat-Long&direction_id=1&fields%5Bschedule%5D=departure_time%2Carrival_time&filter%5Broute%5D=Boat-F1&date=2017-08-19&include=trip%2Cstop&fields%5Btrip%5D=name"
+      "url": "https://api-dev.mbtace.com/schedules?filter%5Bstop%5D=Boat-Hingham%2CBoat-Long&direction_id=1&fields%5Bschedule%5D=departure_time%2Carrival_time&filter%5Broute%5D=Boat-F1&date=2017-08-19&include=trip%2Cstop&fields%5Btrip%5D=name"
     },
     "response": {
       "body": "

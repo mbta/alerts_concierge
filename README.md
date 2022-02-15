@@ -7,7 +7,7 @@ subscribe to notifications for service disruptions.
 
 ### Requirements
 
-- MBTA API key (get one [here](https://dev.api.mbtace.com))
+- MBTA API key (get one [here](https://api-dev.mbtace.com))
   - **Note:** This key must have its version set to `2019-04-05`
 - PostgreSQL 13 (using Homebrew: `brew install postgresql@13`)
 - Chromedriver (using Homebrew: `brew cask install chromedriver`)
