@@ -409,7 +409,7 @@ defmodule AlertProcessor.ServiceInfoCacheTest do
 
   test "get_stops_with_icons", %{pid: pid} do
     {:ok, stops_with_icons} = ServiceInfoCache.get_stops_with_icons(pid)
-    assert stops_with_icons["1154"] == [modes: MapSet.new([:bus]), accessible: false]
+    assert stops_with_icons["2050"] == [modes: MapSet.new([:bus]), accessible: false]
 
     assert stops_with_icons["place-north"] == [
              modes: MapSet.new([:cr, :"green-d", :"green-e", :orange]),
