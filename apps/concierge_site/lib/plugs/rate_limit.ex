@@ -5,7 +5,7 @@ defmodule ConciergeSite.Plugs.RateLimit do
   @behaviour Plug
 
   @limit_anonymous 5
-  @limit_signed_in 15
+  @limit_signed_in 30
   @one_minute 60_000
 
   @doc """

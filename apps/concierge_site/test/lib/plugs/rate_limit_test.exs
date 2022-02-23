@@ -42,7 +42,7 @@ defmodule ConciergeSite.Plugs.RateLimitTest do
   end
 
   test "limits signed-in non-GET requests by user ID" do
-    for _ <- 1..15 do
+    for _ <- 1..30 do
       conn = conn_with_user(:post, 1)
       assert call(conn) == conn
     end
