@@ -14,11 +14,6 @@ defmodule AlertProcessor.Lock do
   The passed function is called with `:ok` if the lock was acquired, or `:error` if it was not.
 
   Returns whatever the passed function returns.
-
-  Note: The function is not executed in a transaction, allowing multiple transactions to be
-  performed "within" a lock. The lack of a `Repo.checkout` in Ecto 2 prevents us from using a
-  session-level lock to do this, so instead we spawn a process that acquires a transaction-level
-  lock and holds the transaction open until the passed function is done executing.
   """
   @spec acquire(atom | non_neg_integer, (:ok | :error -> any)) :: any
 
@@ -26,7 +21,16 @@ defmodule AlertProcessor.Lock do
     @keys |> Map.fetch!(key) |> acquire(func)
   end
 
-  def acquire(key, func) when is_integer(key) and key >= 0 do
+  def acquire(key, func) when is_integer(key) do
+    # We want to allow multiple transactions to occur "within" a lock. It might appear the best
+    # way to handle this is with a session-level lock, but such locks are only released manually
+    # or by closing the connection. There's no easy way to do the latter with Ecto due to how the
+    # connection pool works, and with the former it's hard to guarantee the separate unlock query
+    # will run if e.g. the process dies. So the approach taken here is to spawn a helper process
+    # that opens a transaction, acquires a transaction-level lock, and holds onto it until told
+    # to release it. As demonstrated in the tests for this module, this results in the lock being
+    # properly released even if the calling process dies while holding it.
+
     parent = self()
 
     locker =
