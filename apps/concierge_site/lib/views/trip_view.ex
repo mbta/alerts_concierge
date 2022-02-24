@@ -8,12 +8,10 @@ defmodule ConciergeSite.TripView do
     routes = Enum.reverse(routes)
 
     route_names =
-      routes
-      |> Enum.map(fn leg ->
+      Enum.map_join(routes, ", ", fn leg ->
         [_, route_name, _] = String.split(leg, "~~")
         route_name
       end)
-      |> Enum.join(", ")
 
     if route_names == "", do: last_route_name, else: "#{route_names} and #{last_route_name}"
   end

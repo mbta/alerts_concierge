@@ -196,8 +196,7 @@ defmodule ConciergeSite.AccountController do
   defp formatted_date(date) do
     [date.month, date.day, date.year]
     |> Enum.map(&to_string/1)
-    |> Enum.map(&String.pad_leading(&1, 2, "0"))
-    |> Enum.join("/")
+    |> Enum.map_join("/", &String.pad_leading(&1, 2, "0"))
   end
 
   def mailchimp_update(conn, %{

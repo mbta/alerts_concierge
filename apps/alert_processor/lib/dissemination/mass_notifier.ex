@@ -10,7 +10,7 @@ defmodule AlertProcessor.Dissemination.MassNotifier do
   # Save and enqueue notifications in batches equal to (at least) the number of sending workers,
   # so all workers will have something to do while we save the next batch. The test environment
   # sets the number of workers to 0, so we need to ensure the batch size is at least 1.
-  @batch_size max(1, Application.fetch_env!(:alert_processor, :notification_workers))
+  @batch_size max(1, Application.compile_env!(:alert_processor, :notification_workers))
 
   @doc """
   Saves and enqueues a list of notifications. Always returns `:ok` — if any notification fails to

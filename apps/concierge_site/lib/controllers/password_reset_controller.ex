@@ -72,8 +72,6 @@ defmodule ConciergeSite.PasswordResetController do
   end
 
   defp password_reset_errors(changeset) do
-    changeset.errors
-    |> Enum.map(fn {_, {error, _}} -> error end)
-    |> Enum.join(",")
+    Enum.map_join(changeset.errors, ", ", fn {_, {error, _}} -> error end)
   end
 end

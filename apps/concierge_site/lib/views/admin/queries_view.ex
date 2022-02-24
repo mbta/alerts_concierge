@@ -5,11 +5,9 @@ defmodule ConciergeSite.Admin.QueriesView do
     id_indices = id_indices(columns)
 
     csv_rows =
-      rows
-      |> Stream.map(fn row ->
-        row |> Enum.map(&format_value(&1, id_indices)) |> Enum.join(",")
+      Enum.map_join(rows, "\n", fn row ->
+        Enum.map_join(row, ",", &format_value(&1, id_indices))
       end)
-      |> Enum.join("\n")
 
     Enum.join(columns, ",") <> "\n" <> csv_rows
   end

@@ -4,7 +4,7 @@ defmodule ConciergeSite.RejectedEmailController do
   alias AlertProcessor.Model.User
   require Logger
 
-  @ex_aws Application.fetch_env!(:alert_processor, :ex_aws)
+  @ex_aws Application.compile_env!(:alert_processor, :ex_aws)
 
   def handle_message(conn, _params) do
     with {:ok, raw_body, conn} <- read_body(conn),

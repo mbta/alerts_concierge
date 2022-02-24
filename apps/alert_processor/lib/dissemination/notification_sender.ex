@@ -6,9 +6,9 @@ defmodule AlertProcessor.Dissemination.NotificationSender do
 
   require Logger
 
-  @mailer Application.fetch_env!(:alert_processor, :mailer)
-  @mailer_email Application.fetch_env!(:alert_processor, :mailer_email)
-  @mailer_error Application.fetch_env!(:alert_processor, :mailer_error)
+  @mailer Application.compile_env!(:alert_processor, :mailer)
+  @mailer_email Application.compile_env!(:alert_processor, :mailer_email)
+  @mailer_error Application.compile_env!(:alert_processor, :mailer_error)
 
   @doc "Sends a notification, via SMS if it has a phone number, else via email."
   @spec send(Notification.t()) :: {:ok, term} | {:error, term}
@@ -83,8 +83,7 @@ defmodule AlertProcessor.Dissemination.NotificationSender do
         seconds_since_alert_update: DateTime.diff(now, alert_updated_at),
         response: inspect(response)
       }
-      |> Enum.map(fn {key, value} -> "#{key}=#{value}" end)
-      |> Enum.join(" ")
+      |> Enum.map_join(" ", fn {key, value} -> "#{key}=#{value}" end)
       |> String.replace_prefix("", "notification sent: ")
     end)
   end
