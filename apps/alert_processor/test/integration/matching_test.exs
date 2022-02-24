@@ -5,12 +5,6 @@ defmodule AlertProcessor.Integration.MatchingTest do
   alias AlertProcessor.{AlertParser, ServiceInfoCache, SubscriptionFilterEngine}
   alias AlertProcessor.Model.{Alert, InformedEntity}
 
-  setup_all do
-    {:ok, _} = Application.ensure_all_started(:alert_processor)
-
-    :ok
-  end
-
   describe "subway subscription" do
     setup do
       insert(

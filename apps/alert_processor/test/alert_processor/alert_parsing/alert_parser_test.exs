@@ -6,11 +6,8 @@ defmodule AlertProcessor.AlertParserTest do
   alias AlertProcessor.{AlertParser, Model, Repo, AlertsClient, SendingQueue, ServiceInfoCache}
   alias Model.{InformedEntity, SavedAlert}
 
-  setup_all do
-    {:ok, _} = Application.ensure_all_started(:alert_processor)
+  setup do
     SendingQueue.reset()
-    HTTPoison.start()
-    :ok
   end
 
   test "process_alerts/1" do
