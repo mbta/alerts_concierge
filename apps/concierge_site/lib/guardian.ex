@@ -11,7 +11,7 @@ defmodule ConciergeSite.Guardian do
     verify_issuer: true,
     verify_module: Guardian.JWT
 
-  use Guardian.Permissions.Bitwise
+  use Guardian.Permissions, encoding: Guardian.Permissions.BitwiseEncoding
 
   alias AlertProcessor.{Model.User, Repo}
 

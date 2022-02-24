@@ -26,7 +26,7 @@ defmodule ConciergeSite.Router do
   end
 
   pipeline :admin_auth do
-    plug(Guardian.Permissions.Bitwise, ensure: %{admin: [:all]})
+    plug(Guardian.Permissions, ensure: %{admin: [:all]})
   end
 
   pipeline :layout do
