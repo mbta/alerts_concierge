@@ -37,10 +37,10 @@ defmodule AlertProcessor do
       supervisor(AlertProcessor.Repo, []),
       supervisor(ConCache, [
         [
-          ttl_check: :timer.seconds(60),
-          ttl: :timer.minutes(60)
-        ],
-        [name: CachedApiClient.cache_name()]
+          name: CachedApiClient.cache_name(),
+          global_ttl: :timer.minutes(60),
+          ttl_check_interval: :timer.seconds(60)
+        ]
       ]),
       worker(ServiceInfoCache, []),
       worker(SendingQueue, []),
