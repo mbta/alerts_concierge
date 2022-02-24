@@ -56,7 +56,7 @@ defmodule ConciergeSite.Mixfile do
       {:logster, "~> 1.0.2"},
       {:ehmon, github: "mbta/ehmon", only: :prod},
       {:diskusage_logger, "~> 0.2.0", only: :prod},
-      {:httpoison, "~> 1.1.1"},
+      {:httpoison, "~> 1.8.0"},
       {:poison, "~> 2.0"},
       {:hammer, "~> 6.0"},
       {:sentry, "~> 7.0"},
