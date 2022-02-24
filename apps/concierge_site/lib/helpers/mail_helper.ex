@@ -10,7 +10,7 @@ defmodule ConciergeSite.Helpers.MailHelper do
 
   @all_alerts_url external_url(:alerts)
   @support_url external_url(:support)
-  @template_dir Application.fetch_env!(:concierge_site, :mail_template_dir)
+  @template_dir Application.compile_env!(:concierge_site, :mail_template_dir)
 
   EEx.function_from_file(:def, :html_footer, Path.join(@template_dir, "_footer.html.eex"), [
     :manage_subscriptions_url,

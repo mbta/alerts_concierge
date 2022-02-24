@@ -1,6 +1,6 @@
 defmodule AlertProcessor.NotificationWorker do
   @moduledoc """
-  Worker process for processing a single Notification from SendingQueue
+  Worker process for processing a single Notification from SendingQueue
   """
   use GenServer
   require Logger
@@ -11,7 +11,7 @@ defmodule AlertProcessor.NotificationWorker do
     Model.Notification
   }
 
-  @idle_wait Application.get_env(:alert_processor, :notification_worker_idle_wait, 1000)
+  @idle_wait Application.compile_env(:alert_processor, :notification_worker_idle_wait, 1000)
 
   @doc false
   def start_link(opts \\ [name: __MODULE__]) do

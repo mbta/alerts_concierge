@@ -191,9 +191,7 @@ defmodule ConciergeSite.TripCardHelper do
     do: "Every day"
 
   defp days(days) do
-    days
-    |> Enum.map(&String.slice(String.capitalize(Atom.to_string(&1)), 0..2))
-    |> Enum.join(", ")
+    Enum.map_join(days, ", ", &String.slice(String.capitalize(Atom.to_string(&1)), 0..2))
   end
 
   @spec trip_times({Time.t(), Time.t()}, {Time.t(), Time.t()} | {nil, nil}) :: Phoenix.HTML.safe()
@@ -218,9 +216,7 @@ defmodule ConciergeSite.TripCardHelper do
 
   @spec facility_types([atom]) :: String.t()
   defp facility_types(facility_types) do
-    facility_types
-    |> Enum.map(&@station_features[&1])
-    |> Enum.join(", ")
+    Enum.map_join(facility_types, ", ", &@station_features[&1])
   end
 
   @spec stops_and_routes([Subscription.t()]) :: [String.t()]

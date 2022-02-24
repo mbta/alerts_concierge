@@ -100,8 +100,7 @@ defmodule AlertProcessor.TextReplacement do
       ampm_part
       |> String.codepoints()
       |> Enum.map(&[String.downcase(&1), String.upcase(&1)])
-      |> Enum.map(&"[#{Enum.join(&1)}]")
-      |> Enum.join()
+      |> Enum.map_join(&"[#{Enum.join(&1)}]")
 
     "#{time_part} #{regexed_am_pm_part}"
   end

@@ -15,7 +15,10 @@ defmodule AlertProcessor.SubscriptionFilterEngine do
   alias Model.{Alert, Notification, Subscription}
   require Logger
 
-  @notification_window_filter Application.get_env(:alert_processor, :notification_window_filter)
+  @notification_window_filter Application.compile_env!(
+                                :alert_processor,
+                                :notification_window_filter
+                              )
 
   @doc """
   Determine distinct notifications and schedule them to be sent.

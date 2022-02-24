@@ -5,7 +5,7 @@ defmodule ConciergeSite.Dissemination.Email do
   alias ConciergeSite.Helpers.MailHelper
   require EEx
 
-  @template_dir Application.fetch_env!(:concierge_site, :mail_template_dir)
+  @template_dir Application.compile_env!(:concierge_site, :mail_template_dir)
 
   EEx.function_from_file(
     :def,
