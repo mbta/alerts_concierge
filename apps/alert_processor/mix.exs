@@ -39,7 +39,7 @@ defmodule AlertProcessor.Mixfile do
       {:bypass, "~> 2.1.0", only: :test},
       {:calendar, "~> 1.0.0"},
       {:comeonin, "~> 3.0"},
-      {:con_cache, "~> 0.12.1"},
+      {:con_cache, "~> 1.0.0"},
       {:ecto_sql, "~> 3.0"},
       {:exactor, "~> 2.2.0"},
       {:ex_aws, "~> 2.2.0"},
