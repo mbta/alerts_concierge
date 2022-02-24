@@ -47,7 +47,6 @@ defmodule ConciergeSite.Mixfile do
       {:phoenix, "~> 1.4.0"},
       {:phoenix_pubsub, "~> 1.0"},
       {:phoenix_ecto, "~> 4.0"},
-      {:postgrex, ">= 0.0.0"},
       {:phoenix_html, "~> 2.6"},
       {:phoenix_live_reload, "~> 1.0", only: :dev},
       {:gettext, "~> 0.11"},
@@ -61,7 +60,7 @@ defmodule ConciergeSite.Mixfile do
       {:poison, "~> 2.0"},
       {:hammer, "~> 6.0"},
       {:sentry, "~> 7.0"},
-      {:remote_ip, "~> 0.2"},
+      {:remote_ip, "~> 1.0"},
       {:recaptcha, "~> 3.0"}
     ]
   end
