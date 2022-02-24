@@ -10,8 +10,7 @@ defmodule AlertProcessor.ApiClient do
   alias AlertProcessor.Helpers.ConfigHelper
 
   @doc """
-  Helper function that fetches all alerts from
-  MBTA Alerts API
+  Helper function that fetches all alerts from MBTA Alerts API
   """
   @spec get_alerts() :: {:ok, [map], [map]} | {:error, String.t()}
   def get_alerts do
@@ -210,6 +209,19 @@ defmodule AlertProcessor.ApiClient do
     end
   end
 
+  @impl HTTPoison.Base
+  def process_url(url) do
+    :api_url
+    |> ConfigHelper.get_string()
+    |> URI.merge(url)
+    |> URI.to_string()
+  end
+
+  @impl HTTPoison.Base
+  def process_response_body(body) do
+    Poison.decode!(body)
+  end
+
   defp parse_response(response) do
     case response do
       {:ok, %{body: %{"errors" => errors}}} ->
@@ -242,17 +254,6 @@ defmodule AlertProcessor.ApiClient do
 
         {:error, message}
     end
-  end
-
-  defp process_url(url) do
-    :api_url
-    |> ConfigHelper.get_string()
-    |> URI.merge(url)
-    |> URI.to_string()
-  end
-
-  defp process_response_body(body) do
-    Poison.decode!(body)
   end
 
   defp api_get(path, params \\ []) do
