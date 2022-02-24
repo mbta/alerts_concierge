@@ -42,7 +42,7 @@ defmodule ConciergeSite.Mixfile do
       {:bamboo_ses, "~> 0.1.0"},
       {:comeonin, "~> 3.0"},
       {:ex_aws_sns, "~> 2.2.0"},
-      {:guardian, "~> 1.2.1"},
+      {:guardian, "~> 2.2.0"},
       {:guardian_db, "~> 2.1.0"},
       {:phoenix, "~> 1.4.0"},
       {:phoenix_pubsub, "~> 1.0"},

@@ -6,6 +6,7 @@ defmodule ConciergeSite.Guardian.AuthErrorHandler do
     conn
     |> put_flash(:error, "You are not authorized to view that page.")
     |> redirect(to: trip_path(conn, :index))
+    |> halt()
   end
 
   def auth_error(conn, {_failure, _reason}, _opts) do
@@ -13,5 +14,6 @@ defmodule ConciergeSite.Guardian.AuthErrorHandler do
     |> configure_session(drop: true)
     |> put_flash(:info, "Please log in.")
     |> redirect(to: session_path(conn, :new))
+    |> halt()
   end
 end
