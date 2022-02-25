@@ -12,7 +12,7 @@ defmodule AlertProcessor.Model.UserTest do
   }
   @invalid_attrs %{}
   @password "password1"
-  @encrypted_password Comeonin.Bcrypt.hashpwsalt(@password)
+  @encrypted_password Bcrypt.hash_pwd_salt(@password)
   @disabled_password ""
 
   describe "user changeset" do

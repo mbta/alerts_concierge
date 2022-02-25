@@ -312,7 +312,7 @@ defmodule ConciergeSite.AccountControllerTest do
     end
 
     test "POST /password/edit", %{conn: conn} do
-      user = insert(:user, encrypted_password: Comeonin.Bcrypt.hashpwsalt("Password1!"))
+      user = insert(:user, encrypted_password: Bcrypt.hash_pwd_salt("Password1!"))
 
       user_params = %{current_password: "Password1!", password: "Password2!"}
 
@@ -325,7 +325,7 @@ defmodule ConciergeSite.AccountControllerTest do
     end
 
     test "POST /password/edit no match error", %{conn: conn} do
-      user = insert(:user, encrypted_password: Comeonin.Bcrypt.hashpwsalt("Password1!"))
+      user = insert(:user, encrypted_password: Bcrypt.hash_pwd_salt("Password1!"))
 
       user_params = %{current_password: "Password3!", password: "Password2!"}
 
@@ -339,7 +339,7 @@ defmodule ConciergeSite.AccountControllerTest do
   end
 
   test "POST /password/edit validation error", %{conn: conn} do
-    user = insert(:user, encrypted_password: Comeonin.Bcrypt.hashpwsalt("Password1!"))
+    user = insert(:user, encrypted_password: Bcrypt.hash_pwd_salt("Password1!"))
 
     user_params = %{current_password: "Password1!", password: "Password"}
 
