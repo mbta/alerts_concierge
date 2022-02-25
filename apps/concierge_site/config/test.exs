@@ -12,8 +12,6 @@ config :logger, level: :warn
 config :concierge_site, ConciergeSite.Guardian, secret_key: "top_secret_key"
 config :concierge_site, ConciergeSite.Dissemination.Mailer, adapter: Bamboo.TestAdapter
 
-config :concierge_site, :sql_sandbox, true
-
 # Google Tag Manager
 config :concierge_site, ConciergeSite.ViewHelpers, google_tag_manager_id: "GOOGLE_TAG_MANAGER_ID"
 
@@ -24,4 +22,4 @@ config :exvcr,
   custom_cassette_library_dir: "test/fixture/custom_cassettes",
   filter_request_headers: ["x-api-key"]
 
-config :wallaby, driver: Wallaby.Experimental.Chrome
+config :wallaby, driver: Wallaby.Chrome, otp_app: :alert_processor

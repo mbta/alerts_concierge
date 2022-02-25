@@ -52,7 +52,7 @@ defmodule ConciergeSite.Mixfile do
       {:gettext, "~> 0.11"},
       {:plug, "~> 1.7"},
       {:plug_cowboy, "~> 2.0"},
-      {:wallaby, "~> 0.23.0", only: :test},
+      {:wallaby, "~> 0.29.0", only: :test},
       {:logster, "~> 1.0.2"},
       {:ehmon, github: "mbta/ehmon", only: :prod},
       {:diskusage_logger, "~> 0.2.0", only: :prod},
