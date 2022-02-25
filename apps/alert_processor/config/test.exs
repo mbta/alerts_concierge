@@ -16,7 +16,6 @@ config :alert_processor, :process_alerts?, false
 
 config :alert_processor, :mailer, AlertProcessor.MailerMock
 config :alert_processor, :mailer_email, AlertProcessor.EmailMock
-config :alert_processor, :mailer_error, AlertProcessor.MailerErrorMock
 
 config :alert_processor, api_url: "https://api-dev.mbtace.com/"
 

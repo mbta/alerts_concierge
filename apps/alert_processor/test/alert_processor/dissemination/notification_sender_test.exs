@@ -16,8 +16,8 @@ defmodule AlertProcessor.Dissemination.NotificationSenderTest do
       refute_receive {:publish, _}
     end
 
-    test "catches the configured email exception and converts it to an error return" do
-      notification = %Notification{email: "raise_error@example.com", header: "This is a test"}
+    test "returns an error from the mailer" do
+      notification = %Notification{email: "mailer_error@example.com", header: "This is a test"}
 
       assert {:error, %{message: "error requested"}} = NotificationSender.send(notification)
     end

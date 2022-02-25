@@ -8,24 +8,26 @@ defmodule AlertProcessor.Dissemination.NotificationSender do
 
   @mailer Application.compile_env!(:alert_processor, :mailer)
   @mailer_email Application.compile_env!(:alert_processor, :mailer_email)
-  @mailer_error Application.compile_env!(:alert_processor, :mailer_error)
 
   @doc "Sends a notification, via SMS if it has a phone number, else via email."
   @spec send(Notification.t()) :: {:ok, term} | {:error, term}
   def send(%Notification{email: email, phone_number: nil} = notification)
       when not is_nil(email) do
-    {_email, response} =
+    result =
       notification
       |> @mailer_email.notification_email()
       |> @mailer.deliver_now(response: true)
 
-    log(notification, :email, :ok, response)
-    {:ok, response}
-  rescue
-    error in @mailer_error ->
-      log(notification, :email, :error, error)
-      {:error, error}
+    case result do
+      {:ok, _email, response} ->
+        log(notification, :email, :ok, response)
+        {:ok, response}
 
+      {:error, error} ->
+        log(notification, :email, :error, error)
+        {:error, error}
+    end
+  rescue
     error in ArgumentError ->
       Logger.error("invalid email for #{notification.user_id}")
       {:error, error}

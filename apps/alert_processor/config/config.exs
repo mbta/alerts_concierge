@@ -27,7 +27,6 @@ config :alert_processor, AlertProcessor.Repo, migration_timestamps: [type: :utc_
 # These modules are not defined when AlertProcessor is run on its own.
 config :alert_processor, :mailer, ConciergeSite.Dissemination.Mailer
 config :alert_processor, :mailer_email, ConciergeSite.Dissemination.NotificationEmail
-config :alert_processor, :mailer_error, Bamboo.ApiError
 
 config :alert_processor,
   opted_out_list_fetch_interval: {:system, "OPTED_OUT_LIST_FETCH_INTERVAL", "3600000"}
