@@ -3,8 +3,7 @@ defmodule ConciergeSite.CreateSubscriptionTest do
   use ConciergeSite.FeatureCase
 
   import AlertProcessor.Factory
-  import ConciergeSite.FeatureTestHelper
-  import Wallaby.Query
+  import Wallaby.Query, only: [text_field: 1, button: 1, css: 2]
 
   @password "p@ssw0rd"
   @encrypted_password Comeonin.Bcrypt.hashpwsalt(@password)
@@ -14,7 +13,7 @@ defmodule ConciergeSite.CreateSubscriptionTest do
     {:ok, user: user}
   end
 
-  test "new account", %{session: session} do
+  feature "new account", %{session: session} do
     session
     |> visit("/account/new")
     |> fill_in(text_field("user_email"), with: "test@test.com")
@@ -23,7 +22,7 @@ defmodule ConciergeSite.CreateSubscriptionTest do
     |> assert_has(css("#main", text: "Customize my settings"))
   end
 
-  test "account options", %{session: session, user: user} do
+  feature "account options", %{session: session, user: user} do
     session
     |> log_in(user)
     |> visit("/account/options")
@@ -32,7 +31,7 @@ defmodule ConciergeSite.CreateSubscriptionTest do
     |> assert_has(css("#main", text: "Personalize my subscription"))
   end
 
-  test "new session", %{session: session, user: user} do
+  feature "new session", %{session: session, user: user} do
     session
     |> visit("/login/new")
     |> fill_in(text_field("user_email"), with: user.email)
@@ -41,7 +40,7 @@ defmodule ConciergeSite.CreateSubscriptionTest do
     |> assert_has(css("#main", text: "Customize my settings"))
   end
 
-  test "failed login", %{session: session, user: user} do
+  feature "failed login", %{session: session, user: user} do
     session
     |> visit("/login/new")
     |> fill_in(text_field("user_email"), with: user.email)
@@ -50,14 +49,14 @@ defmodule ConciergeSite.CreateSubscriptionTest do
     |> assert_has(css("#main", text: "Sorry, your login information was incorrect"))
   end
 
-  test "trip index", %{session: session, user: user} do
+  feature "trip index", %{session: session, user: user} do
     session
     |> log_in(user)
     |> visit("/trips")
     |> assert_has(css("#main", text: "My subscriptions"))
   end
 
-  test "edit trip", %{session: session, user: user} do
+  feature "edit trip", %{session: session, user: user} do
     trip = insert(:trip, %{user: user})
 
     insert(:subscription, %{
