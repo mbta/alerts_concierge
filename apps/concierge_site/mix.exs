@@ -60,7 +60,7 @@ defmodule ConciergeSite.Mixfile do
       {:httpoison, "~> 1.8.0"},
       {:poison, "~> 2.0"},
       {:hammer, "~> 6.0"},
-      {:sentry, "~> 7.0"},
+      {:sentry, "~> 8.0"},
       {:remote_ip, "~> 1.0"},
       {:recaptcha, "~> 3.0"}
     ]

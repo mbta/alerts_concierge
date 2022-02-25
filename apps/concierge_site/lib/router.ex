@@ -1,7 +1,6 @@
 defmodule ConciergeSite.Router do
   use ConciergeSite.Web, :router
   use Plug.ErrorHandler
-  use Sentry.Plug
 
   pipeline :redirect_prod_http do
     if Application.get_env(:concierge_site, :redirect_http?) do

@@ -1,6 +1,6 @@
 defmodule ConciergeSite.Endpoint do
+  use Sentry.PlugCapture
   use Phoenix.Endpoint, otp_app: :concierge_site
-  use Sentry.Phoenix.Endpoint
 
   if Application.compile_env(:alert_processor, :sql_sandbox) do
     plug(Phoenix.Ecto.SQL.Sandbox)
@@ -38,6 +38,8 @@ defmodule ConciergeSite.Endpoint do
     pass: ["*/*"],
     json_decoder: Poison
   )
+
+  plug(Sentry.PlugContext)
 
   plug(Plug.MethodOverride)
   plug(Plug.Head)
