@@ -17,7 +17,6 @@ defmodule AlertProcessor.Model.User do
   use Ecto.Schema
   import Ecto.{Changeset, Query}
   alias AlertProcessor.{Aws.AwsClient, Model.Subscription, Model.Trip, Repo}
-  alias Comeonin.Bcrypt
   alias Ecto.Multi
 
   @primary_key {:id, :binary_id, autogenerate: true}
@@ -221,7 +220,7 @@ defmodule AlertProcessor.Model.User do
     case changeset do
       %Ecto.Changeset{valid?: true, changes: %{password: password}} ->
         changeset
-        |> put_change(:encrypted_password, Bcrypt.hashpwsalt(password))
+        |> put_change(:encrypted_password, Bcrypt.hash_pwd_salt(password))
         |> delete_change(:password)
 
       _ ->
@@ -274,8 +273,8 @@ defmodule AlertProcessor.Model.User do
 
   def check_password(user, password) do
     case user do
-      nil -> Bcrypt.dummy_checkpw()
-      _ -> Bcrypt.checkpw(password, user.encrypted_password)
+      nil -> Bcrypt.no_user_verify()
+      _ -> Bcrypt.verify_pass(password, user.encrypted_password)
     end
   end
 

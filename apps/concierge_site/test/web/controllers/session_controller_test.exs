@@ -6,7 +6,7 @@ defmodule ConciergeSite.SessionControllerTest do
   alias Hammer
 
   @password "password1"
-  @encrypted_password Comeonin.Bcrypt.hashpwsalt(@password)
+  @encrypted_password Bcrypt.hash_pwd_salt(@password)
 
   test "GET /login/new", %{conn: conn} do
     conn = get(conn, session_path(conn, :new))

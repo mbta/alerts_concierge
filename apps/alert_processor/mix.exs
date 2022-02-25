@@ -35,10 +35,9 @@ defmodule AlertProcessor.Mixfile do
   # Type `mix help deps` for examples and options.
   defp deps do
     [
-      {:bcrypt_elixir, "~> 1.0"},
+      {:bcrypt_elixir, "~> 3.0"},
       {:bypass, "~> 2.1.0", only: :test},
       {:calendar, "~> 1.0.0"},
-      {:comeonin, "~> 3.0"},
       {:con_cache, "~> 1.0.0"},
       {:ecto_sql, "~> 3.0"},
       {:exactor, "~> 2.2.0"},

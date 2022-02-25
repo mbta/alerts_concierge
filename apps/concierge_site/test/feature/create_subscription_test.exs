@@ -6,7 +6,7 @@ defmodule ConciergeSite.CreateSubscriptionTest do
   import Wallaby.Query, only: [text_field: 1, button: 1, css: 2]
 
   @password "p@ssw0rd"
-  @encrypted_password Comeonin.Bcrypt.hashpwsalt(@password)
+  @encrypted_password Bcrypt.hash_pwd_salt(@password)
 
   setup do
     user = insert(:user, password: @password, encrypted_password: @encrypted_password)
