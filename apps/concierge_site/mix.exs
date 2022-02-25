@@ -38,8 +38,9 @@ defmodule ConciergeSite.Mixfile do
   defp deps do
     [
       {:alert_processor, in_umbrella: true},
-      {:bamboo, "~> 1.4.0"},
-      {:bamboo_ses, "~> 0.1.0"},
+      {:bamboo, "~> 2.2.0"},
+      {:bamboo_phoenix, "~> 1.0.0"},
+      {:bamboo_ses, "~> 0.3.0"},
       {:comeonin, "~> 3.0"},
       {:ex_aws_sns, "~> 2.2.0"},
       {:guardian, "~> 2.2.0"},
