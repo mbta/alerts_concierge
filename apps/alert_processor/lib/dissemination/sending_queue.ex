@@ -4,7 +4,8 @@ defmodule AlertProcessor.SendingQueue do
   use GenServer
   alias AlertProcessor.Model.Notification
 
-  def start_link(opts \\ [name: __MODULE__]) do
+  def start_link(opts) do
+    opts = Keyword.merge([name: __MODULE__], opts)
     GenServer.start_link(__MODULE__, :queue.new(), opts)
   end
 

@@ -7,7 +7,8 @@ defmodule AlertProcessor.Reminders do
   alias __MODULE__
   alias AlertProcessor.Model.Alert
 
-  def start_link(opts \\ [name: __MODULE__]) do
+  def start_link(opts) do
+    opts = Keyword.merge([name: __MODULE__], opts)
     GenServer.start_link(__MODULE__, nil, opts)
   end
 
