@@ -29,7 +29,7 @@ defmodule AlertProcessor.AlertWorker do
   end
 
   @doc false
-  def start_link(opts \\ []) do
+  def start_link(opts) do
     state = %State{
       check_interval: Keyword.get(opts, :check_interval, @check_interval),
       frequencies: Keyword.get(opts, :frequencies, @frequencies),

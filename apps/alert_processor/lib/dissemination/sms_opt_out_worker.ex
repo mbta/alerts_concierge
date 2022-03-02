@@ -14,7 +14,7 @@ defmodule AlertProcessor.SmsOptOutWorker do
   @type phone_number :: String.t()
 
   @doc "Start the server. The first check is done immediately."
-  def start_link(opts \\ [name: __MODULE__]) do
+  def start_link(opts) do
     GenServer.start_link(__MODULE__, nil, opts)
   end
 
