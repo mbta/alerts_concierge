@@ -44,9 +44,9 @@ defmodule ConciergeSite.StopSelectHelper do
 
   @spec option_data([integer]) :: Keyword.t()
   defp option_data(modes) do
-    Enum.reduce(modes, [], fn route_type, acc ->
-      Keyword.put(acc, route_type, true)
-    end)
+    modes
+    |> Enum.reduce([], &Keyword.put(&2, &1, true))
+    |> Enum.sort_by(&elem(&1, 0))
   end
 
   @spec get_stops_by_route(String.t()) :: [stop_row]
@@ -132,7 +132,7 @@ defmodule ConciergeSite.StopSelectHelper do
         else: "#{input_name}[#{field}]"
 
     [
-      data: [type: "stop", route: route_id],
+      data: [route: route_id, type: "stop"],
       class: "form-control",
       id: "#{input_name}_#{field}",
       name: name
