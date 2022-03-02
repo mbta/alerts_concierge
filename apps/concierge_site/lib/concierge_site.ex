@@ -4,6 +4,7 @@ defmodule ConciergeSite do
 
   def start(_type, _args) do
     children = [
+      {Phoenix.PubSub, name: ConciergeSite.PubSub},
       ConciergeSite.Endpoint,
       Guardian.DB.Token.SweeperServer
     ]

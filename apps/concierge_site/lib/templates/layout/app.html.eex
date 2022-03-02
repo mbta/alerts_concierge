@@ -57,7 +57,7 @@
       <div class="row justify-content-md-center">
         <% cols = if (assigns[:wide_layout]), do: "col-md-12", else: "col-md-8" %>
         <main id="main" class="<%= cols %>" tabindex="-1">
-          <%= render @view_module, @view_template, assigns %>
+          <%= @inner_content %>
         </main>
       </div>
     </div>

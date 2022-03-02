@@ -63,8 +63,8 @@ defmodule ConciergeSite.FacilitiesHelperTest do
     end
 
     test "checked", %{outputs: [checked_escalator_html, unchecked_escalator_html]} do
-      assert checked_escalator_html =~ ~r/<input.*escalator.*value=\"true\".*checked.*?>/
-      refute unchecked_escalator_html =~ ~r/<input.*escalator.*value=\"true\".*checked.*?>/
+      assert checked_escalator_html =~ ~r/<input.*checked.*escalator.*value=\"true\".*?>/
+      refute unchecked_escalator_html =~ ~r/<input.*checked.*escalator.*value=\"true\".*?>/
     end
   end
 end
