@@ -209,9 +209,11 @@ defmodule ConciergeSite.TripCardHelper do
 
   @spec format_time({Time.t(), Time.t()}) :: String.t()
   defp format_time({start_time, end_time}) do
-    "#{String.slice(format_time_string(time_to_string(start_time), "%l:%M%p"), 0..-2)} - #{
-      String.slice(format_time_string(time_to_string(end_time), "%l:%M%p"), 0..-2)
-    }"
+    [start_time, end_time]
+    |> Stream.map(&time_to_string/1)
+    |> Stream.map(&format_time_string(&1, "%l:%M%p"))
+    |> Stream.map(&String.trim(&1, "M"))
+    |> Enum.join(" - ")
   end
 
   @spec facility_types([atom]) :: String.t()

@@ -1,19 +1,13 @@
-use Mix.Config
+import Config
 
-# We don't run a server during test. If one is required,
-# you can enable the server option below.
-config :concierge_site, ConciergeSite.Endpoint,
-  http: [port: 4001],
-  server: true
+# Run a server for browser-based feature tests
+config :concierge_site, ConciergeSite.Endpoint, server: true, http: [port: 4001]
 
 # Print only warnings and errors during test
 config :logger, level: :warn
 
 config :concierge_site, ConciergeSite.Guardian, secret_key: "top_secret_key"
 config :concierge_site, ConciergeSite.Dissemination.Mailer, adapter: Bamboo.TestAdapter
-
-# Google Tag Manager
-config :concierge_site, ConciergeSite.ViewHelpers, google_tag_manager_id: "GOOGLE_TAG_MANAGER_ID"
 
 config :recaptcha, http_client: Recaptcha.Http.MockClient
 

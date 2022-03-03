@@ -16,7 +16,14 @@ defmodule AlertProcessor.Mixfile do
       start_permanent: Mix.env() == :prod,
       deps: deps(),
       # https://github.com/dariodf/lcov_ex/issues/2
-      test_coverage: [tool: LcovEx]
+      test_coverage: [tool: LcovEx],
+      # Ignore warnings due to the circular dependency between AlertProcessor and ConciergeSite
+      xref: [
+        exclude: [
+          ConciergeSite.Dissemination.Mailer,
+          ConciergeSite.Dissemination.NotificationEmail
+        ]
+      ]
     ]
   end
 
@@ -46,6 +53,7 @@ defmodule AlertProcessor.Mixfile do
       {:httpoison, "~> 1.8.0"},
       {:paper_trail, "0.8.3"},
       {:poison, "~> 2.0"},
+      {:poolboy, "~> 1.5.0"},
       {:postgrex, "~> 0.15.0"},
       {:sentry, "~> 8.0"},
       {:sweet_xml, "~> 0.6"},

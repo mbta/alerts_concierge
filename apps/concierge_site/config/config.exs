@@ -3,7 +3,7 @@
 #
 # This configuration file is loaded before any dependency and
 # is restricted to this project.
-use Mix.Config
+import Config
 
 # General application configuration
 config :concierge_site,
@@ -12,6 +12,7 @@ config :concierge_site,
 
 # Configures the endpoint
 config :concierge_site, ConciergeSite.Endpoint,
+  http: [:inet6, port: 4000],
   url: [host: "localhost"],
   secret_key_base: "wxQjfCkbnND+H2kYSmvtNl+77BiBDB3qM7ytsJaOTZp2aBcEhcGvdkoa55pYbER0",
   render_errors: [view: ConciergeSite.ErrorView, accepts: ~w(html json)],
@@ -45,10 +46,6 @@ config :guardian, Guardian.DB, repo: AlertProcessor.Repo
 
 config :concierge_site, mail_template_dir: Path.join(~w(#{__DIR__} /../ lib/mail_templates))
 
-# Google Tag Manager
-config :concierge_site, ConciergeSite.ViewHelpers,
-  google_tag_manager_id: System.get_env("GOOGLE_TAG_MANAGER_ID")
-
 # Rate Limiting
 config :hammer,
   backend: {Hammer.Backend.ETS, [expiry_ms: 60_000 * 60 * 4, cleanup_interval_ms: 60_000 * 10]}
@@ -65,4 +62,4 @@ config :concierge_site, mailchimp_api_client: ConciergeSite.Mailchimp.FakeClient
 
 # Import environment specific config. This must remain at the bottom
 # of this file so it overrides the configuration defined above.
-import_config "#{Mix.env()}.exs"
+import_config "#{config_env()}.exs"
