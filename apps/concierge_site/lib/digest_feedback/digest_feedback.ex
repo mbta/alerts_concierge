@@ -69,9 +69,8 @@ defmodule ConciergeSite.DigestFeedback do
 
   def log_digest_rating_reason(%DigestRatingReason{what: what, why: why}) do
     Logger.info(
-      "digest-reason what=\"#{clean_string_for_splunk(what)}\" why=\"#{
-        clean_string_for_splunk(why)
-      }\""
+      "digest-reason " <>
+        "what=\"#{clean_string_for_splunk(what)}\" why=\"#{clean_string_for_splunk(why)}\""
     )
   end
 

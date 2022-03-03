@@ -1,4 +1,4 @@
-use Mix.Config
+import Config
 
 # Print only warnings and errors during test
 config :logger, level: :warn
@@ -18,8 +18,6 @@ config :alert_processor, :mailer, AlertProcessor.MailerMock
 config :alert_processor, :mailer_email, AlertProcessor.EmailMock
 
 config :alert_processor, api_url: "https://api-dev.mbtace.com/"
-
-config :alert_processor, database_url: {:system, "DATABASE_URL_TEST"}
 
 config :alert_processor, :notification_window_filter, AlertProcessor.NotificationWindowFilterMock
 

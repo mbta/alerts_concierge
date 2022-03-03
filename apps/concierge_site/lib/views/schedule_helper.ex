@@ -105,9 +105,8 @@ defmodule ConciergeSite.ScheduleHelper do
             content_tag :span do
               [
                 weekend_indicator(trip),
-                "Train #{trip.trip_number} from #{elem(trip.origin, 0)}, #{
-                  trip.departure_time |> time_to_string() |> format_time_string("%I:%M%P")
-                }"
+                "Train #{trip.trip_number} from #{elem(trip.origin, 0)}, ",
+                trip.departure_time |> time_to_string() |> format_time_string("%I:%M%P")
               ]
             end
           ]
@@ -137,9 +136,8 @@ defmodule ConciergeSite.ScheduleHelper do
           [
             ConciergeSite.IconViewHelper.icon(:ferry),
             weekend_indicator(trip),
-            "Ferry from #{elem(trip.origin, 0)}, #{
-              trip.departure_time |> time_to_string() |> format_time_string("%I:%M%P")
-            }"
+            "Ferry from #{elem(trip.origin, 0)}, ",
+            trip.departure_time |> time_to_string() |> format_time_string("%I:%M%P")
           ]
         end,
         content_tag :i, class: "fa fa-check" do

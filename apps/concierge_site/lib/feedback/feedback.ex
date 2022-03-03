@@ -96,12 +96,9 @@ defmodule ConciergeSite.Feedback do
   def log_alert_rating_reason(alert, %AlertRatingReason{user_id: user_id, what: what, why: why}) do
     Logger.info(
       Enum.join(
-        ["feedback-reason"] ++
-          [
-            "what=\"#{clean_string_for_splunk(what)}\" why=\"#{clean_string_for_splunk(why)}\" user_id=#{
-              user_id
-            }"
-          ] ++ flatten_informed_entities(alert) ++ get_attributes_attributes(alert),
+        ["feedback-reason user_id=#{user_id}"] ++
+          ["what=\"#{clean_string_for_splunk(what)}\" why=\"#{clean_string_for_splunk(why)}\""] ++
+          flatten_informed_entities(alert) ++ get_attributes_attributes(alert),
         " "
       )
     )
@@ -112,9 +109,10 @@ defmodule ConciergeSite.Feedback do
     [%{"text" => text}] = alert.data["header_text"]["translation"]
 
     [
-      "alert_id=#{alert.alert_id} created=#{alert.data["created_timestamp"]} severity=#{
-        alert.data["severity"]
-      } text=\"#{clean_string_for_splunk(text)}\""
+      "alert_id=#{alert.alert_id}",
+      "created=#{alert.data["created_timestamp"]}",
+      "severity=#{alert.data["severity"]}",
+      "text=\"#{clean_string_for_splunk(text)}\""
     ]
   end
 

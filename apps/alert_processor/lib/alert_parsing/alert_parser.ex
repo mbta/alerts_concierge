@@ -45,9 +45,9 @@ defmodule AlertProcessor.AlertParser do
         |> add_tracking_fields(started_at, alert_filter_duration_type)
 
       Logger.info(fn ->
-        "alert filter, duration_type=#{alert_filter_duration_type} alert_count=#{
-          length(alerts_needing_notifications)
-        }"
+        "alert filter, " <>
+          "duration_type=#{alert_filter_duration_type} " <>
+          "alert_count=#{length(alerts_needing_notifications)}"
       end)
 
       if alert_filter_duration_type == :older do
@@ -93,9 +93,9 @@ defmodule AlertProcessor.AlertParser do
       end
 
     Logger.info(fn ->
-      "alert parsing, time=#{Time.diff(Time.utc_now(), start_time, :millisecond)} alert_count=#{
-        length(alerts)
-      }"
+      "alert parsing, " <>
+        "time=#{Time.diff(Time.utc_now(), start_time, :millisecond)} " <>
+        "alert_count=#{length(alerts)}"
     end)
 
     parsed_alerts

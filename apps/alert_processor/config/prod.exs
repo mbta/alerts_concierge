@@ -1,6 +1,4 @@
-use Mix.Config
-
-config :alert_processor, database_url: {:system, "DATABASE_URL_PROD"}
+import Config
 
 # Config for ExAws lib
 config :alert_processor, :ex_aws, ExAws

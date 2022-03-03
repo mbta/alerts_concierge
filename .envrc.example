@@ -7,8 +7,9 @@ export AWS_SECRET_ACCESS_KEY=
 export DATABASE_URL_DEV=postgresql://__username__:password@localhost:5432/alert_concierge_dev
 export DATABASE_URL_PROD=
 export DATABASE_URL_TEST=postgresql://__username__:password@localhost:5432/alert_concierge_test
-export GUARDIAN_AUTH_KEY=abc123
-export HOST_URL=ec2-something.compute-1.amazonaws.com
+export GOOGLE_TAG_MANAGER_ID=
+export GUARDIAN_AUTH_KEY=
+export HOST_URL=
 # Designated test keys: https://developers.google.com/recaptcha/docs/faq
 export RECAPTCHA_PRIVATE_KEY=6LeIxAcTAAAAAGG-vFI1TnRWxMZNFuojJ4WifJWe
 export RECAPTCHA_PUBLIC_KEY=6LeIxAcTAAAAAJcZVRqyHh71UMIEGNQ_MXjiZKhI

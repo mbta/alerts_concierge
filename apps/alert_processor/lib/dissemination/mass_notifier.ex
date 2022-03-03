@@ -23,9 +23,8 @@ defmodule AlertProcessor.Dissemination.MassNotifier do
   @spec save_and_enqueue([Notification.t()]) :: :ok
   def save_and_enqueue(notifications) do
     Logger.info(fn ->
-      "MassNotifier save_and_enqueue, num_notifications=#{length(notifications)}, batch_size=#{
-        @batch_size
-      }"
+      "MassNotifier save_and_enqueue " <>
+        "num_notifications=#{length(notifications)} " <> "batch_size=#{@batch_size}"
     end)
 
     notifications

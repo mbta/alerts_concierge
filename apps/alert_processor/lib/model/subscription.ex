@@ -482,10 +482,10 @@ defmodule AlertProcessor.Model.Subscription do
       from(
         s in query,
         where:
-          not (s.user_id in fragment(
-                 "select distinct on (n.user_id) n.user_id from notifications as n where n.alert_id = ? and n.status = 'sent'",
-                 ^alert_id
-               ))
+          s.user_id not in fragment(
+            "select distinct on (n.user_id) n.user_id from notifications as n where n.alert_id = ? and n.status = 'sent'",
+            ^alert_id
+          )
       )
 
   @spec get_alert_entity_lists(Alert.t()) :: Keyword.t()

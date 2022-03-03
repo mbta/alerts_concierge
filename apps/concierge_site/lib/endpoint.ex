@@ -55,16 +55,4 @@ defmodule ConciergeSite.Endpoint do
   )
 
   plug(ConciergeSite.Router)
-
-  @doc """
-  Dynamically loads configuration from the system environment
-  on startup.
-
-  It receives the endpoint configuration from the config files
-  and must return the updated configuration.
-  """
-  def load_from_system_env(config) do
-    port = 4000
-    {:ok, Keyword.put(config, :http, [:inet6, port: port])}
-  end
 end
