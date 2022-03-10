@@ -71,7 +71,9 @@ const getStopChoices = optionEls =>
   }));
 
 const renderIcons = stopId =>
-  stopData[stopId].reduce(
+  // with float-right, the first element in the markup will be the one furthest
+  // to the right, so we need to reverse the icon list to get the correct order
+  stopData[stopId].slice().reverse().reduce(
     (accumulator, iconId) =>
       `${accumulator}${getIcon(iconId)("float-right route__select--icon")}`,
     ""
