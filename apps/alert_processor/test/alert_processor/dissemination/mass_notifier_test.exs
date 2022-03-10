@@ -1,5 +1,5 @@
 defmodule AlertProcessor.Dissemination.MassNotifierTest do
-  use AlertProcessor.DataCase, async: true
+  use AlertProcessor.DataCase
   import AlertProcessor.Factory
   alias AlertProcessor.Dissemination.MassNotifier
   alias AlertProcessor.{Model.Alert, NotificationBuilder, Repo, SendingQueue}
@@ -14,6 +14,10 @@ defmodule AlertProcessor.Dissemination.MassNotifierTest do
     service_effect: "test",
     last_push_notification: DateTime.utc_now() |> DateTime.truncate(:second)
   }
+
+  setup do
+    SendingQueue.reset()
+  end
 
   describe "save_and_enqueue/1" do
     defp insert_user_and_build_notification(user_attrs \\ %{}) do

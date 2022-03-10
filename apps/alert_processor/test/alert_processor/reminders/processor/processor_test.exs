@@ -1,6 +1,6 @@
 defmodule AlertProcessor.Reminders.ProcessorTest do
   @moduledoc false
-  use AlertProcessor.DataCase, async: true
+  use AlertProcessor.DataCase
   import AlertProcessor.Factory
   alias AlertProcessor.Reminders.Processor
   alias AlertProcessor.Model.{Alert, Notification}
