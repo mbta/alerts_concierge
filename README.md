@@ -8,33 +8,34 @@ subscribe to notifications for service disruptions.
 ### Requirements
 
 - MBTA API key (get one [here](https://api-dev.mbtace.com))
-  - **Note:** This key must have its version set to `2019-04-05`
+  - **Note:** This key must have its version set to `2019-02-12`
+  - You may need to request an increased rate limit if you get errors during
+    the first app startup; 2000 requests per minute should be enough
 - PostgreSQL 13 (using Homebrew: `brew install postgresql@13`)
+  - You will need Postgres client tools in your PATH; if using Homebrew and you
+    get an error about missing tools, use `brew link postgresql@13`
+- [Google Chrome](https://www.google.com/chrome/)
 - Chromedriver (using Homebrew: `brew cask install chromedriver`)
-- Erlang, Elixir, and Node.js versions specified in `.tool_versions`
-  - Use [`asdf`](https://github.com/asdf-vm/asdf) to install automatically
-    - Note [these extra install steps][nodejs-reqs] for NodeJS plugin
-- [direnv](https://github.com/direnv/direnv) _(optional, but convenient)_
-
-[nodejs-reqs]: https://github.com/asdf-vm/asdf-nodejs#requirements
+- [`asdf`](https://asdf-vm.com/) with plugins: `elixir`, `erlang`, `nodejs`
+- [`direnv`](https://direnv.net/) _(optional, for auto-loading env vars)_
 
 ### Instructions
 
-- `mix deps.get`
-- `npm install --prefix apps/concierge_site/assets`
-- `cat .envrc.example | sed -e "s/__username__/$(logname)/g" > .envrc`
-- In `.envrc`: Fill in `API_KEY=` with the API key you obtained above
-- `direnv allow`
-- `mix ecto.setup`
-- `MIX_ENV=test mix ecto.setup`
+1. `asdf install`
+2. `mix deps.get`
+3. `npm install --prefix apps/concierge_site/assets`
+4. `cat .envrc.example | sed -e "s/__username__/$(logname)/g" > .envrc`
+5. In `.envrc`: Fill in `API_KEY=` with the API key you obtained above
+6. `direnv allow`
+7. `mix ecto.setup`
+8. `MIX_ENV=test mix ecto.setup`
 
 The above assumes you have a PostgreSQL user with the same name as your OS user
 (`logname`), which should be the default with a Homebrew install. Otherwise, you
 may need to adjust the username in `.envrc`.
 
-If not using `direnv`, you can instead `source .envrc` as it is a valid shell
-script. However A) this will not persist beyond the current shell session, and
-B) it will persist _through_ the session, even if you change directories.
+If not using `direnv`, you can instead `source .envrc` to perform a one-time
+export of the environment variables into your current shell session.
 
 ### Running tests
 
