@@ -2,8 +2,8 @@
 -- PostgreSQL database dump
 --
 
--- Dumped from database version 13.4
--- Dumped by pg_dump version 14.0
+-- Dumped from database version 13.6
+-- Dumped by pg_dump version 13.6
 
 SET statement_timeout = 0;
 SET lock_timeout = 0;
@@ -584,5 +584,63 @@ ALTER TABLE ONLY public.versions
 -- PostgreSQL database dump complete
 --
 
-INSERT INTO public."schema_migrations" (version) VALUES (20170323160837), (20170324164902), (20170411193142), (20170413164902), (20170413164922), (20170419201204), (20170420134049), (20170426151933), (20170504192335), (20170509151223), (20170511131803), (20170511141849), (20170601111510), (20170605184024), (20170606192717), (20170622144910), (20170706203147), (20170711152200), (20170717151734), (20170726172307), (20170822155325), (20170925154917), (20170928134753), (20171124210022), (20180115200621), (20180126151708), (20180220220709), (20180220221033), (20180220223228), (20180221160945), (20180221163334), (20180302174444), (20180302175419), (20180305194714), (20180314150509), (20180314174157), (20180320154509), (20180320212519), (20180322200228), (20180328192337), (20180402201746), (20180427180310), (20180626183609), (20180627190847), (20180627212459), (20180628144348), (20180628145148), (20180730164440), (20180803152303), (20180809234726), (20180827184355), (20180827190044), (20180827191017), (20180914150352), (20181129190220), (20190607150001), (20190610143559), (20200430210043), (20210421143058), (20210528144213);
-
+INSERT INTO public."schema_migrations" (version) VALUES (20170323160837);
+INSERT INTO public."schema_migrations" (version) VALUES (20170324164902);
+INSERT INTO public."schema_migrations" (version) VALUES (20170411193142);
+INSERT INTO public."schema_migrations" (version) VALUES (20170413164902);
+INSERT INTO public."schema_migrations" (version) VALUES (20170413164922);
+INSERT INTO public."schema_migrations" (version) VALUES (20170419201204);
+INSERT INTO public."schema_migrations" (version) VALUES (20170420134049);
+INSERT INTO public."schema_migrations" (version) VALUES (20170426151933);
+INSERT INTO public."schema_migrations" (version) VALUES (20170504192335);
+INSERT INTO public."schema_migrations" (version) VALUES (20170509151223);
+INSERT INTO public."schema_migrations" (version) VALUES (20170511131803);
+INSERT INTO public."schema_migrations" (version) VALUES (20170511141849);
+INSERT INTO public."schema_migrations" (version) VALUES (20170601111510);
+INSERT INTO public."schema_migrations" (version) VALUES (20170605184024);
+INSERT INTO public."schema_migrations" (version) VALUES (20170606192717);
+INSERT INTO public."schema_migrations" (version) VALUES (20170622144910);
+INSERT INTO public."schema_migrations" (version) VALUES (20170706203147);
+INSERT INTO public."schema_migrations" (version) VALUES (20170711152200);
+INSERT INTO public."schema_migrations" (version) VALUES (20170717151734);
+INSERT INTO public."schema_migrations" (version) VALUES (20170726172307);
+INSERT INTO public."schema_migrations" (version) VALUES (20170822155325);
+INSERT INTO public."schema_migrations" (version) VALUES (20170925154917);
+INSERT INTO public."schema_migrations" (version) VALUES (20170928134753);
+INSERT INTO public."schema_migrations" (version) VALUES (20171124210022);
+INSERT INTO public."schema_migrations" (version) VALUES (20180115200621);
+INSERT INTO public."schema_migrations" (version) VALUES (20180126151708);
+INSERT INTO public."schema_migrations" (version) VALUES (20180220220709);
+INSERT INTO public."schema_migrations" (version) VALUES (20180220221033);
+INSERT INTO public."schema_migrations" (version) VALUES (20180220223228);
+INSERT INTO public."schema_migrations" (version) VALUES (20180221160945);
+INSERT INTO public."schema_migrations" (version) VALUES (20180221163334);
+INSERT INTO public."schema_migrations" (version) VALUES (20180302174444);
+INSERT INTO public."schema_migrations" (version) VALUES (20180302175419);
+INSERT INTO public."schema_migrations" (version) VALUES (20180305194714);
+INSERT INTO public."schema_migrations" (version) VALUES (20180314150509);
+INSERT INTO public."schema_migrations" (version) VALUES (20180314174157);
+INSERT INTO public."schema_migrations" (version) VALUES (20180320154509);
+INSERT INTO public."schema_migrations" (version) VALUES (20180320212519);
+INSERT INTO public."schema_migrations" (version) VALUES (20180322200228);
+INSERT INTO public."schema_migrations" (version) VALUES (20180328192337);
+INSERT INTO public."schema_migrations" (version) VALUES (20180402201746);
+INSERT INTO public."schema_migrations" (version) VALUES (20180427180310);
+INSERT INTO public."schema_migrations" (version) VALUES (20180626183609);
+INSERT INTO public."schema_migrations" (version) VALUES (20180627190847);
+INSERT INTO public."schema_migrations" (version) VALUES (20180627212459);
+INSERT INTO public."schema_migrations" (version) VALUES (20180628144348);
+INSERT INTO public."schema_migrations" (version) VALUES (20180628145148);
+INSERT INTO public."schema_migrations" (version) VALUES (20180730164440);
+INSERT INTO public."schema_migrations" (version) VALUES (20180803152303);
+INSERT INTO public."schema_migrations" (version) VALUES (20180809234726);
+INSERT INTO public."schema_migrations" (version) VALUES (20180827184355);
+INSERT INTO public."schema_migrations" (version) VALUES (20180827190044);
+INSERT INTO public."schema_migrations" (version) VALUES (20180827191017);
+INSERT INTO public."schema_migrations" (version) VALUES (20180914150352);
+INSERT INTO public."schema_migrations" (version) VALUES (20181129190220);
+INSERT INTO public."schema_migrations" (version) VALUES (20190607150001);
+INSERT INTO public."schema_migrations" (version) VALUES (20190610143559);
+INSERT INTO public."schema_migrations" (version) VALUES (20200430210043);
+INSERT INTO public."schema_migrations" (version) VALUES (20210421143058);
+INSERT INTO public."schema_migrations" (version) VALUES (20210528144213);
