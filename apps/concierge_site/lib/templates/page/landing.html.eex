@@ -1,7 +1,7 @@
 <div class="landing-page row">
 
   <div class="landing-page__content col-12 col-lg-7">
-    <h1 class="landing-page__title">Try the new and<br>improved <span>T-Alerts!</span></h1>
+    <h1 class="landing-page__title">Service alerts, when and where you need them</h1>
     <%= flash_error(@conn) %>
     <%= flash_info(@conn) %>
 
@@ -22,7 +22,7 @@
 
   </div>
 
-  <div class="landing-page__example d-none d-lg-block col-lg-5">
+  <div class="landing-page__example col-lg-5">
     <%= img_tag(static_path(@conn, "/images/landing-phone.png"), alt: "Example text alerts") %>
   </div>
 
