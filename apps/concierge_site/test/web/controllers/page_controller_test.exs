@@ -5,7 +5,7 @@ defmodule ConciergeSite.PageControllerTest do
   test "GET /", %{conn: conn} do
     conn = get(conn, page_path(conn, :landing))
 
-    assert html_response(conn, 200) =~ "Try the new"
+    assert html_response(conn, 200) =~ "Service alerts, when"
   end
 
   test "GET /deleted", %{conn: conn} do
