@@ -115,12 +115,12 @@ defmodule AlertProcessor.ApiClient do
   end
 
   @doc """
-  endpoint to fetch shapes for a specific route
+  endpoint to fetch patterns with representative trip stop information for a specific route
   """
-  @spec route_shapes(String.t()) :: {:ok, [map]} | {:error, String.t()}
-  def route_shapes(route) do
-    "/shapes"
-    |> api_get(route: route, direction_id: "1", "fields[shape]": "priority")
+  @spec route_patterns_with_stops(String.t()) :: {:ok, [map], [map]} | {:error, String.t()}
+  def route_patterns_with_stops(route) do
+    "/route_patterns"
+    |> api_get(route: route, direction_id: "1", include: "representative_trip.stops")
     |> parse_response()
   end
 

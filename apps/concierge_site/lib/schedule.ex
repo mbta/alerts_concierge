@@ -4,6 +4,7 @@ defmodule ConciergeSite.Schedule do
   """
   alias AlertProcessor.{ApiClient, DayType, ExtendedTime, ServiceInfoCache}
   alias AlertProcessor.Model.{Route, Subscription, TripInfo}
+  alias AlertProcessor.Helpers.Sort
   alias ConciergeSite.Schedule
 
   @typedoc """
@@ -212,9 +213,13 @@ defmodule ConciergeSite.Schedule do
     |> Enum.filter(fn {_id, schedules} -> Enum.count(schedules) > 1 end)
     |> Enum.map(fn {_id, schedules} ->
       [departure_schedule, arrival_schedule | _] =
-        Enum.sort_by(schedules, fn %{"attributes" => %{"departure_time" => departure_timestamp}} ->
-          departure_timestamp
-        end)
+        Enum.sort_by(
+          schedules,
+          fn %{"attributes" => %{"departure_time" => departure_timestamp}} ->
+            departure_timestamp
+          end,
+          Sort.nils_last()
+        )
 
       %{
         "attributes" => %{
