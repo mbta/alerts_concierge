@@ -5,7 +5,7 @@ defmodule AlertProcessor.ServiceInfoCache do
   mode, line, then branch.
   """
   use GenServer
-  alias AlertProcessor.Helpers.{ConfigHelper, StringHelper}
+  alias AlertProcessor.Helpers.{ConfigHelper, StringHelper, Sort}
   alias AlertProcessor.{ApiClient, Model.Route}
   alias AlertProcessor.ServiceInfo.CacheFile
   require Logger
@@ -453,7 +453,8 @@ defmodule AlertProcessor.ServiceInfoCache do
            })}
 
         {:ok, schedule} ->
-          [departure_schedule | _t] = Enum.sort_by(schedule, & &1["attributes"]["departure_time"])
+          [departure_schedule | _t] =
+            Enum.sort_by(schedule, & &1["attributes"]["departure_time"], Sort.nils_last())
 
           %{
             "relationships" => %{"stop" => %{"data" => %{"id" => origin_id}}},
@@ -652,14 +653,23 @@ defmodule AlertProcessor.ServiceInfoCache do
   end
 
   defp fetch_route_branches("Red") do
-    {:ok, route_shapes} = ApiClient.route_shapes("Red")
+    {:ok, patterns, included} = ApiClient.route_patterns_with_stops("Red")
 
-    route_shapes
-    |> Enum.reject(fn %{"attributes" => %{"priority" => priority}} ->
-      priority == -1
+    %{"stop" => stops, "trip" => trips} = Enum.group_by(included, &Map.fetch!(&1, "type"))
+    stops_by_id = Map.new(stops, fn %{"id" => id} = stop -> {id, stop} end)
+    trips_by_id = Map.new(trips, fn %{"id" => id} = trip -> {id, trip} end)
+
+    patterns
+    |> Enum.filter(fn %{"attributes" => %{"typicality" => t}} -> t == 1 end)
+    |> Enum.map(fn %{"relationships" => %{"representative_trip" => %{"data" => %{"id" => id}}}} ->
+      Map.fetch!(trips_by_id, id)
     end)
-    |> Enum.map(fn %{"relationships" => %{"stops" => %{"data" => stops}}} ->
-      Enum.map(stops, & &1["id"])
+    |> Enum.map(fn %{"relationships" => %{"stops" => %{"data" => data}}} ->
+      data
+      |> Enum.map(fn %{"id" => id} -> Map.fetch!(stops_by_id, id) end)
+      |> Enum.map(fn %{"relationships" => %{"parent_station" => %{"data" => %{"id" => id}}}} ->
+        id
+      end)
     end)
   end
 

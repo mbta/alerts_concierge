@@ -8,7 +8,7 @@ subscribe to notifications for service disruptions.
 ### Requirements
 
 - MBTA API key (get one [here](https://api-dev.mbtace.com))
-  - **Note:** This key must have its version set to `2019-02-12`
+  - **Note:** This key must have its version set to `2021-01-09`
   - You may need to request an increased rate limit if you get errors during
     the first app startup; 2000 requests per minute should be enough
 - PostgreSQL 13 (using Homebrew: `brew install postgresql@13`)
