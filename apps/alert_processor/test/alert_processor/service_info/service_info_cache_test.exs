@@ -5,10 +5,8 @@ defmodule AlertProcessor.ServiceInfoCacheTest do
   alias AlertProcessor.{Model.Route, ServiceInfoCache}
 
   setup_all do
-    use_cassette "service_info", custom: true, clear_mock: true, match_requests_on: [:query] do
-      {:ok, pid} = ServiceInfoCache.start_link(name: :service_info_cache_test_subway)
-      {:ok, pid: pid}
-    end
+    {:ok, pid} = ServiceInfoCache.start_link(name: :service_info_cache_test_subway)
+    {:ok, pid: pid}
   end
 
   test "get_subway_info/0 returns subway branch lists", %{pid: pid} do
