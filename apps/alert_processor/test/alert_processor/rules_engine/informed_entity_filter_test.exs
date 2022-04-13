@@ -1416,5 +1416,46 @@ defmodule AlertProcessor.InformedEntityFilterTest do
 
       assert InformedEntityFilter.subscription_match?(subscription, informed_entity)
     end
+
+    test "returns true when schedule has no origin departure time" do
+      subscription_details = [
+        route_type: nil,
+        direction_id: nil,
+        route: nil,
+        origin: "place-DB-2205",
+        destination: "place-DB-2265",
+        facility_types: [],
+        start_time: ~T[08:00:00],
+        end_time: ~T[09:00:00]
+      ]
+
+      subscription = build(:subscription, subscription_details)
+
+      scheduled_origin_event = %{
+        stop_id: "place-DB-2205",
+        departure_time: nil
+      }
+
+      scheduled_destination_event = %{
+        stop_id: "place-DB-2265",
+        departure_time: nil
+      }
+
+      schedule = [scheduled_origin_event, scheduled_destination_event]
+
+      informed_entity_details = [
+        route_type: nil,
+        direction_id: nil,
+        route: nil,
+        stop: nil,
+        activities: nil,
+        schedule: schedule,
+        trip: "767"
+      ]
+
+      informed_entity = build(:informed_entity, informed_entity_details)
+
+      assert InformedEntityFilter.subscription_match?(subscription, informed_entity)
+    end
   end
 end
