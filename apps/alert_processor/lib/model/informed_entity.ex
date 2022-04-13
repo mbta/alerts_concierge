@@ -17,11 +17,13 @@ defmodule AlertProcessor.Model.InformedEntity do
           | :tty_phone
           | :elevated_subplatform
   @type schedule ::
-          %{
-            departure_time: String.t(),
-            stop_id: String.t(),
-            trip_id: String.t()
-          }
+          [
+            %{
+              departure_time: String.t() | nil,
+              stop_id: String.t(),
+              trip_id: String.t()
+            }
+          ]
           | nil
 
   @type t :: %__MODULE__{
