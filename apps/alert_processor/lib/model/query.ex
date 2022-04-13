@@ -82,6 +82,20 @@ defmodule AlertProcessor.Model.Query do
         LEFT JOIN subscriptions s ON u.id = s.user_id
         GROUP BY u.communication_mode
         """
+      },
+      %__MODULE__{
+        label: "Subscription info for users with invalid emails",
+        query: """
+        SELECT
+          u.email AS email,
+          u.communication_mode AS communication_mode,
+          COUNT(DISTINCT s.id) AS total_subscriptions,
+          COUNT(DISTINCT CASE WHEN NOT s.paused THEN s.id END) as unpaused_subscriptions
+        FROM users u
+        INNER JOIN subscriptions s ON u.id = s.user_id
+        WHERE u.email !~ '[A-Z0-9a-z._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,64}'
+        GROUP BY u.email, u.communication_mode
+        """
       }
     ]
     |> Enum.map(&%{&1 | id: &1.label |> String.downcase() |> String.replace(" ", "_")})
