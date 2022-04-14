@@ -141,7 +141,10 @@ defmodule AlertProcessor.InformedEntityFilter do
   end
 
   defp trip_departure(subscription, schedule) do
-    case Enum.find(schedule, &(&1.stop_id == subscription.origin && &1.departure_time)) do
+    case Enum.find(
+           schedule,
+           &(&1.stop_id == subscription.origin and not is_nil(&1.departure_time))
+         ) do
       matching_stop_event when is_map(matching_stop_event) ->
         time = time_from_scheduled_stop_event(matching_stop_event)
         {:ok, time}
