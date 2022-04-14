@@ -7,10 +7,6 @@ defmodule AlertProcessor.NotificationBuilder do
   alias AlertProcessor.Model.Notification
 
   def build_notification({user, subscriptions}, alert) do
-    do_build_notification({user, subscriptions}, alert)
-  end
-
-  defp do_build_notification({user, subscriptions}, alert) do
     %Notification{
       alert_id: alert.id,
       user: user,

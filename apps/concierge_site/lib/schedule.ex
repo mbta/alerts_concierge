@@ -212,14 +212,10 @@ defmodule ConciergeSite.Schedule do
     |> Enum.group_by(fn %{"relationships" => %{"trip" => %{"data" => %{"id" => id}}}} -> id end)
     |> Enum.filter(fn {_id, schedules} -> Enum.count(schedules) > 1 end)
     |> Enum.map(fn {_id, schedules} ->
-      [departure_schedule, arrival_schedule | _] =
-        Enum.sort_by(
-          schedules,
-          fn %{"attributes" => %{"departure_time" => departure_timestamp}} ->
-            departure_timestamp
-          end,
-          Sort.nils_last()
-        )
+      departure_schedule =
+        Enum.min_by(schedules, & &1["attributes"]["departure_time"], Sort.nils_last())
+
+      arrival_schedule = Enum.max_by(schedules, & &1["attributes"]["arrival_time"])
 
       %{
         "attributes" => %{
@@ -240,6 +236,7 @@ defmodule ConciergeSite.Schedule do
       } = departure_schedule
 
       %{"attributes" => %{"arrival_time" => arrival_timestamp}} = arrival_schedule
+
       {:ok, route} = ServiceInfoCache.get_route(route_id)
 
       arrival_datetime = NaiveDateTime.from_iso8601!(arrival_timestamp)
