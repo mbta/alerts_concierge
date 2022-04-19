@@ -64,7 +64,7 @@ jobs:
           key: ${{ secrets.CACHE_UUID }}-node-${{ hashFiles('**/package-lock.json') }}
       - name: JS dependencies
         if: steps.js-deps-cache.outputs.cache-hit != 'true'
-        run: npm install --prefix apps/concierge_site/assets
+        run: npm ci --prefix apps/concierge_site/assets
 
 
   format:
