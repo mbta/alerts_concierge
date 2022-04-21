@@ -168,7 +168,9 @@ defmodule AlertProcessor.Model.Query do
         label: "Fix user emails",
         query: """
         UPDATE users
-        SET email = #{email_replacements()}
+        SET
+          email = #{email_replacements()},
+          digest_opt_in = false
         WHERE email IN (
           #{select_invalid_emails("users.email")}
         )
