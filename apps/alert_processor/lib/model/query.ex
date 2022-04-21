@@ -21,7 +21,7 @@ defmodule AlertProcessor.Model.Query do
 
   defp email_replacements(replacements) do
     Enum.reduce(replacements, "users.email", fn {l, r}, acc ->
-      "regexp_replace(#{acc}, '#{l}', '#{r}')"
+      "regexp_replace(#{acc}, '#{l}', '#{r}', 'g')"
     end)
   end
 
