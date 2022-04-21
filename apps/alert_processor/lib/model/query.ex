@@ -19,6 +19,16 @@ defmodule AlertProcessor.Model.Query do
 
   @users_with_subscriptions "users u JOIN subscriptions s ON u.id = s.user_id"
 
+  defp invalid_users_to_delete(select_clause) do
+    """
+    SELECT #{select_clause}
+    FROM users
+    WHERE
+      users.email !~ '[A-Z0-9a-z._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,64}'
+      AND users.communication_mode != 'sms'
+    """
+  end
+
   @doc "Lists available queries."
   @spec all() :: [t]
   def all do
@@ -133,6 +143,18 @@ defmodule AlertProcessor.Model.Query do
           new_users_without_subscriptions_per_period
           ON new_users_without_subscriptions_per_period.period_end = periods.end
         ORDER BY periods.end DESC
+        """
+      },
+      %__MODULE__{
+        label: "List accounts to be deleted with invalid emails",
+        query: invalid_users_to_delete("users.email, users.communication_mode")
+      },
+      %__MODULE__{
+        label: "Delete accounts with invalid emails",
+        query: """
+        DELETE FROM users
+        WHERE email IN (#{invalid_users_to_delete("users.email")})
+        RETURNING users.email, users.communication_mode
         """
       }
     ]
