@@ -19,6 +19,29 @@ defmodule AlertProcessor.Model.Query do
 
   @users_with_subscriptions "users u JOIN subscriptions s ON u.id = s.user_id"
 
+  defp email_replacements(replacements) do
+    Enum.reduce(replacements, "users.email", fn {l, r}, acc ->
+      "regexp_replace(#{acc}, '#{l}', '#{r}')"
+    end)
+  end
+
+  defp email_replacements() do
+    email_replacements([
+      {"[ !,]", ""},
+      {"@@*", "@"},
+      {"(@gma$)|(@gmil.com)|(@g$)|(@gmail.co$)", "@gmail.com"},
+      {"@aol$", "@aol.com"}
+    ])
+  end
+
+  defp select_invalid_emails(select_clause) do
+    """
+    SELECT #{select_clause}
+    FROM users
+    WHERE users.email !~ '[A-Z0-9a-z._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,64}'
+    """
+  end
+
   @doc "Lists available queries."
   @spec all() :: [t]
   def all do
@@ -133,6 +156,23 @@ defmodule AlertProcessor.Model.Query do
           new_users_without_subscriptions_per_period
           ON new_users_without_subscriptions_per_period.period_end = periods.end
         ORDER BY periods.end DESC
+        """
+      },
+      %__MODULE__{
+        label: "List user email fixes",
+        query: """
+        #{select_invalid_emails("users.email, #{email_replacements()} as fixed")}
+        """
+      },
+      %__MODULE__{
+        label: "Fix user emails",
+        query: """
+        UPDATE users
+        SET email = #{email_replacements()}
+        WHERE email IN (
+          #{select_invalid_emails("users.email")}
+        )
+        RETURNING email
         """
       }
     ]
