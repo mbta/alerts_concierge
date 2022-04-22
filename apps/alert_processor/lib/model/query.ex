@@ -38,7 +38,18 @@ defmodule AlertProcessor.Model.Query do
     """
     SELECT #{select_clause}
     FROM users
-    WHERE users.email !~ '[A-Z0-9a-z._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,64}'
+    WHERE users.email !~ '^[A-Z0-9a-z._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,64}$'
+    """
+  end
+
+  defp select_duplicated_fixed_emails(select_clause, additional_where_clause \\ "") do
+    """
+    SELECT #{select_clause}
+    FROM users
+    WHERE
+      users.email !~ '^[A-Z0-9a-z._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,64}$'
+      AND #{email_replacements()} IN (SELECT email FROM users)
+      #{additional_where_clause}
     """
   end
 
@@ -161,7 +172,7 @@ defmodule AlertProcessor.Model.Query do
       %__MODULE__{
         label: "List user email fixes",
         query: """
-        #{select_invalid_emails("users.email, #{email_replacements()} as fixed")}
+        #{select_invalid_emails("users.email, #{email_replacements()} as fixed, #{email_replacements()} NOT IN (SELECT email FROM users) AS will_be_fixed")}
         """
       },
       %__MODULE__{
@@ -173,10 +184,29 @@ defmodule AlertProcessor.Model.Query do
           digest_opt_in = false
         WHERE email IN (
           #{select_invalid_emails("users.email")}
+        ) AND #{email_replacements()} NOT IN (
+          SELECT email FROM users
         )
         RETURNING email
         """
-      }
+      },
+      %__MODULE__{
+        label: "List duplicate fixed emails",
+        query: """
+        #{select_duplicated_fixed_emails("users.email, #{email_replacements()} as fixed, communication_mode, communication_mode = 'email' AS will_be_deleted")}
+        """
+      },
+      %__MODULE__{
+        label: "Delete duplicate fixed emails",
+        query: """
+        DELETE FROM users
+        WHERE email
+        IN (
+          #{select_duplicated_fixed_emails("users.email", "AND communication_mode = 'email'")}
+        )
+        RETURNING email
+        """
+      },
     ]
     |> Enum.map(&%{&1 | id: &1.label |> String.downcase() |> String.replace(" ", "_")})
   end
