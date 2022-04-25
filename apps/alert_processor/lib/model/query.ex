@@ -153,7 +153,7 @@ defmodule AlertProcessor.Model.Query do
         label: "Delete accounts with invalid emails",
         query: """
         DELETE FROM users
-        WHERE email IN (#{invalid_users_to_delete("users.email")})
+        WHERE id IN (#{invalid_users_to_delete("users.id")} LIMIT 50)
         RETURNING users.email, users.communication_mode
         """
       }
