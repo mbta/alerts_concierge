@@ -49,6 +49,7 @@ defmodule AlertProcessor.Model.Query do
     FROM users
     WHERE
       users.email !~ '^[A-Z0-9a-z._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,64}$'
+      AND users.email != #{email_replacements()}
       AND #{email_replacements()} IN (SELECT email FROM users)
       #{additional_where_clause}
     """
