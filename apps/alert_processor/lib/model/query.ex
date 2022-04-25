@@ -27,9 +27,10 @@ defmodule AlertProcessor.Model.Query do
 
   defp email_replacements() do
     email_replacements([
-      {"[ !,]", ""},
-      {"@@*", "@"},
-      {"(@gma$)|(@gmil.com)|(@g$)|(@gmail.co$)", "@gmail.com"},
+      {"[<> !,]", ""},
+      {"@(.*@)+", "@"},
+      {"(@gma$)|(@gmil.com)|(@g$)|(@gmail.co$)|(@gmail *$)|(@gmail.com.*)", "@gmail.com"},
+      {"(\\.co\\.$)|(\\.com\\+.*$)", ".com"},
       {"@aol$", "@aol.com"}
     ])
   end
