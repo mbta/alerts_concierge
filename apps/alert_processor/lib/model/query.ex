@@ -134,6 +134,55 @@ defmodule AlertProcessor.Model.Query do
           ON new_users_without_subscriptions_per_period.period_end = periods.end
         ORDER BY periods.end DESC
         """
+      },
+      %__MODULE__{
+        label: "Monthly new active users",
+        query: """
+        WITH
+          periods AS (
+            SELECT start, start + interval '1 month' - interval '1 day' as \"end\"
+            FROM generate_series(
+              date_trunc('month', (SELECT MIN(inserted_at) FROM users)),
+              date_trunc('month', NOW() AT TIME ZONE 'utc') + interval '1 month' - interval '1 second',
+              interval '1 month'
+            ) start
+          ),
+          new AS (
+            SELECT COUNT(DISTINCT users.id), periods.end AS period_end
+            FROM users
+            INNER JOIN subscriptions ON (
+              subscriptions.user_id = users.id
+              AND subscriptions.paused = false
+            )
+            INNER JOIN periods ON (
+              periods.start <= users.inserted_at
+              AND users.inserted_at < periods.end
+            )
+            WHERE users.communication_mode IN ('email', 'sms')
+            GROUP BY periods.end
+          ),
+          users_before_end AS (
+            SELECT COUNT(DISTINCT users.id), periods.end AS period_end
+            FROM users
+            INNER JOIN subscriptions ON (
+              subscriptions.user_id = users.id
+              AND subscriptions.paused = false
+            )
+            INNER JOIN periods ON (
+              users.inserted_at < periods.end
+            )
+            WHERE users.communication_mode IN ('email', 'sms')
+            GROUP BY periods.end
+          )
+        SELECT
+          to_char(periods.end, 'YYYY-MM-DD') AS period_end,
+          COALESCE(new.count, 0) AS new_active_users,
+          COALESCE(users_before_end.count, 0) AS total_active_users
+        FROM periods
+        LEFT JOIN new ON new.period_end = periods.end
+        LEFT JOIN users_before_end ON users_before_end.period_end = periods.end
+        ORDER BY periods.end DESC
+        """
       }
     ]
     |> Enum.map(&%{&1 | id: &1.label |> String.downcase() |> String.replace(" ", "_")})
