@@ -164,7 +164,7 @@ defmodule ConciergeSite.ScheduleTest do
                  time: ~T[05:40:00]
                },
                departure_time: ~T[05:40:00],
-               destination: {"Worcester", "place-WML-0442", {42.261461, -71.794888}, 1},
+               destination: {"Worcester", "place-WML-0442", {42.261835, -71.791806}, 1},
                direction_id: 0,
                selected: false,
                trip_number: "501",
@@ -180,7 +180,7 @@ defmodule ConciergeSite.ScheduleTest do
                  route_type: 2,
                  short_name: "",
                  stop_list: [
-                   {"Worcester", "place-WML-0442", {42.261461, -71.794888}, 1},
+                   {"Worcester", "place-WML-0442", {42.261835, -71.791806}, 1},
                    {"Grafton", "place-WML-0364", {42.2466, -71.685325}, 1},
                    {"Westborough", "place-WML-0340", {42.269644, -71.647076}, 1},
                    {"Southborough", "place-WML-0274", {42.267024, -71.524371}, 1},
@@ -220,7 +220,7 @@ defmodule ConciergeSite.ScheduleTest do
                },
                departure_time: ~T[04:15:00],
                direction_id: 1,
-               origin: {"Worcester", "place-WML-0442", {42.261461, -71.794888}, 1},
+               origin: {"Worcester", "place-WML-0442", {42.261835, -71.791806}, 1},
                selected: false,
                trip_number: "500",
                weekend?: false,
@@ -235,7 +235,7 @@ defmodule ConciergeSite.ScheduleTest do
                  route_type: 2,
                  short_name: "",
                  stop_list: [
-                   {"Worcester", "place-WML-0442", {42.261461, -71.794888}, 1},
+                   {"Worcester", "place-WML-0442", {42.261835, -71.791806}, 1},
                    {"Grafton", "place-WML-0364", {42.2466, -71.685325}, 1},
                    {"Westborough", "place-WML-0340", {42.269644, -71.647076}, 1},
                    {"Southborough", "place-WML-0274", {42.267024, -71.524371}, 1},
