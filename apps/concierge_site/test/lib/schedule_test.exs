@@ -156,9 +156,9 @@ defmodule ConciergeSite.ScheduleTest do
              %AlertProcessor.Model.TripInfo{
                arrival_extended_time: %AlertProcessor.ExtendedTime{
                  relative_day: 1,
-                 time: ~T[06:21:00]
+                 time: ~T[06:25:00]
                },
-               arrival_time: ~T[06:21:00],
+               arrival_time: ~T[06:25:00],
                departure_extended_time: %AlertProcessor.ExtendedTime{
                  relative_day: 1,
                  time: ~T[05:40:00]
