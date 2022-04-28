@@ -25,4 +25,19 @@ defmodule ConcerigeSite.Helpers.MailHelperTest do
       assert url =~ "password_resets/#{reset_token}/edit"
     end
   end
+
+  describe "track_open_url" do
+    test "generates url with notification and alert ids" do
+      url =
+        MailHelper.track_open_url(%AlertProcessor.Model.Notification{
+          alert_id: "foo",
+          id: "bar"
+        })
+
+      assert url =~ "http"
+      assert url =~ "notification_email_opened?"
+      assert url =~ "alert_id=foo"
+      assert url =~ "notification_id=bar"
+    end
+  end
 end
