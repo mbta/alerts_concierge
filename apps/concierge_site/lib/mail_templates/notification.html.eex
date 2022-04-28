@@ -344,5 +344,6 @@
 
       </div>
 
+      <img src="<%= track_open_url %>" height=0 width=0>
       </body>
     </html>

@@ -52,6 +52,7 @@ defmodule ConciergeSite.Router do
     get("/login", SessionController, :login_redirect)
     get("/deleted", PageController, :account_deleted)
     get("/feedback", FeedbackController, :feedback)
+    get("/notification_email_opened", EmailOpenedController, :notification)
     post("/api/feedback", FeedbackController, :new)
     get("/digest/feedback", DigestFeedbackController, :feedback)
     post("/api/digest/feedback", DigestFeedbackController, :new)

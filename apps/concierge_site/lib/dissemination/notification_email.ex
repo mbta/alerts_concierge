@@ -13,7 +13,7 @@ defmodule ConciergeSite.Dissemination.NotificationEmail do
     :def,
     :html_email,
     Path.join(@template_dir, "notification.html.eex"),
-    [:notification, :manage_subscriptions_url, :support_url, :all_alerts_url]
+    [:notification, :manage_subscriptions_url, :support_url, :all_alerts_url, :track_open_url]
   )
 
   EEx.function_from_file(
@@ -30,10 +30,20 @@ defmodule ConciergeSite.Dissemination.NotificationEmail do
     {support_url, all_alerts_url} = {MailHelper.support_url(), MailHelper.all_alerts_url()}
     notification_email_subject = email_subject(notification)
 
+    track_open_url = MailHelper.track_open_url(notification)
+
     Email.base_email()
     |> to(email)
     |> subject(notification_email_subject)
-    |> html_body(html_email(notification, manage_subscriptions_url, support_url, all_alerts_url))
+    |> html_body(
+      html_email(
+        notification,
+        manage_subscriptions_url,
+        support_url,
+        all_alerts_url,
+        track_open_url
+      )
+    )
     |> text_body(text_email(notification, manage_subscriptions_url, support_url, all_alerts_url))
   end
 

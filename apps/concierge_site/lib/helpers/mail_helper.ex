@@ -4,6 +4,7 @@ defmodule ConciergeSite.Helpers.MailHelper do
   digest emails
   """
 
+  alias AlertProcessor.Model.Notification
   import ConciergeSite.ViewHelpers, only: [external_url: 1]
   alias ConciergeSite.Router.Helpers
   require EEx
@@ -46,5 +47,15 @@ defmodule ConciergeSite.Helpers.MailHelper do
 
   def reset_password_url(reset_token) do
     Helpers.password_reset_url(ConciergeSite.Endpoint, :edit, reset_token)
+  end
+
+  @spec track_open_url(Notification.t()) :: String.t()
+  def track_open_url(%Notification{id: notification_id, alert_id: alert_id}) do
+    Helpers.email_opened_url(
+      ConciergeSite.Endpoint,
+      :notification,
+      alert_id: alert_id,
+      notification_id: notification_id
+    )
   end
 end
