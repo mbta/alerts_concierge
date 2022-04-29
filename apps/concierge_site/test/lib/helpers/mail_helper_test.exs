@@ -35,9 +35,7 @@ defmodule ConcerigeSite.Helpers.MailHelperTest do
         })
 
       assert url =~ "http"
-      assert url =~ "notification_email_opened?"
-      assert url =~ "alert_id=foo"
-      assert url =~ "notification_id=bar"
+      assert url =~ "/email_opened/notification/foo/bar/img.gif"
     end
   end
 end

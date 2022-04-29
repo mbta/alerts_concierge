@@ -77,8 +77,7 @@ defmodule ConciergeSite.Dissemination.NotificationEmailTest do
     assert body =~ "feedback?alert_id=123&user_id=456&rating=yes"
     assert body =~ "feedback?alert_id=123&user_id=456&rating=no"
 
-    assert body =~
-             "notification_email_opened?alert_id=123&notification_id=a7722510-6a27-44ee-808e-b242312abb6d"
+    assert body =~ "/email_opened/notification/123/a7722510-6a27-44ee-808e-b242312abb6d/img.gif"
   end
 
   test "html_email/1 includes content for closed alerts" do
