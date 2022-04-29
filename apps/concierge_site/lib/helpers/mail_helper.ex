@@ -51,11 +51,6 @@ defmodule ConciergeSite.Helpers.MailHelper do
 
   @spec track_open_url(Notification.t()) :: String.t()
   def track_open_url(%Notification{id: notification_id, alert_id: alert_id}) do
-    Helpers.email_opened_url(
-      ConciergeSite.Endpoint,
-      :notification,
-      alert_id: alert_id,
-      notification_id: notification_id
-    )
+    Helpers.email_opened_url(ConciergeSite.Endpoint, :notification, alert_id, notification_id)
   end
 end
