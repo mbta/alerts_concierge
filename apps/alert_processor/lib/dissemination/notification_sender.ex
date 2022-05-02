@@ -27,10 +27,6 @@ defmodule AlertProcessor.Dissemination.NotificationSender do
         log(notification, :email, :error, error)
         {:error, error}
     end
-  rescue
-    error in ArgumentError ->
-      Logger.error("invalid email for #{notification.user_id}")
-      {:error, error}
   end
 
   def send(%Notification{phone_number: phone_number} = notification)

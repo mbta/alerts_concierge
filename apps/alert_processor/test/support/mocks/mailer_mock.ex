@@ -3,7 +3,6 @@ defmodule AlertProcessor.MailerMock do
 
   def deliver_now(email, _options \\ [])
 
-  def deliver_now(%{to: "bad_email"}, _), do: raise(ArgumentError, message: "invalid email")
   def deliver_now(%{to: "mailer_error" <> _}, _), do: {:error, %{message: "error requested"}}
 
   def deliver_now(email, _) do

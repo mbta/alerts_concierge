@@ -2,7 +2,6 @@ defmodule AlertProcessor.Dissemination.NotificationSenderTest do
   @moduledoc false
   use ExUnit.Case
 
-  import ExUnit.CaptureLog
   alias AlertProcessor.Dissemination.NotificationSender
   alias AlertProcessor.Model.Notification
 
@@ -20,19 +19,6 @@ defmodule AlertProcessor.Dissemination.NotificationSenderTest do
       notification = %Notification{email: "mailer_error@example.com", header: "This is a test"}
 
       assert {:error, %{message: "error requested"}} = NotificationSender.send(notification)
-    end
-
-    test "catches bad email addresses and logs them (instead of crashing)" do
-      function = fn ->
-        NotificationSender.send(%Notification{
-          email: "bad_email",
-          header: "This is a test",
-          user_id: 1
-        })
-      end
-
-      assert {:error, %{message: "invalid email"}} = function.()
-      assert capture_log(function) =~ "invalid email for 1"
     end
   end
 
