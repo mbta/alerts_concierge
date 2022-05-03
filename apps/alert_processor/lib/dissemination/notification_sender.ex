@@ -57,7 +57,8 @@ defmodule AlertProcessor.Dissemination.NotificationSender do
              last_push_notification: alert_updated_at,
              severity: alert_severity,
              tracking_duration_type: alert_duration_type,
-             tracking_fetched_at: alert_fetched_at
+             tracking_fetched_at: alert_fetched_at,
+             tracking_batch_id: batch_id
            }
          },
          communication_mode,
@@ -79,6 +80,7 @@ defmodule AlertProcessor.Dissemination.NotificationSender do
         alert_duration_type: alert_duration_type,
         seconds_processing: DateTime.diff(now, alert_fetched_at, :millisecond) / 1000,
         seconds_since_alert_update: DateTime.diff(now, alert_updated_at),
+        batch_id: batch_id,
         response: inspect(response)
       }
       |> Enum.map_join(" ", fn {key, value} -> "#{key}=#{value}" end)
