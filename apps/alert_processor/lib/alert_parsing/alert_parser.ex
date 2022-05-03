@@ -27,6 +27,7 @@ defmodule AlertProcessor.AlertParser do
           {:ok, {[map], [map], [map]}} | {:error, any}
   def process_alerts(alert_filter_duration_type \\ :anytime) do
     started_at = DateTime.utc_now()
+    batch_id = Ecto.UUID.generate()
 
     with {:ok, alerts, feed_timestamp} <- AlertsClient.get_alerts(),
          {:ok, api_alerts, _} <- ApiClient.get_alerts(),
@@ -42,7 +43,7 @@ defmodule AlertProcessor.AlertParser do
       alerts_needing_notifications =
         parsed_alerts
         |> AlertFilters.filter_by_duration_type(alert_filter_duration_type)
-        |> add_tracking_fields(started_at, alert_filter_duration_type)
+        |> add_tracking_fields(started_at, alert_filter_duration_type, batch_id)
 
       Logger.info(fn ->
         "alert filter, " <>
@@ -122,10 +123,14 @@ defmodule AlertProcessor.AlertParser do
     |> Enum.filter(filter_fun)
   end
 
-  defp add_tracking_fields(alerts, fetched_at, duration_type) do
+  defp add_tracking_fields(alerts, fetched_at, duration_type, batch_id) do
     Enum.map(
       alerts,
-      &struct!(&1, tracking_fetched_at: fetched_at, tracking_duration_type: duration_type)
+      &struct!(&1,
+        tracking_fetched_at: fetched_at,
+        tracking_duration_type: duration_type,
+        tracking_batch_id: batch_id
+      )
     )
   end
 

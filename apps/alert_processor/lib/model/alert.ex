@@ -28,7 +28,8 @@ defmodule AlertProcessor.Model.Alert do
     :closed_timestamp,
     :reminder_times,
     :tracking_duration_type,
-    :tracking_fetched_at
+    :tracking_fetched_at,
+    :tracking_batch_id
   ]
 
   @type informed_entity :: [
@@ -60,7 +61,8 @@ defmodule AlertProcessor.Model.Alert do
           closed_timestamp: DateTime.t() | nil,
           reminder_times: [DateTime.t()] | nil,
           tracking_duration_type: AlertFilters.duration_type() | nil,
-          tracking_fetched_at: DateTime.t() | nil
+          tracking_fetched_at: DateTime.t() | nil,
+          tracking_batch_id: Ecto.UUID.t() | nil
         }
 
   @doc """
