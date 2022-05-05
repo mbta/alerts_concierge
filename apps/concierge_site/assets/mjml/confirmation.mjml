@@ -67,7 +67,7 @@
 
     <mj-section background-color="#ffffff" padding-top="0" padding-bottom="20">
       <mj-column>
-        <mj-image href="<%= manage_subscriptions_url %" src="https://s3.amazonaws.com/mbta-alerts/html_email/welcome/sign-in-button.png" width="189" height="45"></mj-image>
+        <mj-image href="<%= manage_subscriptions_url %>" src="https://s3.amazonaws.com/mbta-alerts/html_email/welcome/sign-in-button.png" width="189" height="45"></mj-image>
       </mj-column>
     </mj-section>
 
