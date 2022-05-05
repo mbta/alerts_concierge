@@ -89,21 +89,4 @@ defmodule ConciergeSite.MJML do
       end
     end
   end
-
-  @mail_template_dir Application.compile_env!(:concierge_site, :mail_template_dir)
-  def html_template_path(name) do
-    Path.join(@mail_template_dir, name)
-  end
-
-  def overwrite_html_template!(mjml_name, html_name) do
-    {:ok, html} = html_from_template(mjml_name)
-
-    File.write!(html_template_path(html_name), html)
-  end
-
-  def overwrite_html_templates!() do
-    overwrite_html_template!("notification.mjml", "notification.html.eex")
-    overwrite_html_template!("password-reset.mjml", "password_reset.html.eex")
-    overwrite_html_template!("confirmation.mjml", "confirmation.html.eex")
-  end
 end
