@@ -64,7 +64,8 @@ defmodule ConciergeSite.Mixfile do
       {:bcrypt_elixir, "~> 3.0", only: :test},
       {:wallaby, "~> 0.29.0", only: :test},
       {:diskusage_logger, "~> 0.2.0", only: :prod},
-      {:ehmon, github: "mbta/ehmon", only: :prod}
+      {:ehmon, github: "mbta/ehmon", only: :prod},
+      {:mjml, "~> 1.3.2"}
     ]
   end
 
