@@ -60,6 +60,7 @@ defmodule ConciergeSite.MJML do
   @spec eval_string(String.t(), keyword, keyword) :: {:ok | :error, String.t()}
   def eval_string(mjml_string, bindings \\ [], options \\ []) do
     case to_html_with_eex(mjml_string) do
+      # sobelow_skip ["Traversal"]
       {:ok, html} -> {:ok, EEx.eval_string(html, bindings, options)}
       e -> e
     end
