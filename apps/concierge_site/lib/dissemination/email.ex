@@ -3,14 +3,15 @@ defmodule ConciergeSite.Dissemination.Email do
   use Bamboo.Phoenix, view: ConciergeSite.EmailView
   alias AlertProcessor.Helpers.ConfigHelper
   alias ConciergeSite.Helpers.MailHelper
+  alias ConciergeSite.MJML
+
+  require ConciergeSite.MJML
   require EEx
 
-  @template_dir Application.compile_env!(:concierge_site, :mail_template_dir)
-
-  EEx.function_from_file(
+  MJML.function_from_template(
     :def,
     :password_reset_html_email,
-    Path.join(@template_dir, "password_reset.html.eex"),
+    "password-reset.mjml",
     [:reset_token]
   )
 
@@ -29,10 +30,10 @@ defmodule ConciergeSite.Dissemination.Email do
     |> text_body(password_reset_text_email(reset_token))
   end
 
-  EEx.function_from_file(
+  MJML.function_from_template(
     :def,
     :confirmation_html_email,
-    Path.join(@template_dir, "confirmation.html.eex"),
+    "confirmation.mjml",
     [:manage_subscriptions_url, :support_url]
   )
 

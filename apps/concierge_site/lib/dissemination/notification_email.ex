@@ -5,16 +5,18 @@ defmodule ConciergeSite.Dissemination.NotificationEmail do
   alias AlertProcessor.Model.Notification
   alias ConciergeSite.Dissemination.Email
   alias ConciergeSite.Helpers.MailHelper
+  alias ConciergeSite.MJML
+
+  require ConciergeSite.MJML
   require EEx
 
-  @template_dir Application.compile_env!(:concierge_site, :mail_template_dir)
-
-  EEx.function_from_file(
-    :def,
-    :html_email,
-    Path.join(@template_dir, "notification.html.eex"),
-    [:notification, :manage_subscriptions_url, :support_url, :all_alerts_url, :track_open_url]
-  )
+  MJML.function_from_template(:def, :html_email, "notification.mjml", [
+    :notification,
+    :manage_subscriptions_url,
+    :support_url,
+    :all_alerts_url,
+    :track_open_url
+  ])
 
   EEx.function_from_file(
     :def,
