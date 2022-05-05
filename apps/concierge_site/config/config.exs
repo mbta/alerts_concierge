@@ -45,6 +45,7 @@ config :logster, :allowed_headers, ["referer"]
 config :guardian, Guardian.DB, repo: AlertProcessor.Repo
 
 config :concierge_site, mail_template_dir: Path.join(~w(#{__DIR__} /../ lib/mail_templates))
+config :concierge_site, mjml_template_dir: Path.join(~w(#{__DIR__} /../ assets/mjml))
 
 # Rate Limiting
 config :hammer,
