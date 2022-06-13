@@ -76,6 +76,7 @@ defmodule ConciergeSite.ScheduleTest do
                  {"Salem", "place-ER-0168", {42.524792, -70.895876}, 1},
                  {"Swampscott", "place-ER-0128", {42.473743, -70.922537}, 1},
                  {"Lynn", "place-ER-0115", {42.462953, -70.945421}, 1},
+                 {"Orient Heights", "place-orhte", {42.386867, -71.004736}, 1},
                  {"River Works", "place-ER-0099", {42.449927, -70.969848}, 2},
                  {"Chelsea", "place-chels", {42.397024, -71.041314}, 1},
                  {"North Station", "place-north", {42.365577, -71.06129}, 1}
@@ -156,14 +157,14 @@ defmodule ConciergeSite.ScheduleTest do
              %AlertProcessor.Model.TripInfo{
                arrival_extended_time: %AlertProcessor.ExtendedTime{
                  relative_day: 1,
-                 time: ~T[06:25:00]
+                 time: ~T[06:15:00]
                },
-               arrival_time: ~T[06:25:00],
+               arrival_time: ~T[06:15:00],
                departure_extended_time: %AlertProcessor.ExtendedTime{
                  relative_day: 1,
-                 time: ~T[05:40:00]
+                 time: ~T[05:30:00]
                },
-               departure_time: ~T[05:40:00],
+               departure_time: ~T[05:30:00],
                destination: {"Worcester", "place-WML-0442", {42.261835, -71.791806}, 1},
                direction_id: 0,
                selected: false,
