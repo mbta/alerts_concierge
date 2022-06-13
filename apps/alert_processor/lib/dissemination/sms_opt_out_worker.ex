@@ -67,8 +67,15 @@ defmodule AlertProcessor.SmsOptOutWorker do
         normalized_phone_numbers = Enum.map(phone_numbers, &String.replace_leading(&1, "+1", ""))
 
         case next_token do
-          "" -> {:ok, opted_out_list ++ normalized_phone_numbers}
-          token -> fetch_opted_out_list(token, opted_out_list ++ normalized_phone_numbers)
+          "" ->
+            {:ok, opted_out_list ++ normalized_phone_numbers}
+
+          token ->
+            # The underlying API call here has a hard rate limit of 10 requests
+            # per second. See: https://docs.aws.amazon.com/general/latest/gr/sns.html
+            # Sleep enough that we're slightly under that rate limit
+            Process.sleep(200)
+            fetch_opted_out_list(token, opted_out_list ++ normalized_phone_numbers)
         end
 
       {:error, error} ->
