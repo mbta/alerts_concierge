@@ -1,0 +1,35 @@
+{
+  "name": "sms_logs",
+  "version": "0.0.1",
+  "type": "module",
+  "scripts": {
+    "lint": "eslint .",
+    "test": "jest",
+    "check-format": "prettier --check .",
+    "format": "prettier --write .",
+    "build": "esbuild src/main.ts --bundle --platform=node --target=node16 --outfile=dist/main.cjs",
+    "typecheck": "tsc",
+    "check": "sh ./check.sh",
+    "dist": "sh ./dist.sh",
+    "clean": "rm -r dist"
+  },
+  "devDependencies": {
+    "@tsconfig/node16": "^1.0.3",
+    "@types/aws-lambda": "^8.10.100",
+    "@types/jest": "^28.1.2",
+    "@typescript-eslint/eslint-plugin": "^5.29.0",
+    "@typescript-eslint/parser": "^5.29.0",
+    "esbuild": "^0.14.45",
+    "eslint": "^8.18.0",
+    "jest": "^28.1.1",
+    "prettier": "^2.7.1",
+    "ts-jest": "^28.0.5",
+    "typescript": "^4.7.3"
+  },
+  "dependencies": {
+    "@aws-sdk/client-secrets-manager": "^3.112.0",
+    "@sentry/serverless": "^7.2.0",
+    "node-fetch": "^3.2.6",
+    "zod": "^3.17.3"
+  }
+}
