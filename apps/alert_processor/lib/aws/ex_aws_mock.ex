@@ -28,38 +28,11 @@ defmodule ExAws.Mock do
            }
          }}
 
-      :list_phone_numbers_opted_out ->
-        case operation.params["nextToken"] do
-          nil ->
-            {:ok,
-             %{
-               body: %{
-                 phone_numbers: ["+19999999999"],
-                 next_token: "this_is_a_token",
-                 request_id: "123"
-               }
-             }}
-
-          "error" ->
-            {:error,
-             {:http_error, 400,
-              %{
-                code: "Throttling",
-                detail: "",
-                message: "Rate exceeded",
-                request_id: "531e7c21-0317-5eba-a114-2efd4caef900",
-                type: "Sender"
-              }}}
-
-          _ ->
-            {:ok,
-             %{
-               body: %{
-                 phone_numbers: ["+15555555555"],
-                 next_token: "",
-                 request_id: "456"
-               }
-             }}
+      :check_if_phone_number_is_opted_out ->
+        case operation.params["phoneNumber"] do
+          "+18675309" -> {:ok, %{body: %{is_opted_out: true}}}
+          "+1816613" -> {:error, :mock}
+          _ -> {:ok, %{body: %{is_opted_out: false}}}
         end
 
       :opt_in_phone_number ->

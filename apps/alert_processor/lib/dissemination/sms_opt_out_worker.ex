@@ -3,6 +3,8 @@ defmodule AlertProcessor.SmsOptOutWorker do
   Periodically fetches the list of opted-out phone numbers (those that sent a "STOP" message to
   the number that sends alerts), and disables alerts for the corresponding user accounts.
   """
+  import Ecto.Query
+
   use GenServer
   require Logger
   alias AlertProcessor.Aws.AwsClient
@@ -37,55 +39,76 @@ defmodule AlertProcessor.SmsOptOutWorker do
   def process_opt_outs do
     Lock.acquire(__MODULE__, fn
       :ok ->
-        do_process_opt_outs()
+        try do
+          do_process_opt_outs()
+        rescue
+          e -> Logger.error("SmsOptOutWorker event=error #{inspect(e)}")
+        end
 
       :error ->
         Logger.warn("SmsOptOutWorker event=skipped")
     end)
   end
 
+  defp fetch_phone_numbers() do
+    User
+    |> select([u], u.phone_number)
+    |> where([u], not is_nil(u.phone_number))
+    |> distinct(true)
+    |> AlertProcessor.Repo.all()
+  end
+
+  defp format_phone_number(phone_number) do
+    "+1#{phone_number}"
+  end
+
+  defp check_opted_out(phone_number) do
+    resp =
+      phone_number
+      |> format_phone_number()
+      |> ExAws.SNS.check_if_phone_number_is_opted_out()
+      |> AwsClient.request()
+
+    case resp do
+      {:ok, %{body: %{is_opted_out: is_opted_out}}} -> {:ok, is_opted_out}
+      {:error, e} -> {:error, e}
+    end
+  end
+
+  defp collect_opted_out(phone_numbers) do
+    Enum.reduce(phone_numbers, {[], 0, 0}, fn number, {opted_out, untouched_count, error_count} ->
+      case check_opted_out(number) do
+        {:ok, is_opted_out} ->
+          if is_opted_out do
+            {[number | opted_out], untouched_count, error_count}
+          else
+            {opted_out, untouched_count + 1, error_count}
+          end
+
+        {:error, e} ->
+          Logger.warn(["SmsOptOutWorker event=aws_error #{inspect(e)}"])
+          {opted_out, untouched_count, error_count + 1}
+      end
+    end)
+  end
+
   defp do_process_opt_outs do
-    with {:ok, opted_out_numbers} <- fetch_opted_out_list(nil),
-         {:ok, multi_result} <- User.set_sms_opted_out(opted_out_numbers) do
-      Logger.info([
-        "SmsOptOutWorker event=processed ",
-        "numbers=#{length(opted_out_numbers)} updated=#{map_size(multi_result)}"
-      ])
-    else
-      {:error, error} ->
-        Logger.warn("SmsOptOutWorker event=fetch_error #{inspect(error)}")
+    phone_numbers = fetch_phone_numbers()
+    {opted_out_numbers, untouched_count, error_count} = collect_opted_out(phone_numbers)
+
+    case User.set_sms_opted_out(opted_out_numbers) do
+      {:ok, multi_result} ->
+        Logger.info([
+          "SmsOptOutWorker event=processed ",
+          "opted_out=#{map_size(multi_result)} untouched=#{untouched_count} errors=#{error_count}"
+        ])
 
       {:error, _, user, _} ->
-        Logger.warn("SmsOptOutWorker event=update_error #{inspect(user)}")
+        Logger.warn(["SmsOptOutWorker event=update_error #{inspect(user)}"])
     end
+
+    {opted_out_numbers, untouched_count, error_count}
   end
-
-  @spec fetch_opted_out_list(next_token, [phone_number]) :: {:ok, [phone_number]} | {:error, any}
-  def fetch_opted_out_list(next_token, opted_out_list \\ []) do
-    case next_token |> list_numbers_opted_out_query() |> AwsClient.request() do
-      {:ok, %{body: %{next_token: next_token, phone_numbers: phone_numbers}}} ->
-        normalized_phone_numbers = Enum.map(phone_numbers, &String.replace_leading(&1, "+1", ""))
-
-        case next_token do
-          "" ->
-            {:ok, opted_out_list ++ normalized_phone_numbers}
-
-          token ->
-            # The underlying API call here has a hard rate limit of 10 requests
-            # per second. See: https://docs.aws.amazon.com/general/latest/gr/sns.html
-            # Sleep enough that we're slightly under that rate limit
-            Process.sleep(200)
-            fetch_opted_out_list(token, opted_out_list ++ normalized_phone_numbers)
-        end
-
-      {:error, error} ->
-        {:error, {length(opted_out_list), error}}
-    end
-  end
-
-  @spec list_numbers_opted_out_query(next_token) :: ExAws.Operation.Query.t()
-  defp list_numbers_opted_out_query(nil), do: ExAws.SNS.list_phone_numbers_opted_out()
-  defp list_numbers_opted_out_query(token), do: ExAws.SNS.list_phone_numbers_opted_out(token)
 
   defp fetch_interval do
     ConfigHelper.get_int(:opted_out_list_fetch_interval)

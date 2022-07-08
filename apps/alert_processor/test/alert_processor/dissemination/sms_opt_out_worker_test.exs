@@ -16,32 +16,44 @@ defmodule AlertProcessor.SmsOptOutWorkerTest do
     end)
   end
 
-  test "fetches list of opted-out phone numbers and opts out the corresponding users" do
-    user = insert(:user, phone_number: "9999999999")
+  test "opts out proper users" do
+    a = insert(:user, phone_number: "8675309")
+    b = insert(:user, phone_number: "1234567")
 
-    SmsOptOutWorker.process_opt_outs()
+    {opted_out_numbers, untouched_count, error_count} = SmsOptOutWorker.process_opt_outs()
+    assert opted_out_numbers == [a.phone_number]
+    assert untouched_count == 1
+    assert error_count == 0
 
-    assert_received {:list_phone_numbers_opted_out, _}
-    reloaded_user = Repo.one(from(u in User, where: u.id == ^user.id))
-    assert reloaded_user.phone_number == nil
-    assert reloaded_user.sms_opted_out_at != nil
-    assert reloaded_user.communication_mode == "none"
+    assert_received {:check_if_phone_number_is_opted_out, _}
+    assert_received {:check_if_phone_number_is_opted_out, _}
+
+    a_ = Repo.one(from(u in User, where: u.id == ^a.id))
+    assert a_.phone_number == nil
+    assert a_.sms_opted_out_at != nil
+    assert a_.communication_mode == "none"
+
+    b_ = Repo.one(from(u in User, where: u.id == ^b.id))
+    assert b_.phone_number != nil
   end
 
-  test "doesn't update users with phone numbers not in the list" do
-    user = insert(:user, phone_number: "5555551234")
+  test "handles errors" do
+    insert(:user, phone_number: "816613")
 
-    SmsOptOutWorker.process_opt_outs()
-
-    assert_received {:list_phone_numbers_opted_out, _}
-    reloaded_user = Repo.one(from(u in User, where: u.id == ^user.id))
-    assert reloaded_user.phone_number == "5555551234"
+    {opted_out_numbers, untouched_count, error_count} = SmsOptOutWorker.process_opt_outs()
+    assert opted_out_numbers == []
+    assert untouched_count == 0
+    assert error_count == 1
   end
 
-  test "handles errors when fetching the opt-out list" do
-    # in `ExAws.Mock`, using "error" as a `nextToken` results in an error
-    result = SmsOptOutWorker.fetch_opted_out_list("error", ["5555551234"])
-    assert {:error, {1, {:http_error, 400, _}}} = result
+  test "ignores null numbers" do
+    a = insert(:user, phone_number: "8675309")
+    insert(:user, phone_number: nil)
+
+    {opted_out_numbers, untouched_count, error_count} = SmsOptOutWorker.process_opt_outs()
+    assert opted_out_numbers == [a.phone_number]
+    assert untouched_count == 0
+    assert error_count == 0
   end
 
   test "skips processing if another instance is already processing" do
