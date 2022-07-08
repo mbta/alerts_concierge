@@ -47,7 +47,8 @@ defmodule AlertProcessor.Mixfile do
       {:con_cache, "~> 1.0.0"},
       {:ecto_sql, "~> 3.0"},
       {:ex_aws, "~> 2.2.0"},
-      {:ex_aws_sns, "~> 2.2.0"},
+      # TOOD: use official release when tagged
+      {:ex_aws_sns, git: "https://github.com/ex-aws/ex_aws_sns.git", ref: "fc213db"},
       {:fast_local_datetime, "~> 1.0.0"},
       {:gettext, "~> 0.11"},
       {:httpoison, "~> 1.8.0"},

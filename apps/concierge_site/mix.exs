@@ -41,7 +41,8 @@ defmodule ConciergeSite.Mixfile do
       {:bamboo, "~> 2.2.0"},
       {:bamboo_phoenix, "~> 1.0.0"},
       {:bamboo_ses, "~> 0.3.0"},
-      {:ex_aws_sns, "~> 2.2.0"},
+      # TOOD: use official release when tagged
+      {:ex_aws_sns, git: "https://github.com/ex-aws/ex_aws_sns.git", ref: "fc213db"},
       {:gettext, "~> 0.11"},
       {:guardian, "~> 2.2.0"},
       {:guardian_db, "~> 2.1.0"},
