@@ -76,6 +76,7 @@ defmodule ConciergeSite.ScheduleTest do
                  {"Salem", "place-ER-0168", {42.524792, -70.895876}, 1},
                  {"Swampscott", "place-ER-0128", {42.473743, -70.922537}, 1},
                  {"Lynn", "place-ER-0115", {42.462953, -70.945421}, 1},
+                 {"Wellington", "place-welln", {42.40237, -71.077082}, 1},
                  {"River Works", "place-ER-0099", {42.449927, -70.969848}, 2},
                  {"Chelsea", "place-chels", {42.397024, -71.041314}, 1},
                  {"North Station", "place-north", {42.365577, -71.06129}, 1}
