@@ -78,12 +78,11 @@ defmodule AlertProcessor.SmsOptOutWorker do
   defp collect_opted_out(phone_numbers) do
     Enum.reduce(phone_numbers, {[], 0, 0}, fn number, {opted_out, untouched_count, error_count} ->
       case check_opted_out(number) do
-        {:ok, is_opted_out} ->
-          if is_opted_out do
-            {[number | opted_out], untouched_count, error_count}
-          else
-            {opted_out, untouched_count + 1, error_count}
-          end
+        {:ok, true} ->
+          {[number | opted_out], untouched_count, error_count}
+
+        {:ok, _} ->
+          {opted_out, untouched_count + 1, error_count}
 
         {:error, e} ->
           Logger.warn(["SmsOptOutWorker event=aws_error #{inspect(e)}"])
