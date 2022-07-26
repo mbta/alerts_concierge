@@ -77,21 +77,30 @@ defmodule AlertProcessor.SmsOptOutWorker do
 
   defp collect_opted_out(phone_numbers) do
     Enum.reduce(phone_numbers, {[], 0, 0}, fn number, {opted_out, untouched_count, error_count} ->
-      case check_opted_out(number) do
-        {:ok, true} ->
-          {[number | opted_out], untouched_count, error_count}
+      res =
+        case check_opted_out(number) do
+          {:ok, true} ->
+            {[number | opted_out], untouched_count, error_count}
 
-        {:ok, _} ->
-          {opted_out, untouched_count + 1, error_count}
+          {:ok, _} ->
+            {opted_out, untouched_count + 1, error_count}
 
-        {:error, e} ->
-          Logger.warn(["SmsOptOutWorker event=aws_error #{inspect(e)}"])
-          {opted_out, untouched_count, error_count + 1}
-      end
+          {:error, e} ->
+            Logger.warn(["SmsOptOutWorker event=aws_error #{inspect(e)}"])
+            {opted_out, untouched_count, error_count + 1}
+        end
+
+      # From https://docs.aws.amazon.com/general/latest/gr/sns.html
+      # The rate limit for CheckIfPhoneNumberIsOptedOut is 50 requests /
+      # second. Sleep so that we're just under that limit.
+      Process.sleep(25)
+
+      res
     end)
   end
 
   defp do_process_opt_outs do
+    Logger.info("SmsOptOutWorker event=starting")
     phone_numbers = fetch_phone_numbers()
     {opted_out_numbers, untouched_count, error_count} = collect_opted_out(phone_numbers)
 
