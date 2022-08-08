@@ -45,10 +45,10 @@ defmodule ConciergeSite.ScheduleTest do
     assert Enum.all?(result[{"cr", "CR-Newburyport"}], &Map.has_key?(&1, :weekend?))
 
     assert List.first(result[{"cr", "CR-Newburyport"}]) == %TripInfo{
-             arrival_time: ~T[07:20:00],
-             departure_time: ~T[06:30:00],
-             arrival_extended_time: %ExtendedTime{relative_day: 1, time: ~T[07:20:00]},
-             departure_extended_time: %ExtendedTime{relative_day: 1, time: ~T[06:30:00]},
+             arrival_time: ~T[07:26:00],
+             departure_time: ~T[06:35:00],
+             arrival_extended_time: %ExtendedTime{relative_day: 1, time: ~T[07:26:00]},
+             departure_extended_time: %ExtendedTime{relative_day: 1, time: ~T[06:35:00]},
              destination: {"Manchester", "place-GB-0254", {42.573687, -70.77009}, 1},
              direction_id: 0,
              origin: {"North Station", "place-north", {42.365577, -71.06129}, 1},
@@ -76,7 +76,6 @@ defmodule ConciergeSite.ScheduleTest do
                  {"Salem", "place-ER-0168", {42.524792, -70.895876}, 1},
                  {"Swampscott", "place-ER-0128", {42.473743, -70.922537}, 1},
                  {"Lynn", "place-ER-0115", {42.462953, -70.945421}, 1},
-                 {"Wellington", "place-welln", {42.40237, -71.077082}, 1},
                  {"River Works", "place-ER-0099", {42.449927, -70.969848}, 2},
                  {"Chelsea", "place-chels", {42.397024, -71.041314}, 1},
                  {"North Station", "place-north", {42.365577, -71.06129}, 1}
@@ -84,8 +83,8 @@ defmodule ConciergeSite.ScheduleTest do
                direction_destinations: ["Newburyport or Rockport", "North Station"]
              },
              selected: false,
-             trip_number: "1101",
-             weekend?: true
+             trip_number: "101",
+             weekend?: false
            }
   end
 
