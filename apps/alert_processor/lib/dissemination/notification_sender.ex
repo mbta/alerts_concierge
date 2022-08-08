@@ -34,12 +34,15 @@ defmodule AlertProcessor.Dissemination.NotificationSender do
     {result, response} =
       notification
       |> sms_message()
+      |> with_t_alerts_prefix()
       |> ExAws.SNS.publish(phone_number: "+1#{phone_number}")
       |> AwsClient.request()
 
     log(notification, :sms, result, response)
     {result, response}
   end
+
+  defp with_t_alerts_prefix(str), do: "T-Alerts - #{str}"
 
   @spec sms_message(Notification.t()) :: String.t()
   defp sms_message(%{type: :all_clear, header: header}), do: "All clear (re: #{header})"

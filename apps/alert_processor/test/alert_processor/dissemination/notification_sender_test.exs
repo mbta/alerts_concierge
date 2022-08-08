@@ -32,7 +32,8 @@ defmodule AlertProcessor.Dissemination.NotificationSenderTest do
 
       {:ok, _} = NotificationSender.send(notification)
 
-      assert_receive {:publish, %{"Message" => "This is a test", "PhoneNumber" => "+15555551234"}}
+      assert_receive {:publish,
+                      %{"Message" => "T-Alerts - This is a test", "PhoneNumber" => "+15555551234"}}
     end
 
     test "sends SMS and not email when both are possible" do
@@ -58,7 +59,7 @@ defmodule AlertProcessor.Dissemination.NotificationSenderTest do
 
       {:ok, _} = NotificationSender.send(notification)
 
-      assert_receive {:publish, %{"Message" => "All clear (re: This is a test)"}}
+      assert_receive {:publish, %{"Message" => "T-Alerts - All clear (re: This is a test)"}}
     end
 
     test "formats a reminder notification" do
@@ -70,7 +71,7 @@ defmodule AlertProcessor.Dissemination.NotificationSenderTest do
 
       {:ok, _} = NotificationSender.send(notification)
 
-      assert_receive {:publish, %{"Message" => "Reminder: This is a test"}}
+      assert_receive {:publish, %{"Message" => "T-Alerts - Reminder: This is a test"}}
     end
 
     test "formats an update notification" do
@@ -82,7 +83,7 @@ defmodule AlertProcessor.Dissemination.NotificationSenderTest do
 
       {:ok, _} = NotificationSender.send(notification)
 
-      assert_receive {:publish, %{"Message" => "Update: This is a test"}}
+      assert_receive {:publish, %{"Message" => "T-Alerts - Update: This is a test"}}
     end
   end
 end
