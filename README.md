@@ -49,3 +49,6 @@ export of the environment variables into your current shell session.
 ## Deployment
 
 We run the app on AWS: see [`docs/aws.md`](docs/aws.md) for deployment guides.
+
+## Scrubbing the Production Database for Local Usage
+See [`scripts/sanitize_db_dump/README.md`](scripts/sanitize_db_dump/README.md)
