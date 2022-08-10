@@ -57,21 +57,21 @@ defmodule AlertProcessor.SubscriptionFilterEngine do
   """
   @spec determine_recipients(Alert.t(), DateTime.t()) :: [Subscription.t()]
   def determine_recipients(alert, now \\ DateTime.now!("America/New_York")) do
-    total_start_time = Time.utc_now()
+    total_start_time = System.monotonic_time(:millisecond)
 
-    start_time = Time.utc_now()
+    start_time = System.monotonic_time(:millisecond)
     subscriptions_to_test = Subscription.all_active_for_alert(alert)
-    end_time = Time.utc_now()
-    diff = Time.diff(end_time, start_time, :millisecond)
+    end_time = System.monotonic_time(:millisecond)
+    diff = end_time - start_time
     Logger.info("all active for alert, alert_id=#{alert.id} time=#{diff}")
 
-    start_time = Time.utc_now()
+    start_time = System.monotonic_time(:millisecond)
     recent_outdated_notifications = Notification.most_recent_if_outdated_for_alert(alert)
-    end_time = Time.utc_now()
-    diff = Time.diff(end_time, start_time, :millisecond)
+    end_time = System.monotonic_time(:millisecond)
+    diff = end_time - start_time
     Logger.info("recent outdated notifications, alert_id=#{alert.id} time=#{diff}")
 
-    total_diff = Time.diff(end_time, total_start_time, :millisecond)
+    total_diff = end_time - total_start_time
 
     Logger.info(fn ->
       "matching database queries, alert_id=#{alert.id} time=#{total_diff}"
