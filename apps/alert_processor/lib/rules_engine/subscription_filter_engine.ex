@@ -90,7 +90,7 @@ defmodule AlertProcessor.SubscriptionFilterEngine do
   @spec schedule_distinct_notifications(Alert.t(), [Subscription.t()]) :: :ok
   def schedule_distinct_notifications(alert, subscriptions) do
     Logger.info(fn ->
-      "Scheduling distinct notifications, num_subscriptions=#{length(subscriptions)}"
+      "Scheduling distinct notifications, alert_id=#{alert.id} num_subscriptions=#{length(subscriptions)}"
     end)
 
     subscriptions
