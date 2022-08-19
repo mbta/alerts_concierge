@@ -138,16 +138,21 @@ defmodule AlertProcessor.Model.User do
     |> changeset(params, [:phone_number, :email])
     |> update_change(:phone_number, &clean_phone_number/1)
     |> validate_phone_number()
+    |> validate_accept_tnc(params)
     |> update_change(:email, &String.trim/1)
     |> update_change(:email, &lowercase_email/1)
     |> validate_email()
   end
 
-  def update_account_changeset(struct, %{"communication_mode" => "sms"} = params) do
+  def update_account_changeset(
+        struct,
+        %{"communication_mode" => "sms"} = params
+      ) do
     struct
     |> changeset(params, [:phone_number])
     |> update_change(:phone_number, &clean_phone_number/1)
     |> validate_phone_number()
+    |> validate_accept_tnc(params)
   end
 
   def update_account_changeset(struct, %{"communication_mode" => "email"} = params) do
@@ -187,6 +192,12 @@ defmodule AlertProcessor.Model.User do
       ~r/^[0-9]{10}$/,
       message: "Phone number is not in a valid format."
     )
+  end
+
+  defp validate_accept_tnc(changeset, %{"accept_tnc" => "true"}), do: changeset
+
+  defp validate_accept_tnc(changeset, _) do
+    add_error(changeset, :accept_tnc, "Must be accepted.", validation: :required)
   end
 
   defp validate_password(changeset) do

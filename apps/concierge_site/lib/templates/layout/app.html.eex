@@ -61,17 +61,7 @@
         </main>
       </div>
     </div>
-    <footer class="footer__container">
-      <div class="container">
-        <p class="footer__links">
-          <%= link "Support", to: external_url(:support) %> ●
-          <%= link "FAQs", to: external_url(:faqs) %>
-        </p>
-        <p class="footer__copyright">
-          &copy; Massachusetts Bay Transportation Authority, all rights reserved. We will only use your information to provide you with the T-Alert services you have requested. See our <%= link "privacy policy", to: external_url(:privacy) %>.
-        </p>
-      </div>
-    </footer>
+    <%= render "_footer.html", conn: @conn %>
 
     <script src="<%= static_path(@conn, "/js/app.js") %>"></script>
 

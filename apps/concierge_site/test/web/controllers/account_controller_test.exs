@@ -81,6 +81,7 @@ defmodule ConciergeSite.AccountControllerTest do
     user_params = %{
       communication_mode: "sms",
       phone_number: "5555555555",
+      accept_tnc: "true",
       digest_opt_in: false
     }
 
@@ -131,6 +132,7 @@ defmodule ConciergeSite.AccountControllerTest do
     assert html_response(conn, 200) =~ "Customize my settings"
     assert html_response(conn, 200) =~ "How would you like to receive alerts?"
     assert html_response(conn, 200) =~ "Phone number is not in a valid format."
+    assert html_response(conn, 200) =~ "Must be accepted."
   end
 
   describe "edit account" do
@@ -151,6 +153,7 @@ defmodule ConciergeSite.AccountControllerTest do
       user_params = %{
         communication_mode: "sms",
         phone_number: "5555555555",
+        accept_tnc: "true",
         email: "test@test.com "
       }
 
@@ -198,6 +201,22 @@ defmodule ConciergeSite.AccountControllerTest do
         |> post(account_path(conn, :update), %{user: user_params})
 
       assert html_response(conn, 200) =~ "Phone number is not in a valid format"
+    end
+
+    test "POST /account/edit error must accept terms and conditions", %{conn: conn} do
+      user = insert(:user, phone_number: nil)
+
+      user_params = %{
+        communication_mode: "sms",
+        phone_number: "8888888888"
+      }
+
+      conn =
+        user
+        |> guardian_login(conn)
+        |> post(account_path(conn, :update), %{user: user_params})
+
+      assert html_response(conn, 200) =~ "Must be accepted."
     end
   end
 
