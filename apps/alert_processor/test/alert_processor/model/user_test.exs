@@ -54,7 +54,11 @@ defmodule AlertProcessor.Model.UserTest do
       assert {:ok, user} =
                User.update_account(
                  user,
-                 %{"phone_number" => "5550000000", "communication_mode" => "sms"},
+                 %{
+                   "phone_number" => "5550000000",
+                   "communication_mode" => "sms",
+                   "accept_tnc" => "true"
+                 },
                  user.id
                )
 
@@ -64,7 +68,14 @@ defmodule AlertProcessor.Model.UserTest do
 
     test "opts in phone number when phone number changed" do
       user = insert(:user)
-      assert {:ok, _} = User.update_account(user, %{"phone_number" => "5550000000"}, user.id)
+
+      assert {:ok, _} =
+               User.update_account(
+                 user,
+                 %{"phone_number" => "5550000000", "accept_tnc" => "true"},
+                 user.id
+               )
+
       assert_received {:opt_in_phone_number, %{"phoneNumber" => "5550000000"}}
     end
 
@@ -81,6 +92,19 @@ defmodule AlertProcessor.Model.UserTest do
                User.update_account(
                  user,
                  %{"phone_number" => "not a phone number", "communication_mode" => "sms"},
+                 user.id
+               )
+
+      refute changeset.valid?
+    end
+
+    test "does not update phone number when not accepting terms and conditions" do
+      user = insert(:user)
+
+      assert {:error, changeset} =
+               User.update_account(
+                 user,
+                 %{"phone_number" => "8888888888", "communication_mode" => "sms"},
                  user.id
                )
 

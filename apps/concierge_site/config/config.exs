@@ -30,6 +30,7 @@ config :concierge_site, :external_urls,
   alerts: "https://www.mbta.com/alerts",
   faqs: "https://www.mbta.com/about-t-alerts",
   privacy: "https://www.mbta.com/policies/privacy-policy#4.6",
+  terms_and_conditions: "https://www.mbta.com/policies/t-alerts-sms-terms-and-conditions",
   support: "https://www.mbta.com/customer-support"
 
 # Configures Elixir's Logger

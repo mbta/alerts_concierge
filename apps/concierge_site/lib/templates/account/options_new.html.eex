@@ -28,11 +28,23 @@
           <%= hidden_input form, :communication_mode, value: communication_mode  %>
         </div>
 
-        <div class="form-group my-4 <%= if communication_mode != "sms", do: "d-none", else: "" %>" data-phone="input">
+        <div class="form-group my-3 <%= if communication_mode != "sms", do: "d-none", else: "" %>" data-phone="input">
           <%= label form, :phone_number, "What’s your mobile phone number?", class: "form__label d-block" %>
           <%= telephone_input form, :phone_number, autocomplete: "off", placeholder: "###-###-####", class: "form-control d-inline-block form__phone--input", data: [toggle: "input"] %>
           <%= error_tag form, :phone_number %>
-          <span class="form__phone--note">Your mobile provider’s message rates may apply.</span>
+          <div class="mt-3 form-check">
+            <%= checkbox form, :accept_tnc, class: "form-check-input" %>
+            <%= label form, :accept_tnc, class: "form__label-radio" do %>
+              I consent to receiving SMS alerts from T-Alerts and have read and agree with the <%= link "privacy policy", to: external_url(:privacy) %> and <%= link "terms and conditions", to: external_url(:terms_and_conditions) %>.
+            <% end %>
+            <ul>
+              <li>Message frequency varies</li>
+              <li>Message and data rates may apply</li>
+              <li>Text "HELP" to 58541 for help</li>
+              <li>Text "STOP" to 58541 to unsubscribe</li>
+            </ul>
+            <%= error_tag form, :accept_tnc %>
+          </div>
         </div>
 
         <div class="form-group form__section form-check">
