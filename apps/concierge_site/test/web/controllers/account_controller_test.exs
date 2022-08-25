@@ -132,7 +132,7 @@ defmodule ConciergeSite.AccountControllerTest do
     assert html_response(conn, 200) =~ "Customize my settings"
     assert html_response(conn, 200) =~ "How would you like to receive alerts?"
     assert html_response(conn, 200) =~ "Phone number is not in a valid format."
-    assert html_response(conn, 200) =~ "Must be accepted."
+    assert html_response(conn, 200) =~ "You must consent to these terms to receive SMS alerts."
   end
 
   describe "edit account" do
@@ -216,7 +216,7 @@ defmodule ConciergeSite.AccountControllerTest do
         |> guardian_login(conn)
         |> post(account_path(conn, :update), %{user: user_params})
 
-      assert html_response(conn, 200) =~ "Must be accepted."
+      assert html_response(conn, 200) =~ "You must consent to these terms to receive SMS alerts."
     end
   end
 
