@@ -197,7 +197,9 @@ defmodule AlertProcessor.Model.User do
   defp validate_accept_tnc(changeset, %{"accept_tnc" => "true"}), do: changeset
 
   defp validate_accept_tnc(changeset, _) do
-    add_error(changeset, :accept_tnc, "Must be accepted.", validation: :required)
+    add_error(changeset, :accept_tnc, "You must consent to these terms to receive SMS alerts.",
+      validation: :required
+    )
   end
 
   defp validate_password(changeset) do
