@@ -57,13 +57,24 @@ defmodule AlertProcessor.SubscriptionFilterEngine do
   """
   @spec determine_recipients(Alert.t(), DateTime.t()) :: [Subscription.t()]
   def determine_recipients(alert, now \\ DateTime.now!("America/New_York")) do
-    start_time = Time.utc_now()
+    total_start_time = System.monotonic_time(:millisecond)
+
+    start_time = System.monotonic_time(:millisecond)
     subscriptions_to_test = Subscription.all_active_for_alert(alert)
+    end_time = System.monotonic_time(:millisecond)
+    diff = end_time - start_time
+    Logger.info("all active for alert, alert_id=#{alert.id} time=#{diff}")
+
+    start_time = System.monotonic_time(:millisecond)
     recent_outdated_notifications = Notification.most_recent_if_outdated_for_alert(alert)
-    end_time = Time.utc_now()
+    end_time = System.monotonic_time(:millisecond)
+    diff = end_time - start_time
+    Logger.info("recent outdated notifications, alert_id=#{alert.id} time=#{diff}")
+
+    total_diff = end_time - total_start_time
 
     Logger.info(fn ->
-      "matching database queries, time=#{Time.diff(end_time, start_time, :millisecond)}"
+      "matching database queries, alert_id=#{alert.id} time=#{total_diff}"
     end)
 
     subscriptions_to_auto_resend =
@@ -79,7 +90,7 @@ defmodule AlertProcessor.SubscriptionFilterEngine do
   @spec schedule_distinct_notifications(Alert.t(), [Subscription.t()]) :: :ok
   def schedule_distinct_notifications(alert, subscriptions) do
     Logger.info(fn ->
-      "Scheduling distinct notifications, num_subscriptions=#{length(subscriptions)}"
+      "Scheduling distinct notifications, alert_id=#{alert.id} num_subscriptions=#{length(subscriptions)}"
     end)
 
     subscriptions
