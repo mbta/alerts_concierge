@@ -221,6 +221,20 @@ defmodule AlertProcessor.ServiceInfoCacheTest do
                route_id: "Boat-F1",
                route_type: 4,
                short_name: ""
+             },
+             %AlertProcessor.Model.Route{
+               direction_destinations: ["Lewis Wharf", "Long Wharf"],
+               direction_names: ["Outbound", "Inbound"],
+               headsigns: nil,
+               long_name: "East Boston Ferry",
+               order: 2,
+               route_id: "Boat-EastBoston",
+               route_type: 4,
+               short_name: "",
+               stop_list: [
+                 {"Lewis Wharf", "Boat-Lewis", {42.365867, -71.041958}, 1},
+                 {"Long Wharf (North)", "Boat-Long", {42.360795, -71.049976}, 1}
+               ]
              }
            ] = route_info
   end
