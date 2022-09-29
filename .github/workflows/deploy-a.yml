@@ -1,10 +1,6 @@
-name: Deploy
+name: Deploy to -a (old)
 
 on:
-  workflow_run:
-    workflows: ["CI"]
-    types: [completed]
-    branches: [main]
   workflow_dispatch:
     inputs:
       env:
@@ -40,7 +36,8 @@ jobs:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           ecs-cluster: alerts-concierge
-          ecs-service: alerts-concierge-${{ env.TARGET }}
+          ecs-service: alerts-concierge-${{ env.TARGET }}-a
+          ecs-task-definition: alerts-concierge-${{ env.TARGET }}
           docker-tag: ${{ steps.build-push.outputs.docker-tag }}
       - uses: mbta/actions/notify-slack-deploy@v1
         if: ${{ !cancelled() }}
