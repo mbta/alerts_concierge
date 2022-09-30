@@ -8,7 +8,6 @@
     "watch": "webpack --mode development --watch"
   },
   "dependencies": {
-    "PubSub": "^4.0.0",
     "bootstrap": "^4.1.0",
     "choices.js": "^9.0.1",
     "core-js": "^3.18.2",
@@ -20,6 +19,7 @@
     "phoenix_html": "file:../../../deps/phoenix_html",
     "popper.js": "^1.14.3",
     "promise": "^8.0.1",
+    "PubSub": "^4.0.0",
     "set-manipulator": "^0.3.1",
     "time-number": "^1.1.0",
     "xhr": "^2.5.0"
