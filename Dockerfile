@@ -15,7 +15,7 @@ RUN mix deps.get --only prod
 
 
 # --- Build frontend assets ---
-FROM node:14.17.6-bullseye-slim as asset-builder
+FROM node:14.21.1-bullseye-slim as asset-builder
 
 RUN apt-get update --allow-releaseinfo-change
 RUN apt-get install --no-install-recommends --yes ca-certificates git
