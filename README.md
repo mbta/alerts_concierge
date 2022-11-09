@@ -15,7 +15,7 @@ subscribe to notifications for service disruptions.
   - You will need Postgres client tools in your PATH; if using Homebrew and you
     get an error about missing tools, use `brew link postgresql@13`
 - [Google Chrome](https://www.google.com/chrome/)
-- Chromedriver (using Homebrew: `brew cask install chromedriver`)
+- Chromedriver (using Homebrew: `brew install --cask chromedriver`)
 - [`asdf`](https://asdf-vm.com/) with plugins: `elixir`, `erlang`, `nodejs`
 - [`direnv`](https://direnv.net/) _(optional, for auto-loading env vars)_
 
@@ -51,4 +51,5 @@ export of the environment variables into your current shell session.
 We run the app on AWS: see [`docs/aws.md`](docs/aws.md) for deployment guides.
 
 ## Scrubbing the Production Database for Local Usage
+
 See [`scripts/sanitize_db_dump/README.md`](scripts/sanitize_db_dump/README.md)
