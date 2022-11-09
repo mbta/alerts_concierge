@@ -3,8 +3,7 @@ defmodule ConciergeSite.ScheduleTest do
   # credo:disable-for-this-file Credo.Check.Design.DuplicatedCode
   use ExUnit.Case
   alias ConciergeSite.Schedule
-  alias AlertProcessor.ExtendedTime
-  alias AlertProcessor.Model.{Route, Subscription, TripInfo}
+  alias AlertProcessor.Model.{Subscription, TripInfo}
 
   doctest Schedule
 
@@ -43,49 +42,6 @@ defmodule ConciergeSite.ScheduleTest do
     assert is_list(result[{"cr", "CR-Newburyport"}])
     assert Enum.all?(result[{"cr", "CR-Newburyport"}], &is_trip_info(&1))
     assert Enum.all?(result[{"cr", "CR-Newburyport"}], &Map.has_key?(&1, :weekend?))
-
-    assert List.first(result[{"cr", "CR-Newburyport"}]) == %TripInfo{
-             arrival_time: ~T[07:20:00],
-             departure_time: ~T[06:30:00],
-             arrival_extended_time: %ExtendedTime{relative_day: 1, time: ~T[07:20:00]},
-             departure_extended_time: %ExtendedTime{relative_day: 1, time: ~T[06:30:00]},
-             destination: {"Manchester", "place-GB-0254", {42.573687, -70.77009}, 1},
-             direction_id: 0,
-             origin: {"North Station", "place-north", {42.365577, -71.06129}, 1},
-             route: %Route{
-               direction_names: ["Outbound", "Inbound"],
-               headsigns: nil,
-               route_id: "CR-Newburyport",
-               route_type: 2,
-               short_name: "",
-               long_name: "Newburyport/Rockport Line",
-               order: 10,
-               stop_list: [
-                 {"Rockport", "place-GB-0353", {42.655491, -70.627055}, 1},
-                 {"Gloucester", "place-GB-0316", {42.616799, -70.668345}, 1},
-                 {"West Gloucester", "place-GB-0296", {42.611933, -70.705417}, 1},
-                 {"Manchester", "place-GB-0254", {42.573687, -70.77009}, 1},
-                 {"Beverly Farms", "place-GB-0229", {42.561651, -70.811405}, 1},
-                 {"Montserrat", "place-GB-0198", {42.562171, -70.869254}, 1},
-                 {"Newburyport", "place-ER-0362", {42.797837, -70.87797}, 1},
-                 {"Rowley", "place-ER-0312", {42.726845, -70.859034}, 1},
-                 {"Ipswich", "place-ER-0276", {42.676921, -70.840589}, 1},
-                 {"Hamilton/Wenham", "place-ER-0227", {42.609212, -70.874801}, 1},
-                 {"North Beverly", "place-ER-0208", {42.583779, -70.883851}, 1},
-                 {"Beverly", "place-ER-0183", {42.547276, -70.885432}, 1},
-                 {"Salem", "place-ER-0168", {42.524792, -70.895876}, 1},
-                 {"Swampscott", "place-ER-0128", {42.473743, -70.922537}, 1},
-                 {"Lynn", "place-ER-0115", {42.462953, -70.945421}, 1},
-                 {"River Works", "place-ER-0099", {42.449927, -70.969848}, 2},
-                 {"Chelsea", "place-chels", {42.397024, -71.041314}, 1},
-                 {"North Station", "place-north", {42.365577, -71.06129}, 1}
-               ],
-               direction_destinations: ["Newburyport or Rockport", "North Station"]
-             },
-             selected: false,
-             trip_number: "1101",
-             weekend?: true
-           }
   end
 
   test "get_schedules_for_trip/2" do
@@ -152,110 +108,10 @@ defmodule ConciergeSite.ScheduleTest do
     assert is_list(first_trip_result[{"cr", "CR-Worcester"}])
     assert Enum.all?(first_trip_result[{"cr", "CR-Worcester"}], &is_trip_info(&1))
 
-    assert List.first(first_trip_result[{"cr", "CR-Worcester"}]) ==
-             %AlertProcessor.Model.TripInfo{
-               arrival_extended_time: %AlertProcessor.ExtendedTime{
-                 relative_day: 1,
-                 time: ~T[06:15:00]
-               },
-               arrival_time: ~T[06:15:00],
-               departure_extended_time: %AlertProcessor.ExtendedTime{
-                 relative_day: 1,
-                 time: ~T[05:30:00]
-               },
-               departure_time: ~T[05:30:00],
-               destination: {"Worcester", "place-WML-0442", {42.261835, -71.791806}, 1},
-               direction_id: 0,
-               selected: false,
-               trip_number: "501",
-               weekend?: false,
-               origin: {"Framingham", "place-WML-0214", {42.276108, -71.420055}, 1},
-               route: %AlertProcessor.Model.Route{
-                 direction_destinations: ["Worcester", "South Station"],
-                 direction_names: ["Outbound", "Inbound"],
-                 headsigns: nil,
-                 long_name: "Framingham/Worcester Line",
-                 order: 2,
-                 route_id: "CR-Worcester",
-                 route_type: 2,
-                 short_name: "",
-                 stop_list: [
-                   {"Worcester", "place-WML-0442", {42.261835, -71.791806}, 1},
-                   {"Grafton", "place-WML-0364", {42.2466, -71.685325}, 1},
-                   {"Westborough", "place-WML-0340", {42.269644, -71.647076}, 1},
-                   {"Southborough", "place-WML-0274", {42.267024, -71.524371}, 1},
-                   {"Ashland", "place-WML-0252", {42.26149, -71.482161}, 1},
-                   {"Framingham", "place-WML-0214", {42.276108, -71.420055}, 1},
-                   {"West Natick", "place-WML-0199", {42.283064, -71.391797}, 1},
-                   {"Natick Center", "place-WML-0177", {42.285719, -71.347133}, 2},
-                   {"Wellesley Square", "place-WML-0147", {42.297526, -71.294173}, 2},
-                   {"Wellesley Hills", "place-WML-0135", {42.31037, -71.277044}, 2},
-                   {"Wellesley Farms", "place-WML-0125", {42.323608, -71.272288}, 2},
-                   {"Auburndale", "place-WML-0102", {42.345833, -71.250373}, 2},
-                   {"West Newton", "place-WML-0091", {42.347878, -71.230528}, 2},
-                   {"Newtonville", "place-WML-0081", {42.351702, -71.205408}, 2},
-                   {"Boston Landing", "place-WML-0035", {42.357293, -71.139883}, 1},
-                   {"Lansdowne", "place-WML-0025", {42.347581, -71.099974}, 1},
-                   {"Back Bay", "place-bbsta", {42.34735, -71.075727}, 1},
-                   {"South Station", "place-sstat", {42.352271, -71.055242}, 1}
-                 ]
-               }
-             }
-
     assert is_map(return_trip_result)
     assert Map.keys(return_trip_result) == [{"cr", "CR-Worcester"}]
     assert is_list(return_trip_result[{"cr", "CR-Worcester"}])
     assert Enum.all?(return_trip_result[{"cr", "CR-Worcester"}], &is_trip_info(&1))
-
-    assert List.first(return_trip_result[{"cr", "CR-Worcester"}]) ==
-             %AlertProcessor.Model.TripInfo{
-               arrival_extended_time: %AlertProcessor.ExtendedTime{
-                 relative_day: 1,
-                 time: ~T[04:55:00]
-               },
-               arrival_time: ~T[04:55:00],
-               departure_extended_time: %AlertProcessor.ExtendedTime{
-                 relative_day: 1,
-                 time: ~T[04:15:00]
-               },
-               departure_time: ~T[04:15:00],
-               direction_id: 1,
-               origin: {"Worcester", "place-WML-0442", {42.261835, -71.791806}, 1},
-               selected: false,
-               trip_number: "500",
-               weekend?: false,
-               destination: {"Framingham", "place-WML-0214", {42.276108, -71.420055}, 1},
-               route: %AlertProcessor.Model.Route{
-                 direction_destinations: ["Worcester", "South Station"],
-                 direction_names: ["Outbound", "Inbound"],
-                 headsigns: nil,
-                 long_name: "Framingham/Worcester Line",
-                 order: 2,
-                 route_id: "CR-Worcester",
-                 route_type: 2,
-                 short_name: "",
-                 stop_list: [
-                   {"Worcester", "place-WML-0442", {42.261835, -71.791806}, 1},
-                   {"Grafton", "place-WML-0364", {42.2466, -71.685325}, 1},
-                   {"Westborough", "place-WML-0340", {42.269644, -71.647076}, 1},
-                   {"Southborough", "place-WML-0274", {42.267024, -71.524371}, 1},
-                   {"Ashland", "place-WML-0252", {42.26149, -71.482161}, 1},
-                   {"Framingham", "place-WML-0214", {42.276108, -71.420055}, 1},
-                   {"West Natick", "place-WML-0199", {42.283064, -71.391797}, 1},
-                   {"Natick Center", "place-WML-0177", {42.285719, -71.347133}, 2},
-                   {"Wellesley Square", "place-WML-0147", {42.297526, -71.294173}, 2},
-                   {"Wellesley Hills", "place-WML-0135", {42.31037, -71.277044}, 2},
-                   {"Wellesley Farms", "place-WML-0125", {42.323608, -71.272288}, 2},
-                   {"Auburndale", "place-WML-0102", {42.345833, -71.250373}, 2},
-                   {"West Newton", "place-WML-0091", {42.347878, -71.230528}, 2},
-                   {"Newtonville", "place-WML-0081", {42.351702, -71.205408}, 2},
-                   {"Boston Landing", "place-WML-0035", {42.357293, -71.139883}, 1},
-                   {"Lansdowne", "place-WML-0025", {42.347581, -71.099974}, 1},
-                   {"Back Bay", "place-bbsta", {42.34735, -71.075727}, 1},
-                   {"South Station", "place-sstat", {42.352271, -71.055242}, 1}
-                 ]
-               }
-             }
   end
 
   defp is_trip_info(%TripInfo{}), do: true
