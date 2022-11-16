@@ -234,14 +234,14 @@ defmodule AlertProcessor.ApiClient do
         {:error, formatted_errors}
 
       {:ok, %{body: %{"data" => data, "included" => includes}}} ->
-        Logger.info(fn ->
+        Logger.debug(fn ->
           "Response successfully parsed"
         end)
 
         {:ok, data, includes}
 
       {:ok, %{body: %{"data" => data}}} ->
-        Logger.info(fn ->
+        Logger.debug(fn ->
           "Response successfully parsed"
         end)
 
