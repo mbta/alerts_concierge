@@ -11,7 +11,7 @@ defmodule AlertProcessor.Mixfile do
       lockfile: "../../mix.lock",
       elixir: "~> 1.6",
       elixirc_paths: elixirc_paths(Mix.env()),
-      compilers: [:gettext] ++ Mix.compilers(),
+      compilers: Mix.compilers(),
       build_embedded: Mix.env() == :prod,
       start_permanent: Mix.env() == :prod,
       deps: deps(),
