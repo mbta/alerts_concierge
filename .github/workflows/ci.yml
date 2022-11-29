@@ -66,7 +66,6 @@ jobs:
         if: steps.js-deps-cache.outputs.cache-hit != 'true'
         run: npm ci --prefix apps/concierge_site/assets
 
-
   format:
     name: Format
     runs-on: ubuntu-latest
@@ -85,7 +84,6 @@ jobs:
             deps
           key: ${{ secrets.CACHE_UUID }}-mix-${{ hashFiles('**/mix.lock') }}
       - run: mix format --check-formatted
-
 
   warnings:
     name: Warnings
@@ -106,7 +104,6 @@ jobs:
           key: ${{ secrets.CACHE_UUID }}-mix-${{ hashFiles('**/mix.lock') }}
       - run: mix compile --warnings-as-errors
 
-
   credo:
     name: Credo
     runs-on: ubuntu-latest
@@ -126,7 +123,6 @@ jobs:
           key: ${{ secrets.CACHE_UUID }}-mix-${{ hashFiles('**/mix.lock') }}
       - run: mix credo
 
-
   sobelow:
     name: Sobelow
     runs-on: ubuntu-latest
@@ -145,7 +141,6 @@ jobs:
             deps
           key: ${{ secrets.CACHE_UUID }}-mix-${{ hashFiles('**/mix.lock') }}
       - run: mix sobelow
-
 
   tests:
     name: Tests
@@ -194,7 +189,6 @@ jobs:
           path: |
             cover/
             apps/*/cover/
-
 
   dialyzer:
     name: Dialyzer
