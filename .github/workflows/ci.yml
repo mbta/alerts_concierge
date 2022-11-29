@@ -17,6 +17,7 @@ concurrency:
 
 env:
   API_KEY: ${{ secrets.API_KEY }}
+  API_URL: https://api-dev.mbtace.com/
   DATABASE_URL_TEST: postgresql://postgres:postgres@localhost:5432/concierge
   MIX_ENV: test
   RECAPTCHA_PRIVATE_KEY: 6LeIxAcTAAAAAGG-vFI1TnRWxMZNFuojJ4WifJWe
