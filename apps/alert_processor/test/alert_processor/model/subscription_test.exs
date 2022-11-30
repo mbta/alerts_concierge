@@ -660,15 +660,6 @@ defmodule AlertProcessor.Model.SubscriptionTest do
     end
   end
 
-  test "paused_count returns the number of paused subscriptions" do
-    user = insert(:user)
-    insert(:subscription, user: user, route: "Red", paused: true)
-    insert(:subscription, user: user, route: "Orange")
-    insert(:subscription, user: user, route: "Blue", paused: true)
-
-    assert Subscription.paused_count() == 2
-  end
-
   defp map_subscription(%{"routes" => routes} = params) do
     params = Map.delete(params, "routes")
 
