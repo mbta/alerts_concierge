@@ -434,35 +434,95 @@ defmodule AlertProcessor.Model.Subscription do
   def all_active_for_alert(alert) do
     alert
     |> get_alert_entity_lists()
-    |> subscribers_match_query()
+    |> entity_specific_queries(alert)
+  end
+
+  @spec entity_specific_queries(Keyword.t(), Alert.t()) :: [t()]
+  defp entity_specific_queries(
+         [route_ids: _, routes: _, stops: _, wildcard: true],
+         alert
+       ) do
+    from(s in __MODULE__)
+    |> shared_query(alert)
+  end
+
+  defp entity_specific_queries(entity_lists, alert) do
+    entity_lists
+    |> Keyword.delete(:wildcard)
+    |> Enum.map(&entity_specific_query(&1, alert))
+    |> List.flatten(admin_query(alert))
+  end
+
+  @spec admin_query(Alert.t()) :: [t()]
+  defp admin_query(alert) do
+    from(
+      s in __MODULE__,
+      where: s.is_admin == true
+    )
+    |> shared_query(alert)
+  end
+
+  @spec entity_specific_query(tuple(), Alert.t()) :: [t()]
+  defp entity_specific_query({:route_ids, []}, _alert), do: []
+
+  defp entity_specific_query({:route_ids, route_ids}, alert) do
+    from(
+      s in __MODULE__,
+      where: s.route_type in ^route_ids
+    )
+    |> shared_query(alert)
+  end
+
+  defp entity_specific_query({:routes, []}, _alert), do: []
+
+  defp entity_specific_query({:routes, routes}, alert) do
+    from(
+      s in __MODULE__,
+      where: s.route in ^routes
+    )
+    |> shared_query(alert)
+  end
+
+  defp entity_specific_query({:stops, []}, _alert), do: []
+
+  defp entity_specific_query({:stops, stops}, alert) do
+    from(
+      s in __MODULE__,
+      where: s.origin in ^stops or s.destination in ^stops
+    )
+    |> shared_query(alert)
+  end
+
+  defp shared_query(query, alert) do
+    query
     |> where_subscription_not_paused()
     |> where_not_yet_notified(alert)
     |> Repo.all()
     |> Repo.preload(:user)
   end
 
-  defp subscribers_match_query(
-         route_ids: _,
-         routes: _,
-         stops: _,
-         wildcard: true
-       ),
-       do: from(s in __MODULE__)
+  # defp subscribers_match_query(
+  #        route_ids: _,
+  #        routes: _,
+  #        stops: _,
+  #        wildcard: true
+  #      ),
+  #      do: from(s in __MODULE__)
 
-  defp subscribers_match_query(
-         route_ids: route_ids,
-         routes: routes,
-         stops: stops,
-         wildcard: false
-       ) do
-    # group (route_type ANY(..) OR route ANY(..) OR origin ANY(..) OR destination ANY (...)) together
-    from(
-      s in __MODULE__,
-      where:
-        s.is_admin == true or s.route_type in ^route_ids or s.route in ^routes or
-          s.origin in ^stops or s.destination in ^stops
-    )
-  end
+  # defp subscribers_match_query(
+  #        route_ids: route_ids,
+  #        routes: routes,
+  #        stops: stops,
+  #        wildcard: false
+  #      ) do
+  #   # group (route_type ANY(..) OR route ANY(..) OR origin ANY(..) OR destination ANY (...)) together
+  #   from(
+  #     s in __MODULE__,
+  #     where:
+  #       s.is_admin == true or s.route_type in ^route_ids or s.route in ^routes or
+  #         s.origin in ^stops or s.destination in ^stops
+  #   )
+  # end
 
   defp where_subscription_not_paused(query), do: from(s in query, where: s.paused == false)
 
