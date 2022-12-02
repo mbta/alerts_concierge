@@ -2,8 +2,10 @@ defmodule ConciergeSite.Router do
   use ConciergeSite.Web, :router
   use Plug.ErrorHandler
 
+  @redirect_http Application.compile_env(:concierge_site, :redirect_http?)
+
   pipeline :redirect_prod_http do
-    if Application.get_env(:concierge_site, :redirect_http?) do
+    if @redirect_http do
       plug(Plug.SSL, rewrite_on: [:x_forwarded_proto])
     end
   end
