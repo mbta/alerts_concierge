@@ -501,29 +501,6 @@ defmodule AlertProcessor.Model.Subscription do
     |> Repo.preload(:user)
   end
 
-  # defp subscribers_match_query(
-  #        route_ids: _,
-  #        routes: _,
-  #        stops: _,
-  #        wildcard: true
-  #      ),
-  #      do: from(s in __MODULE__)
-
-  # defp subscribers_match_query(
-  #        route_ids: route_ids,
-  #        routes: routes,
-  #        stops: stops,
-  #        wildcard: false
-  #      ) do
-  #   # group (route_type ANY(..) OR route ANY(..) OR origin ANY(..) OR destination ANY (...)) together
-  #   from(
-  #     s in __MODULE__,
-  #     where:
-  #       s.is_admin == true or s.route_type in ^route_ids or s.route in ^routes or
-  #         s.origin in ^stops or s.destination in ^stops
-  #   )
-  # end
-
   defp where_subscription_not_paused(query), do: from(s in query, where: s.paused == false)
 
   defp where_not_yet_notified(query, %Alert{id: alert_id}),
