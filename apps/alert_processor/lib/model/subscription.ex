@@ -3,6 +3,8 @@ defmodule AlertProcessor.Model.Subscription do
   Set of criteria on which a user wants to be sent alerts.
   """
 
+  require Logger
+
   alias AlertProcessor.{Repo, TimeFrameComparison}
 
   alias AlertProcessor.Model.{
@@ -446,8 +448,16 @@ defmodule AlertProcessor.Model.Subscription do
          [route_ids: _, routes: _, stops: _, wildcard: true],
          alert
        ) do
-    from(s in __MODULE__, select: s.id)
-    |> where_not_paused_and_not_yet_notified(alert)
+    start_time = System.monotonic_time(:millisecond)
+
+    subscription_ids =
+      from(s in __MODULE__, select: s.id)
+      |> where_not_paused_and_not_yet_notified(alert)
+
+    end_time = System.monotonic_time(:millisecond)
+    Logger.info("wildcard query, time=#{end_time - start_time}")
+
+    subscription_ids
   end
 
   defp entity_specific_queries(entity_lists, alert) do
@@ -459,46 +469,78 @@ defmodule AlertProcessor.Model.Subscription do
 
   @spec admin_query(Alert.t()) :: [t()]
   defp admin_query(alert) do
-    from(
-      s in __MODULE__,
-      select: s.id,
-      where: s.is_admin == true
-    )
-    |> where_not_paused_and_not_yet_notified(alert)
+    start_time = System.monotonic_time(:millisecond)
+
+    subscription_ids =
+      from(
+        s in __MODULE__,
+        select: s.id,
+        where: s.is_admin == true
+      )
+      |> where_not_paused_and_not_yet_notified(alert)
+
+    end_time = System.monotonic_time(:millisecond)
+    Logger.info("admin query, time=#{end_time - start_time}")
+
+    subscription_ids
   end
 
   @spec entity_specific_query(tuple(), Alert.t()) :: [t()]
   defp entity_specific_query({:route_ids, []}, _alert), do: []
 
   defp entity_specific_query({:route_ids, route_ids}, alert) do
-    from(
-      s in __MODULE__,
-      select: s.id,
-      where: s.route_type in ^route_ids
-    )
-    |> where_not_paused_and_not_yet_notified(alert)
+    start_time = System.monotonic_time(:millisecond)
+
+    subscription_ids =
+      from(
+        s in __MODULE__,
+        select: s.id,
+        where: s.route_type in ^route_ids
+      )
+      |> where_not_paused_and_not_yet_notified(alert)
+
+    end_time = System.monotonic_time(:millisecond)
+    Logger.info("route IDs query, route_ids=#{inspect(route_ids)} time=#{end_time - start_time}")
+
+    subscription_ids
   end
 
   defp entity_specific_query({:routes, []}, _alert), do: []
 
   defp entity_specific_query({:routes, routes}, alert) do
-    from(
-      s in __MODULE__,
-      select: s.id,
-      where: s.route in ^routes
-    )
-    |> where_not_paused_and_not_yet_notified(alert)
+    start_time = System.monotonic_time(:millisecond)
+
+    subscription_ids =
+      from(
+        s in __MODULE__,
+        select: s.id,
+        where: s.route in ^routes
+      )
+      |> where_not_paused_and_not_yet_notified(alert)
+
+    end_time = System.monotonic_time(:millisecond)
+    Logger.info("routes query, routes=#{inspect(routes)} time=#{end_time - start_time}")
+
+    subscription_ids
   end
 
   defp entity_specific_query({:stops, []}, _alert), do: []
 
   defp entity_specific_query({:stops, stops}, alert) do
-    from(
-      s in __MODULE__,
-      select: s.id,
-      where: s.origin in ^stops or s.destination in ^stops
-    )
-    |> where_not_paused_and_not_yet_notified(alert)
+    start_time = System.monotonic_time(:millisecond)
+
+    subscription_ids =
+      from(
+        s in __MODULE__,
+        select: s.id,
+        where: s.origin in ^stops or s.destination in ^stops
+      )
+      |> where_not_paused_and_not_yet_notified(alert)
+
+    end_time = System.monotonic_time(:millisecond)
+    Logger.info("stops query, stops=#{inspect(stops)} time=#{end_time - start_time}")
+
+    subscription_ids
   end
 
   defp where_not_paused_and_not_yet_notified(query, alert) do
