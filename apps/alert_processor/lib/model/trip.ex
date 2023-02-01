@@ -43,14 +43,14 @@ defmodule AlertProcessor.Model.Trip do
     belongs_to(:user, User, type: :binary_id)
     has_many(:subscriptions, Subscription, on_delete: :delete_all)
 
-    field(:relevant_days, {:array, AlertProcessor.AtomType}, null: false)
-    field(:start_time, :time, null: false)
-    field(:end_time, :time, null: false)
-    field(:return_start_time, :time, null: true)
-    field(:return_end_time, :time, null: true)
-    field(:facility_types, {:array, AlertProcessor.AtomType}, null: false)
-    field(:roundtrip, :boolean, null: false)
-    field(:trip_type, AlertProcessor.AtomType, null: false, default: :commute)
+    field(:relevant_days, {:array, AlertProcessor.AtomType})
+    field(:start_time, :time)
+    field(:end_time, :time)
+    field(:return_start_time, :time)
+    field(:return_end_time, :time)
+    field(:facility_types, {:array, AlertProcessor.AtomType})
+    field(:roundtrip, :boolean)
+    field(:trip_type, AlertProcessor.AtomType, default: :commute)
 
     timestamps(type: :utc_datetime)
   end
