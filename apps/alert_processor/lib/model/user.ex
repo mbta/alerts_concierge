@@ -24,14 +24,14 @@ defmodule AlertProcessor.Model.User do
   schema "users" do
     has_one(:subscription, Subscription)
     has_many(:trips, Trip)
-    field(:email, :string, null: false)
+    field(:email, :string)
     field(:phone_number, :string)
     field(:role, :string)
     field(:encrypted_password, :string)
     field(:digest_opt_in, :boolean, default: true)
     field(:email_rejection_status, :string)
     field(:sms_opted_out_at, :utc_datetime)
-    field(:communication_mode, :string, null: false, default: "email")
+    field(:communication_mode, :string, default: "email")
     field(:password, :string, virtual: true)
     field(:sms_toggle, :boolean, virtual: true)
 

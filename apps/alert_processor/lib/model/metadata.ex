@@ -16,7 +16,7 @@ defmodule AlertProcessor.Model.Metadata do
   @primary_key {:id, AlertProcessor.AtomType, autogenerate: false}
 
   schema "metadata" do
-    field(:data, :map, default: %{}, null: false)
+    field(:data, :map, default: %{})
     timestamps(type: :utc_datetime)
   end
 
