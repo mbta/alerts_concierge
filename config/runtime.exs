@@ -3,6 +3,9 @@ import Config
 config :alert_processor, AlertProcessor.Repo,
   url: System.fetch_env!("DATABASE_URL_#{config_env() |> to_string() |> String.upcase()}")
 
+config :concierge_site, ConciergeSite.Endpoint,
+  authentication_source: System.get_env("AUTHENTICATION_SOURCE", "local")
+
 if config_env() == :prod do
   config :concierge_site, ConciergeSite.Endpoint,
     url: [host: System.fetch_env!("HOST_URL"), port: 80],
