@@ -4,13 +4,17 @@ defmodule ConciergeSite.AccountController do
   alias AlertProcessor.Model.User
   alias AlertProcessor.Repo
   alias ConciergeSite.ConfirmationMessage
-  alias ConciergeSite.SignInHelper
+  alias ConciergeSite.SessionHelper
   alias ConciergeSite.Mailchimp
 
   require Logger
 
   def new(conn, _params) do
-    render(conn, "new.html", account_changeset: new_user_changeset())
+    if SessionHelper.keycloak_auth?() do
+      redirect(conn, to: "/auth/keycloak/register")
+    else
+      render(conn, "new.html", account_changeset: new_user_changeset())
+    end
   end
 
   def edit(%{assigns: %{current_user: user}} = conn, _params) do
@@ -26,8 +30,7 @@ defmodule ConciergeSite.AccountController do
   def create(conn, %{"user" => params, "g-recaptcha-response" => recaptcha_response}) do
     with {:ok, _resp} <- Recaptcha.verify(recaptcha_response),
          {:ok, user} <- User.create_account(params) do
-      ConfirmationMessage.send_email_confirmation(user)
-      SignInHelper.sign_in(conn, user)
+      SessionHelper.sign_in(conn, user)
     else
       {:error, errors} when is_list(errors) ->
         Logger.warn("AccountController event=recaptcha_error errors=#{Enum.join(errors, ",")}")
@@ -111,7 +114,15 @@ defmodule ConciergeSite.AccountController do
     case User.update_account(user, params, user) do
       {:ok, updated_user} ->
         Mailchimp.update_member(user)
-        ConfirmationMessage.send_sms_confirmation(updated_user.phone_number, params["sms_toggle"])
+
+        if updated_user.communication_mode == "sms" do
+          ConfirmationMessage.send_sms_confirmation(
+            updated_user.phone_number,
+            params["sms_toggle"]
+          )
+        else
+          ConfirmationMessage.send_email_confirmation(updated_user)
+        end
 
         conn
         |> redirect(to: trip_path(conn, :new))

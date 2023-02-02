@@ -97,6 +97,14 @@ defmodule ConciergeSite.Router do
     )
   end
 
+  scope "/auth", ConciergeSite do
+    pipe_through([:redirect_prod_http, :browser])
+    get("/:provider", AuthController, :request)
+    get("/:provider/register", AuthController, :register)
+    get("/:provider/callback", AuthController, :callback)
+    get("/:provider/logout", AuthController, :logout)
+  end
+
   scope "/admin", ConciergeSite.Admin, as: :admin do
     pipe_through([:redirect_prod_http, :browser, :browser_auth, :admin_auth, :layout])
 

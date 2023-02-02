@@ -2,15 +2,29 @@ defmodule ConciergeSite.SessionControllerTest do
   @moduledoc false
   use ConciergeSite.ConnCase
   import AlertProcessor.Factory
+  import Test.Support.Helpers
   alias AlertProcessor.{Model.User, Model.Trip, Repo}
   alias Hammer
 
   @password "password1"
   @encrypted_password Bcrypt.hash_pwd_salt(@password)
 
-  test "GET /login/new", %{conn: conn} do
-    conn = get(conn, session_path(conn, :new))
-    assert html_response(conn, 200) =~ "Sign in"
+  describe "GET /login/new" do
+    test "for local auth", %{conn: conn} do
+      reassign_env(:concierge_site, ConciergeSite.Endpoint, authentication_source: "local")
+
+      conn = get(conn, session_path(conn, :new))
+
+      assert html_response(conn, 200) =~ "Sign in"
+    end
+
+    test "for Keycloak auth", %{conn: conn} do
+      reassign_env(:concierge_site, ConciergeSite.Endpoint, authentication_source: "keycloak")
+
+      conn = get(conn, session_path(conn, :new))
+
+      assert redirected_to(conn, 302) == "/auth/keycloak"
+    end
   end
 
   test "POST /login", %{conn: conn} do

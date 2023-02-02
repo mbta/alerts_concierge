@@ -3,12 +3,15 @@ defmodule ConciergeSite.CreateSubscriptionTest do
   use ConciergeSite.FeatureCase
 
   import AlertProcessor.Factory
+  import Test.Support.Helpers
   import Wallaby.Query, only: [text_field: 1, button: 1, css: 2]
 
   @password "p@ssw0rd"
   @encrypted_password Bcrypt.hash_pwd_salt(@password)
 
   setup do
+    Application.put_env(:wallaby, :base_url, ConciergeSite.Endpoint.url())
+    reassign_env(:concierge_site, ConciergeSite.Endpoint, authentication_source: "local")
     user = insert(:user, password: @password, encrypted_password: @encrypted_password)
     {:ok, user: user}
   end

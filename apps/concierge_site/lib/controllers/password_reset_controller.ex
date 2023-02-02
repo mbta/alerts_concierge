@@ -2,7 +2,7 @@ defmodule ConciergeSite.PasswordResetController do
   use ConciergeSite.Web, :controller
   alias AlertProcessor.Model.User
   alias ConciergeSite.Dissemination.{Email, Mailer}
-  alias ConciergeSite.SignInHelper
+  alias ConciergeSite.SessionHelper
 
   action_fallback(ConciergeSite.FallbackController)
 
@@ -40,7 +40,7 @@ defmodule ConciergeSite.PasswordResetController do
          {:ok, _} <- User.update_password(user, password_reset_params, user) do
       conn
       |> put_flash(:info, "Your password has been updated.")
-      |> SignInHelper.sign_in(user)
+      |> SessionHelper.sign_in(user)
     else
       {:error, :password_confirmation} ->
         conn
