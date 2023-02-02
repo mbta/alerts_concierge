@@ -6,6 +6,19 @@ config :alert_processor, AlertProcessor.Repo,
 config :concierge_site, ConciergeSite.Endpoint,
   authentication_source: System.get_env("AUTHENTICATION_SOURCE", "local")
 
+config :ueberauth, Ueberauth.Strategy.OIDC,
+  keycloak: [
+    fetch_userinfo: true,
+    userinfo_uid_field: "preferred_username",
+    discovery_document_uri: System.get_env("KEYCLOAK_WELL_KNOWN_OIDC"),
+    client_id: System.get_env("KEYCLOAK_CLIENT_ID"),
+    client_secret: System.get_env("KEYCLOAK_CLIENT_SECRET"),
+    redirect_uri: System.get_env("KEYCLOAK_REDIRECT_URI"),
+    logout_uri: System.get_env("KEYCLOAK_LOGOUT_URI"),
+    response_type: "code",
+    scope: "openid email profile roles web-origins"
+  ]
+
 if config_env() == :prod do
   config :concierge_site, ConciergeSite.Endpoint,
     url: [host: System.fetch_env!("HOST_URL"), port: 80],
