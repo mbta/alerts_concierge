@@ -324,6 +324,9 @@ defmodule AlertProcessor.Model.User do
     |> Repo.transaction()
   end
 
+  @spec get(id()) :: t() | nil
+  def get(id), do: Repo.get_by(__MODULE__, id: id)
+
   @spec for_email(String.t()) :: t | nil
   def for_email(email) do
     Repo.get_by(__MODULE__, email: String.downcase(email))

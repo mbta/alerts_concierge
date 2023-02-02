@@ -295,6 +295,18 @@ defmodule AlertProcessor.Model.UserTest do
     end
   end
 
+  describe "get/1" do
+    test "returns a user if present" do
+      user = insert(:user)
+      assert User.get(user.id) == user
+    end
+
+    test "returns nil if no matching user" do
+      bad_id = UUID.uuid4()
+      assert User.get(bad_id) == nil
+    end
+  end
+
   describe "for_email/1" do
     test "returns a user if present" do
       user = insert(:user)

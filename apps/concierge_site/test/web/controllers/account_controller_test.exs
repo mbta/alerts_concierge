@@ -6,9 +6,18 @@ defmodule ConciergeSite.AccountControllerTest do
   alias AlertProcessor.Model.{Notification, Subscription, Trip, User}
   alias AlertProcessor.Repo
 
-  test "new/4", %{conn: conn} do
-    conn = get(conn, account_path(conn, :new))
-    assert html_response(conn, 200) =~ "Sign up"
+  describe "new/4" do
+    test "using local auth, displays the Sign up page", %{conn: conn} do
+      reassign_env(:concierge_site, ConciergeSite.Endpoint, authentication_source: "local")
+      conn = get(conn, account_path(conn, :new))
+      assert html_response(conn, 200) =~ "Sign up"
+    end
+
+    test "using keycloak auth, redirects to the keycloak register route", %{conn: conn} do
+      reassign_env(:concierge_site, ConciergeSite.Endpoint, authentication_source: "keycloak")
+      conn = get(conn, account_path(conn, :new))
+      assert redirected_to(conn) == "/auth/keycloak/register"
+    end
   end
 
   test "POST /account", %{conn: conn} do
@@ -171,6 +180,7 @@ defmodule ConciergeSite.AccountControllerTest do
     end
 
     test "POST /account/edit error email in use", %{conn: conn} do
+      reassign_env(:concierge_site, ConciergeSite.Endpoint, authentication_source: "local")
       insert(:user, email: "taken@email.com")
       user = insert(:user, email: "before@email.com")
 

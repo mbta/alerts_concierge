@@ -35,7 +35,9 @@ defmodule AlertsConcierge.Mixfile do
       {:credo, "~> 1.6.0", only: [:dev, :test]},
       {:dialyxir, "~> 1.1.0", only: [:dev, :test]},
       {:lcov_ex, "~> 0.2", only: [:dev, :test]},
-      {:sobelow, "~> 0.11.0", only: [:dev, :test]}
+      {:sobelow, "~> 0.11.0", only: [:dev, :test]},
+      {:ueberauth, "~> 0.10.3"},
+      {:ueberauth_oidc, "~> 0.1.5"}
     ]
   end
 

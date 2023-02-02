@@ -18,3 +18,8 @@ config :sentry,
   json_library: Poison
 
 config :logger, backends: [:console, Sentry.LoggerBackend]
+
+config :ueberauth, Ueberauth,
+  providers: [
+    keycloak: {Ueberauth.Strategy.OIDC, [default: [provider: :keycloak]]}
+  ]
