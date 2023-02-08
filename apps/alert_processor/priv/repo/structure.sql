@@ -2,8 +2,8 @@
 -- PostgreSQL database dump
 --
 
--- Dumped from database version 13.6
--- Dumped by pg_dump version 13.6
+-- Dumped from database version 14.6 (Homebrew)
+-- Dumped by pg_dump version 14.6 (Homebrew)
 
 SET statement_timeout = 0;
 SET lock_timeout = 0;
@@ -15,20 +15,6 @@ SET check_function_bodies = false;
 SET xmloption = content;
 SET client_min_messages = warning;
 SET row_security = off;
-
---
--- Name: uuid-ossp; Type: EXTENSION; Schema: -; Owner: -
---
-
-CREATE EXTENSION IF NOT EXISTS "uuid-ossp" WITH SCHEMA public;
-
-
---
--- Name: EXTENSION "uuid-ossp"; Type: COMMENT; Schema: -; Owner: -
---
-
-COMMENT ON EXTENSION "uuid-ossp" IS 'generate universally unique identifiers (UUIDs)';
-
 
 SET default_tablespace = '';
 
@@ -71,7 +57,7 @@ CREATE TABLE public.guardian_tokens (
 --
 
 CREATE TABLE public.informed_entities (
-    id uuid DEFAULT public.uuid_generate_v4() NOT NULL,
+    id uuid DEFAULT gen_random_uuid() NOT NULL,
     subscription_id uuid,
     direction_id integer,
     facility_type character varying(255),
@@ -159,7 +145,7 @@ CREATE TABLE public.notifications (
 --
 
 CREATE TABLE public.password_resets (
-    id uuid DEFAULT public.uuid_generate_v4() NOT NULL,
+    id uuid DEFAULT gen_random_uuid() NOT NULL,
     user_id uuid,
     expired_at timestamp without time zone,
     redeemed_at timestamp without time zone,
@@ -183,7 +169,7 @@ CREATE TABLE public.schema_migrations (
 --
 
 CREATE TABLE public.subscriptions (
-    id uuid DEFAULT public.uuid_generate_v4() NOT NULL,
+    id uuid DEFAULT gen_random_uuid() NOT NULL,
     user_id uuid,
     inserted_at timestamp without time zone DEFAULT now() NOT NULL,
     updated_at timestamp without time zone DEFAULT now() NOT NULL,
@@ -217,7 +203,7 @@ CREATE TABLE public.subscriptions (
 --
 
 CREATE TABLE public.trips (
-    id uuid DEFAULT public.uuid_generate_v4() NOT NULL,
+    id uuid DEFAULT gen_random_uuid() NOT NULL,
     user_id uuid NOT NULL,
     relevant_days character varying(255)[] DEFAULT ARRAY[]::character varying[] NOT NULL,
     start_time time without time zone NOT NULL,
@@ -237,7 +223,7 @@ CREATE TABLE public.trips (
 --
 
 CREATE TABLE public.users (
-    id uuid DEFAULT public.uuid_generate_v4() NOT NULL,
+    id uuid DEFAULT gen_random_uuid() NOT NULL,
     email character varying(255) NOT NULL,
     phone_number character varying(255),
     inserted_at timestamp without time zone DEFAULT now() NOT NULL,
@@ -644,3 +630,4 @@ INSERT INTO public."schema_migrations" (version) VALUES (20190610143559);
 INSERT INTO public."schema_migrations" (version) VALUES (20200430210043);
 INSERT INTO public."schema_migrations" (version) VALUES (20210421143058);
 INSERT INTO public."schema_migrations" (version) VALUES (20210528144213);
+INSERT INTO public."schema_migrations" (version) VALUES (20230208195021);

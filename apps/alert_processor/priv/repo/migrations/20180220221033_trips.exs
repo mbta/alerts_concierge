@@ -3,7 +3,7 @@ defmodule AlertProcessor.Repo.Migrations.Trips do
 
   def change do
     create table(:trips, primary_key: false) do
-      add :id, :uuid, primary_key: true, default: fragment("uuid_generate_v4()")
+      add :id, :uuid, primary_key: true, default: fragment("gen_random_uuid()")
       add :user_id, references(:users, type: :uuid), null: false
       add :alert_priority_type, :string, null: false
       add :relevant_days, {:array, :string}, null: false, default: []
