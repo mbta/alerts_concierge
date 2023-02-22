@@ -355,19 +355,19 @@ defmodule ConciergeSite.AccountControllerTest do
 
       assert html_response(conn, 200) =~ "Current password is incorrect"
     end
-  end
 
-  test "POST /password/edit validation error", %{conn: conn} do
-    user = insert(:user, encrypted_password: Bcrypt.hash_pwd_salt("Password1!"))
+    test "POST /password/edit validation error", %{conn: conn} do
+      user = insert(:user, encrypted_password: Bcrypt.hash_pwd_salt("Password1!"))
 
-    user_params = %{current_password: "Password1!", password: "Password"}
+      user_params = %{current_password: "Password1!", password: "Password"}
 
-    conn =
-      user
-      |> guardian_login(conn)
-      |> post(account_path(conn, :update_password), %{user: user_params})
+      conn =
+        user
+        |> guardian_login(conn)
+        |> post(account_path(conn, :update_password), %{user: user_params})
 
-    assert html_response(conn, 200) =~ "New password format is incorrect"
+      assert html_response(conn, 200) =~ "New password format is incorrect"
+    end
   end
 
   describe "account delete" do
