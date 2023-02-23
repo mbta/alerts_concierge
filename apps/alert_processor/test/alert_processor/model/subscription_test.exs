@@ -515,8 +515,8 @@ defmodule AlertProcessor.Model.SubscriptionTest do
 
       assert Float.round(subscription.destination_lat, 6) == 42.355518
       assert Float.round(subscription.destination_long, 6) == -71.060225
-      assert Float.round(subscription.origin_lat, 6) == 42.395428
-      assert Float.round(subscription.origin_long, 6) == -71.142483
+      assert Float.round(subscription.origin_lat, 6) == 42.39583
+      assert Float.round(subscription.origin_long, 6) == -71.141287
     end
 
     test "without stop values" do
