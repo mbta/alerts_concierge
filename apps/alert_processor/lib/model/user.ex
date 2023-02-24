@@ -324,9 +324,6 @@ defmodule AlertProcessor.Model.User do
     |> Repo.transaction()
   end
 
-  defp normalize_papertrail_result({:ok, %{model: user}}), do: {:ok, user}
-  defp normalize_papertrail_result(result), do: result
-
   @spec for_email(String.t()) :: t | nil
   def for_email(email) do
     Repo.get_by(__MODULE__, email: String.downcase(email))
@@ -357,4 +354,7 @@ defmodule AlertProcessor.Model.User do
 
   def inside_opt_out_freeze_window?(%__MODULE__{sms_opted_out_at: sms_opted_out_at}),
     do: Date.diff(Date.utc_today(), DateTime.to_date(sms_opted_out_at)) <= 30
+
+  defp normalize_papertrail_result({:ok, %{model: user}}), do: {:ok, user}
+  defp normalize_papertrail_result(result), do: result
 end
