@@ -18,8 +18,5 @@ defmodule AlertProcessor.Repo.Migrations.DropUuidOsspExtension do
     alter table(:trips, primary_key: false) do
       modify :id, :uuid, default: fragment("gen_random_uuid()")
     end
-
-    # The uuid-ossp extension used to be required for generating UUIDs, but now the `gen_random_uuid` function is built in to Postgres starting with version 13 so we no longer need this extension.
-    execute "DROP EXTENSION IF EXISTS \"uuid-ossp\";"
   end
 end
