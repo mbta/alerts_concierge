@@ -47,9 +47,7 @@ defmodule AlertProcessor.Mixfile do
       {:con_cache, "~> 1.0.0"},
       {:ecto_sql, "~> 3.0"},
       {:ex_aws, "~> 2.2.0"},
-      # TOOD: update to use official release when one is tagged with
-      # `check_if_phone_number_is_opted_out` support
-      {:ex_aws_sns, git: "https://github.com/ex-aws/ex_aws_sns.git", ref: "fc213db"},
+      {:ex_aws_sns, "~> 2.3.1"},
       {:fast_local_datetime, "~> 1.0.0"},
       {:gettext, "~> 0.11"},
       {:httpoison, "~> 1.8.0"},
