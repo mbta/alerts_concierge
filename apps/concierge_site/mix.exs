@@ -41,9 +41,7 @@ defmodule ConciergeSite.Mixfile do
       {:bamboo, "~> 2.2.0"},
       {:bamboo_phoenix, "~> 1.0.0"},
       {:bamboo_ses, "~> 0.3.0"},
-      # TOOD: update to use official release when one is tagged with
-      # `check_if_phone_number_is_opted_out` support
-      {:ex_aws_sns, git: "https://github.com/ex-aws/ex_aws_sns.git", ref: "fc213db"},
+      {:ex_aws_sns, "~> 2.3.1"},
       {:gettext, "~> 0.11"},
       {:guardian, "~> 2.3.1"},
       {:guardian_db, "~> 2.1.0"},
