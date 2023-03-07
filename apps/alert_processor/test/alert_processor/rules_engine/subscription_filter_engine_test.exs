@@ -40,8 +40,8 @@ defmodule AlertProcessor.SubscriptionFilterEngineTest do
     test "the expected subscription matches", %{alert: alert} do
       email_match = "route1,route4|weekdays|low,high|10am-2pm@test.com"
       email_no_match = "route2,route3|weekdays,sunday|low,high|10am-2pm@test.com"
-      user = insert(:user, phone_number: nil, email: email_match)
-      user2 = insert(:user, phone_number: nil, email: email_no_match)
+      user = insert(:user, communication_mode: "email", phone_number: nil, email: email_match)
+      user2 = insert(:user, communication_mode: "email", phone_number: nil, email: email_no_match)
 
       :subscription
       |> build(
@@ -139,7 +139,11 @@ defmodule AlertProcessor.SubscriptionFilterEngineTest do
       }
 
       user_morning =
-        insert(:user, phone_number: nil, email: "redline|weekdays|low|morning@test.com")
+        insert(:user,
+          communication_mode: "email",
+          phone_number: nil,
+          email: "redline|weekdays|low|morning@test.com"
+        )
 
       # Morning subscription
       :subscription
@@ -155,7 +159,11 @@ defmodule AlertProcessor.SubscriptionFilterEngineTest do
       |> insert
 
       user_evening =
-        insert(:user, phone_number: nil, email: "redline|weekdays|low|evening@test.com")
+        insert(:user,
+          communication_mode: "email",
+          phone_number: nil,
+          email: "redline|weekdays|low|evening@test.com"
+        )
 
       # Evening subscription
       :subscription
@@ -188,7 +196,7 @@ defmodule AlertProcessor.SubscriptionFilterEngineTest do
     test "two subscription matches for the same alert-user sends only one notification", %{
       alert: alert
     } do
-      user = insert(:user, phone_number: nil)
+      user = insert(:user, communication_mode: "email", phone_number: nil)
 
       :subscription
       |> build(
@@ -222,7 +230,7 @@ defmodule AlertProcessor.SubscriptionFilterEngineTest do
 
   describe "schedule_all_notifications/1" do
     test "one matching subscription causes one scheduled notification", %{alert: alert} do
-      user = insert(:user, phone_number: nil)
+      user = insert(:user, communication_mode: "email", phone_number: nil)
 
       :subscription
       |> build(

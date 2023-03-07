@@ -62,10 +62,23 @@ defmodule AlertProcessor.Dissemination.MassNotifierTest do
     end
 
     test "enqueues notifications with a phone number ahead of others" do
-      {_, first_phone} = insert_user_and_build_notification(%{phone_number: "5555551234"})
-      {_, first_email} = insert_user_and_build_notification(%{phone_number: nil})
-      {_, second_phone} = insert_user_and_build_notification(%{phone_number: "5555556789"})
-      {_, second_email} = insert_user_and_build_notification(%{phone_number: nil})
+      {_, first_phone} =
+        insert_user_and_build_notification(%{
+          communication_mode: "sms",
+          phone_number: "5555551234"
+        })
+
+      {_, first_email} =
+        insert_user_and_build_notification(%{communication_mode: "email", phone_number: nil})
+
+      {_, second_phone} =
+        insert_user_and_build_notification(%{
+          communication_mode: "sms",
+          phone_number: "5555556789"
+        })
+
+      {_, second_email} =
+        insert_user_and_build_notification(%{communication_mode: "email", phone_number: nil})
 
       :ok = MassNotifier.save_and_enqueue([first_phone, first_email, second_phone, second_email])
       {:ok, first} = SendingQueue.pop()
