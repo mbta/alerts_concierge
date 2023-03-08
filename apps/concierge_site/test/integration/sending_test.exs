@@ -45,7 +45,9 @@ defmodule ConciergeSite.Integration.Sending do
     }
 
     test "email" do
-      %{email: email, id: user_id} = insert(:user, %{phone_number: nil})
+      %{email: email, id: user_id} =
+        insert(:user, %{communication_mode: "email", phone_number: nil})
+
       insert(:subscription, Map.put(@subscription, :user_id, user_id))
       schedule_all_notifications([@alert], :anytime)
       {:ok, notification} = SendingQueue.pop()
@@ -55,7 +57,7 @@ defmodule ConciergeSite.Integration.Sending do
     end
 
     test "SMS" do
-      user = insert(:user, %{phone_number: "5556667777"})
+      user = insert(:user, %{communication_mode: "sms", phone_number: "5556667777"})
       insert(:subscription, Map.put(@subscription, :user_id, user.id))
       schedule_all_notifications([@alert], :anytime)
       {:ok, notification} = SendingQueue.pop()

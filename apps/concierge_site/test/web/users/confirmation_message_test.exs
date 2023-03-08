@@ -7,7 +7,7 @@ defmodule ConciergeSite.ConfirmationMessageTest do
 
   describe "send_email_confirmation/1" do
     test "sends email to user" do
-      user = insert(:user, email: "test@test.com", phone_number: nil)
+      user = insert(:user, communication_mode: "email", email: "test@test.com", phone_number: nil)
 
       ConfirmationMessage.send_email_confirmation(user)
 
@@ -20,7 +20,12 @@ defmodule ConciergeSite.ConfirmationMessageTest do
 
   describe "send_sms_confirmation/1" do
     test "sends SMS to user with phone number" do
-      user = insert(:user, email: "test@test.com", phone_number: "5556667777")
+      user =
+        insert(:user,
+          communication_mode: "sms",
+          email: "test@test.com",
+          phone_number: "5556667777"
+        )
 
       expected = %{body: %{message_id: "123", request_id: "345"}}
       {:ok, actual} = ConfirmationMessage.send_sms_confirmation(user.phone_number, "true")
@@ -29,7 +34,12 @@ defmodule ConciergeSite.ConfirmationMessageTest do
     end
 
     test "does not send SMS to user with phone number but no opt-in" do
-      user = insert(:user, email: "test@test.com", phone_number: "5556667777")
+      user =
+        insert(:user,
+          communication_mode: "email",
+          email: "test@test.com",
+          phone_number: "5556667777"
+        )
 
       {:ok, actual} = ConfirmationMessage.send_sms_confirmation(user.phone_number, "false")
 
@@ -37,7 +47,7 @@ defmodule ConciergeSite.ConfirmationMessageTest do
     end
 
     test "does not send SMS to user with empty phone number" do
-      user = insert(:user, email: "test@test.com", phone_number: "")
+      user = insert(:user, communication_mode: "email", email: "test@test.com", phone_number: "")
 
       {:ok, actual} = ConfirmationMessage.send_sms_confirmation(user.phone_number, "true")
 
