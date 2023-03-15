@@ -20,7 +20,7 @@ defmodule ConciergeSite.AccountController do
   def edit(%{assigns: %{current_user: user}} = conn, _params) do
     conn
     |> put_flash(:warning, communication_mode_flash(user))
-    |> render("edit.html", changeset: User.changeset(user), user_id: user.id)
+    |> render(edit_template(), changeset: User.changeset(user), user_id: user.id)
   end
 
   def edit_password(conn, _params) do
@@ -74,7 +74,7 @@ defmodule ConciergeSite.AccountController do
       {:error, changeset} ->
         render(
           conn,
-          "edit.html",
+          edit_template(),
           changeset: changeset,
           user_id: user.id,
           errors: errors(changeset)
@@ -238,4 +238,7 @@ defmodule ConciergeSite.AccountController do
   def mailchimp_update(conn, _params) do
     json(conn, %{status: "ok", message: "invalid request"})
   end
+
+  defp edit_template,
+    do: if(SessionHelper.keycloak_auth?(), do: "edit_keycloak.html", else: "edit.html")
 end

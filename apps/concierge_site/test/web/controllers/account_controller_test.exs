@@ -127,6 +127,7 @@ defmodule ConciergeSite.AccountControllerTest do
   end
 
   test "POST /account/options with errors", %{conn: conn} do
+    reassign_env(:concierge_site, ConciergeSite.Endpoint, authentication_source: "local")
     user = insert(:user)
 
     user_params = %{
@@ -199,6 +200,7 @@ defmodule ConciergeSite.AccountControllerTest do
     end
 
     test "POST /account/edit error invalid phone number", %{conn: conn} do
+      reassign_env(:concierge_site, ConciergeSite.Endpoint, authentication_source: "local")
       user = insert(:user, phone_number: nil)
 
       user_params = %{
@@ -215,6 +217,7 @@ defmodule ConciergeSite.AccountControllerTest do
     end
 
     test "POST /account/edit error must accept terms and conditions", %{conn: conn} do
+      reassign_env(:concierge_site, ConciergeSite.Endpoint, authentication_source: "local")
       user = insert(:user, phone_number: nil)
 
       user_params = %{
