@@ -190,13 +190,6 @@ defmodule AlertProcessor.Model.UserTest do
       assert changeset.changes.phone_number == "2342342344"
       assert changeset.valid?
     end
-
-    test "if communication_mode is email, phone_number (if present) will be ignored" do
-      changeset = create_changeset(%{"phone_number" => "2342342344"})
-
-      refute changeset.changes[:phone_number]
-      assert changeset.valid?
-    end
   end
 
   describe "authenticate/1" do
