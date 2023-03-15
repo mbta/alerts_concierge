@@ -121,7 +121,6 @@ defmodule AlertProcessor.Model.User do
     |> update_change(:email, &lowercase_email/1)
     |> validate_email()
     |> validate_password()
-    |> clear_phone_if_mode_is_email(params)
     |> update_change(:phone_number, &clean_phone_number/1)
     |> validate_phone_number()
     |> hash_password()
@@ -176,12 +175,6 @@ defmodule AlertProcessor.Model.User do
     )
     |> unique_constraint(:email, message: "Sorry, that email has already been taken.")
   end
-
-  defp clear_phone_if_mode_is_email(changeset, %{"communication_mode" => "email"}) do
-    update_change(changeset, :phone_number, &clear_value/1)
-  end
-
-  defp clear_phone_if_mode_is_email(changeset, _), do: changeset
 
   defp clear_value(_), do: nil
 
