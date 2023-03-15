@@ -2,6 +2,7 @@ defmodule ConciergeSite.AccountControllerTest do
   @moduledoc false
   use ConciergeSite.ConnCase, async: true
   import AlertProcessor.Factory
+  import Test.Support.Helpers
   alias AlertProcessor.Helpers.ConfigHelper
   alias AlertProcessor.Model.{Notification, Subscription, Trip, User}
   alias AlertProcessor.Repo
@@ -329,7 +330,9 @@ defmodule ConciergeSite.AccountControllerTest do
   end
 
   describe "update password" do
-    test "GET /password/edit", %{conn: conn} do
+    test "GET /password/edit - for local auth", %{conn: conn} do
+      reassign_env(:concierge_site, ConciergeSite.Endpoint, authentication_source: "local")
+
       user = insert(:user)
 
       conn =
@@ -338,6 +341,20 @@ defmodule ConciergeSite.AccountControllerTest do
         |> get(account_path(conn, :edit_password))
 
       assert html_response(conn, 200) =~ "Update password"
+    end
+
+    test "GET /password/edit - for Keycloak auth", %{conn: conn} do
+      reassign_env(:concierge_site, ConciergeSite.Endpoint, authentication_source: "keycloak")
+
+      user = insert(:user)
+
+      conn =
+        user
+        |> guardian_login(conn)
+        |> get(account_path(conn, :edit_password))
+
+      assert redirected_to(conn, 302) =~
+               ~r/\/auth\/realms\/MBTA\/protocol\/openid-connect\/auth?.*kc_action=UPDATE_PASSWORD/
     end
 
     test "POST /password/edit", %{conn: conn} do
