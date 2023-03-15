@@ -89,6 +89,8 @@ defmodule ConciergeSite.SessionControllerTest do
   end
 
   test "DELETE /login", %{conn: conn} do
+    reassign_env(:concierge_site, ConciergeSite.Endpoint, authentication_source: "local")
+
     user = insert(:user)
 
     conn =
@@ -96,7 +98,7 @@ defmodule ConciergeSite.SessionControllerTest do
       |> guardian_login(conn)
       |> delete(session_path(conn, :delete))
 
-    assert redirected_to(conn, 302) =~ session_path(conn, :new)
+    assert redirected_to(conn, 302) == "/"
   end
 
   test "unauthenticated/2", %{conn: conn} do
