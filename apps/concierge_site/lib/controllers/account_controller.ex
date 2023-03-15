@@ -24,7 +24,11 @@ defmodule ConciergeSite.AccountController do
   end
 
   def edit_password(conn, _params) do
-    render(conn, "edit_password.html")
+    if SessionHelper.keycloak_auth?() do
+      redirect(conn, external: ConciergeSite.AccountView.edit_password_url(conn))
+    else
+      render(conn, "edit_password.html")
+    end
   end
 
   def create(conn, %{"user" => params, "g-recaptcha-response" => recaptcha_response}) do
