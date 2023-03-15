@@ -4,6 +4,8 @@ defmodule AlertProcessor.Model.UserTest do
   import AlertProcessor.Factory
   alias AlertProcessor.Model.User
 
+  doctest User
+
   @valid_attrs %{email: "email@test.com", role: "user", password: "password1"}
   @valid_account_attrs %{
     "email" => "test@email.com",

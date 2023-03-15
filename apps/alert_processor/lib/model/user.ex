@@ -358,6 +358,28 @@ defmodule AlertProcessor.Model.User do
   def inside_opt_out_freeze_window?(%__MODULE__{sms_opted_out_at: sms_opted_out_at}),
     do: Date.diff(Date.utc_today(), DateTime.to_date(sms_opted_out_at)) <= 30
 
+  @doc """
+  Returns the email address for the given user.
+
+  ## Examples
+
+      iex> User.email(%User{email: "user@example.com"})
+      "user@example.com"
+  """
+  @spec email(t()) :: String.t()
+  def email(%__MODULE__{email: email}), do: email
+
+  @doc """
+  Returns the phone number for the given user.
+
+  ## Examples
+
+      iex> User.phone_number(%User{phone_number: "5551234567"})
+      "5551234567"
+  """
+  @spec phone_number(t()) :: String.t() | nil
+  def phone_number(%__MODULE__{phone_number: phone_number}), do: phone_number
+
   defp normalize_papertrail_result({:ok, %{model: user}}), do: {:ok, user}
   defp normalize_papertrail_result(result), do: result
 end

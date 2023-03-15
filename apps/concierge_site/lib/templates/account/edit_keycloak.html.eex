@@ -1,16 +1,15 @@
-<h1 class="heading__title">Customize my settings</h1>
+<h1 class="heading__title">Settings</h1>
 <%= flash_error(@conn) %>
+<%= flash_warning(@conn) %>
 
 <% communication_mode = fetch_field!(@changeset, :communication_mode) %>
 
 <div class="container container__inner">
   <div class="row justify-content-md-center">
-    <div class="col-md-10 col-sm-12">
-    
-      <%= form_for @changeset, account_path(@conn, :options_create), [as: :user, method: :post], fn form -> %>
-
+    <div class="col-sm-12">
+      <%= form_for @changeset, account_path(@conn, :update), [as: :user, method: :post], fn form -> %>
         <div class="form-group form__section--top">
-          <%= label form, :sms_toggle, "How would you like to receive alerts?", class: "form__label" %>
+          <%= label form, :sms_toggle, "I’d like to receive alert notifications by:", class: "form__label" %>
           <div class="btn-group btn-group-toggle btn__radio--toggle-container" data-toggle="buttons" role="radiogroup">
             <label data-id="email" role="radio" tabindex="0"
                 aria-checked="<%= if communication_mode == "email", do: "true", else: "false" %>"
@@ -21,31 +20,23 @@
             </label>
             <label data-id="sms" role="radio" tabindex="0"
                 aria-checked="<%= if communication_mode == "sms", do: "true", else: "false" %>"
-                class="btn btn-outline-primary btn__radio--toggle btn__radio--toggle-item <%= if communication_mode == "sms", do: "active" %>">
+                class="btn btn-outline-primary btn__radio--toggle btn__radio--toggle-item
+                <%= if sms_frozen?(@changeset), do: "disabled" %>
+                <%= if !sms_frozen?(@changeset) and communication_mode == "sms", do: "active" %>">
               <%= render ConciergeSite.LayoutView, "_icon_sms.html" %>
-              <%= radio_button form, :sms_toggle, "true", tabindex: "-1", required: true, checked: communication_mode == "sms" %>
+              <%= radio_button form, :sms_toggle, "true", tabindex: "-1", required: true, checked: communication_mode == "sms", disabled: sms_frozen?(@changeset) %>
               <div>Text me</div>
             </label>
           </div>
           <%= hidden_input form, :communication_mode, value: communication_mode  %>
         </div>
 
-        <div class="form-group my-3 <%= if communication_mode != "sms", do: "d-none", else: "" %>" data-phone="input">
-          <%= if keycloak_auth?() do %>
-            <%= if phone_number(@current_user) do %>
-              <%= label form, :phone_number, "My phone number is:", class: "form__label d-block" %>
-              <div><%= @current_user |> phone_number() |> format_phone_number() %></div>
-            <% else %>
-              <p>Please enter your number in order to recieve text messages.</p>
-              <div><%= link to: update_profile_url(@conn) do %>Add phone number<% end %></div>
-            <% end %>
-          <% else %>
-            <%= label form, :phone_number, "What’s your mobile phone number?", class: "form__label d-block" %>
-            <%= telephone_input form, :phone_number, autocomplete: "off", placeholder: "###-###-####", class: "form-control d-inline-block form__phone--input", data: [toggle: "input"] %>
-            <%= error_tag form, :phone_number %>
-          <% end %>
+        <div class="form-group my-4 <%= if communication_mode != "sms", do: "d-none" %>" data-phone="input">
+          <%= if phone_number(@current_user) do %>
+            <%= label form, :phone_number, "My phone number is:", class: "form__label d-block" %>
+            <div><%= @current_user |> phone_number() |> format_phone_number() %></div>
+            <div><%= link to: update_profile_url(@conn) do %>Change phone number<% end %></div>
 
-          <%= if !keycloak_auth?() or phone_number(@current_user) do %>
             <div class="mt-3 form-check">
               <%= checkbox form, :accept_tnc, class: "form-check-input" %>
               <%= label form, :accept_tnc, class: "form__label-radio" do %>
@@ -59,23 +50,34 @@
               </ul>
               <%= error_tag form, :accept_tnc %>
             </div>
-            
+          <% else %>
+            <p class="font-weight-bold">Please enter your number in order to recieve text messages.</p>
+            <div><%= link to: update_profile_url(@conn) do %>Add phone number<% end %></div>
           <% end %>
         </div>
 
-        <div class="form-group form__section form-check">
+        <div class="form-group form__section <%= if communication_mode != "email", do: "d-none" %>">
+          <%= label form, :email, "My account email:", class: "form__label" %>
+          <div><%= email(@current_user) %></div>
+          <div><%= link to: update_profile_url(@conn) do %>Change email<% end %></div>
+          <div class="my-3"><%= link to: account_path(@conn, :edit_password) do %>Change password<% end %></div>
+        </div>
+
+        <div class="form-group form__section form-check my-5">
           <%= checkbox form, :digest_opt_in, class: "form-check-input" %>
           <%= label form, :digest_opt_in, "Yes, send me a weekly email about planned service disruptions across the MBTA.", class: "form__label--radio" %>
           Even if you receive text alerts, this will be sent to the email address you signed up with.
         </div>
 
         <div class="form__action-buttons--container">
-          <%= submit "Next", class: "btn btn-primary float-right form__action-button" %>
-          <a href="javascript:history.back()" class="btn btn-outline-primary form__action-button">Back</a>
+          <%= submit "Update account settings", class: "btn btn-primary btn-login btn-block" %>
+          <button type="button" class="btn btn-outline-danger btn-block" data-toggle="modal" data-target="#deleteModal">
+            Delete my account
+          </button>
         </div>
-
       <% end %>
-
     </div>
   </div>
 </div>
+
+<%= render ConciergeSite.LayoutView, "_delete_modal.html", assigns %>

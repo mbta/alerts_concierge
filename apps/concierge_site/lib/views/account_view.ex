@@ -1,8 +1,14 @@
 defmodule ConciergeSite.AccountView do
   use ConciergeSite.Web, :view
+
   alias AlertProcessor.Model.User
+  alias ConciergeSite.SessionHelper
   alias Ecto.Changeset
   alias Plug.Conn
+
+  defdelegate keycloak_auth?, to: SessionHelper
+  defdelegate email(user), to: User
+  defdelegate phone_number(user), to: User
 
   def fetch_field!(changeset, field) do
     {_, value} = Changeset.fetch_field(changeset, field)
@@ -10,6 +16,18 @@ defmodule ConciergeSite.AccountView do
   end
 
   def sms_frozen?(%{data: user}), do: User.inside_opt_out_freeze_window?(user)
+
+  @spec format_phone_number(String.t()) :: String.t()
+  def format_phone_number(
+        <<area_code::binary-size(3), exchange::binary-size(3), extension::binary-size(4)>>
+      ),
+      do: "#{area_code}-#{exchange}-#{extension}"
+
+  def format_phone_number(number), do: number
+
+  @spec update_profile_url(Conn.t()) :: String.t()
+  def update_profile_url(conn),
+    do: keycloak_auth_action_url("MBTA_UPDATE_PROFILE", encoded_account_edit_url(conn))
 
   @spec edit_password_url(Conn.t()) :: String.t()
   def edit_password_url(conn),
