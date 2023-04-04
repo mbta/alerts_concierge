@@ -14,6 +14,9 @@ config :alert_processor, :ex_aws, ExAws.Mock
 # Don't run periodic background alert processing
 config :alert_processor, :process_alerts?, false
 
+# Don't run periodic background user update polling
+config :alert_processor, :poll_for_user_updates?, false
+
 config :alert_processor, :mailer, AlertProcessor.MailerMock
 config :alert_processor, :mailer_email, AlertProcessor.EmailMock
 
