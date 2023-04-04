@@ -3,6 +3,7 @@ defmodule ConciergeSite.AuthController do
 
   require Logger
 
+  alias AlertProcessor.Helpers.PhoneNumber
   alias AlertProcessor.Model.User
   alias AlertProcessor.Repo
   alias ConciergeSite.SessionHelper
@@ -40,7 +41,7 @@ defmodule ConciergeSite.AuthController do
     phone_number =
       user_info
       |> Map.get("phone")
-      |> strip_us_country_code()
+      |> PhoneNumber.strip_us_country_code()
 
     user =
       id
@@ -98,8 +99,4 @@ defmodule ConciergeSite.AuthController do
         phone_number: phone_number
     }
   end
-
-  @spec strip_us_country_code(String.t() | nil) :: String.t() | nil
-  defp strip_us_country_code("+1" <> phone_number), do: phone_number
-  defp strip_us_country_code(phone_number), do: phone_number
 end

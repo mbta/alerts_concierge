@@ -40,6 +40,8 @@ config :alert_processor,
 config :alert_processor, api_url: {:system, "API_URL", "https://api-dev.mbtace.com/"}
 config :alert_processor, api_key: {:system, "API_KEY", nil}
 
+config :alert_processor, user_update_sqs_queue_url: {:system, "USER_UPDATE_SQS_QUEUE_URL", ""}
+
 # Number of workers for sending notifications
 config :alert_processor, notification_workers: 40
 
