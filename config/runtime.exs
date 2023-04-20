@@ -21,7 +21,7 @@ config :ueberauth, Ueberauth.Strategy.OIDC,
 
 if config_env() == :prod do
   config :concierge_site, ConciergeSite.Endpoint,
-    url: [host: System.fetch_env!("HOST_URL"), port: 80],
+    url: [host: System.fetch_env!("HOST_URL"), port: 443, scheme: "https"],
     secret_key_base: System.fetch_env!("SECRET_KEY_BASE")
 
   config :concierge_site, ConciergeSite.Guardian,
