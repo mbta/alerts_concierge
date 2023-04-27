@@ -53,7 +53,7 @@ defmodule ConciergeSite.AccountController do
       {:ok, updated_user} ->
         Mailchimp.update_member(updated_user)
 
-        if user.phone_number == nil and updated_user.phone_number != nil do
+        if user.communication_mode != "sms" and updated_user.communication_mode == "sms" do
           ConfirmationMessage.send_sms_confirmation(
             updated_user.phone_number,
             params["sms_toggle"]
