@@ -7,6 +7,7 @@ defmodule ConciergeSite.AuthController do
   alias AlertProcessor.Model.User
   alias AlertProcessor.Repo
   alias ConciergeSite.SessionHelper
+  alias Ueberauth.Auth.Credentials
   alias Plug.Conn
 
   plug(Ueberauth)
@@ -28,11 +29,12 @@ defmodule ConciergeSite.AuthController do
         %{
           assigns: %{
             ueberauth_auth: %{
-              credentials: %{
-                other: %{
-                  user_info: %{"mbta_uuid" => id, "email" => email} = user_info
-                }
-              }
+              credentials:
+                %{
+                  other: %{
+                    user_info: %{"mbta_uuid" => id, "email" => email} = user_info
+                  }
+                } = credentials
             }
           }
         } = conn,
@@ -43,10 +45,12 @@ defmodule ConciergeSite.AuthController do
       |> Map.get("phone")
       |> PhoneNumber.strip_us_country_code()
 
+    role = user_role(credentials)
+
     user =
       id
-      |> get_or_create_user(email, phone_number)
-      |> use_email_and_phone_from_token(email, phone_number)
+      |> get_or_create_user(email, phone_number, role)
+      |> use_props_from_token(email, phone_number, role)
 
     SessionHelper.sign_in(conn, user)
   end
@@ -69,15 +73,15 @@ defmodule ConciergeSite.AuthController do
     SessionHelper.sign_out(conn)
   end
 
-  @spec get_or_create_user(User.id(), String.t(), String.t() | nil) :: User.t()
-  defp get_or_create_user(id, email, phone_number) do
+  @spec get_or_create_user(User.id(), String.t(), String.t() | nil, String.t()) :: User.t()
+  defp get_or_create_user(id, email, phone_number, role) do
     case User.get(id) do
       nil ->
         Repo.insert!(%User{
           id: id,
           email: email,
           phone_number: phone_number,
-          role: "user",
+          role: role,
           encrypted_password: ""
         })
 
@@ -91,12 +95,44 @@ defmodule ConciergeSite.AuthController do
   # Display the email and phone number we received in the token rather than the values from the database.
   # In cases where the user just changed one of these fields in Keycloak, we might not have had time to update
   # the database yet, so the values in the token are more authoritative.
-  @spec use_email_and_phone_from_token(User.t(), String.t(), String.t() | nil) :: User.t()
-  defp use_email_and_phone_from_token(user, email, phone_number) do
+  @spec use_props_from_token(User.t(), String.t(), String.t() | nil, String.t()) :: User.t()
+  defp use_props_from_token(user, email, phone_number, role) do
     %User{
       user
       | email: email,
-        phone_number: phone_number
+        phone_number: phone_number,
+        role: role
     }
+  end
+
+  @spec user_role(Credentials.t()) :: String.t()
+  defp user_role(%Credentials{
+         token: token,
+         other: %{
+           provider: provider
+         }
+       }) do
+    token_verify_fn =
+      Application.get_env(:concierge_site, :token_verify_fn, &OpenIDConnect.verify/2)
+
+    provider
+    |> token_verify_fn.(token)
+    |> parse_role()
+  end
+
+  # Parse the user's role from the access token provided by Keycloak
+  @spec parse_role({:ok, map()} | {:error, :verify, any()}) :: String.t()
+  defp parse_role({:ok, %{"resource_access" => %{"t-alerts" => %{"roles" => roles}}}}),
+    do: highest_role(roles)
+
+  defp parse_role(_), do: "user"
+
+  @spec highest_role([String.t()]) :: String.t()
+  defp highest_role(roles) when is_list(roles) do
+    if Enum.member?(roles, "admin") do
+      "admin"
+    else
+      "user"
+    end
   end
 end
