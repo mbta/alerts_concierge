@@ -62,7 +62,6 @@ defmodule ConciergeSite.Mixfile do
       {:tzdata, "~> 1.1.0"},
       {:phoenix_live_reload, "~> 1.0", only: :dev},
       {:bcrypt_elixir, "~> 3.0", only: :test},
-      {:wallaby, "~> 0.29.0", only: :test},
       {:diskusage_logger, "~> 0.2.0", only: :prod},
       {:ehmon, github: "mbta/ehmon", only: :prod},
       {:mjml, "~> 1.3.2"},
