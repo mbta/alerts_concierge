@@ -29,6 +29,10 @@ defmodule ConciergeSite.Web.AuthControllerTest do
     setup do
       reassign_env(:concierge_site, ConciergeSite.Endpoint, authentication_source: "keycloak")
 
+      reassign_env(:concierge_site, :token_verify_fn, fn _, _ ->
+        {:ok, %{"resource_access" => %{"t-alerts" => %{"roles" => ["admin", "user"]}}}}
+      end)
+
       rider =
         Repo.insert!(%User{
           email: "rider@example.com",
@@ -67,6 +71,7 @@ defmodule ConciergeSite.Web.AuthControllerTest do
          %{conn: conn, rider: %User{id: id}} do
       new_email = "newemail@example.com"
       new_phone_number = "+15559876543"
+      new_role = "admin"
 
       # Uses the new phone number but strips the US country code to match our foramtting convention
       expected_phone_number = "5559876543"
@@ -76,8 +81,12 @@ defmodule ConciergeSite.Web.AuthControllerTest do
         |> assign(:ueberauth_auth, auth_for(id, new_email, new_phone_number))
         |> get("/auth/keycloak/callback")
 
-      assert %User{id: ^id, email: ^new_email, phone_number: ^expected_phone_number} =
-               Guardian.Plug.current_resource(conn)
+      assert %User{
+               id: ^id,
+               email: ^new_email,
+               phone_number: ^expected_phone_number,
+               role: ^new_role
+             } = Guardian.Plug.current_resource(conn)
     end
 
     test "creates user record if it doesn't already exist", %{conn: conn} do
