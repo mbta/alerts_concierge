@@ -15,5 +15,3 @@ config :exvcr,
   vcr_cassette_library_dir: "test/fixture/vcr_cassettes",
   custom_cassette_library_dir: "test/fixture/custom_cassettes",
   filter_request_headers: ["x-api-key"]
-
-config :wallaby, driver: Wallaby.Chrome, otp_app: :alert_processor
