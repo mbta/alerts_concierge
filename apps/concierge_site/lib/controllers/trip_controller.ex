@@ -8,7 +8,7 @@ defmodule ConciergeSite.TripController do
   alias AlertProcessor.Model.{Trip, Subscription, User}
   alias AlertProcessor.ServiceInfoCache
   alias ConciergeSite.ParamParsers.{ParamTime, TripParams}
-  alias ConciergeSite.Schedule
+  alias ConciergeSite.{Schedule, TripView}
   alias Ecto.Multi
 
   plug(:scrub_params, "trip" when action in [:create, :leg])
@@ -312,7 +312,7 @@ defmodule ConciergeSite.TripController do
          true <- user.id == trip.user_id,
          {:ok, %Trip{}} <- Trip.delete(trip) do
       conn
-      |> put_flash(:info, "Subscription deleted.")
+      |> put_flash(:info, TripView.subscription_deleted_message())
       |> redirect(to: trip_path(conn, :index))
     else
       _ ->
