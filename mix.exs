@@ -33,7 +33,7 @@ defmodule AlertsConcierge.Mixfile do
   defp deps do
     [
       {:credo, "~> 1.6.0", only: [:dev, :test]},
-      {:dialyxir, "~> 1.1.0", only: [:dev, :test]},
+      {:dialyxir, "~> 1.3.0", only: [:dev, :test]},
       {:lcov_ex, "~> 0.2", only: [:dev, :test]},
       {:sobelow, "~> 0.11.0", only: [:dev, :test]}
     ]
