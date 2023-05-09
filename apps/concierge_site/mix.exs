@@ -65,7 +65,7 @@ defmodule ConciergeSite.Mixfile do
       {:wallaby, "~> 0.29.0", only: :test},
       {:diskusage_logger, "~> 0.2.0", only: :prod},
       {:ehmon, github: "mbta/ehmon", only: :prod},
-      {:mjml, "~> 1.3.2"}
+      {:mjml, "~> 1.5.0"}
     ]
   end
 
