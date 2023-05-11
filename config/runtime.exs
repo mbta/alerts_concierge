@@ -6,6 +6,11 @@ config :alert_processor, AlertProcessor.Repo,
 config :concierge_site, ConciergeSite.Endpoint,
   authentication_source: System.get_env("AUTHENTICATION_SOURCE", "local")
 
+config :concierge_site,
+  keyclooak_base_uri: System.get_env("KEYCLOAK_BASE_URI"),
+  keyclooak_client_id: System.get_env("KEYCLOAK_CLIENT_ID"),
+  keyclooak_redirect_uri: System.get_env("KEYCLOAK_REDIRECT_URI")
+
 config :ueberauth, Ueberauth.Strategy.OIDC,
   keycloak: [
     fetch_userinfo: true,
