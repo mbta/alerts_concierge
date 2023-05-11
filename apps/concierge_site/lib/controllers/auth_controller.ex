@@ -77,6 +77,7 @@ defmodule ConciergeSite.AuthController do
   defp get_or_create_user(id, email, phone_number, role) do
     case User.get(id) do
       nil ->
+        # The user just created their account in Keycloak so we need to add them to our database
         Repo.insert!(%User{
           id: id,
           email: email,
