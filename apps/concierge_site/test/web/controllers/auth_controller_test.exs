@@ -63,7 +63,7 @@ defmodule ConciergeSite.Web.AuthControllerTest do
       assert redirected_to(conn) == "/account/options"
     end
 
-    test "uses the email and phone number from the token in place of the database values as they might be more current if the user just updated their details in Keycloak",
+    test "uses the email, phone number, and role from the token in place of the database values as they might be more current if the user just updated their details in Keycloak",
          %{conn: conn, rider: %User{id: id}} do
       new_email = "newemail@example.com"
       new_phone_number = "+15559876543"
@@ -83,6 +83,31 @@ defmodule ConciergeSite.Web.AuthControllerTest do
                phone_number: ^expected_phone_number,
                role: ^new_role
              } = Guardian.Plug.current_resource(conn)
+    end
+
+    test "doesn't allow admin access if the token says they are now just a user",
+         %{conn: conn} do
+      was_an_admin =
+        Repo.insert!(%User{
+          email: "was_an_admin@example.com",
+          role: "admin",
+          encrypted_password: ""
+        })
+
+      reassign_env(:concierge_site, :token_verify_fn, fn _, _ ->
+        {:ok, %{"resource_access" => %{"t-alerts" => %{"roles" => ["user"]}}}}
+      end)
+
+      conn =
+        conn
+        |> assign(
+          :ueberauth_auth,
+          auth_for(was_an_admin.id, was_an_admin.email, was_an_admin.phone_number)
+        )
+        |> get("/auth/keycloak/callback")
+
+      assert user = Guardian.Plug.current_resource(conn)
+      refute User.admin?(user)
     end
 
     test "creates user record if it doesn't already exist", %{conn: conn} do
