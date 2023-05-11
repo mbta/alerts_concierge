@@ -16,10 +16,12 @@ defmodule ConciergeSite.AuthController do
   def register(conn, _params) do
     base_uri = System.get_env("KEYCLOAK_BASE_URI")
     client_id = System.get_env("KEYCLOAK_CLIENT_ID")
-    redirect_uri = "KEYCLOAK_REDIRECT_URI" |> System.get_env() |> URI.encode()
+    redirect_uri = System.get_env("KEYCLOAK_REDIRECT_URI")
 
     registration_uri =
-      "#{base_uri}/auth/realms/MBTA/protocol/openid-connect/registrations?client_id=#{client_id}&response_type=code&scope=openid&redirect_uri=#{redirect_uri}"
+      URI.encode(
+        "#{base_uri}/auth/realms/MBTA/protocol/openid-connect/registrations?client_id=#{client_id}&response_type=code&scope=openid&redirect_uri=#{redirect_uri}"
+      )
 
     redirect(conn, external: registration_uri)
   end

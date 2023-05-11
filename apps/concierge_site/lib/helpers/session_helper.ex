@@ -23,7 +23,9 @@ defmodule ConciergeSite.SessionHelper do
       if keycloak_auth?() do
         [
           external:
-            "#{System.get_env("KEYCLOAK_LOGOUT_URI")}?redirect_uri=#{page_url(conn, :landing)}"
+            URI.encode(
+              "#{System.get_env("KEYCLOAK_LOGOUT_URI")}?redirect_uri=#{page_url(conn, :landing)}"
+            )
         ]
       else
         [to: page_path(conn, :landing)]
