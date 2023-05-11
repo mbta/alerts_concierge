@@ -95,9 +95,12 @@ defmodule ConciergeSite.AuthController do
     end
   end
 
-  # Display the email and phone number we received in the token rather than the values from the database.
-  # In cases where the user just changed one of these fields in Keycloak, we might not have had time to update
-  # the database yet, so the values in the token are more authoritative.
+  # Display the email and phone number we received in the token rather than the
+  # values from the database. We will eventually receive an SQS message from
+  # Keycloak and update these values in our local database (so that we able
+  # able to use them to send notifications), but in cases where the user just
+  # changed one of these fields in Keycloak, we might not have had time receive
+  # that message yet, so the values in the token are more authoritative.
   @spec use_props_from_token(User.t(), String.t(), String.t() | nil, String.t()) :: User.t()
   defp use_props_from_token(user, email, phone_number, role) do
     %User{
