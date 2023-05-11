@@ -14,9 +14,9 @@ defmodule ConciergeSite.AuthController do
 
   @spec register(Conn.t(), map()) :: Conn.t()
   def register(conn, _params) do
-    base_uri = System.get_env("KEYCLOAK_BASE_URI")
-    client_id = System.get_env("KEYCLOAK_CLIENT_ID")
-    redirect_uri = System.get_env("KEYCLOAK_REDIRECT_URI")
+    base_uri = Application.get_env(:concierge_site, :keyclooak_base_uri)
+    client_id = Application.get_env(:concierge_site, :keyclooak_client_id)
+    redirect_uri = Application.get_env(:concierge_site, :keyclooak_redirect_uri)
 
     registration_uri =
       URI.encode(
