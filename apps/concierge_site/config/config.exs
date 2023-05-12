@@ -62,14 +62,6 @@ config :concierge_site, mailchimp_api_key: {:system, "MAILCHIMP_API_KEY", ""}
 config :concierge_site, mailchimp_list_id: {:system, "MAILCHIMP_LIST_ID", "abc123"}
 config :concierge_site, mailchimp_api_client: ConciergeSite.Mailchimp.FakeClient
 
-# Informizely
-config :concierge_site,
-  informizely_site_id: {:system, "INFORMIZELY_SITE_ID", "69f607f3-3826-4aa6-9f86-996a07670833"}
-
-config :concierge_site,
-  informizely_account_deleted_survey_id:
-    {:system, "INFORMIZELY_ACCOUNT_DELETED_SURVEY_ID", "rhluhvlu"}
-
 # Import environment specific config. This must remain at the bottom
 # of this file so it overrides the configuration defined above.
 import_config "#{config_env()}.exs"

@@ -13,4 +13,12 @@ if config_env() == :prod do
 
   config :concierge_site, ConciergeSite.ViewHelpers,
     google_tag_manager_id: System.fetch_env!("GOOGLE_TAG_MANAGER_ID")
+
+  # Informizely
+  config :concierge_site,
+    informizely_site_id: System.fetch_env!("INFORMIZELY_SITE_ID")
+
+  config :concierge_site,
+    informizely_account_deleted_survey_id:
+      System.fetch_env!("INFORMIZELY_ACCOUNT_DELETED_SURVEY_ID")
 end
