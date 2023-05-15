@@ -71,7 +71,7 @@
     (function (d) {
       var scriptElement = d.createElement("script");
       scriptElement.type = "text/javascript"; scriptElement.async = true;
-      scriptElement.src = "https://insitez.blob.core.windows.net/site/69f607f3-3826-4aa6-9f86-996a07670833.js";
+      scriptElement.src = "https://insitez.blob.core.windows.net/site/<%= informizely_site_id() %>.js";
       var node = d.getElementById("_informizely_script_tag");
       node.parentNode.insertBefore(scriptElement, node);
     })(document);

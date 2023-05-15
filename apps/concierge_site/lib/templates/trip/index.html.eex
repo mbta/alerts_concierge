@@ -16,6 +16,11 @@
       <%= link(to: trip_path(@conn, :new), class: "btn btn-primary btn-block trip__card--btn") do %>
         <span>Create another subscription <i aria-hidden="true" class="fa fa-plus-circle"></i></span>
       <% end %>
+
+
+      <%= if show_deleted_last_trip_survey?(@conn, @trips) do %>
+        <%= informizely_account_deleted_survey() %>
+      <% end %>
     </div>
   </div>
 </div>

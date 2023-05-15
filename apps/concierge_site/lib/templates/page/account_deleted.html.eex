@@ -2,4 +2,6 @@
 
 <p class="my-4">No further notifications will be sent, and you will be unable to login into your account.</p>
 
+<%= informizely_account_deleted_survey() %>
+
 <p class="my-4"><a href="/">Go to T-Alerts <i aria-hidden="true" class="fa fa-arrow-right "></i></a></p>
