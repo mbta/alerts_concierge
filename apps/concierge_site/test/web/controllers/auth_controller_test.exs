@@ -10,9 +10,9 @@ defmodule ConciergeSite.Web.AuthControllerTest do
 
   describe "GET /auth/:provider/register" do
     test "redirects to the OIDC registration page", %{conn: conn} do
-      reassign_env(:concierge_site, :keyclooak_base_uri, "TEST-BASE-URI")
-      reassign_env(:concierge_site, :keyclooak_client_id, "t-alerts")
-      reassign_env(:concierge_site, :keyclooak_redirect_uri, "TEST-REDIRECT-URI")
+      reassign_env(:concierge_site, :keycloak_base_uri, "TEST-BASE-URI")
+      reassign_env(:concierge_site, :keycloak_client_id, "t-alerts")
+      reassign_env(:concierge_site, :keycloak_redirect_uri, "TEST-REDIRECT-URI")
 
       conn = get(conn, "/auth/keycloak/register")
 
