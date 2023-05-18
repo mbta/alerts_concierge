@@ -134,7 +134,11 @@ defmodule AlertProcessor.Model.User do
         %{"communication_mode" => "sms", "email" => _email} = params
       ) do
     struct
-    |> changeset(params, [:phone_number, :email])
+    |> changeset(params, [:email])
+    # Validate phone number as required separately for the custom error message.
+    |> validate_required([:phone_number],
+      message: "Please click the link above to add your phone number to your account."
+    )
     |> update_change(:phone_number, &clean_phone_number/1)
     |> validate_phone_number()
     |> validate_accept_tnc(params)
@@ -148,7 +152,11 @@ defmodule AlertProcessor.Model.User do
         %{"communication_mode" => "sms"} = params
       ) do
     struct
-    |> changeset(params, [:phone_number])
+    |> changeset(params)
+    # Validate phone number as required separately for the custom error message.
+    |> validate_required([:phone_number],
+      message: "Please click the link above to add your phone number to your account."
+    )
     |> update_change(:phone_number, &clean_phone_number/1)
     |> validate_phone_number()
     |> validate_accept_tnc(params)

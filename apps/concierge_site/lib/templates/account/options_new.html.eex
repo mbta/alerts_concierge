@@ -32,12 +32,13 @@
 
         <div class="form-group my-3 <%= if communication_mode != "sms", do: "d-none", else: "" %>" data-phone="input">
           <%= if keycloak_auth?() do %>
-            <%= if phone_number(@current_user) do %>
+            <%= if phone_number?(@current_user) do %>
               <%= label form, :phone_number, "My phone number is:", class: "form__label d-block" %>
               <div><%= @current_user |> phone_number() |> format_phone_number() %></div>
             <% else %>
-              <p>Please enter your number in order to recieve text messages.</p>
+              <p class="font-weight-bold">Please enter your number in order to recieve text messages.</p>
               <div><%= link to: update_profile_url(@conn) do %>Add phone number<% end %></div>
+              <%= error_tag form, :phone_number %>
             <% end %>
           <% else %>
             <%= label form, :phone_number, "What’s your mobile phone number?", class: "form__label d-block" %>
