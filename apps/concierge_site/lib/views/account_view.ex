@@ -10,6 +10,11 @@ defmodule ConciergeSite.AccountView do
   defdelegate email(user), to: User
   defdelegate phone_number(user), to: User
 
+  def phone_number?(user) do
+    phone_number = User.phone_number(user)
+    is_binary(phone_number) and phone_number != ""
+  end
+
   def fetch_field!(changeset, field) do
     {_, value} = Changeset.fetch_field(changeset, field)
     value
