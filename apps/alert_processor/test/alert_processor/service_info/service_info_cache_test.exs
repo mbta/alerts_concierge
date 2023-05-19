@@ -67,14 +67,14 @@ defmodule AlertProcessor.ServiceInfoCacheTest do
                long_name: "Red Line",
                route_type: 1,
                direction_names: ["South", "North"],
-               stop_list: [{"Ashmont", "place-asmnl", _, _} | _]
+               stop_list: [{"Braintree", "place-brntn", _, _} | _]
              },
              %Route{
                route_id: "Red",
                long_name: "Red Line",
                route_type: 1,
                direction_names: ["South", "North"],
-               stop_list: [{"Braintree", "place-brntn", _, _} | _]
+               stop_list: [{"Ashmont", "place-asmnl", _, _} | _]
              }
            ] = Enum.sort_by(route_info, & &1.route_id)
   end
@@ -266,7 +266,7 @@ defmodule AlertProcessor.ServiceInfoCacheTest do
     assert {:ok, "Alewife"} == ServiceInfoCache.get_headsign(pid, "place-asmnl", "place-davis", 1)
     assert {:ok, "Alewife"} == ServiceInfoCache.get_headsign(pid, "place-brntn", "place-davis", 1)
 
-    assert {:ok, "Ashmont or Braintree"} ==
+    assert {:ok, "Braintree or Ashmont"} ==
              ServiceInfoCache.get_headsign(pid, "place-davis", "place-pktrm", 0)
 
     assert {:ok, "Alewife"} == ServiceInfoCache.get_headsign(pid, "place-pktrm", "place-davis", 1)
