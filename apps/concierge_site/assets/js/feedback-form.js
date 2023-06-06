@@ -43,7 +43,7 @@ const handlefeedbackFormSubmit = feedbackFormEl => e => {
         );
         alertEl.innerHTML = `<p>Thanks for your feedback!</p>
           <p> If you're interested in continuing to share your experiences you can sign up at
-            <a href="http://mbta.com/ridertechfeedback"> mbta.com/ridertechfeedback</a> to be contacted in the future.
+            <a href="http://mbta.com/ridertechfeedback">mbta.com/ridertechfeedback</a> to be contacted in the future.
           After a feedback session, we can compensate you with a CharlieCard for your time.
         </p>`
         feedbackFormEl.reset();
