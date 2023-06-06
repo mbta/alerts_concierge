@@ -183,6 +183,14 @@ defmodule AlertProcessor.Model.Query do
         LEFT JOIN users_before_end ON users_before_end.period_end = periods.end
         ORDER BY periods.end DESC
         """
+      },
+      %__MODULE__{
+        label: "Grouped Time Windows",
+        query: """
+        SELECT s.start_time, s.end_time, s.type, count(distinct s.id)
+        FROM subscriptions s
+        GROUP BY s.type, s.start_time, s.end_time;
+        """
       }
     ]
     |> Enum.map(&%{&1 | id: &1.label |> String.downcase() |> String.replace(" ", "_")})
