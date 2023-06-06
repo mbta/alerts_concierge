@@ -1,3 +1,9 @@
 <h1 class="heading__title">Alert feedback form</h1>
 
-<div class="alert alert-success" tabindex="0">Thanks for your feedback!</div>
+<div class="alert alert-success" tabindex="0">
+    <p>Thanks for your feedback!</p>
+    <p>If you're interested in continuing to share your experiences you can sign up at
+     <a href="http://mbta.com/ridertechfeedback">mbta.com/ridertechfeedback</a> to be contacted in the future.
+      After a feedback session, we can compensate you with a CharlieCard for your time.
+    </p>
+</div>
