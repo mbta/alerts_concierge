@@ -12,18 +12,8 @@ defmodule ConciergeSite.AuthController do
 
   plug(Ueberauth)
 
-  @spec register(Conn.t(), map()) :: Conn.t()
   def register(conn, _params) do
-    base_uri = Application.get_env(:concierge_site, :keycloak_base_uri)
-    client_id = Application.get_env(:concierge_site, :keycloak_client_id)
-    redirect_uri = Application.get_env(:concierge_site, :keycloak_redirect_uri)
-
-    registration_uri =
-      URI.encode(
-        "#{base_uri}/auth/realms/MBTA/protocol/openid-connect/registrations?client_id=#{client_id}&response_type=code&scope=openid&redirect_uri=#{redirect_uri}"
-      )
-
-    redirect(conn, external: registration_uri)
+    redirect(conn, to: "/auth/keycloak?" <> URI.encode_query(%{uri: registration_uri()}))
   end
 
   @spec callback(Conn.t(), any) :: Conn.t()
@@ -140,5 +130,28 @@ defmodule ConciergeSite.AuthController do
     else
       "user"
     end
+  end
+
+  @spec registration_uri :: String.t()
+  defp registration_uri do
+    base_uri = Application.get_env(:concierge_site, :keycloak_base_uri)
+    client_id = Application.get_env(:concierge_site, :keycloak_client_id)
+
+    params = %{
+      client_id: client_id,
+      response_type: "code",
+      scope: "openid"
+    }
+
+    build_uri("#{base_uri}/auth/realms/MBTA/protocol/openid-connect/registrations", params)
+  end
+
+  @spec build_uri(String.t(), map()) :: String.t()
+  defp build_uri(uri, params) do
+    query = URI.encode_query(params)
+
+    uri
+    |> URI.merge("?#{query}")
+    |> URI.to_string()
   end
 end

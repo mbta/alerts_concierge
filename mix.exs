@@ -37,7 +37,9 @@ defmodule AlertsConcierge.Mixfile do
       {:lcov_ex, "~> 0.2", only: [:dev, :test]},
       {:sobelow, "~> 0.11.0", only: [:dev, :test]},
       {:ueberauth, "~> 0.10.3"},
-      {:ueberauth_oidc, "~> 0.1.5"}
+      # Using a branch temporarily for custom URI support until it gets accepted and released properly --MSS 2023-06-13
+      {:ueberauth_oidc, github: "arkadyan/ueberauth_oidc", branch: "custom-uri"},
+      {:openid_connect, "~> 0.2.2"}
     ]
   end
 
