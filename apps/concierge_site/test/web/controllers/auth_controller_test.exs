@@ -9,15 +9,14 @@ defmodule ConciergeSite.Web.AuthControllerTest do
   alias Ueberauth.Auth.{Credentials, Info}
 
   describe "GET /auth/:provider/register" do
-    test "redirects to the OIDC registration page", %{conn: conn} do
-      reassign_env(:concierge_site, :keycloak_base_uri, "TEST-BASE-URI")
+    test "redirects to the Ueberauth request action with a custom URI", %{conn: conn} do
+      reassign_env(:concierge_site, :keycloak_base_uri, "https://example.com/TEST-BASE-URI")
       reassign_env(:concierge_site, :keycloak_client_id, "t-alerts")
       reassign_env(:concierge_site, :keycloak_redirect_uri, "TEST-REDIRECT-URI")
 
       conn = get(conn, "/auth/keycloak/register")
 
-      assert redirected_to(conn) =~
-               ~r/.+\/auth\/realms\/MBTA\/protocol\/openid-connect\/registrations\?client_id=t-alerts&response_type=code&scope=openid&redirect_uri=.+/
+      assert redirected_to(conn) =~ "/auth/keycloak?uri="
     end
   end
 
