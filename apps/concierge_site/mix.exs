@@ -66,8 +66,7 @@ defmodule ConciergeSite.Mixfile do
       {:ehmon, github: "mbta/ehmon", only: :prod},
       {:mjml, "~> 1.3.2"},
       {:ueberauth, "~> 0.10.3"},
-      # Using a branch temporarily for custom URI support until https://github.com/DefactoSoftware/ueberauth_oidc/pull/26 gets accepted and released --MSS 2023-06-13
-      {:ueberauth_oidc, github: "arkadyan/ueberauth_oidc", branch: "custom-uri"},
+      {:ueberauth_oidc, "~> 0.1.7"},
       {:openid_connect, "~> 0.2.2"}
     ]
   end
