@@ -21,7 +21,7 @@ defmodule AlertProcessor.UserUpdateWorker do
           required(:user_id) => String.t(),
           required(:updates) => %{
             optional(:email) => String.t(),
-            optional(:phone) => String.t()
+            optional(:phone_number) => String.t()
           }
         }
 
@@ -148,7 +148,7 @@ defmodule AlertProcessor.UserUpdateWorker do
       user_id: user_id,
       updates: %{
         email: Map.get(updates, "email"),
-        phone: updates |> Map.get("phone") |> PhoneNumber.strip_us_country_code()
+        phone_number: updates |> Map.get("phone_number") |> PhoneNumber.strip_us_country_code()
       }
     }
   end
@@ -168,7 +168,7 @@ defmodule AlertProcessor.UserUpdateWorker do
           Map.filter(
             %{
               "email" => Map.get(updates, :email),
-              "phone_number" => Map.get(updates, :phone)
+              "phone_number" => Map.get(updates, :phone_number)
             },
             fn {_key, val} -> !is_nil(val) end
           )

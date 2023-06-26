@@ -34,7 +34,7 @@ defmodule ConciergeSite.AuthController do
       ) do
     phone_number =
       user_info
-      |> Map.get("phone")
+      |> Map.get("phone_number")
       |> PhoneNumber.strip_us_country_code()
 
     role = user_role(credentials)
