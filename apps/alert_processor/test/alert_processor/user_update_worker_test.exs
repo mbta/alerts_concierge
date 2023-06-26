@@ -34,7 +34,10 @@ defmodule AlertProcessor.UserUpdateWorkerTest do
       reassign_env(:alert_processor, :delete_message_fn, fn _, _ -> %{} end)
 
       reassign_env(:alert_processor, :request_fn, fn _, _ ->
-        message_body = %{"mbtaUuid" => user.id, "updates" => %{"phone" => "+1#{new_phone}"}}
+        message_body = %{
+          "mbtaUuid" => user.id,
+          "updates" => %{"phone_number" => "+1#{new_phone}"}
+        }
 
         {:ok,
          %{
@@ -67,7 +70,7 @@ defmodule AlertProcessor.UserUpdateWorkerTest do
       reassign_env(:alert_processor, :request_fn, fn _, _ ->
         message_body = %{
           "mbtaUuid" => user.id,
-          "updates" => %{"email" => new_email, "phone" => "+1#{new_phone}"}
+          "updates" => %{"email" => new_email, "phone_number" => "+1#{new_phone}"}
         }
 
         {:ok,
@@ -125,7 +128,11 @@ defmodule AlertProcessor.UserUpdateWorkerTest do
 
       reassign_env(:alert_processor, :request_fn, fn _, _ ->
         missing_user_id = UUID.generate()
-        message_body = %{"mbtaUuid" => missing_user_id, "updates" => %{"phone" => "+15555555555"}}
+
+        message_body = %{
+          "mbtaUuid" => missing_user_id,
+          "updates" => %{"phone_number" => "+15555555555"}
+        }
 
         {:ok,
          %{
