@@ -36,7 +36,7 @@ defmodule Ueberauth.Strategy.FakeKeycloak do
           "given_name" => "Fake",
           "mbta_uuid" => "acad6280-8cb9-4e00-999c-c6d141adf0a6",
           "name" => "Fake Name",
-          "phone" => "+15555555555",
+          "phone_number" => "+15555555555",
           "preferred_username" => "fake@example.com",
           "sub" => "7eaf0809-88da-4895-97e0-c83444ab310f"
         }

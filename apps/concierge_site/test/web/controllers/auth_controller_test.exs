@@ -159,7 +159,7 @@ defmodule ConciergeSite.Web.AuthControllerTest do
             "given_name" => "John",
             "mbta_uuid" => id,
             "name" => "John Rider",
-            "phone" => phone_number,
+            "phone_number" => phone_number,
             "preferred_username" => email
           }
         }
