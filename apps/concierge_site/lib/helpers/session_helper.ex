@@ -21,7 +21,7 @@ defmodule ConciergeSite.SessionHelper do
   def sign_out(conn) do
     redirect_to =
       if keycloak_auth?() do
-        token = conn.assigns.ueberauth_auth.extra.raw_info.tokens["id_token"]
+        token = conn.private.ueberauth_oidc_user_info
 
         [
           external:

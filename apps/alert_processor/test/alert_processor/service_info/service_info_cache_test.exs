@@ -223,7 +223,7 @@ defmodule AlertProcessor.ServiceInfoCacheTest do
                short_name: ""
              },
              %AlertProcessor.Model.Route{
-               direction_destinations: ["Lewis Mall Wharf", "Long Wharf"],
+               direction_destinations: ["Lewis Wharf", "Long Wharf"],
                direction_names: ["Outbound", "Inbound"],
                headsigns: nil,
                long_name: "East Boston Ferry",
@@ -232,22 +232,8 @@ defmodule AlertProcessor.ServiceInfoCacheTest do
                route_type: 4,
                short_name: "",
                stop_list: [
-                 {"Lewis Mall Wharf", "Boat-Lewis", {42.365867, -71.041958}, 1},
+                 {"Lewis Wharf", "Boat-Lewis", {42.365867, -71.041958}, 1},
                  {"Long Wharf (North)", "Boat-Long", {42.360795, -71.049976}, 1}
-               ]
-             },
-             %AlertProcessor.Model.Route{
-               direction_names: ["Outbound", "Inbound"],
-               direction_destinations: ["Blossom Street Pier", "Long Wharf"],
-               headsigns: nil,
-               long_name: "Lynn Ferry",
-               order: 3,
-               route_id: "Boat-Lynn",
-               route_type: 4,
-               short_name: "",
-               stop_list: [
-                 {"Blossom Street Pier", "Boat-Blossom", {42.45481, -70.94802}, 1},
-                 {"Long Wharf (South) - Gate 4", "Boat-Long-South-4", {42.359897, -71.04859}, 1}
                ]
              }
            ] = route_info
