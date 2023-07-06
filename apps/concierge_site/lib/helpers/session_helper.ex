@@ -21,10 +21,12 @@ defmodule ConciergeSite.SessionHelper do
   def sign_out(conn) do
     redirect_to =
       if keycloak_auth?() do
+        token = conn.assigns.ueberauth_auth.extra.raw_info.tokens["id_token"]
+
         [
           external:
             URI.encode(
-              "#{System.get_env("KEYCLOAK_LOGOUT_URI")}?redirect_uri=#{page_url(conn, :landing)}"
+              "#{System.get_env("KEYCLOAK_LOGOUT_URI")}?post_logout_redirect_uri=#{page_url(conn, :landing)}?id_token_hint=#{token}"
             )
         ]
       else

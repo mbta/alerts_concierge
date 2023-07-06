@@ -36,7 +36,7 @@ defmodule AlertsConcierge.Mixfile do
       {:dialyxir, "~> 1.1.0", only: [:dev, :test]},
       {:lcov_ex, "~> 0.2", only: [:dev, :test]},
       {:sobelow, "~> 0.11.0", only: [:dev, :test]},
-      {:ueberauth, "~> 0.10.3"},
+      {:ueberauth, "~> 0.10.5"},
       {:ueberauth_oidc, "~> 0.1.7"},
       {:openid_connect, "~> 0.2.2"}
     ]

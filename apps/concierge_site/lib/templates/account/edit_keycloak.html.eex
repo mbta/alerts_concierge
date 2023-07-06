@@ -75,7 +75,7 @@
           <h2 style="font-size: 1.25rem;">Your MBTA Account</h2>
           <ul>
             <li class="mb-2">
-              <a href="https://login-sandbox.mbtace.com/auth/realms/MBTA/protocol/openid-connect/auth?client_id=t-alerts&amp;kc_action=MBTA_UPDATE_PROFILE&amp;response_type=code&amp;redirect_uri=https://alerts-concierge-dev.mbtace.com/account/edit">
+              <a href="#{System.get_env(~s[KEYCLOAK_BASE_URI])}/auth/realms/MBTA/protocol/openid-connect/auth?client_id=t-alerts&amp;kc_action=MBTA_UPDATE_PROFILE&amp;response_type=code&amp;redirect_uri=#{page_url(@conn, :landing)}/account/edit">
                 Update your email address
               </a>
               <span>
