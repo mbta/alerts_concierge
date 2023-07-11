@@ -48,7 +48,7 @@ defmodule ConciergeSite.Mixfile do
       {:hammer, "~> 6.0"},
       {:httpoison, "~> 1.8.0"},
       {:logster, "~> 1.0.2"},
-      {:phoenix, "~> 1.6.0"},
+      {:phoenix, "~> 1.7.7"},
       {:phoenix_ecto, "~> 4.0"},
       {:phoenix_html, "~> 3.0"},
       {:phoenix_live_view, "~> 0.17.0"},
