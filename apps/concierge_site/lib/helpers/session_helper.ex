@@ -11,9 +11,9 @@ defmodule ConciergeSite.SessionHelper do
 
   @doc "Signs in a user with Guardian and redirects to the appropriate route."
   @spec sign_in(Conn.t(), User.t()) :: Conn.t()
-  def sign_in(conn, user) do
+  def sign_in(conn, user, claims \\ %{}) do
     conn
-    |> ConciergeSite.Guardian.Plug.sign_in(user)
+    |> ConciergeSite.Guardian.Plug.sign_in(user, claims)
     |> redirect(to: sign_in_redirect_path(user))
   end
 
@@ -21,10 +21,12 @@ defmodule ConciergeSite.SessionHelper do
   def sign_out(conn) do
     redirect_to =
       if keycloak_auth?() do
+        id_token = conn |> Guardian.Plug.current_claims() |> Map.get("id_token")
+
         [
           external:
             URI.encode(
-              "#{System.get_env("KEYCLOAK_LOGOUT_URI")}?redirect_uri=#{page_url(conn, :landing)}"
+              "#{System.get_env("KEYCLOAK_LOGOUT_URI")}?post_logout_redirect_uri=#{page_url(conn, :landing)}&id_token_hint=#{id_token}"
             )
         ]
       else

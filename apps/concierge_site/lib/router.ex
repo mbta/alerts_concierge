@@ -64,13 +64,15 @@ defmodule ConciergeSite.Router do
     post("/api/feedback", FeedbackController, :new)
     get("/digest/feedback", DigestFeedbackController, :feedback)
     post("/api/digest/feedback", DigestFeedbackController, :new)
-    resources("/login", SessionController, only: [:new, :create, :delete], singleton: true)
+    resources("/login", SessionController, only: [:new, :create], singleton: true)
     resources("/account", AccountController, only: [:new, :create])
     resources("/password_resets", PasswordResetController, only: [:new, :create, :edit, :update])
   end
 
   scope "/", ConciergeSite do
     pipe_through([:redirect_prod_http, :browser, :browser_auth, :layout])
+
+    resources("/login", SessionController, only: [:delete], singleton: true)
 
     get("/account/options", AccountController, :options_new)
     post("/account/options", AccountController, :options_create)

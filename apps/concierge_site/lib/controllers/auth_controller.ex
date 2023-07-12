@@ -26,7 +26,12 @@ defmodule ConciergeSite.AuthController do
                   other: %{
                     user_info: %{"mbta_uuid" => id, "email" => email} = user_info
                   }
-                } = credentials
+                } = credentials,
+              extra: %{
+                raw_info: %{
+                  tokens: %{"id_token" => id_token}
+                }
+              }
             }
           }
         } = conn,
@@ -44,7 +49,7 @@ defmodule ConciergeSite.AuthController do
       |> get_or_create_user(email, phone_number, role)
       |> use_props_from_token(email, phone_number, role)
 
-    SessionHelper.sign_in(conn, user)
+    SessionHelper.sign_in(conn, user, %{id_token: id_token})
   end
 
   def callback(%{assigns: %{ueberauth_failure: failure}} = conn, _params) do

@@ -163,6 +163,11 @@ defmodule ConciergeSite.Web.AuthControllerTest do
             "preferred_username" => email
           }
         }
+      },
+      extra: %{
+        raw_info: %{
+          tokens: %{"id_token" => "FAKE ID TOKEN"}
+        }
       }
     }
   end
