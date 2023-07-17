@@ -234,6 +234,18 @@ defmodule AlertProcessor.Model.Query do
           UNION ALL
           SELECT 'Paused for 12 months or more',plmore.total_paused_accounts FROM paused_for_twelve_months_or_more plmore;
         """
+      },
+      %__MODULE__{
+        label: "Count of Users With Parallel Bus Route Subscriptions",
+        query: """
+        SELECT COUNT(DISTINCT user_id) AS users_with_parallel_subscriptions
+        FROM subscriptions
+        WHERE id IN
+        (SELECT parent_id FROM subscriptions
+        WHERE parent_id IS NOT null
+        AND paused is not true
+        GROUP BY parent_id)
+        """
       }
     ]
     |> Enum.map(&%{&1 | id: &1.label |> String.downcase() |> String.replace(" ", "_")})
