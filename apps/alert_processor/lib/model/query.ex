@@ -236,9 +236,9 @@ defmodule AlertProcessor.Model.Query do
         """
       },
       %__MODULE__{
-        label: "Count of Active Users Having Subscriptions That Are Parents",
+        label: "Count of Users With Parallel Bus Route Subscriptions",
         query: """
-        SELECT COUNT(DISTINCT user_id) AS users_with_parent_subscriptions
+        SELECT COUNT(DISTINCT user_id) AS users_with_parallel_subscriptions
         FROM subscriptions
         WHERE id IN
         (SELECT parent_id FROM subscriptions
