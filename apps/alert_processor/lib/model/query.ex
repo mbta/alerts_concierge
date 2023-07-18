@@ -248,6 +248,20 @@ defmodule AlertProcessor.Model.Query do
         GROUP BY parent_id)
         AND u.communication_mode != 'none'
         """
+      },
+      %__MODULE__{
+        label: "Count of Active Users By Number of Active Trips",
+        query: """
+        select trip_count, count(user_id) as users
+        from (
+          select t.user_id as user_id, count(distinct t.id) as trip_count
+          from trips t
+          join subscriptions s
+            on s.trip_id = t.id and s.paused = false
+          group by t.user_id
+        ) as user_trip_counts
+        group by trip_count;
+        """
       }
     ]
     |> Enum.map(&%{&1 | id: &1.label |> String.downcase() |> String.replace(" ", "_")})
