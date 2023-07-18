@@ -239,12 +239,14 @@ defmodule AlertProcessor.Model.Query do
         label: "Count of Users With Parallel Bus Route Subscriptions",
         query: """
         SELECT COUNT(DISTINCT user_id) AS users_with_parallel_subscriptions
-        FROM subscriptions
-        WHERE id IN
+        FROM subscriptions s
+        JOIN users u on u.id = s.user_id
+        WHERE s.id IN
         (SELECT parent_id FROM subscriptions
         WHERE parent_id IS NOT null
         AND paused is not true
         GROUP BY parent_id)
+        AND u.communication_mode != 'none'
         """
       }
     ]
