@@ -206,25 +206,39 @@ defmodule AlertProcessor.ServiceInfoCacheTest do
     assert [
              %AlertProcessor.Model.Route{
                direction_names: ["Outbound", "Inbound"],
+               direction_destinations: ["Charlestown", "Long Wharf"],
                headsigns: nil,
                long_name: "Charlestown Ferry",
                order: 0,
                route_id: "Boat-F4",
                route_type: 4,
-               short_name: ""
+               short_name: "",
+               stop_list: [
+                 {"Charlestown Navy Yard", "Boat-Charlestown", {42.372756, -71.052528}, 1},
+                 {"Long Wharf (South)", "Boat-Long-South", {42.359448, -71.050498}, 1}
+               ]
              },
              %AlertProcessor.Model.Route{
                direction_names: ["Outbound", "Inbound"],
+               direction_destinations: ["Hingham or Hull", "Long Wharf or Rowes Wharf"],
                headsigns: nil,
                long_name: "Hingham/Hull Ferry",
                order: 1,
                route_id: "Boat-F1",
                route_type: 4,
-               short_name: ""
+               short_name: "",
+               stop_list: [
+                 {"Hingham", "Boat-Hingham", {42.253956, -70.919844}, 1},
+                 {"Rowes Wharf", "Boat-Rowes", {42.355721, -71.049897}, 1},
+                 {"Georges Island", "Boat-George", {42.319742, -70.930427}, 1},
+                 {"Hull", "Boat-Hull", {42.303251, -70.920215}, 1},
+                 {"Logan Airport Ferry Terminal", "Boat-Logan", {42.359789, -71.02734}, 1},
+                 {"Long Wharf (North)", "Boat-Long", {42.360795, -71.049976}, 1}
+               ]
              },
              %AlertProcessor.Model.Route{
-               direction_destinations: ["Lewis Mall Wharf", "Long Wharf"],
                direction_names: ["Outbound", "Inbound"],
+               direction_destinations: ["Lewis Mall Wharf", "Long Wharf"],
                headsigns: nil,
                long_name: "East Boston Ferry",
                order: 2,
@@ -263,7 +277,7 @@ defmodule AlertProcessor.ServiceInfoCacheTest do
                  {"Winthrop Landing", "Boat-Winthrop", {42.366711, -70.973302}, 1},
                  {"Quincy", "Boat-Quincy", {42.30132, -71.03201}, 1},
                  {"Logan Airport Ferry Terminal", "Boat-Logan", {42.359789, -71.02734}, 1},
-                 {"Fan Pier", "Boat-Fan", {42.353484, -71.04323}, 1},
+                 {"Seaport/Fan Pier", "Boat-Fan", {42.353484, -71.04323}, 1},
                  {"Central Wharf (South)", "Boat-Aquarium", {42.358815, -71.048779}, 1}
                ]
              }
