@@ -71,7 +71,7 @@
         </div>
       <% end %>
       <div class="my-5 min-h-[16rem]">
-        <div id="your_account" class="<%= if communication_mode == "sms", do: "d-none" %>">
+        <div id="your_account">
           <h2 style="font-size: 1.25rem;">Your MBTA Account</h2>
           <ul>
             <li class="mb-2">
