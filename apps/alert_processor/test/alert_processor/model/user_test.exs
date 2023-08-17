@@ -4,6 +4,8 @@ defmodule AlertProcessor.Model.UserTest do
   import AlertProcessor.Factory
   alias AlertProcessor.Model.User
 
+  doctest User
+
   @valid_attrs %{email: "email@test.com", role: "user", password: "password1"}
   @valid_account_attrs %{
     "email" => "test@email.com",
@@ -190,13 +192,6 @@ defmodule AlertProcessor.Model.UserTest do
       assert changeset.changes.phone_number == "2342342344"
       assert changeset.valid?
     end
-
-    test "if communication_mode is email, phone_number (if present) will be ignored" do
-      changeset = create_changeset(%{"phone_number" => "2342342344"})
-
-      refute changeset.changes[:phone_number]
-      assert changeset.valid?
-    end
   end
 
   describe "authenticate/1" do
@@ -299,6 +294,18 @@ defmodule AlertProcessor.Model.UserTest do
 
     test "doesn't do anything if no phone numbers are passed" do
       assert {:ok, %{}} = User.set_sms_opted_out([])
+    end
+  end
+
+  describe "get/1" do
+    test "returns a user if present" do
+      user = insert(:user)
+      assert User.get(user.id) == user
+    end
+
+    test "returns nil if no matching user" do
+      bad_id = UUID.uuid4()
+      assert User.get(bad_id) == nil
     end
   end
 

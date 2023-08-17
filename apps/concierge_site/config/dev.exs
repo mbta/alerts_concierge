@@ -8,6 +8,7 @@ import Config
 # with webpack to recompile .js and .css sources.
 config :concierge_site, ConciergeSite.Endpoint,
   http: [port: 4005],
+  url: [host: "alerts.localhost"],
   debug_errors: true,
   code_reloader: true,
   check_origin: false,

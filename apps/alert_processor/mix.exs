@@ -48,6 +48,7 @@ defmodule AlertProcessor.Mixfile do
       {:ecto_sql, "~> 3.0"},
       {:ex_aws, "~> 2.2.0"},
       {:ex_aws_sns, "~> 2.3.1"},
+      {:ex_aws_sqs, "~> 3.4"},
       {:fast_local_datetime, "~> 1.0.0"},
       {:gettext, "~> 0.11"},
       {:httpoison, "~> 1.8.0"},

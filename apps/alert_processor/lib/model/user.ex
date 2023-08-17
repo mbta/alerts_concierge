@@ -121,7 +121,6 @@ defmodule AlertProcessor.Model.User do
     |> update_change(:email, &lowercase_email/1)
     |> validate_email()
     |> validate_password()
-    |> clear_phone_if_mode_is_email(params)
     |> update_change(:phone_number, &clean_phone_number/1)
     |> validate_phone_number()
     |> hash_password()
@@ -135,7 +134,11 @@ defmodule AlertProcessor.Model.User do
         %{"communication_mode" => "sms", "email" => _email} = params
       ) do
     struct
-    |> changeset(params, [:phone_number, :email])
+    |> changeset(params, [:email])
+    # Validate phone number as required separately for the custom error message.
+    |> validate_required([:phone_number],
+      message: "Please click the link above to add your phone number to your account."
+    )
     |> update_change(:phone_number, &clean_phone_number/1)
     |> validate_phone_number()
     |> validate_accept_tnc(params)
@@ -149,7 +152,11 @@ defmodule AlertProcessor.Model.User do
         %{"communication_mode" => "sms"} = params
       ) do
     struct
-    |> changeset(params, [:phone_number])
+    |> changeset(params)
+    # Validate phone number as required separately for the custom error message.
+    |> validate_required([:phone_number],
+      message: "Please click the link above to add your phone number to your account."
+    )
     |> update_change(:phone_number, &clean_phone_number/1)
     |> validate_phone_number()
     |> validate_accept_tnc(params)
@@ -176,12 +183,6 @@ defmodule AlertProcessor.Model.User do
     )
     |> unique_constraint(:email, message: "Sorry, that email has already been taken.")
   end
-
-  defp clear_phone_if_mode_is_email(changeset, %{"communication_mode" => "email"}) do
-    update_change(changeset, :phone_number, &clear_value/1)
-  end
-
-  defp clear_phone_if_mode_is_email(changeset, _), do: changeset
 
   defp clear_value(_), do: nil
 
@@ -331,8 +332,8 @@ defmodule AlertProcessor.Model.User do
     |> Repo.transaction()
   end
 
-  defp normalize_papertrail_result({:ok, %{model: user}}), do: {:ok, user}
-  defp normalize_papertrail_result(result), do: result
+  @spec get(id()) :: t() | nil
+  def get(id), do: Repo.get(__MODULE__, id)
 
   @spec for_email(String.t()) :: t | nil
   def for_email(email) do
@@ -364,4 +365,29 @@ defmodule AlertProcessor.Model.User do
 
   def inside_opt_out_freeze_window?(%__MODULE__{sms_opted_out_at: sms_opted_out_at}),
     do: Date.diff(Date.utc_today(), DateTime.to_date(sms_opted_out_at)) <= 30
+
+  @doc """
+  Returns the email address for the given user.
+
+  ## Examples
+
+      iex> User.email(%User{email: "user@example.com"})
+      "user@example.com"
+  """
+  @spec email(t()) :: String.t()
+  def email(%__MODULE__{email: email}), do: email
+
+  @doc """
+  Returns the phone number for the given user.
+
+  ## Examples
+
+      iex> User.phone_number(%User{phone_number: "5551234567"})
+      "5551234567"
+  """
+  @spec phone_number(t()) :: String.t() | nil
+  def phone_number(%__MODULE__{phone_number: phone_number}), do: phone_number
+
+  defp normalize_papertrail_result({:ok, %{model: user}}), do: {:ok, user}
+  defp normalize_papertrail_result(result), do: result
 end

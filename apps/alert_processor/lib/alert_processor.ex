@@ -21,21 +21,28 @@ defmodule AlertProcessor do
         do: [],
         else: [check_interval: nil]
 
-    children = [
-      AlertProcessor.Repo,
-      {ConCache,
-       [
-         name: AlertProcessor.CachedApiClient.cache_name(),
-         global_ttl: :timer.minutes(60),
-         ttl_check_interval: :timer.seconds(60)
-       ]},
-      AlertProcessor.ServiceInfoCache,
-      AlertProcessor.SendingQueue,
-      AlertProcessor.Reminders,
-      {AlertProcessor.AlertWorker, alert_worker_config},
-      AlertProcessor.SmsOptOutWorker,
-      :poolboy.child_spec(:message_worker, message_worker_config, [])
-    ]
+    user_update_children =
+      if Application.get_env(:alert_processor, :poll_for_user_updates?, true),
+        do: [AlertProcessor.UserUpdateWorker],
+        else: []
+
+    children =
+      [
+        AlertProcessor.Repo,
+        {ConCache,
+         [
+           name: AlertProcessor.CachedApiClient.cache_name(),
+           global_ttl: :timer.minutes(60),
+           ttl_check_interval: :timer.seconds(60)
+         ]},
+        AlertProcessor.ServiceInfoCache,
+        AlertProcessor.SendingQueue,
+        AlertProcessor.Reminders,
+        {AlertProcessor.AlertWorker, alert_worker_config},
+        AlertProcessor.SmsOptOutWorker,
+        :poolboy.child_spec(:message_worker, message_worker_config, [])
+      ] ++
+        user_update_children
 
     Supervisor.start_link(children, strategy: :one_for_one)
   end

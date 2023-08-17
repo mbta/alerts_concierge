@@ -2,13 +2,23 @@ defmodule ConciergeSite.AccountControllerTest do
   @moduledoc false
   use ConciergeSite.ConnCase, async: true
   import AlertProcessor.Factory
+  import Test.Support.Helpers
   alias AlertProcessor.Helpers.ConfigHelper
   alias AlertProcessor.Model.{Notification, Subscription, Trip, User}
   alias AlertProcessor.Repo
 
-  test "new/4", %{conn: conn} do
-    conn = get(conn, account_path(conn, :new))
-    assert html_response(conn, 200) =~ "Sign up"
+  describe "new/4" do
+    test "using local auth, displays the Sign up page", %{conn: conn} do
+      reassign_env(:concierge_site, ConciergeSite.Endpoint, authentication_source: "local")
+      conn = get(conn, account_path(conn, :new))
+      assert html_response(conn, 200) =~ "Sign up"
+    end
+
+    test "using keycloak auth, redirects to the keycloak register route", %{conn: conn} do
+      reassign_env(:concierge_site, ConciergeSite.Endpoint, authentication_source: "keycloak")
+      conn = get(conn, account_path(conn, :new))
+      assert redirected_to(conn) == "/auth/keycloak/register"
+    end
   end
 
   test "POST /account", %{conn: conn} do
@@ -117,6 +127,7 @@ defmodule ConciergeSite.AccountControllerTest do
   end
 
   test "POST /account/options with errors", %{conn: conn} do
+    reassign_env(:concierge_site, ConciergeSite.Endpoint, authentication_source: "local")
     user = insert(:user)
 
     user_params = %{
@@ -171,6 +182,7 @@ defmodule ConciergeSite.AccountControllerTest do
     end
 
     test "POST /account/edit error email in use", %{conn: conn} do
+      reassign_env(:concierge_site, ConciergeSite.Endpoint, authentication_source: "local")
       insert(:user, email: "taken@email.com")
       user = insert(:user, email: "before@email.com")
 
@@ -188,6 +200,7 @@ defmodule ConciergeSite.AccountControllerTest do
     end
 
     test "POST /account/edit error invalid phone number", %{conn: conn} do
+      reassign_env(:concierge_site, ConciergeSite.Endpoint, authentication_source: "local")
       user = insert(:user, phone_number: nil)
 
       user_params = %{
@@ -204,6 +217,7 @@ defmodule ConciergeSite.AccountControllerTest do
     end
 
     test "POST /account/edit error must accept terms and conditions", %{conn: conn} do
+      reassign_env(:concierge_site, ConciergeSite.Endpoint, authentication_source: "local")
       user = insert(:user, phone_number: nil)
 
       user_params = %{
@@ -319,7 +333,9 @@ defmodule ConciergeSite.AccountControllerTest do
   end
 
   describe "update password" do
-    test "GET /password/edit", %{conn: conn} do
+    test "GET /password/edit - for local auth", %{conn: conn} do
+      reassign_env(:concierge_site, ConciergeSite.Endpoint, authentication_source: "local")
+
       user = insert(:user)
 
       conn =
@@ -328,6 +344,20 @@ defmodule ConciergeSite.AccountControllerTest do
         |> get(account_path(conn, :edit_password))
 
       assert html_response(conn, 200) =~ "Update password"
+    end
+
+    test "GET /password/edit - for Keycloak auth", %{conn: conn} do
+      reassign_env(:concierge_site, ConciergeSite.Endpoint, authentication_source: "keycloak")
+
+      user = insert(:user)
+
+      conn =
+        user
+        |> guardian_login(conn)
+        |> get(account_path(conn, :edit_password))
+
+      assert redirected_to(conn, 302) =~
+               ~r/\/auth\/realms\/MBTA\/protocol\/openid-connect\/auth?.*kc_action=UPDATE_PASSWORD/
     end
 
     test "POST /password/edit", %{conn: conn} do
@@ -355,19 +385,19 @@ defmodule ConciergeSite.AccountControllerTest do
 
       assert html_response(conn, 200) =~ "Current password is incorrect"
     end
-  end
 
-  test "POST /password/edit validation error", %{conn: conn} do
-    user = insert(:user, encrypted_password: Bcrypt.hash_pwd_salt("Password1!"))
+    test "POST /password/edit validation error", %{conn: conn} do
+      user = insert(:user, encrypted_password: Bcrypt.hash_pwd_salt("Password1!"))
 
-    user_params = %{current_password: "Password1!", password: "Password"}
+      user_params = %{current_password: "Password1!", password: "Password"}
 
-    conn =
-      user
-      |> guardian_login(conn)
-      |> post(account_path(conn, :update_password), %{user: user_params})
+      conn =
+        user
+        |> guardian_login(conn)
+        |> post(account_path(conn, :update_password), %{user: user_params})
 
-    assert html_response(conn, 200) =~ "New password format is incorrect"
+      assert html_response(conn, 200) =~ "New password format is incorrect"
+    end
   end
 
   describe "account delete" do
