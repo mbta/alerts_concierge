@@ -3,4 +3,4 @@
 <% end %>
 <div><%= link("Subscriptions", to: trip_path(@conn, :index)) %></div>
 <div><%= link("Settings", to: account_path(@conn, :edit)) %></div>
-<div><%= link("Logout", to: session_path(@conn, :delete), method: :delete) %></div>
+<div><%= link("Sign out", to: session_path(@conn, :delete), method: :delete) %></div>
