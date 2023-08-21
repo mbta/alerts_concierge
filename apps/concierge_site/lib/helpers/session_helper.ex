@@ -34,7 +34,7 @@ defmodule ConciergeSite.SessionHelper do
       end
 
     conn
-    |> put_flash(:info, "You have been logged out!")
+    |> put_flash(:info, "You have been signed out.")
     |> Guardian.Plug.sign_out(ConciergeSite.Guardian)
     |> Conn.clear_session()
     |> redirect(redirect_to)
