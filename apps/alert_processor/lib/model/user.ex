@@ -242,54 +242,12 @@ defmodule AlertProcessor.Model.User do
     end
   end
 
-  @doc """
-  Builds a changeset to verify login
-  """
-  def login_changeset(struct, params \\ %{}) do
-    struct
-    |> cast(params, [:email, :password])
-    |> validate_required([:email, :password])
-  end
-
   def opt_in_phone_number(%__MODULE__{phone_number: nil}), do: {:ok, nil}
 
   def opt_in_phone_number(%__MODULE__{phone_number: phone_number}) do
     phone_number
     |> ExAws.SNS.opt_in_phone_number()
     |> AwsClient.request()
-  end
-
-  @doc """
-  Checks if user's login credentials are valid
-  """
-  def authenticate(%{"email" => email, "password" => password} = params) do
-    changeset = login_changeset(%__MODULE__{}, params)
-
-    case changeset.errors do
-      [] ->
-        user = Repo.get_by(__MODULE__, email: String.downcase(email))
-
-        cond do
-          user && user.encrypted_password == "" ->
-            {:error, :disabled}
-
-          check_password(user, password) ->
-            {:ok, user}
-
-          true ->
-            {:error, changeset}
-        end
-
-      _ ->
-        {:error, changeset}
-    end
-  end
-
-  def check_password(user, password) do
-    case user do
-      nil -> Bcrypt.no_user_verify()
-      _ -> Bcrypt.verify_pass(password, user.encrypted_password)
-    end
   end
 
   @doc "Records an email rejection status for a user and disables notifications for them."

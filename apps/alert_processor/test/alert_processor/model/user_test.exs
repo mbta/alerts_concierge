@@ -13,9 +13,6 @@ defmodule AlertProcessor.Model.UserTest do
     "communication_mode" => "email"
   }
   @invalid_attrs %{}
-  @password "password1"
-  @encrypted_password Bcrypt.hash_pwd_salt(@password)
-  @disabled_password ""
 
   describe "user changeset" do
     test "changeset with valid attributes" do
@@ -191,58 +188,6 @@ defmodule AlertProcessor.Model.UserTest do
 
       assert changeset.changes.phone_number == "2342342344"
       assert changeset.valid?
-    end
-  end
-
-  describe "authenticate/1" do
-    test "authenticates if email and password valid" do
-      Repo.insert!(%User{
-        email: "test@email.com",
-        role: "user",
-        encrypted_password: @encrypted_password
-      })
-
-      assert {:ok, _} = User.authenticate(%{"email" => "test@email.com", "password" => @password})
-    end
-
-    test "does not authenticate if invalid password for existing user" do
-      Repo.insert!(%User{
-        email: "test@email.com",
-        role: "user",
-        encrypted_password: @encrypted_password
-      })
-
-      assert {:error, _} =
-               User.authenticate(%{
-                 "email" => "test@email.com",
-                 "password" => "different_password"
-               })
-    end
-
-    test "does not authenticate if user doesn't exist" do
-      assert {:error, _} =
-               User.authenticate(%{"email" => "nope@invalid.com", "password" => @password})
-    end
-
-    test "does not authenticate if user's account is disabled" do
-      Repo.insert!(%User{
-        email: "test@email.com",
-        role: "user",
-        encrypted_password: @disabled_password
-      })
-
-      assert {:error, :disabled} =
-               User.authenticate(%{"email" => "test@email.com", "password" => @password})
-    end
-
-    test "email is not case sensitive" do
-      Repo.insert!(%User{
-        email: "test@email.com",
-        role: "user",
-        encrypted_password: @encrypted_password
-      })
-
-      assert {:ok, _} = User.authenticate(%{"email" => "TEST@EMAIL.COM", "password" => @password})
     end
   end
 

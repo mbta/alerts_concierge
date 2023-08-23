@@ -8,69 +8,11 @@ defmodule ConciergeSite.AccountControllerTest do
   alias AlertProcessor.Repo
 
   describe "new/4" do
-    test "using local auth, displays the Sign up page", %{conn: conn} do
-      reassign_env(:concierge_site, ConciergeSite.Endpoint, authentication_source: "local")
-      conn = get(conn, account_path(conn, :new))
-      assert html_response(conn, 200) =~ "Sign up"
-    end
-
-    test "using keycloak auth, redirects to the keycloak register route", %{conn: conn} do
+    test "redirects to the keycloak register route", %{conn: conn} do
       reassign_env(:concierge_site, ConciergeSite.Endpoint, authentication_source: "keycloak")
       conn = get(conn, account_path(conn, :new))
       assert redirected_to(conn) == "/auth/keycloak/register"
     end
-  end
-
-  test "POST /account", %{conn: conn} do
-    params = %{
-      "user" => %{"password" => "Password1!", "email" => "test@test.com "},
-      "g-recaptcha-response" => "valid_response"
-    }
-
-    conn = post(conn, account_path(conn, :create), params)
-    assert html_response(conn, 302) =~ "/account/options"
-  end
-
-  test "POST /account bad password", %{conn: conn} do
-    params = %{
-      "user" => %{"password" => "password", "email" => "test@test.com"},
-      "g-recaptcha-response" => "valid_response"
-    }
-
-    conn = post(conn, account_path(conn, :create), params)
-
-    assert html_response(conn, 200) =~ "Password must contain at least one number or symbol."
-  end
-
-  test "POST /account bad email", %{conn: conn} do
-    params = %{
-      "user" => %{"password" => "password1!", "email" => "test"},
-      "g-recaptcha-response" => "valid_response"
-    }
-
-    conn = post(conn, account_path(conn, :create), params)
-    assert html_response(conn, 200) =~ "enter a valid email"
-  end
-
-  test "POST /account empty values", %{conn: conn} do
-    params = %{
-      "user" => %{"password" => "", "email" => ""},
-      "g-recaptcha-response" => "valid_response"
-    }
-
-    conn = post(conn, account_path(conn, :create), params)
-    assert html_response(conn, 200) =~ "Password is required"
-    assert html_response(conn, 200) =~ "Email is required"
-  end
-
-  test "POST /account bad recaptcha", %{conn: conn} do
-    params = %{
-      "user" => %{"password" => "Password1!", "email" => "test@test.com "},
-      "g-recaptcha-response" => "invalid_response"
-    }
-
-    conn = post(conn, account_path(conn, :create), params)
-    assert html_response(conn, 200) =~ "reCAPTCHA validation error"
   end
 
   test "GET /account/options", %{conn: conn} do
@@ -127,7 +69,7 @@ defmodule ConciergeSite.AccountControllerTest do
   end
 
   test "POST /account/options with errors", %{conn: conn} do
-    reassign_env(:concierge_site, ConciergeSite.Endpoint, authentication_source: "local")
+    reassign_env(:concierge_site, ConciergeSite.Endpoint, authentication_source: "keycloak")
     user = insert(:user)
 
     user_params = %{
@@ -142,7 +84,6 @@ defmodule ConciergeSite.AccountControllerTest do
 
     assert html_response(conn, 200) =~ "Customize my settings"
     assert html_response(conn, 200) =~ "How would you like to receive alerts?"
-    assert html_response(conn, 200) =~ "Phone number is not in a valid format."
     assert html_response(conn, 200) =~ "You must consent to these terms to receive SMS alerts."
   end
 
@@ -159,6 +100,7 @@ defmodule ConciergeSite.AccountControllerTest do
     end
 
     test "POST /account/edit", %{conn: conn} do
+      reassign_env(:concierge_site, ConciergeSite.Endpoint, authentication_source: "keycloak")
       user = insert(:user, phone_number: nil)
 
       user_params = %{
@@ -181,48 +123,12 @@ defmodule ConciergeSite.AccountControllerTest do
       assert updated_user.email == "test@test.com"
     end
 
-    test "POST /account/edit error email in use", %{conn: conn} do
-      reassign_env(:concierge_site, ConciergeSite.Endpoint, authentication_source: "local")
-      insert(:user, email: "taken@email.com")
-      user = insert(:user, email: "before@email.com")
-
-      user_params = %{
-        communication_mode: "email",
-        email: "taken@email.com"
-      }
-
-      conn =
-        user
-        |> guardian_login(conn)
-        |> post(account_path(conn, :update), %{user: user_params})
-
-      assert html_response(conn, 200) =~ "Sorry, that email has already been taken"
-    end
-
-    test "POST /account/edit error invalid phone number", %{conn: conn} do
-      reassign_env(:concierge_site, ConciergeSite.Endpoint, authentication_source: "local")
-      user = insert(:user, phone_number: nil)
-
-      user_params = %{
-        communication_mode: "sms",
-        phone_number: "5"
-      }
-
-      conn =
-        user
-        |> guardian_login(conn)
-        |> post(account_path(conn, :update), %{user: user_params})
-
-      assert html_response(conn, 200) =~ "Phone number is not in a valid format"
-    end
-
     test "POST /account/edit error must accept terms and conditions", %{conn: conn} do
-      reassign_env(:concierge_site, ConciergeSite.Endpoint, authentication_source: "local")
-      user = insert(:user, phone_number: nil)
+      reassign_env(:concierge_site, ConciergeSite.Endpoint, authentication_source: "keycloak")
+      user = insert(:user, communication_mode: "email", phone_number: "8888888888")
 
       user_params = %{
-        communication_mode: "sms",
-        phone_number: "8888888888"
+        communication_mode: "sms"
       }
 
       conn =
@@ -333,19 +239,6 @@ defmodule ConciergeSite.AccountControllerTest do
   end
 
   describe "update password" do
-    test "GET /password/edit - for local auth", %{conn: conn} do
-      reassign_env(:concierge_site, ConciergeSite.Endpoint, authentication_source: "local")
-
-      user = insert(:user)
-
-      conn =
-        user
-        |> guardian_login(conn)
-        |> get(account_path(conn, :edit_password))
-
-      assert html_response(conn, 200) =~ "Update password"
-    end
-
     test "GET /password/edit - for Keycloak auth", %{conn: conn} do
       reassign_env(:concierge_site, ConciergeSite.Endpoint, authentication_source: "keycloak")
 
@@ -358,45 +251,6 @@ defmodule ConciergeSite.AccountControllerTest do
 
       assert redirected_to(conn, 302) =~
                ~r/\/auth\/realms\/MBTA\/protocol\/openid-connect\/auth?.*kc_action=UPDATE_PASSWORD/
-    end
-
-    test "POST /password/edit", %{conn: conn} do
-      user = insert(:user, encrypted_password: Bcrypt.hash_pwd_salt("Password1!"))
-
-      user_params = %{current_password: "Password1!", password: "Password2!"}
-
-      conn =
-        user
-        |> guardian_login(conn)
-        |> post(account_path(conn, :update_password), %{user: user_params})
-
-      assert html_response(conn, 302) =~ "/trips"
-    end
-
-    test "POST /password/edit no match error", %{conn: conn} do
-      user = insert(:user, encrypted_password: Bcrypt.hash_pwd_salt("Password1!"))
-
-      user_params = %{current_password: "Password3!", password: "Password2!"}
-
-      conn =
-        user
-        |> guardian_login(conn)
-        |> post(account_path(conn, :update_password), %{user: user_params})
-
-      assert html_response(conn, 200) =~ "Current password is incorrect"
-    end
-
-    test "POST /password/edit validation error", %{conn: conn} do
-      user = insert(:user, encrypted_password: Bcrypt.hash_pwd_salt("Password1!"))
-
-      user_params = %{current_password: "Password1!", password: "Password"}
-
-      conn =
-        user
-        |> guardian_login(conn)
-        |> post(account_path(conn, :update_password), %{user: user_params})
-
-      assert html_response(conn, 200) =~ "New password format is incorrect"
     end
   end
 

@@ -64,7 +64,7 @@ defmodule ConciergeSite.Router do
     post("/api/feedback", FeedbackController, :new)
     get("/digest/feedback", DigestFeedbackController, :feedback)
     post("/api/digest/feedback", DigestFeedbackController, :new)
-    resources("/login", SessionController, only: [:new, :create], singleton: true)
+    resources("/login", SessionController, only: [:new], singleton: true)
     resources("/account", AccountController, only: [:new, :create])
     resources("/password_resets", PasswordResetController, only: [:new, :create, :edit, :update])
   end
@@ -80,7 +80,6 @@ defmodule ConciergeSite.Router do
     post("/account/edit", AccountController, :update)
     delete("/account/delete", AccountController, :delete)
     get("/password/edit", AccountController, :edit_password)
-    post("/password/edit", AccountController, :update_password)
 
     resources("/trips", TripController, only: [:index, :edit, :update, :delete]) do
       patch("/pause", TripController, :pause, as: :pause)

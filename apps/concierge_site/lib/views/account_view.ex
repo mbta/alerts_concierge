@@ -2,11 +2,9 @@ defmodule ConciergeSite.AccountView do
   use ConciergeSite.Web, :view
 
   alias AlertProcessor.Model.User
-  alias ConciergeSite.SessionHelper
   alias Ecto.Changeset
   alias Plug.Conn
 
-  defdelegate keycloak_auth?, to: SessionHelper
   defdelegate email(user), to: User
   defdelegate phone_number(user), to: User
 
