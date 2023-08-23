@@ -3,9 +3,6 @@ import Config
 config :alert_processor, AlertProcessor.Repo,
   url: System.fetch_env!("DATABASE_URL_#{config_env() |> to_string() |> String.upcase()}")
 
-config :concierge_site, ConciergeSite.Endpoint,
-  authentication_source: System.get_env("AUTHENTICATION_SOURCE", "local")
-
 config :concierge_site,
   keycloak_base_uri: System.get_env("KEYCLOAK_BASE_URI"),
   keycloak_client_id: System.get_env("KEYCLOAK_CLIENT_ID"),

@@ -2,14 +2,12 @@ defmodule ConciergeSite.AccountControllerTest do
   @moduledoc false
   use ConciergeSite.ConnCase, async: true
   import AlertProcessor.Factory
-  import Test.Support.Helpers
   alias AlertProcessor.Helpers.ConfigHelper
   alias AlertProcessor.Model.{Notification, Subscription, Trip, User}
   alias AlertProcessor.Repo
 
   describe "new/4" do
     test "redirects to the keycloak register route", %{conn: conn} do
-      reassign_env(:concierge_site, ConciergeSite.Endpoint, authentication_source: "keycloak")
       conn = get(conn, account_path(conn, :new))
       assert redirected_to(conn) == "/auth/keycloak/register"
     end
@@ -69,7 +67,6 @@ defmodule ConciergeSite.AccountControllerTest do
   end
 
   test "POST /account/options with errors", %{conn: conn} do
-    reassign_env(:concierge_site, ConciergeSite.Endpoint, authentication_source: "keycloak")
     user = insert(:user)
 
     user_params = %{
@@ -100,7 +97,6 @@ defmodule ConciergeSite.AccountControllerTest do
     end
 
     test "POST /account/edit", %{conn: conn} do
-      reassign_env(:concierge_site, ConciergeSite.Endpoint, authentication_source: "keycloak")
       user = insert(:user, phone_number: nil)
 
       user_params = %{
@@ -124,7 +120,6 @@ defmodule ConciergeSite.AccountControllerTest do
     end
 
     test "POST /account/edit error must accept terms and conditions", %{conn: conn} do
-      reassign_env(:concierge_site, ConciergeSite.Endpoint, authentication_source: "keycloak")
       user = insert(:user, communication_mode: "email", phone_number: "8888888888")
 
       user_params = %{
@@ -240,8 +235,6 @@ defmodule ConciergeSite.AccountControllerTest do
 
   describe "update password" do
     test "GET /password/edit - for Keycloak auth", %{conn: conn} do
-      reassign_env(:concierge_site, ConciergeSite.Endpoint, authentication_source: "keycloak")
-
       user = insert(:user)
 
       conn =
