@@ -2,8 +2,8 @@
 -- PostgreSQL database dump
 --
 
--- Dumped from database version 14.6 (Homebrew)
--- Dumped by pg_dump version 14.6 (Homebrew)
+-- Dumped from database version 14.9 (Homebrew)
+-- Dumped by pg_dump version 14.9 (Homebrew)
 
 SET statement_timeout = 0;
 SET lock_timeout = 0;
@@ -137,20 +137,6 @@ CREATE TABLE public.notifications (
     url character varying(255),
     closed_timestamp timestamp without time zone,
     type character varying(255)
-);
-
-
---
--- Name: password_resets; Type: TABLE; Schema: public; Owner: -
---
-
-CREATE TABLE public.password_resets (
-    id uuid DEFAULT gen_random_uuid() NOT NULL,
-    user_id uuid,
-    expired_at timestamp without time zone,
-    redeemed_at timestamp without time zone,
-    inserted_at timestamp without time zone NOT NULL,
-    updated_at timestamp without time zone NOT NULL
 );
 
 
@@ -337,14 +323,6 @@ ALTER TABLE ONLY public.notifications
 
 
 --
--- Name: password_resets password_resets_pkey; Type: CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.password_resets
-    ADD CONSTRAINT password_resets_pkey PRIMARY KEY (id);
-
-
---
 -- Name: schema_migrations schema_migrations_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -424,13 +402,6 @@ CREATE INDEX notifications_alert_id_index ON public.notifications USING btree (a
 --
 
 CREATE INDEX notifications_user_id_index ON public.notifications USING btree (user_id);
-
-
---
--- Name: password_resets_user_id_index; Type: INDEX; Schema: public; Owner: -
---
-
-CREATE INDEX password_resets_user_id_index ON public.password_resets USING btree (user_id);
 
 
 --
@@ -524,14 +495,6 @@ ALTER TABLE ONLY public.informed_entities
 
 ALTER TABLE ONLY public.notifications
     ADD CONSTRAINT notifications_user_id_fkey FOREIGN KEY (user_id) REFERENCES public.users(id) ON DELETE CASCADE;
-
-
---
--- Name: password_resets password_resets_user_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.password_resets
-    ADD CONSTRAINT password_resets_user_id_fkey FOREIGN KEY (user_id) REFERENCES public.users(id) ON DELETE CASCADE;
 
 
 --
@@ -631,3 +594,4 @@ INSERT INTO public."schema_migrations" (version) VALUES (20200430210043);
 INSERT INTO public."schema_migrations" (version) VALUES (20210421143058);
 INSERT INTO public."schema_migrations" (version) VALUES (20210528144213);
 INSERT INTO public."schema_migrations" (version) VALUES (20230208195021);
+INSERT INTO public."schema_migrations" (version) VALUES (20230823214704);
