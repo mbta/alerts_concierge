@@ -18,13 +18,19 @@ defmodule ConciergeSite.SessionHelper do
   end
 
   @spec sign_out(Conn.t()) :: Conn.t()
-  def sign_out(conn) do
-    redirect_to = [
-      external:
-        URI.encode(
-          "#{System.get_env("KEYCLOAK_LOGOUT_URI")}?post_logout_redirect_uri=#{page_url(conn, :landing)}&id_token_hint=#{id_token(conn)}"
-        )
-    ]
+  @spec sign_out(Conn.t(), keyword()) :: Conn.t()
+  def sign_out(conn, opts \\ []) do
+    redirect_to =
+      if Keyword.get(opts, :skip_oidc_sign_out, false) do
+        [to: page_path(conn, :landing)]
+      else
+        [
+          external:
+            URI.encode(
+              "#{System.get_env("KEYCLOAK_LOGOUT_URI")}?post_logout_redirect_uri=#{page_url(conn, :landing)}&id_token_hint=#{id_token(conn)}"
+            )
+        ]
+      end
 
     conn
     |> put_flash(:info, "You have been signed out.")

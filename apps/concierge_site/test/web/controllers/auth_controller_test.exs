@@ -123,7 +123,7 @@ defmodule ConciergeSite.Web.AuthControllerTest do
     end
 
     test "redirects to the landing page for an ueberauth failure", %{conn: conn} do
-      reassign_env(:concierge_site, ConciergeSite.Endpoint, authentication_source: "local")
+      reassign_env(:concierge_site, ConciergeSite.Endpoint, authentication_source: "keycloak")
 
       conn =
         conn
