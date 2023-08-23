@@ -111,27 +111,6 @@ defmodule AlertProcessor.Model.UserTest do
     end
   end
 
-  describe "update_password" do
-    test "updates password" do
-      user = insert(:user)
-      current_password = user.encrypted_password
-      assert {:ok, user} = User.update_password(user, %{"password" => "Password1"}, user.id)
-      assert current_password != user.encrypted_password
-    end
-
-    test "allows passwords of at least 8 characters and one number or symbol" do
-      user = insert(:user)
-
-      assert {:ok, user} = User.update_password(user, %{password: "example8"}, user.id)
-      assert {:ok, user} = User.update_password(user, %{password: "ex_ample"}, user.id)
-      assert {:ok, user} = User.update_password(user, %{password: "[example"}, user.id)
-      assert {:ok, user} = User.update_password(user, %{password: "código01"}, user.id)
-      assert {:error, _} = User.update_password(user, %{password: "2-short"}, user.id)
-      assert {:error, _} = User.update_password(user, %{password: "longExample"}, user.id)
-      assert {:error, _} = User.update_password(user, %{password: "contraseña"}, user.id)
-    end
-  end
-
   describe "create_account_changeset" do
     defp create_changeset(%{} = attributes) do
       User.create_account_changeset(%User{}, Map.merge(@valid_account_attrs, attributes))

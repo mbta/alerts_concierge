@@ -66,7 +66,6 @@ defmodule ConciergeSite.Router do
     post("/api/digest/feedback", DigestFeedbackController, :new)
     resources("/login", SessionController, only: [:new], singleton: true)
     resources("/account", AccountController, only: [:new, :create])
-    resources("/password_resets", PasswordResetController, only: [:new, :create, :edit, :update])
   end
 
   scope "/", ConciergeSite do

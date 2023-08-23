@@ -100,17 +100,6 @@ defmodule AlertProcessor.Model.User do
     end
   end
 
-  def update_password(user, params, originator) do
-    user
-    |> update_password_changeset(params)
-    |> PaperTrail.update(
-      originator: wrap_id(originator),
-      origin: nil,
-      meta: %{subscriber_id: user.id, subscriber_email: user.email}
-    )
-    |> normalize_papertrail_result()
-  end
-
   @doc """
   Builds changeset used for registering a new user account
   """
@@ -222,13 +211,6 @@ defmodule AlertProcessor.Model.User do
 
   defp lowercase_email(nil), do: ""
   defp lowercase_email(value), do: String.downcase(value)
-
-  defp update_password_changeset(struct, params) do
-    struct
-    |> changeset(params, ~w(password)a)
-    |> validate_password()
-    |> hash_password()
-  end
 
   defp hash_password(changeset) do
     case changeset do
