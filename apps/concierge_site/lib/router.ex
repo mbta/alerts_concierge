@@ -109,7 +109,6 @@ defmodule ConciergeSite.Router do
     pipe_through([:redirect_prod_http, :browser, :browser_auth, :admin_auth, :layout])
 
     get("/", HomeController, :index)
-    resources("/admins", AdminsController, only: [:index, :create, :delete])
     resources("/queries", QueriesController, only: [:index, :show])
   end
 

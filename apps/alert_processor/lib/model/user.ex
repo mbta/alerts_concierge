@@ -284,9 +284,6 @@ defmodule AlertProcessor.Model.User do
   def wrap_id(%__MODULE__{} = user), do: user
   def wrap_id(user_id), do: %__MODULE__{id: user_id}
 
-  @spec admins() :: [t]
-  def admins, do: Repo.all(from(u in __MODULE__, where: u.role == "admin", order_by: u.email))
-
   @spec admin?(t()) :: boolean
   def admin?(%__MODULE__{role: "admin"}), do: true
   def admin?(_user), do: false
