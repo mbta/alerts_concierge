@@ -119,22 +119,6 @@ defmodule AlertProcessor.Model.UserTest do
       assert create_changeset(%{}).valid?
     end
 
-    test "is invalid with an email that does not contain an @" do
-      refute create_changeset(%{"email" => "emailatexample.com"}).valid?
-    end
-
-    test "is invalid with an email that is missing the TLD" do
-      refute create_changeset(%{"email" => "email@example"}).valid?
-    end
-
-    test "is invalid with an email that has a stray space in it" do
-      refute create_changeset(%{"email" => "email @example.com"}).valid?
-    end
-
-    test "is invalid when whole string is not a valid email" do
-      refute create_changeset(%{"email" => "has a@valid.email substring"}).valid?
-    end
-
     test "trims leading and trailing spaces from email" do
       leading = create_changeset(%{"email" => " email@example.com"})
       trailing = create_changeset(%{"email" => "email@example.com "})

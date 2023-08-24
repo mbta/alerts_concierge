@@ -103,8 +103,7 @@ defmodule AlertProcessor.Model.User do
   def create_account_changeset(struct, params \\ %{}) do
     struct
     |> changeset(params, @required_fields)
-    |> update_change(:email, &String.trim/1)
-    |> update_change(:email, &lowercase_email/1)
+    |> clean_email()
     |> validate_email()
     |> update_change(:phone_number, &clean_phone_number/1)
     |> validate_phone_number()
@@ -126,8 +125,7 @@ defmodule AlertProcessor.Model.User do
     |> update_change(:phone_number, &clean_phone_number/1)
     |> validate_phone_number()
     |> validate_accept_tnc(params)
-    |> update_change(:email, &String.trim/1)
-    |> update_change(:email, &lowercase_email/1)
+    |> clean_email()
     |> validate_email()
   end
 
@@ -149,23 +147,15 @@ defmodule AlertProcessor.Model.User do
   def update_account_changeset(struct, %{"communication_mode" => "email"} = params) do
     struct
     |> changeset(params, [:email])
+    |> clean_email()
     |> validate_email()
-    |> update_change(:email, &String.trim/1)
-    |> update_change(:email, &lowercase_email/1)
     |> update_change(:phone_number, &clear_value/1)
   end
 
   def update_account_changeset(struct, params), do: changeset(struct, params)
 
   defp validate_email(changeset) do
-    changeset
-    |> validate_format(
-      :email,
-      # The same validation used by the `mail` library
-      ~r/^[A-Z0-9a-z._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,64}$/,
-      message: "Please enter a valid email address."
-    )
-    |> unique_constraint(:email, message: "Sorry, that email has already been taken.")
+    unique_constraint(changeset, :email, message: "Sorry, that email has already been taken.")
   end
 
   defp clear_value(_), do: nil
@@ -189,6 +179,12 @@ defmodule AlertProcessor.Model.User do
 
   defp clean_phone_number(nil), do: nil
   defp clean_phone_number(value), do: String.replace(value, ~r/\D/, "")
+
+  defp clean_email(struct) do
+    struct
+    |> update_change(:email, &String.trim/1)
+    |> update_change(:email, &lowercase_email/1)
+  end
 
   defp lowercase_email(nil), do: ""
   defp lowercase_email(value), do: String.downcase(value)
@@ -246,7 +242,12 @@ defmodule AlertProcessor.Model.User do
 
   @spec for_email(String.t()) :: t | nil
   def for_email(email) do
-    Repo.get_by(__MODULE__, email: String.downcase(email))
+    email =
+      email
+      |> String.trim()
+      |> lowercase_email()
+
+    Repo.get_by(__MODULE__, email: email)
   end
 
   @spec wrap_id(__MODULE__.t() | String.t()) :: __MODULE__.t()
