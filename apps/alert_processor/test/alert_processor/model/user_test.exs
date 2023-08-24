@@ -6,10 +6,9 @@ defmodule AlertProcessor.Model.UserTest do
 
   doctest User
 
-  @valid_attrs %{email: "email@test.com", role: "user", password: "password1"}
+  @valid_attrs %{email: "email@test.com", role: "user"}
   @valid_account_attrs %{
     "email" => "test@email.com",
-    "password" => "Password1",
     "communication_mode" => "email"
   }
   @invalid_attrs %{}
@@ -21,7 +20,7 @@ defmodule AlertProcessor.Model.UserTest do
     end
 
     test "changeset with invalid attributes" do
-      changeset = User.changeset(%User{}, @invalid_attrs, ~w(email password)a)
+      changeset = User.changeset(%User{}, @invalid_attrs, ~w(email)a)
       refute changeset.valid?
     end
   end
@@ -118,18 +117,6 @@ defmodule AlertProcessor.Model.UserTest do
 
     test "is valid with valid params" do
       assert create_changeset(%{}).valid?
-    end
-
-    test "is valid with password containing special characters and at least 6 characters" do
-      assert create_changeset(%{"password" => "P@ssword"}).valid?
-    end
-
-    test "is invalid with password that is too short" do
-      refute create_changeset(%{"password" => "P@ss1"}).valid?
-    end
-
-    test "is invalid with password that does not contain a digit or special character" do
-      refute create_changeset(%{"password" => "Password"}).valid?
     end
 
     test "is invalid with an email that does not contain an @" do

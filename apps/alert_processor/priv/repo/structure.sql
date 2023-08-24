@@ -215,7 +215,6 @@ CREATE TABLE public.users (
     inserted_at timestamp without time zone DEFAULT now() NOT NULL,
     updated_at timestamp without time zone DEFAULT now() NOT NULL,
     role character varying(255) DEFAULT 'user'::character varying NOT NULL,
-    encrypted_password character varying(255) NOT NULL,
     digest_opt_in boolean DEFAULT true NOT NULL,
     sms_opted_out_at timestamp without time zone,
     communication_mode character varying(255) DEFAULT 'email'::character varying NOT NULL,
@@ -595,3 +594,4 @@ INSERT INTO public."schema_migrations" (version) VALUES (20210421143058);
 INSERT INTO public."schema_migrations" (version) VALUES (20210528144213);
 INSERT INTO public."schema_migrations" (version) VALUES (20230208195021);
 INSERT INTO public."schema_migrations" (version) VALUES (20230823214704);
+INSERT INTO public."schema_migrations" (version) VALUES (20230824175754);

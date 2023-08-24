@@ -79,8 +79,7 @@ defmodule ConciergeSite.AuthController do
           id: id,
           email: email,
           phone_number: phone_number,
-          role: role,
-          encrypted_password: ""
+          role: role
         })
 
         User.get(id)

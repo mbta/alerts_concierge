@@ -27,12 +27,10 @@ defmodule AlertProcessor.Model.User do
     field(:email, :string)
     field(:phone_number, :string)
     field(:role, :string)
-    field(:encrypted_password, :string)
     field(:digest_opt_in, :boolean, default: true)
     field(:email_rejection_status, :string)
     field(:sms_opted_out_at, :utc_datetime)
     field(:communication_mode, :string, default: "email")
-    field(:password, :string, virtual: true)
     field(:sms_toggle, :boolean, virtual: true)
 
     timestamps(type: :utc_datetime)
@@ -42,13 +40,12 @@ defmodule AlertProcessor.Model.User do
     email
     phone_number
     role
-    password
     digest_opt_in
     email_rejection_status
     sms_opted_out_at
     communication_mode
   )a
-  @required_fields ~w(email password)a
+  @required_fields ~w(email)a
 
   @communication_modes ~w(none email sms)
   @email_rejection_statuses [nil, "bounce", "complaint"]
@@ -109,10 +106,8 @@ defmodule AlertProcessor.Model.User do
     |> update_change(:email, &String.trim/1)
     |> update_change(:email, &lowercase_email/1)
     |> validate_email()
-    |> validate_password()
     |> update_change(:phone_number, &clean_phone_number/1)
     |> validate_phone_number()
-    |> hash_password()
   end
 
   @doc """
@@ -192,37 +187,11 @@ defmodule AlertProcessor.Model.User do
     )
   end
 
-  defp validate_password(changeset) do
-    changeset
-    |> validate_length(
-      :password,
-      min: 8,
-      message: "Password must be at least 8 characters long."
-    )
-    |> validate_format(
-      :password,
-      ~r/_|\d|\W/u,
-      message: "Password must contain at least one number or symbol."
-    )
-  end
-
   defp clean_phone_number(nil), do: nil
   defp clean_phone_number(value), do: String.replace(value, ~r/\D/, "")
 
   defp lowercase_email(nil), do: ""
   defp lowercase_email(value), do: String.downcase(value)
-
-  defp hash_password(changeset) do
-    case changeset do
-      %Ecto.Changeset{valid?: true, changes: %{password: password}} ->
-        changeset
-        |> put_change(:encrypted_password, Bcrypt.hash_pwd_salt(password))
-        |> delete_change(:password)
-
-      _ ->
-        changeset
-    end
-  end
 
   def opt_in_phone_number(%__MODULE__{phone_number: nil}), do: {:ok, nil}
 

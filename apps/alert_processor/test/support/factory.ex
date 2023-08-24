@@ -232,8 +232,7 @@ defmodule AlertProcessor.Factory do
     %User{
       email: sequence(:email, &"email-#{&1}@example.com"),
       phone_number: sequence(:phone_number, &String.pad_leading("#{&1}", 10, "5555551234")),
-      role: "user",
-      encrypted_password: sequence(:encrypted_password, &"encrypted_password_#{&1}")
+      role: "user"
     }
   end
 
