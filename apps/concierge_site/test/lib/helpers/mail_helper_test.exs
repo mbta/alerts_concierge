@@ -17,15 +17,6 @@ defmodule ConcerigeSite.Helpers.MailHelperTest do
     end
   end
 
-  describe "reset_password_url" do
-    test "generates url with password reset id" do
-      reset_token = "some-reset-token"
-      url = MailHelper.reset_password_url(reset_token)
-      assert url =~ "http"
-      assert url =~ "password_resets/#{reset_token}/edit"
-    end
-  end
-
   describe "track_open_url" do
     test "generates url with notification and alert ids" do
       url =

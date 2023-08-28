@@ -2,95 +2,17 @@ defmodule ConciergeSite.SessionControllerTest do
   @moduledoc false
   use ConciergeSite.ConnCase
   import AlertProcessor.Factory
-  import Test.Support.Helpers
-  alias AlertProcessor.{Model.User, Model.Trip, Repo}
   alias Hammer
 
-  @password "password1"
-  @encrypted_password Bcrypt.hash_pwd_salt(@password)
-
   describe "GET /login/new" do
-    test "for local auth", %{conn: conn} do
-      reassign_env(:concierge_site, ConciergeSite.Endpoint, authentication_source: "local")
-
-      conn = get(conn, session_path(conn, :new))
-
-      assert html_response(conn, 200) =~ "Sign in"
-    end
-
-    test "for Keycloak auth", %{conn: conn} do
-      reassign_env(:concierge_site, ConciergeSite.Endpoint, authentication_source: "keycloak")
-
+    test "redirects to Keycloak login page", %{conn: conn} do
       conn = get(conn, session_path(conn, :new))
 
       assert redirected_to(conn, 302) == "/auth/keycloak"
     end
   end
 
-  test "POST /login", %{conn: conn} do
-    user =
-      Repo.insert!(%User{
-        email: "test@email.com",
-        role: "user",
-        encrypted_password: @encrypted_password
-      })
-
-    params = %{"user" => %{"email" => user.email, "password" => @password}}
-    conn = post(conn, session_path(conn, :create), params)
-    assert html_response(conn, 302) =~ "/account/options"
-  end
-
-  test "POST /login with trips", %{conn: conn} do
-    user =
-      Repo.insert!(%User{
-        email: "test@email.com",
-        role: "user",
-        encrypted_password: @encrypted_password
-      })
-
-    Repo.insert!(%Trip{
-      user_id: user.id,
-      relevant_days: [:monday],
-      start_time: ~T[12:00:00],
-      end_time: ~T[18:00:00],
-      facility_types: [:elevator]
-    })
-
-    params = %{"user" => %{"email" => user.email, "password" => @password}}
-    conn = post(conn, session_path(conn, :create), params)
-    assert html_response(conn, 302) =~ "<a href=\"/trips\">"
-  end
-
-  test "POST /login rejected", %{conn: conn} do
-    user =
-      Repo.insert!(%User{
-        email: "test@email.com",
-        role: "user",
-        encrypted_password: @encrypted_password
-      })
-
-    params = %{"user" => %{"email" => user.email, "password" => "11111111111"}}
-    conn = post(conn, session_path(conn, :create), params)
-    assert html_response(conn, 200) =~ "information was incorrect"
-  end
-
-  test "POST /login rate-limited", %{conn: conn} do
-    on_exit(fn -> true = :ets.delete_all_objects(:hammer_ets_buckets) end)
-    params = %{"user" => %{"email" => "test2@email.com", "password" => "11111111111"}}
-
-    [first_attempt, _, _, _, next_to_last_attempt, last_attempt] =
-      for _ <- 1..6 do
-        conn |> assign(:rate_limit?, true) |> post(session_path(conn, :create), params)
-      end
-
-    assert first_attempt.status == 200
-    assert next_to_last_attempt.status == 200
-    assert last_attempt.status == 429
-  end
-
   test "DELETE /login", %{conn: conn} do
-    reassign_env(:concierge_site, ConciergeSite.Endpoint, authentication_source: "local")
-
     user = insert(:user)
 
     conn =
@@ -98,7 +20,7 @@ defmodule ConciergeSite.SessionControllerTest do
       |> guardian_login(conn)
       |> delete(session_path(conn, :delete))
 
-    assert redirected_to(conn, 302) == "/"
+    assert redirected_to(conn, 302) =~ ~r/post_logout_redirect_uri=.+/
   end
 
   test "unauthenticated/2", %{conn: conn} do

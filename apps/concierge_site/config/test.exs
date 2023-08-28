@@ -1,5 +1,8 @@
 import Config
 
+config :concierge_site,
+  start_oidc_worker: false
+
 # Run a server for browser-based feature tests
 config :concierge_site, ConciergeSite.Endpoint, server: true, http: [port: 4001]
 

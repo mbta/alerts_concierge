@@ -10,28 +10,6 @@ defmodule ConciergeSite.Dissemination.Email do
 
   MJML.function_from_template(
     :def,
-    :password_reset_html_email,
-    "password-reset.mjml",
-    [:reset_token]
-  )
-
-  EEx.function_from_file(
-    :def,
-    :password_reset_text_email,
-    Path.join(~w(#{File.cwd!()} lib mail_templates password_reset.txt.eex)),
-    [:reset_token]
-  )
-
-  def password_reset_email(user, reset_token) do
-    base_email()
-    |> to(user.email)
-    |> subject("Reset your T-Alerts password")
-    |> html_body(password_reset_html_email(reset_token))
-    |> text_body(password_reset_text_email(reset_token))
-  end
-
-  MJML.function_from_template(
-    :def,
     :confirmation_html_email,
     "confirmation.mjml",
     [:manage_subscriptions_url, :support_url]

@@ -32,10 +32,6 @@ defmodule ConciergeSite.Helpers.MailHelper do
     )
   end
 
-  def reset_password_url(reset_token) do
-    Helpers.password_reset_url(ConciergeSite.Endpoint, :edit, reset_token)
-  end
-
   @spec track_open_url(Notification.t()) :: String.t()
   def track_open_url(%Notification{id: notification_id, alert_id: alert_id}) do
     Helpers.email_opened_url(ConciergeSite.Endpoint, :notification, alert_id, notification_id)

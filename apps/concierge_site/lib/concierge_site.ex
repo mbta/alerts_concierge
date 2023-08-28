@@ -4,8 +4,7 @@ defmodule ConciergeSite do
 
   def start(_type, _args) do
     auth_children =
-      if Application.get_env(:concierge_site, ConciergeSite.Endpoint)[:authentication_source] ==
-           "keycloak" do
+      if Application.get_env(:concierge_site, :start_oidc_worker) do
         [
           {OpenIDConnect.Worker, Application.get_env(:ueberauth, Ueberauth.Strategy.OIDC)}
         ]

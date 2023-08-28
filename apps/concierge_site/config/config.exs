@@ -8,7 +8,8 @@ import Config
 # General application configuration
 config :concierge_site,
   namespace: ConciergeSite,
-  ecto_repos: []
+  ecto_repos: [],
+  start_oidc_worker: true
 
 # Configures the endpoint
 config :concierge_site, ConciergeSite.Endpoint,

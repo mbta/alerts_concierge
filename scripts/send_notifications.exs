@@ -88,7 +88,6 @@ defmodule SendNotifications do
   defp create_or_update_user(mode) do
     attributes = %{
       email: @user_email,
-      password: "Password1",
       phone_number: if(mode == :sms, do: @user_phone, else: nil),
       communication_mode: mode
     }

@@ -15,7 +15,7 @@ defmodule CreateUsers do
       -d, --delete                     Delete users previously created by script
   """
 
-  @user_fields ~w(email phone_number encrypted_password)a
+  @user_fields ~w(email phone_number)a
 
   def run(:help) do
     IO.write(@moduledoc)
@@ -47,9 +47,7 @@ defmodule CreateUsers do
     params = %{
       email:
         "send-alerts-test-#{Integer.to_string(:rand.uniform(4_294_967_296), 32)}@example.com",
-      phone_number: "5555555555",
-      # p@ssw0rd
-      encrypted_password: "$2b$12$BwbCgTrrnXytfn733NZvV.RkLpMyO8Ga/zON5mSZAFz4/50kYYDhK"
+      phone_number: "5555555555"
     }
 
     %AlertProcessor.Model.User{}

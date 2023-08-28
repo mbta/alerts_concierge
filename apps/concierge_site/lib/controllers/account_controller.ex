@@ -4,55 +4,22 @@ defmodule ConciergeSite.AccountController do
   alias AlertProcessor.Model.User
   alias AlertProcessor.Repo
   alias ConciergeSite.ConfirmationMessage
-  alias ConciergeSite.SessionHelper
   alias ConciergeSite.Mailchimp
 
   require Logger
 
   def new(conn, _params) do
-    if SessionHelper.keycloak_auth?() do
-      redirect(conn, to: "/auth/keycloak/register")
-    else
-      render(conn, "new.html", account_changeset: new_user_changeset())
-    end
+    redirect(conn, to: "/auth/keycloak/register")
   end
 
   def edit(%{assigns: %{current_user: user}} = conn, _params) do
     conn
     |> put_flash(:warning, communication_mode_flash(user))
-    |> render(edit_template(), changeset: User.changeset(user), user_id: user.id)
+    |> render("edit.html", changeset: User.changeset(user), user_id: user.id)
   end
 
   def edit_password(conn, _params) do
-    if SessionHelper.keycloak_auth?() do
-      redirect(conn, external: ConciergeSite.AccountView.edit_password_url(conn))
-    else
-      render(conn, "edit_password.html")
-    end
-  end
-
-  def create(conn, %{"user" => params, "g-recaptcha-response" => recaptcha_response}) do
-    with {:ok, _resp} <- Recaptcha.verify(recaptcha_response),
-         {:ok, user} <- User.create_account(params) do
-      SessionHelper.sign_in(conn, user)
-    else
-      {:error, errors} when is_list(errors) ->
-        Logger.warn("AccountController event=recaptcha_error errors=#{Enum.join(errors, ",")}")
-
-        conn
-        |> put_flash(:error, "reCAPTCHA validation error. Please try again.")
-        |> render("new.html", account_changeset: new_user_changeset(params))
-
-      {:error, %Ecto.Changeset{} = changeset} ->
-        render(conn, "new.html", account_changeset: changeset, errors: errors(changeset))
-    end
-  end
-
-  def create(conn, _params) do
-    conn
-    |> put_flash(:error, "Required params error. \
-      Please ensure your web browser is up-to-date and you have JavaScript enabled.")
-    |> render("new.html", account_changeset: new_user_changeset())
+    redirect(conn, external: ConciergeSite.AccountView.edit_password_url(conn))
   end
 
   def update(%{assigns: %{current_user: user}} = conn, %{"user" => params}) do
@@ -74,31 +41,11 @@ defmodule ConciergeSite.AccountController do
       {:error, changeset} ->
         render(
           conn,
-          edit_template(),
+          "edit.html",
           changeset: changeset,
           user_id: user.id,
           errors: errors(changeset)
         )
-    end
-  end
-
-  def update_password(%{assigns: %{current_user: user}} = conn, %{"user" => params}) do
-    if User.check_password(user, params["current_password"]) do
-      case User.update_password(user, %{"password" => params["password"]}, user) do
-        {:ok, _} ->
-          conn
-          |> put_flash(:info, "Your password has been updated.")
-          |> redirect(to: trip_path(conn, :index))
-
-        {:error, _} ->
-          conn
-          |> put_flash(:error, "New password format is incorrect. Please try again.")
-          |> render("edit_password.html")
-      end
-    else
-      conn
-      |> put_flash(:error, "Current password is incorrect. Please try again.")
-      |> render("edit_password.html")
     end
   end
 
@@ -143,9 +90,6 @@ defmodule ConciergeSite.AccountController do
       field
     end)
   end
-
-  defp new_user_changeset(params \\ %{"sms_toggle" => false}),
-    do: User.create_account_changeset(%User{}, params)
 
   defp communication_mode_flash(%User{sms_opted_out_at: sms_opted_out_at} = user)
        when not is_nil(sms_opted_out_at) do
@@ -238,7 +182,4 @@ defmodule ConciergeSite.AccountController do
   def mailchimp_update(conn, _params) do
     json(conn, %{status: "ok", message: "invalid request"})
   end
-
-  defp edit_template,
-    do: if(SessionHelper.keycloak_auth?(), do: "edit_keycloak.html", else: "edit.html")
 end

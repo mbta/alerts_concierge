@@ -2,7 +2,6 @@ export ALERT_API_URL=http://s3.amazonaws.com/mbta-realtime-test/alerts_enhanced.
 export API_KEY=
 export API_URL=https://api-dev.mbtace.com/
 export APP_COOKIE=
-export AUTHENTICATION_SOURCE=
 export AWS_ACCESS_KEY_ID=
 export AWS_SECRET_ACCESS_KEY=
 export DATABASE_URL_DEV=postgresql://__username__:password@localhost:5432/alert_concierge_dev

@@ -22,8 +22,6 @@ defmodule ConciergeSite.Web.AuthControllerTest do
 
   describe "GET /auth/:provider/callback" do
     setup do
-      reassign_env(:concierge_site, ConciergeSite.Endpoint, authentication_source: "keycloak")
-
       reassign_env(:concierge_site, :token_verify_fn, fn _, _ ->
         {:ok, %{"resource_access" => %{"t-alerts" => %{"roles" => ["admin", "user"]}}}}
       end)
@@ -32,8 +30,7 @@ defmodule ConciergeSite.Web.AuthControllerTest do
         Repo.insert!(%User{
           email: "rider@example.com",
           phone_number: "5551234567",
-          role: "user",
-          encrypted_password: ""
+          role: "user"
         })
 
       {:ok, rider: rider}
@@ -89,8 +86,7 @@ defmodule ConciergeSite.Web.AuthControllerTest do
       was_an_admin =
         Repo.insert!(%User{
           email: "was_an_admin@example.com",
-          role: "admin",
-          encrypted_password: ""
+          role: "admin"
         })
 
       reassign_env(:concierge_site, :token_verify_fn, fn _, _ ->
@@ -123,8 +119,6 @@ defmodule ConciergeSite.Web.AuthControllerTest do
     end
 
     test "redirects to the landing page for an ueberauth failure", %{conn: conn} do
-      reassign_env(:concierge_site, ConciergeSite.Endpoint, authentication_source: "local")
-
       conn =
         conn
         |> init_test_session(%{username: "test_username"})

@@ -54,7 +54,7 @@ defmodule ConciergeSite.AuthController do
 
   def callback(%{assigns: %{ueberauth_failure: failure}} = conn, _params) do
     Logger.info("Ueberauth failure: #{inspect(failure)}")
-    SessionHelper.sign_out(conn)
+    SessionHelper.sign_out(conn, skip_oidc_sign_out: true)
   end
 
   def callback(%{assigns: assigns} = conn, params) do
@@ -62,7 +62,7 @@ defmodule ConciergeSite.AuthController do
       "Unexpected Ueberauth callback assigns=#{inspect(assigns)} params=#{inspect(params)}"
     )
 
-    SessionHelper.sign_out(conn)
+    SessionHelper.sign_out(conn, skip_oidc_sign_out: true)
   end
 
   @spec logout(Conn.t(), map()) :: Conn.t()
@@ -79,8 +79,7 @@ defmodule ConciergeSite.AuthController do
           id: id,
           email: email,
           phone_number: phone_number,
-          role: role,
-          encrypted_password: ""
+          role: role
         })
 
         User.get(id)

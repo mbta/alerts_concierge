@@ -7,7 +7,6 @@ timestamp=$(TZ=UTC date +%Y-%m-%dT%H_%M_%SZ)
 # Skipping the table:
 # - guardian_tokens
 # - metadata
-# - password_resets
 # - versions
 pg_dump \
 --port=5432 \
