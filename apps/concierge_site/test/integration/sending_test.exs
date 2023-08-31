@@ -29,7 +29,9 @@ defmodule ConciergeSite.Integration.Sending do
         }
       ],
       last_push_notification: ~U[2018-01-01 05:00:00Z],
-      service_effect: "Service Effect"
+      service_effect: "Service Effect",
+      image_url: "http://example.com/cool_carrot.png",
+      image_alternative_text: "cool carrot"
     }
 
     @subscription %{

@@ -24,7 +24,9 @@ defmodule AlertProcessor.Model.Notification do
           last_push_notification: DateTime.t() | nil,
           alert: Alert.t() | nil,
           closed_timestamp: DateTime.t() | nil,
-          type: notification_type | nil
+          type: notification_type | nil,
+          image_url: String.t() | nil,
+          image_alternative_text: String.t() | nil
         }
 
   @primary_key {:id, :binary_id, autogenerate: true}
@@ -47,6 +49,8 @@ defmodule AlertProcessor.Model.Notification do
     field(:alert, :string, virtual: true)
     field(:closed_timestamp, :utc_datetime)
     field(:type, AlertProcessor.AtomType)
+    field(:image_url, :string)
+    field(:image_alternative_text, :string)
 
     timestamps(type: :utc_datetime)
   end

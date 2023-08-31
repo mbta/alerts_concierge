@@ -46,7 +46,9 @@ defmodule AlertProcessor.NotificationBuilderTest do
           }
         ],
         closed_timestamp: alert.closed_timestamp,
-        type: :initial
+        type: :initial,
+        image_url: nil,
+        image_alternative_text: nil
       }
 
       notification = NotificationBuilder.build_notification({user, [sub]}, alert)

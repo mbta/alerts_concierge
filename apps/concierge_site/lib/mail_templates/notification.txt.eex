@@ -11,6 +11,10 @@ The issue described below has ended:
 
 <%= notification.header %>
 
+<%= notification.image_url %>
+
+<%= notification.image_alternative_text %>
+
 <%= notification.description %>
 <% end %>
 

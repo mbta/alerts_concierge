@@ -20,6 +20,7 @@ defmodule ConciergeSite.Dissemination.NotificationEmailTest do
     header: "Red line inbound from Alewife station closure",
     description: "There is a fire in at south station so it is closed",
     url: "http://www.example.com/alert-info",
+    image_url: "http://www.example.com/alert-info.png",
     alert: @alert,
     last_push_notification: %DateTime{
       year: 2017,
@@ -47,6 +48,7 @@ defmodule ConciergeSite.Dissemination.NotificationEmailTest do
     assert body =~ "Red line delay"
     assert body =~ "Red line inbound from Alewife station closure"
     assert body =~ "There is a fire in at south station so it is closed"
+    assert body =~ "http://www.example.com/alert-info.png"
     assert body =~ "Last Updated: Jan 18 2017 02:00 PM"
   end
 

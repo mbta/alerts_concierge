@@ -41,6 +41,11 @@
                 <%= notification.header %>
               </p>
               <br />
+              <%= if notification.image_url do %>
+                <a href="<%= notification.image_url %>" target="blank">
+                  <img src="<%= notification.image_url %>" alt="<%= notification.image_alternative_text %>" style="width: 100%;" />
+                </a>
+              <% end %>
               <%= if notification.description do %>
                 <p style="margin: 0; padding: 0; font-size: 16px; line-height: 1.5; color: #1c1e23;">
                   <%= String.replace(notification.description, "\r\n", "<br/>") %>
