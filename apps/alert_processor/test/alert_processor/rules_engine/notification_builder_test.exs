@@ -17,7 +17,9 @@ defmodule AlertProcessor.NotificationBuilderTest do
         id: "1",
         header: nil,
         active_period: [%{start: two_days_from_now, end: three_days_from_now}],
-        last_push_notification: one_hour_ago
+        last_push_notification: one_hour_ago,
+        image_url: "http://example.com/cool_image.png",
+        image_alternative_text: "a cool image"
       }
 
       {:ok, alert: alert}
@@ -47,8 +49,8 @@ defmodule AlertProcessor.NotificationBuilderTest do
         ],
         closed_timestamp: alert.closed_timestamp,
         type: :initial,
-        image_url: nil,
-        image_alternative_text: nil
+        image_url: "http://example.com/cool_image.png",
+        image_alternative_text: "a cool image"
       }
 
       notification = NotificationBuilder.build_notification({user, [sub]}, alert)
