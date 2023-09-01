@@ -30,7 +30,9 @@ CREATE TABLE public.alerts (
     last_modified timestamp without time zone,
     data jsonb,
     inserted_at timestamp without time zone NOT NULL,
-    updated_at timestamp without time zone NOT NULL
+    updated_at timestamp without time zone NOT NULL,
+    image_url character varying(255),
+    image_alternative_text character varying(255)
 );
 
 
@@ -136,7 +138,9 @@ CREATE TABLE public.notifications (
     description text,
     url character varying(255),
     closed_timestamp timestamp without time zone,
-    type character varying(255)
+    type character varying(255),
+    image_url character varying(255),
+    image_alternative_text character varying(255)
 );
 
 
@@ -595,3 +599,4 @@ INSERT INTO public."schema_migrations" (version) VALUES (20210528144213);
 INSERT INTO public."schema_migrations" (version) VALUES (20230208195021);
 INSERT INTO public."schema_migrations" (version) VALUES (20230823214704);
 INSERT INTO public."schema_migrations" (version) VALUES (20230824175754);
+INSERT INTO public."schema_migrations" (version) VALUES (20230830193726);

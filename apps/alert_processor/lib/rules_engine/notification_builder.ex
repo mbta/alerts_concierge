@@ -28,7 +28,9 @@ defmodule AlertProcessor.NotificationBuilder do
           &%AlertProcessor.Model.NotificationSubscription{subscription_id: &1.id}
         ),
       closed_timestamp: alert.closed_timestamp,
-      type: List.first(subscriptions).notification_type_to_send || :initial
+      type: List.first(subscriptions).notification_type_to_send || :initial,
+      image_url: alert.image_url,
+      image_alternative_text: alert.image_alternative_text
     }
   end
 

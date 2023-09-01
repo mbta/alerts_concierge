@@ -169,6 +169,11 @@ defmodule AlertProcessor.AlertParser do
     |> Map.put(:recurrence, parse_translation(alert_data["recurrence_text"]))
     |> Map.put(:closed_timestamp, parse_datetime_or_nil(alert_data["closed_timestamp"]))
     |> Map.put(:reminder_times, parse_reminder_times(alert_data["reminder_times"]))
+    |> Map.put(:image_url, parse_translated_image(alert_data["image"]))
+    |> Map.put(
+      :image_alternative_text,
+      parse_translation(alert_data["image_alternative_text"])
+    )
     |> List.wrap()
   end
 
@@ -404,6 +409,27 @@ defmodule AlertProcessor.AlertParser do
   defp do_parse_translation(translations) when is_list(translations) do
     case Enum.find(translations, &(&1["translation"]["language"] == "en")) do
       %{"translation" => %{"language" => "en", "text" => text}} -> text
+      _ -> nil
+    end
+  end
+
+  @doc """
+  Parses a `TranslatedImage` type per the GTFS-realtime specification and returns the url. For
+  more details please see:
+  https://developers.google.com/transit/gtfs-realtime/reference/#message-translatedimage
+  Returns url if only one item in list, if multiple items, finds and returns the english one.
+  """
+  @spec parse_translated_image(map) :: String.t() | nil
+
+  def parse_translated_image(nil), do: nil
+
+  def parse_translated_image(%{"localized_image" => [localized_image]}) do
+    Map.get(localized_image, "url")
+  end
+
+  def parse_translated_image(%{"localized_image" => localized_images}) do
+    case Enum.find(localized_images, &(&1["language"] == "en")) do
+      %{"url" => url} -> url
       _ -> nil
     end
   end

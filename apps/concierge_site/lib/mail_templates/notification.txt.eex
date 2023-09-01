@@ -11,7 +11,13 @@ The issue described below has ended:
 
 <%= notification.header %>
 
+<%= if notification.image_url do %>
+  <%= notification.image_url %>
+  <%= notification.image_alternative_text %>
+<% end %>
+
 <%= notification.description %>
+
 <% end %>
 
 <%= if notification.last_push_notification do %>
