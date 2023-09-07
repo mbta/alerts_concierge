@@ -1,5 +1,23 @@
 import Config
 
+alias Helpers.RuntimeHelper
+
+ex_aws =
+  case(System.get_env("DISABLE_SMS_SENDING")) do
+    "true" -> ExAws.Mock
+    _ -> Application.get_env(:alert_processor, :ex_aws)
+  end
+
+mailer =
+  case(System.get_env("DISABLE_EMAIL_SENDING")) do
+    "true" -> AlertProcessor.MailerMock
+    _ -> Application.get_env(:alert_processor, :mailer)
+  end
+
+config :alert_processor,
+  ex_aws: ex_aws,
+  mailer: mailer
+
 config :alert_processor, AlertProcessor.Repo,
   url: System.fetch_env!("DATABASE_URL_#{config_env() |> to_string() |> String.upcase()}")
 
