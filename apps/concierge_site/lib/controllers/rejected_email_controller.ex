@@ -26,7 +26,7 @@ defmodule ConciergeSite.RejectedEmailController do
   end
 
   defp sns do
-    mod = String.to_atom("#{Application.get_env(:alert_processor, :ex_aws)}.SNS")
+    mod = String.to_existing_atom("#{Application.get_env(:alert_processor, :ex_aws)}.SNS")
     Logger.info("Using SNS module #{mod}")
     mod
   end
