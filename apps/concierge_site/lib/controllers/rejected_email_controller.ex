@@ -4,12 +4,10 @@ defmodule ConciergeSite.RejectedEmailController do
   alias AlertProcessor.Model.User
   require Logger
 
-  @ex_aws Application.compile_env!(:alert_processor, :ex_aws)
-
   def handle_message(conn, _params) do
     with {:ok, raw_body, conn} <- read_body(conn),
          {:ok, params} <- Poison.decode(raw_body),
-         :ok <- @ex_aws.SNS.verify_message(params) do
+         :ok <- sns().verify_message(params) do
       do_handle_message(params)
       send_resp(conn, :no_content, "")
     else
@@ -25,6 +23,12 @@ defmodule ConciergeSite.RejectedEmailController do
         log_error("event=handle_error reason=verify #{error}")
         send_resp(conn, :unauthorized, "")
     end
+  end
+
+  defp sns do
+    mod = String.to_atom("#{Application.get_env(:alert_processor, :ex_aws)}.SNS")
+    Logger.info("Using SNS module #{mod}")
+    mod
   end
 
   defp do_handle_message(%{"Type" => "SubscriptionConfirmation", "SubscribeURL" => url}) do
