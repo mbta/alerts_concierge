@@ -420,7 +420,11 @@ defmodule AlertProcessor.ServiceInfoCache do
   defp fetch_service_info(:bus), do: do_fetch_service_info([3])
 
   defp fetch_service_info(:parent_stop_info) do
-    {:ok, parent_stations} = ApiClient.parent_stations()
+    parent_stations =
+      case ApiClient.parent_stations() do
+        {:ok, parent_stations} -> parent_stations
+        {:error, _message} -> []
+      end
 
     for station <- parent_stations, into: %{} do
       case station do
@@ -437,9 +441,20 @@ defmodule AlertProcessor.ServiceInfoCache do
   end
 
   defp fetch_service_info(:ferry_general_ids) do
-    {:ok, routes} = ApiClient.routes([4])
+    routes =
+      case ApiClient.routes([4]) do
+        {:ok, routes} -> routes
+        {:error, _message} -> []
+      end
+
     route_ids = Enum.map(routes, & &1["id"])
-    {:ok, trips, service_info} = ApiClient.trips_with_service_info(route_ids)
+
+    {trips, service_info} =
+      case ApiClient.trips_with_service_info(route_ids) do
+        {:ok, trips, service_info} -> {trips, service_info}
+        {:error, _message} -> {[], []}
+      end
+
     trip_info_map = map_trip_information(trips, service_info)
     trip_ids = Enum.map(trips, & &1["id"])
 
@@ -469,14 +484,27 @@ defmodule AlertProcessor.ServiceInfoCache do
              origin_id: origin_id,
              departure_time: departure_time
            })}
+
+        {:error, _message} ->
+          {"", %{}}
       end
     end
   end
 
   defp fetch_service_info(:commuter_rail_trip_ids) do
-    {:ok, routes} = ApiClient.routes([2])
+    routes =
+      case ApiClient.routes([2]) do
+        {:ok, routes} -> routes
+        {:error, _message} -> []
+      end
+
     route_ids = Enum.map(routes, & &1["id"])
-    {:ok, trips, _} = ApiClient.trips_with_service_info(route_ids)
+
+    trips =
+      case ApiClient.trips_with_service_info(route_ids) do
+        {:ok, trips, _} -> trips
+        {:error, _message} -> []
+      end
 
     for trip <- trips, into: %{} do
       %{"attributes" => %{"name" => name}, "id" => trip_id} = trip
@@ -485,7 +513,11 @@ defmodule AlertProcessor.ServiceInfoCache do
   end
 
   defp fetch_service_info(:facility_map) do
-    {:ok, facilities} = ApiClient.facilities()
+    facilities =
+      case ApiClient.facilities() do
+        {:ok, facilities} -> facilities
+        {:error, _message} -> []
+      end
 
     for f <- facilities, into: %{} do
       %{"attributes" => %{"type" => facility_type}, "id" => id} = f
@@ -545,7 +577,11 @@ defmodule AlertProcessor.ServiceInfoCache do
   defp parse_time_of_week(_), do: "weekday"
 
   defp do_fetch_service_info(route_types) do
-    {:ok, routes} = ApiClient.routes(route_types)
+    routes =
+      case ApiClient.routes(route_types) do
+        {:ok, routes} -> routes
+        {:error, _message} -> []
+      end
 
     routes
     |> Enum.map(fn %{
@@ -583,7 +619,12 @@ defmodule AlertProcessor.ServiceInfoCache do
 
   defp fetch_stops(3, route_id) when route_id in @silver_line_route_ids do
     stop_ids_with_elevator_or_escalator = stop_ids_with_elevator_or_escalator()
-    {:ok, route_stops} = ApiClient.route_stops(route_id)
+
+    route_stops =
+      case ApiClient.route_stops(route_id) do
+        {:ok, route_stops} -> route_stops
+        {:error, _message} -> []
+      end
 
     route_stops
     |> Enum.filter(&MapSet.member?(stop_ids_with_elevator_or_escalator, &1["id"]))
@@ -593,12 +634,21 @@ defmodule AlertProcessor.ServiceInfoCache do
   defp fetch_stops(3, _), do: []
 
   defp fetch_stops(_route_type, route_id) do
-    {:ok, route_stops} = ApiClient.route_stops(route_id)
+    route_stops =
+      case ApiClient.route_stops(route_id) do
+        {:ok, route_stops} -> route_stops
+        {:error, _message} -> []
+      end
+
     prepare_stops_for_cache(route_stops)
   end
 
   defp stop_ids_with_elevator_or_escalator() do
-    {:ok, facilities} = ApiClient.facilities()
+    facilities =
+      case ApiClient.facilities() do
+        {:ok, facilities} -> facilities
+        {:error, _message} -> []
+      end
 
     Enum.reduce(facilities, MapSet.new(), fn facility, stop_ids ->
       attributes_type = get_in(facility, ["attributes", "type"])
@@ -653,7 +703,11 @@ defmodule AlertProcessor.ServiceInfoCache do
   end
 
   defp fetch_route_branches("Red") do
-    {:ok, patterns, included} = ApiClient.route_patterns_with_stops("Red")
+    {patterns, included} =
+      case ApiClient.route_patterns_with_stops("Red") do
+        {:ok, patterns, included} -> {patterns, included}
+        {:error, _message} -> {[], []}
+      end
 
     %{"stop" => stops, "trip" => trips} = Enum.group_by(included, &Map.fetch!(&1, "type"))
     stops_by_id = Map.new(stops, fn %{"id" => id} = stop -> {id, stop} end)
@@ -687,7 +741,11 @@ defmodule AlertProcessor.ServiceInfoCache do
   end
 
   def do_headsigns(route_id, direction_id) do
-    {:ok, trips} = ApiClient.trips(route_id, direction_id)
+    trips =
+      case ApiClient.trips(route_id, direction_id) do
+        {:ok, trips} -> trips
+        {:error, _message} -> []
+      end
 
     trips
     |> Enum.filter(fn %{"attributes" => attributes} -> attributes["headsign"] != "" end)
