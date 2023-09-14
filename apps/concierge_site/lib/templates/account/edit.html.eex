@@ -84,7 +84,7 @@
               <%= link to: account_path(@conn, :edit_password) do %>Choose a new password<% end %>
             </li>
             <li class="mb-2">
-              <a href="#" class="text-danger" data-toggle="modal" data-target="#deleteModal">Delete my account</a>
+              <a href="#" class="text-danger" data-toggle="modal" data-target="#deleteModal">Delete my subscriptions</a>
             </li>
           </ul>
         </div>

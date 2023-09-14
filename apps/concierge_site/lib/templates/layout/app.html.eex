@@ -39,8 +39,10 @@
               <%= render "_header_navigation_links.html", conn: @conn, current_user: @current_user %>
             </div>
           <% else %>
-            <%= link(to: session_path(@conn, :new)) do %>
-              Sign in
+            <%= if @conn.request_path !== "/deleted" do %>
+              <%= link(to: session_path(@conn, :new)) do %>
+                Sign in
+              <% end %>
             <% end %>
           <% end %>
         </div>
