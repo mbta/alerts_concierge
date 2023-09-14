@@ -98,8 +98,17 @@ defmodule ConciergeSite.Router do
   end
 
   scope "/auth", ConciergeSite do
-    pipe_through([:redirect_prod_http, :browser])
+    pipe_through([
+      :redirect_prod_http,
+      :browser,
+      ConciergeSite.Plugs.ValidateAuthRedirect
+    ])
+
     get("/:provider", AuthController, :request)
+  end
+
+  scope "/auth", ConciergeSite do
+    pipe_through([:redirect_prod_http, :browser])
     get("/:provider/register", AuthController, :register)
     get("/:provider/callback", AuthController, :callback)
     get("/:provider/logout", AuthController, :logout)
