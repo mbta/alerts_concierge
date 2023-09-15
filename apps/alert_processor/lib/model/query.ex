@@ -260,7 +260,8 @@ defmodule AlertProcessor.Model.Query do
             on s.trip_id = t.id and s.paused = false
           group by t.user_id
         ) as user_trip_counts
-        group by trip_count;
+        group by trip_count
+        order by trip_count asc;
         """
       }
     ]
