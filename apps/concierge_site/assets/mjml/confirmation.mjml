@@ -8,19 +8,12 @@
     <mj-font name="Helvetica" href="https://fonts.googleapis.com/css?family=Helvetica:400,700" />
   </mj-head>
   <mj-body>
-    <mj-section background-color="#16528b" text-align="center">
-      <mj-column>
-        <mj-text align="center" padding="0">
-          <img src="https://s3.amazonaws.com/mbta-alerts/html_email/welcome2/header.png" width="254" height="100" />
-        </mj-text>
-      </mj-column>
-    </mj-section>
     <mj-section background-color="#ffffff" padding="0">
       <mj-column>
         <mj-text font-family="Helvetica, Arial" font-size="16px">
           <p>Thanks for signing up for T-Alerts!<br /><br /> If you have immediate feedback about the sign up process, or related to any alerts as you start to receive them, <a style="color: #165c96" href="<%= support_url %>">we’d love to hear it.</a><br
             /><br />
-            <strong>Get the most from your T-Alerts account by signing in!  You can:</strong>
+            <strong>Get the most from your T-Alerts account by <a href="<%= manage_subscriptions_url %>">signing in!</a>  You can:</strong>
           </p>
         </mj-text>
       </mj-column>
@@ -65,9 +58,11 @@
     </mj-section>
 
 
-    <mj-section background-color="#ffffff" padding-top="0" padding-bottom="20">
+    <mj-section padding-top="0" padding-bottom="20">
       <mj-column>
-        <mj-image href="<%= manage_subscriptions_url %>" src="https://s3.amazonaws.com/mbta-alerts/html_email/welcome/sign-in-button.png" width="189" height="45"></mj-image>
+        <mj-text font-family="Helvetica, Arial" font-size="16px" align="center">
+          <a href="<%= manage_subscriptions_url %>" width="254px" height="100px">Sign in to T-Alerts</a>
+        </mj-text>
       </mj-column>
     </mj-section>
 
