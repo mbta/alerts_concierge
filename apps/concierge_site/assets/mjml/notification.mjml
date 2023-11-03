@@ -112,6 +112,6 @@
         </mj-text>
       </mj-column>
     </mj-section>
-	<img src="<%= track_open_url %>" height="0" width="0">
+	<img src="<%= track_open_url %>" height="0" width="0" alt="">
   </mj-body>
 </mjml>
