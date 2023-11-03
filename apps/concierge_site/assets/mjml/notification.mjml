@@ -29,7 +29,7 @@
         <mj-raw>
           <div role="main" style="font-family:'Helvetica Neue', Helvetica, Arial, sans-serif; padding: 10px 0 10px 0">
             <%= if notification.closed_timestamp do %>
-              <p style="font-size: 16px; font-weight: bold; line-height: 20px;">
+              <p role="heading" aria-level="1" style="font-size: 16px; font-weight: bold; line-height: 20px;">
                 The issue described below has ended:
               </p>
               <p style="margin: 0; padding: 0 0 0 15px; border-left: 5px #f7f7f7 solid; font-size: 16px; line-height: 1.5; color: #1c1e23; margin-top: 24px;">
@@ -42,7 +42,7 @@
                 </p>
               <% end %>
             <% else %>
-              <p style="margin: 0; padding: 0; font-size: 16px; font-weight: bold; line-height: 1.5; color: #1c1e23; margin-top: 24px;">
+              <p role="heading" aria-level="1" style="margin: 0; padding: 0; font-size: 16px; font-weight: bold; line-height: 1.5; color: #1c1e23; margin-top: 24px;">
                 <%= notification.header %>
               </p>
               <br />
