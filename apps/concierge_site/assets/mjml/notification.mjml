@@ -7,7 +7,7 @@
     </mj-attributes>
     <mj-html-attributes>
       <mj-selector path=".footer">
-        <mj-html-attribute name="role">footer</mj-html-attribute>
+        <mj-html-attribute name="role">contentinfo</mj-html-attribute>
       </mj-selector>
     </mj-html-attributes>
   </mj-head>
