@@ -5,11 +5,6 @@
       <mj-all font-size="16px" />
       <mj-all line-height="19px" />
     </mj-attributes>
-    <mj-html-attributes>
-      <mj-selector path=".footer">
-        <mj-html-attribute name="role">contentinfo</mj-html-attribute>
-      </mj-selector>
-    </mj-html-attributes>
   </mj-head>
 
   <mj-body width="500px">
@@ -102,7 +97,7 @@
     <mj-section padding="0" css-class="footer">
       <mj-column>
         <mj-text font-size="12px" font-family="'Helvetica Neue', Helvetica, Arial, sans-serif" padding-left="0" padding-right="0">
-          <p>
+          <p role="contentinfo">
             <a href="<%= support_url %>" style="color: #16528A; text-decoration: none;">Tell us how we’re doing</a> ●
             <a href="<%= manage_subscriptions_url %>" style="color: #16528A; text-decoration: none;">Edit Subscription</a> ●
             <a href="<%= all_alerts_url %>" style="color: #16528A; text-decoration: none;">See all alerts</a>
