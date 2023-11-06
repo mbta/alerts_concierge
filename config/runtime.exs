@@ -21,23 +21,27 @@ config :alert_processor,
 config :alert_processor, AlertProcessor.Repo,
   url: System.fetch_env!("DATABASE_URL_#{config_env() |> to_string() |> String.upcase()}")
 
-config :concierge_site,
-  keycloak_base_uri: System.get_env("KEYCLOAK_BASE_URI"),
-  keycloak_client_id: System.get_env("KEYCLOAK_CLIENT_ID"),
-  keycloak_redirect_uri: System.get_env("KEYCLOAK_REDIRECT_URI")
+if base_uri = System.get_env("KEYCLOAK_BASE_URI") do
+  config :concierge_site,
+    keycloak_base_uri: base_uri
 
-config :ueberauth, Ueberauth.Strategy.OIDC,
-  keycloak: [
-    fetch_userinfo: true,
-    userinfo_uid_field: "preferred_username",
-    discovery_document_uri: System.get_env("KEYCLOAK_WELL_KNOWN_OIDC"),
-    client_id: System.get_env("KEYCLOAK_CLIENT_ID"),
-    client_secret: System.get_env("KEYCLOAK_CLIENT_SECRET"),
-    redirect_uri: System.get_env("KEYCLOAK_REDIRECT_URI"),
-    logout_uri: System.get_env("KEYCLOAK_LOGOUT_URI"),
-    response_type: "code",
-    scope: "openid email profile roles web-origins"
+  keycloak_base_opts = [
+    discovery_document_uri: System.fetch_env!("KEYCLOAK_WELL_KNOWN_OIDC"),
+    client_id: System.fetch_env!("KEYCLOAK_CLIENT_ID"),
+    client_secret: System.fetch_env!("KEYCLOAK_CLIENT_SECRET")
   ]
+
+  realm = System.get_env("KEYCLOAK_REALM", "MBTA")
+
+  config :ueberauth, Ueberauth.Strategy.OIDC,
+    keycloak: keycloak_base_opts,
+    edit_password: keycloak_base_opts,
+    update_profile: keycloak_base_opts,
+    register:
+      Keyword.merge(keycloak_base_opts,
+        request_uri: "#{base_uri}/auth/realms/#{realm}/protocol/openid-connect/registrations"
+      )
+end
 
 if config_env() == :prod do
   config :concierge_site, ConciergeSite.Endpoint,

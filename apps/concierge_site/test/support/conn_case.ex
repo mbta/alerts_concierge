@@ -32,7 +32,12 @@ defmodule ConciergeSite.ConnCase do
         conn
         |> bypass_through(ConciergeSite.Router, [:browser])
         |> get("/")
-        |> ConciergeSite.Guardian.Plug.sign_in(user)
+        |> ConciergeSite.Guardian.Plug.sign_in(
+          user,
+          %{
+            logout_uri: "http://oidc.example/end_session_uri"
+          }
+        )
         |> send_resp(200, "Flush the session")
         |> recycle()
       end

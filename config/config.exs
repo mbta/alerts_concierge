@@ -19,7 +19,32 @@ config :sentry,
 
 config :logger, backends: [:console, Sentry.LoggerBackend]
 
+keycloak_base_opts = [
+  fetch_userinfo: true,
+  userinfo_uid_field: "preferred_username",
+  response_type: "code",
+  scope: "openid email profile roles web-origins"
+]
+
 config :ueberauth, Ueberauth,
   providers: [
-    keycloak: {Ueberauth.Strategy.OIDC, [default: [provider: :keycloak]]}
+    keycloak: {Ueberauth.Strategy.OIDC, keycloak_base_opts},
+    edit_password:
+      {Ueberauth.Strategy.OIDC,
+       Keyword.merge(keycloak_base_opts,
+         callback_path: "/account/edit",
+         request_params: %{kc_action: "UPDATE_PASSWORD"}
+       )},
+    update_profile:
+      {Ueberauth.Strategy.OIDC,
+       Keyword.merge(keycloak_base_opts,
+         callback_path: "/account/edit",
+         request_params: %{kc_action: "MBTA_UPDATE_PROFILE"}
+       )},
+    register:
+      {Ueberauth.Strategy.OIDC,
+       Keyword.merge(keycloak_base_opts,
+         callback_path: "/auth/keycloak/callback",
+         scope: "openid"
+       )}
   ]
