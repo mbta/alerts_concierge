@@ -3,6 +3,8 @@ defmodule AlertProcessor.Model.Subscription do
   Set of criteria on which a user wants to be sent alerts.
   """
 
+  require Logger
+
   alias AlertProcessor.{Repo, TimeFrameComparison}
 
   alias AlertProcessor.Model.{
@@ -83,8 +85,8 @@ defmodule AlertProcessor.Model.Subscription do
     has_many(:notification_subscriptions, NotificationSubscription)
     has_many(:notifications, through: [:notification_subscriptions, :notification])
     field(:relevant_days, {:array, AlertProcessor.AtomType})
-    field(:start_time, :time, null: false)
-    field(:end_time, :time, null: false)
+    field(:start_time, :time)
+    field(:end_time, :time)
     field(:travel_start_time, :time)
     field(:travel_end_time, :time)
     field(:origin, :string)
@@ -432,47 +434,90 @@ defmodule AlertProcessor.Model.Subscription do
 
   @spec all_active_for_alert(Alert.t()) :: [t()]
   def all_active_for_alert(alert) do
-    alert
-    |> get_alert_entity_lists()
-    |> subscribers_match_query()
+    subscription_ids =
+      alert
+      |> get_alert_entity_lists()
+      |> entity_specific_queries(alert)
+      |> Enum.uniq()
+
+    fetch_with_user(subscription_ids)
+  end
+
+  @spec entity_specific_queries(Keyword.t(), Alert.t()) :: [id()]
+  defp entity_specific_queries(
+         [route_ids: _, routes: _, stops: _, wildcard: true],
+         alert
+       ) do
+    log_timing("wildcard query", fn ->
+      from(s in __MODULE__, select: s.id)
+      |> where_not_paused_and_not_yet_notified(alert)
+    end)
+  end
+
+  defp entity_specific_queries(entity_lists, alert) do
+    entity_lists
+    |> Keyword.delete(:wildcard)
+    |> Enum.map(&entity_specific_query(&1, alert))
+    |> List.flatten(admin_query(alert))
+  end
+
+  @spec admin_query(Alert.t()) :: [t()]
+  defp admin_query(alert) do
+    log_timing("admin query", fn ->
+      from(
+        s in __MODULE__,
+        select: s.id,
+        where: s.is_admin == true
+      )
+      |> where_not_paused_and_not_yet_notified(alert)
+    end)
+  end
+
+  @spec entity_specific_query(tuple(), Alert.t()) :: [t()]
+  defp entity_specific_query({:route_ids, []}, _alert), do: []
+
+  defp entity_specific_query({:route_ids, route_ids}, alert) do
+    log_timing("route IDs query route_ids=#{inspect(route_ids)}", fn ->
+      from(
+        s in __MODULE__,
+        select: s.id,
+        where: s.route_type in ^route_ids
+      )
+      |> where_not_paused_and_not_yet_notified(alert)
+    end)
+  end
+
+  defp entity_specific_query({:routes, []}, _alert), do: []
+
+  defp entity_specific_query({:routes, routes}, alert) do
+    log_timing("routes query, routes=#{inspect(routes)}", fn ->
+      from(
+        s in __MODULE__,
+        select: s.id,
+        where: s.route in ^routes
+      )
+      |> where_not_paused_and_not_yet_notified(alert)
+    end)
+  end
+
+  defp entity_specific_query({:stops, []}, _alert), do: []
+
+  defp entity_specific_query({:stops, stops}, alert) do
+    log_timing("stops query, stops=#{inspect(stops)}", fn ->
+      from(
+        s in __MODULE__,
+        select: s.id,
+        where: s.origin in ^stops or s.destination in ^stops
+      )
+      |> where_not_paused_and_not_yet_notified(alert)
+    end)
+  end
+
+  defp where_not_paused_and_not_yet_notified(query, alert) do
+    query
     |> where_subscription_not_paused()
     |> where_not_yet_notified(alert)
     |> Repo.all()
-    |> Repo.preload(:user)
-  end
-
-  @spec paused_count() :: number
-  def paused_count do
-    Repo.one(
-      from(
-        s in __MODULE__,
-        where: s.paused == true,
-        select: count(s.id)
-      )
-    )
-  end
-
-  defp subscribers_match_query(
-         route_ids: _,
-         routes: _,
-         stops: _,
-         wildcard: true
-       ),
-       do: from(s in __MODULE__)
-
-  defp subscribers_match_query(
-         route_ids: route_ids,
-         routes: routes,
-         stops: stops,
-         wildcard: false
-       ) do
-    # group (route_type ANY(..) OR route ANY(..) OR origin ANY(..) OR destination ANY (...)) together
-    from(
-      s in __MODULE__,
-      where:
-        s.is_admin == true or s.route_type in ^route_ids or s.route in ^routes or
-          s.origin in ^stops or s.destination in ^stops
-    )
   end
 
   defp where_subscription_not_paused(query), do: from(s in query, where: s.paused == false)
@@ -487,6 +532,15 @@ defmodule AlertProcessor.Model.Subscription do
             ^alert_id
           )
       )
+
+  @spec log_timing(String.t(), (() -> any())) :: any()
+  defp log_timing(key, fun) when is_function(fun, 0) do
+    start_time = System.monotonic_time(:millisecond)
+    result = fun.()
+    end_time = System.monotonic_time(:millisecond)
+    Logger.info("#{key} time=#{end_time - start_time}")
+    result
+  end
 
   @spec get_alert_entity_lists(Alert.t()) :: Keyword.t()
   defp get_alert_entity_lists(alert) do

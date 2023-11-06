@@ -32,7 +32,7 @@ const handleRouteFormSubmit = e => {
   removeElByQuery("#bus-error");
 
   const existingAlternativeRoutes = JSON.parse(
-    decodeURI(document.getElementById("trip_alternate_routes").value)
+    decodeURI(document.getElementById("new-tripleg-form_alternate_routes").value)
   );
 
   const formEl = e.target;
@@ -82,7 +82,7 @@ const handleRouteFormSubmit = e => {
   );
 
   // commit all alternate routes back to the DOM
-  document.getElementById("trip_alternate_routes").value = encodeURI(
+  document.getElementById("new-tripleg-form_alternate_routes").value = encodeURI(
     JSON.stringify(updatedAlternateRoutes)
   );
 };

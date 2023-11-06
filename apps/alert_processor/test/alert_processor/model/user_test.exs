@@ -4,16 +4,14 @@ defmodule AlertProcessor.Model.UserTest do
   import AlertProcessor.Factory
   alias AlertProcessor.Model.User
 
-  @valid_attrs %{email: "email@test.com", role: "user", password: "password1"}
+  doctest User
+
+  @valid_attrs %{email: "email@test.com", role: "user"}
   @valid_account_attrs %{
     "email" => "test@email.com",
-    "password" => "Password1",
     "communication_mode" => "email"
   }
   @invalid_attrs %{}
-  @password "password1"
-  @encrypted_password Bcrypt.hash_pwd_salt(@password)
-  @disabled_password ""
 
   describe "user changeset" do
     test "changeset with valid attributes" do
@@ -22,7 +20,7 @@ defmodule AlertProcessor.Model.UserTest do
     end
 
     test "changeset with invalid attributes" do
-      changeset = User.changeset(%User{}, @invalid_attrs, ~w(email password)a)
+      changeset = User.changeset(%User{}, @invalid_attrs, ~w(email)a)
       refute changeset.valid?
     end
   end
@@ -112,27 +110,6 @@ defmodule AlertProcessor.Model.UserTest do
     end
   end
 
-  describe "update_password" do
-    test "updates password" do
-      user = insert(:user)
-      current_password = user.encrypted_password
-      assert {:ok, user} = User.update_password(user, %{"password" => "Password1"}, user.id)
-      assert current_password != user.encrypted_password
-    end
-
-    test "allows passwords of at least 8 characters and one number or symbol" do
-      user = insert(:user)
-
-      assert {:ok, user} = User.update_password(user, %{password: "example8"}, user.id)
-      assert {:ok, user} = User.update_password(user, %{password: "ex_ample"}, user.id)
-      assert {:ok, user} = User.update_password(user, %{password: "[example"}, user.id)
-      assert {:ok, user} = User.update_password(user, %{password: "código01"}, user.id)
-      assert {:error, _} = User.update_password(user, %{password: "2-short"}, user.id)
-      assert {:error, _} = User.update_password(user, %{password: "longExample"}, user.id)
-      assert {:error, _} = User.update_password(user, %{password: "contraseña"}, user.id)
-    end
-  end
-
   describe "create_account_changeset" do
     defp create_changeset(%{} = attributes) do
       User.create_account_changeset(%User{}, Map.merge(@valid_account_attrs, attributes))
@@ -140,34 +117,6 @@ defmodule AlertProcessor.Model.UserTest do
 
     test "is valid with valid params" do
       assert create_changeset(%{}).valid?
-    end
-
-    test "is valid with password containing special characters and at least 6 characters" do
-      assert create_changeset(%{"password" => "P@ssword"}).valid?
-    end
-
-    test "is invalid with password that is too short" do
-      refute create_changeset(%{"password" => "P@ss1"}).valid?
-    end
-
-    test "is invalid with password that does not contain a digit or special character" do
-      refute create_changeset(%{"password" => "Password"}).valid?
-    end
-
-    test "is invalid with an email that does not contain an @" do
-      refute create_changeset(%{"email" => "emailatexample.com"}).valid?
-    end
-
-    test "is invalid with an email that is missing the TLD" do
-      refute create_changeset(%{"email" => "email@example"}).valid?
-    end
-
-    test "is invalid with an email that has a stray space in it" do
-      refute create_changeset(%{"email" => "email @example.com"}).valid?
-    end
-
-    test "is invalid when whole string is not a valid email" do
-      refute create_changeset(%{"email" => "has a@valid.email substring"}).valid?
     end
 
     test "trims leading and trailing spaces from email" do
@@ -189,65 +138,6 @@ defmodule AlertProcessor.Model.UserTest do
 
       assert changeset.changes.phone_number == "2342342344"
       assert changeset.valid?
-    end
-
-    test "if communication_mode is email, phone_number (if present) will be ignored" do
-      changeset = create_changeset(%{"phone_number" => "2342342344"})
-
-      refute changeset.changes[:phone_number]
-      assert changeset.valid?
-    end
-  end
-
-  describe "authenticate/1" do
-    test "authenticates if email and password valid" do
-      Repo.insert!(%User{
-        email: "test@email.com",
-        role: "user",
-        encrypted_password: @encrypted_password
-      })
-
-      assert {:ok, _} = User.authenticate(%{"email" => "test@email.com", "password" => @password})
-    end
-
-    test "does not authenticate if invalid password for existing user" do
-      Repo.insert!(%User{
-        email: "test@email.com",
-        role: "user",
-        encrypted_password: @encrypted_password
-      })
-
-      assert {:error, _} =
-               User.authenticate(%{
-                 "email" => "test@email.com",
-                 "password" => "different_password"
-               })
-    end
-
-    test "does not authenticate if user doesn't exist" do
-      assert {:error, _} =
-               User.authenticate(%{"email" => "nope@invalid.com", "password" => @password})
-    end
-
-    test "does not authenticate if user's account is disabled" do
-      Repo.insert!(%User{
-        email: "test@email.com",
-        role: "user",
-        encrypted_password: @disabled_password
-      })
-
-      assert {:error, :disabled} =
-               User.authenticate(%{"email" => "test@email.com", "password" => @password})
-    end
-
-    test "email is not case sensitive" do
-      Repo.insert!(%User{
-        email: "test@email.com",
-        role: "user",
-        encrypted_password: @encrypted_password
-      })
-
-      assert {:ok, _} = User.authenticate(%{"email" => "TEST@EMAIL.COM", "password" => @password})
     end
   end
 
@@ -299,6 +189,18 @@ defmodule AlertProcessor.Model.UserTest do
 
     test "doesn't do anything if no phone numbers are passed" do
       assert {:ok, %{}} = User.set_sms_opted_out([])
+    end
+  end
+
+  describe "get/1" do
+    test "returns a user if present" do
+      user = insert(:user)
+      assert User.get(user.id) == user
+    end
+
+    test "returns nil if no matching user" do
+      bad_id = UUID.uuid4()
+      assert User.get(bad_id) == nil
     end
   end
 

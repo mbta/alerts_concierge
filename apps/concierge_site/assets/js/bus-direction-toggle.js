@@ -10,7 +10,7 @@ export const toggleBusDirection = direction => {
 const updateAlternateRoutes = (before, after, direction) => {
   // read existing alternate routes from DOM
   const alternativeRoutes = JSON.parse(
-    decodeURI(document.getElementById("trip_alternate_routes").value)
+    decodeURI(document.getElementById("new-tripleg-form_alternate_routes").value)
   );
 
   // return if their are no alternative routes specified
@@ -24,22 +24,22 @@ const updateAlternateRoutes = (before, after, direction) => {
     (accumulator, primaryRoute) =>
       primaryRoute === before
         ? // update the route that has been changed
-          Object.assign({}, accumulator, {
-            [after]: alternativeRoutes[primaryRoute].map(alternativeRoute => {
-              // replace the direction on nested alternate routes
-              const [route, suffix] = alternativeRoute.split(" - ", 2);
-              return `${route} - ${direction}${suffix.substring(1)}`;
-            })
+        Object.assign({}, accumulator, {
+          [after]: alternativeRoutes[primaryRoute].map(alternativeRoute => {
+            // replace the direction on nested alternate routes
+            const [route, suffix] = alternativeRoute.split(" - ", 2);
+            return `${route} - ${direction}${suffix.substring(1)}`;
           })
+        })
         : // otherwise, return original key and value
-          Object.assign({}, accumulator, {
-            [`${primaryRoute}`]: alternativeRoutes[primaryRoute]
-          }),
+        Object.assign({}, accumulator, {
+          [`${primaryRoute}`]: alternativeRoutes[primaryRoute]
+        }),
     {}
   );
 
   // commit all alternate routes back to the DOM
-  document.getElementById("trip_alternate_routes").value = encodeURI(
+  document.getElementById("new-tripleg-form_alternate_routes").value = encodeURI(
     JSON.stringify(updatedAlternateRoutes)
   );
 };

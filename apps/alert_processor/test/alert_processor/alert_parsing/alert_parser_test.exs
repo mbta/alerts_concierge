@@ -561,6 +561,92 @@ defmodule AlertProcessor.AlertParserTest do
     end
   end
 
+  test "selects english image if multiple images" do
+    image = %{
+      "localized_image" => [
+        %{
+          "url" =>
+            "https://cdn.mbta.com/sites/default/files/styles/whats_happening/public/media/2021-03/promo-service-changes-fall-2.png",
+          "media_type" => "image/png",
+          "language" => "en"
+        },
+        %{
+          "url" =>
+            "https://upload.wikimedia.org/wikipedia/commons/thumb/a/a2/Vegetable-Carrot-Bundle-wStalks.jpg/800px-Vegetable-Carrot-Bundle-wStalks.jpg",
+          "media_type" => "image/png",
+          "language" => "fn"
+        }
+      ]
+    }
+
+    some_timestamp = 1_524_609_934
+
+    alert = %{
+      "id" => "some id",
+      "created_timestamp" => some_timestamp,
+      "duration_certainty" => nil,
+      "effect_detail" => "some_effect",
+      "header_text" => nil,
+      "informed_entity" => [
+        %{
+          "direction_id" => 0
+        }
+      ],
+      "service_effect_text" => nil,
+      "severity" => nil,
+      "last_push_notification_timestamp" => some_timestamp,
+      "image" => image
+    }
+
+    [parsed_alert] = AlertParser.parse_alert(alert, %{}, nil)
+    actual_image_url = parsed_alert.image_url
+    assert hd(image["localized_image"])["url"] == actual_image_url
+  end
+
+  test "selects image if given only one image" do
+    image = %{
+      "localized_image" => [
+        %{
+          "url" =>
+            "https://upload.wikimedia.org/wikipedia/commons/thumb/a/a2/Vegetable-Carrot-Bundle-wStalks.jpg/800px-Vegetable-Carrot-Bundle-wStalks.jpg",
+          "media_type" => "image/png"
+        }
+      ]
+    }
+
+    some_timestamp = 1_524_609_934
+
+    alert = %{
+      "id" => "some id",
+      "created_timestamp" => some_timestamp,
+      "duration_certainty" => nil,
+      "effect_detail" => "some_effect",
+      "header_text" => nil,
+      "informed_entity" => [
+        %{
+          "direction_id" => 0
+        }
+      ],
+      "service_effect_text" => nil,
+      "severity" => nil,
+      "last_push_notification_timestamp" => some_timestamp,
+      "image" => image,
+      "image_alternative_text" => %{
+        "translation" => [
+          %{
+            "text" => "cool image",
+            "language" => "en"
+          }
+        ]
+      }
+    }
+
+    [parsed_alert] = AlertParser.parse_alert(alert, %{}, nil)
+    actual_image_url = parsed_alert.image_url
+    assert actual_image_url == hd(image["localized_image"])["url"]
+    assert parsed_alert.image_alternative_text == "cool image"
+  end
+
   test "swapped informed entities" do
     # the swap alerts cassette has been doctored so the IDs match in the API and IBI feeds
     use_cassette "swap_alerts", custom: true, clear_mock: true, match_requests_on: [:query] do

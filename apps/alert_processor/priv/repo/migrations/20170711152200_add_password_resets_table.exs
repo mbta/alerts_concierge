@@ -3,7 +3,7 @@ defmodule MbtaServer.Repo.Migrations.AddPasswordResetsTable do
 
   def change do
     create table(:password_resets, primary_key: false) do
-      add :id, :uuid, primary_key: true, default: fragment("uuid_generate_v4()")
+      add :id, :uuid, primary_key: true, default: fragment("gen_random_uuid()")
       add :user_id, references(:users, type: :uuid, on_delete: :delete_all)
       add :expired_at, :utc_datetime
       add :redeemed_at, :utc_datetime

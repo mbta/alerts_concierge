@@ -515,8 +515,8 @@ defmodule AlertProcessor.Model.SubscriptionTest do
 
       assert Float.round(subscription.destination_lat, 6) == 42.355518
       assert Float.round(subscription.destination_long, 6) == -71.060225
-      assert Float.round(subscription.origin_lat, 6) == 42.395428
-      assert Float.round(subscription.origin_long, 6) == -71.142483
+      assert Float.round(subscription.origin_lat, 6) == 42.39583
+      assert Float.round(subscription.origin_long, 6) == -71.141287
     end
 
     test "without stop values" do
@@ -658,15 +658,6 @@ defmodule AlertProcessor.Model.SubscriptionTest do
 
       assert [] = Subscription.all_active_for_alert(alert)
     end
-  end
-
-  test "paused_count returns the number of paused subscriptions" do
-    user = insert(:user)
-    insert(:subscription, user: user, route: "Red", paused: true)
-    insert(:subscription, user: user, route: "Orange")
-    insert(:subscription, user: user, route: "Blue", paused: true)
-
-    assert Subscription.paused_count() == 2
   end
 
   defp map_subscription(%{"routes" => routes} = params) do

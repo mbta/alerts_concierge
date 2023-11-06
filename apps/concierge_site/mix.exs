@@ -11,7 +11,7 @@ defmodule ConciergeSite.Mixfile do
       lockfile: "../../mix.lock",
       elixir: "~> 1.6",
       elixirc_paths: elixirc_paths(Mix.env()),
-      compilers: [:gettext, :phoenix] ++ Mix.compilers(),
+      compilers: [:phoenix] ++ Mix.compilers(),
       build_embedded: Mix.env() == :prod,
       start_permanent: Mix.env() == :prod,
       deps: deps(),
@@ -41,11 +41,9 @@ defmodule ConciergeSite.Mixfile do
       {:bamboo, "~> 2.2.0"},
       {:bamboo_phoenix, "~> 1.0.0"},
       {:bamboo_ses, "~> 0.3.0"},
-      # TOOD: update to use official release when one is tagged with
-      # `check_if_phone_number_is_opted_out` support
-      {:ex_aws_sns, git: "https://github.com/ex-aws/ex_aws_sns.git", ref: "fc213db"},
+      {:ex_aws_sns, "~> 2.3.1"},
       {:gettext, "~> 0.11"},
-      {:guardian, "~> 2.2.0"},
+      {:guardian, "~> 2.3.1"},
       {:guardian_db, "~> 2.1.0"},
       {:hammer, "~> 6.0"},
       {:httpoison, "~> 1.8.0"},
@@ -64,10 +62,12 @@ defmodule ConciergeSite.Mixfile do
       {:tzdata, "~> 1.1.0"},
       {:phoenix_live_reload, "~> 1.0", only: :dev},
       {:bcrypt_elixir, "~> 3.0", only: :test},
-      {:wallaby, "~> 0.29.0", only: :test},
       {:diskusage_logger, "~> 0.2.0", only: :prod},
       {:ehmon, github: "mbta/ehmon", only: :prod},
-      {:mjml, "~> 1.3.2"}
+      {:mjml, "~> 1.5.0"},
+      {:ueberauth, "~> 0.10.3"},
+      {:ueberauth_oidc, "~> 0.1.7"},
+      {:openid_connect, "~> 0.2.2"}
     ]
   end
 

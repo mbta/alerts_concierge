@@ -1,5 +1,5 @@
 # --- Set up Elixir build ---
-FROM hexpm/elixir:1.13.4-erlang-24.3.4.6-debian-bullseye-20220801-slim as elixir-builder
+FROM hexpm/elixir:1.14.5-erlang-25.3.2.7-debian-bullseye-20230612-slim as elixir-builder
 
 ENV LANG=C.UTF-8 MIX_ENV=prod
 
@@ -15,7 +15,7 @@ RUN mix deps.get --only prod
 
 
 # --- Build frontend assets ---
-FROM node:14.21.1-bullseye-slim as asset-builder
+FROM node:18.14.0-bullseye-slim as asset-builder
 
 RUN apt-get update --allow-releaseinfo-change
 RUN apt-get install --no-install-recommends --yes ca-certificates git

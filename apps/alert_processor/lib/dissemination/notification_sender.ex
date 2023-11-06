@@ -6,7 +6,6 @@ defmodule AlertProcessor.Dissemination.NotificationSender do
 
   require Logger
 
-  @mailer Application.compile_env!(:alert_processor, :mailer)
   @mailer_email Application.compile_env!(:alert_processor, :mailer_email)
 
   @doc "Sends a notification, via SMS if it has a phone number, else via email."
@@ -16,7 +15,7 @@ defmodule AlertProcessor.Dissemination.NotificationSender do
     result =
       notification
       |> @mailer_email.notification_email()
-      |> @mailer.deliver_now(response: true)
+      |> mailer().deliver_now(response: true)
 
     case result do
       {:ok, _email, response} ->
@@ -40,6 +39,13 @@ defmodule AlertProcessor.Dissemination.NotificationSender do
 
     log(notification, :sms, result, response)
     {result, response}
+  end
+
+  @spec mailer :: module()
+  defp mailer do
+    mod = Application.get_env(:alert_processor, :mailer)
+    Logger.info("Using mailer module #{mod}")
+    mod
   end
 
   defp with_t_alerts_prefix(str), do: "T-Alerts - #{str}"

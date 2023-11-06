@@ -2,8 +2,10 @@ defmodule ConciergeSite.Router do
   use ConciergeSite.Web, :router
   use Plug.ErrorHandler
 
+  @redirect_http Application.compile_env(:concierge_site, :redirect_http?)
+
   pipeline :redirect_prod_http do
-    if Application.get_env(:concierge_site, :redirect_http?) do
+    if @redirect_http do
       plug(Plug.SSL, rewrite_on: [:x_forwarded_proto])
     end
   end
@@ -62,13 +64,14 @@ defmodule ConciergeSite.Router do
     post("/api/feedback", FeedbackController, :new)
     get("/digest/feedback", DigestFeedbackController, :feedback)
     post("/api/digest/feedback", DigestFeedbackController, :new)
-    resources("/login", SessionController, only: [:new, :create, :delete], singleton: true)
+    resources("/login", SessionController, only: [:new], singleton: true)
     resources("/account", AccountController, only: [:new, :create])
-    resources("/password_resets", PasswordResetController, only: [:new, :create, :edit, :update])
   end
 
   scope "/", ConciergeSite do
     pipe_through([:redirect_prod_http, :browser, :browser_auth, :layout])
+
+    resources("/login", SessionController, only: [:delete], singleton: true)
 
     get("/account/options", AccountController, :options_new)
     post("/account/options", AccountController, :options_create)
@@ -76,7 +79,6 @@ defmodule ConciergeSite.Router do
     post("/account/edit", AccountController, :update)
     delete("/account/delete", AccountController, :delete)
     get("/password/edit", AccountController, :edit_password)
-    post("/password/edit", AccountController, :update_password)
 
     resources("/trips", TripController, only: [:index, :edit, :update, :delete]) do
       patch("/pause", TripController, :pause, as: :pause)
@@ -95,11 +97,27 @@ defmodule ConciergeSite.Router do
     )
   end
 
+  scope "/auth", ConciergeSite do
+    pipe_through([
+      :redirect_prod_http,
+      :browser,
+      ConciergeSite.Plugs.ValidateAuthRedirect
+    ])
+
+    get("/:provider", AuthController, :request)
+  end
+
+  scope "/auth", ConciergeSite do
+    pipe_through([:redirect_prod_http, :browser])
+    get("/:provider/register", AuthController, :register)
+    get("/:provider/callback", AuthController, :callback)
+    get("/:provider/logout", AuthController, :logout)
+  end
+
   scope "/admin", ConciergeSite.Admin, as: :admin do
     pipe_through([:redirect_prod_http, :browser, :browser_auth, :admin_auth, :layout])
 
     get("/", HomeController, :index)
-    resources("/admins", AdminsController, only: [:index, :create, :delete])
     resources("/queries", QueriesController, only: [:index, :show])
   end
 

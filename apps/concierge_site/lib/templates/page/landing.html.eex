@@ -11,7 +11,7 @@
 
     <div class="landing-page__buttons row">
       <div class="col-12 offset-0 col-lg-8 offset-lg-2">
-        <%= link "Create an account", to: account_path(@conn, :new), class: "btn btn-primary btn-block" %>
+        <%= link "Create your MBTA account", to: account_path(@conn, :new), class: "btn btn-primary btn-block" %>
         <%= link "Sign in", to: session_path(@conn, :new), class: "btn btn-outline-primary btn-block" %>
 
         <p class="landing-page__faq">

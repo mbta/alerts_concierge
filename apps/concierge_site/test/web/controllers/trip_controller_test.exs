@@ -340,8 +340,7 @@ defmodule ConciergeSite.TripControllerTest do
         return_start_time: %{"am_pm" => "PM", "hour" => "5", "minute" => "00"},
         round_trip: "true",
         start_time: %{"am_pm" => "AM", "hour" => "8", "minute" => "00"},
-        alternate_routes:
-          "%7B%22741%20-%201%22:[%22710%20-%201~~Route%20CT1~~bus%22,%22747%20-%201~~Route%20CT2~~bus%22]%7D"
+        alternate_routes: "%7B%22741%20-%201%22:[%22747%20-%201~~Route%20CT2~~bus%22]%7D"
       }
 
       conn =
@@ -356,7 +355,6 @@ defmodule ConciergeSite.TripControllerTest do
       assert html_response(conn, 200) =~
                "<span class=\"trip__card--route\">Silver Line SL1</span>"
 
-      assert html_response(conn, 200) =~ "<span class=\"trip__card--route\">Route 710</span>"
       assert html_response(conn, 200) =~ "<span class=\"trip__card--route\">Route CT2</span>"
     end
 

@@ -24,15 +24,13 @@ defmodule AlertProcessor.Model.User do
   schema "users" do
     has_one(:subscription, Subscription)
     has_many(:trips, Trip)
-    field(:email, :string, null: false)
+    field(:email, :string)
     field(:phone_number, :string)
     field(:role, :string)
-    field(:encrypted_password, :string)
     field(:digest_opt_in, :boolean, default: true)
     field(:email_rejection_status, :string)
     field(:sms_opted_out_at, :utc_datetime)
-    field(:communication_mode, :string, null: false, default: "email")
-    field(:password, :string, virtual: true)
+    field(:communication_mode, :string, default: "email")
     field(:sms_toggle, :boolean, virtual: true)
 
     timestamps(type: :utc_datetime)
@@ -42,13 +40,12 @@ defmodule AlertProcessor.Model.User do
     email
     phone_number
     role
-    password
     digest_opt_in
     email_rejection_status
     sms_opted_out_at
     communication_mode
   )a
-  @required_fields ~w(email password)a
+  @required_fields ~w(email)a
 
   @communication_modes ~w(none email sms)
   @email_rejection_statuses [nil, "bounce", "complaint"]
@@ -100,31 +97,16 @@ defmodule AlertProcessor.Model.User do
     end
   end
 
-  def update_password(user, params, originator) do
-    user
-    |> update_password_changeset(params)
-    |> PaperTrail.update(
-      originator: wrap_id(originator),
-      origin: nil,
-      meta: %{subscriber_id: user.id, subscriber_email: user.email}
-    )
-    |> normalize_papertrail_result()
-  end
-
   @doc """
   Builds changeset used for registering a new user account
   """
   def create_account_changeset(struct, params \\ %{}) do
     struct
     |> changeset(params, @required_fields)
-    |> update_change(:email, &String.trim/1)
-    |> update_change(:email, &lowercase_email/1)
+    |> clean_email()
     |> validate_email()
-    |> validate_password()
-    |> clear_phone_if_mode_is_email(params)
     |> update_change(:phone_number, &clean_phone_number/1)
     |> validate_phone_number()
-    |> hash_password()
   end
 
   @doc """
@@ -135,12 +117,15 @@ defmodule AlertProcessor.Model.User do
         %{"communication_mode" => "sms", "email" => _email} = params
       ) do
     struct
-    |> changeset(params, [:phone_number, :email])
+    |> changeset(params, [:email])
+    # Validate phone number as required separately for the custom error message.
+    |> validate_required([:phone_number],
+      message: "Please click the link above to add your phone number to your account."
+    )
     |> update_change(:phone_number, &clean_phone_number/1)
     |> validate_phone_number()
     |> validate_accept_tnc(params)
-    |> update_change(:email, &String.trim/1)
-    |> update_change(:email, &lowercase_email/1)
+    |> clean_email()
     |> validate_email()
   end
 
@@ -149,7 +134,11 @@ defmodule AlertProcessor.Model.User do
         %{"communication_mode" => "sms"} = params
       ) do
     struct
-    |> changeset(params, [:phone_number])
+    |> changeset(params)
+    # Validate phone number as required separately for the custom error message.
+    |> validate_required([:phone_number],
+      message: "Please click the link above to add your phone number to your account."
+    )
     |> update_change(:phone_number, &clean_phone_number/1)
     |> validate_phone_number()
     |> validate_accept_tnc(params)
@@ -158,30 +147,16 @@ defmodule AlertProcessor.Model.User do
   def update_account_changeset(struct, %{"communication_mode" => "email"} = params) do
     struct
     |> changeset(params, [:email])
+    |> clean_email()
     |> validate_email()
-    |> update_change(:email, &String.trim/1)
-    |> update_change(:email, &lowercase_email/1)
     |> update_change(:phone_number, &clear_value/1)
   end
 
   def update_account_changeset(struct, params), do: changeset(struct, params)
 
   defp validate_email(changeset) do
-    changeset
-    |> validate_format(
-      :email,
-      # The same validation used by the `mail` library
-      ~r/^[A-Z0-9a-z._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,64}$/,
-      message: "Please enter a valid email address."
-    )
-    |> unique_constraint(:email, message: "Sorry, that email has already been taken.")
+    unique_constraint(changeset, :email, message: "Sorry, that email has already been taken.")
   end
-
-  defp clear_phone_if_mode_is_email(changeset, %{"communication_mode" => "email"}) do
-    update_change(changeset, :phone_number, &clear_value/1)
-  end
-
-  defp clear_phone_if_mode_is_email(changeset, _), do: changeset
 
   defp clear_value(_), do: nil
 
@@ -202,53 +177,17 @@ defmodule AlertProcessor.Model.User do
     )
   end
 
-  defp validate_password(changeset) do
-    changeset
-    |> validate_length(
-      :password,
-      min: 8,
-      message: "Password must be at least 8 characters long."
-    )
-    |> validate_format(
-      :password,
-      ~r/_|\d|\W/u,
-      message: "Password must contain at least one number or symbol."
-    )
-  end
-
   defp clean_phone_number(nil), do: nil
   defp clean_phone_number(value), do: String.replace(value, ~r/\D/, "")
 
+  defp clean_email(struct) do
+    struct
+    |> update_change(:email, &String.trim/1)
+    |> update_change(:email, &lowercase_email/1)
+  end
+
   defp lowercase_email(nil), do: ""
   defp lowercase_email(value), do: String.downcase(value)
-
-  defp update_password_changeset(struct, params) do
-    struct
-    |> changeset(params, ~w(password)a)
-    |> validate_password()
-    |> hash_password()
-  end
-
-  defp hash_password(changeset) do
-    case changeset do
-      %Ecto.Changeset{valid?: true, changes: %{password: password}} ->
-        changeset
-        |> put_change(:encrypted_password, Bcrypt.hash_pwd_salt(password))
-        |> delete_change(:password)
-
-      _ ->
-        changeset
-    end
-  end
-
-  @doc """
-  Builds a changeset to verify login
-  """
-  def login_changeset(struct, params \\ %{}) do
-    struct
-    |> cast(params, [:email, :password])
-    |> validate_required([:email, :password])
-  end
 
   def opt_in_phone_number(%__MODULE__{phone_number: nil}), do: {:ok, nil}
 
@@ -256,39 +195,6 @@ defmodule AlertProcessor.Model.User do
     phone_number
     |> ExAws.SNS.opt_in_phone_number()
     |> AwsClient.request()
-  end
-
-  @doc """
-  Checks if user's login credentials are valid
-  """
-  def authenticate(%{"email" => email, "password" => password} = params) do
-    changeset = login_changeset(%__MODULE__{}, params)
-
-    case changeset.errors do
-      [] ->
-        user = Repo.get_by(__MODULE__, email: String.downcase(email))
-
-        cond do
-          user && user.encrypted_password == "" ->
-            {:error, :disabled}
-
-          check_password(user, password) ->
-            {:ok, user}
-
-          true ->
-            {:error, changeset}
-        end
-
-      _ ->
-        {:error, changeset}
-    end
-  end
-
-  def check_password(user, password) do
-    case user do
-      nil -> Bcrypt.no_user_verify()
-      _ -> Bcrypt.verify_pass(password, user.encrypted_password)
-    end
   end
 
   @doc "Records an email rejection status for a user and disables notifications for them."
@@ -331,20 +237,22 @@ defmodule AlertProcessor.Model.User do
     |> Repo.transaction()
   end
 
-  defp normalize_papertrail_result({:ok, %{model: user}}), do: {:ok, user}
-  defp normalize_papertrail_result(result), do: result
+  @spec get(id()) :: t() | nil
+  def get(id), do: Repo.get(__MODULE__, id)
 
   @spec for_email(String.t()) :: t | nil
   def for_email(email) do
-    Repo.get_by(__MODULE__, email: String.downcase(email))
+    email =
+      email
+      |> String.trim()
+      |> lowercase_email()
+
+    Repo.get_by(__MODULE__, email: email)
   end
 
   @spec wrap_id(__MODULE__.t() | String.t()) :: __MODULE__.t()
   def wrap_id(%__MODULE__{} = user), do: user
   def wrap_id(user_id), do: %__MODULE__{id: user_id}
-
-  @spec admins() :: [t]
-  def admins, do: Repo.all(from(u in __MODULE__, where: u.role == "admin", order_by: u.email))
 
   @spec admin?(t()) :: boolean
   def admin?(%__MODULE__{role: "admin"}), do: true
@@ -364,4 +272,29 @@ defmodule AlertProcessor.Model.User do
 
   def inside_opt_out_freeze_window?(%__MODULE__{sms_opted_out_at: sms_opted_out_at}),
     do: Date.diff(Date.utc_today(), DateTime.to_date(sms_opted_out_at)) <= 30
+
+  @doc """
+  Returns the email address for the given user.
+
+  ## Examples
+
+      iex> User.email(%User{email: "user@example.com"})
+      "user@example.com"
+  """
+  @spec email(t()) :: String.t()
+  def email(%__MODULE__{email: email}), do: email
+
+  @doc """
+  Returns the phone number for the given user.
+
+  ## Examples
+
+      iex> User.phone_number(%User{phone_number: "5551234567"})
+      "5551234567"
+  """
+  @spec phone_number(t()) :: String.t() | nil
+  def phone_number(%__MODULE__{phone_number: phone_number}), do: phone_number
+
+  defp normalize_papertrail_result({:ok, %{model: user}}), do: {:ok, user}
+  defp normalize_papertrail_result(result), do: result
 end

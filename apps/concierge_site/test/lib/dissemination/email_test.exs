@@ -3,17 +3,6 @@ defmodule ConciergeSite.Dissemination.EmailTest do
   use ConciergeSite.ConnCase
   alias ConciergeSite.Dissemination.Email
 
-  test "password reset email" do
-    user = insert(:user)
-    reset_token = "some reset token"
-
-    email = Email.password_reset_email(user, reset_token)
-
-    assert email.to == user.email
-    assert email.subject == "Reset your T-Alerts password"
-    assert email.html_body =~ "You recently requested a password reset for your T-Alerts account"
-  end
-
   test "confirmation email" do
     user = insert(:user)
 

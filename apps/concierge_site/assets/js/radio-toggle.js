@@ -2,7 +2,7 @@ import $ from "jquery";
 import { toggleVisibleSelector } from "./select-route-choices";
 import { toggleBusDirection } from "./bus-direction-toggle";
 
-export default function(pubsub) {
+export default function (pubsub) {
   $("label[role='radio']").on("keypress", triggerClick());
   $("label[role='radio']").on("click", toggleRadio(pubsub, $));
   $("label[role='checkbox']").on("keypress", triggerClick());
@@ -49,7 +49,7 @@ function toggleRadio(pubsub, $) {
     const $parentEl = $targetLabelEl.parents("div[role='radiogroup']");
 
     // update selection indicators and values, publish to subscribers
-    $parentEl.find("label").each(function(index, value) {
+    $parentEl.find("label").each(function (index, value) {
       const $labelEl = $(value);
       if ($labelEl.data("id") == selectedId) {
         $labelEl.attr("aria-checked", "true");
@@ -68,7 +68,7 @@ function toggleRadio(pubsub, $) {
 }
 
 function triggerClick() {
-  return function(e) {
+  return function (e) {
     const code = e.keyCode || e.which;
     if (code == 13 || code == 32) {
       e.preventDefault();

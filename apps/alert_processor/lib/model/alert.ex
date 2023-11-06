@@ -29,7 +29,9 @@ defmodule AlertProcessor.Model.Alert do
     :reminder_times,
     :tracking_duration_type,
     :tracking_fetched_at,
-    :tracking_batch_id
+    :tracking_batch_id,
+    :image_url,
+    :image_alternative_text
   ]
 
   @type informed_entity :: [
@@ -62,7 +64,9 @@ defmodule AlertProcessor.Model.Alert do
           reminder_times: [DateTime.t()] | nil,
           tracking_duration_type: AlertFilters.duration_type() | nil,
           tracking_fetched_at: DateTime.t() | nil,
-          tracking_batch_id: Ecto.UUID.t() | nil
+          tracking_batch_id: Ecto.UUID.t() | nil,
+          image_url: String.t() | nil,
+          image_alternative_text: String.t() | nil
         }
 
   @doc """

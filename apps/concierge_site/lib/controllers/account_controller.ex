@@ -4,13 +4,12 @@ defmodule ConciergeSite.AccountController do
   alias AlertProcessor.Model.User
   alias AlertProcessor.Repo
   alias ConciergeSite.ConfirmationMessage
-  alias ConciergeSite.SignInHelper
   alias ConciergeSite.Mailchimp
 
   require Logger
 
   def new(conn, _params) do
-    render(conn, "new.html", account_changeset: new_user_changeset())
+    redirect(conn, to: "/auth/keycloak/register")
   end
 
   def edit(%{assigns: %{current_user: user}} = conn, _params) do
@@ -20,32 +19,7 @@ defmodule ConciergeSite.AccountController do
   end
 
   def edit_password(conn, _params) do
-    render(conn, "edit_password.html")
-  end
-
-  def create(conn, %{"user" => params, "g-recaptcha-response" => recaptcha_response}) do
-    with {:ok, _resp} <- Recaptcha.verify(recaptcha_response),
-         {:ok, user} <- User.create_account(params) do
-      ConfirmationMessage.send_email_confirmation(user)
-      SignInHelper.sign_in(conn, user)
-    else
-      {:error, errors} when is_list(errors) ->
-        Logger.warn("AccountController event=recaptcha_error errors=#{Enum.join(errors, ",")}")
-
-        conn
-        |> put_flash(:error, "reCAPTCHA validation error. Please try again.")
-        |> render("new.html", account_changeset: new_user_changeset(params))
-
-      {:error, %Ecto.Changeset{} = changeset} ->
-        render(conn, "new.html", account_changeset: changeset, errors: errors(changeset))
-    end
-  end
-
-  def create(conn, _params) do
-    conn
-    |> put_flash(:error, "Required params error. \
-      Please ensure your web browser is up-to-date and you have JavaScript enabled.")
-    |> render("new.html", account_changeset: new_user_changeset())
+    redirect(conn, external: ConciergeSite.AccountView.edit_password_url(conn))
   end
 
   def update(%{assigns: %{current_user: user}} = conn, %{"user" => params}) do
@@ -53,7 +27,7 @@ defmodule ConciergeSite.AccountController do
       {:ok, updated_user} ->
         Mailchimp.update_member(updated_user)
 
-        if user.phone_number == nil and updated_user.phone_number != nil do
+        if user.communication_mode != "sms" and updated_user.communication_mode == "sms" do
           ConfirmationMessage.send_sms_confirmation(
             updated_user.phone_number,
             params["sms_toggle"]
@@ -75,26 +49,6 @@ defmodule ConciergeSite.AccountController do
     end
   end
 
-  def update_password(%{assigns: %{current_user: user}} = conn, %{"user" => params}) do
-    if User.check_password(user, params["current_password"]) do
-      case User.update_password(user, %{"password" => params["password"]}, user) do
-        {:ok, _} ->
-          conn
-          |> put_flash(:info, "Your password has been updated.")
-          |> redirect(to: trip_path(conn, :index))
-
-        {:error, _} ->
-          conn
-          |> put_flash(:error, "New password format is incorrect. Please try again.")
-          |> render("edit_password.html")
-      end
-    else
-      conn
-      |> put_flash(:error, "Current password is incorrect. Please try again.")
-      |> render("edit_password.html")
-    end
-  end
-
   def delete(%{assigns: %{current_user: user}} = conn, _params) do
     Mailchimp.delete_member(user)
     Repo.delete!(user)
@@ -111,7 +65,15 @@ defmodule ConciergeSite.AccountController do
     case User.update_account(user, params, user) do
       {:ok, updated_user} ->
         Mailchimp.update_member(user)
-        ConfirmationMessage.send_sms_confirmation(updated_user.phone_number, params["sms_toggle"])
+
+        if updated_user.communication_mode == "sms" do
+          ConfirmationMessage.send_sms_confirmation(
+            updated_user.phone_number,
+            params["sms_toggle"]
+          )
+        else
+          ConfirmationMessage.send_email_confirmation(updated_user)
+        end
 
         conn
         |> redirect(to: trip_path(conn, :new))
@@ -128,9 +90,6 @@ defmodule ConciergeSite.AccountController do
       field
     end)
   end
-
-  defp new_user_changeset(params \\ %{"sms_toggle" => false}),
-    do: User.create_account_changeset(%User{}, params)
 
   defp communication_mode_flash(%User{sms_opted_out_at: sms_opted_out_at} = user)
        when not is_nil(sms_opted_out_at) do

@@ -7,7 +7,6 @@ defmodule AlertProcessor.Factory do
     Notification,
     Subscription,
     User,
-    PasswordReset,
     Trip,
     NotificationSubscription,
     SavedAlert
@@ -233,16 +232,7 @@ defmodule AlertProcessor.Factory do
     %User{
       email: sequence(:email, &"email-#{&1}@example.com"),
       phone_number: sequence(:phone_number, &String.pad_leading("#{&1}", 10, "5555551234")),
-      role: "user",
-      encrypted_password: sequence(:encrypted_password, &"encrypted_password_#{&1}")
-    }
-  end
-
-  def password_reset_factory do
-    %PasswordReset{
-      expired_at: DateTime.add(DateTime.utc_now(), 3600),
-      redeemed_at: nil,
-      user: build(:user)
+      role: "user"
     }
   end
 

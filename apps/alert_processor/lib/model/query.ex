@@ -183,6 +183,86 @@ defmodule AlertProcessor.Model.Query do
         LEFT JOIN users_before_end ON users_before_end.period_end = periods.end
         ORDER BY periods.end DESC
         """
+      },
+      %__MODULE__{
+        label: "Grouped Time Windows",
+        query: """
+        SELECT
+          to_char(s.start_time, 'FMHH24:MI') as start_time,
+          to_char(s.end_time, 'FMHH24:MI') as end_time, s.type,
+          count(distinct s.id)
+        FROM subscriptions s
+        GROUP BY s.type, s.start_time, s.end_time;
+        """
+      },
+      %__MODULE__{
+        label: "Fully Paused Accounts",
+        query: """
+          WITH
+          paused_accounts AS (
+            SELECT u.id, MAX(s.updated_at) as newest_subscription FROM users u
+            INNER JOIN subscriptions s ON u.id = s.user_id
+            GROUP BY u.id
+            HAVING sum(case when s.paused = false then 1 else 0 end) = 0
+          ),
+          total_accounts AS (
+            SELECT COUNT(DISTINCT paused_accounts.id) as total_paused_accounts FROM paused_accounts
+          ),
+          paused_for_less_than_a_month AS (
+            SELECT COUNT(DISTINCT paused_accounts.id) as total_paused_accounts FROM paused_accounts
+            WHERE paused_accounts.newest_subscription > NOW() - INTERVAL '1 month'
+          ),
+          paused_for_less_than_three_months AS (
+            SELECT COUNT(DISTINCT paused_accounts.id) as total_paused_accounts FROM paused_accounts
+            WHERE paused_accounts.newest_subscription > NOW() - INTERVAL '3 months'
+          ),
+          paused_for_less_than_twelve_months AS (
+            SELECT COUNT(DISTINCT paused_accounts.id) as total_paused_accounts FROM paused_accounts
+            WHERE paused_accounts.newest_subscription > NOW() - INTERVAL '12 months'
+          ),
+          paused_for_twelve_months_or_more AS (
+            SELECT COUNT(DISTINCT paused_accounts.id) as total_paused_accounts FROM paused_accounts
+            WHERE paused_accounts.newest_subscription <= NOW() - INTERVAL '12 months'
+          )
+          SELECT 'Total Paused Accounts' as Time_Span,ta.total_paused_accounts as total_accounts from total_accounts ta
+          UNION ALL
+          SELECT 'Paused for Less than 1 month',pl1.total_paused_accounts FROM paused_for_less_than_a_month pl1
+          UNION ALL
+          SELECT 'Paused for Less than 3 months',pl3.total_paused_accounts FROM paused_for_less_than_three_months pl3
+          UNION ALL
+          SELECT 'Paused for Less than 12 months',pl12.total_paused_accounts FROM paused_for_less_than_twelve_months pl12
+          UNION ALL
+          SELECT 'Paused for 12 months or more',plmore.total_paused_accounts FROM paused_for_twelve_months_or_more plmore;
+        """
+      },
+      %__MODULE__{
+        label: "Count of Users With Parallel Bus Route Subscriptions",
+        query: """
+        SELECT COUNT(DISTINCT user_id) AS users_with_parallel_subscriptions
+        FROM subscriptions s
+        JOIN users u on u.id = s.user_id
+        WHERE s.id IN
+        (SELECT parent_id FROM subscriptions
+        WHERE parent_id IS NOT null
+        AND paused is not true
+        GROUP BY parent_id)
+        AND u.communication_mode != 'none'
+        """
+      },
+      %__MODULE__{
+        label: "Count of Active Users By Number of Active Trips",
+        query: """
+        select trip_count, count(user_id) as users
+        from (
+          select t.user_id as user_id, count(distinct t.id) as trip_count
+          from trips t
+          join subscriptions s
+            on s.trip_id = t.id and s.paused = false
+          group by t.user_id
+        ) as user_trip_counts
+        group by trip_count
+        order by trip_count asc;
+        """
       }
     ]
     |> Enum.map(&%{&1 | id: &1.label |> String.downcase() |> String.replace(" ", "_")})
