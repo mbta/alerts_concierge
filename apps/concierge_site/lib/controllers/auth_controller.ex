@@ -7,29 +7,22 @@ defmodule ConciergeSite.AuthController do
   alias AlertProcessor.Model.User
   alias AlertProcessor.Repo
   alias ConciergeSite.SessionHelper
-  alias Ueberauth.Auth.Credentials
   alias Plug.Conn
 
   plug(Ueberauth)
-
-  def register(conn, _params) do
-    redirect(conn, to: "/auth/keycloak?" <> URI.encode_query(%{uri: registration_uri()}))
-  end
 
   @spec callback(Conn.t(), any) :: Conn.t()
   def callback(
         %{
           assigns: %{
             ueberauth_auth: %{
-              credentials:
-                %{
-                  other: %{
-                    user_info: %{"mbta_uuid" => id, "email" => email} = user_info
-                  }
-                } = credentials,
+              info: %{email: email, phone: phone_number},
+              credentials: credentials,
               extra: %{
                 raw_info: %{
-                  tokens: %{"id_token" => id_token}
+                  claims: %{"sub" => id},
+                  opts: opts,
+                  userinfo: userinfo
                 }
               }
             }
@@ -37,19 +30,33 @@ defmodule ConciergeSite.AuthController do
         } = conn,
         _params
       ) do
-    phone_number =
-      user_info
-      |> Map.get("phone_number")
-      |> PhoneNumber.strip_us_country_code()
+    phone_number = PhoneNumber.strip_us_country_code(phone_number)
 
-    role = user_role(credentials)
+    role = parse_role({:ok, userinfo})
 
     user =
       id
       |> get_or_create_user(email, phone_number, role)
       |> use_props_from_token(email, phone_number, role)
 
-    SessionHelper.sign_in(conn, user, %{id_token: id_token})
+    logout_params = %{
+      post_logout_redirect_uri: page_url(conn, :landing),
+      id_token_hint: credentials.other.id_token
+    }
+
+    {:ok, logout_uri} =
+      case Map.fetch(conn.assigns, :_end_session_uri) do
+        {:ok, fun} when is_function(fun, 1) ->
+          {:ok, fun.(logout_params)}
+
+        _ ->
+          OpenIDConnect.end_session_uri(
+            opts,
+            logout_params
+          )
+      end
+
+    SessionHelper.sign_in(conn, user, %{logout_uri: logout_uri})
   end
 
   def callback(%{assigns: %{ueberauth_failure: failure}} = conn, _params) do
@@ -105,21 +112,6 @@ defmodule ConciergeSite.AuthController do
     }
   end
 
-  @spec user_role(Credentials.t()) :: String.t()
-  defp user_role(%Credentials{
-         token: token,
-         other: %{
-           provider: provider
-         }
-       }) do
-    token_verify_fn =
-      Application.get_env(:concierge_site, :token_verify_fn, &OpenIDConnect.verify/2)
-
-    provider
-    |> token_verify_fn.(token)
-    |> parse_role()
-  end
-
   # Parse the user's role from the access token provided by Keycloak
   @spec parse_role({:ok, map()} | {:error, :verify, any()}) :: String.t()
   defp parse_role({:ok, %{"resource_access" => %{"t-alerts" => %{"roles" => roles}}}}),
@@ -134,28 +126,5 @@ defmodule ConciergeSite.AuthController do
     else
       "user"
     end
-  end
-
-  @spec registration_uri :: String.t()
-  defp registration_uri do
-    base_uri = Application.get_env(:concierge_site, :keycloak_base_uri)
-    client_id = Application.get_env(:concierge_site, :keycloak_client_id)
-
-    params = %{
-      client_id: client_id,
-      response_type: "code",
-      scope: "openid"
-    }
-
-    build_uri("#{base_uri}/auth/realms/MBTA/protocol/openid-connect/registrations", params)
-  end
-
-  @spec build_uri(String.t(), map()) :: String.t()
-  defp build_uri(uri, params) do
-    query = URI.encode_query(params)
-
-    uri
-    |> URI.merge("?#{query}")
-    |> URI.to_string()
   end
 end

@@ -20,7 +20,7 @@ defmodule ConciergeSite.SessionControllerTest do
       |> guardian_login(conn)
       |> delete(session_path(conn, :delete))
 
-    assert redirected_to(conn, 302) =~ ~r/post_logout_redirect_uri=.+/
+    assert redirected_to(conn, 302) =~ "http://oidc.example/end_session_uri"
   end
 
   test "unauthenticated/2", %{conn: conn} do

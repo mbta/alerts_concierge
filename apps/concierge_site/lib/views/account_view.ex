@@ -30,27 +30,9 @@ defmodule ConciergeSite.AccountView do
 
   @spec update_profile_url(Conn.t()) :: String.t()
   def update_profile_url(conn),
-    do: keycloak_auth_action_url("MBTA_UPDATE_PROFILE", encoded_account_edit_url(conn))
+    do: ConciergeSite.Router.Helpers.auth_url(conn, :request, :update_profile)
 
   @spec edit_password_url(Conn.t()) :: String.t()
   def edit_password_url(conn),
-    do: keycloak_auth_action_url("UPDATE_PASSWORD", encoded_account_edit_url(conn))
-
-  @spec keycloak_auth_action_url(String.t(), String.t()) :: String.t()
-  defp keycloak_auth_action_url(action, redirect_uri),
-    do:
-      "#{keycloak_base_uri()}/auth/realms/MBTA/protocol/openid-connect/auth?client_id=#{keycloak_client_id()}&kc_action=#{action}&response_type=code&redirect_uri=#{redirect_uri}"
-
-  @spec keycloak_base_uri :: String.t()
-  defp keycloak_base_uri, do: System.get_env("KEYCLOAK_BASE_URI")
-
-  @spec keycloak_client_id :: String.t()
-  defp keycloak_client_id, do: System.get_env("KEYCLOAK_CLIENT_ID")
-
-  @spec encoded_account_edit_url(Conn.t()) :: String.t()
-  defp encoded_account_edit_url(conn) do
-    conn
-    |> ConciergeSite.Router.Helpers.account_url(:edit)
-    |> URI.encode()
-  end
+    do: ConciergeSite.Router.Helpers.auth_url(conn, :request, :edit_password)
 end

@@ -9,7 +9,7 @@ defmodule ConciergeSite.AccountControllerTest do
   describe "new/4" do
     test "redirects to the keycloak register route", %{conn: conn} do
       conn = get(conn, account_path(conn, :new))
-      assert redirected_to(conn) == "/auth/keycloak/register"
+      assert redirected_to(conn) == "/auth/register"
     end
   end
 
@@ -242,8 +242,7 @@ defmodule ConciergeSite.AccountControllerTest do
         |> guardian_login(conn)
         |> get(account_path(conn, :edit_password))
 
-      assert redirected_to(conn, 302) =~
-               ~r/\/auth\/realms\/MBTA\/protocol\/openid-connect\/auth?.*kc_action=UPDATE_PASSWORD/
+      assert redirected_to(conn, 302) =~ "/auth/edit_password"
     end
   end
 
