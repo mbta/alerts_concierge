@@ -99,7 +99,7 @@
     <mj-raw>
       <!-- Footer -->
     </mj-raw>
-    <mj-section padding="0" css-class="footer">
+    <mj-section padding="0">
       <mj-column>
         <mj-text font-size="12px" font-family="'Helvetica Neue', Helvetica, Arial, sans-serif" padding-left="0" padding-right="0">
           <p role="contentinfo">
