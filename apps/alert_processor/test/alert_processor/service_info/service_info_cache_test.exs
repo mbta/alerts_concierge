@@ -230,7 +230,6 @@ defmodule AlertProcessor.ServiceInfoCacheTest do
                stop_list: [
                  {"Hingham", "Boat-Hingham", {42.253956, -70.919844}, 1},
                  {"Rowes Wharf", "Boat-Rowes", {42.355721, -71.049897}, 1},
-                 {"Georges Island", "Boat-George", {42.319742, -70.930427}, 1},
                  {"Hull", "Boat-Hull", {42.303251, -70.920215}, 1},
                  {"Logan Airport Ferry Terminal", "Boat-Logan", {42.359789, -71.02734}, 1},
                  {"Long Wharf (North)", "Boat-Long", {42.360795, -71.049976}, 1}
