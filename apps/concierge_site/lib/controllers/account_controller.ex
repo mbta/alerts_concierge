@@ -9,7 +9,7 @@ defmodule ConciergeSite.AccountController do
   require Logger
 
   def new(conn, _params) do
-    redirect(conn, to: "/auth/keycloak/register")
+    redirect(conn, to: "/auth/register")
   end
 
   def edit(%{assigns: %{current_user: user}} = conn, _params) do

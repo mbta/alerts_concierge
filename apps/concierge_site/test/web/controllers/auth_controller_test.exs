@@ -1,30 +1,15 @@
 defmodule ConciergeSite.Web.AuthControllerTest do
   use ConciergeSite.ConnCase
 
-  import Test.Support.Helpers
-
   alias AlertProcessor.Repo
   alias AlertProcessor.Model.User
   alias Ueberauth.Auth
-  alias Ueberauth.Auth.{Credentials, Info}
-
-  describe "GET /auth/:provider/register" do
-    test "redirects to the Ueberauth request action with a custom URI", %{conn: conn} do
-      reassign_env(:concierge_site, :keycloak_base_uri, "https://example.com/TEST-BASE-URI")
-      reassign_env(:concierge_site, :keycloak_client_id, "t-alerts")
-      reassign_env(:concierge_site, :keycloak_redirect_uri, "TEST-REDIRECT-URI")
-
-      conn = get(conn, "/auth/keycloak/register")
-
-      assert redirected_to(conn) =~ "/auth/keycloak?uri="
-    end
-  end
+  alias Ueberauth.Auth.{Credentials, Extra, Info}
 
   describe "GET /auth/:provider/callback" do
-    setup do
-      reassign_env(:concierge_site, :token_verify_fn, fn _, _ ->
-        {:ok, %{"resource_access" => %{"t-alerts" => %{"roles" => ["admin", "user"]}}}}
-      end)
+    setup %{conn: conn} do
+      conn =
+        assign(conn, :_end_session_uri, fn opts -> "/end_session?#{URI.encode_query(opts)}" end)
 
       rider =
         Repo.insert!(%User{
@@ -33,7 +18,7 @@ defmodule ConciergeSite.Web.AuthControllerTest do
           role: "user"
         })
 
-      {:ok, rider: rider}
+      {:ok, conn: conn, rider: rider}
     end
 
     test "given an ueberauth auth, logs the user into Guardian", %{
@@ -47,6 +32,8 @@ defmodule ConciergeSite.Web.AuthControllerTest do
 
       assert %User{id: ^id, email: ^email, phone_number: ^phone_number} =
                Guardian.Plug.current_resource(conn)
+
+      assert %{"logout_uri" => _} = Guardian.Plug.current_claims(conn)
     end
 
     test "given an ueberauth auth, redirects to the account options page (for an account with no trips)",
@@ -70,7 +57,7 @@ defmodule ConciergeSite.Web.AuthControllerTest do
 
       conn =
         conn
-        |> assign(:ueberauth_auth, auth_for(id, new_email, new_phone_number))
+        |> assign(:ueberauth_auth, auth_for(id, new_email, new_phone_number, [new_role]))
         |> get("/auth/keycloak/callback")
 
       assert %User{
@@ -89,15 +76,11 @@ defmodule ConciergeSite.Web.AuthControllerTest do
           role: "admin"
         })
 
-      reassign_env(:concierge_site, :token_verify_fn, fn _, _ ->
-        {:ok, %{"resource_access" => %{"t-alerts" => %{"roles" => ["user"]}}}}
-      end)
-
       conn =
         conn
         |> assign(
           :ueberauth_auth,
-          auth_for(was_an_admin.id, was_an_admin.email, was_an_admin.phone_number)
+          auth_for(was_an_admin.id, was_an_admin.email, was_an_admin.phone_number, ["user"])
         )
         |> get("/auth/keycloak/callback")
 
@@ -130,7 +113,7 @@ defmodule ConciergeSite.Web.AuthControllerTest do
   end
 
   @spec auth_for(User.id(), String.t(), String.t() | nil) :: Auth.t()
-  defp auth_for(id, email, phone_number) do
+  defp auth_for(id, email, phone_number, roles \\ ["user"]) do
     %Auth{
       uid: email,
       provider: :keycloak,
@@ -145,22 +128,29 @@ defmodule ConciergeSite.Web.AuthControllerTest do
         refresh_token: "FAKE REFRESH TOKEN",
         expires_at: System.system_time(:second) + 1_000,
         other: %{
-          provider: :keycloak,
-          user_info: %{
+          id_token: "FAKE ID TOKEN"
+        }
+      },
+      extra: %Extra{
+        raw_info: %{
+          claims: %{
+            "sub" => id
+          },
+          opts: %{},
+          userinfo: %{
             "email" => email,
             "email_verified" => true,
             "family_name" => "Rider",
             "given_name" => "John",
-            "mbta_uuid" => id,
             "name" => "John Rider",
             "phone_number" => phone_number,
-            "preferred_username" => email
+            "preferred_username" => email,
+            "resource_access" => %{
+              "t-alerts" => %{
+                "roles" => roles
+              }
+            }
           }
-        }
-      },
-      extra: %{
-        raw_info: %{
-          tokens: %{"id_token" => "FAKE ID TOKEN"}
         }
       }
     }

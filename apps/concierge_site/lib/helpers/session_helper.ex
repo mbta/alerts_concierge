@@ -20,15 +20,18 @@ defmodule ConciergeSite.SessionHelper do
   @spec sign_out(Conn.t()) :: Conn.t()
   @spec sign_out(Conn.t(), keyword()) :: Conn.t()
   def sign_out(conn, opts \\ []) do
+    logout_uri =
+      case Guardian.Plug.current_claims(conn) do
+        %{"logout_uri" => logout_uri} -> logout_uri
+        _ -> nil
+      end
+
     redirect_to =
-      if Keyword.get(opts, :skip_oidc_sign_out, false) do
+      if Keyword.get(opts, :skip_oidc_sign_out, false) or is_nil(logout_uri) do
         [to: page_path(conn, :landing)]
       else
         [
-          external:
-            URI.encode(
-              "#{System.get_env("KEYCLOAK_LOGOUT_URI")}?post_logout_redirect_uri=#{page_url(conn, :landing)}&id_token_hint=#{id_token(conn)}"
-            )
+          external: logout_uri
         ]
       end
 
@@ -45,12 +48,5 @@ defmodule ConciergeSite.SessionHelper do
     else
       trip_path(@endpoint, :index)
     end
-  end
-
-  @spec id_token(Conn.t()) :: String.t()
-  defp id_token(conn) do
-    conn
-    |> Guardian.Plug.current_claims()
-    |> Map.get("id_token")
   end
 end
