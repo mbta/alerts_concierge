@@ -20,31 +20,32 @@ config :sentry,
 config :logger, backends: [:console, Sentry.LoggerBackend]
 
 keycloak_base_opts = [
-  fetch_userinfo: true,
-  userinfo_uid_field: "preferred_username",
-  response_type: "code",
-  scope: "openid email profile roles web-origins"
+  issuer: :keycloak_issuer,
+  userinfo: true,
+  uid_field: "preferred_username",
+  scopes: ~w(openid email profile roles web-origins),
+  preferred_auth_methods: ~w(client_secret_post)a
 ]
 
 config :ueberauth, Ueberauth,
   providers: [
-    keycloak: {Ueberauth.Strategy.OIDC, keycloak_base_opts},
+    keycloak: {Ueberauth.Strategy.Oidcc, keycloak_base_opts},
     edit_password:
-      {Ueberauth.Strategy.OIDC,
+      {Ueberauth.Strategy.Oidcc,
        Keyword.merge(keycloak_base_opts,
-         callback_path: "/account/edit",
-         request_params: %{kc_action: "UPDATE_PASSWORD"}
+         callback_path: "/auth/keycloak_edit/callback",
+         authorization_params: %{kc_action: "UPDATE_PASSWORD"}
        )},
     update_profile:
-      {Ueberauth.Strategy.OIDC,
+      {Ueberauth.Strategy.Oidcc,
        Keyword.merge(keycloak_base_opts,
-         callback_path: "/account/edit",
-         request_params: %{kc_action: "MBTA_UPDATE_PROFILE"}
+         callback_path: "/auth/keycloak_edit/callback",
+         authorization_params: %{kc_action: "MBTA_UPDATE_PROFILE"}
        )},
     register:
-      {Ueberauth.Strategy.OIDC,
+      {Ueberauth.Strategy.Oidcc,
        Keyword.merge(keycloak_base_opts,
          callback_path: "/auth/keycloak/callback",
-         scope: "openid"
+         scopes: ~w(openid)
        )}
   ]

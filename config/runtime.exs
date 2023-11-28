@@ -25,22 +25,34 @@ if base_uri = System.get_env("KEYCLOAK_BASE_URI") do
   config :concierge_site,
     keycloak_base_uri: base_uri
 
+  keycloak_issuer =
+    String.replace_trailing(
+      System.fetch_env!("KEYCLOAK_WELL_KNOWN_OIDC"),
+      "/.well-known/openid-configuration",
+      ""
+    )
+
   keycloak_base_opts = [
-    discovery_document_uri: System.fetch_env!("KEYCLOAK_WELL_KNOWN_OIDC"),
     client_id: System.fetch_env!("KEYCLOAK_CLIENT_ID"),
     client_secret: System.fetch_env!("KEYCLOAK_CLIENT_SECRET")
   ]
 
   realm = System.get_env("KEYCLOAK_REALM", "MBTA")
 
-  config :ueberauth, Ueberauth.Strategy.OIDC,
-    keycloak: keycloak_base_opts,
-    edit_password: keycloak_base_opts,
-    update_profile: keycloak_base_opts,
-    register:
-      Keyword.merge(keycloak_base_opts,
-        request_uri: "#{base_uri}/auth/realms/#{realm}/protocol/openid-connect/registrations"
-      )
+  config :ueberauth_oidcc,
+    issuers: [
+      %{name: :keycloak_issuer, issuer: keycloak_issuer}
+    ],
+    providers: [
+      keycloak: keycloak_base_opts,
+      edit_password: keycloak_base_opts,
+      update_profile: keycloak_base_opts,
+      register:
+        Keyword.merge(keycloak_base_opts,
+          authorization_endpoint:
+            "#{base_uri}/auth/realms/#{realm}/protocol/openid-connect/registrations"
+        )
+    ]
 end
 
 if config_env() == :prod do

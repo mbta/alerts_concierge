@@ -14,7 +14,7 @@ defmodule ConciergeSite.SessionHelper do
   def sign_in(conn, user, claims \\ %{}) do
     conn
     |> ConciergeSite.Guardian.Plug.sign_in(user, claims)
-    |> redirect(to: sign_in_redirect_path(user))
+    |> redirect(to: sign_in_redirect_path(conn, user))
   end
 
   @spec sign_out(Conn.t()) :: Conn.t()
@@ -42,7 +42,13 @@ defmodule ConciergeSite.SessionHelper do
     |> redirect(redirect_to)
   end
 
-  defp sign_in_redirect_path(user) do
+  defp sign_in_redirect_path(conn, user)
+
+  defp sign_in_redirect_path(%{path_info: ["auth", "keycloak_edit" | _]}, _user) do
+    account_path(@endpoint, :edit)
+  end
+
+  defp sign_in_redirect_path(_conn, user) do
     if Trip.get_trips_by_user(user.id) == [] do
       account_path(@endpoint, :options_new)
     else
