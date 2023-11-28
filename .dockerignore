@@ -19,6 +19,7 @@ tmp
 .deliver
 devops
 docker
+Dockerfile
 releases
 
 # Static artifacts if you're using Phoenix if it's an umbrella app change the paths
