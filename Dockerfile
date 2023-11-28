@@ -54,7 +54,7 @@ FROM debian:${DEBIAN_NAME}-slim
 ENV LANG=C.UTF-8 MIX_ENV=prod REPLACE_OS_VARS=true
 
 RUN apt-get update --allow-releaseinfo-change \
-  && apt-get install --no-install-recommends --yes dumb-init \
+  && apt-get install --no-install-recommends --yes dumb-init ca-certificates \
   && rm -rf /var/lib/apt/lists/*
 
 WORKDIR /root

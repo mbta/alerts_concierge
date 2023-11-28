@@ -15,17 +15,16 @@ defmodule ConciergeSite.AuthController do
   def callback(
         %{
           assigns: %{
-            ueberauth_auth: %{
-              info: %{email: email, phone: phone_number},
-              credentials: credentials,
-              extra: %{
-                raw_info: %{
-                  claims: %{"sub" => id},
-                  opts: opts,
-                  userinfo: userinfo
+            ueberauth_auth:
+              %{
+                info: %{email: email, phone: phone_number},
+                extra: %{
+                  raw_info: %{
+                    claims: %{"sub" => id},
+                    userinfo: userinfo
+                  }
                 }
-              }
-            }
+              } = auth
           }
         } = conn,
         _params
@@ -40,21 +39,10 @@ defmodule ConciergeSite.AuthController do
       |> use_props_from_token(email, phone_number, role)
 
     logout_params = %{
-      post_logout_redirect_uri: page_url(conn, :landing),
-      id_token_hint: credentials.other.id_token
+      post_logout_redirect_uri: page_url(conn, :landing)
     }
 
-    {:ok, logout_uri} =
-      case Map.fetch(conn.assigns, :_end_session_uri) do
-        {:ok, fun} when is_function(fun, 1) ->
-          {:ok, fun.(logout_params)}
-
-        _ ->
-          OpenIDConnect.end_session_uri(
-            opts,
-            logout_params
-          )
-      end
+    {:ok, logout_uri} = UeberauthOidcc.initiate_logout_url(auth, logout_params)
 
     SessionHelper.sign_in(conn, user, %{logout_uri: logout_uri})
   end

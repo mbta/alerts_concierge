@@ -8,9 +8,6 @@ defmodule ConciergeSite.Web.AuthControllerTest do
 
   describe "GET /auth/:provider/callback" do
     setup %{conn: conn} do
-      conn =
-        assign(conn, :_end_session_uri, fn opts -> "/end_session?#{URI.encode_query(opts)}" end)
-
       rider =
         Repo.insert!(%User{
           email: "rider@example.com",
@@ -117,7 +114,7 @@ defmodule ConciergeSite.Web.AuthControllerTest do
     %Auth{
       uid: email,
       provider: :keycloak,
-      strategy: Ueberauth.Strategy.OIDC,
+      strategy: Ueberauth.Strategy.Oidcc,
       info: %Info{
         name: "John Rider",
         email: email,
@@ -136,7 +133,12 @@ defmodule ConciergeSite.Web.AuthControllerTest do
           claims: %{
             "sub" => id
           },
-          opts: %{},
+          opts: %{
+            module: __MODULE__.FakeOidcc,
+            issuer: :keycloak_issuer,
+            client_id: "fake_client",
+            client_secret: "fake_client_secret"
+          },
           userinfo: %{
             "email" => email,
             "email_verified" => true,
@@ -154,5 +156,11 @@ defmodule ConciergeSite.Web.AuthControllerTest do
         }
       }
     }
+  end
+
+  defmodule FakeOidcc do
+    def initiate_logout_url("FAKE ID TOKEN", :keycloak_issuer, "fake_client", opts) do
+      {:ok, "/end_session?#{URI.encode_query(opts)}"}
+    end
   end
 end
