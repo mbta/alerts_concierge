@@ -1,5 +1,11 @@
 # --- Set up Elixir build ---
-FROM hexpm/elixir:1.14.5-erlang-25.3.2.7-debian-bullseye-20230612-slim as elixir-builder
+ARG ELIXIR_VERSION=1.14.5
+ARG ERLANG_VERSION=26.1.2
+ARG DEBIAN_NAME=bullseye
+ARG DEBIAN_VERSION=${DEBIAN_NAME}-20230612
+ARG NODE_VERSION=18.14.0
+
+FROM hexpm/elixir:${ELIXIR_VERSION}-erlang-${ERLANG_VERSION}-debian-${DEBIAN_VERSION}-slim as elixir-builder
 
 ENV LANG=C.UTF-8 MIX_ENV=prod
 
@@ -15,7 +21,7 @@ RUN mix deps.get --only prod
 
 
 # --- Build frontend assets ---
-FROM node:18.14.0-bullseye-slim as asset-builder
+FROM node:${NODE_VERSION}-${DEBIAN_NAME}-slim as asset-builder
 
 RUN apt-get update --allow-releaseinfo-change
 RUN apt-get install --no-install-recommends --yes ca-certificates git
@@ -43,7 +49,7 @@ RUN mix release
 
 
 # --- Set up runtime container ---
-FROM debian:bullseye-slim
+FROM debian:${DEBIAN_NAME}-slim
 
 ENV LANG=C.UTF-8 MIX_ENV=prod REPLACE_OS_VARS=true
 
@@ -53,6 +59,13 @@ RUN apt-get update --allow-releaseinfo-change \
 
 WORKDIR /root
 COPY --from=app-builder /root/_build/prod/rel/alerts_concierge .
+
+# Ensure SSL support is enabled
+RUN env SECRET_KEY_BASE= HOST_URL= DATABASE_URL_PROD= GUARDIAN_AUTH_KEY= \
+        GOOGLE_TAG_MANAGER_ID= INFORMIZELY_SITE_ID= INFORMIZELY_ACCOUNT_DELETED_SURVEY_ID= \
+  sh -c ' \
+     bin/alerts_concierge eval ":crypto.supports()" && \
+     bin/alerts_concierge eval ":ok = :public_key.cacerts_load"'
 
 EXPOSE 4000
 ENTRYPOINT ["/usr/bin/dumb-init", "--"]
