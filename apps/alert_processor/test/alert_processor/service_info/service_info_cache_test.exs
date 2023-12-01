@@ -251,10 +251,24 @@ defmodule AlertProcessor.ServiceInfoCacheTest do
              },
              %AlertProcessor.Model.Route{
                direction_names: ["Outbound", "Inbound"],
+               direction_destinations: ["Blossom Street Pier", "Long Wharf"],
+               headsigns: nil,
+               long_name: "Lynn Ferry",
+               order: 3,
+               route_id: "Boat-Lynn",
+               route_type: 4,
+               short_name: "",
+               stop_list: [
+                 {"Blossom Street Pier", "Boat-Blossom", {42.45481, -70.94802}, 1},
+                 {"Long Wharf (North)", "Boat-Long", {42.360795, -71.049976}, 1}
+               ]
+             },
+             %AlertProcessor.Model.Route{
+               direction_names: ["Outbound", "Inbound"],
                direction_destinations: ["Winthrop", "Central Wharf"],
                headsigns: nil,
                long_name: "Winthrop Ferry",
-               order: 3,
+               order: 4,
                route_id: "Boat-F6",
                route_type: 4,
                short_name: "",
