@@ -44,7 +44,9 @@ defmodule ConciergeSite.AuthController do
 
     {:ok, logout_uri} = UeberauthOidcc.initiate_logout_url(auth, logout_params)
 
-    SessionHelper.sign_in(conn, user, %{logout_uri: logout_uri})
+    conn
+    |> put_session("logout_uri", logout_uri)
+    |> SessionHelper.sign_in(user)
   end
 
   def callback(%{assigns: %{ueberauth_failure: failure}} = conn, _params) do
