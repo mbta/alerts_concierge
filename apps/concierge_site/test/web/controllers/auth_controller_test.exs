@@ -30,7 +30,7 @@ defmodule ConciergeSite.Web.AuthControllerTest do
       assert %User{id: ^id, email: ^email, phone_number: ^phone_number} =
                Guardian.Plug.current_resource(conn)
 
-      assert %{"logout_uri" => _} = Guardian.Plug.current_claims(conn)
+      assert is_binary(Plug.Conn.get_session(conn, "logout_uri"))
     end
 
     test "given an ueberauth auth, redirects to the account options page (for an account with no trips)",

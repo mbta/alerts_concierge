@@ -20,11 +20,7 @@ defmodule ConciergeSite.SessionHelper do
   @spec sign_out(Conn.t()) :: Conn.t()
   @spec sign_out(Conn.t(), keyword()) :: Conn.t()
   def sign_out(conn, opts \\ []) do
-    logout_uri =
-      case Guardian.Plug.current_claims(conn) do
-        %{"logout_uri" => logout_uri} -> logout_uri
-        _ -> nil
-      end
+    logout_uri = Conn.get_session(conn, "logout_uri")
 
     redirect_to =
       if Keyword.get(opts, :skip_oidc_sign_out, false) or is_nil(logout_uri) do
