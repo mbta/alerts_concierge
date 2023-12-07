@@ -313,7 +313,7 @@ defmodule AlertProcessor.ServiceInfoCacheTest do
     assert {:ok, "Alewife"} == ServiceInfoCache.get_headsign(pid, "place-pktrm", "place-davis", 1)
     assert {:ok, "C"} == ServiceInfoCache.get_headsign(pid, "place-gover", "place-clmnl", 0)
     assert {:ok, "C"} == ServiceInfoCache.get_headsign(pid, "place-clmnl", "place-gover", 1)
-    assert {:ok, "D or E"} == ServiceInfoCache.get_headsign(pid, "place-gover", "place-haecl", 0)
+    assert {:ok, "D or E"} == ServiceInfoCache.get_headsign(pid, "place-gover", "place-north", 0)
     assert :error == ServiceInfoCache.get_headsign(pid, "garbage", "more garbage", 1)
   end
 
