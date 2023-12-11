@@ -14,7 +14,7 @@ defmodule AlertProcessor.ServiceInfoCache do
   @info_types [
     :parent_stop_info,
     :subway_full_routes,
-    # :ferry_general_ids,
+    :ferry_general_ids,
     :commuter_rail_trip_ids,
     :facility_map
   ]
@@ -437,38 +437,39 @@ defmodule AlertProcessor.ServiceInfoCache do
   end
 
   defp fetch_service_info(:ferry_general_ids) do
-    {:ok, routes} = ApiClient.routes([4])
-    route_ids = Enum.map(routes, & &1["id"])
-    {:ok, trips, service_info} = ApiClient.trips_with_service_info(route_ids)
-    trip_info_map = map_trip_information(trips, service_info)
-    trip_ids = Enum.map(trips, & &1["id"])
+    with {:ok, routes} <- ApiClient.routes([4]),
+         route_ids <- Enum.map(routes, & &1["id"]),
+         {:ok, trips, service_info} <- ApiClient.trips_with_service_info(route_ids) do
+      trip_info_map = map_trip_information(trips, service_info)
+      trip_ids = Enum.map(trips, & &1["id"])
 
-    for trip_id <- trip_ids, into: %{} do
-      case ApiClient.schedule_for_trip(trip_id) do
-        {:ok, []} ->
-          {trip_id,
-           map_generalized_trip_id(trip_id, trip_info_map, %{
-             origin_id: nil,
-             departure_time: nil
-           })}
+      for trip_id <- trip_ids, into: %{} do
+        case ApiClient.schedule_for_trip(trip_id) do
+          {:ok, []} ->
+            {trip_id,
+             map_generalized_trip_id(trip_id, trip_info_map, %{
+               origin_id: nil,
+               departure_time: nil
+             })}
 
-        {:ok, schedule} ->
-          [departure_schedule | _t] =
-            Enum.sort_by(schedule, & &1["attributes"]["departure_time"], Sort.nils_last())
+          {:ok, schedule} ->
+            [departure_schedule | _t] =
+              Enum.sort_by(schedule, & &1["attributes"]["departure_time"], Sort.nils_last())
 
-          %{
-            "relationships" => %{"stop" => %{"data" => %{"id" => origin_id}}},
-            "attributes" => %{"departure_time" => departure_timestamp}
-          } = departure_schedule
+            %{
+              "relationships" => %{"stop" => %{"data" => %{"id" => origin_id}}},
+              "attributes" => %{"departure_time" => departure_timestamp}
+            } = departure_schedule
 
-          departure_time =
-            departure_timestamp |> NaiveDateTime.from_iso8601!() |> NaiveDateTime.to_time()
+            departure_time =
+              departure_timestamp |> NaiveDateTime.from_iso8601!() |> NaiveDateTime.to_time()
 
-          {trip_id,
-           map_generalized_trip_id(trip_id, trip_info_map, %{
-             origin_id: origin_id,
-             departure_time: departure_time
-           })}
+            {trip_id,
+             map_generalized_trip_id(trip_id, trip_info_map, %{
+               origin_id: origin_id,
+               departure_time: departure_time
+             })}
+        end
       end
     end
   end
