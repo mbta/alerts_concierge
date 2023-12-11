@@ -87,7 +87,8 @@ defmodule AlertProcessor.ApiClient do
   @doc """
   endpoint to fetch trips for a set of routes and include service information
   """
-  @spec trips_with_service_info([String.t()]) :: {:ok, [map], [map]} | {:error, String.t()}
+  @spec trips_with_service_info([String.t()]) ::
+          {:ok, [map], [map]} | {:ok, []} | {:error, String.t()}
   def trips_with_service_info(routes) do
     "/trips"
     |> api_get(route: Enum.join(routes, ","), include: "service")
