@@ -14,7 +14,7 @@ defmodule AlertProcessor.ServiceInfoCache do
   @info_types [
     :parent_stop_info,
     :subway_full_routes,
-    :ferry_general_ids,
+    # :ferry_general_ids,
     :commuter_rail_trip_ids,
     :facility_map
   ]
