@@ -244,10 +244,7 @@ defmodule AlertProcessor.ServiceInfoCacheTest do
                route_id: "Boat-EastBoston",
                route_type: 4,
                short_name: "",
-               stop_list: [
-                 {"Lewis Mall Wharf", "Boat-Lewis", {42.365867, -71.041958}, 1},
-                 {"Long Wharf (North)", "Boat-Long", {42.360795, -71.049976}, 1}
-               ]
+               stop_list: []
              },
              %AlertProcessor.Model.Route{
                direction_names: ["Outbound", "Inbound"],
@@ -269,13 +266,7 @@ defmodule AlertProcessor.ServiceInfoCacheTest do
                route_id: "Boat-F6",
                route_type: 4,
                short_name: "",
-               stop_list: [
-                 {"Winthrop Landing", "Boat-Winthrop", {42.366711, -70.973302}, 1},
-                 {"Quincy", "Boat-Quincy", {42.30132, -71.03201}, 1},
-                 {"Logan Airport Ferry Terminal", "Boat-Logan", {42.359789, -71.02734}, 1},
-                 {"Seaport/Fan Pier", "Boat-Fan", {42.353484, -71.04323}, 1},
-                 {"Central Wharf (South)", "Boat-Aquarium", {42.358815, -71.048779}, 1}
-               ]
+               stop_list: []
              }
            ] = route_info
   end
