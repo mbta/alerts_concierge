@@ -1,0 +1,26 @@
+[
+  {
+    "request": {
+      "body": "",
+      "headers": [],
+      "method": "get",
+      "options": [],
+      "request_body": "",
+      "url": "https://api-dev.mbtace.com/trips?route=Boat-EastBoston&include=service"
+    },
+    "response": {
+      "body": "{\"data\":[],\"jsonapi\":{\"version\":\"1.0\"}}",
+      "headers": {
+        "cache-control": "max-age=0, private, must-revalidate",
+        "Content-Type": "application/vnd.api+json; charset=utf-8",
+        "Date": "Mon, 22 May 2017 18:18:15 GMT",
+        "Server": "nginx/1.10.2",
+        "x-request-id": "5lqassji1u6prmfrd2k6m96s320ogps0",
+        "Content-Length": "78005",
+        "Connection": "keep-alive"
+      },
+      "status_code": 200,
+      "type": "ok"
+    }
+  }
+]

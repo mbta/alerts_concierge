@@ -9,6 +9,21 @@ defmodule AlertProcessor.ServiceInfoCacheTest do
     {:ok, pid: pid}
   end
 
+  describe "init/1" do
+    test "returns the results of loading initial service info" do
+      assert {:ok,
+              %{
+                routes: [_ | _],
+                stops_with_icons: %{},
+                commuter_rail_trip_ids: %{},
+                facility_map: %{},
+                ferry_general_ids: %{},
+                parent_stop_info: %{},
+                subway_full_routes: [_ | _]
+              }} = ServiceInfoCache.init([])
+    end
+  end
+
   test "get_subway_info/0 returns subway branch lists", %{pid: pid} do
     {:ok, route_info} = ServiceInfoCache.get_subway_info(pid)
 

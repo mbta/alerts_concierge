@@ -53,6 +53,27 @@ defmodule AlertProcessor.ApiClientTest do
     end
   end
 
+  describe "trips_with_service_info/1" do
+    test "returns trips data and includes given a list of route IDs" do
+      use_cassette "get_trips_including_service",
+        custom: true,
+        clear_mock: true,
+        match_requests_on: [:query] do
+        assert {:ok, [_ | _], [_ | _]} =
+                 ApiClient.trips_with_service_info(["CR-Haverhill", "CR-Providence"])
+      end
+    end
+
+    test "returns empty data and no includes when empty data in the response" do
+      use_cassette "get_trips_empty_data_response",
+        custom: true,
+        clear_mock: true,
+        match_requests_on: [:query] do
+        assert {:ok, []} = ApiClient.trips_with_service_info(["Boat-EastBoston"])
+      end
+    end
+  end
+
   test "route_stops/1 returns inbound stops of a route" do
     expected_route_ids = [
       "Forge Park / 495",
