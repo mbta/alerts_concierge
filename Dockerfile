@@ -39,7 +39,13 @@ RUN npm run deploy
 # --- Build Elixir release ---
 FROM elixir-builder as app-builder
 
+RUN apt-get install --no-install-recommends --yes curl
+
 WORKDIR /root/apps/concierge_site/priv/static
+
+RUN curl https://truststore.pki.rds.amazonaws.com/global/global-bundle.pem \
+  -o aws-cert-bundle.pem
+RUN echo "51b107da46717aed974d97464b63f7357b220fe8737969db1492d1cae74b3947  aws-cert-bundle.pem" | sha256sum -c -
 COPY --from=asset-builder /root/apps/concierge_site/priv/static .
 
 WORKDIR /root
