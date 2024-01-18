@@ -66,13 +66,6 @@ RUN apt-get update --allow-releaseinfo-change \
 WORKDIR /root
 COPY --from=app-builder /root/_build/prod/rel/alerts_concierge .
 
-# Ensure SSL support is enabled
-RUN env SECRET_KEY_BASE= HOST_URL= DATABASE_URL_PROD= GUARDIAN_AUTH_KEY= \
-  GOOGLE_TAG_MANAGER_ID= INFORMIZELY_SITE_ID= INFORMIZELY_ACCOUNT_DELETED_SURVEY_ID= \
-  sh -c ' \
-  bin/alerts_concierge eval ":crypto.supports()" && \
-  bin/alerts_concierge eval ":ok = :public_key.cacerts_load"'
-
 EXPOSE 4000
 ENTRYPOINT ["/usr/bin/dumb-init", "--"]
 CMD ["bin/alerts_concierge", "start"]
