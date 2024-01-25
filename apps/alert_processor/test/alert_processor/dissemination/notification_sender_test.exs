@@ -36,6 +36,23 @@ defmodule AlertProcessor.Dissemination.NotificationSenderTest do
                       %{"Message" => "T-Alerts - This is a test", "PhoneNumber" => "+15555551234"}}
     end
 
+    test "sends an SMS with url appended if it exists" do
+      notification = %Notification{
+        header: "This is a test",
+        phone_number: "5555551234",
+        url: "https://example.com",
+        type: :initial
+      }
+
+      {:ok, _} = NotificationSender.send(notification)
+
+      assert_receive {:publish,
+                      %{
+                        "Message" => "T-Alerts - This is a test Learn more: https://example.com",
+                        "PhoneNumber" => "+15555551234"
+                      }}
+    end
+
     test "sends SMS and not email when both are possible" do
       notification = %Notification{
         email: "test@example.com",
