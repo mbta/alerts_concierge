@@ -229,7 +229,7 @@ defmodule AlertProcessor.ServiceInfoCacheTest do
                route_type: 4,
                short_name: "",
                stop_list: [
-                 {"Charlestown Navy Yard", "Boat-Charlestown", {42.372756, -71.052528}, 1},
+                 {"Charlestown", "Boat-Charlestown", {42.372756, -71.052528}, 1},
                  {"Long Wharf (South)", "Boat-Long-South", {42.359448, -71.050498}, 1}
                ]
              },
@@ -252,36 +252,17 @@ defmodule AlertProcessor.ServiceInfoCacheTest do
              },
              %AlertProcessor.Model.Route{
                direction_names: ["Outbound", "Inbound"],
-               direction_destinations: ["Lewis Mall Wharf", "Long Wharf"],
+               direction_destinations: ["Lewis Wharf", "Long Wharf"],
                headsigns: nil,
                long_name: "East Boston Ferry",
                order: 2,
                route_id: "Boat-EastBoston",
                route_type: 4,
                short_name: "",
-               stop_list: []
-             },
-             %AlertProcessor.Model.Route{
-               direction_names: ["Outbound", "Inbound"],
-               direction_destinations: ["Blossom Street Pier", "Long Wharf"],
-               headsigns: nil,
-               long_name: "Lynn Ferry",
-               order: 3,
-               route_id: "Boat-Lynn",
-               route_type: 4,
-               short_name: "",
-               stop_list: []
-             },
-             %AlertProcessor.Model.Route{
-               direction_names: ["Outbound", "Inbound"],
-               direction_destinations: ["Winthrop", "Central Wharf"],
-               headsigns: nil,
-               long_name: "Winthrop Ferry",
-               order: 4,
-               route_id: "Boat-F6",
-               route_type: 4,
-               short_name: "",
-               stop_list: []
+               stop_list: [
+                 {"Lewis Wharf", "Boat-Lewis", {42.365867, -71.041958}, 1},
+                 {"Long Wharf (North)", "Boat-Long", {42.360795, -71.049976}, 1}
+               ]
              }
            ] = route_info
   end
