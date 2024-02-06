@@ -83,7 +83,7 @@ if config_env() == :prod do
     hostname: hostname,
     port: port,
     # password set by `configure` callback below
-    configure: {AlertsUI.Repo, :before_connect, []},
+    configure: {AlertsProcessor.Repo, :before_connect, []},
     ssl: true,
     ssl_opts: [
       cacertfile: "priv/aws-cert-bundle.pem",
