@@ -73,26 +73,4 @@ if config_env() == :prod do
   config :concierge_site,
     informizely_account_deleted_survey_id:
       System.fetch_env!("INFORMIZELY_ACCOUNT_DELETED_SURVEY_ID")
-
-  port = System.get_env("DATABASE_PORT") |> String.to_integer()
-  hostname = System.get_env("DATABASE_HOST")
-
-  config :alert_processor, AlertProcessor.Repo,
-    username: System.get_env("DATABASE_USER"),
-    database: System.get_env("DATABASE_NAME"),
-    hostname: hostname,
-    port: port,
-    # password set by `configure` callback below
-    configure: {AlertsProcessor.Repo, :before_connect, []},
-    ssl: true,
-    ssl_opts: [
-      cacertfile: "priv/aws-cert-bundle.pem",
-      verify: :verify_peer,
-      server_name_indication: String.to_charlist(hostname),
-      verify_fun:
-        {&:ssl_verify_hostname.verify_fun/3, [check_hostname: String.to_charlist(hostname)]}
-    ]
-
-  port = System.get_env("DATABASE_PORT") |> String.to_integer()
-  hostname = System.get_env("DATABASE_HOST")
 end
