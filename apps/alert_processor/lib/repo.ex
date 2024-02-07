@@ -10,7 +10,7 @@ defmodule AlertProcessor.Repo do
     username = Keyword.fetch!(config, :username)
     hostname = Keyword.fetch!(config, :hostname)
     port = Keyword.fetch!(config, :port)
-    mod = Application.get_env(:alerts_ui, :aws_rds_mod)
+    mod = Application.get_env(:alerts_processor, :aws_rds_mod)
     Logger.info("username: #{username}, hostname: #{hostname}, port: #{port}, mod: #{mod}")
     token = mod.generate_db_auth_token(hostname, username, port, %{})
     Logger.info("generated_aws_rds_iam_auth_token")
