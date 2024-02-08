@@ -7,7 +7,8 @@ defmodule AlertProcessor.Repo do
 
   def before_connect(config) do
     Logger.info("generating_aws_rds_iam_auth_token")
-    username = Keyword.fetch!(config, :username)
+    Logger.info("important username #{Keyword.fetch!(config, :username)}")
+    username = "alerts_concierge"
     hostname = Keyword.fetch!(config, :hostname)
     port = Keyword.fetch!(config, :port)
     mod = Application.get_env(:alert_processor, :aws_rds_mod)

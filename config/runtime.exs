@@ -76,6 +76,7 @@ if config_env() == :prod do
 
   port = System.get_env("DATABASE_PORT") |> String.to_integer()
   hostname = System.get_env("DATABASE_HOST")
+  username = System.get_env("DATABASE_USER")
 
   config :alert_processor, AlertProcessor.Repo,
     username: "alerts_concierge",
