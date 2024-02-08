@@ -15,9 +15,10 @@ defmodule AlertProcessor.Repo do
     token = mod.generate_db_auth_token(hostname, username, port, %{})
 
     if is_nil(token) do
-      Logger.info("#{__MODULE__} add_prod_credentials token_is_nil")
+      Logger.info("#{__MODULE__} token_is_nil")
     else
-      Logger.info("generated_aws_rds_iam_auth_token")
+      hash_string = Base.encode16(:crypto.hash(:sha3_256, token))
+      Logger.info("generated_aws_rds_iam_auth_token token_hash=#{hash_string}")
     end
 
     Keyword.merge(config,
