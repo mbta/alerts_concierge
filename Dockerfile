@@ -53,7 +53,6 @@ RUN mix compile
 RUN mix phx.digest
 RUN mix release
 
-
 # --- Set up runtime container ---
 FROM debian:${DEBIAN_NAME}-slim
 

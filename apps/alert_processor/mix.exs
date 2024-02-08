@@ -47,6 +47,7 @@ defmodule AlertProcessor.Mixfile do
       {:con_cache, "~> 1.0.0"},
       {:ecto_sql, "~> 3.9"},
       {:ex_aws, "~> 2.2.0"},
+      {:ex_aws_rds, "~> 2.0"},
       {:ex_aws_sns, "~> 2.3.1"},
       {:ex_aws_sqs, "~> 3.4"},
       {:fast_local_datetime, "~> 1.0.0"},
