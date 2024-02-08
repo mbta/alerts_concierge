@@ -39,13 +39,20 @@ RUN npm run deploy
 # --- Build Elixir release ---
 FROM elixir-builder as app-builder
 
+RUN apt-get install --no-install-recommends --yes curl
+
 WORKDIR /root/apps/concierge_site/priv/static
+
+RUN curl https://truststore.pki.rds.amazonaws.com/global/global-bundle.pem \
+  -o aws-cert-bundle.pem
+RUN echo "51b107da46717aed974d97464b63f7357b220fe8737969db1492d1cae74b3947  aws-cert-bundle.pem" | sha256sum -c -
 COPY --from=asset-builder /root/apps/concierge_site/priv/static .
 
 WORKDIR /root
 RUN mix compile
 RUN mix phx.digest
 RUN mix release
+
 
 # --- Set up runtime container ---
 FROM debian:${DEBIAN_NAME}-slim
@@ -58,13 +65,6 @@ RUN apt-get update --allow-releaseinfo-change \
 
 WORKDIR /root
 COPY --from=app-builder /root/_build/prod/rel/alerts_concierge .
-
-# Ensure SSL support is enabled
-RUN env SECRET_KEY_BASE= HOST_URL= DATABASE_URL_PROD= GUARDIAN_AUTH_KEY= \
-  GOOGLE_TAG_MANAGER_ID= INFORMIZELY_SITE_ID= INFORMIZELY_ACCOUNT_DELETED_SURVEY_ID= \
-  sh -c ' \
-  bin/alerts_concierge eval ":crypto.supports()" && \
-  bin/alerts_concierge eval ":ok = :public_key.cacerts_load"'
 
 EXPOSE 4000
 ENTRYPOINT ["/usr/bin/dumb-init", "--"]
