@@ -78,18 +78,10 @@ if config_env() == :prod do
   hostname = System.get_env("DATABASE_HOST")
 
   config :alert_processor, AlertProcessor.Repo,
-    username: System.get_env("DATABASE_USER"),
-    database: System.get_env("DATABASE_NAME"),
-    hostname: hostname,
-    port: port,
-    # password set by `configure` callback below
-    configure: {AlertProcessor.Repo, :before_connect, []},
-    ssl: true,
-    ssl_opts: [
-      cacertfile: "priv/aws-cert-bundle.pem",
-      verify: :verify_peer,
-      server_name_indication: String.to_charlist(hostname),
-      verify_fun:
-        {&:ssl_verify_hostname.verify_fun/3, [check_hostname: String.to_charlist(hostname)]}
-    ]
+  database: System.get_env("DATABASE_NAME"),
+  username: System.get_env("DATABASE_USER"),
+  hostname: System.get_env("DATABASE_HOST"),
+  port: port,
+  show_sensitive_data_on_connection_error: true,
+  backoff_min: 5_000
 end
