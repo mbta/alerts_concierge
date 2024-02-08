@@ -76,15 +76,14 @@ if config_env() == :prod do
 
   port = System.get_env("DATABASE_PORT") |> String.to_integer()
   hostname = System.get_env("DATABASE_HOST")
-  username = System.get_env("DATABASE_USER")
 
   config :alert_processor, AlertProcessor.Repo,
-    username: "foo",
+    username: System.get_env("DATABASE_USER"),
     database: System.get_env("DATABASE_NAME"),
     hostname: hostname,
     port: port,
     # password set by `configure` callback below
-    configure: {AlertProcessor.Repo, :before_connect, []},
+    configure: {AlertProcessor.Repo, :before_connect, [username: username]},
     ssl: true,
     ssl_opts: [
       cacertfile: "priv/aws-cert-bundle.pem",
