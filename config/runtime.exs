@@ -78,10 +78,11 @@ if config_env() == :prod do
   hostname = System.get_env("DATABASE_HOST")
 
   config :alert_processor, AlertProcessor.Repo,
-  database: System.get_env("DATABASE_NAME"),
-  username: System.get_env("DATABASE_USER"),
-  hostname: System.get_env("DATABASE_HOST"),
-  port: port,
-  show_sensitive_data_on_connection_error: true,
-  backoff_min: 5_000
+    username: System.get_env("DATABASE_USER"),
+    database: System.get_env("DATABASE_NAME"),
+    hostname: hostname,
+    port: port,
+    # password set by `configure` callback below
+    configure: {AlertProcessor.Repo, :before_connect, []},
+    ssl: true
 end
