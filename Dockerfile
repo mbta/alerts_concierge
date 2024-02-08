@@ -64,6 +64,7 @@ RUN apt-get update --allow-releaseinfo-change \
 
 WORKDIR /root
 COPY --from=app-builder /root/_build/prod/rel/alerts_concierge .
+COPY --from=app-builder /root/aws-cert-bundle.pem ./priv/aws-cert-bundle.pem
 
 EXPOSE 4000
 ENTRYPOINT ["/usr/bin/dumb-init", "--"]
