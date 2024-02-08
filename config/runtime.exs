@@ -79,7 +79,7 @@ if config_env() == :prod do
   username = System.get_env("DATABASE_USER")
 
   config :alert_processor, AlertProcessor.Repo,
-    username: "alerts_concierge",
+    username: "foo",
     database: System.get_env("DATABASE_NAME"),
     hostname: hostname,
     port: port,
