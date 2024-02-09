@@ -8,8 +8,7 @@ import Config
 # General application configuration
 config :alert_processor,
   ecto_repos: [AlertProcessor.Repo],
-  notification_window_filter: AlertProcessor.NotificationWindowFilter,
-  aws_rds_mod: ExAws.RDS
+  notification_window_filter: AlertProcessor.NotificationWindowFilter
 
 config :ex_aws, json_codec: Poison, debug_requests: true
 
