@@ -8,7 +8,7 @@ defmodule AlertProcessor.Repo do
   def before_connect(config) do
     port = System.get_env("DATABASE_PORT") |> String.to_integer()
     hostname = System.get_env("DATABASE_HOST")
-    username = System.get_env("DATABASE_USER")
+    username = "alerts_concierge_app" #System.get_env("DATABASE_USER")
     mod = Application.get_env(:alert_processor, :aws_rds_mod)
     Logger.info("username: #{username}, hostname: #{hostname}, port: #{port}, mod: #{mod}")
     Logger.info("generating_aws_rds_iam_auth_token")
