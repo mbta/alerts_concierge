@@ -43,7 +43,7 @@ defmodule ConciergeSite.Router do
 
   scope "/", ConciergeSite do
     pipe_through([:redirect_prod_http])
-
+    post("/unsubscribe/:id", UnsubscribeController, :update)
     post("/rejected_email", RejectedEmailController, :handle_message)
   end
 
