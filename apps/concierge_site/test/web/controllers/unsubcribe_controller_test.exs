@@ -7,6 +7,13 @@ defmodule ConciergeSite.UnsubscribeControllerTest do
 
   describe "update/2" do
     test "unsubscribes user from al subscriptions", %{conn: conn} do
+      conn =
+        conn
+        |> Map.put(
+          :secret_key_base,
+          "wxQjfCkbnND+H2kYSmvtNl+77BiBDB3qM7ytsJaOTZp2aBcEhcGvdkoa55pYbER0"
+        )
+
       trip_details = %{
         relevant_days: [:monday],
         start_time: ~T[12:00:00],
@@ -40,9 +47,12 @@ defmodule ConciergeSite.UnsubscribeControllerTest do
       subscription_1 = insert(:subscription, subscription_details_1)
       subscription_2 = insert(:subscription, subscription_details_2)
 
+      encrypted_user_id =
+        Plug.Crypto.encrypt(conn.secret_key_base, conn.secret_key_base, trip.user.id)
+
       post(
         conn,
-        unsubscribe_path(conn, :update, trip.user.id)
+        unsubscribe_path(conn, :update, encrypted_user_id)
       )
 
       updated_subscription_1 = Repo.get!(Subscription, subscription_1.id)
