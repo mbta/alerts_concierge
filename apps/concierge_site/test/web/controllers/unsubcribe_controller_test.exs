@@ -2,11 +2,11 @@ defmodule ConciergeSite.UnsubscribeControllerTest do
   @moduledoc false
   use ConciergeSite.ConnCase, async: true
   import AlertProcessor.Factory
-  alias AlertProcessor.Model.Subscription
+  alias AlertProcessor.Model.{Subscription, User}
   alias AlertProcessor.Repo
 
   describe "update/2" do
-    test "unsubscribes user from al subscriptions", %{conn: conn} do
+    test "unsubscribes user from all subscriptions", %{conn: conn} do
       conn =
         conn
         |> Map.put(
@@ -47,6 +47,8 @@ defmodule ConciergeSite.UnsubscribeControllerTest do
       subscription_1 = insert(:subscription, subscription_details_1)
       subscription_2 = insert(:subscription, subscription_details_2)
 
+      assert trip.user.communication_mode == "email"
+
       encrypted_user_id =
         Plug.Crypto.encrypt(conn.secret_key_base, conn.secret_key_base, trip.user.id)
 
@@ -61,6 +63,9 @@ defmodule ConciergeSite.UnsubscribeControllerTest do
       for updated_subscription <- [updated_subscription_1, updated_subscription_2] do
         assert updated_subscription.paused == true
       end
+
+      updated_user = User.get(trip.user.id)
+      assert updated_user.communication_mode == "none"
     end
   end
 end
