@@ -11,7 +11,8 @@ defmodule ConciergeSite.UnsubscribeControllerTest do
         conn
         |> Map.put(
           :secret_key_base,
-          "wxQjfCkbnND+H2kYSmvtNl+77BiBDB3qM7ytsJaOTZp2aBcEhcGvdkoa55pYbER0"
+          Application.fetch_env!(:concierge_site, ConciergeSite.Endpoint)
+          |> Keyword.fetch!(:secret_key_base)
         )
 
       trip_details = %{

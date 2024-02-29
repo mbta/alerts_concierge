@@ -56,6 +56,9 @@ if base_uri = System.get_env("KEYCLOAK_BASE_URI") do
 end
 
 if config_env() == :prod do
+  config :concierge_site,
+    host_url: System.fetch_env!("HOST_URL")
+
   config :concierge_site, ConciergeSite.Endpoint,
     url: [host: System.fetch_env!("HOST_URL"), port: 443, scheme: "https"],
     secret_key_base: System.fetch_env!("SECRET_KEY_BASE")
