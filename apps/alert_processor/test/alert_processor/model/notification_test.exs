@@ -317,6 +317,31 @@ defmodule AlertProcessor.Model.NotificationTest do
     end
   end
 
+  describe "image_alternative_text" do
+    test "returns the Notifaction's image_alternative_text" do
+      alt_text = "Test alt text."
+      notification = struct(Notification, image_alternative_text: alt_text)
+
+      assert Notification.image_alternative_text(notification) == alt_text
+    end
+
+    test "if email? is true, appends info about the link" do
+      notification = struct(Notification, image_alternative_text: "Test alt text.")
+
+      assert Notification.image_alternative_text(notification, true) ==
+               "Test alt text. Link opens a full-size version of the image."
+    end
+
+    test "handles missing image_alternative_text" do
+      notification = struct(Notification, image_alternative_text: nil)
+
+      assert Notification.image_alternative_text(notification) == ""
+
+      assert Notification.image_alternative_text(notification, true) ==
+               "Link opens a full-size version of the image."
+    end
+  end
+
   defp notification_details(
          alert_id,
          notification_number,

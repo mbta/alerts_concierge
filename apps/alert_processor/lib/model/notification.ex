@@ -124,4 +124,20 @@ defmodule AlertProcessor.Model.Notification do
       )
     )
   end
+
+  @spec image_alternative_text(t()) :: String.t()
+  @spec image_alternative_text(t(), email? :: boolean()) :: String.t()
+  def image_alternative_text(notification, email? \\ false)
+
+  def image_alternative_text(%__MODULE__{image_alternative_text: nil} = notification, email?),
+    do: image_alternative_text(%__MODULE__{notification | image_alternative_text: ""}, email?)
+
+  def image_alternative_text(%__MODULE__{image_alternative_text: image_alternative_text}, true) do
+    [image_alternative_text, "Link opens a full-size version of the image."]
+    |> Enum.reject(&(&1 == ""))
+    |> Enum.join(" ")
+  end
+
+  def image_alternative_text(%__MODULE__{image_alternative_text: image_alternative_text}, false),
+    do: image_alternative_text
 end
