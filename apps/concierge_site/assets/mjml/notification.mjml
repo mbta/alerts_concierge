@@ -43,7 +43,7 @@
               <br />
               <%= if notification.image_url do %>
                 <a href="<%= notification.image_url %>" target="blank">
-                  <img src="<%= notification.image_url %>" alt="<%= notification.image_alternative_text %>" style="margin-top: 1.5rem; margin-bottom: 1.5rem;" width="500"/>
+                  <img src="<%= notification.image_url %>" alt="<%= Notification.image_alternative_text(notification, true) %>" style="margin-top: 1.5rem; margin-bottom: 1.5rem;" width="500"/>
                 </a>
               <% end %>
               <%= if notification.description do %>
