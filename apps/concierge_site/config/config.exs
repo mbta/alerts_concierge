@@ -9,7 +9,8 @@ import Config
 config :concierge_site,
   namespace: ConciergeSite,
   ecto_repos: [],
-  start_oidc_worker: true
+  start_oidc_worker: true,
+  host_url: "localhost"
 
 # Configures the endpoint
 config :concierge_site, ConciergeSite.Endpoint,
