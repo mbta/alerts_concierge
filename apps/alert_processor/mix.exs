@@ -62,7 +62,7 @@ defmodule AlertProcessor.Mixfile do
       {:uuid, "~> 1.1.8"},
       {:bypass, "~> 2.1.0", only: :test},
       {:ex_machina, "~> 2.7.0", only: :test},
-      {:exvcr, "~> 0.13.0", only: :test}
+      {:exvcr, "~> 0.15.1", only: :test}
     ]
   end
 
