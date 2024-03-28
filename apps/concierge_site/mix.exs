@@ -44,7 +44,7 @@ defmodule ConciergeSite.Mixfile do
       {:ex_aws_sns, "~> 2.3.1"},
       {:gettext, "~> 0.11"},
       {:guardian, "~> 2.3.1"},
-      {:guardian_db, "~> 2.1.0"},
+      {:guardian_db, "~> 3.0.0"},
       {:hammer, "~> 6.0"},
       {:httpoison, "~> 1.8.0"},
       {:logster, "~> 1.1.1"},
