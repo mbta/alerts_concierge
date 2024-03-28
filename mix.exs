@@ -32,7 +32,7 @@ defmodule AlertsConcierge.Mixfile do
   # and cannot be accessed from applications inside the apps folder
   defp deps do
     [
-      {:credo, "~> 1.6.0", only: [:dev, :test]},
+      {:credo, "~> 1.7.5", only: [:dev, :test]},
       {:dialyxir, "~> 1.4.3", only: [:dev, :test]},
       {:lcov_ex, "~> 0.2", only: [:dev, :test]},
       {:sobelow, "~> 0.11.0", only: [:dev, :test]}
