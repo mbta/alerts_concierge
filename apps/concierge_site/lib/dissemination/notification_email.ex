@@ -35,6 +35,7 @@ defmodule ConciergeSite.Dissemination.NotificationEmail do
     track_open_url = MailHelper.track_open_url(notification)
 
     Email.base_email()
+    |> Email.add_unsubscribe_header(notification.user_id)
     |> to(email)
     |> subject(notification_email_subject)
     |> html_body(

@@ -43,6 +43,7 @@ defmodule ConciergeSite.Dissemination.NotificationEmailTest do
   test "text_email/1 has all necessary content" do
     email = NotificationEmail.notification_email(@notification)
     body = email.text_body
+    headers = email.headers
 
     assert email.to == @email
     assert body =~ "Red line delay"
@@ -50,6 +51,11 @@ defmodule ConciergeSite.Dissemination.NotificationEmailTest do
     assert body =~ "There is a fire in at south station so it is closed"
     assert body =~ "http://www.example.com/alert-info.png"
     assert body =~ "Last Updated: Jan 18 2017 02:00 PM"
+
+    assert headers["List-Unsubscribe-Post"] == "List-Unsubscribe=One-Click"
+
+    assert headers["List-Unsubscribe"]
+           |> String.match?(~r(https:\/\/alerts.localhost\/unsubscribe\/\S{100,}))
   end
 
   test "text_email/1 includes content for closed alerts" do
