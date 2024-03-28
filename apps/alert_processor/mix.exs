@@ -53,7 +53,7 @@ defmodule AlertProcessor.Mixfile do
       {:gettext, "~> 0.11"},
       {:httpoison, "~> 1.8.0"},
       {:paper_trail, "0.8.3"},
-      {:poison, "~> 2.0"},
+      {:poison, "~> 4.0"},
       {:poolboy, "~> 1.5.0"},
       {:postgrex, "~> 0.17"},
       {:sentry, "~> 8.0"},
