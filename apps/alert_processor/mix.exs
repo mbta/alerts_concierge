@@ -51,7 +51,7 @@ defmodule AlertProcessor.Mixfile do
       {:ex_aws_sqs, "~> 3.4"},
       {:fast_local_datetime, "~> 1.0.0"},
       {:gettext, "~> 0.11"},
-      {:httpoison, "~> 1.8.0"},
+      {:httpoison, "~> 2.2.1"},
       {:paper_trail, "0.8.3"},
       {:poison, "~> 2.0"},
       {:poolboy, "~> 1.5.0"},

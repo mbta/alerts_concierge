@@ -46,7 +46,7 @@ defmodule ConciergeSite.Mixfile do
       {:guardian, "~> 2.3.1"},
       {:guardian_db, "~> 2.1.0"},
       {:hammer, "~> 6.0"},
-      {:httpoison, "~> 1.8.0"},
+      {:httpoison, "~> 2.2.1"},
       {:logster, "~> 1.1.1"},
       {:phoenix, "~> 1.6.0"},
       {:phoenix_ecto, "~> 4.0"},
