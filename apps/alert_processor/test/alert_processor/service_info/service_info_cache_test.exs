@@ -279,7 +279,7 @@ defmodule AlertProcessor.ServiceInfoCacheTest do
                short_name: "",
                stop_list: [
                  {"Blossom Street Pier", "Boat-Blossom", {42.45481, -70.94802}, 1},
-                 {"Long Wharf (South) - Gate 4", "Boat-Long-South-4", {42.359897, -71.04859}, 1}
+                 {"Long Wharf (North)", "Boat-Long", {42.360795, -71.049976}, 1}
                ]
              },
              %AlertProcessor.Model.Route{
