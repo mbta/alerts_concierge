@@ -58,7 +58,7 @@ defmodule ConciergeSite.Mixfile do
       {:poison, "~> 2.0"},
       {:recaptcha, "~> 3.0"},
       {:remote_ip, "~> 1.0"},
-      {:sentry, "~> 8.0"},
+      {:sentry, "~> 10.4"},
       {:tzdata, "~> 1.1.0"},
       {:phoenix_live_reload, "~> 1.0", only: :dev},
       {:bcrypt_elixir, "~> 3.0", only: :test},
