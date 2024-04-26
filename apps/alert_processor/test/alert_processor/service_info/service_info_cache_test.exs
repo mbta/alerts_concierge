@@ -286,7 +286,7 @@ defmodule AlertProcessor.ServiceInfoCacheTest do
                direction_names: ["Outbound", "Inbound"],
                direction_destinations: ["Winthrop", "Central Wharf"],
                headsigns: nil,
-               long_name: "Winthrop Ferry",
+               long_name: "Winthrop/Quincy Ferry",
                order: 4,
                route_id: "Boat-F6",
                route_type: 4,
