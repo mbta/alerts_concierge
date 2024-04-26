@@ -37,10 +37,32 @@ defmodule AlertProcessor.NotificationWorker do
         log(id, notification, "event=pop time=#{now() - pop_start}")
 
         send_start = now()
-        NotificationSender.send(notification)
-        log(id, notification, "event=send time=#{now() - send_start}")
 
-        send(self(), :work)
+        case NotificationSender.send(notification) do
+          {:ok, _} ->
+            log(id, notification, "event=send notification=#{id} time=#{now() - send_start}")
+            send(self(), :work)
+
+          {:error, {:http_error, 400, _}} ->
+            SendingQueue.push(notification)
+
+            log(
+              id,
+              notification,
+              "event=send_failure action=put_back_on_queue notification=#{id} time=#{now() - send_start}"
+            )
+
+            send(self(), :work)
+
+          {:error, _} ->
+            log(
+              id,
+              notification,
+              "event=send_failure action=none notification=#{id} time=#{now() - send_start}"
+            )
+
+            send(self(), :work)
+        end
 
       :error ->
         Process.send_after(self(), :work, @idle_wait)
