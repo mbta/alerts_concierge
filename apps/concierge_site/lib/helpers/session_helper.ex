@@ -11,9 +11,9 @@ defmodule ConciergeSite.SessionHelper do
 
   @doc "Signs in a user with Guardian and redirects to the appropriate route."
   @spec sign_in(Conn.t(), User.t()) :: Conn.t()
-  def sign_in(conn, user, claims \\ %{}) do
+  def sign_in(conn, user) do
     conn
-    |> ConciergeSite.Guardian.Plug.sign_in(user, claims)
+    |> ConciergeSite.Guardian.Plug.sign_in(user)
     |> redirect(to: sign_in_redirect_path(conn, user))
   end
 
