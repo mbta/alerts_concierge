@@ -142,7 +142,7 @@ defmodule AlertProcessor.Model.Query do
           periods AS (
             SELECT start, start + interval '1 month' - interval '1 day' as \"end\"
             FROM generate_series(
-              date_trunc('month', (SELECT MIN(inserted_at) FROM users)),
+              date_trunc('month', NOW() AT TIME ZONE 'utc') - interval '1 month',
               date_trunc('month', NOW() AT TIME ZONE 'utc') + interval '1 month' - interval '1 second',
               interval '1 month'
             ) start
