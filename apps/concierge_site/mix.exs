@@ -66,7 +66,7 @@ defmodule ConciergeSite.Mixfile do
       {:ehmon, github: "mbta/ehmon", only: :prod},
       {:mjml, "~> 1.5.0"},
       {:ueberauth, "~> 0.10.3"},
-      {:ueberauth_oidcc, "~> 0.4.0"}
+      {:ueberauth_oidcc, "~> 0.1"}
     ]
   end
 
