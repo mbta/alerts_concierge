@@ -240,6 +240,15 @@ defmodule AlertProcessor.Model.User do
   @spec get(id()) :: t() | nil
   def get(id), do: Repo.get(__MODULE__, id)
 
+  @spec get_by_alternate_id(%{id: id() | nil, mbta_uuid: id() | nil}) :: [t()]
+  def get_by_alternate_id(%{id: id, mbta_uuid: mbta_uuid}) do
+    from(u in __MODULE__,
+      where: u.id in [^id, ^mbta_uuid]
+    )
+    |> Repo.all()
+    |> Enum.filter(&(!is_nil(&1)))
+  end
+
   @spec for_email(String.t()) :: t | nil
   def for_email(email) do
     email =

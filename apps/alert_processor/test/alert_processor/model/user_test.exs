@@ -204,6 +204,29 @@ defmodule AlertProcessor.Model.UserTest do
     end
   end
 
+  describe "get_by_alternate_id/1" do
+    test "returns a user by id if present" do
+      user = insert(:user)
+      assert User.get_by_alternate_id(%{id: user.id, mbta_uuid: nil}) == [user]
+    end
+
+    test "returns a user by mbta_uuid if present" do
+      user = insert(:user)
+      assert User.get_by_alternate_id(%{id: nil, mbta_uuid: user.id}) == [user]
+    end
+
+    test "returns two users if both present (unlikely)" do
+      user = insert(:user)
+      user2 = insert(:user)
+      assert User.get_by_alternate_id(%{id: user.id, mbta_uuid: user2.id}) == [user, user2]
+    end
+
+    test "returns empty_list if no matching user" do
+      bad_id = UUID.uuid4()
+      assert User.get_by_alternate_id(%{id: bad_id, mbta_uuid: nil}) == []
+    end
+  end
+
   describe "for_email/1" do
     test "returns a user if present" do
       user = insert(:user)

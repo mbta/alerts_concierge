@@ -65,6 +65,40 @@ defmodule ConciergeSite.Web.AuthControllerTest do
              } = Guardian.Plug.current_resource(conn)
     end
 
+    test "can use mbta_uuid user",
+         %{conn: conn, rider: %User{id: id, email: email, phone_number: phone_number}} do
+      auth = auth_for(nil, email, phone_number, ["user"], id)
+
+      conn =
+        conn
+        |> assign(:ueberauth_auth, auth)
+        |> get("/auth/keycloak/callback")
+
+      assert %User{id: ^id, email: ^email, phone_number: ^phone_number} =
+               Guardian.Plug.current_resource(conn)
+    end
+
+    @tag capture_log: true
+    test "redirects if we somehow get 2 users",
+         %{conn: conn, rider: %User{id: id, email: email, phone_number: phone_number}} do
+      user2 =
+        Repo.insert!(%User{
+          email: "rider2@example.com",
+          phone_number: "5551234567",
+          role: "user"
+        })
+
+      auth = auth_for(id, email, phone_number, ["user"], user2.id)
+
+      conn =
+        conn
+        |> assign(:ueberauth_auth, auth)
+        |> get("/auth/keycloak/callback")
+
+      assert is_nil(Guardian.Plug.current_resource(conn))
+      assert redirected_to(conn) == "/"
+    end
+
     test "doesn't allow admin access if the token says they are now just a user",
          %{conn: conn} do
       was_an_admin =
@@ -110,7 +144,7 @@ defmodule ConciergeSite.Web.AuthControllerTest do
   end
 
   @spec auth_for(User.id(), String.t(), String.t() | nil) :: Auth.t()
-  defp auth_for(id, email, phone_number, roles \\ ["user"]) do
+  defp auth_for(id, email, phone_number, roles \\ ["user"], mbta_uuid \\ nil) do
     %Auth{
       uid: email,
       provider: :keycloak,
@@ -147,6 +181,7 @@ defmodule ConciergeSite.Web.AuthControllerTest do
             "name" => "John Rider",
             "phone_number" => phone_number,
             "preferred_username" => email,
+            "mbta_uuid" => mbta_uuid,
             "resource_access" => %{
               "t-alerts" => %{
                 "roles" => roles
