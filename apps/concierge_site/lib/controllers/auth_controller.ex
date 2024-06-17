@@ -21,7 +21,7 @@ defmodule ConciergeSite.AuthController do
                 extra: %{
                   raw_info: %{
                     claims: %{"sub" => id},
-                    userinfo: userinfo
+                    userinfo: %{"mbta_uuid" => mbta_uuid} = userinfo
                   }
                 }
               } = auth
@@ -34,9 +34,8 @@ defmodule ConciergeSite.AuthController do
     role = parse_role({:ok, userinfo})
 
     user =
-      id
+      %{id: id, mbta_uuid: mbta_uuid}
       |> get_or_create_user(email, phone_number, role)
-      |> use_props_from_token(email, phone_number, role)
 
     logout_params = %{
       post_logout_redirect_uri: page_url(conn, :landing)
@@ -44,9 +43,17 @@ defmodule ConciergeSite.AuthController do
 
     {:ok, logout_uri} = UeberauthOidcc.initiate_logout_url(auth, logout_params)
 
-    conn
-    |> put_session("logout_uri", logout_uri)
-    |> SessionHelper.sign_in(user)
+    case user do
+      nil ->
+        SessionHelper.sign_out(conn, skip_oidc_sign_out: true)
+
+      _ ->
+        user = use_props_from_token(user, email, phone_number, role)
+
+        conn
+        |> put_session("logout_uri", logout_uri)
+        |> SessionHelper.sign_in(user)
+    end
   end
 
   def callback(%{assigns: %{ueberauth_failure: failure}} = conn, _params) do
@@ -67,11 +74,20 @@ defmodule ConciergeSite.AuthController do
     SessionHelper.sign_out(conn)
   end
 
-  @spec get_or_create_user(User.id(), String.t(), String.t() | nil, String.t()) :: User.t()
-  defp get_or_create_user(id, email, phone_number, role) do
-    case User.get(id) do
-      nil ->
-        # The user just created their account in Keycloak so we need to add them to our database
+  @spec get_or_create_user(
+          %{id: User.id(), mbta_uuid: User.id() | nil},
+          String.t(),
+          String.t() | nil,
+          String.t()
+        ) ::
+          User.t() | nil
+  defp get_or_create_user(%{id: id, mbta_uuid: mbta_uuid} = id_map, email, phone_number, role) do
+    # This checks both the normal id from Keycloak, and the legacy mbta_uuid. We should get either 0 or 1 users back.
+    user_list = User.get_by_alternate_id(id_map)
+
+    case length(user_list) do
+      0 ->
+        # If neither ID is found, the user just created their account in Keycloak so we need to add them to our database
         Repo.insert!(%User{
           id: id,
           email: email,
@@ -81,8 +97,14 @@ defmodule ConciergeSite.AuthController do
 
         User.get(id)
 
-      user ->
-        user
+      1 ->
+        # If 1 user is found, we want to return that user
+        hd(user_list)
+
+      2 ->
+        # If 2 users are found, something weird happened. Log and return nil. User will be redirected to landing page.
+        Logger.warn("User with 2 ids found. sub id: #{id}, mbta_uuid: #{mbta_uuid}")
+        nil
     end
   end
 
@@ -92,7 +114,13 @@ defmodule ConciergeSite.AuthController do
   # able to use them to send notifications), but in cases where the user just
   # changed one of these fields in Keycloak, we might not have had time receive
   # that message yet, so the values in the token are more authoritative.
-  @spec use_props_from_token(User.t(), String.t(), String.t() | nil, String.t()) :: User.t()
+  @spec use_props_from_token(
+          User.t(),
+          String.t(),
+          String.t() | nil,
+          String.t()
+        ) ::
+          User.t() | nil
   defp use_props_from_token(user, email, phone_number, role) do
     %User{
       user
