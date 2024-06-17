@@ -215,7 +215,12 @@ defmodule AlertProcessor.Model.UserTest do
       assert User.get_by_alternate_id(%{id: nil, mbta_uuid: user.id}) == [user]
     end
 
-    test "returns two users if both present (unlikely)" do
+    test "returns a user if both id's are the same " do
+      user = insert(:user)
+      assert User.get_by_alternate_id(%{id: user.id, mbta_uuid: user.id}) == [user]
+    end
+
+    test "returns two users if both ids present and different (unlikely)" do
       user = insert(:user)
       user2 = insert(:user)
       assert User.get_by_alternate_id(%{id: user.id, mbta_uuid: user2.id}) == [user, user2]

@@ -36,7 +36,6 @@ defmodule ConciergeSite.AuthController do
     user =
       %{id: id, mbta_uuid: mbta_uuid}
       |> get_or_create_user(email, phone_number, role)
-      |> use_props_from_token(email, phone_number, role)
 
     logout_params = %{
       post_logout_redirect_uri: page_url(conn, :landing)
@@ -49,6 +48,8 @@ defmodule ConciergeSite.AuthController do
         SessionHelper.sign_out(conn, skip_oidc_sign_out: true)
 
       _ ->
+        user = use_props_from_token(user, email, phone_number, role)
+
         conn
         |> put_session("logout_uri", logout_uri)
         |> SessionHelper.sign_in(user)
@@ -74,12 +75,12 @@ defmodule ConciergeSite.AuthController do
   end
 
   @spec get_or_create_user(
-          %{id: User.id() | nil, mbta_uuid: User.id() | nil},
+          %{id: User.id(), mbta_uuid: User.id() | nil},
           String.t(),
           String.t() | nil,
           String.t()
         ) ::
-          User.t() | :find_user_error
+          User.t() | nil
   defp get_or_create_user(%{id: id, mbta_uuid: mbta_uuid} = id_map, email, phone_number, role) do
     # This checks both the normal id from Keycloak, and the legacy mbta_uuid. We should get either 0 or 1 users back.
     user_list = User.get_by_alternate_id(id_map)
@@ -103,7 +104,7 @@ defmodule ConciergeSite.AuthController do
       2 ->
         # If 2 users are found, something weird happened. Log and return nil. User will be redirected to landing page.
         Logger.warn("User with 2 ids found. sub id: #{id}, mbta_uuid: #{mbta_uuid}")
-        :find_user_error
+        nil
     end
   end
 
@@ -114,14 +115,12 @@ defmodule ConciergeSite.AuthController do
   # changed one of these fields in Keycloak, we might not have had time receive
   # that message yet, so the values in the token are more authoritative.
   @spec use_props_from_token(
-          User.t() | :find_user_error,
+          User.t(),
           String.t(),
           String.t() | nil,
           String.t()
         ) ::
           User.t() | nil
-  defp use_props_from_token(:find_user_error, _, _, _), do: nil
-
   defp use_props_from_token(user, email, phone_number, role) do
     %User{
       user

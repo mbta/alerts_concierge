@@ -240,8 +240,11 @@ defmodule AlertProcessor.Model.User do
   @spec get(id()) :: t() | nil
   def get(id), do: Repo.get(__MODULE__, id)
 
-  @spec get_by_alternate_id(%{id: id() | nil, mbta_uuid: id() | nil}) :: [t()]
+  @spec get_by_alternate_id(%{id: id(), mbta_uuid: id() | nil}) :: [t()]
   def get_by_alternate_id(%{id: id, mbta_uuid: mbta_uuid}) do
+    # can get accounts using id or mbta_uuid
+    # which is the old-style ID for accounts from the time before SSO.
+
     from(u in __MODULE__,
       where: u.id in [^id, ^mbta_uuid]
     )
