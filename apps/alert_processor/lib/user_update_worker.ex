@@ -45,7 +45,6 @@ defmodule AlertProcessor.UserUpdateWorker do
   @impl GenServer
   def handle_info(:fetch_message, state) do
     {:ok, messages} = receive_messages()
-    Logger.info("USER_MESSAGES: #{inspect(messages)}")
 
     for message <- messages do
       case update_user_record(message.user_update) do
@@ -127,6 +126,7 @@ defmodule AlertProcessor.UserUpdateWorker do
   defp handle_sqs_results({:ok, %{body: %{messages: messages}, status_code: 200}})
        when is_list(messages) do
     Logger.info("Received SQS messages, count=#{length(messages)}")
+    Logger.info("SQS_MESSAGES: #{inspect(messages)}")
     {:ok, Enum.map(messages, &parse_message/1)}
   end
 
