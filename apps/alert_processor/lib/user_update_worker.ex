@@ -47,6 +47,8 @@ defmodule AlertProcessor.UserUpdateWorker do
     {:ok, messages} = receive_messages()
 
     for message <- messages do
+      Logger.info("USER_MESSAGE: #{inspect(message)}")
+
       case update_user_record(message.user_update) do
         :ok ->
           # Delete the message from SQS once successfully processed
@@ -131,11 +133,10 @@ defmodule AlertProcessor.UserUpdateWorker do
 
   @spec parse_message(map()) :: map()
   defp parse_message(%{body: body, receipt_handle: receipt_handle}) do
-    body =
+    user_update =
       body
       |> Poison.decode!()
-    Logger.info("USER_UPDATE #{inspect(body)}")
-    user_update = body  |> parse_user_update()
+      |> parse_user_update()
 
     %{
       user_update: user_update,
