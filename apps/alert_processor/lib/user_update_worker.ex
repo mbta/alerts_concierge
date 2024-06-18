@@ -131,10 +131,11 @@ defmodule AlertProcessor.UserUpdateWorker do
 
   @spec parse_message(map()) :: map()
   defp parse_message(%{body: body, receipt_handle: receipt_handle}) do
-    user_update =
+    body =
       body
       |> Poison.decode!()
-      |> parse_user_update()
+    Logger.info("USER_UPDATE #{inspect(body)}")
+    user_update = body  |> parse_user_update()
 
     %{
       user_update: user_update,
@@ -156,6 +157,8 @@ defmodule AlertProcessor.UserUpdateWorker do
   @spec update_user_record(user_update()) :: :ok | :error
   # Ignore empty updates. The user changed a property we aren't interested in saving locally.
   defp update_user_record(%{updates: updates}) when updates == %{}, do: :ok
+
+  defp update_user_record(%{user_id: nil}), do: :ok
 
   defp update_user_record(%{user_id: user_id, updates: updates}) do
     case User.get(user_id) do
