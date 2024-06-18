@@ -45,10 +45,9 @@ defmodule AlertProcessor.UserUpdateWorker do
   @impl GenServer
   def handle_info(:fetch_message, state) do
     {:ok, messages} = receive_messages()
+    Logger.info("USER_MESSAGES: #{inspect(messages)}")
 
     for message <- messages do
-      Logger.info("USER_MESSAGE: #{inspect(message)}")
-
       case update_user_record(message.user_update) do
         :ok ->
           # Delete the message from SQS once successfully processed
