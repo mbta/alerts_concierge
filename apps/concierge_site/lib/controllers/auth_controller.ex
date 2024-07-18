@@ -21,7 +21,7 @@ defmodule ConciergeSite.AuthController do
                 extra: %{
                   raw_info: %{
                     claims: %{"sub" => id},
-                    userinfo: %{"mbta_uuid" => mbta_uuid} = userinfo
+                    userinfo: userinfo
                   }
                 }
               } = auth
@@ -32,6 +32,7 @@ defmodule ConciergeSite.AuthController do
     phone_number = PhoneNumber.strip_us_country_code(phone_number)
 
     role = parse_role({:ok, userinfo})
+    mbta_uuid = Map.get(userinfo, "mbta_uuid")
 
     user =
       %{id: id, mbta_uuid: mbta_uuid}

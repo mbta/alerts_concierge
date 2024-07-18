@@ -90,6 +90,36 @@ defmodule AlertProcessor.UserUpdateWorkerTest do
       assert updated_user.phone_number == new_phone
     end
 
+    test "works correctly with just id" do
+      user = insert(:user)
+      new_phone = "5550000000"
+
+      reassign_env(:alert_processor, :receive_message_fn, fn _, _ -> %{} end)
+      reassign_env(:alert_processor, :delete_message_fn, fn _, _ -> %{} end)
+
+      reassign_env(:alert_processor, :request_fn, fn _, _ ->
+        message_body = %{
+          "id" => user.id,
+          "updates" => %{"phone_number" => "+1#{new_phone}"}
+        }
+
+        {:ok,
+         %{
+           body: %{
+             messages: [
+               %{body: Poison.encode!(message_body), receipt_handle: "MOCK_RECEIPT_HANDLE"}
+             ]
+           },
+           status_code: 200
+         }}
+      end)
+
+      refute user.phone_number == new_phone
+      assert UserUpdateWorker.handle_info(:fetch_message, nil) == {:noreply, nil}
+      updated_user = User.get(user.id)
+      assert updated_user.phone_number == new_phone
+    end
+
     test "updates multiple user properties" do
       user = insert(:user)
       new_phone = "5550000000"
