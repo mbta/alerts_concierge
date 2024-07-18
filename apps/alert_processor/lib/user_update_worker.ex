@@ -169,15 +169,13 @@ defmodule AlertProcessor.UserUpdateWorker do
   defp update_user_record(%{id: user_id, mbta_uuid: mbta_uuid, updates: updates} = attribute_map) do
     user_list = User.get_by_alternate_id(attribute_map |> Map.delete(:updates))
 
-    case length(user_list) do
-      0 ->
+    case user_list do
+      [] ->
         # Ignore updates for a user that has not yet logged in to T-Alerts
         :ok
 
-      1 ->
+      [user] ->
         # If 1 user is found, we want to update that user
-        user = hd(user_list)
-
         updates =
           Map.filter(
             %{
@@ -200,9 +198,9 @@ defmodule AlertProcessor.UserUpdateWorker do
             :error
         end
 
-      2 ->
+      _ ->
         # If 2 users are found, something weird happened. Log and return nil.
-        Logger.warn("User with 2 ids found. sub id: #{user_id}, mbta_uuid: #{mbta_uuid}")
+        Logger.error("User with 2 ids found. sub id: #{user_id}, mbta_uuid: #{mbta_uuid}")
         nil
     end
   end

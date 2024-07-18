@@ -86,8 +86,8 @@ defmodule ConciergeSite.AuthController do
     # This checks both the normal id from Keycloak, and the legacy mbta_uuid. We should get either 0 or 1 users back.
     user_list = User.get_by_alternate_id(id_map)
 
-    case length(user_list) do
-      0 ->
+    case user_list do
+      [] ->
         # If neither ID is found, the user just created their account in Keycloak so we need to add them to our database
         Repo.insert!(%User{
           id: id,
@@ -98,11 +98,11 @@ defmodule ConciergeSite.AuthController do
 
         User.get(id)
 
-      1 ->
+      [user] ->
         # If 1 user is found, we want to return that user
-        hd(user_list)
+        user
 
-      2 ->
+      _ ->
         # If 2 users are found, something weird happened. Log and return nil. User will be redirected to landing page.
         Logger.warn("User with 2 ids found. sub id: #{id}, mbta_uuid: #{mbta_uuid}")
         nil
