@@ -67,7 +67,7 @@ defmodule ConciergeSite.Web.AuthControllerTest do
 
     test "can use mbta_uuid user",
          %{conn: conn, rider: %User{id: id, email: email, phone_number: phone_number}} do
-      auth = auth_for(nil, email, phone_number, ["user"], id)
+      auth = auth_for_user_with_mbta_uuid(nil, email, phone_number, ["user"], id)
 
       conn =
         conn
@@ -88,7 +88,7 @@ defmodule ConciergeSite.Web.AuthControllerTest do
           role: "user"
         })
 
-      auth = auth_for(id, email, phone_number, ["user"], user2.id)
+      auth = auth_for_user_with_mbta_uuid(id, email, phone_number, ["user"], user2.id)
 
       conn =
         conn
@@ -144,7 +144,57 @@ defmodule ConciergeSite.Web.AuthControllerTest do
   end
 
   @spec auth_for(User.id(), String.t(), String.t() | nil) :: Auth.t()
-  defp auth_for(id, email, phone_number, roles \\ ["user"], mbta_uuid \\ nil) do
+  defp auth_for(id, email, phone_number, roles \\ ["user"]) do
+    %Auth{
+      uid: email,
+      provider: :keycloak,
+      strategy: Ueberauth.Strategy.Oidcc,
+      info: %Info{
+        name: "John Rider",
+        email: email,
+        phone: phone_number
+      },
+      credentials: %Credentials{
+        token: "FAKE TOKEN",
+        refresh_token: "FAKE REFRESH TOKEN",
+        expires_at: System.system_time(:second) + 1_000,
+        other: %{
+          id_token: "FAKE ID TOKEN"
+        }
+      },
+      extra: %Extra{
+        raw_info: %{
+          claims: %{
+            "sub" => id
+          },
+          opts: %{
+            module: __MODULE__.FakeOidcc,
+            issuer: :keycloak_issuer,
+            client_id: "fake_client",
+            client_secret: "fake_client_secret"
+          },
+          userinfo: %{
+            "email" => email,
+            "email_verified" => true,
+            "family_name" => "Rider",
+            "given_name" => "John",
+            "name" => "John Rider",
+            "phone_number" => phone_number,
+            "preferred_username" => email,
+            "resource_access" => %{
+              "t-alerts" => %{
+                "roles" => roles
+              }
+            }
+          }
+        }
+      }
+    }
+  end
+
+  @spec auth_for_user_with_mbta_uuid(User.id(), String.t(), String.t(), [String.t()], String.t()) ::
+          Auth.t()
+  defp auth_for_user_with_mbta_uuid(id, email, phone_number, roles, mbta_uuid) do
     %Auth{
       uid: email,
       provider: :keycloak,

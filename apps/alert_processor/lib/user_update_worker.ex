@@ -2,6 +2,10 @@ defmodule AlertProcessor.UserUpdateWorker do
   @moduledoc """
   Fetch user update message sent from Keycloak via an SQS queue.
   Apply the change to our local record.
+
+  The mbta_uuid field is a legacy field used by some older subscribers. All
+  new subs should only have the id field, but the mbta_uuid field is necessary
+  to support the others.
   """
 
   use GenServer
@@ -18,7 +22,8 @@ defmodule AlertProcessor.UserUpdateWorker do
         }
 
   @type user_update :: %{
-          required(:user_id) => String.t(),
+          required(:id) => String.t() | nil,
+          required(:mbta_uuid) => String.t() | nil,
           required(:updates) => %{
             optional(:email) => String.t(),
             optional(:phone_number) => String.t()
@@ -143,12 +148,16 @@ defmodule AlertProcessor.UserUpdateWorker do
   end
 
   @spec parse_user_update(map()) :: user_update()
-  defp parse_user_update(%{"mbtaUuid" => user_id, "updates" => updates}) do
+  defp parse_user_update(user_attributes) do
     %{
-      user_id: user_id,
+      id: Map.get(user_attributes, "id"),
+      mbta_uuid: Map.get(user_attributes, "mbtaUuid"),
       updates: %{
-        email: Map.get(updates, "email"),
-        phone_number: updates |> Map.get("phone_number") |> PhoneNumber.strip_us_country_code()
+        email: Map.get(user_attributes["updates"], "email"),
+        phone_number:
+          user_attributes["updates"]
+          |> Map.get("phone_number")
+          |> PhoneNumber.strip_us_country_code()
       }
     }
   end
@@ -157,13 +166,16 @@ defmodule AlertProcessor.UserUpdateWorker do
   # Ignore empty updates. The user changed a property we aren't interested in saving locally.
   defp update_user_record(%{updates: updates}) when updates == %{}, do: :ok
 
-  defp update_user_record(%{user_id: user_id, updates: updates}) do
-    case User.get(user_id) do
-      nil ->
+  defp update_user_record(%{id: user_id, mbta_uuid: mbta_uuid, updates: updates} = attribute_map) do
+    user_list = User.get_by_alternate_id(attribute_map |> Map.delete(:updates))
+
+    case user_list do
+      [] ->
         # Ignore updates for a user that has not yet logged in to T-Alerts
         :ok
 
-      user ->
+      [user] ->
+        # If 1 user is found, we want to update that user
         updates =
           Map.filter(
             %{
@@ -185,6 +197,11 @@ defmodule AlertProcessor.UserUpdateWorker do
 
             :error
         end
+
+      _ ->
+        # If 2 users are found, something weird happened. Log and return nil.
+        Logger.error("User with 2 ids found. sub id: #{user_id}, mbta_uuid: #{mbta_uuid}")
+        nil
     end
   end
 
