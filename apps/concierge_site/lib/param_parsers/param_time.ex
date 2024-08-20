@@ -20,13 +20,18 @@ defmodule ConciergeSite.ParamParsers.ParamTime do
       ~T[12:00:00]
       iex> ConciergeSite.ParamParsers.ParamTime.to_time(nil)
       nil
+      iex> ConciergeSite.ParamParsers.ParamTime.to_time(%{"am_pm" => "PM", "hour" => "12", "minute" => nil})
+      ~T[12:00:00]
   """
   @spec to_time(map) :: Time.t()
   def to_time(nil), do: nil
 
   def to_time(form_time) do
     hour = hour(form_time["hour"], form_time["am_pm"])
-    minute = String.to_integer(form_time["minute"])
+
+    minute =
+      if is_binary(form_time["minute"]), do: String.to_integer(form_time["minute"]), else: 0
+
     second = 0
 
     {:ok, time} = Time.from_erl({hour, minute, second})
