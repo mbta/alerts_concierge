@@ -15,7 +15,13 @@ defmodule ConciergeSite.Router do
     plug(:fetch_session)
     plug(:fetch_flash)
     plug(:protect_from_forgery)
-    plug(:put_secure_browser_headers)
+
+    plug :put_secure_browser_headers, %{
+      "strict-transport-security" => "max-age=31536000",
+      "content-security-policy" =>
+        "default-src 'self'; script-src 'self' 'unsafe-eval' 'unsafe-inline' www.googletagmanager.com insitez.blob.core.windows.net;"
+    }
+
     plug(ConciergeSite.Plugs.AssignCurrentUser)
     plug(ConciergeSite.Plugs.RateLimit, enable?: Mix.env() != :test)
   end
