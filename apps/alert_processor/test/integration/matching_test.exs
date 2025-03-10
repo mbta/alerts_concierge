@@ -1201,15 +1201,15 @@ defmodule AlertProcessor.Integration.MatchingTest do
   # NOTE: The following tests use a set of specific trip IDs. At the time the tests are run, the
   # trip for the current day of the week must have schedules present in the API. All trips must
   # depart from Fairmount station outbound and the time must be specified here. These test trips
-  # are active as of 2024-06-03.
+  # are active as of 2025-03-15.
 
   @test_trip_id (case Date.utc_today() |> Date.day_of_week() do
-                   day when day in 1..5 -> "CR-670238-741"
-                   6 -> "CR-665302-1701"
-                   7 -> "CR-665434-2701"
+                   day when day in 1..5 -> "SouthWKDYF24-697779-741"
+                   6 -> "SouthWKNDF24-698042-1701"
+                   7 -> "SouthWKNDF24-698542-2701"
                  end)
   @test_trip_departs_fairmount_at (case Date.utc_today() |> Date.day_of_week() do
-                                     day when day in 1..5 -> ~T[06:11:00]
+                                     day when day in 1..5 -> ~T[05:47:00]
                                      day when day in 6..7 -> ~T[06:47:00]
                                    end)
 
@@ -1253,7 +1253,7 @@ defmodule AlertProcessor.Integration.MatchingTest do
         origin: "place-DB-2205",
         destination: "place-DB-0095",
         facility_types: [],
-        start_time: Time.add(@test_trip_departs_fairmount_at, 20 * 60),
+        start_time: Time.add(@test_trip_departs_fairmount_at, 25 * 60),
         end_time: Time.add(@test_trip_departs_fairmount_at, 60 * 60),
         relevant_days: ~w(monday)a
       )
@@ -1350,7 +1350,7 @@ defmodule AlertProcessor.Integration.MatchingTest do
         facility_types: [],
         start_time: Time.add(@test_trip_departs_fairmount_at, -60 * 60),
         end_time: Time.add(@test_trip_departs_fairmount_at, 120 * 60),
-        travel_start_time: Time.add(@test_trip_departs_fairmount_at, 20 * 60),
+        travel_start_time: Time.add(@test_trip_departs_fairmount_at, 25 * 60),
         travel_end_time: Time.add(@test_trip_departs_fairmount_at, 60 * 60),
         relevant_days: ~w(monday)a
       )
