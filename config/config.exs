@@ -49,3 +49,5 @@ config :ueberauth, Ueberauth,
          scopes: ~w(openid)
        )}
   ]
+
+import_config "#{config_env()}.exs"

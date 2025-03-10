@@ -42,7 +42,11 @@ defmodule ConciergeSite.AuthController do
       post_logout_redirect_uri: page_url(conn, :landing)
     }
 
-    {:ok, logout_uri} = UeberauthOidcc.initiate_logout_url(auth, logout_params)
+    {:ok, logout_uri} =
+      case auth.strategy do
+        Ueberauth.Strategy.Oidcc -> UeberauthOidcc.initiate_logout_url(auth, logout_params)
+        Ueberauth.Strategy.FakeKeycloak -> {:ok, "/"}
+      end
 
     case user do
       nil ->

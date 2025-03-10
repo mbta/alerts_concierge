@@ -4,6 +4,8 @@ defmodule Ueberauth.Strategy.FakeKeycloak do
   """
   use Ueberauth.Strategy, ignores_csrf_attack: true
 
+  @email "fake@example.com"
+
   @impl Ueberauth.Strategy
   def handle_request!(conn) do
     conn
@@ -30,7 +32,7 @@ defmodule Ueberauth.Strategy.FakeKeycloak do
       other: %{
         provider: :keycloak,
         user_info: %{
-          "email" => "fake@example.com",
+          "email" => @email,
           "email_verified" => true,
           "family_name" => "Name",
           "given_name" => "Fake",
@@ -50,7 +52,9 @@ defmodule Ueberauth.Strategy.FakeKeycloak do
 
   @impl Ueberauth.Strategy
   def info(_conn) do
-    %Ueberauth.Auth.Info{}
+    %Ueberauth.Auth.Info{
+      email: @email
+    }
   end
 
   @impl Ueberauth.Strategy
@@ -58,8 +62,10 @@ defmodule Ueberauth.Strategy.FakeKeycloak do
     %Ueberauth.Auth.Extra{
       raw_info: %{
         claims: %{
-          "exp" => expires_at(conn)
-        }
+          "exp" => expires_at(conn),
+          "sub" => "7eaf0809-88da-4895-97e0-c83444ab310f"
+        },
+        userinfo: %{"resource_access" => %{"t-alerts" => %{"roles" => ["admin"]}}}
       }
     }
   end
