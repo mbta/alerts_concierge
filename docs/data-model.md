@@ -9,7 +9,7 @@ Transfers create different subscriptions on the same trip (with a higher `rank`)
 
 For commuter rail and ferry, to support riders who plan around individual scheduled trips, the UI presents a list of trips during the selected time range, appearing to allow the individual scheduled trips themselves to be included or excluded from the subscription.
 However, the subscription only tracks this information in `travel_start_time`/`travel_end_time`, which is set in the interface to between the first and the last selected trip, and indeed the interface does not allow the selection of non-contiguous sets of trips.
-Storing selected trips by ID would lead to selections losing meaning at new ratings if trip IDs change; this approach allows an equivalent trip at the same time to remain selected if its ID changes in the new rating.
+Storing selected trips by ID would lead to selections losing meaning at new ratings if trip IDs change; this approach allows an equivalent trip at the same time to remain selected if its ID changes in the new rating (which it usually does).
 
 A trip can instead represent a non-time-windowed interest in accessibility information (`trip_type` of `accessibility` rather than `commute`, and subscription `type`s of `accessibility` rather than `subway`/`bus`/`cr`/`ferry`).
 
