@@ -11,7 +11,8 @@ For commuter rail and ferry, to support riders who plan around individual schedu
 However, the subscription only tracks this information in `travel_start_time`/`travel_end_time`, which is set in the interface to between the first and the last selected trip, and indeed the interface does not allow the selection of non-contiguous sets of trips.
 Storing selected trips by ID would lead to selections losing meaning at new ratings if trip IDs change; this approach allows an equivalent trip at the same time to remain selected if its ID changes in the new rating (which it usually does).
 
-A trip can instead represent a non-time-windowed interest in accessibility information (`trip_type` of `accessibility` rather than `commute`, and subscription `type`s of `accessibility` rather than `subway`/`bus`/`cr`/`ferry`).
+A trip also has a list of `facility_types` to request notifications for issues with elevators, escalators, parking, and/or bike storage.
+Riders who need accessibility alerts at all times of day can instead create a trip with `trip_type` `accessibility` (rather than the default `commute`) with subscriptions for selected stations and/or routes.
 
 ## Data-Driven
 
