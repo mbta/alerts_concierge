@@ -4,8 +4,8 @@
 
 In alerts_concierge, *trips* (referred to in the UI as “subscriptions”) represent an entire commute, potentially including transfers and a return journey.
 
-A trip is composed of multiple *subscriptions*, representing an individual leg of a commute; subscriptions have a single time range, a single route, and a single pair of stops where they start and end.
-Transfers create different subscriptions on the same trip (with a higher `rank`), the Green Line trunk creates different subscriptions on the same trip (one per `route`), and return trips create different subscriptions on the same trip (with `return_trip` `true` and the opposite `direction_id`).
+A trip is composed of multiple *subscriptions*, representing an individual leg of a commute; subscriptions have a single time range, a single route, a single direction, and a single pair of stops where they start and end (except for bus, where there are no endpoints).
+Transfers create different subscriptions on the same trip (with a higher `rank`), multiple bus route selections and the Green Line trunk create different subscriptions on the same trip (one per `route`), and return trips create different subscriptions on the same trip (with `return_trip` `true` and the opposite `direction_id`).
 
 For commuter rail and ferry, to support riders who plan around individual scheduled trips, the UI presents a list of trips during the selected time range, appearing to allow the individual scheduled trips themselves to be included or excluded from the subscription.
 However, the subscription only tracks this information in `travel_start_time`/`travel_end_time`, which is set in the interface to between the first and the last selected trip, and indeed the interface does not allow the selection of non-contiguous sets of trips.
