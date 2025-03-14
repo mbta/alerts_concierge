@@ -4,4 +4,7 @@
   <%= link to: admin_queries_path(@conn, :index), class: "list-group-item list-group-item-action" do %>
     <i class="fa fa-database"></i> Database queries
   <% end %>
+  <%= link to: admin_scr_path(@conn, :index), class: "list-group-item list-group-item-action" do %>
+    <i class="fa fa-code-fork"></i> South Coast Rail migration
+  <% end %>
 </div>
