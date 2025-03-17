@@ -31,40 +31,44 @@ defmodule ConciergeSite.Admin.ScrController do
 
   def phase1(conn, _params) do
     {:ok, flash} =
-      Repo.transaction(fn ->
-        subscriptions = get_relevant_subscriptions_by_route_and_id()
+      Repo.transaction(
+        fn ->
+          subscriptions = get_relevant_subscriptions_by_route_and_id()
 
-        old_subscriptions = Map.get(subscriptions, @old_route, %{})
-        already_migrated_subscriptions = Map.get(subscriptions, @new_route, %{})
+          old_subscriptions = Map.get(subscriptions, @old_route, %{})
+          already_migrated_subscriptions = Map.get(subscriptions, @new_route, %{})
 
-        new_subscriptions =
-          old_subscriptions
-          |> Enum.flat_map(fn {_, old_subscription} ->
-            new_subscription_for_old_subscription(
-              old_subscription,
-              already_migrated_subscriptions
-            )
-            |> List.wrap()
-          end)
+          new_subscriptions =
+            old_subscriptions
+            |> Enum.flat_map(fn {_, old_subscription} ->
+              new_subscription_for_old_subscription(
+                old_subscription,
+                already_migrated_subscriptions
+              )
+              |> List.wrap()
+            end)
 
-        relevant_subscription_ids =
-          new_subscriptions
-          |> Enum.flat_map(fn %Subscription{id: new_id} ->
-            [new_id, uuid_op(new_id, &(&1 - 1)) |> Ecto.UUID.cast!()]
-          end)
+          relevant_subscription_ids =
+            new_subscriptions
+            |> Enum.flat_map(fn %Subscription{id: new_id} ->
+              [new_id, uuid_op(new_id, &(&1 - 1)) |> Ecto.UUID.cast!()]
+            end)
 
-        notification_subscriptions = get_relevant_nses_by_sub_and_notif(relevant_subscription_ids)
+          notification_subscriptions =
+            get_relevant_nses_by_sub_and_notif(relevant_subscription_ids)
 
-        new_subscription_count = length(new_subscriptions)
+          new_subscription_count = length(new_subscriptions)
 
-        new_notification_subscription_count =
-          new_subscriptions
-          |> Enum.reduce(0, fn new_subscription, count ->
-            count + migrate_nses(new_subscription, notification_subscriptions)
-          end)
+          new_notification_subscription_count =
+            new_subscriptions
+            |> Enum.reduce(0, fn new_subscription, count ->
+              count + migrate_nses(new_subscription, notification_subscriptions)
+            end)
 
-        "Migrated #{new_subscription_count} subscriptions and #{new_notification_subscription_count} associations to notifications."
-      end)
+          "Migrated #{new_subscription_count} subscriptions and #{new_notification_subscription_count} associations to notifications."
+        end,
+        timeout: 60_000
+      )
 
     conn
     |> put_flash(:info, flash)
@@ -73,17 +77,23 @@ defmodule ConciergeSite.Admin.ScrController do
 
   def phase2(conn, _params) do
     {:ok, flash} =
-      Repo.transaction(fn ->
-        {sub_count, subscription_ids} =
-          Repo.delete_all(from(s in Subscription, where: s.route == @old_route, select: s.id))
+      Repo.transaction(
+        fn ->
+          {sub_count, subscription_ids} =
+            Repo.delete_all(from(s in Subscription, where: s.route == @old_route, select: s.id),
+              timeout: 60_000
+            )
 
-        {ns_count, _} =
-          Repo.delete_all(
-            from(ns in NotificationSubscription, where: ns.subscription_id in ^subscription_ids)
-          )
+          {ns_count, _} =
+            Repo.delete_all(
+              from(ns in NotificationSubscription, where: ns.subscription_id in ^subscription_ids),
+              timeout: 60_000
+            )
 
-        "Deleted #{sub_count} subscriptions and #{ns_count} associations to notifications."
-      end)
+          "Deleted #{sub_count} subscriptions and #{ns_count} associations to notifications."
+        end,
+        timeout: 60_000
+      )
 
     conn
     |> put_flash(:info, flash)
@@ -117,7 +127,8 @@ defmodule ConciergeSite.Admin.ScrController do
     Repo.all(
       from(s in Subscription,
         where: s.route == @old_route or s.route == @new_route
-      )
+      ),
+      timeout: 60_000
     )
     |> Enum.group_by(& &1.route)
     |> Map.new(fn {route, subscriptions} ->
@@ -178,7 +189,8 @@ defmodule ConciergeSite.Admin.ScrController do
     Repo.all(
       from(ns in NotificationSubscription,
         where: ns.subscription_id in ^relevant_subscription_ids
-      )
+      ),
+      timeout: 60_000
     )
     |> Enum.group_by(& &1.subscription_id)
     |> Map.new(fn {subscription_id, ns_list} ->
