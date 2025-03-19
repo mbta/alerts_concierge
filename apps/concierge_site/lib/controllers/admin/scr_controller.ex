@@ -1,7 +1,6 @@
 defmodule ConciergeSite.Admin.ScrController do
   use ConciergeSite.Web, :controller
   import Ecto.Query
-  alias AlertProcessor.Model.NotificationSubscription
   alias AlertProcessor.Model.Subscription
   alias AlertProcessor.Repo
 
@@ -31,40 +30,29 @@ defmodule ConciergeSite.Admin.ScrController do
 
   def phase1(conn, _params) do
     {:ok, flash} =
-      Repo.transaction(fn ->
-        subscriptions = get_relevant_subscriptions_by_route_and_id()
+      Repo.transaction(
+        fn ->
+          subscriptions = get_relevant_subscriptions_by_route_and_id()
 
-        old_subscriptions = Map.get(subscriptions, @old_route, %{})
-        already_migrated_subscriptions = Map.get(subscriptions, @new_route, %{})
+          old_subscriptions = Map.get(subscriptions, @old_route, %{})
+          already_migrated_subscriptions = Map.get(subscriptions, @new_route, %{})
 
-        new_subscriptions =
-          old_subscriptions
-          |> Enum.flat_map(fn {_, old_subscription} ->
-            new_subscription_for_old_subscription(
-              old_subscription,
-              already_migrated_subscriptions
-            )
-            |> List.wrap()
-          end)
+          new_subscriptions =
+            old_subscriptions
+            |> Enum.flat_map(fn {_, old_subscription} ->
+              new_subscription_for_old_subscription(
+                old_subscription,
+                already_migrated_subscriptions
+              )
+              |> List.wrap()
+            end)
 
-        relevant_subscription_ids =
-          new_subscriptions
-          |> Enum.flat_map(fn %Subscription{id: new_id} ->
-            [new_id, uuid_op(new_id, &(&1 - 1)) |> Ecto.UUID.cast!()]
-          end)
+          new_subscription_count = length(new_subscriptions)
 
-        notification_subscriptions = get_relevant_nses_by_sub_and_notif(relevant_subscription_ids)
-
-        new_subscription_count = length(new_subscriptions)
-
-        new_notification_subscription_count =
-          new_subscriptions
-          |> Enum.reduce(0, fn new_subscription, count ->
-            count + migrate_nses(new_subscription, notification_subscriptions)
-          end)
-
-        "Migrated #{new_subscription_count} subscriptions and #{new_notification_subscription_count} associations to notifications."
-      end)
+          "Migrated #{new_subscription_count} subscriptions."
+        end,
+        timeout: 60_000
+      )
 
     conn
     |> put_flash(:info, flash)
@@ -73,17 +61,15 @@ defmodule ConciergeSite.Admin.ScrController do
 
   def phase2(conn, _params) do
     {:ok, flash} =
-      Repo.transaction(fn ->
-        {sub_count, subscription_ids} =
-          Repo.delete_all(from(s in Subscription, where: s.route == @old_route, select: s.id))
+      Repo.transaction(
+        fn ->
+          {sub_count, _} =
+            Repo.delete_all(from(s in Subscription, where: s.route == @old_route), timeout: 60_000)
 
-        {ns_count, _} =
-          Repo.delete_all(
-            from(ns in NotificationSubscription, where: ns.subscription_id in ^subscription_ids)
-          )
-
-        "Deleted #{sub_count} subscriptions and #{ns_count} associations to notifications."
-      end)
+          "Deleted #{sub_count} subscriptions."
+        end,
+        timeout: 60_000
+      )
 
     conn
     |> put_flash(:info, flash)
@@ -117,7 +103,8 @@ defmodule ConciergeSite.Admin.ScrController do
     Repo.all(
       from(s in Subscription,
         where: s.route == @old_route or s.route == @new_route
-      )
+      ),
+      timeout: 60_000
     )
     |> Enum.group_by(& &1.route)
     |> Map.new(fn {route, subscriptions} ->
@@ -169,46 +156,5 @@ defmodule ConciergeSite.Admin.ScrController do
       new_subscription
       |> Repo.insert!()
     end
-  end
-
-  @spec get_relevant_nses_by_sub_and_notif([Ecto.UUID.t()]) :: %{
-          Subscription.id() => %{String.t() => NotificationSubscription.t()}
-        }
-  defp get_relevant_nses_by_sub_and_notif(relevant_subscription_ids) do
-    Repo.all(
-      from(ns in NotificationSubscription,
-        where: ns.subscription_id in ^relevant_subscription_ids
-      )
-    )
-    |> Enum.group_by(& &1.subscription_id)
-    |> Map.new(fn {subscription_id, ns_list} ->
-      {subscription_id, ns_list |> Enum.group_by(& &1.notification_id)}
-    end)
-  end
-
-  @spec migrate_nses(Subscription.t(), %{
-          Subscription.id() => %{String.t() => NotificationSubscription.t()}
-        }) :: non_neg_integer()
-  defp migrate_nses(new_subscription, notification_subscriptions) do
-    new_id = new_subscription.id
-    old_id = uuid_op(new_id, &(&1 - 1))
-
-    old_id_ns_by_notification = Map.get(notification_subscriptions, old_id, %{})
-    new_id_ns_by_notification = Map.get(notification_subscriptions, new_id, %{})
-
-    old_id_ns_by_notification
-    |> Enum.reduce(0, fn {notification_id, _old_ns}, count ->
-      if Map.has_key?(new_id_ns_by_notification, notification_id) do
-        count
-      else
-        %NotificationSubscription{
-          notification_id: notification_id,
-          subscription_id: new_id
-        }
-        |> Repo.insert!()
-
-        count + 1
-      end
-    end)
   end
 end

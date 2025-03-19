@@ -1,6 +1,5 @@
 defmodule ConciergeSite.Admin.ScrControllerTest do
   use ConciergeSite.ConnCase, async: true
-  alias AlertProcessor.Model.NotificationSubscription
   alias AlertProcessor.Model.Subscription
   alias AlertProcessor.Repo
   alias ConciergeSite.Admin.ScrController
@@ -62,16 +61,6 @@ defmodule ConciergeSite.Admin.ScrControllerTest do
       sub12 = insert(:subscription, trip: trip1, route: "CR-Middleborough")
       [sub21, sub22] = insert_list(2, :subscription, trip: trip2, route: "CR-Middleborough")
 
-      alert = insert(:saved_alert)
-
-      [notif1, notif2] = insert_list(2, :notification, alert_id: alert.id, status: :sent)
-
-      insert(:notification_subscription, notification: notif1, subscription: sub11)
-      insert(:notification_subscription, notification: notif1, subscription: sub11after)
-      insert(:notification_subscription, notification: notif1, subscription: sub12)
-      insert(:notification_subscription, notification: notif2, subscription: sub21)
-      insert(:notification_subscription, notification: notif2, subscription: sub22)
-
       conn = post(conn, admin_scr_path(conn, :phase1))
       assert redirected_to(conn) == admin_scr_path(conn, :index)
 
@@ -93,20 +82,7 @@ defmodule ConciergeSite.Admin.ScrControllerTest do
                ^sub22afterid => %Subscription{}
              } = Repo.all(Subscription) |> Map.new(&{&1.id, &1})
 
-      all_ns = Repo.all(NotificationSubscription)
-
-      assert MapSet.new([sub11id, sub11afterid, sub12id, sub12afterid]) ==
-               all_ns
-               |> Enum.filter(&(&1.notification_id == notif1.id))
-               |> MapSet.new(& &1.subscription_id)
-
-      assert MapSet.new([sub21id, sub21afterid, sub22id, sub22afterid]) ==
-               all_ns
-               |> Enum.filter(&(&1.notification_id == notif2.id))
-               |> MapSet.new(& &1.subscription_id)
-
-      assert get_flash(conn, :info) ==
-               "Migrated 3 subscriptions and 3 associations to notifications."
+      assert get_flash(conn, :info) == "Migrated 3 subscriptions."
     end
 
     test "only available to admins", %{conn: conn} do
@@ -131,20 +107,12 @@ defmodule ConciergeSite.Admin.ScrControllerTest do
           route: "CR-NewBedford"
         )
 
-      alert = insert(:saved_alert)
-      notif = insert(:notification, alert_id: alert.id, status: :sent)
-
-      insert(:notification_subscription, notification: notif, subscription: sub_before)
-      insert(:notification_subscription, notification: notif, subscription: sub_after)
-
       conn = post(conn, admin_scr_path(conn, :phase2))
       assert redirected_to(conn) == admin_scr_path(conn, :index)
 
       assert Repo.one!(Subscription).id == sub_after.id
-      assert Repo.one!(NotificationSubscription).subscription_id == sub_after.id
 
-      assert get_flash(conn, :info) ==
-               "Deleted 1 subscriptions and 1 associations to notifications."
+      assert get_flash(conn, :info) == "Deleted 1 subscriptions."
     end
 
     test "only available to admins", %{conn: conn} do
