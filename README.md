@@ -37,6 +37,11 @@ may need to adjust the username in `.envrc`.
 If not using `direnv`, you can instead `source .envrc` to perform a one-time
 export of the environment variables into your current shell session.
 
+### Documentation
+
+See [`docs/data-model.md`](docs/data-model.md) for some notes on the objects
+alerts_concierge uses to represent its state.
+
 ### Running tests
 
 - `mix test`
