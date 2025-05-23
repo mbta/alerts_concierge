@@ -5,6 +5,7 @@ defmodule AlertProcessor.Model.Notification do
 
   use Ecto.Schema
   import Ecto.{Changeset, Query}
+  alias AlertProcessor.Model.InformedEntity
   alias AlertProcessor.Repo
   alias AlertProcessor.Model.{Alert, User}
 
@@ -18,6 +19,7 @@ defmodule AlertProcessor.Model.Notification do
           description: String.t() | nil,
           url: String.t() | nil,
           header: String.t(),
+          call_to_action: String.t() | nil,
           phone_number: String.t() | nil,
           email: String.t() | nil,
           status: atom,
@@ -42,6 +44,7 @@ defmodule AlertProcessor.Model.Notification do
     field(:description, :string)
     field(:url, :string)
     field(:header, :string)
+    field(:call_to_action, :string)
     field(:phone_number, :string)
     field(:email, :string)
     field(:status, AlertProcessor.AtomType)
@@ -65,7 +68,7 @@ defmodule AlertProcessor.Model.Notification do
   end
 
   @permitted_fields ~w(alert_id user_id send_after description url service_effect
-    header phone_number email status last_push_notification closed_timestamp)a
+    header call_to_action phone_number email status last_push_notification closed_timestamp)a
   @required_fields ~w(alert_id user_id header service_effect)a
 
   @doc """
@@ -102,7 +105,7 @@ defmodule AlertProcessor.Model.Notification do
     )
   end
 
-  @spec most_recent_if_outdated_for_alert(AlertProcessor.Model.Alert.t()) :: any()
+  @spec most_recent_if_outdated_for_alert(Alert.t()) :: any()
   def most_recent_if_outdated_for_alert(%Alert{
         id: id,
         last_push_notification: last_push_notification
@@ -124,6 +127,43 @@ defmodule AlertProcessor.Model.Notification do
       )
     )
   end
+
+  @spec call_to_action(Alert.t() | nil) :: String.t()
+  def call_to_action(nil), do: nil
+
+  def call_to_action(%Alert{effect_name: effect_name, informed_entities: entities}) do
+    if effect_name == "Delay" do
+      entities |> effected_bus_routes |> bus_delay_cta_text
+    else
+      nil
+    end
+  end
+
+  @spec effected_bus_routes([InformedEntity.t()] | nil) :: [String.t()] | nil
+  defp effected_bus_routes(entities) when is_list(entities),
+    do:
+      entities
+      |> Enum.map(fn
+        %InformedEntity{route_type: 3, route: route} -> route
+        _ -> nil
+      end)
+      |> Enum.uniq()
+      |> Enum.filter(fn
+        nil -> false
+        _ -> true
+      end)
+
+  defp effected_bus_routes(_), do: nil
+
+  @spec bus_delay_cta_text([String.t()] | nil) :: String.t() | nil
+  defp bus_delay_cta_text([route]) do
+    "Track your bus at https://mbta.com/route/#{route} or use the MBTA Go app: https://mbta.com/mobile-app"
+  end
+
+  defp bus_delay_cta_text([_, _ | _]),
+    do: "To track your bus, use the MBTA Go app: https://mbta.com/mobile-app"
+
+  defp bus_delay_cta_text(_), do: nil
 
   @spec image_alternative_text(t()) :: String.t()
   @spec image_alternative_text(t(), email? :: boolean()) :: String.t()

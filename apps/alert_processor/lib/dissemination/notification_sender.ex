@@ -32,7 +32,7 @@ defmodule AlertProcessor.Dissemination.NotificationSender do
       when not is_nil(phone_number) do
     {result, response} =
       notification
-      |> sms_message_with_url()
+      |> sms_message_with_url_and_cta()
       |> with_t_alerts_prefix()
       |> ExAws.SNS.publish(phone_number: "+1#{phone_number}")
       |> AwsClient.request()
@@ -51,15 +51,23 @@ defmodule AlertProcessor.Dissemination.NotificationSender do
   defp with_t_alerts_prefix(str), do: "T-Alerts - #{str}"
 
   @spec sms_message(Notification.t()) :: String.t()
-  defp sms_message_with_url(notification) do
+  defp sms_message_with_url_and_cta(notification) do
     url = if Map.get(notification, :url), do: " Learn more: #{notification.url}", else: ""
-    "#{sms_message(notification)}#{url}"
+
+    cta =
+      if Map.get(notification, :call_to_action),
+        do: "\n\n#{remove_https_scheme(notification.call_to_action)}",
+        else: ""
+
+    "#{sms_message(notification)}#{url}#{cta}"
   end
 
   defp sms_message(%{type: :all_clear, header: header}), do: "All clear (re: #{header})"
   defp sms_message(%{type: :reminder, header: header}), do: "Reminder: #{header}"
   defp sms_message(%{type: :update, header: header}), do: "Update: #{header}"
   defp sms_message(%{header: header}), do: header
+
+  defp remove_https_scheme(text), do: String.replace(text, "https://", "")
 
   defp log(
          %{
