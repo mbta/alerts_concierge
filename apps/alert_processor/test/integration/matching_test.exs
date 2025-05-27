@@ -1204,13 +1204,13 @@ defmodule AlertProcessor.Integration.MatchingTest do
   # are active as of 2025-03-15.
 
   @test_trip_id (case Date.utc_today() |> Date.day_of_week() do
-                   day when day in 1..5 -> "SouthWKDYF24-697779-741"
-                   6 -> "SouthWKNDF24-698042-1701"
-                   7 -> "SouthWKNDF24-698542-2701"
+                   day when day in 1..5 -> "AttleboroWork-715730-1708"
+                   6 -> "AttleboroWork-715730-1708"
+                   7 -> "AttleboroWork-715730-1708"
                  end)
   @test_trip_departs_fairmount_at (case Date.utc_today() |> Date.day_of_week() do
-                                     day when day in 1..5 -> ~T[05:47:00]
-                                     day when day in 6..7 -> ~T[06:47:00]
+                                     day when day in 1..5 -> ~T[06:33:00]
+                                     day when day in 6..7 -> ~T[06:33:00]
                                    end)
 
   describe "informed_entity's trip matching" do
