@@ -115,7 +115,7 @@ defmodule AlertProcessor.NotificationBuilderTest do
 
       assert %Notification{
                call_to_action:
-                 "Track your bus at https://mbta.com/route/1 or use the MBTA Go app: https://mbta.com/mobile-app"
+                 "Track your bus at https://mbta.com/route/1 or use the MBTA Go app: https://go.mbta.com"
              } = notification
     end
 
@@ -141,8 +141,7 @@ defmodule AlertProcessor.NotificationBuilderTest do
       notification = NotificationBuilder.build_notification(user_subs, alert)
 
       assert %Notification{
-               call_to_action:
-                 "To track your bus, use the MBTA Go app: https://mbta.com/mobile-app"
+               call_to_action: "To track your bus, use the MBTA Go app: https://go.mbta.com"
              } = notification
     end
 
