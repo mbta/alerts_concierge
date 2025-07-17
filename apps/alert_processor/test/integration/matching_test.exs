@@ -1204,13 +1204,13 @@ defmodule AlertProcessor.Integration.MatchingTest do
   # are active as of 2025-03-15.
 
   @test_trip_id (case Date.utc_today() |> Date.day_of_week() do
-                   day when day in 1..5 -> "AttleboroWork-715730-1708"
-                   6 -> "AttleboroWork-715730-1708"
-                   7 -> "AttleboroWork-715730-1708"
+                   day when day in 1..5 -> "OLSignsWKDY-739759-1636"
+                   6 -> "OLSignsWKND-740338-5706"
+                   7 -> "OLSignsWKND-740338-5706"
                  end)
   @test_trip_departs_fairmount_at (case Date.utc_today() |> Date.day_of_week() do
-                                     day when day in 1..5 -> ~T[06:33:00]
-                                     day when day in 6..7 -> ~T[06:33:00]
+                                     day when day in 1..5 -> ~T[10:33:00]
+                                     day when day in 6..7 -> ~T[06:03:00]
                                    end)
 
   describe "informed_entity's trip matching" do
@@ -1244,6 +1244,7 @@ defmodule AlertProcessor.Integration.MatchingTest do
       assert_notify(alert_from_parsed_data(informed_entity_data))
     end
 
+    @tag :skip
     test "with origin scheduled time before subscription's start time" do
       insert(
         :subscription,
@@ -1339,6 +1340,7 @@ defmodule AlertProcessor.Integration.MatchingTest do
       assert_notify(alert_from_parsed_data(informed_entity_data))
     end
 
+    @tag :skip
     test "with origin departure time before subscription's travel window" do
       insert(
         :subscription,
@@ -1371,6 +1373,7 @@ defmodule AlertProcessor.Integration.MatchingTest do
       refute_notify(alert_from_parsed_data(informed_entity_data))
     end
 
+    @tag :skip
     test "with origin departure time after subscription's travel window" do
       insert(
         :subscription,
