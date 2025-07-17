@@ -1244,6 +1244,7 @@ defmodule AlertProcessor.Integration.MatchingTest do
       assert_notify(alert_from_parsed_data(informed_entity_data))
     end
 
+    # Skipping because it was failing to pass with trips from the Spring/Summer 25 rating
     @tag :skip
     test "with origin scheduled time before subscription's start time" do
       insert(
@@ -1340,6 +1341,7 @@ defmodule AlertProcessor.Integration.MatchingTest do
       assert_notify(alert_from_parsed_data(informed_entity_data))
     end
 
+    # Skipping because it was failing to pass with trips from the Spring/Summer 25 rating
     @tag :skip
     test "with origin departure time before subscription's travel window" do
       insert(
@@ -1373,6 +1375,7 @@ defmodule AlertProcessor.Integration.MatchingTest do
       refute_notify(alert_from_parsed_data(informed_entity_data))
     end
 
+    # Skipping because it was failing to pass with trips from the Spring/Summer 25 rating
     @tag :skip
     test "with origin departure time after subscription's travel window" do
       insert(
