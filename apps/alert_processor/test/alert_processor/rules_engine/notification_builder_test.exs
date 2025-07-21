@@ -10,9 +10,9 @@ defmodule AlertProcessor.NotificationBuilderTest do
   describe "build_notification" do
     setup do
       now = naive_to_local(~N[2018-01-11 14:10:55Z])
-      one_hour_ago = DateTime.add(now, -3600)
-      two_days_from_now = DateTime.add(now, 172_800)
-      three_days_from_now = DateTime.add(now, 259_200)
+      one_hour_ago = DateTime.add(now, -1, :hour)
+      two_days_from_now = DateTime.add(now, 2, :day)
+      three_days_from_now = DateTime.add(now, 3, :day)
 
       alert = %Alert{
         id: "1",
@@ -98,9 +98,9 @@ defmodule AlertProcessor.NotificationBuilderTest do
       user_subs: user_subs
     } do
       now = naive_to_local(~N[2018-01-11 14:10:55Z])
-      one_hour_ago = DateTime.add(now, -3600)
-      two_days_from_now = DateTime.add(now, 172_800)
-      three_days_from_now = DateTime.add(now, 259_200)
+      one_hour_ago = DateTime.add(now, -1, :hour)
+      two_days_from_now = DateTime.add(now, 2, :day)
+      three_days_from_now = DateTime.add(now, 3, :day)
 
       alert = %Alert{
         id: "1",
@@ -121,9 +121,9 @@ defmodule AlertProcessor.NotificationBuilderTest do
 
     test "includes only mbta go CTA if multiple bus routes are effected", %{user_subs: user_subs} do
       now = naive_to_local(~N[2018-01-11 14:10:55Z])
-      one_hour_ago = DateTime.add(now, -3600)
-      two_days_from_now = DateTime.add(now, 172_800)
-      three_days_from_now = DateTime.add(now, 259_200)
+      one_hour_ago = DateTime.add(now, -1, :hour)
+      two_days_from_now = DateTime.add(now, 2, :day)
+      three_days_from_now = DateTime.add(now, 3, :day)
 
       alert = %Alert{
         id: "1",
@@ -147,9 +147,9 @@ defmodule AlertProcessor.NotificationBuilderTest do
 
     test "nil cta when not a delay alert", %{user_subs: user_subs} do
       now = naive_to_local(~N[2018-01-11 14:10:55Z])
-      one_hour_ago = DateTime.add(now, -3600)
-      two_days_from_now = DateTime.add(now, 172_800)
-      three_days_from_now = DateTime.add(now, 259_200)
+      one_hour_ago = DateTime.add(now, -1, :hour)
+      two_days_from_now = DateTime.add(now, 2, :day)
+      three_days_from_now = DateTime.add(now, 3, :day)
 
       alert = %Alert{
         id: "1",
@@ -157,6 +157,26 @@ defmodule AlertProcessor.NotificationBuilderTest do
         effect_name: "Detour",
         active_period: [%{start: two_days_from_now, end: three_days_from_now}],
         informed_entities: [%InformedEntity{route_type: 3, route: "1"}],
+        last_push_notification: one_hour_ago
+      }
+
+      notification = NotificationBuilder.build_notification(user_subs, alert)
+
+      assert %Notification{call_to_action: nil} = notification
+    end
+
+    test "nil cta for rail delay", %{user_subs: user_subs} do
+      now = naive_to_local(~N[2018-01-11 14:10:55Z])
+      one_hour_ago = DateTime.add(now, -1, :hour)
+      two_days_from_now = DateTime.add(now, 2, :day)
+      three_days_from_now = DateTime.add(now, 3, :day)
+
+      alert = %Alert{
+        id: "Red",
+        header: nil,
+        effect_name: "Delay",
+        active_period: [%{start: two_days_from_now, end: three_days_from_now}],
+        informed_entities: [%InformedEntity{route_type: 1, route: "Red"}],
         last_push_notification: one_hour_ago
       }
 

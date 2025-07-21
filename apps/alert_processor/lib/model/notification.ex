@@ -148,10 +148,7 @@ defmodule AlertProcessor.Model.Notification do
         _ -> nil
       end)
       |> Enum.uniq()
-      |> Enum.filter(fn
-        nil -> false
-        _ -> true
-      end)
+      |> Enum.reject(&is_nil(&1))
 
   defp effected_bus_routes(_), do: nil
 
