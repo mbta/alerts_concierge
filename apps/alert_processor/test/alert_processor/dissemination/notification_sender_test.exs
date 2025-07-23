@@ -102,5 +102,19 @@ defmodule AlertProcessor.Dissemination.NotificationSenderTest do
 
       assert_receive {:publish, %{"Message" => "T-Alerts - Update: This is a test"}}
     end
+
+    test "formats a notification with a cta" do
+      notification = %Notification{
+        header: "This is a test",
+        phone_number: "5555551234",
+        call_to_action: "Test CTA https://example.com",
+        type: :update
+      }
+
+      {:ok, _} = NotificationSender.send(notification)
+
+      assert_receive {:publish,
+                      %{"Message" => "T-Alerts - Update: This is a test\n\nTest CTA example.com"}}
+    end
   end
 end

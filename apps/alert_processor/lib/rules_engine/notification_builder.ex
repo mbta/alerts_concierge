@@ -17,6 +17,7 @@ defmodule AlertProcessor.NotificationBuilder do
       service_effect: alert.service_effect,
       description: alert.description,
       url: alert.url,
+      call_to_action: Notification.call_to_action(alert),
       phone_number: phone_number,
       email: email,
       status: :unsent,

@@ -2,8 +2,8 @@
 -- PostgreSQL database dump
 --
 
--- Dumped from database version 14.9 (Homebrew)
--- Dumped by pg_dump version 14.9 (Homebrew)
+-- Dumped from database version 13.21
+-- Dumped by pg_dump version 13.21
 
 SET statement_timeout = 0;
 SET lock_timeout = 0;
@@ -140,7 +140,8 @@ CREATE TABLE public.notifications (
     closed_timestamp timestamp without time zone,
     type character varying(255),
     image_url character varying(255),
-    image_alternative_text character varying(255)
+    image_alternative_text character varying(255),
+    call_to_action character varying(255)
 );
 
 
@@ -600,3 +601,4 @@ INSERT INTO public."schema_migrations" (version) VALUES (20230208195021);
 INSERT INTO public."schema_migrations" (version) VALUES (20230823214704);
 INSERT INTO public."schema_migrations" (version) VALUES (20230824175754);
 INSERT INTO public."schema_migrations" (version) VALUES (20230830193726);
+INSERT INTO public."schema_migrations" (version) VALUES (20250523171312);
