@@ -154,11 +154,11 @@ defmodule AlertProcessor.Model.Notification do
 
   @spec bus_delay_cta_text([String.t()] | nil) :: String.t() | nil
   defp bus_delay_cta_text([route]) do
-    "Track your bus at https://mbta.com/route/#{route} or use the MBTA Go app: https://go.mbta.com"
+    "Track your bus at https://mbta.com/route/#{route} or use the MBTA Go app: https://go.mbta.com/t-alert"
   end
 
   defp bus_delay_cta_text([_, _ | _]),
-    do: "To track your bus, use the MBTA Go app: https://go.mbta.com"
+    do: "To track your bus, use the MBTA Go app: https://go.mbta.com/t-alert"
 
   defp bus_delay_cta_text(_), do: nil
 
