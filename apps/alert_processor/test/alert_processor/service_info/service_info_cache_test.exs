@@ -492,7 +492,6 @@ defmodule AlertProcessor.ServiceInfoCacheTest do
               "980" => "ELEVATOR",
               "309" => "ESCALATOR",
               "815" => "ELEVATOR",
-              "800" => "ELEVATOR",
               "963" => "ELEVATOR"
             }} = ServiceInfoCache.get_facility_map(pid)
   end
