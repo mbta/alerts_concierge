@@ -263,6 +263,31 @@ defmodule AlertProcessor.Model.Query do
         group by trip_count
         order by trip_count asc;
         """
+      },
+      %__MODULE__{
+        label: "Subscription counts by month created",
+        query: """
+        SELECT to_char(date_trunc('month', s.inserted_at), 'YYYY-MM') AS month_created,
+          #{@subscription_counts}
+        FROM #{@users_with_subscriptions}
+        WHERE #{@notifications_enabled}
+          AND s.return_trip IS NOT TRUE
+        GROUP BY date_trunc('month', s.inserted_at)
+        ORDER BY date_trunc('month', s.inserted_at)
+        """
+      },
+      %__MODULE__{
+        label: "Subscription counts by station features",
+        query: """
+        SELECT facility_type,
+          #{@subscription_counts}
+        FROM #{@users_with_subscriptions}
+          INNER JOIN (SELECT DISTINCT unnest(facility_types) AS facility_type FROM subscriptions) all_facility_types ON ARRAY[all_facility_types.facility_type] <@ s.facility_types
+        WHERE #{@notifications_enabled}
+          AND s.return_trip IS NOT TRUE
+        GROUP BY facility_type
+        ORDER BY facility_type
+        """
       }
     ]
     |> Enum.map(&%{&1 | id: &1.label |> String.downcase() |> String.replace(" ", "_")})
