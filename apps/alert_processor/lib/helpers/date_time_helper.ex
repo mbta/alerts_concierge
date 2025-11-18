@@ -3,6 +3,7 @@ defmodule AlertProcessor.Helpers.DateTimeHelper do
   Module containing reusable datetime helpers for
   multi-step datetime functions.
   """
+  require Logger
   @time_zone "America/New_York"
 
   @spec datetime_to_date_and_time(DateTime.t()) :: {Date.t(), Time.t()}
@@ -48,6 +49,7 @@ defmodule AlertProcessor.Helpers.DateTimeHelper do
 
   @spec parse_unix_timestamp(integer, String.t()) :: {:ok, DateTime.t()} | :error
   def parse_unix_timestamp(timestamp, time_zone \\ @time_zone) do
+    Logger.info("debugging info- timestamp: #{timestamp}, timezone: #{time_zone}")
     case FastLocalDatetime.unix_to_datetime(timestamp, time_zone) do
       {:ok, datetime} -> {:ok, datetime}
       _ -> :error
