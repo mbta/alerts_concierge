@@ -44,7 +44,8 @@ defmodule AlertProcessor.NotificationWorker do
             send(self(), :work)
 
           {:error, {:http_error, 400, _}} ->
-            log_error(
+            log(
+              :error,
               id,
               notification,
               "event=send_failure action=put_back_on_queue time=#{now() - send_start}"
@@ -54,7 +55,8 @@ defmodule AlertProcessor.NotificationWorker do
             send(self(), :work)
 
           {:error, _} ->
-            log_error(
+            log(
+              :error,
               id,
               notification,
               "event=send_failure action=none time=#{now() - send_start}"
@@ -78,18 +80,17 @@ defmodule AlertProcessor.NotificationWorker do
     {:noreply, id}
   end
 
-  defp log(id, notification, message) do
-    mode = if(is_nil(notification.phone_number), do: "email", else: "sms")
-    Logger.info("worker_log id=#{id} mode=#{mode} notification=#{notification.id} #{message}")
-  end
-
   defp log(id, message) do
     Logger.info("worker_log id=#{id} #{message}")
   end
 
-  defp log_error(id, notification, message) do
+  defp log(level \\ :info, id, notification, message) do
     mode = if(is_nil(notification.phone_number), do: "email", else: "sms")
-    Logger.error("worker_log id=#{id} mode=#{mode} notification=#{notification.id} #{message}")
+
+    Logger.log(
+      level,
+      "worker_log id=#{id} mode=#{mode} notification=#{notification.id} #{message}"
+    )
   end
 
   defp now() do
