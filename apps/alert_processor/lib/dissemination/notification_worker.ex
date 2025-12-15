@@ -45,7 +45,7 @@ defmodule AlertProcessor.NotificationWorker do
 
           {:error, {:http_error, 400, _}} ->
             log(
-              :error,
+              :warning,
               id,
               notification,
               "event=send_failure action=put_back_on_queue time=#{now() - send_start}"
