@@ -65,7 +65,7 @@ defmodule AlertProcessor.ServiceInfoCacheTest do
              },
              %Route{
                route_id: "Mattapan",
-               long_name: "Mattapan Trolley",
+               long_name: "Mattapan Line",
                route_type: 0,
                direction_names: ["Outbound", "Inbound"],
                stop_list: [{_, _, _, _} | _]
@@ -135,7 +135,7 @@ defmodule AlertProcessor.ServiceInfoCacheTest do
              },
              %Route{
                route_id: "Mattapan",
-               long_name: "Mattapan Trolley",
+               long_name: "Mattapan Line",
                route_type: 0,
                direction_names: ["Outbound", "Inbound"],
                stop_list: [{_, _, _, _} | _]
@@ -361,7 +361,7 @@ defmodule AlertProcessor.ServiceInfoCacheTest do
     assert {:ok, %Route{long_name: "Green Line B", short_name: "B"}} =
              ServiceInfoCache.get_route(pid, "Green-B")
 
-    assert {:ok, %Route{long_name: "Mattapan Trolley", short_name: ""}} =
+    assert {:ok, %Route{long_name: "Mattapan Line", short_name: ""}} =
              ServiceInfoCache.get_route(pid, "Mattapan")
 
     assert {:ok, %Route{long_name: "Orange Line", short_name: ""}} =
