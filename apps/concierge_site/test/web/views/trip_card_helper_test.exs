@@ -101,7 +101,7 @@ defmodule ConciergeSite.TripCardHelperTest do
       assert html =~ "Orange Line"
       assert html =~ "Green Line"
       assert html =~ "Blue Line"
-      assert html =~ "Mattapan Trolley"
+      assert html =~ "Mattapan Line"
       assert html =~ "Route 57"
       assert html =~ "Silver Line SL1"
       assert html =~ "Haverhill Line"

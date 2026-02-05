@@ -65,7 +65,7 @@ defmodule AlertProcessor.ServiceInfoCacheTest do
              },
              %Route{
                route_id: "Mattapan",
-               long_name: "Mattapan Trolley",
+               long_name: "Mattapan Line",
                route_type: 0,
                direction_names: ["Outbound", "Inbound"],
                stop_list: [{_, _, _, _} | _]
@@ -135,7 +135,7 @@ defmodule AlertProcessor.ServiceInfoCacheTest do
              },
              %Route{
                route_id: "Mattapan",
-               long_name: "Mattapan Trolley",
+               long_name: "Mattapan Line",
                route_type: 0,
                direction_names: ["Outbound", "Inbound"],
                stop_list: [{_, _, _, _} | _]
@@ -248,7 +248,6 @@ defmodule AlertProcessor.ServiceInfoCacheTest do
                stop_list: [
                  {"Hingham", "Boat-Hingham", {42.253956, -70.919844}, 1},
                  {"Rowes Wharf", "Boat-Rowes", {42.355721, -71.049897}, 1},
-                 {"Georges Island", "Boat-George", {42.319742, -70.930427}, 1},
                  {"Hull", "Boat-Hull", {42.303251, -70.920215}, 1},
                  {"Logan Airport Ferry Terminal", "Boat-Logan", {42.359789, -71.02734}, 1},
                  {"Long Wharf (North)", "Boat-Long", {42.360795, -71.049976}, 1}
@@ -277,10 +276,7 @@ defmodule AlertProcessor.ServiceInfoCacheTest do
                route_id: "Boat-Lynn",
                route_type: 4,
                short_name: "",
-               stop_list: [
-                 {"Blossom Street Pier", "Boat-Blossom", {42.45481, -70.94802}, 1},
-                 {"Long Wharf (North)", "Boat-Long", {42.360795, -71.049976}, 1}
-               ]
+               stop_list: []
              },
              %AlertProcessor.Model.Route{
                direction_names: ["Outbound", "Inbound"],
@@ -361,7 +357,7 @@ defmodule AlertProcessor.ServiceInfoCacheTest do
     assert {:ok, %Route{long_name: "Green Line B", short_name: "B"}} =
              ServiceInfoCache.get_route(pid, "Green-B")
 
-    assert {:ok, %Route{long_name: "Mattapan Trolley", short_name: ""}} =
+    assert {:ok, %Route{long_name: "Mattapan Line", short_name: ""}} =
              ServiceInfoCache.get_route(pid, "Mattapan")
 
     assert {:ok, %Route{long_name: "Orange Line", short_name: ""}} =
