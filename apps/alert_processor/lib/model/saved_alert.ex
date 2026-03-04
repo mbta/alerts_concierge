@@ -5,6 +5,8 @@ defmodule AlertProcessor.Model.SavedAlert do
   import Ecto.Query
   alias AlertProcessor.Repo
 
+  require Logger
+
   @type t :: %__MODULE__{
           id: String.t() | nil,
           last_modified: DateTime.t() | nil,
@@ -71,7 +73,7 @@ defmodule AlertProcessor.Model.SavedAlert do
         last_modified: DateTime.from_unix!(alert["last_modified_timestamp"]),
         data: alert
       }
-
+      Logger.info("Processing alert id: " <> alert["id"])
       if existing == nil do
         save_new_alert(%__MODULE__{}, params)
       else
