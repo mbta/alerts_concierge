@@ -66,14 +66,16 @@ defmodule AlertProcessor.Model.SavedAlert do
 
     existing_alerts = Repo.all(query)
     alert_pairs = pair_alerts(alerts, existing_alerts)
-
     for {alert, existing} <- alert_pairs do
+      Logger.info("Processing alert id: " <> alert["id"])
+      Logger.info(alert["last_modified_timestamp"] || "nil")
+
       params = %{
         alert_id: alert["id"],
         last_modified: DateTime.from_unix!(alert["last_modified_timestamp"]),
         data: alert
       }
-      Logger.info("Processing alert id: " <> alert["id"])
+
       if existing == nil do
         save_new_alert(%__MODULE__{}, params)
       else
