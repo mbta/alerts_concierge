@@ -105,7 +105,7 @@ defmodule ConciergeSite.TripCardHelperTest do
       assert html =~ "Route 57"
       assert html =~ "Silver Line SL1"
       assert html =~ "Haverhill Line"
-      assert html =~ "Hingham/Hull Ferry"
+      assert html =~ "Hingham Ferry"
       assert html =~ "Unknown Route"
       assert html =~ "Unknown Stop"
       assert html =~ "One-way"
