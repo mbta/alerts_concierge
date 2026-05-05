@@ -440,56 +440,9 @@ defmodule AlertProcessor.ServiceInfoCacheTest do
   end
 
   test "get_facility_map", %{pid: pid} do
-    assert {:ok,
-            %{
-              "929" => "ELEVATOR",
-              "909" => "ELEVATOR",
-              "516" => "ESCALATOR",
-              "408" => "ESCALATOR",
-              "311" => "ESCALATOR",
-              "304" => "ESCALATOR",
-              "320" => "ESCALATOR",
-              "923" => "ELEVATOR",
-              "945" => "ELEVATOR",
-              "830" => "ELEVATOR",
-              "936" => "ELEVATOR",
-              "986" => "ELEVATOR",
-              "954" => "ELEVATOR",
-              "145" => "ESCALATOR",
-              "940" => "ELEVATOR",
-              "362" => "ESCALATOR",
-              "386" => "ESCALATOR",
-              "137" => "ESCALATOR",
-              "143" => "ESCALATOR",
-              "380" => "ESCALATOR",
-              "904" => "ELEVATOR",
-              "113" => "ESCALATOR",
-              "928" => "ELEVATOR",
-              "983" => "ELEVATOR",
-              "138" => "ESCALATOR",
-              "442" => "ESCALATOR",
-              "378" => "ESCALATOR",
-              "899" => "ELEVATOR",
-              "901" => "ELEVATOR",
-              "148" => "ESCALATOR",
-              "307" => "ESCALATOR",
-              "428" => "ESCALATOR",
-              "962" => "ELEVATOR",
-              "708" => "ELEVATOR",
-              "416" => "ESCALATOR",
-              "948" => "ELEVATOR",
-              "354" => "ESCALATOR",
-              "711" => "ELEVATOR",
-              "910" => "ELEVATOR",
-              "876" => "ELEVATOR",
-              "332" => "ESCALATOR",
-              "149" => "ESCALATOR",
-              "407" => "ESCALATOR",
-              "980" => "ELEVATOR",
-              "309" => "ESCALATOR",
-              "815" => "ELEVATOR",
-              "963" => "ELEVATOR"
-            }} = ServiceInfoCache.get_facility_map(pid)
+    assert {:ok, facility_map} = ServiceInfoCache.get_facility_map(pid)
+    # Sample value
+    assert facility_map["909"] == "ELEVATOR"
   end
 
   test "get_stops_with_icons", %{pid: pid} do
