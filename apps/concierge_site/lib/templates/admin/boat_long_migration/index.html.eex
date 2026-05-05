@@ -1,0 +1,26 @@
+<h1 class="heading__title">Boat-Long Subscription Migration</h1>
+<%= flash_info(@conn) %>
+
+<h2 class="heading__subtitle">Subscription Counts</h2>
+<dl>
+  <dt class="font-weight-normal">Subscription count for route: Boat-F1, stop: Boat-Long on (NO CHANGE)</dt>
+  <dd data-testid="boat-f1-boat-long-count"><%= @boat_f1_boat_long_count %></dd>
+</dl>
+<dl>
+  <dt class="font-weight-normal">Subscription count for route: Boat-EastBoston, stop: Boat-Long (OLD)</dt>
+  <dd data-testid="boat-eastboston-boat-long-count"><%= @boat_eastboston_boat_long_count %></dd>
+</dl>
+<dl>
+  <dt class="font-weight-normal">Subscription count for route: Boat-EastBoston, stop: Boat-Long-North-5B (NEW)</dt>
+  <dd data-testid="boat-eastboston-boat-long-north-5b-count"><%= @boat_eastboston_boat_long_north_5b_count %></dd>
+</dl>
+<dl>
+  <dt class="font-weight-normal">Subscription count for route: Boat-Lynn, stop: Boat-Long (OLD)</dt>
+  <dd data-testid="boat-lynn-boat-long-count"><%= @boat_lynn_boat_long_count %></dd>
+</dl>
+<dl>
+  <dt class="font-weight-normal">Subscription count for route: Boat-Lynn, stop: Boat-Long-North-5C (NEW)</dt>
+  <dd data-testid="boat-lynn-boat-long-north-5c-count"><%= @boat_lynn_boat_long_north_5c_count %></dd>
+</dl>
+
+
