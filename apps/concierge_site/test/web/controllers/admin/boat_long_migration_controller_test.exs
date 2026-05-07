@@ -63,18 +63,18 @@ defmodule BoatLongMigrationControllerTest do
 
       conn = get(conn, admin_boat_long_migration_path(conn, :index))
 
-      assert html_response(conn, 200) =~ ~r/<dd data-testid=\"boat-f1-boat-long-count\">2<\/dd>/
+      assert html_response(conn, 200) =~ ~r/<dd data-testid=\"f1-long-count\">2<\/dd>/
 
       assert html_response(conn, 200) =~
-               ~r/<dd data-testid=\"boat-eastboston-boat-long-count\">2<\/dd>/
+               ~r/<dd data-testid=\"eastboston-old-stop-count\">2<\/dd>/
 
       assert html_response(conn, 200) =~
-               ~r/<dd data-testid=\"boat-eastboston-boat-long-north-5b-count\">2<\/dd>/
+               ~r/<dd data-testid=\"eastboston-new-stop-count\">2<\/dd>/
 
-      assert html_response(conn, 200) =~ ~r/<dd data-testid=\"boat-lynn-boat-long-count\">2<\/dd>/
+      assert html_response(conn, 200) =~ ~r/<dd data-testid=\"lynn-old-stop-count\">2<\/dd>/
 
       assert html_response(conn, 200) =~
-               ~r/<dd data-testid=\"boat-lynn-boat-long-north-5c-count\">2<\/dd>/
+               ~r/<dd data-testid=\"lynn-new-stop-count\">2<\/dd>/
     end
 
     test "only available to admins", %{conn: conn} do

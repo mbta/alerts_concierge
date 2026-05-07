@@ -6,26 +6,37 @@ defmodule ConciergeSite.Admin.BoatLongMigrationController do
   alias AlertProcessor.Model.Subscription
   alias AlertProcessor.Repo
 
+  @f1_route "Boat-F1"
+  @f1_stop "Boat-Long"
+
+  @eastboston_route "Boat-EastBoston"
+  @eastboston_old_stop "Boat-Long"
+  @eastboston_new_stop "Boat-Long-North-5B"
+
+  @lynn_route "Boat-Lynn"
+  @lynn_old_stop "Boat-Long"
+  @lynn_new_stop "Boat-Long-North-5C"
+
   def index(conn, _params) do
-    boat_f1_boat_long_count = subscription_count_for_route_and_stop("Boat-F1", "Boat-Long")
+    f1_count = subscription_count_for_route_and_stop(@f1_route, @f1_stop)
 
-    boat_eastboston_boat_long_count =
-      subscription_count_for_route_and_stop("Boat-EastBoston", "Boat-Long")
+    eastboston_old_stop_count =
+      subscription_count_for_route_and_stop(@eastboston_route, @eastboston_old_stop)
 
-    boat_eastboston_boat_long_north_5b_count =
-      subscription_count_for_route_and_stop("Boat-EastBoston", "Boat-Long-North-5B")
+    eastboston_new_stop_count =
+      subscription_count_for_route_and_stop(@eastboston_route, @eastboston_new_stop)
 
-    boat_lynn_boat_long_count = subscription_count_for_route_and_stop("Boat-Lynn", "Boat-Long")
+    lynn_old_stop_count = subscription_count_for_route_and_stop(@lynn_route, @lynn_old_stop)
 
-    boat_lynn_boat_long_north_5c_count =
-      subscription_count_for_route_and_stop("Boat-Lynn", "Boat-Long-North-5C")
+    lynn_new_stop_count =
+      subscription_count_for_route_and_stop(@lynn_route, @lynn_new_stop)
 
     render(conn, "index.html",
-      boat_f1_boat_long_count: boat_f1_boat_long_count,
-      boat_eastboston_boat_long_count: boat_eastboston_boat_long_count,
-      boat_eastboston_boat_long_north_5b_count: boat_eastboston_boat_long_north_5b_count,
-      boat_lynn_boat_long_count: boat_lynn_boat_long_count,
-      boat_lynn_boat_long_north_5c_count: boat_lynn_boat_long_north_5c_count
+      f1_count: f1_count,
+      eastboston_old_stop_count: eastboston_old_stop_count,
+      eastboston_new_stop_count: eastboston_new_stop_count,
+      lynn_old_stop_count: lynn_old_stop_count,
+      lynn_new_stop_count: lynn_new_stop_count
     )
   end
 
