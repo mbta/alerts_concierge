@@ -66,6 +66,9 @@ defmodule ConciergeSite.Admin.BoatLongMigrationController do
         @lynn_new_stop_long
       )
 
+  def delete_boat_eastboston(conn, _params),
+    do: delete_for(conn, @eastboston_route, @eastboston_old_stop)
+
   @spec subscription_count_for_route_and_stop(Route.route_id(), Route.stop_id()) ::
           non_neg_integer()
   def subscription_count_for_route_and_stop(route, stop) do
@@ -136,12 +139,33 @@ defmodule ConciergeSite.Admin.BoatLongMigrationController do
     |> redirect(to: admin_boat_long_migration_path(conn, :index))
   end
 
+  defp delete_for(conn, route, stop) do
+    {count, _} = delete_subscriptions_by_route_and_id(route, stop)
+
+    flash = "Deleted #{count} subscriptions."
+
+    conn
+    |> put_flash(:info, flash)
+    |> redirect(to: admin_boat_long_migration_path(conn, :index))
+  end
+
   @spec subscriptions_by_route_and_id(Route.route_id(), Route.stop_id()) :: [Subscription.t()]
   defp subscriptions_by_route_and_id(route, stop) do
     Repo.all(
       from(s in Subscription,
         where: s.route == ^route and (s.origin == ^stop or s.destination == ^stop)
       )
+    )
+  end
+
+  @spec delete_subscriptions_by_route_and_id(Route.route_id(), Route.stop_id()) ::
+          {non_neg_integer(), nil | [term()]}
+  defp delete_subscriptions_by_route_and_id(route, stop) do
+    Repo.delete_all(
+      from(s in Subscription,
+        where: s.route == ^route and (s.origin == ^stop or s.destination == ^stop)
+      ),
+      timeout: 60_000
     )
   end
 

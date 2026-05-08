@@ -132,6 +132,12 @@ defmodule ConciergeSite.Router do
       BoatLongMigrationController,
       :migrate_boat_lynn
     )
+
+    post(
+      "/boat-long/delete-boat-eastboston",
+      BoatLongMigrationController,
+      :delete_boat_eastboston
+    )
   end
 
   scope "/mailchimp", ConciergeSite do

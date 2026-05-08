@@ -277,4 +277,74 @@ defmodule BoatLongMigrationControllerTest do
       assert redirected_to(conn) == "/trips"
     end
   end
+
+  describe "delete_boat_eastboston" do
+    test "deletes old subscriptions and notification deliveries", %{conn: conn} do
+      starting_old_stop_count =
+        BoatLongMigrationController.subscription_count_for_route_and_stop(
+          @eastboston_route,
+          @eastboston_old_stop
+        )
+
+      starting_new_stop_count =
+        BoatLongMigrationController.subscription_count_for_route_and_stop(
+          @eastboston_route,
+          @eastboston_new_stop
+        )
+
+      insert(:subscription,
+        route: @eastboston_route,
+        origin: @eastboston_old_stop,
+        destination: @eastboston_other_stop
+      )
+
+      insert(:subscription,
+        route: @eastboston_route,
+        origin: @eastboston_new_stop,
+        destination: @eastboston_other_stop
+      )
+
+      before_old_stop_count =
+        BoatLongMigrationController.subscription_count_for_route_and_stop(
+          @eastboston_route,
+          @eastboston_old_stop
+        )
+
+      before_new_stop_count =
+        BoatLongMigrationController.subscription_count_for_route_and_stop(
+          @eastboston_route,
+          @eastboston_new_stop
+        )
+
+      assert before_old_stop_count - starting_old_stop_count == 1
+      assert before_new_stop_count - starting_new_stop_count == 1
+
+      conn = post(conn, admin_boat_long_migration_path(conn, :delete_boat_eastboston))
+      assert redirected_to(conn) == admin_boat_long_migration_path(conn, :index)
+      assert get_flash(conn, :info) == "Deleted 1 subscriptions."
+
+      after_old_stop_count =
+        BoatLongMigrationController.subscription_count_for_route_and_stop(
+          @eastboston_route,
+          @eastboston_old_stop
+        )
+
+      after_new_stop_count =
+        BoatLongMigrationController.subscription_count_for_route_and_stop(
+          @eastboston_route,
+          @eastboston_new_stop
+        )
+
+      assert after_old_stop_count - before_old_stop_count == -1
+      assert after_new_stop_count - before_new_stop_count == 0
+    end
+
+    test "only available to admins", %{conn: conn} do
+      conn = guardian_login(insert(:user, role: "user"), conn)
+
+      conn = post(conn, admin_boat_long_migration_path(conn, :delete_boat_eastboston))
+
+      assert redirected_to(conn) == "/trips"
+    end
+  end
 end
