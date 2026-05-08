@@ -69,6 +69,9 @@ defmodule ConciergeSite.Admin.BoatLongMigrationController do
   def delete_boat_eastboston(conn, _params),
     do: delete_for(conn, @eastboston_route, @eastboston_old_stop)
 
+  def delete_boat_lynn(conn, _params),
+    do: delete_for(conn, @lynn_route, @lynn_old_stop)
+
   @spec subscription_count_for_route_and_stop(Route.route_id(), Route.stop_id()) ::
           non_neg_integer()
   def subscription_count_for_route_and_stop(route, stop) do
