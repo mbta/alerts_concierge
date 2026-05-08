@@ -26,13 +26,40 @@
 <h2 class="heading__subtitle">Migration Actions</h2>
 
 <ol>
-  <li>
-    Boat-EastBoston: 
+  <li class="mt-4">
+    Create new subscriptions for Boat-EastBoston: 
     <%= link to: admin_boat_long_migration_path(@conn, :migrate_boat_eastboston), class: "btn btn-primary", method: :post do %>
       <i class="fa fa-play-circle-o"></i> Run
     <% end %>
     <ul>
       <li>Copies subscriptions involving stop Boat-Long on route Boat-EastBoston to use stop Boat-Long-North-5B</li>
+    </ul>
+  </li>
+  <li class="mt-4">
+    TKTK Delete old subscriptions for Boat-EastBoston: 
+    <%!-- <%= link to: admin_boat_long_migration_path(@conn, :migrate_boat_eastboston), class: "btn btn-primary", method: :post do %>
+      <i class="fa fa-play-circle-o"></i> Run
+    <% end %> --%>
+    <ul>
+      <li>Deletes subscriptions involving stop Boat-Long on route Boat-EastBoston</li>
+    </ul>
+  </li>
+  <li class="mt-4">
+    Create new subscriptions for Boat-Lynn: 
+    <%= link to: admin_boat_long_migration_path(@conn, :migrate_boat_lynn), class: "btn btn-primary", method: :post do %>
+      <i class="fa fa-play-circle-o"></i> Run
+    <% end %>
+    <ul>
+      <li>Copies subscriptions involving stop Boat-Long on route Boat-Lynn to use stop Boat-Long-North-5C</li>
+    </ul>
+  </li>
+  <li class="mt-4">
+    TKTK Delete old subscriptions for Boat-Lynn: 
+    <%!-- <%= link to: admin_boat_long_migration_path(@conn, :migrate_boat_eastboston), class: "btn btn-primary", method: :post do %>
+      <i class="fa fa-play-circle-o"></i> Run
+    <% end %> --%>
+    <ul>
+      <li>Deletes subscriptions involving stop Boat-Long on route Boat-Lynn</li>
     </ul>
   </li>
 </ol>

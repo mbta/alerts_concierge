@@ -55,6 +55,17 @@ defmodule ConciergeSite.Admin.BoatLongMigrationController do
         @eastboston_new_stop_long
       )
 
+  def migrate_boat_lynn(conn, _params),
+    do:
+      migrate_for(
+        conn,
+        @lynn_route,
+        @lynn_old_stop,
+        @lynn_new_stop,
+        @lynn_new_stop_lat,
+        @lynn_new_stop_long
+      )
+
   @spec subscription_count_for_route_and_stop(Route.route_id(), Route.stop_id()) ::
           non_neg_integer()
   def subscription_count_for_route_and_stop(route, stop) do
