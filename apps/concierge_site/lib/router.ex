@@ -120,6 +120,12 @@ defmodule ConciergeSite.Router do
     get("/", HomeController, :index)
     resources("/queries", QueriesController, only: [:index, :show])
     get("/boat-long", BoatLongMigrationController, :index)
+
+    post(
+      "/boat-long/migrate-boat-eastboston",
+      BoatLongMigrationController,
+      :migrate_boat_eastboston
+    )
   end
 
   scope "/mailchimp", ConciergeSite do
