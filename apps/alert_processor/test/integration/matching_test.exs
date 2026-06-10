@@ -1201,15 +1201,15 @@ defmodule AlertProcessor.Integration.MatchingTest do
   # NOTE: The following tests use a set of specific trip IDs. At the time the tests are run, the
   # trip for the current day of the week must have schedules present in the API. All trips must
   # depart from Fairmount station outbound and the time must be specified here. These test trips
-  # are active as of 2025-08-15.
+  # are active as of 2026-06-10.
 
   @test_trip_id (case Date.utc_today() |> Date.day_of_week() do
-                   day when day in 1..5 -> "BasewUpdatedWalpoleTurns-772903-1627"
-                   6 -> "SouthWKNDBase25-772513-5731"
-                   7 -> "SouthWKNDBase25-772513-5731"
+                   day when day in 1..5 -> "SWKDYWCPeriod-831376-1621"
+                   6 -> "BungalowWKND-755499-6625"
+                   7 -> "BungalowWKND-755499-6625"
                  end)
   @test_trip_departs_fairmount_at (case Date.utc_today() |> Date.day_of_week() do
-                                     day when day in 1..5 -> ~T[10:41:00]
+                                     day when day in 1..5 -> ~T[09:41:00]
                                      day when day in 6..7 -> ~T[10:41:00]
                                    end)
 
