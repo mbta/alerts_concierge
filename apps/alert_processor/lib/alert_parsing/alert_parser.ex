@@ -219,7 +219,8 @@ defmodule AlertProcessor.AlertParser do
     do_parse_effect_name(parse_translation(translations))
   end
 
-  defp do_parse_effect_name(effect_detail) when is_binary(effect_detail), do: StringHelper.split_capitalize(effect_detail, "_")
+  defp do_parse_effect_name(effect_detail) when is_binary(effect_detail),
+    do: StringHelper.split_capitalize(effect_detail, "_")
 
   defp parse_active_periods(alert, nil, _), do: alert
 
