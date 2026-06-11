@@ -159,7 +159,7 @@ defmodule AlertProcessor.AlertParser do
     |> Map.put(:created_at, parse_datetime(created_timestamp))
     |> Map.put(:description, parse_translation(alert_data["description_text"]))
     |> Map.put(:url, parse_translation(alert_data["url"]))
-    |> Map.put(:effect_name, do_parse_effect_name(effect_detail))
+    |> Map.put(:effect_name, parse_effect_name(effect_detail))
     |> Map.put(:header, parse_translation(header_text))
     |> Map.put(:id, to_string(id))
     |> Map.put(:service_effect, parse_translation(service_effect_text))
