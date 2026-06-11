@@ -232,87 +232,116 @@ defmodule AlertProcessor.ServiceInfoCacheTest do
                route_type: 4,
                short_name: "",
                stop_list: [
-                 {"Charlestown Navy Yard", "Boat-Charlestown", {42.372756, -71.052528}, 1},
-                 {"Long Wharf (South)", "Boat-Long-South", {42.359448, -71.050498}, 1}
+                 {"Charlestown Navy Yard", "Boat-Charlestown", {42.3726, -71.05234}, 1},
+                 {"Long Wharf (South)", "Boat-Long-South", {42.35945, -71.05048}, 1}
                ]
              },
              %AlertProcessor.Model.Route{
                direction_names: ["Outbound", "Inbound"],
-               direction_destinations: ["Hingham or Hull", "Long Wharf or Rowes Wharf"],
+               direction_destinations: ["Hingham", "Rowes Wharf"],
                headsigns: nil,
-               long_name: "Hingham/Hull Ferry",
+               long_name: "Hingham Ferry",
                order: 1,
                route_id: "Boat-F1",
                route_type: 4,
                short_name: "",
                stop_list: [
-                  {"Hingham", "Boat-Hingham", {42.253956, -70.919844}, 1},
-                  {"Rowes Wharf", "Boat-Rowes", {42.355721, -71.049897}, 1},
-                  {"Georges Island", "Boat-George", {42.319742, -70.930427}, 1},
-                  {"Hull", "Boat-Hull", {42.303251, -70.920215}, 1},
-                  {"Logan Airport Ferry Terminal", "Boat-Logan", {42.359789, -71.02734}, 1},
-                  {"Long Wharf (North)", "Boat-Long", {42.360795, -71.049976}, 1}
-                ]
+                 {"Hingham", "Boat-Hingham", {42.25415, -70.91985}, 1},
+                 {"Rowes Wharf", "Boat-Rowes", {42.35558, -71.04902}, 1}
+               ]
              },
              %AlertProcessor.Model.Route{
-                direction_destinations: ["Lewis Mall Wharf", "Long Wharf"],
-                direction_names: ["Outbound", "Inbound"],
-                headsigns: nil,
-                long_name: "East Boston Ferry",
-                order: 2,
-                route_id: "Boat-EastBoston",
-                route_type: 4,
-                short_name: "",
-                stop_list: [
-                  {"Lewis Mall Wharf", "Boat-Lewis", {42.365867, -71.041958}, 1},
-                  {"Long Wharf (North)", "Boat-Long", {42.360795, -71.049976}, 1}
-                ]
+               direction_names: ["Outbound", "Inbound"],
+               direction_destinations: ["Hingham or Hull", "Long Wharf"],
+               headsigns: nil,
+               long_name: "Hingham/Hull Ferry",
+               order: 2,
+               route_id: "Boat-F2H",
+               route_type: 4,
+               short_name: "",
+               stop_list: [
+                 {"Hingham", "Boat-Hingham", {42.25415, -70.91985}, 1},
+                 {"Hull", "Boat-Hull", {42.3027, -70.91996}, 1},
+                 {"Georges Island", "Boat-George", {42.319742, -70.930427}, 1},
+                 {"Logan Airport Ferry Terminal", "Boat-Logan", {42.35985, -71.02767}, 1},
+                 {"Long Wharf (North) - Gate 5A", "Boat-Long", {42.36083, -71.04998}, 1}
+               ]
              },
              %AlertProcessor.Model.Route{
+               direction_names: ["Outbound", "Inbound"],
+               direction_destinations: ["Lewis Mall Wharf", "Long Wharf"],
+               headsigns: nil,
+               long_name: "East Boston Ferry",
+               order: 3,
+               route_id: "Boat-EastBoston",
+               route_type: 4,
+               short_name: "",
+               stop_list: [
+                 {"Lewis Mall Wharf", "Boat-Lewis", {42.36566, -71.0421}, 1},
+                 {"Long Wharf (North) - Gate 5B", "Boat-Long-North-5B", {42.36089, -71.04964}, 1}
+               ]
+             },
+             %AlertProcessor.Model.Route{
+               direction_names: ["Outbound", "Inbound"],
                direction_destinations: ["Blossom Street Pier", "Long Wharf"],
-                direction_names: ["Outbound", "Inbound"],
-                headsigns: nil,
-                long_name: "Lynn Ferry",
-                order: 3,
-                route_id: "Boat-Lynn",
-                route_type: 4,
-                short_name: "",
-                stop_list: [
-                  {"Blossom Street Pier", "Boat-Blossom", {42.45481, -70.94802}, 1},
-                  {"Long Wharf (North)", "Boat-Long", {42.360795, -71.049976}, 1}
-                ]
+               headsigns: nil,
+               long_name: "Lynn Ferry",
+               order: 4,
+               route_id: "Boat-Lynn",
+               route_type: 4,
+               short_name: "",
+               stop_list: [
+                 {"Blossom Street Pier", "Boat-Blossom", {42.45485, -70.9479}, 1},
+                 {"Long Wharf (North) - Gate 5C", "Boat-Long-North-5C", {42.36095, -71.04925}, 1}
+               ]
              },
              %AlertProcessor.Model.Route{
-              direction_destinations: ["Winthrop", "Winthrop"],
-              direction_names: ["Outbound", "Inbound"],
-              headsigns: nil,
-              long_name: "Winthrop Ferry",
-              order: 4,
-              route_id: "Boat-F6",
-              route_type: 4,
-              short_name: "",
-              stop_list: [
-                {"Winthrop Landing", "Boat-Winthrop", {42.366711, -70.973302}, 1},
-                {"Logan Airport Ferry Terminal", "Boat-Logan", {42.359789, -71.02734}, 1},
-                {"Central Wharf (South)", "Boat-Aquarium", {42.358815, -71.048779}, 1},
-                {"Seaport/Fan Pier", "Boat-Fan", {42.353484, -71.04323}, 1}
-              ]
+               direction_names: ["Outbound", "Inbound"],
+               direction_destinations: ["Winthrop", "Winthrop"],
+               headsigns: nil,
+               long_name: "Winthrop Ferry",
+               order: 5,
+               route_id: "Boat-F6",
+               route_type: 4,
+               short_name: "",
+               stop_list: [
+                 {"Winthrop Landing", "Boat-Winthrop", {42.36669, -70.97384}, 1},
+                 {"Logan Airport Ferry Terminal", "Boat-Logan", {42.35985, -71.02767}, 1},
+                 {"Central Wharf (South)", "Boat-Aquarium", {42.35886, -71.0486}, 1},
+                 {"Seaport/Fan Pier", "Boat-Fan", {42.35349, -71.04322}, 1}
+               ]
              },
              %AlertProcessor.Model.Route{
-              direction_destinations: ["Quincy", "Quincy"],
-              direction_names: ["Outbound", "Inbound"],
-              headsigns: nil,
-              long_name: "Quincy Ferry",
-              order: 5,
-              route_id: "Boat-F7",
-              route_type: 4,
-              short_name: "",
-              stop_list: [
-                {"Quincy", "Boat-Quincy", {42.30132, -71.03201}, 1},
-                {"Seaport/Fan Pier", "Boat-Fan", {42.353484, -71.04323}, 1},
-                {"Central Wharf (South)", "Boat-Aquarium", {42.358815, -71.048779}, 1},
-                {"Logan Airport Ferry Terminal", "Boat-Logan", {42.359789, -71.02734}, 1}
-              ]
+               direction_names: ["Outbound", "Inbound"],
+               direction_destinations: ["Quincy", "Quincy"],
+               headsigns: nil,
+               long_name: "Quincy Ferry",
+               order: 6,
+               route_id: "Boat-F7",
+               route_type: 4,
+               short_name: "",
+               stop_list: [
+                 {"Quincy", "Boat-Quincy", {42.30188, -71.03187}, 1},
+                 {"Seaport/Fan Pier", "Boat-Fan", {42.35349, -71.04322}, 1},
+                 {"Central Wharf (South)", "Boat-Aquarium", {42.35886, -71.0486}, 1},
+                 {"Logan Airport Ferry Terminal", "Boat-Logan", {42.35985, -71.02767}, 1}
+               ]
+             },
+             %AlertProcessor.Model.Route{
+               direction_names: ["Outbound", "Inbound"],
+               direction_destinations: ["Harbor Loop", "Harbor Loop"],
+               headsigns: nil,
+               long_name: "Harbor Loop Ferry",
+               order: 7,
+               route_id: "Boat-F10",
+               route_type: 4,
+               short_name: "",
+               stop_list: [
+                 {"Seaport/Commonwealth Pier", "Boat-Commonwealth", {42.3505, -71.04018}, 1},
+                 {"Central Wharf (South)", "Boat-Aquarium", {42.35886, -71.0486}, 1},
+                 {"North Station/Lovejoy Wharf", "Boat-Lovejoy", {42.36748, -71.06}, 1},
+                 {"Logan Airport Ferry Terminal", "Boat-Logan", {42.35985, -71.02767}, 1}
+               ]
              }
            ] = route_info
   end
