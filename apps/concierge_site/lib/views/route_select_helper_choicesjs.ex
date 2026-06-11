@@ -79,7 +79,7 @@ defmodule ConciergeSite.RouteSelectHelperChoicesJS do
       {:orange, "Orange", "Orange Line"},
       {:green, "Green", "Green Line"},
       {:blue, "Blue", "Blue Line"},
-      {:mattapan, "Mattapan", "Mattapan Trolley"}
+      {:mattapan, "Mattapan", "Mattapan Line"}
     ]
   end
 

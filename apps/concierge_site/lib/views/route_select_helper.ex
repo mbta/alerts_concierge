@@ -71,7 +71,7 @@ defmodule ConciergeSite.RouteSelectHelper do
       {:orange, "Orange", "Orange Line"},
       {:green, "Green", "Green Line"},
       {:blue, "Blue", "Blue Line"},
-      {:mattapan, "Mattapan", "Mattapan Trolley"}
+      {:mattapan, "Mattapan", "Mattapan Line"}
     ]
   end
 
@@ -84,7 +84,7 @@ defmodule ConciergeSite.RouteSelectHelper do
       {:"green-d", "Green-D", "Green Line D"},
       {:"green-e", "Green-E", "Green Line E"},
       {:blue, "Blue", "Blue Line"},
-      {:mattapan, "Mattapan", "Mattapan Trolley"}
+      {:mattapan, "Mattapan", "Mattapan Line"}
     ]
   end
 
