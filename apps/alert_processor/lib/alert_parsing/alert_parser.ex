@@ -159,7 +159,7 @@ defmodule AlertProcessor.AlertParser do
     |> Map.put(:created_at, parse_datetime(created_timestamp))
     |> Map.put(:description, parse_translation(alert_data["description_text"]))
     |> Map.put(:url, parse_translation(alert_data["url"]))
-    |> Map.put(:effect_name, StringHelper.split_capitalize(effect_detail, "_"))
+    |> Map.put(:effect_name, parse_effect_name(effect_detail))
     |> Map.put(:header, parse_translation(header_text))
     |> Map.put(:id, to_string(id))
     |> Map.put(:service_effect, parse_translation(service_effect_text))
@@ -209,6 +209,18 @@ defmodule AlertProcessor.AlertParser do
   end
 
   defp parse_duration_certainty(alert, _, _, _), do: %{alert | duration_certainty: :known}
+
+  @spec parse_effect_name(map | list | String.t()) :: String.t() | nil
+  def parse_effect_name(translations), do: do_parse_effect_name(translations)
+
+  defp do_parse_effect_name(nil), do: nil
+
+  defp do_parse_effect_name(translations) when is_map(translations) or is_list(translations) do
+    do_parse_effect_name(parse_translation(translations))
+  end
+
+  defp do_parse_effect_name(effect_detail) when is_binary(effect_detail),
+    do: StringHelper.split_capitalize(effect_detail, "_")
 
   defp parse_active_periods(alert, nil, _), do: alert
 

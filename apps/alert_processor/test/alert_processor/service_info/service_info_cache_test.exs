@@ -262,6 +262,7 @@ defmodule AlertProcessor.ServiceInfoCacheTest do
                stop_list: [
                  {"Hingham", "Boat-Hingham", {42.25415, -70.91985}, 1},
                  {"Hull", "Boat-Hull", {42.3027, -70.91996}, 1},
+                 {"Georges Island", "Boat-George", {42.319742, -70.930427}, 1},
                  {"Logan Airport Ferry Terminal", "Boat-Logan", {42.35985, -71.02767}, 1},
                  {"Long Wharf (North) - Gate 5A", "Boat-Long", {42.36083, -71.04998}, 1}
                ]
@@ -323,6 +324,22 @@ defmodule AlertProcessor.ServiceInfoCacheTest do
                  {"Quincy", "Boat-Quincy", {42.30188, -71.03187}, 1},
                  {"Seaport/Fan Pier", "Boat-Fan", {42.35349, -71.04322}, 1},
                  {"Central Wharf (South)", "Boat-Aquarium", {42.35886, -71.0486}, 1},
+                 {"Logan Airport Ferry Terminal", "Boat-Logan", {42.35985, -71.02767}, 1}
+               ]
+             },
+             %AlertProcessor.Model.Route{
+               direction_names: ["Outbound", "Inbound"],
+               direction_destinations: ["Harbor Loop", "Harbor Loop"],
+               headsigns: nil,
+               long_name: "Harbor Loop Ferry",
+               order: 7,
+               route_id: "Boat-F10",
+               route_type: 4,
+               short_name: "",
+               stop_list: [
+                 {"Seaport/Commonwealth Pier", "Boat-Commonwealth", {42.3505, -71.04018}, 1},
+                 {"Central Wharf (South)", "Boat-Aquarium", {42.35886, -71.0486}, 1},
+                 {"North Station/Lovejoy Wharf", "Boat-Lovejoy", {42.36748, -71.06}, 1},
                  {"Logan Airport Ferry Terminal", "Boat-Logan", {42.35985, -71.02767}, 1}
                ]
              }

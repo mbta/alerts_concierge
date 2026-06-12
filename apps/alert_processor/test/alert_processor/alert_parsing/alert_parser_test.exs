@@ -451,6 +451,42 @@ defmodule AlertProcessor.AlertParserTest do
     end
   end
 
+  describe "parse_effect_name/1" do
+    test "parses list of translations" do
+      translation = [
+        %{
+          "translation" => %{
+            "text" => "TRACK_CHANGE",
+            "language" => "en"
+          }
+        }
+      ]
+
+      assert AlertParser.parse_effect_name(translation) == "Track Change"
+    end
+
+    test "parses a translation map" do
+      translation = %{
+        "translation" => [
+          %{
+            "text" => "TRACK_CHANGE",
+            "language" => "en"
+          }
+        ]
+      }
+
+      assert AlertParser.parse_effect_name(translation) == "Track Change"
+    end
+
+    test "parses a string" do
+      assert AlertParser.parse_effect_name("DELAY") == "Delay"
+    end
+
+    test "parses nil" do
+      assert is_nil(AlertParser.parse_effect_name(nil))
+    end
+  end
+
   describe "parse_alert/1" do
     test "with alert with no active_period" do
       some_timestamp = 1_524_609_934

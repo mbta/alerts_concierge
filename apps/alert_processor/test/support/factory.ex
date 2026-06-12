@@ -257,14 +257,14 @@ defmodule AlertProcessor.Factory do
         "active_period" => [%{"end" => 1_538_162_074, "start" => 1_538_154_825}],
         "alert_lifecycle" => "NEW",
         "cause" => "TECHNICAL_PROBLEM",
-        "cause_detail" => "SIGNAL_PROBLEM",
+        "cause_detail" => [%{"language" => "en", "text" => "SIGNAL_PROBLEM"}],
         "created_timestamp" => 1_538_154_830,
         "description_text" => %{
           "translation" => [%{"language" => "en", "text" => ""}]
         },
         "duration_certainty" => "ESTIMATED",
         "effect" => "OTHER_EFFECT",
-        "effect_detail" => "DELAY",
+        "effect_detail" => [%{"language" => "en", "text" => "DELAY"}],
         "header_text" => %{
           "translation" => [
             %{
