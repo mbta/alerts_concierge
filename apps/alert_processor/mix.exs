@@ -54,7 +54,7 @@ defmodule AlertProcessor.Mixfile do
       {:httpoison, "~> 2.2.1"},
       {:mock, "~> 0.3.0", only: :test},
       {:paper_trail, "0.8.3"},
-      {:poison, "~> 2.0"},
+      {:poison, "~> 4.0"},
       {:poolboy, "~> 1.5.0"},
       {:postgrex, "~> 0.17"},
       {:sentry, "~> 8.0"},

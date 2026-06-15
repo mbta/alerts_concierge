@@ -55,7 +55,7 @@ defmodule ConciergeSite.Mixfile do
       {:phoenix_pubsub, "~> 2.0"},
       {:plug, "~> 1.7"},
       {:plug_cowboy, "~> 2.0"},
-      {:poison, "~> 2.0"},
+      {:poison, "~> 4.0"},
       {:recaptcha, "~> 3.0"},
       {:remote_ip, "~> 1.0"},
       {:sentry, "~> 8.0"},
