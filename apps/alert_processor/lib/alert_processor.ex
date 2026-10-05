@@ -40,6 +40,7 @@ defmodule AlertProcessor do
         AlertProcessor.Reminders,
         {AlertProcessor.AlertWorker, alert_worker_config},
         AlertProcessor.SmsOptOutWorker,
+        AlertProcessor.ActiveUserCountLogger,
         :poolboy.child_spec(:message_worker, message_worker_config, [])
       ] ++
         user_update_children
