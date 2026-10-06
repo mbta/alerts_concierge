@@ -232,7 +232,7 @@ defmodule AlertProcessor.ServiceInfoCacheTest do
                route_type: 4,
                short_name: "",
                stop_list: [
-                 {"Charlestown Navy Yard", "Boat-Charlestown", {42.3726, -71.05234}, 1},
+                 {"Charlestown (Navy Yard)", "Boat-Charlestown", {42.3726, -71.05234}, 1},
                  {"Long Wharf (South)", "Boat-Long-South", {42.35945, -71.05048}, 1}
                ]
              },
@@ -246,7 +246,7 @@ defmodule AlertProcessor.ServiceInfoCacheTest do
                route_type: 4,
                short_name: "",
                stop_list: [
-                 {"Hingham", "Boat-Hingham", {42.25415, -70.91985}, 1},
+                 {"Hingham (Hewitts Cove)", "Boat-Hingham", {42.25415, -70.91985}, 1},
                  {"Rowes Wharf", "Boat-Rowes", {42.35558, -71.04902}, 1}
                ]
              },
@@ -260,9 +260,8 @@ defmodule AlertProcessor.ServiceInfoCacheTest do
                route_type: 4,
                short_name: "",
                stop_list: [
-                 {"Hingham", "Boat-Hingham", {42.25415, -70.91985}, 1},
-                 {"Hull", "Boat-Hull", {42.3027, -70.91996}, 1},
-                 {"Georges Island", "Boat-George", {42.319742, -70.930427}, 1},
+                 {"Hingham (Hewitts Cove)", "Boat-Hingham", {42.25415, -70.91985}, 1},
+                 {"Hull (Pemberton Point)", "Boat-Hull", {42.3027, -70.91996}, 1},
                  {"Logan Airport Ferry Terminal", "Boat-Logan", {42.35985, -71.02767}, 1},
                  {"Long Wharf (North) - Gate 5A", "Boat-Long", {42.36083, -71.04998}, 1}
                ]
@@ -277,7 +276,7 @@ defmodule AlertProcessor.ServiceInfoCacheTest do
                route_type: 4,
                short_name: "",
                stop_list: [
-                 {"Lewis Mall Wharf", "Boat-Lewis", {42.36566, -71.0421}, 1},
+                 {"East Boston (Lewis Mall)", "Boat-Lewis", {42.36566, -71.0421}, 1},
                  {"Long Wharf (North) - Gate 5B", "Boat-Long-North-5B", {42.36089, -71.04964}, 1}
                ]
              },
@@ -291,12 +290,12 @@ defmodule AlertProcessor.ServiceInfoCacheTest do
                route_type: 4,
                short_name: "",
                stop_list: [
-                 {"Blossom Street Pier", "Boat-Blossom", {42.45485, -70.9479}, 1},
+                 {"Lynn (Blossom Street Pier)", "Boat-Blossom", {42.45485, -70.9479}, 1},
                  {"Long Wharf (North) - Gate 5C", "Boat-Long-North-5C", {42.36095, -71.04925}, 1}
                ]
              },
              %AlertProcessor.Model.Route{
-               direction_names: ["Outbound", "Inbound"],
+               direction_names: ["Loop", "Loop"],
                direction_destinations: ["Winthrop", "Winthrop"],
                headsigns: nil,
                long_name: "Winthrop Ferry",
@@ -305,14 +304,14 @@ defmodule AlertProcessor.ServiceInfoCacheTest do
                route_type: 4,
                short_name: "",
                stop_list: [
-                 {"Winthrop Landing", "Boat-Winthrop", {42.36669, -70.97384}, 1},
+                 {"Winthrop (Winthrop Landing)", "Boat-Winthrop", {42.36669, -70.97384}, 1},
                  {"Logan Airport Ferry Terminal", "Boat-Logan", {42.35985, -71.02767}, 1},
-                 {"Central Wharf (South)", "Boat-Aquarium", {42.35886, -71.0486}, 1},
-                 {"Seaport/Fan Pier", "Boat-Fan", {42.35349, -71.04322}, 1}
+                 {"Central Wharf (Aquarium)", "Boat-Aquarium", {42.35886, -71.0486}, 1},
+                 {"Seaport (Fan Pier)", "Boat-Fan", {42.35349, -71.04322}, 1}
                ]
              },
              %AlertProcessor.Model.Route{
-               direction_names: ["Outbound", "Inbound"],
+               direction_names: ["Loop", "Loop"],
                direction_destinations: ["Quincy", "Quincy"],
                headsigns: nil,
                long_name: "Quincy Ferry",
@@ -321,14 +320,14 @@ defmodule AlertProcessor.ServiceInfoCacheTest do
                route_type: 4,
                short_name: "",
                stop_list: [
-                 {"Quincy", "Boat-Quincy", {42.30188, -71.03187}, 1},
-                 {"Seaport/Fan Pier", "Boat-Fan", {42.35349, -71.04322}, 1},
-                 {"Central Wharf (South)", "Boat-Aquarium", {42.35886, -71.0486}, 1},
+                 {"Quincy (Squantum Point)", "Boat-Quincy", {42.30188, -71.03187}, 1},
+                 {"Seaport (Fan Pier)", "Boat-Fan", {42.35349, -71.04322}, 1},
+                 {"Central Wharf (Aquarium)", "Boat-Aquarium", {42.35886, -71.0486}, 1},
                  {"Logan Airport Ferry Terminal", "Boat-Logan", {42.35985, -71.02767}, 1}
                ]
              },
              %AlertProcessor.Model.Route{
-               direction_names: ["Outbound", "Inbound"],
+               direction_names: ["Counterclockwise", "Clockwise"],
                direction_destinations: ["Harbor Loop", "Harbor Loop"],
                headsigns: nil,
                long_name: "Harbor Loop Ferry",
@@ -337,9 +336,9 @@ defmodule AlertProcessor.ServiceInfoCacheTest do
                route_type: 4,
                short_name: "",
                stop_list: [
-                 {"Seaport/Commonwealth Pier", "Boat-Commonwealth", {42.3505, -71.04018}, 1},
-                 {"Central Wharf (South)", "Boat-Aquarium", {42.35886, -71.0486}, 1},
-                 {"North Station/Lovejoy Wharf", "Boat-Lovejoy", {42.36748, -71.06}, 1},
+                 {"Seaport (Commonwealth Pier)", "Boat-Commonwealth", {42.3505, -71.04018}, 1},
+                 {"Central Wharf (Aquarium)", "Boat-Aquarium", {42.35886, -71.0486}, 1},
+                 {"Lovejoy Wharf (North Station)", "Boat-Lovejoy", {42.36748, -71.06}, 1},
                  {"Logan Airport Ferry Terminal", "Boat-Logan", {42.35985, -71.02767}, 1}
                ]
              }
