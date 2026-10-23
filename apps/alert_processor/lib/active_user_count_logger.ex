@@ -37,10 +37,20 @@ defmodule AlertProcessor.ActiveUserCountLogger do
   end
 
   defp log_active_user_count do
-    active_user_ids =
-      from(s in Subscription, where: not s.paused, distinct: true, select: s.user_id)
+    active_users_by_communication_mode =
+      Repo.all(
+        from(s in Subscription,
+          join: u in assoc(s, :user),
+          where: not s.paused and u.communication_mode != "none",
+          group_by: u.communication_mode,
+          select: {u.communication_mode, count(u.id, :distinct)}
+        )
+      )
+      |> Map.new()
 
-    active_users = Repo.aggregate(active_user_ids, :count)
-    Logger.info("ActiveUserCountLogger active_user_count=#{active_users}")
+    email_users = Map.get(active_users_by_communication_mode, "email", 0)
+    sms_users = Map.get(active_users_by_communication_mode, "sms", 0)
+
+    Logger.info("ActiveUserCountLogger email=#{email_users} sms=#{sms_users}")
   end
 end

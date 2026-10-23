@@ -261,6 +261,7 @@ defmodule AlertProcessor.ServiceInfoCacheTest do
                short_name: "",
                stop_list: [
                  {"Hingham (Hewitts Cove)", "Boat-Hingham", {42.25415, -70.91985}, 1},
+                 {"Rowes Wharf", "Boat-Rowes", {42.35558, -71.04902}, 1},
                  {"Hull (Pemberton Point)", "Boat-Hull", {42.3027, -70.91996}, 1},
                  {"Logan Airport Ferry Terminal", "Boat-Logan", {42.35985, -71.02767}, 1},
                  {"Long Wharf (North) - Gate 5A", "Boat-Long", {42.36083, -71.04998}, 1}
