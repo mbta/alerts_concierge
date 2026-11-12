@@ -41,6 +41,7 @@ defmodule ConciergeSite.Mixfile do
       {:bamboo, "~> 2.3"},
       {:bamboo_phoenix, "~> 1.0.0"},
       {:bamboo_ses, "~> 0.4"},
+      {:castore, "~> 1.0.22"},
       {:ex_aws_sns, "~> 2.3.1"},
       {:gettext, "~> 0.11"},
       {:guardian, "~> 2.3.1"},
