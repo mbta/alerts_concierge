@@ -44,6 +44,7 @@ defmodule AlertProcessor.Mixfile do
     [
       {:bcrypt_elixir, "~> 3.0"},
       {:calendar, "~> 1.0.0"},
+      {:certifi, "2.18.0", override: true},
       {:con_cache, "~> 1.0.0"},
       {:ecto_sql, "~> 3.9"},
       {:ex_aws, "~> 2.4"},
