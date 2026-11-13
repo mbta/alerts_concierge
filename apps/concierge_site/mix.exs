@@ -43,7 +43,7 @@ defmodule ConciergeSite.Mixfile do
       {:bamboo_ses, "~> 0.4"},
       {:ex_aws_sns, "~> 2.3.1"},
       {:gettext, "~> 0.11"},
-      {:guardian, "~> 2.3.1"},
+      {:guardian, "~> 2.5.0"},
       {:guardian_db, "~> 2.1.0"},
       {:hammer, "~> 6.0"},
       {:httpoison, "~> 2.2.1"},
