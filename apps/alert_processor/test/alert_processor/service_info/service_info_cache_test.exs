@@ -187,7 +187,7 @@ defmodule AlertProcessor.ServiceInfoCacheTest do
 
       for silver_line_route_id <- silver_line_route_ids do
         route = Enum.find(routes, &(&1.route_id == silver_line_route_id))
-        assert length(route.stop_list) > 0
+        assert route.stop_list != []
       end
     end
   end

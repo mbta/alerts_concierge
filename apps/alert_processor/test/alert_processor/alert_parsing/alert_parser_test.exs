@@ -545,7 +545,7 @@ defmodule AlertProcessor.AlertParserTest do
 
         [schedule | _] = List.first(result)
 
-        assert length(result) > 0
+        assert result != []
 
         assert %{
                  departure_time: "2017-10-26T08:52:00-04:00",
