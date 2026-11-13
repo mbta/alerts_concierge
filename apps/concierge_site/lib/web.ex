@@ -21,7 +21,7 @@ defmodule ConciergeSite.Web do
       use Phoenix.Controller, namespace: ConciergeSite
       import Plug.Conn
       import ConciergeSite.Router.Helpers
-      import ConciergeSite.Gettext
+      use Gettext, backend: ConciergeSite.Gettext
       import ConciergeSite.AuthorizationHelper
     end
   end
@@ -43,7 +43,7 @@ defmodule ConciergeSite.Web do
       import ConciergeSite.ErrorHelpers
       import ConciergeSite.FlashHelpers
       import ConciergeSite.FontAwesomeHelpers
-      import ConciergeSite.Gettext
+      use Gettext, backend: ConciergeSite.Gettext
       import ConciergeSite.ViewHelpers
     end
   end
@@ -59,7 +59,7 @@ defmodule ConciergeSite.Web do
   def channel do
     quote do
       use Phoenix.Channel
-      import ConciergeSite.Gettext
+      use Gettext, backend: ConciergeSite.Gettext
     end
   end
 

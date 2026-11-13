@@ -4,5 +4,5 @@
     <%= ConciergeSite.FacilitiesHelper.facility_checkbox(@form, @trip, :elevator, "Elevators") %>
     <%= ConciergeSite.FacilitiesHelper.facility_checkbox(@form, @trip, :escalator, "Escalators") %>
   </div>
-  <%= if @changeset.errors[:escalator], do: error_tag @changeset, :escalator %>
+  <%= if @changeset.errors[:escalator], do: error_tag(@changeset, :escalator) %>
 </div>

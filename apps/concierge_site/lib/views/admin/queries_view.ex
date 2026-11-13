@@ -15,7 +15,7 @@ defmodule ConciergeSite.Admin.QueriesView do
   defp format_value(value, true) when is_binary(value) do
     case Ecto.UUID.load(value) do
       {:ok, uuid} -> uuid
-      {:error, _} -> inspect(value)
+      :error -> inspect(value)
     end
   end
 

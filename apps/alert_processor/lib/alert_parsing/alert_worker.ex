@@ -19,7 +19,7 @@ defmodule AlertProcessor.AlertWorker do
     @type t :: %{
             check_interval: non_neg_integer | nil,
             frequencies: %{atom => non_neg_integer},
-            now_fn: (() -> DateTime.t()),
+            now_fn: (-> DateTime.t()),
             process_fn: (AlertProcessor.AlertFilters.duration_type() -> any)
           }
 
