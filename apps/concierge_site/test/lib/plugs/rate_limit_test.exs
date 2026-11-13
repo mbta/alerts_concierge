@@ -1,6 +1,7 @@
 defmodule ConciergeSite.Plugs.RateLimitTest do
   @moduledoc false
   use ExUnit.Case
+  import Plug.Conn
   import Plug.Test
 
   alias ConciergeSite.Plugs.RateLimit
