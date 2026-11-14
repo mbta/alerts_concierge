@@ -417,7 +417,7 @@ defmodule AlertProcessor.Model.SubscriptionTest do
       subscription = insert(:subscription, %{user_id: user.id})
       insert(:informed_entity, %{subscription_id: subscription.id})
       informed_entities = Repo.all(InformedEntity)
-      assert length(informed_entities) > 0
+      assert informed_entities != []
       Subscription.delete_subscription(subscription, user.id)
       assert Repo.all(InformedEntity) == []
     end

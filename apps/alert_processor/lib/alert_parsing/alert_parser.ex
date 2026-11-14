@@ -178,7 +178,7 @@ defmodule AlertProcessor.AlertParser do
   end
 
   def parse_alert(alert, _, _) do
-    Logger.warn("Failed to parse alert: #{Poison.encode!(alert)}")
+    Logger.warning("Failed to parse alert: #{Poison.encode!(alert)}")
     []
   end
 
@@ -188,7 +188,7 @@ defmodule AlertProcessor.AlertParser do
         dt
 
       {:error, reason} ->
-        Logger.warn("Failed to parse date #{datetime}: invalid value: #{reason}")
+        Logger.warning("Failed to parse date #{datetime}: invalid value: #{reason}")
         {:error, "Error parsing date"}
     end
   end
@@ -318,7 +318,7 @@ defmodule AlertProcessor.AlertParser do
       Enum.map(routes, &Map.put(entity, :route, &1))
     else
       _ ->
-        Logger.warn("Failed to retrieve data from entity")
+        Logger.warning("Failed to retrieve data from entity")
         [entity]
     end
   end
@@ -359,7 +359,7 @@ defmodule AlertProcessor.AlertParser do
       Enum.map(schedule, &parse_schedule_event/1)
     else
       _ ->
-        Logger.warn("Failed to retrieve schedule for trip")
+        Logger.warning("Failed to retrieve schedule for trip")
         nil
     end
   end

@@ -1,7 +1,7 @@
 defmodule ConciergeSite.TripView do
   use ConciergeSite.Web, :view
 
-  alias alias AlertProcessor.Model.Trip
+  alias AlertProcessor.Model.Trip
   alias Plug.Conn
 
   @spec route_names_for_alternate_routes(list(String.t())) :: String.t()

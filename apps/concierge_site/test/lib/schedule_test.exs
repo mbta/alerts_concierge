@@ -40,7 +40,7 @@ defmodule ConciergeSite.ScheduleTest do
     assert Map.keys(result) == [{"cr", "CR-Newburyport"}]
 
     assert is_list(result[{"cr", "CR-Newburyport"}])
-    assert Enum.all?(result[{"cr", "CR-Newburyport"}], &is_trip_info(&1))
+    assert Enum.all?(result[{"cr", "CR-Newburyport"}], &trip_info?(&1))
     assert Enum.all?(result[{"cr", "CR-Newburyport"}], &Map.has_key?(&1, :weekend?))
   end
 
@@ -106,14 +106,14 @@ defmodule ConciergeSite.ScheduleTest do
     assert is_map(first_trip_result)
     assert Map.keys(first_trip_result) == [{"cr", "CR-Worcester"}]
     assert is_list(first_trip_result[{"cr", "CR-Worcester"}])
-    assert Enum.all?(first_trip_result[{"cr", "CR-Worcester"}], &is_trip_info(&1))
+    assert Enum.all?(first_trip_result[{"cr", "CR-Worcester"}], &trip_info?(&1))
 
     assert is_map(return_trip_result)
     assert Map.keys(return_trip_result) == [{"cr", "CR-Worcester"}]
     assert is_list(return_trip_result[{"cr", "CR-Worcester"}])
-    assert Enum.all?(return_trip_result[{"cr", "CR-Worcester"}], &is_trip_info(&1))
+    assert Enum.all?(return_trip_result[{"cr", "CR-Worcester"}], &trip_info?(&1))
   end
 
-  defp is_trip_info(%TripInfo{}), do: true
-  defp is_trip_info(_), do: false
+  defp trip_info?(%TripInfo{}), do: true
+  defp trip_info?(_), do: false
 end

@@ -533,7 +533,7 @@ defmodule AlertProcessor.Model.Subscription do
           )
       )
 
-  @spec log_timing(String.t(), (() -> any())) :: any()
+  @spec log_timing(String.t(), (-> any())) :: any()
   defp log_timing(key, fun) when is_function(fun, 0) do
     start_time = System.monotonic_time(:millisecond)
     result = fun.()

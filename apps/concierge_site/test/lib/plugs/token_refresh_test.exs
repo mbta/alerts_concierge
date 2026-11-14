@@ -1,7 +1,8 @@
 defmodule ConciergeSite.Plugs.TokenRefreshTest do
   @moduledoc false
   use ConciergeSite.ConnCase, async: true
-  use Plug.Test
+  import Plug.Conn
+  import Plug.Test
 
   alias ConciergeSite.Guardian
   alias ConciergeSite.Plugs.TokenRefresh
