@@ -8,7 +8,7 @@ config :concierge_site,
 config :concierge_site, ConciergeSite.Endpoint, server: true, http: [port: 4001]
 
 # Print only warnings and errors during test
-config :logger, level: :warn
+config :logger, level: :warning
 
 config :concierge_site, ConciergeSite.Guardian, secret_key: "top_secret_key"
 config :concierge_site, ConciergeSite.Dissemination.Mailer, adapter: Bamboo.TestAdapter
