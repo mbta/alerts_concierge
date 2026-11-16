@@ -91,4 +91,8 @@ if config_env() == :prod do
       verify_fun:
         {&:ssl_verify_hostname.verify_fun/3, [check_hostname: String.to_charlist(hostname)]}
     ]
+
+  config :sentry,
+    dsn: System.fetch_env!("SENTRY_DSN"),
+    environment_name: System.fetch_env!("SENTRY_ENV")
 end
