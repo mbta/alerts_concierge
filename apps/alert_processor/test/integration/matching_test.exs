@@ -1207,9 +1207,9 @@ defmodule AlertProcessor.Integration.MatchingTest do
   # https://api-v3.mbta.com/schedules?sort=departure_time&filter[direction_id]=0&filter[min_time]=09:00&filter[max_time]=11:00&filter[route]=CR-Fairmount&filter[stop]=place-DB-2205&filter[date]=2026-10-05
 
   @test_trip_id (case Date.utc_today() |> Date.day_of_week() do
-                   day when day in 1..5 -> "schedule-FBTieJobPhase2-879968-7211-DB-2205-01-70"
-                   6 -> "schedule-SouthWeekendBase-876438-7701-DB-2205-01-70"
-                   7 -> "schedule-SouthWeekendBase-876438-7701-DB-2205-01-70"
+                   day when day in 1..5 -> "FBTieJobPhase2-879968-7211"
+                   6 -> "SouthWeekendBase-876438-7701"
+                   7 -> "SouthWeekendBase-876438-7701"
                  end)
   @test_trip_departs_fairmount_at (case Date.utc_today() |> Date.day_of_week() do
                                      day when day in 1..5 -> ~T[09:11:00]
