@@ -1201,19 +1201,19 @@ defmodule AlertProcessor.Integration.MatchingTest do
   # NOTE: The following tests use a set of specific trip IDs. At the time the tests are run, the
   # trip for the current day of the week must have schedules present in the API. All trips must
   # depart from Fairmount station outbound and the time must be specified here. These test trips
-  # are active as of 2026-10-05.
+  # are active as of 2026-11-16.
   #
   # To find new trip IDs, plug the current date or the next weekend dates into
   # https://api-v3.mbta.com/schedules?sort=departure_time&filter[direction_id]=0&filter[min_time]=09:00&filter[max_time]=11:00&filter[route]=CR-Fairmount&filter[stop]=place-DB-2205&filter[date]=2026-10-05
 
   @test_trip_id (case Date.utc_today() |> Date.day_of_week() do
-                   day when day in 1..5 -> "FBWMLConstruction-860212-1621"
-                   6 -> "SouthBase-830456-5731"
-                   7 -> "SouthBase-830456-5731"
+                   day when day in 1..5 -> "schedule-FBTieJobPhase2-879968-7211-DB-2205-01-70"
+                   6 -> "schedule-SouthWeekendBase-876438-7701-DB-2205-01-70"
+                   7 -> "schedule-SouthWeekendBase-876438-7701-DB-2205-01-70"
                  end)
   @test_trip_departs_fairmount_at (case Date.utc_today() |> Date.day_of_week() do
-                                     day when day in 1..5 -> ~T[09:41:00]
-                                     day when day in 6..7 -> ~T[10:41:00]
+                                     day when day in 1..5 -> ~T[09:11:00]
+                                     day when day in 6..7 -> ~T[09:11:00]
                                    end)
 
   test "test trip exists" do
