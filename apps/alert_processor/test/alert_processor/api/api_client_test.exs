@@ -8,9 +8,9 @@ defmodule AlertProcessor.ApiClientTest do
   @tag :skip
 
   test "get_alerts/0 returns list of alerts if successful" do
-    use_cassette "get_alerts", custom: true, clear_mock: true, match_requests_on: [:query] do
-      assert {:ok, [_ | _], [_ | _]} = ApiClient.get_alerts()
-    end
+    # use_cassette "get_alerts", custom: true, clear_mock: true, match_requests_on: [:query] do
+    assert {:ok, [_ | _], [_ | _]} = ApiClient.get_alerts()
+    # end
   end
 
   describe "routes/2" do
@@ -62,24 +62,25 @@ defmodule AlertProcessor.ApiClientTest do
     @tag :skip
 
     test "returns trips data and includes given a list of route IDs" do
-      use_cassette "get_trips_including_service",
-        custom: true,
-        clear_mock: true,
-        match_requests_on: [:query] do
-        assert {:ok, [_ | _], [_ | _]} =
-                 ApiClient.trips_with_service_info(["CR-Haverhill", "CR-Providence"])
-      end
+      # use_cassette "get_trips_including_service",
+      #   custom: true,
+      #   clear_mock: true,
+      #   match_requests_on: [:query] do
+      assert {:ok, [_ | _], [_ | _]} =
+               ApiClient.trips_with_service_info(["CR-Haverhill", "CR-Providence"])
+
+      # end
     end
 
     # requires ExVCR, which is disabled due to version incompatability
     @tag :skip
     test "returns empty data and no includes when empty data in the response" do
-      use_cassette "get_trips_empty_data_response",
-        custom: true,
-        clear_mock: true,
-        match_requests_on: [:query] do
-        assert {:ok, []} = ApiClient.trips_with_service_info(["Boat-EastBoston"])
-      end
+      # use_cassette "get_trips_empty_data_response",
+      #   custom: true,
+      #   clear_mock: true,
+      #   match_requests_on: [:query] do
+      assert {:ok, []} = ApiClient.trips_with_service_info(["Boat-EastBoston"])
+      # end
     end
   end
 
@@ -104,33 +105,34 @@ defmodule AlertProcessor.ApiClientTest do
       "place-sstat"
     ]
 
-    use_cassette "stops_cr_franklin_inbound",
-      custom: true,
-      clear_mock: true,
-      match_requests_on: [:query] do
-      {:ok, routes} = ApiClient.route_stops("CR-Franklin")
-      response_ids = routes |> Enum.map(& &1["id"])
-      assert response_ids == expected_route_ids
-    end
+    # use_cassette "stops_cr_franklin_inbound",
+    #   custom: true,
+    #   clear_mock: true,
+    #   match_requests_on: [:query] do
+    {:ok, routes} = ApiClient.route_stops("CR-Franklin")
+    response_ids = routes |> Enum.map(& &1["id"])
+    assert response_ids == expected_route_ids
+    # end
   end
 
   # requires ExVCR, which is disabled due to version incompatability
   @tag :skip
   test "schedule_for_trip/1 returns list of schedules if successful" do
-    use_cassette "trip_schedule_orange_line",
-      custom: true,
-      clear_mock: true,
-      match_requests_on: [:query] do
-      assert {:ok, _schedule_data} = ApiClient.schedule_for_trip("Orange")
-    end
+    # use_cassette "trip_schedule_orange_line",
+    #   custom: true,
+    #   clear_mock: true,
+    #   match_requests_on: [:query] do
+    assert {:ok, _schedule_data} = ApiClient.schedule_for_trip("Orange")
+    # end
   end
 
   # requires ExVCR, which is disabled due to version incompatability
   @tag :skip
   test "subway_schedules_union/2 returns list of schedules and included parent stations if successful" do
-    use_cassette "subway_schedules", custom: true, clear_mock: true, match_requests_on: [:query] do
-      assert {:ok, _schedule_data, _included_data} =
-               ApiClient.subway_schedules_union("place-brntn", "place-qamnl")
-    end
+    # use_cassette "subway_schedules", custom: true, clear_mock: true, match_requests_on: [:query] do
+    assert {:ok, _schedule_data, _included_data} =
+             ApiClient.subway_schedules_union("place-brntn", "place-qamnl")
+
+    # end
   end
 end

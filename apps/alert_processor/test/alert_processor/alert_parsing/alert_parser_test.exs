@@ -28,19 +28,19 @@ defmodule AlertProcessor.AlertParserTest do
     |> weekday_subscription
     |> PaperTrail.insert()
 
-    use_cassette "old_alerts", custom: true, clear_mock: true, match_requests_on: [:query] do
-      beginning_alerts = length(Repo.all(SavedAlert))
-      {:ok, _} = AlertParser.process_alerts()
-      ending_alerts = length(Repo.all(SavedAlert))
-      assert ending_alerts - beginning_alerts == 2
-    end
+    # use_cassette "old_alerts", custom: true, clear_mock: true, match_requests_on: [:query] do
+    beginning_alerts = length(Repo.all(SavedAlert))
+    {:ok, _} = AlertParser.process_alerts()
+    ending_alerts = length(Repo.all(SavedAlert))
+    assert ending_alerts - beginning_alerts == 2
+    # end
 
-    use_cassette "new_alerts", custom: true, clear_mock: true, match_requests_on: [:query] do
-      beginning_alerts = length(Repo.all(SavedAlert))
-      {:ok, _} = AlertParser.process_alerts()
-      ending_alerts = length(Repo.all(SavedAlert))
-      assert ending_alerts - beginning_alerts == 0
-    end
+    # use_cassette "new_alerts", custom: true, clear_mock: true, match_requests_on: [:query] do
+    beginning_alerts = length(Repo.all(SavedAlert))
+    {:ok, _} = AlertParser.process_alerts()
+    ending_alerts = length(Repo.all(SavedAlert))
+    assert ending_alerts - beginning_alerts == 0
+    # end
   end
 
   # requires ExVCR, which is disabled due to version incompatability
@@ -93,15 +93,15 @@ defmodule AlertProcessor.AlertParserTest do
       send_after: ~N[2017-04-25 10:00:00]
     )
 
-    use_cassette "unruly_passenger_alert",
-      custom: true,
-      clear_mock: true,
-      match_requests_on: [:query] do
-      {:ok, _} = AlertParser.process_alerts()
-      {:ok, notification} = SendingQueue.pop()
-      assert notification.header == "Board Needham Line on opposite track due to unruly passenger"
-      assert notification.service_effect == "Needham Line track change"
-    end
+    # use_cassette "unruly_passenger_alert",
+    #   custom: true,
+    #   clear_mock: true,
+    #   match_requests_on: [:query] do
+    {:ok, _} = AlertParser.process_alerts()
+    {:ok, notification} = SendingQueue.pop()
+    assert notification.header == "Board Needham Line on opposite track due to unruly passenger"
+    assert notification.service_effect == "Needham Line track change"
+    # end
   end
 
   # requires ExVCR, which is disabled due to version incompatability
@@ -122,112 +122,114 @@ defmodule AlertProcessor.AlertParserTest do
     |> weekday_subscription
     |> PaperTrail.insert()
 
-    use_cassette "facilities_alerts", custom: true, clear_mock: true, match_requests_on: [:query] do
-      {:ok, _} = AlertParser.process_alerts()
+    # use_cassette "facilities_alerts", custom: true, clear_mock: true, match_requests_on: [:query] do
+    {:ok, _} = AlertParser.process_alerts()
 
-      {:ok, notification} = SendingQueue.pop()
+    {:ok, notification} = SendingQueue.pop()
 
-      assert notification.header ==
-               "Escalator 343 DAVIS SQUARE - Unpaid Lobby to Holland Street unavailable today"
-    end
+    assert notification.header ==
+             "Escalator 343 DAVIS SQUARE - Unpaid Lobby to Holland Street unavailable today"
+
+    # end
   end
 
   # requires ExVCR, which is disabled due to version incompatability
   @tag :skip
   test "parse_alerts/1 parses alerts adds routes to facility entities" do
-    use_cassette "facilities_alerts", custom: true, clear_mock: true, match_requests_on: [:query] do
-      {:ok, alerts, feed_timestamp} = AlertsClient.get_alerts()
-      {:ok, facility_map} = ServiceInfoCache.get_facility_map()
+    # use_cassette "facilities_alerts", custom: true, clear_mock: true, match_requests_on: [:query] do
+    {:ok, alerts, feed_timestamp} = AlertsClient.get_alerts()
+    {:ok, facility_map} = ServiceInfoCache.get_facility_map()
 
-      facility_entities =
-        {alerts, facility_map, feed_timestamp}
-        |> AlertParser.parse_alerts()
-        |> Enum.flat_map(& &1.informed_entities)
-        |> Enum.reject(&is_nil(&1.facility_type))
+    facility_entities =
+      {alerts, facility_map, feed_timestamp}
+      |> AlertParser.parse_alerts()
+      |> Enum.flat_map(& &1.informed_entities)
+      |> Enum.reject(&is_nil(&1.facility_type))
 
-      for entity <- facility_entities do
-        refute is_nil(entity.route)
-      end
+    for entity <- facility_entities do
+      refute is_nil(entity.route)
     end
+
+    # end
   end
 
   # requires ExVCR, which is disabled due to version incompatability
   @tag :skip
 
   test "parse_alerts/1 does not return nil entries for unparsable alert map" do
-    use_cassette "facilities_alerts", custom: true, clear_mock: true, match_requests_on: [:query] do
-      {:ok, facility_map} = ServiceInfoCache.get_facility_map()
+    # use_cassette "facilities_alerts", custom: true, clear_mock: true, match_requests_on: [:query] do
+    {:ok, facility_map} = ServiceInfoCache.get_facility_map()
 
-      alert = %{
-        "url" => %{
-          "translation" => [
-            %{"text" => "", "language" => "en"}
-          ]
-        },
-        "timeframe_text" => %{
-          "translation" => [
-            %{"text" => "", "language" => "en"}
-          ]
-        },
-        "short_header_text" => %{
-          "translation" => [
-            %{
-              "text" => "",
-              "language" => "en"
-            }
-          ]
-        },
-        "severity_level" => "INFO",
-        "severity" => 1,
-        "reminder_times" => [
-          1_598_007_600
-        ],
-        "last_push_notification_timestamp" => 1_597_338_499,
-        "last_modified_timestamp" => 1_599_991_533,
-        "informed_entity" => [
-          %{
-            "stop_id" => "70027",
-            "route_type" => 1,
-            "route_id" => "Orange",
-            "direction_id" => 1,
-            "activities" => ["BOARD", "EXIT", "RIDE"]
-          }
-        ],
-        "id" => "369319",
-        "header_text" => %{
-          "translation" => [
-            %{
-              "text" => "",
-              "language" => "en"
-            }
-          ]
-        },
-        "effect_detail" => "SERVICE_CHANGE",
-        "effect" => "UNKNOWN_EFFECT",
-        "duration_certainty" => "KNOWN",
-        "description_text" => %{
-          "translation" => [
-            %{
-              "text" => "",
-              "language" => "en"
-            }
-          ]
-        },
-        "created_timestamp" => 1_597_338_499,
-        "cause_detail" => "MAINTENANCE",
-        "cause" => "MAINTENANCE",
-        "alert_lifecycle" => "UPCOMING",
-        "active_period" => [
-          %{"start" => 1_600_044_300, "end" => 1_600_065_000}
+    alert = %{
+      "url" => %{
+        "translation" => [
+          %{"text" => "", "language" => "en"}
         ]
-      }
+      },
+      "timeframe_text" => %{
+        "translation" => [
+          %{"text" => "", "language" => "en"}
+        ]
+      },
+      "short_header_text" => %{
+        "translation" => [
+          %{
+            "text" => "",
+            "language" => "en"
+          }
+        ]
+      },
+      "severity_level" => "INFO",
+      "severity" => 1,
+      "reminder_times" => [
+        1_598_007_600
+      ],
+      "last_push_notification_timestamp" => 1_597_338_499,
+      "last_modified_timestamp" => 1_599_991_533,
+      "informed_entity" => [
+        %{
+          "stop_id" => "70027",
+          "route_type" => 1,
+          "route_id" => "Orange",
+          "direction_id" => 1,
+          "activities" => ["BOARD", "EXIT", "RIDE"]
+        }
+      ],
+      "id" => "369319",
+      "header_text" => %{
+        "translation" => [
+          %{
+            "text" => "",
+            "language" => "en"
+          }
+        ]
+      },
+      "effect_detail" => "SERVICE_CHANGE",
+      "effect" => "UNKNOWN_EFFECT",
+      "duration_certainty" => "KNOWN",
+      "description_text" => %{
+        "translation" => [
+          %{
+            "text" => "",
+            "language" => "en"
+          }
+        ]
+      },
+      "created_timestamp" => 1_597_338_499,
+      "cause_detail" => "MAINTENANCE",
+      "cause" => "MAINTENANCE",
+      "alert_lifecycle" => "UPCOMING",
+      "active_period" => [
+        %{"start" => 1_600_044_300, "end" => 1_600_065_000}
+      ]
+    }
 
-      alerts =
-        {[alert], facility_map, 1_506_433_715}
-        |> AlertParser.parse_alerts()
+    alerts =
+      {[alert], facility_map, 1_506_433_715}
+      |> AlertParser.parse_alerts()
 
-      assert Enum.empty?(alerts)
-    end
+    assert Enum.empty?(alerts)
+    # end
   end
 
   # requires ExVCR, which is disabled due to version incompatability
@@ -249,148 +251,150 @@ defmodule AlertProcessor.AlertParserTest do
     |> Map.put(:user, user)
     |> insert()
 
-    use_cassette "bus_stop_alert", custom: true, clear_mock: true, match_requests_on: [:query] do
-      {:ok, _} = AlertParser.process_alerts()
-      {:ok, notification} = SendingQueue.pop()
-      assert notification.header == "Malcolm X Blvd @ King St (inbound) stop moving"
-      assert notification.alert_id == "115718"
-    end
+    # use_cassette "bus_stop_alert", custom: true, clear_mock: true, match_requests_on: [:query] do
+    {:ok, _} = AlertParser.process_alerts()
+    {:ok, notification} = SendingQueue.pop()
+    assert notification.header == "Malcolm X Blvd @ King St (inbound) stop moving"
+    assert notification.alert_id == "115718"
+    # end
   end
 
   # requires ExVCR, which is disabled due to version incompatability
   @tag :skip
   test "correctly parses entities without activities" do
-    use_cassette "no_activities_alerts",
-      custom: true,
-      clear_mock: true,
-      match_requests_on: [:query] do
-      beginning_alerts = length(Repo.all(SavedAlert))
-      {:ok, _} = AlertParser.process_alerts()
-      ending_alerts = length(Repo.all(SavedAlert))
-      assert ending_alerts - beginning_alerts == 1
-    end
+    # use_cassette "no_activities_alerts",
+    #   custom: true,
+    #   clear_mock: true,
+    #   match_requests_on: [:query] do
+    beginning_alerts = length(Repo.all(SavedAlert))
+    {:ok, _} = AlertParser.process_alerts()
+    ending_alerts = length(Repo.all(SavedAlert))
+    assert ending_alerts - beginning_alerts == 1
+    # end
   end
 
   # requires ExVCR, which is disabled due to version incompatability
   @tag :skip
   test "correctly calculates active period" do
-    use_cassette "known_alert", custom: true, clear_mock: true, match_requests_on: [:query] do
-      {:ok, [alert], feed_timestamp} = AlertProcessor.AlertsClient.get_alerts()
-      [result] = AlertParser.parse_alert(alert, %{}, feed_timestamp)
+    # use_cassette "known_alert", custom: true, clear_mock: true, match_requests_on: [:query] do
+    {:ok, [alert], feed_timestamp} = AlertProcessor.AlertsClient.get_alerts()
+    [result] = AlertParser.parse_alert(alert, %{}, feed_timestamp)
 
-      assert %AlertProcessor.Model.Alert{
-               active_period: [%{start: start_datetime, end: end_datetime}],
-               created_at: created_at_datetime,
-               duration_certainty: :known,
-               effect_name: "Delay",
-               header: "Red Line experiencing minor delays",
-               id: "115513",
-               informed_entities: _informed_entities,
-               service_effect: "Minor Red Line delay",
-               severity: :minor,
-               closed_timestamp: nil
-             } = result
+    assert %AlertProcessor.Model.Alert{
+             active_period: [%{start: start_datetime, end: end_datetime}],
+             created_at: created_at_datetime,
+             duration_certainty: :known,
+             effect_name: "Delay",
+             header: "Red Line experiencing minor delays",
+             id: "115513",
+             informed_entities: _informed_entities,
+             service_effect: "Minor Red Line delay",
+             severity: :minor,
+             closed_timestamp: nil
+           } = result
 
-      assert start_datetime == DateTime.from_naive!(~N[2017-10-10 13:44:54], "America/New_York")
-      assert end_datetime == DateTime.from_naive!(~N[2017-10-10 18:50:34], "America/New_York")
-      assert created_at_datetime == ~U[2017-10-10 17:44:59Z]
-    end
+    assert start_datetime == DateTime.from_naive!(~N[2017-10-10 13:44:54], "America/New_York")
+    assert end_datetime == DateTime.from_naive!(~N[2017-10-10 18:50:34], "America/New_York")
+    assert created_at_datetime == ~U[2017-10-10 17:44:59Z]
+    # end
   end
 
   # requires ExVCR, which is disabled due to version incompatability
   @tag :skip
   test "correctly parses estimated timeframe alert" do
-    use_cassette "estimated_alert", custom: true, clear_mock: true, match_requests_on: [:query] do
-      {:ok, [alert], feed_timestamp} = AlertProcessor.AlertsClient.get_alerts()
-      [result] = AlertParser.parse_alert(alert, %{}, feed_timestamp)
+    # use_cassette "estimated_alert", custom: true, clear_mock: true, match_requests_on: [:query] do
+    {:ok, [alert], feed_timestamp} = AlertProcessor.AlertsClient.get_alerts()
+    [result] = AlertParser.parse_alert(alert, %{}, feed_timestamp)
 
-      assert %AlertProcessor.Model.Alert{
-               active_period: [%{start: start_datetime, end: end_datetime}],
-               created_at: created_at_datetime,
-               duration_certainty: {:estimated, 14_400},
-               effect_name: "Delay",
-               header: "Red Line experiencing minor delays",
-               id: "115513",
-               informed_entities: _informed_entities,
-               service_effect: "Minor Red Line delay",
-               severity: :minor,
-               closed_timestamp: nil
-             } = result
+    assert %AlertProcessor.Model.Alert{
+             active_period: [%{start: start_datetime, end: end_datetime}],
+             created_at: created_at_datetime,
+             duration_certainty: {:estimated, 14_400},
+             effect_name: "Delay",
+             header: "Red Line experiencing minor delays",
+             id: "115513",
+             informed_entities: _informed_entities,
+             service_effect: "Minor Red Line delay",
+             severity: :minor,
+             closed_timestamp: nil
+           } = result
 
-      assert start_datetime == DateTime.from_naive!(~N[2017-10-10 13:44:54], "America/New_York")
-      assert end_datetime == DateTime.from_naive!(~N[2017-10-12 01:44:59], "America/New_York")
-      assert 1_507_661_434 == feed_timestamp
+    assert start_datetime == DateTime.from_naive!(~N[2017-10-10 13:44:54], "America/New_York")
+    assert end_datetime == DateTime.from_naive!(~N[2017-10-12 01:44:59], "America/New_York")
+    assert 1_507_661_434 == feed_timestamp
 
-      assert 36 * 60 * 60 ==
-               DateTime.to_unix(end_datetime) - DateTime.to_unix(created_at_datetime)
-    end
+    assert 36 * 60 * 60 ==
+             DateTime.to_unix(end_datetime) - DateTime.to_unix(created_at_datetime)
+
+    # end
   end
 
   # requires ExVCR, which is disabled due to version incompatability
   @tag :skip
   test "rounds estimated duration to nearest 15 min to handle timestamp drift" do
-    use_cassette "estimated_alert_drifted",
-      custom: true,
-      clear_mock: true,
-      match_requests_on: [:query] do
-      {:ok, [alert], feed_timestamp} = AlertProcessor.AlertsClient.get_alerts()
-      [result] = AlertParser.parse_alert(alert, %{}, feed_timestamp)
+    # use_cassette "estimated_alert_drifted",
+    #   custom: true,
+    #   clear_mock: true,
+    #   match_requests_on: [:query] do
+    {:ok, [alert], feed_timestamp} = AlertProcessor.AlertsClient.get_alerts()
+    [result] = AlertParser.parse_alert(alert, %{}, feed_timestamp)
 
-      assert %AlertProcessor.Model.Alert{
-               active_period: [%{start: _start_datetime, end: end_datetime}],
-               created_at: created_at_datetime,
-               duration_certainty: {:estimated, 14_400},
-               effect_name: "Delay",
-               header: "Red Line experiencing minor delays",
-               id: "115513",
-               informed_entities: _informed_entities,
-               service_effect: "Minor Red Line delay",
-               severity: :minor,
-               closed_timestamp: nil
-             } = result
+    assert %AlertProcessor.Model.Alert{
+             active_period: [%{start: _start_datetime, end: end_datetime}],
+             created_at: created_at_datetime,
+             duration_certainty: {:estimated, 14_400},
+             effect_name: "Delay",
+             header: "Red Line experiencing minor delays",
+             id: "115513",
+             informed_entities: _informed_entities,
+             service_effect: "Minor Red Line delay",
+             severity: :minor,
+             closed_timestamp: nil
+           } = result
 
-      assert 1_507_661_322 == feed_timestamp
+    assert 1_507_661_322 == feed_timestamp
 
-      assert 36 * 60 * 60 ==
-               DateTime.to_unix(end_datetime) - DateTime.to_unix(created_at_datetime)
-    end
+    assert 36 * 60 * 60 ==
+             DateTime.to_unix(end_datetime) - DateTime.to_unix(created_at_datetime)
+
+    # end
   end
 
   # requires ExVCR, which is disabled due to version incompatability
   @tag :skip
   test "correctly parses an alert with a url" do
-    use_cassette "estimated_url_alert",
-      custom: true,
-      clear_mock: true,
-      match_requests_on: [:query] do
-      {:ok, [alert], feed_timestamp} = AlertProcessor.AlertsClient.get_alerts()
-      [result] = AlertParser.parse_alert(alert, %{}, feed_timestamp)
-      assert result.url == "http://www.example.com/alert-info"
-    end
+    # use_cassette "estimated_url_alert",
+    #   custom: true,
+    #   clear_mock: true,
+    #   match_requests_on: [:query] do
+    {:ok, [alert], feed_timestamp} = AlertProcessor.AlertsClient.get_alerts()
+    [result] = AlertParser.parse_alert(alert, %{}, feed_timestamp)
+    assert result.url == "http://www.example.com/alert-info"
+    # end
   end
 
   # requires ExVCR, which is disabled due to version incompatability
   @tag :skip
   test "correctly pulls the closed timestamp when present" do
-    use_cassette "closed_alert", custom: true, clear_mock: true, match_requests_on: [:query] do
-      {:ok, [alert], feed_timestamp} = AlertProcessor.AlertsClient.get_alerts()
-      [result] = AlertParser.parse_alert(alert, %{}, feed_timestamp)
+    # use_cassette "closed_alert", custom: true, clear_mock: true, match_requests_on: [:query] do
+    {:ok, [alert], feed_timestamp} = AlertProcessor.AlertsClient.get_alerts()
+    [result] = AlertParser.parse_alert(alert, %{}, feed_timestamp)
 
-      assert %AlertProcessor.Model.Alert{
-               active_period: [%{start: _start_datetime, end: _end_datetime}],
-               created_at: _created_at_datetime,
-               duration_certainty: :known,
-               effect_name: "Delay",
-               header: "Red Line experiencing minor delays",
-               id: "115513",
-               informed_entities: _informed_entities,
-               service_effect: "Minor Red Line delay",
-               severity: :minor,
-               closed_timestamp: closed_timestamp
-             } = result
+    assert %AlertProcessor.Model.Alert{
+             active_period: [%{start: _start_datetime, end: _end_datetime}],
+             created_at: _created_at_datetime,
+             duration_certainty: :known,
+             effect_name: "Delay",
+             header: "Red Line experiencing minor delays",
+             id: "115513",
+             informed_entities: _informed_entities,
+             service_effect: "Minor Red Line delay",
+             severity: :minor,
+             closed_timestamp: closed_timestamp
+           } = result
 
-      assert closed_timestamp == ~U[2017-10-10 17:50:59Z]
-    end
+    assert closed_timestamp == ~U[2017-10-10 17:50:59Z]
+    # end
   end
 
   describe "remove_ignored/1" do
@@ -560,27 +564,28 @@ defmodule AlertProcessor.AlertParserTest do
     @tag :skip
 
     test "adds schedule data to trip alerts" do
-      use_cassette "trip_alerts", custom: true, clear_mock: true, match_requests_on: [:query] do
-        {:ok, alerts, feed_timestamp} = AlertsClient.get_alerts()
-        {:ok, facility_map} = ServiceInfoCache.get_facility_map()
+      # use_cassette "trip_alerts", custom: true, clear_mock: true, match_requests_on: [:query] do
+      {:ok, alerts, feed_timestamp} = AlertsClient.get_alerts()
+      {:ok, facility_map} = ServiceInfoCache.get_facility_map()
 
-        result =
-          {alerts, facility_map, feed_timestamp}
-          |> AlertParser.parse_alerts()
-          |> Enum.flat_map(& &1.informed_entities)
-          |> Enum.map(& &1.schedule)
-          |> Enum.reject(&is_nil(&1))
+      result =
+        {alerts, facility_map, feed_timestamp}
+        |> AlertParser.parse_alerts()
+        |> Enum.flat_map(& &1.informed_entities)
+        |> Enum.map(& &1.schedule)
+        |> Enum.reject(&is_nil(&1))
 
-        [schedule | _] = List.first(result)
+      [schedule | _] = List.first(result)
 
-        assert result != []
+      assert result != []
 
-        assert %{
-                 departure_time: "2017-10-26T08:52:00-04:00",
-                 stop_id: "Newburyport",
-                 trip_id: "CR-Saturday-Fall-17-1150"
-               } = schedule
-      end
+      assert %{
+               departure_time: "2017-10-26T08:52:00-04:00",
+               stop_id: "Newburyport",
+               trip_id: "CR-Saturday-Fall-17-1150"
+             } = schedule
+
+      # end
     end
 
     test "with reminder_times" do
@@ -716,42 +721,42 @@ defmodule AlertProcessor.AlertParserTest do
 
   test "swapped informed entities" do
     # the swap alerts cassette has been doctored so the IDs match in the API and IBI feeds
-    use_cassette "swap_alerts", custom: true, clear_mock: true, match_requests_on: [:query] do
-      {:ok, {alerts, api_alerts, updated_alerts}} = AlertParser.process_alerts()
-      informed_entities_before = List.first(alerts)["informed_entity"]
-      informed_entities_after = List.first(updated_alerts)["informed_entity"]
-      first_swapped_entity = List.first(informed_entities_after)
-      informed_entities_api = List.first(api_alerts)["attributes"]["informed_entity"]
-      first_api_entity = List.first(informed_entities_api)
+    # use_cassette "swap_alerts", custom: true, clear_mock: true, match_requests_on: [:query] do
+    {:ok, {alerts, api_alerts, updated_alerts}} = AlertParser.process_alerts()
+    informed_entities_before = List.first(alerts)["informed_entity"]
+    informed_entities_after = List.first(updated_alerts)["informed_entity"]
+    first_swapped_entity = List.first(informed_entities_after)
+    informed_entities_api = List.first(api_alerts)["attributes"]["informed_entity"]
+    first_api_entity = List.first(informed_entities_api)
 
-      # the first informed entity from the API, in the format of the IBI feed
-      # stop -> stop_id, route -> route_id, same activites and route_type
-      # agency_id is droppend and trip becomes a map
-      api_expected = %{
-        "activities" => ["BOARD", "EXIT"],
-        "route" => "47",
-        "route_type" => 3,
-        "stop" => "11809",
-        "trip" => "trip-abc"
-      }
+    # the first informed entity from the API, in the format of the IBI feed
+    # stop -> stop_id, route -> route_id, same activites and route_type
+    # agency_id is droppend and trip becomes a map
+    api_expected = %{
+      "activities" => ["BOARD", "EXIT"],
+      "route" => "47",
+      "route_type" => 3,
+      "stop" => "11809",
+      "trip" => "trip-abc"
+    }
 
-      swapped_expected = %{
-        "activities" => ["BOARD", "EXIT"],
-        "route_id" => "47",
-        "route_type" => 3,
-        "stop_id" => "11809",
-        "trip" => %{"route_id" => "47", "trip_id" => "trip-abc"}
-      }
+    swapped_expected = %{
+      "activities" => ["BOARD", "EXIT"],
+      "route_id" => "47",
+      "route_type" => 3,
+      "stop_id" => "11809",
+      "trip" => %{"route_id" => "47", "trip_id" => "trip-abc"}
+    }
 
-      assert first_swapped_entity["activities"] == first_api_entity["activities"]
-      assert first_swapped_entity["route_type"] == first_api_entity["route_type"]
-      assert first_swapped_entity["route_id"] == first_api_entity["route"]
-      assert first_swapped_entity["stop_id"] == first_api_entity["stop"]
-      assert first_swapped_entity["trip"]["trip_id"] == first_api_entity["trip"]
-      assert first_swapped_entity["trip"]["route_id"] == first_api_entity["route"]
-      refute informed_entities_before == informed_entities_after
-      assert first_api_entity == api_expected
-      assert first_swapped_entity == swapped_expected
-    end
+    assert first_swapped_entity["activities"] == first_api_entity["activities"]
+    assert first_swapped_entity["route_type"] == first_api_entity["route_type"]
+    assert first_swapped_entity["route_id"] == first_api_entity["route"]
+    assert first_swapped_entity["stop_id"] == first_api_entity["stop"]
+    assert first_swapped_entity["trip"]["trip_id"] == first_api_entity["trip"]
+    assert first_swapped_entity["trip"]["route_id"] == first_api_entity["route"]
+    refute informed_entities_before == informed_entities_after
+    assert first_api_entity == api_expected
+    assert first_swapped_entity == swapped_expected
+    # end
   end
 end
