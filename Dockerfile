@@ -24,7 +24,8 @@ RUN mix deps.get --only prod
 FROM node:${NODE_VERSION}-${DEBIAN_NAME}-slim as asset-builder
 
 RUN apt-get update --allow-releaseinfo-change
-RUN apt-get install --no-install-recommends --yes ca-certificates git
+RUN apt-get install --no-install-recommends --yes git
+RUN  apt-get install --only-upgrade -y ca-certificates
 
 # Allow asset build to reference files provided by Elixir dependencies
 WORKDIR /root

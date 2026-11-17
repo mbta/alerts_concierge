@@ -31,6 +31,9 @@ jobs:
       TARGET: ${{ github.event.inputs.env || 'dev' }}
 
     steps:
+      # TODO: Remove once https://github.com/actions/runner-images/issues/15018 is resolved
+      - name: Upgrade CA certificates
+        run: sudo apt-get update && sudo apt-get install -y --only-upgrade ca-certificates
       - uses: actions/checkout@v2
       - uses: mbta/actions/build-push-ecr@v2
         id: build-push
