@@ -65,7 +65,7 @@ defmodule ConciergeSite.Mixfile do
       {:diskusage_logger, "~> 0.2.0", only: :prod},
       {:ehmon, github: "mbta/ehmon", only: :prod},
       {:mjml, "~> 1.5.0"},
-      {:ueberauth, "~> 0.10.3"},
+      {:ueberauth, "~> 0.11.0"},
       {:ueberauth_oidcc, "~> 0.1"}
     ]
   end
