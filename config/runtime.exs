@@ -91,4 +91,10 @@ if config_env() == :prod do
       verify_fun:
         {&:ssl_verify_hostname.verify_fun/3, [check_hostname: String.to_charlist(hostname)]}
     ]
+
+  config :sentry,
+    dsn: System.get_env("SENTRY_DSN"),
+    environment_name: System.get_env("SENTRY_ENV", "local"),
+    enable_source_code_context: true,
+    root_source_code_path: File.cwd!()
 end

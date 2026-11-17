@@ -83,7 +83,7 @@ defmodule AlertProcessor.Dissemination.MassNotifier do
             saved_notification
 
           {:error, changeset} ->
-            Logger.warn("notification insert failed: #{inspect(changeset)}")
+            Logger.warning("notification insert failed: #{inspect(changeset)}")
             nil
         end
       end)

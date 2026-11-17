@@ -12,13 +12,13 @@
         </div>
         <div class="my-3" data-modal="action_container">
           <button type="button" class="btn btn-outline-primary" data-dismiss="modal">No, cancel</button>
-          <%# Editing an individual trip %>
+          <% # Editing an individual trip %>
           <%= if assigns[:trip] do %>
             <%= link to: trip_path(@conn, :delete, assigns[:trip]), method: :delete, class: "btn btn-primary" do %>
               Yes, delete
             <% end %>
           <% end %>
-          <%# Editing an account %>
+          <% # Editing an account %>
           <%= if assigns[:conn].request_path == "/account/edit" do %>
             <%= link to: account_path(@conn, :delete), method: :delete, class: "btn btn-primary" do %>
               Yes, delete

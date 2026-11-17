@@ -3,14 +3,16 @@ updates:
   - package-ecosystem: mix
     directory: "/"
     schedule:
-      interval: daily
+      interval: weekly
+      day: "monday"
       time: "09:00"
     open-pull-requests-limit: 10
     versioning-strategy: lockfile-only
   - package-ecosystem: npm
     directory: "/apps/concierge_site/assets"
     schedule:
-      interval: daily
+      interval: weekly
+      day: "monday"
       time: "09:00"
     open-pull-requests-limit: 10
     versioning-strategy: lockfile-only

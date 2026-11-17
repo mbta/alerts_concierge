@@ -33,7 +33,7 @@ defmodule AlertProcessor.ServiceInfo.CacheFile do
 
   """
   def should_use_file? do
-    EnvHelper.is_env?(:dev) || EnvHelper.is_env?(:test)
+    EnvHelper.env?(:dev) || EnvHelper.env?(:test)
   end
 
   @doc """
@@ -41,8 +41,8 @@ defmodule AlertProcessor.ServiceInfo.CacheFile do
   """
   def cache_filename() do
     cond do
-      EnvHelper.is_env?(:dev) -> @dev_filename
-      EnvHelper.is_env?(:test) -> @test_filename
+      EnvHelper.env?(:dev) -> @dev_filename
+      EnvHelper.env?(:test) -> @test_filename
       true -> nil
     end
   end

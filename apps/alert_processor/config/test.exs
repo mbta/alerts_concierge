@@ -1,7 +1,7 @@
 import Config
 
 # Print only warnings and errors during test
-config :logger, level: :warn
+config :logger, level: :warning
 
 # Configure your database
 config :alert_processor, AlertProcessor.Repo,
@@ -27,8 +27,3 @@ config :alert_processor, :notification_window_filter, AlertProcessor.Notificatio
 config :alert_processor, notification_workers: 0, notification_worker_idle_wait: 50
 
 config :alert_processor, :sql_sandbox, true
-
-config :exvcr,
-  vcr_cassette_library_dir: "test/fixture/vcr_cassettes",
-  custom_cassette_library_dir: "test/fixture/custom_cassettes",
-  filter_request_headers: ["x-api-key"]

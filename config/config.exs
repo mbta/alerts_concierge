@@ -10,13 +10,6 @@ import_config "../apps/concierge_site/config/config.exs"
 
 config :elixir, :time_zone_database, Tzdata.TimeZoneDatabase
 
-config :sentry,
-  dsn: {:system, "SENTRY_DSN"},
-  environment_name: {:system, "SENTRY_ENV"},
-  included_environments: ~w(prod dev dev-green),
-  in_app_module_allow_list: [AlertProcessor, ConciergeSite],
-  json_library: Poison
-
 config :logger, backends: [:console, Sentry.LoggerBackend]
 
 keycloak_base_opts = [

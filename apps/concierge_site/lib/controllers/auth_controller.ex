@@ -67,7 +67,7 @@ defmodule ConciergeSite.AuthController do
   end
 
   def callback(%{assigns: assigns} = conn, params) do
-    Logger.warn(
+    Logger.warning(
       "Unexpected Ueberauth callback assigns=#{inspect(assigns)} params=#{inspect(params)}"
     )
 
@@ -108,7 +108,7 @@ defmodule ConciergeSite.AuthController do
 
       _ ->
         # If 2 users are found, something weird happened. Log and return nil. User will be redirected to landing page.
-        Logger.warn("User with 2 ids found. sub id: #{id}, mbta_uuid: #{mbta_uuid}")
+        Logger.warning("User with 2 ids found. sub id: #{id}, mbta_uuid: #{mbta_uuid}")
         nil
     end
   end

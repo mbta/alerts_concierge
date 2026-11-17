@@ -20,11 +20,11 @@ defmodule AlertProcessor.AlertsClient do
         {:ok, reconstructed_alerts, timestamp}
 
       {:ok, %{body: {:error, reason}}} ->
-        Logger.warn(fn -> "Error getting alerts enhanced JSON: reason=#{inspect(reason)}" end)
+        Logger.warning(fn -> "Error getting alerts enhanced JSON: reason=#{inspect(reason)}" end)
         {:ok, [], nil}
 
       {:error, error} ->
-        Logger.warn(fn -> "Error getting alerts: #{inspect(error)}" end)
+        Logger.warning(fn -> "Error getting alerts: #{inspect(error)}" end)
         {:error, error}
     end
   end

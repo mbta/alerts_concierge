@@ -96,5 +96,5 @@ defmodule ConciergeSite.RejectedEmailController do
 
   defp log_error(message), do: Logger.error("#{__MODULE__} #{message}")
   defp log_info(message), do: Logger.info("#{__MODULE__} #{message}")
-  defp log_warn(message), do: Logger.warn("#{__MODULE__} #{message}")
+  defp log_warn(message), do: Logger.warning("#{__MODULE__} #{message}")
 end

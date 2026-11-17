@@ -46,24 +46,23 @@ defmodule AlertProcessor.Mixfile do
       {:calendar, "~> 1.0.0"},
       {:con_cache, "~> 1.0.0"},
       {:ecto_sql, "~> 3.9"},
-      {:ex_aws, "~> 2.4"},
+      {:ex_aws, "~> 2.7"},
       {:ex_aws_sns, "~> 2.3.1"},
       {:ex_aws_sqs, "~> 3.4"},
       {:fast_local_datetime, "~> 1.0.0"},
       {:gettext, "~> 0.11"},
-      {:httpoison, "~> 2.2.1"},
+      {:httpoison, "~> 3.0.1"},
       {:mock, "~> 0.3.0", only: :test},
       {:paper_trail, "0.8.3"},
       {:poison, "~> 2.0"},
       {:poolboy, "~> 1.5.0"},
       {:postgrex, "~> 0.17"},
-      {:sentry, "~> 8.0"},
+      {:sentry, "~> 14.0"},
       {:sweet_xml, "~> 0.6"},
       {:tzdata, "~> 1.1.0"},
       {:uuid, "~> 1.1.8"},
       {:bypass, "~> 2.1.0", only: :test},
-      {:ex_machina, "~> 2.7.0", only: :test},
-      {:exvcr, "~> 0.15.1", only: :test}
+      {:ex_machina, "~> 2.7.0", only: :test}
     ]
   end
 

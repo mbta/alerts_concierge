@@ -17,14 +17,14 @@ defmodule AlertProcessor.Helpers.EnvHelper do
   @doc """
   Returns true if the current Mix.env matches the given item else returns false
 
-    iex> EnvHelper.is_env?(:test)
+    iex> EnvHelper.env?(:test)
     true
 
-    iex> EnvHelper.is_env?(:other)
+    iex> EnvHelper.env?(:other)
     false
 
   """
-  def is_env?(env_name) do
+  def env?(env_name) do
     mix_is_loaded?() && Mix.env() == env_name
   end
 

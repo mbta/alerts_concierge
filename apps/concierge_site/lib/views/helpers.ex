@@ -15,7 +15,9 @@ defmodule ConciergeSite.ViewHelpers do
 
   def informizely_account_deleted_survey,
     do:
-      Tag.content_tag(:div, "", id: "informizely-embed-#{informizely_account_deleted_survey_id()}")
+      Tag.content_tag(:div, "",
+        id: "informizely-embed-#{informizely_account_deleted_survey_id()}"
+      )
 
   def informizely_site_id, do: ConfigHelper.get_string(:informizely_site_id, :concierge_site)
 

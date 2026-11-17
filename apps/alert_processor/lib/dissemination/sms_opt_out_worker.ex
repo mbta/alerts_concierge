@@ -46,7 +46,7 @@ defmodule AlertProcessor.SmsOptOutWorker do
         end
 
       :error ->
-        Logger.warn("SmsOptOutWorker event=skipped")
+        Logger.warning("SmsOptOutWorker event=skipped")
     end)
   end
 
@@ -86,7 +86,7 @@ defmodule AlertProcessor.SmsOptOutWorker do
             {opted_out, untouched_count + 1, error_count}
 
           {:error, e} ->
-            Logger.warn(["SmsOptOutWorker event=aws_error #{inspect(e)}"])
+            Logger.warning(["SmsOptOutWorker event=aws_error #{inspect(e)}"])
             {opted_out, untouched_count, error_count + 1}
         end
 
@@ -112,7 +112,7 @@ defmodule AlertProcessor.SmsOptOutWorker do
         ])
 
       {:error, _, user, _} ->
-        Logger.warn(["SmsOptOutWorker event=update_error #{inspect(user)}"])
+        Logger.warning(["SmsOptOutWorker event=update_error #{inspect(user)}"])
     end
 
     {opted_out_numbers, untouched_count, error_count}
