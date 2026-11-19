@@ -4,6 +4,11 @@ defmodule ConciergeSite.Plugs.RateLimit do
   import Plug.Conn
   @behaviour Plug
 
+  defmodule Backend do
+    @moduledoc "The Hammer backend that owns the actual rate limiting."
+    use Hammer, backend: :ets
+  end
+
   @limit_anonymous 5
   @limit_signed_in 30
   @one_minute 60_000
@@ -28,7 +33,7 @@ defmodule ConciergeSite.Plugs.RateLimit do
   def call(%{remote_ip: ip} = conn, _opts), do: limit(conn, ip_string(ip), @limit_anonymous)
 
   defp limit(conn, identifier, count) do
-    case Hammer.check_rate(identifier, @one_minute, count) do
+    case Backend.hit(identifier, @one_minute, count) do
       {:allow, _count} -> conn
       {:deny, _limit} -> conn |> send_resp(429, "Too many requests!") |> halt()
     end
