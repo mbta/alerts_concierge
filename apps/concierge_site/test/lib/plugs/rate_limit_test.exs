@@ -9,7 +9,7 @@ defmodule ConciergeSite.Plugs.RateLimitTest do
   setup do
     on_exit(fn ->
       # https://github.com/ExHammer/hammer/issues/35
-      true = :ets.delete_all_objects(:hammer_ets_buckets)
+      true = :ets.delete_all_objects(RateLimit.Backend)
     end)
   end
 

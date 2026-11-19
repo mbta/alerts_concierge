@@ -50,10 +50,6 @@ config :guardian, Guardian.DB, repo: AlertProcessor.Repo
 config :concierge_site, mail_template_dir: Path.join(~w(#{__DIR__} /../ lib/mail_templates))
 config :concierge_site, mjml_template_dir: Path.join(~w(#{__DIR__} /../ assets/mjml))
 
-# Rate Limiting
-config :hammer,
-  backend: {Hammer.Backend.ETS, [expiry_ms: 60_000 * 60 * 4, cleanup_interval_ms: 60_000 * 10]}
-
 config :recaptcha,
   public_key: {:system, "RECAPTCHA_PUBLIC_KEY"},
   secret: {:system, "RECAPTCHA_PRIVATE_KEY"}
