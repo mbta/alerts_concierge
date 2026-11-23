@@ -24,5 +24,7 @@ defmodule ConciergeSite.TripView do
 
   @spec show_deleted_last_trip_survey?(Conn.t(), [Trip.t()]) :: boolean()
   def show_deleted_last_trip_survey?(conn, trips),
-    do: get_flash(conn, :info) == subscription_deleted_message() and Enum.empty?(trips)
+    do:
+      Phoenix.Flash.get(conn.assigns.flash, :info) == subscription_deleted_message() and
+        Enum.empty?(trips)
 end
