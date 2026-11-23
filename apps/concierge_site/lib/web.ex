@@ -18,7 +18,10 @@ defmodule ConciergeSite.Web do
 
   def controller do
     quote do
-      use Phoenix.Controller, namespace: ConciergeSite
+      use Phoenix.Controller,
+        namespace: ConciergeSite,
+        layouts: [html: {ConciergeSite.LayoutView, :app}]
+
       import Plug.Conn
       import ConciergeSite.Router.Helpers
       use Gettext, backend: ConciergeSite.Gettext
@@ -34,7 +37,7 @@ defmodule ConciergeSite.Web do
 
       @dialyzer :no_match
       # Import convenience functions from controllers
-      import Phoenix.Controller, only: [get_csrf_token: 0, get_flash: 2, view_module: 1]
+      import Phoenix.Controller, only: [get_csrf_token: 0, view_module: 1]
 
       # Use all HTML functionality (forms, tags, etc)
       use Phoenix.HTML

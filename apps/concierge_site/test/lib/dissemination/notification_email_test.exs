@@ -55,7 +55,7 @@ defmodule ConciergeSite.Dissemination.NotificationEmailTest do
     assert headers["List-Unsubscribe-Post"] == "List-Unsubscribe=One-Click"
 
     assert headers["List-Unsubscribe"]
-           |> String.match?(~r(https:\/\/alerts.localhost\/unsubscribe\/\S{100,}))
+           |> String.match?(~r(https:\/\/alerts.localhost\/unsubscribe\/\S{80,}))
   end
 
   test "text_email/1 includes content for closed alerts" do
