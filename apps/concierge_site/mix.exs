@@ -50,7 +50,7 @@ defmodule ConciergeSite.Mixfile do
       {:hammer, "~> 7.5"},
       {:httpoison, "~> 3.0.1"},
       {:logster, "~> 1.1.1"},
-      {:phoenix, "~> 1.6.0"},
+      {:phoenix, "~> 1.7.25"},
       {:phoenix_ecto, "~> 4.0"},
       {:phoenix_html, "~> 3.0"},
       {:phoenix_live_view, "~> 0.20.14"},
