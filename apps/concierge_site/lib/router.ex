@@ -36,8 +36,8 @@ defmodule ConciergeSite.Router do
     plug(Guardian.Permissions, ensure: %{admin: [:all]})
   end
 
-  pipeline :layout do
-    plug(:put_layout, {ConciergeSite.LayoutView, :app})
+  pipeline :app_layout do
+    plug(:put_layout, html: {ConciergeSite.LayoutView, :app})
   end
 
   scope "/", ConciergeSite do
@@ -54,7 +54,7 @@ defmodule ConciergeSite.Router do
   end
 
   scope "/", ConciergeSite do
-    pipe_through([:redirect_prod_http, :browser, :layout])
+    pipe_through([:redirect_prod_http, :browser, :app_layout])
 
     get("/", PageController, :landing)
     get("/login", SessionController, :login_redirect)
@@ -75,7 +75,7 @@ defmodule ConciergeSite.Router do
   end
 
   scope "/", ConciergeSite do
-    pipe_through([:redirect_prod_http, :browser, :browser_auth, :layout])
+    pipe_through([:redirect_prod_http, :browser, :browser_auth, :app_layout])
 
     resources("/login", SessionController, only: [:delete], singleton: true)
 
@@ -115,7 +115,7 @@ defmodule ConciergeSite.Router do
   end
 
   scope "/admin", ConciergeSite.Admin, as: :admin do
-    pipe_through([:redirect_prod_http, :browser, :browser_auth, :admin_auth, :layout])
+    pipe_through([:redirect_prod_http, :browser, :browser_auth, :admin_auth, :app_layout])
 
     get("/", HomeController, :index)
     resources("/queries", QueriesController, only: [:index, :show])
