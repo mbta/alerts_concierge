@@ -62,7 +62,7 @@ defmodule AlertProcessor.Mixfile do
       {:tzdata, "~> 1.1.0"},
       {:uuid, "~> 1.1.8"},
       {:bypass, "~> 2.1.0", only: :test},
-      {:ex_machina, "~> 2.7.0", only: :test}
+      {:ex_machina, "~> 2.8.2", only: :test}
     ]
   end
 
